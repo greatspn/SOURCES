@@ -158,14 +158,14 @@ mkdir -p GreatSPN
 cd GreatSPN
 
 # Setup public repository URLs
-GREATSPN_SOURCES=https://gitlab.di.unito.it/amparore/GreatSPN-public.git
+GREATSPN_SOURCES=https://github.com/greatspn/SOURCES.git
 
 if [[ $DEVMODE == "Y" ]] ; then
 	if [[ ! -e ~/.ssh/id_rsa.pub ]] ; then
 		fail "Cannot find the SSH key in ~/.ssh/id_rsa.pub . Cannot clone the repositories in developer mode."
 	fi
 	# Use SSH repositories (require developer access and a valid ~/.ssh/id_rsa key)
-	GREATSPN_SOURCES=git@gitlab.di.unito.it:amparore/GreatSPN-public.git
+	# GREATSPN_SOURCES=git@gitlab.di.unito.it:amparore/GreatSPN-public.git
 	GREATSPN_PRIVATE=git@gitlab.di.unito.it:amparore/GreatSPN-private.git
 fi
 
