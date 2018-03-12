@@ -25,7 +25,7 @@ the installation. As of now, the only supported platform is Fedora. We will add 
 
 On Fedora (version 18 or greater), type the following command at the prompt:
 ```
-	curl https://github.com/greatspn/SOURCES/download.sh | bash -Fedora
+	curl https://raw.githubusercontent.com/greatspn/SOURCES/master/download.sh | bash -s -- -Fedora
 ```
 This will create a GreatSPN/ directory, which will contain these subdirectories:
  * SOURCES: the main source tree of the GreatSPN framework
@@ -60,7 +60,7 @@ On other Linux distributions, you will first need to install the following depen
 
 After that, type the command:
 ```
-	curl https://github.com/greatspn/SOURCES/install.sh | bash
+	curl https://raw.githubusercontent.com/greatspn/SOURCES/master/download.sh | bash
 ```
 and follow the above instruction to compile meddly and GreatSPN.
 
