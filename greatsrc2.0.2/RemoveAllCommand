@@ -1,0 +1,11 @@
+#!/bin/bash 
+
+
+if [ "$1" = "" ]
+then
+	echo "Use RMNET [-n] netdirectory/netname"
+	exit 1
+fi
+
+rm -f $1.*
+exit 0 	

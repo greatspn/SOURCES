@@ -1,0 +1,9 @@
+#
+source ~/.GreatSPN
+	$GSPNHOME/gbin/gmd nets/$1
+	/bin/mv nets/$1_mdf.p nets/GMT_mdf.p
+	pc -w -o nets/$1.gmt $GSPNHOME/2bin/gmt.o nets/GMT_mdf.p
+	/bin/rm -f GMT_mdf.o nets/GMT_mdf.p
+	nets/$1.gmt nets/$1
+	/bin/rm -f nets/$1.gmt
+	$GSPNHOME/2bin/ggs nets/$1; csh $GSPNHOME/gst nets/ $1; echo "ok" > ok

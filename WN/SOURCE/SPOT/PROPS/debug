@@ -1,0 +1,56 @@
+-1 * 1 * F(P2 & GF!P9 & G!P3)
+  |  1  {Acc[!P9]}
+
+ Inter_NoREQ(1<{c2c1}0>) |{c2c1}0|=2  * 1 * F(P2 & GF!P9 & G!P3)
+  |  1  {Acc[P2 & GF!P9 & G!P3]}
+
+Cycle:
+
+  Inter_REQ(1<{c1}1>)Inter_NoREQ(1<{c2}0>)GrReqC(1<{c1}1>) | {c2}0|=1 |{c1}1|=1  * 1 * GF!P9 & G!P3
+  |  1  {Acc[P2 & GF!P9 & G!P3]}
+
+  Inter_REQ(1<{c2c1}0>)GrReqC(1<{c2c1}0>) | {c2c1}0|=2  * 1 * GF!P9 & G!P3
+  |  1  {Acc[P2 & GF!P9 & G!P3], Acc[!P9]}
+
+  Inter_REQ(1<{c2c1}0>1<{c2c1}1>)GrReqC(1<{c2c1}1>)PReqC(1<{c2c1}0>)P18(1<{c2c1}0>) |{c2c1}0|=1 |{c2c1}1|=1  * 1 * GF!P9 & G!P3
+  |  1  {Acc[P2 & GF!P9 & G!P3]}
+
+  Inter_REQ(1<{c2c1}0>1<{c2c1}1>)GrReqC(1<{c2c1}1>)PReqC(1<{c2c1}0>)P26(1<{c2c1}0>) |{c2c1}0|=1 |{c2c1}1|=1  * 1 * GF!P9 & G!P3
+  |  1  {Acc[P2 & GF!P9 & G!P3]}
+
+  Inter_REQ(1<{c2c1}0>1<{c2c1}1>)GrReqC(1<{c2c1}1>)PReqC(1<{c2c1}0>)P27(1<{c2c1}0>) |{c2c1}0|=1 |{c2c1}1|=1  * 1 * GF!P9 & G!P3
+  |  1  {Acc[P2 & GF!P9 & G!P3]}
+
+  P28(1<{c2c1}1>)Inter_REQ(1<{c2c1}0>1<{c2c1}1>)GrReqC(1<{c2c1}0>)PReqC(1<{c2c1}1>) |{c2c1}0|=1 |{c2c1}1|=1  * 1 * GF!P9 & G!P3
+  |  1  {Acc[P2 & GF!P9 & G!P3]}
+
+  P29(1<{c2c1}1>)Inter_REQ(1<{c2c1}0>1<{c2c1}1>)GrReqC(1<{c2c1}0>)PReqC(1<{c2c1}1>) |{c2c1}0|=1 |{c2c1}1|=1  * 1 * GF!P9 & G!P3
+  |  1  {Acc[P2 & GF!P9 & G!P3]}
+
+  Inter_REQ(1<{c2c1}0>1<{c2c1}1>)GrReqC(1<{c2c1}1>)PReqC(1<{c2c1}0>)P30(1<{c2c1}0>) |{c2c1}0|=1 |{c2c1}1|=1  * 1 * GF!P9 & G!P3
+  |  1  {Acc[P2 & GF!P9 & G!P3]}
+
+  Inter_REQ(1<{c2c1}0>1<{c2c1}1>)GrReqC(1<{c2c1}1>)PReqC(1<{c2c1}0>)P31(1<{c2c1}0>) |{c2c1}0|=1 |{c2c1}1|=1  * 1 * GF!P9 & G!P3
+  |  1  {Acc[P2 & GF!P9 & G!P3]}
+
+  Inter_REQ(1<{c2c1}0>1<{c2c1}1>)GrReqC(1<{c2c1}1>)PReqC(1<{c2c1}0>)P32(1<{c2c1}0>) |{c2c1}0|=1 |{c2c1}1|=1  * 1 * GF!P9 & G!P3
+  |  1  {Acc[P2 & GF!P9 & G!P3]}
+
+  Inter_REQ(1<{c2c1}0>1<{c2c1}1>)GrReqC(1<{c2c1}1>)GrC(1<{c2c1}0>) |{c2c1}0|=1 |{c2c1}1|=1  * 1 * GF!P9 & G!P3
+  |  1  {Acc[P2 & GF!P9 & G!P3]}
+
+  Inter_REQ(1<{c1}1>)Inter_CS(1<{c2}0>)GrReqC(1<{c1}1>)GrC(1<{c2}0>) |{c2}0|=1 |{c1}1|=1  * 1 * GF!P9 & G!P3
+  |  1  {Acc[P2 & GF!P9 & G!P3]}
+
+
+Inter_NoREQ >= <c1>;
+P1B: Inter_NoREQ  < <c1> ;
+P2: Inter_REQ >= <c1>;
+P2B: Inter_REQ < <c1>;
+P3: Inter_CS >= <c1>;
+P3B: Inter_CS < <c1>;
+;
+P8: #(Inter_REQ)>=1;
+P8B: #(Inter_REQ)=0;
+P9: GrReqC >= <c1>;
+P9B: GrReqC < <c1>;

@@ -1,0 +1,40 @@
+INSTALLING AND USING A RG/SRG GRAPHICAL REPRESENTATION
+======================================================
+For using the RG/SRG graphical representation  on your system, please follow these
+instructions.
+
+Build Requirements
+================== 
+
+To use the RG/SRG graphical representation you need to download and install the Graphviz package (Graph Visualization Software)
+http://www.graphviz.org/
+
+
+Basic Installation
+==================
+
+To build the package you  can consult the README file 
+
+
+Getting Started
+===============
+
+To generate the RG/SRG graphical representation of a net you have to  type the following commands from a terminal:
+
+>swn_ord_rg netdirectory/netname -d     
+            or
+>swn_sym_rg netdirectory/netname -d
+>v_graph netdirectory/netname
+
+The graph is  saved in the netdirectory/netname.ps file 
+
+
+
+
+
+
+
+
+
+
+

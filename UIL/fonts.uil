@@ -1,0 +1,27 @@
+/*******************************************************************************
+	Font values
+	
+	Comment:				This Section translates Font strings to Font 
+							values
+							
+	Programmer:				Alex
+	Creation Date:			23/2/95
+	Last Modify Date:		23/2/95
+
+********************************************************************************/
+
+value
+
+/*******************************************************************************
+	To change fonts or add new one try the "xlsfonts" command to get the 
+	X font specification string.
+	
+	WARNING use always the long format string; don't use font aliases because
+			are machine	dependent. To resolve an alias font look for the 
+			font.alias files in the fonts directories.
+			To get a listing of the current fonts directories try "xset q"
+********************************************************************************/
+			
+	fontBig	:	font('-adobe-helvetica-medium-r-normal--14-140-75-75-p-77-iso8859-1');
+	fontSmall:	font('-misc-fixed-medium-r-semicondensed--13-120-75-75-c-60-iso8859-1');
+	fontMouseHelp:	font('6x10');

@@ -1,0 +1,35 @@
+#!/bin/csh
+#
+############ GreatSPN2.0 ######################
+if ( ! $?GSPN2VERSION ) then
+	set path1 = $0;
+	set path2 = $path1:h
+	set path1 = $path2:h
+        setenv GSPN2VERSION $path1/install/version.csh
+	unset path1
+	unset path2
+endif
+if ( ! $?GSPN2BINS ) then
+        setenv GSPN2BINS `$GSPN2VERSION`
+endif
+if ( ! $?GSPN2HOME ) then
+        source ~/.GreatSPN2_$GSPN2BINS
+endif
+if ( ! -e $1.epd ) then
+	${GREATSPN_SCRIPTDIR}/newMT $1 
+	if( $status != 0) exit($status)
+endif
+echo ""
+echo "Start Transient solution"
+time ${GREATSPN_SCRIPTDIR}/2bin/gtrc $1 $2 -e0.00000001 -i10000
+if( $status != 0) exit(16)
+/bin/cp $1.epd $1.mpd
+if( $status != 0) exit(31)
+${GREATSPN_SCRIPTDIR}/2bin/gst_prep $1
+if( $status != 0) exit(13)
+${GREATSPN_SCRIPTDIR}/2bin/gst_stndrd $1 > $1.sta
+if( $status != 0) exit(14)
+${GREATSPN_SCRIPTDIR}/2bin/throughput $1 >> $1.sta
+if( $status != 0) exit(15)
+echo ""
+exit(0)

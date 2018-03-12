@@ -1,0 +1,177 @@
+/***************************************************************************
+ *   Copyright (C) 2011 by Marco Beccuti   *
+ *   beccuti@di.unito.it   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+
+
+#ifdef HAVE_CONFIG_H
+	#include <config.h>
+#endif
+
+#ifndef __IOS_H__
+	#define __IOS_H__
+	#include <iostream>
+#endif
+
+
+#ifndef __MAP_H__
+	#define __MAP_H__
+	#include <map>
+#endif
+
+#ifndef __LST_H__
+	#define __LST_H__
+	#include <list>
+#endif
+
+#ifndef __MDD_H__
+	#define __MDD_H__
+	#include "../SHARED/medd.h"
+#endif
+
+namespace PARSER{
+using namespace std;
+using namespace dddRS;
+
+//!Exception for Input/Output
+class ExceptionIO{
+std::string mess;
+public:
+	//! Empty constructor 
+	ExceptionIO() {mess="";};
+	//! constructor takes in input a message
+	ExceptionIO(std::string mess) {this->mess=mess;};
+	//! \name Methods use to access at the data structures
+  	//@{
+	//!it returns message
+	std::string get(void) {return mess;};
+	//@}
+//!Pre/Post conditions
+};
+
+class BOUNDMARKING{
+
+int Max;
+int Min;
+public:
+	//! Empty constructor 
+	BOUNDMARKING()	{Min=0; Max=0;};
+	//! Constructor takes in input a place id and its marking bounds.
+	BOUNDMARKING(int Max, int Min)	{this->Min=Min; this->Max=Max;}; 
+	//! \name Methods use to access at the data structures
+  	//@{
+	//!it returns  markings' bounds.
+	void get(int& Max, int& Min)		{Min=this->Min; Max=this->Max;}; 
+	//@}
+	//! \name Methods use to update the data structures
+  	//@{
+	//!it sets  markings' bounds.
+	void set(int Max, int Min)		{this->Min=Min; this->Max=Max;}; 
+	//!it sets upper bound.
+	void setMax(int Max)		{if (Max!=0) cerr<<"Conflict in the automaton"<<endl; this->Max=Max;};
+	//!it sets lower bound.
+	void setMin(int Min)		{if (Min!=0) cerr<<"Conflict in the automaton"<<endl; this->Min=Min;};
+	//@}
+};
+
+class TRANSITION{
+int D; // destination state
+int T; // transition id according to greatspn
+map < int, class BOUNDMARKING > prepost; //transition pre/post conditions for places
+
+public:
+	//! Empty constructor 
+	TRANSITION()	{D=0; T=0;};
+	//! Constructor takes in input the destination state  and the transition id.
+	TRANSITION(int D, int T)	{this->D=D; this->T=T;}; 
+//! \name Methods use to access at the data structures
+	//@{
+	//!it returns the destination state and the transition id
+	void getS_T(int& D, int& T)		{D=this->D; T=this->T;}; 
+	//!it takes in input a place id and returns true if the place belongs to the pre/post condition otherwise false. In Max and Min the place bounds are stored.
+	bool getBound(int P,int& Max, int Min) 
+			{
+			if (prepost.find(P)==prepost.end())
+				{
+				return false;
+				}
+			else
+				{
+				prepost[P].get(Max,Min);
+				return true;
+				}
+			 }
+	//@}
+//! \name Methods use to update  the data structures
+	//@{
+	//!it sets the destination state and the transition id
+	void setS_T(int D, int T)		{this->D=D; this->T=T;}; 
+	//!it sets the bound for  place P
+	bool setBound(int P,int& Max, int Min) 
+			{
+			bool b=false;
+			if (prepost.find(P)==prepost.end())
+				{
+				b=false;
+				}
+			prepost[P].set(Max,Min);
+			return b;
+			}
+	//!it sets the Upper bound for  place P
+	bool setBoundMax(int P,int& Max) 
+			{
+			bool b=false;
+			if (prepost.find(P)==prepost.end())
+				{
+				b=false;
+				}
+			prepost[P].setMax(Max);
+			return b;
+			}
+	//!it sets the lower bound for  place P
+	bool setBoundMin(int P,int& Min) 
+			{
+			bool b=false;
+			if (prepost.find(P)==prepost.end())
+				{
+				b=false;
+				}
+			prepost[P].setMin(Min);
+			return b;
+			}
+	//@}
+	friend ostream& operator<<(ostream& out,class TRANSITION& data)
+			{
+			out<<"-----------------------------------------\n";
+			out<<"Transition: "<<data.T<<endl;
+			out<<"Destination: "<<data.D<<endl;
+			map <int, class BOUNDMARKING>::iterator iter = data.prepost.begin();
+			int Max,Min;
+			while (iter!=data.prepost.end())
+				{	
+				iter->second.get(Max,Min);
+				out<<"\t Place: "<<iter->first<<" Max: "<<Max<<" Min: "<<Min<<endl;
+				iter++;
+				}
+			out<<"-----------------------------------------\n";
+			return out;
+			}	
+};
+
+
+};

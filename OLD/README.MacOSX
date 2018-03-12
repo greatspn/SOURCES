@@ -1,0 +1,10 @@
+Remember to modify the following files in order to compile libdmc on MacOSX
+
+WN/EDIT/makefile.libdmcrg
+WN/EDIT/makefile.libdmcsrg
+
+Change the LINK variable to
+-g -dynamiclib  -single_module -o
+
+You also need to install byacc from
+http://invisible-island.net/byacc/byacc.html

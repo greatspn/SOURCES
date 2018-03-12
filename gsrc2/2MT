@@ -1,0 +1,10 @@
+#
+/bin/cp nets/$1_crate.c nets/2MT_crate.c
+/bin/cp nets/$1_cmark.c nets/2MT_cmark.c
+cc -O -o nets/$1.MT $GSPNHOME/2bin/gmtc.o $GSPNHOME/2bin/compact.o \
+	nets/2MT_crate.c nets/2MT_cmark.c
+/bin/rm -f nets/2MT_crate.c nets/2MT_cmark.c *.o
+echo ""
+echo "Start EMC Matrix Construction"
+nets/$1.MT nets/$1 -e0.00000001 | $GSPNHOME/2bin/transpose nets/$1
+/bin/rm -f nets/$1.MT

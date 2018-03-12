@@ -1,0 +1,107 @@
+pred	   : pred
+	     OR 
+	     pterm
+        {
+	 gen(TYPEOR,"");
+	}
+	   | pterm
+	   ;
+pterm	   : pterm 
+	     AND 
+	     pfatt
+	{
+	 gen(TYPEAND,"");
+	}
+	   | pfatt
+	   ;
+pfatt	   : OPAR 
+	     pred
+	     CPAR
+	   | predop
+	     relop
+	     predop
+	   {
+	    gen(relfl," ");
+	   }
+	   ;
+relop      : EQ
+        {
+	 relfl = TYPEEQ;
+	}
+           | NE
+        {
+	 relfl = TYPENE;
+	}
+	   | LT
+        {
+	 fprintf(stdout,"Predicate operator < is not allowed in SWN specification\n");
+         exit(1);
+	}
+	   | LE
+        {
+	 fprintf(stdout,"Predicate operator <= is not allowed in SWN specification\n");
+         exit(1);
+	}
+	   | GT
+        {
+	 fprintf(stdout,"Predicate operator > is not allowed in SWN specification\n");
+         exit(1);
+	}
+	   | GE
+        {
+	 fprintf(stdout,"Predicate operator >= is not allowed in SWN specification\n");
+         exit(1);
+	}
+	   ;
+predop:   NUM
+	{
+	 sprintf(sbc_name,"%d",atoi(jjtext)-1);
+	 gen(TYPENUM,sbc_name);
+	}
+      |    STRING
+	{
+	 gen(TYPESTRING,str_in);
+	}
+      |    D
+	   OPAR
+	   STRING
+	   CPAR
+	{
+	 gen(TYPED,str_in);
+	}
+      |    ESCL
+	   STRING
+	{
+	 gen(TYPESUCCESSOR,str_in);
+	}
+      |    CARET
+	   STRING
+	{
+	 gen(TYPEPREDECESSOR,str_in);
+	}
+      |    DISTANCE
+	   OPAR
+	   STRING
+	{
+#ifdef SYMBOLIC
+	 fprintf(stdout,"SWN predicate definition DISTANCE is not allowed in SWN symbolic solution\n");
+         exit(1);
+#endif
+#ifdef COLOURED
+	 gen(TYPEDISTANCE,str_in);
+#endif
+	}
+	   COMMA
+	   STRING 
+	   CPAR
+	{
+#ifdef SYMBOLIC
+	 fprintf(stdout,"SWN predicate definition DISTANCE is not allowed in SWN symbolic solution\n");
+         exit(1);
+#endif
+#ifdef COLOURED
+	 gen(TYPEDISTANCE,str_in);
+#endif
+	}
+      ;
+%%

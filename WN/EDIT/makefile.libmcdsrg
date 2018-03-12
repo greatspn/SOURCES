@@ -1,0 +1,355 @@
+#directories
+SSOU = SOLVE
+CSOU = SOURCE/SHARED
+GSOU = SOURCE/REACHAB
+RSOU = SOURCE/READNET
+ESOU = SOURCE/REACHAB/E_SRG
+SPOTSOU = SOURCE/SPOT
+EDT = EDIT
+SFK = SUPPORT
+INC = INCLUDE
+BCK = BACKUP
+TRS = TRANSL
+OBJ = ../../$(GSPN2BINS)/2bin/MCDSRGO
+BINDIR=../../$(GSPN2BINS)
+LIBDIR=$(BINDIR)/2bin/lib
+
+#commands
+COMP = $(CC) $(CFLAGS) -o
+LINK = ar r
+LFLAGS = -lm -l$(LEX_LIB) $(SOCKET_LIB)  
+
+
+#files groups
+
+T_INCLUDES = ${INC}/const.h \
+	     ${INC}/struct.h \
+	     ${INC}/var_ext.h \
+	     ${INC}/decl.h \
+	     ${INC}/fun_ext.h \
+	     ${INC}/macros.h \
+	     ${INC}/SCONSSPOT.h \
+	     ${INC}/SSTRUCTSPOT.h \
+	     ${INC}/SVAR_EXTSPOT.h \
+	     ${INC}/SDECLSPOT.h \
+	     ${INC}/gspnlib.h
+	
+T_OBJECTS =	${OBJ}/getline.o \
+		${OBJ}/ealloc.o \
+	${OBJ}/LIBESRGSYMBOLIC_TRANSG.tab.o \
+	${OBJ}/LIBESRGSYMBOLIC_TRANSL.o \
+	${OBJ}/LIBESRGSYMBOLIC_PROPG.tab.o \
+	${OBJ}/LIBESRGSYMBOLIC_PROPL.o \
+	${OBJ}/LIBESRGSYMBOLIC_FSymFmTokens2.o\
+	${OBJ}/LIBESRGSYMBOLIC_MultiSetOp.o \
+	${OBJ}/LIBESRGSYMBOLIC_STATIC_CONF.o \
+	${OBJ}/LIBESRGSYMBOLIC_Vectors.o \
+	${OBJ}/LIBESRGSYMBOLIC_GroupMark.o \
+	${OBJ}/LIBESRGSYMBOLIC_INCLUSION.o \
+	${OBJ}/LIBESRGSYMBOLIC_CACHE.o \
+	${OBJ}/LIBESRGSYMBOLIC_main.o \
+	${OBJ}/LIBESRGSYMBOLIC_grammar.o \
+	${OBJ}/LIBESRGSYMBOLIC_service.o \
+	${OBJ}/LIBESRGSYMBOLIC_token.o \
+	${OBJ}/LIBESRGSYMBOLIC_dimensio.o \
+	${OBJ}/LIBESRGSYMBOLIC_errors.o \
+	${OBJ}/LIBESRGSYMBOLIC_compact.o \
+	${OBJ}/LIBESRGSYMBOLIC_common.o \
+	${OBJ}/LIBESRGSYMBOLIC_report.o \
+	${OBJ}/LIBESRGSYMBOLIC_enabling.o \
+	${OBJ}/LIBESRGSYMBOLIC_fire.o\
+	${OBJ}/LIBESRGSYMBOLIC_split.o\
+	${OBJ}/LIBESRGSYMBOLIC_group.o\
+	${OBJ}/LIBESRGSYMBOLIC_shared1.o\
+	${OBJ}/LIBESRGSYMBOLIC_shared2.o\
+	${OBJ}/LIBESRGSYMBOLIC_outdom.o\
+	${OBJ}/LIBESRGSYMBOLIC_degree.o \
+	${OBJ}/LIBESRGSYMBOLIC_precheck.o \
+	${OBJ}/LIBESRGSYMBOLIC_flush.o \
+	${OBJ}/LIBESRGSYMBOLIC_graph_se.o \
+	${OBJ}/LIBESRGSYMBOLIC_canonic.o \
+	${OBJ}/LIBESRGSYMBOLIC_schemes.o \
+	${OBJ}/LIBESRGSYMBOLIC_libgraph.o \
+	${OBJ}/LIBESRGSYMBOLIC_stack.o \
+	${OBJ}/LIBESRGSYMBOLIC_convert.o \
+	${OBJ}/LIBESRGSYMBOLIC_rg_files.o \
+	${OBJ}/LIBESRGSYMBOLIC_rgengwn.o \
+	${OBJ}/LIBESRGSYMBOLIC_read_arc.o \
+	${OBJ}/LIBESRGSYMBOLIC_read_t_c.o \
+	${OBJ}/LIBESRGSYMBOLIC_read_NET.o \
+	${OBJ}/LIBESRGSYMBOLIC_read_DEF.o \
+	${OBJ}/LIBESRGSYMBOLIC_read_t_s.o \
+	${OBJ}/LIBESRGSYMBOLIC_wn_yac.o \
+	${OBJ}/LIBESRGSYMBOLIC_GET_SYM.o \
+	${OBJ}/LIBESRGSYMBOLIC_MAPP_FOR_GROUPING.o \
+	${OBJ}/LIBESRGSYMBOLIC_MAPP_FOR_DECOMPOSING.o \
+	${OBJ}/LIBESRGSYMBOLIC_GROUP_STATICS.o \
+	${OBJ}/LIBESRGSYMBOLIC_STATIC_LIST.o \
+	${OBJ}/LIBESRGSYMBOLIC_MY_ALLOCATION.o \
+	${OBJ}/LIBESRGSYMBOLIC_GET_FIRST_EVENT.o \
+	${OBJ}/LIBESRGSYMBOLIC_INST_SYM_EVENT.o \
+	${OBJ}/LIBESRGSYMBOLIC_EVENTUALITIES.o \
+	${OBJ}/LIBESRGSYMBOLIC_READ_WRITE.o \
+	${OBJ}/LIBESRGSYMBOLIC_SAVE.o
+#${OBJ}/LIBESRGSYMBOLIC_AFTER_FIRING_CASES.o
+            
+T_SOURCES =	${SPOTSOU}/PROPS/TRANS.tab.c \
+	${SPOTSOU}/PROPS/TRANS.c \
+	${SPOTSOU}/PROPS/PROPG.tab.c \
+	${SPOTSOU}/PROPS/PROPL.c \
+	${SPOTSOU}/PROPS/FSymFmTokens2.c\
+	${SPOTSOU}/PROPS/MultiSetOp.c \
+	${SPOTSOU}/PROPS/STATIC_CONF.c \
+	${SPOTSOU}/PROPS/Vectors.c \
+	${SPOTSOU}/PROPS/GroupMark.c \
+	${SPOTSOU}/PROPS/INCLUSION.c \
+	${SPOTSOU}/PROPS/cache.c \
+	${CSOU}/main.c \
+	${CSOU}/service.c \
+	${CSOU}/token.c \
+	${CSOU}/dimensio.c \
+	${CSOU}/errors.c \
+	${SSOU}/compact.c \
+	${CSOU}/common.c \
+	${CSOU}/enabling.c \
+	${CSOU}/fire.c\
+	${CSOU}/split.c\
+	${CSOU}/group.c\
+	${CSOU}/shared1.c\
+	${CSOU}/shared2.c\
+	${CSOU}/outdom.c\
+	${CSOU}/report.c\
+	${CSOU}/precheck.c \
+	${CSOU}/flush.c \
+	${CSOU}/degree.c \
+	${GSOU}/graph_se.c\
+	${GSOU}/canonic.c\
+	${GSOU}/schemes.c\
+	${GSOU}/dsrg_graph.c\
+	${GSOU}/stack.c\
+	${GSOU}/convert.c\
+	${GSOU}/rg_files.c\
+	${GSOU}/rgengwn.c\
+	${RSOU}/read_arc.c \
+	${RSOU}/read_t_c.c \
+	${RSOU}/read_NET.c \
+	${RSOU}/read_DEF.c \
+	${RSOU}/read_t_s.c \
+	${RSOU}/wn_yac.c \
+	${ESOU}/AFTER_FIRING_CASES.c \
+	${ESOU}/GET_SYM.c \
+	${ESOU}/MAPP_FOR_GROUPING.c \
+	${ESOU}/MAPP_FOR_DECOMPOSING.c \
+	${ESOU}/GROUP_STATICS.c \
+	${ESOU}/STATIC_LIST.c \
+	${ESOU}/MY_ALLOCATION.c\
+	${ESOU}/GET_FIRST_EVENT.c \
+	${ESOU}/INST_SYM_EVENT.c \
+	${ESOU}/EVENTUALITIES.c \
+	${ESOU}/READ_WRITE.c \
+	${ESOU}/SAVE.c \
+
+T_LEX = ${TRS}/wn.lex 
+T_YACC = ${TRS}/wn.yac
+
+$(LIBDIR)/libgspnMCDSRG.a : ${T_INCLUDES} ${T_OBJECTS} ${T_LEX}	${T_YACC}
+	${LINK} $(LIBDIR)/libgspnMCDSRG.a ${T_OBJECTS}
+
+${OBJ}/LIBESRGSYMBOLIC_TRANSL.o : ${SPOTSOU}/PROPS/TRANS.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_TRANSL.o ${SPOTSOU}/PROPS/TRANS.c
+
+${SPOTSOU}/PROPS/TRANS.c : ${SPOTSOU}/PROPS/TRANS.l
+	$(LEX)  -PTrans -o${SPOTSOU}/PROPS/TRANS.c ${SPOTSOU}/PROPS/TRANS.l
+
+${OBJ}/LIBESRGSYMBOLIC_TRANSG.tab.o : ${SPOTSOU}/PROPS/TRANS.tab.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_TRANSG.tab.o ${SPOTSOU}/PROPS/TRANS.tab.c
+
+${SPOTSOU}/PROPS/TRANS.tab.c :  ${SPOTSOU}/PROPS/TRANS.y
+	cd ${SPOTSOU}/PROPS/ ; $(YACC) -d -p Trans -b TRANS `pwd`/TRANS.y ; cd - ;
+
+${OBJ}/LIBESRGSYMBOLIC_PROPL.o : ${SPOTSOU}/PROPS/PROPL.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_PROPL.o ${SPOTSOU}/PROPS/PROPL.c
+
+${SPOTSOU}/PROPS/PROPL.c : ${SPOTSOU}/PROPS/PROPL.l
+	$(LEX)  -PProp -o${SPOTSOU}/PROPS/PROPL.c ${SPOTSOU}/PROPS/PROPL.l
+
+${OBJ}/LIBESRGSYMBOLIC_PROPG.tab.o : ${SPOTSOU}/PROPS/PROPG.tab.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_PROPG.tab.o ${SPOTSOU}/PROPS/PROPG.tab.c
+
+${SPOTSOU}/PROPS/PROPG.tab.c :  ${SPOTSOU}/PROPS/PROPG.y
+	cd ${SPOTSOU}/PROPS/ ;$(YACC) -d -p Prop -b PROPG PROPG.y ; cd - ;
+
+${OBJ}/LIBESRGSYMBOLIC_CACHE.o : ${SPOTSOU}/PROPS/cache.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_CACHE.o ${SPOTSOU}/PROPS/cache.c -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include  
+
+${OBJ}/LIBESRGSYMBOLIC_FSymFmTokens2.o : ${SPOTSOU}/PROPS/FSymFmTokens2.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_FSymFmTokens2.o ${SPOTSOU}/PROPS/FSymFmTokens2.c
+
+${OBJ}/LIBESRGSYMBOLIC_MultiSetOp.o : ${SPOTSOU}/PROPS/MultiSetOp.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_MultiSetOp.o ${SPOTSOU}/PROPS/MultiSetOp.c
+
+${OBJ}/LIBESRGSYMBOLIC_STATIC_CONF.o : ${SPOTSOU}/PROPS/STATIC_CONF.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_STATIC_CONF.o ${SPOTSOU}/PROPS/STATIC_CONF.c
+
+${OBJ}/LIBESRGSYMBOLIC_Vectors.o : ${SPOTSOU}/PROPS/Vectors.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_Vectors.o ${SPOTSOU}/PROPS/Vectors.c
+
+${OBJ}/LIBESRGSYMBOLIC_GroupMark.o : ${SPOTSOU}/PROPS/GroupMark.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_GroupMark.o ${SPOTSOU}/PROPS/GroupMark.c
+
+${OBJ}/LIBESRGSYMBOLIC_INCLUSION.o : ${SPOTSOU}/PROPS/INCLUSION.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_INCLUSION.o ${SPOTSOU}/PROPS/INCLUSION.c
+
+${OBJ}/LIBESRGSYMBOLIC_main.o : ${CSOU}/main.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_main.o ${CSOU}/main.c
+
+${OBJ}/LIBESRGSYMBOLIC_outdom.o : ${CSOU}/outdom.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_outdom.o ${CSOU}/outdom.c
+
+${OBJ}/LIBESRGSYMBOLIC_shared1.o : ${CSOU}/shared1.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_shared1.o ${CSOU}/shared1.c
+
+${OBJ}/LIBESRGSYMBOLIC_shared2.o : ${CSOU}/shared2.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_shared2.o ${CSOU}/shared2.c
+
+${OBJ}/LIBESRGSYMBOLIC_precheck.o : ${CSOU}/precheck.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_precheck.o ${CSOU}/precheck.c
+
+${OBJ}/LIBESRGSYMBOLIC_split.o : ${CSOU}/split.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_split.o ${CSOU}/split.c
+
+${OBJ}/LIBESRGSYMBOLIC_group.o : ${CSOU}/group.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_group.o ${CSOU}/group.c
+
+${OBJ}/LIBESRGSYMBOLIC_fire.o : ${CSOU}/fire.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_fire.o ${CSOU}/fire.c
+
+${OBJ}/LIBESRGSYMBOLIC_degree.o : ${CSOU}/degree.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_degree.o ${CSOU}/degree.c
+
+${OBJ}/LIBESRGSYMBOLIC_flush.o : ${CSOU}/flush.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_flush.o ${CSOU}/flush.c
+
+${OBJ}/LIBESRGSYMBOLIC_compact.o : ${SSOU}/compact.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_compact.o ${SSOU}/compact.c
+
+${OBJ}/LIBESRGSYMBOLIC_common.o : ${CSOU}/common.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_common.o ${CSOU}/common.c
+
+${OBJ}/LIBESRGSYMBOLIC_errors.o : ${CSOU}/errors.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_errors.o ${CSOU}/errors.c
+
+${OBJ}/LIBESRGSYMBOLIC_dimensio.o : ${CSOU}/dimensio.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_dimensio.o ${CSOU}/dimensio.c
+
+${OBJ}/LIBESRGSYMBOLIC_token.o : ${CSOU}/token.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_token.o ${CSOU}/token.c
+
+${OBJ}/LIBESRGSYMBOLIC_service.o : ${CSOU}/service.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_service.o ${CSOU}/service.c
+
+${OBJ}/LIBESRGSYMBOLIC_enabling.o : ${CSOU}/enabling.c ${T_INCLUDES} ${INC}/shared.h
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_enabling.o ${CSOU}/enabling.c
+
+${OBJ}/LIBESRGSYMBOLIC_report.o : ${CSOU}/report.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_report.o ${CSOU}/report.c
+
+${OBJ}/LIBESRGSYMBOLIC_canonic.o : ${GSOU}/canonic.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_canonic.o ${GSOU}/canonic.c
+
+${OBJ}/LIBESRGSYMBOLIC_schemes.o : ${GSOU}/schemes.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_schemes.o ${GSOU}/schemes.c
+
+${OBJ}/LIBESRGSYMBOLIC_libgraph.o : ${GSOU}/dsrg_graph.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_libgraph.o ${GSOU}/dsrg_graph.c
+
+${OBJ}/LIBESRGSYMBOLIC_graph_se.o : ${GSOU}/graph_se.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_graph_se.o ${GSOU}/graph_se.c
+
+${OBJ}/LIBESRGSYMBOLIC_rgengwn.o : ${GSOU}/rgengwn.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_rgengwn.o ${GSOU}/rgengwn.c
+
+${OBJ}/LIBESRGSYMBOLIC_rg_files.o : ${GSOU}/rg_files.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_rg_files.o ${GSOU}/rg_files.c
+
+${OBJ}/LIBESRGSYMBOLIC_stack.o : ${GSOU}/stack.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_stack.o ${GSOU}/stack.c
+
+${OBJ}/LIBESRGSYMBOLIC_convert.o : ${GSOU}/convert.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_convert.o ${GSOU}/convert.c
+
+${OBJ}/LIBESRGSYMBOLIC_wn_yac.o : ${RSOU}/wn_yac.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_wn_yac.o ${RSOU}/wn_yac.c
+
+${OBJ}/LIBESRGSYMBOLIC_read_arc.o : ${RSOU}/read_arc.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_read_arc.o ${RSOU}/read_arc.c
+
+${OBJ}/LIBESRGSYMBOLIC_read_t_s.o : ${RSOU}/read_t_s.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_read_t_s.o ${RSOU}/read_t_s.c
+
+${OBJ}/LIBESRGSYMBOLIC_read_t_c.o : ${RSOU}/read_t_c.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_read_t_c.o ${RSOU}/read_t_c.c
+
+${OBJ}/LIBESRGSYMBOLIC_read_DEF.o : ${RSOU}/read_DEF.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_read_DEF.o ${RSOU}/read_DEF.c
+
+${OBJ}/LIBESRGSYMBOLIC_read_NET.o : ${RSOU}/read_NET.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_read_NET.o ${RSOU}/read_NET.c
+
+${OBJ}/LIBESRGSYMBOLIC_grammar.o : ${SFK}/grammar.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_grammar.o ${SFK}/grammar.c
+
+${OBJ}/LIBESRGSYMBOLIC_AFTER_FIRING_CASES.o : ${ESOU}/AFTER_FIRING_CASES.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_AFTER_FIRING_CASES.o ${ESOU}/AFTER_FIRING_CASES.c
+
+${OBJ}/LIBESRGSYMBOLIC_GET_SYM.o : ${ESOU}/GET_SYM.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_GET_SYM.o ${ESOU}/GET_SYM.c
+
+${OBJ}/LIBESRGSYMBOLIC_MAPP_FOR_GROUPING.o : ${ESOU}/MAPP_FOR_GROUPING.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_MAPP_FOR_GROUPING.o ${ESOU}/MAPP_FOR_GROUPING.c
+
+${OBJ}/LIBESRGSYMBOLIC_MAPP_FOR_DECOMPOSING.o : ${ESOU}/MAPP_FOR_DECOMPOSING.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_MAPP_FOR_DECOMPOSING.o ${ESOU}/MAPP_FOR_DECOMPOSING.c
+
+${OBJ}/LIBESRGSYMBOLIC_GROUP_STATICS.o : ${ESOU}/GROUP_STATICS.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_GROUP_STATICS.o ${ESOU}/GROUP_STATICS.c
+
+${OBJ}/LIBESRGSYMBOLIC_STATIC_LIST.o : ${ESOU}/STATIC_LIST.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_STATIC_LIST.o ${ESOU}/STATIC_LIST.c
+
+${OBJ}/LIBESRGSYMBOLIC_MY_ALLOCATION.o : ${ESOU}/MY_ALLOCATION.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_MY_ALLOCATION.o ${ESOU}/MY_ALLOCATION.c
+
+${OBJ}/LIBESRGSYMBOLIC_GET_FIRST_EVENT.o : ${ESOU}/GET_FIRST_EVENT.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_GET_FIRST_EVENT.o ${ESOU}/GET_FIRST_EVENT.c
+
+${OBJ}/LIBESRGSYMBOLIC_INST_SYM_EVENT.o : ${ESOU}/INST_SYM_EVENT.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_INST_SYM_EVENT.o ${ESOU}/INST_SYM_EVENT.c
+
+${OBJ}/LIBESRGSYMBOLIC_EVENTUALITIES.o : ${ESOU}/EVENTUALITIES.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_EVENTUALITIES.o ${ESOU}/EVENTUALITIES.c
+
+${OBJ}/LIBESRGSYMBOLIC_READ_WRITE.o : ${ESOU}/READ_WRITE.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_READ_WRITE.o ${ESOU}/READ_WRITE.c
+
+
+${OBJ}/ealloc.o : ${CSOU}/ealloc.c ${T_INCLUDES}
+	${COMP}  ${OBJ}/ealloc.o ${CSOU}/ealloc.c
+
+${OBJ}/getline.o : ${CSOU}/getline.c ${T_INCLUDES}
+	${COMP}  ${OBJ}/getline.o ${CSOU}/getline.c
+
+
+${OBJ}/LIBESRGSYMBOLIC_SAVE.o : ${ESOU}/SAVE.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBESRGSYMBOLIC_SAVE.o ${ESOU}/SAVE.c
+#############################################
+${SFK}/lex.c : ${TRS}/wn.lex
+	$(LEX) ${TRS}/wn.lex
+	mv lex.jj.c ${SFK}/lex.c
+	#ed ${SFK}/lex.c < ${EDT}/ed_lex
+
+${SFK}/grammar.c : ${TRS}/wn.yac ${SFK}/lex.c ${T_INCLUDES}
+	$(YACC) ${TRS}/wn.yac
+	mv y.tab.c ${SFK}/grammar.c
+	ed ${SFK}/grammar.c < ${EDT}/ed_gram
+

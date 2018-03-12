@@ -1,0 +1,18 @@
+#
+if ( ! $?GSPNBINS ) then
+        setenv GSPNBINS `arch`
+endif
+if ( ! $?GSPNHOME ) then
+        source ~/.GreatSPN_$GSPNBINS
+endif
+$GSPNHOME/2bin/pinvar nets/$1 > 2RG.list
+$GSPNHOME/2bin/struct nets/$1 >> 2RG.list
+$GSPNHOME/2bin/comp nets/$1>> 2RG.list
+/bin/cp nets/$1_cmark.c nets/2RG_cmark.c
+/bin/cp nets/$1_ctran.c nets/2RG_ctran.c
+cc -O -o nets/$1.RG $GSPNHOME/2bin/grg.o $GSPNHOME/2bin/compact.o nets/2RG_cmark.c nets/2RG_ctran.c
+/bin/rm -f nets/2RG_cmark.c *.o nets/2RG_ctran.c
+echo ""
+echo "Start Reachability Graph construction"
+time nets/$1.RG nets/$1 >> 2RG.list
+/bin/rm -f nets/$1.RG

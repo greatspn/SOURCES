@@ -1,0 +1,202 @@
+/*******************************************************************************
+        Console Dialog
+        
+        Comment:     This Section Describes the Console Dialog 
+                                                        
+        Programmer:                     Alex
+        Creation Date:                  27/2/95
+        Last Modify Date:               28/3/95
+
+********************************************************************************/
+procedure
+	ConsoleClearCB();
+	ConsoleInterruptCB();
+	ConsoleOkCB();
+	ConsoleStartCB();
+        ClearProcessCB();
+	
+object  ConsoleDialog : XmFormDialog
+{
+        controls
+        {
+				XmSeparator  ConsoleDialogSeparator;
+				XmScrolledList  ConsoleDialogList;
+				XmPushButton  ConsoleDialogOK;
+				XmPushButton  ConsoleDialogClear;
+				XmPushButton  ConsoleDialogInterrupt;
+				XmPushButton  ConsoleDialogStart;
+!				XmTextField	  ConsoleDialogHostname;
+!				XmLabel		ConsoleDialogLabel;
+				unmanaged XmFormDialog SimOptionsDialog;
+				unmanaged XmFormDialog SwnRGDialog;
+				/****17/7/08 ESRG by Marco***/
+				unmanaged XmFormDialog SwnESRGDialog;
+				unmanaged XmFormDialog SwnDSRGDialog;
+				/****17/7/08 ESRG by Marco***/
+				/****10/6/10 ESRG by Marco***/
+				unmanaged XmFormDialog GSPNMDDDialog;
+				/****10/6/10 ESRG by Marco***/
+				unmanaged XmFormDialog SwnUnfoldOptionsDialog;
+         };
+        arguments
+        {
+                XmNdialogTitle                  =       "Console";
+                XmNminWidth                     =       480;
+                XmNminHeight                    =       176;
+                XmNwidth                        =       480;
+                XmNheight                       =       308;
+                XmNautoUnmanage                 =       false;
+                XmNdialogStyle                  =       XmDIALOG_FULL_APPLICATION_MODAL;
+                XmNnoResize                             =       false;
+				XmNbackground =				appDialogBackgroundColor;
+				XmNdefaultButton 				= 		ConsoleDialogStart;
+        };
+        callbacks
+        {
+              XmNpopdownCallback = procedure ClearProcessCB();
+        };
+
+};
+				
+object ConsoleDialogSeparator : XmSeparator
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_OPPOSITE_FORM;
+      XmNtopOffset =              -70;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                1;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                1;
+   };
+};
+
+object ConsoleDialogOK : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              6;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                20;
+      XmNlabelString =               'Ok';
+      XmNrecomputeSize =            false;
+      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+   callbacks
+   {
+   		XmNactivateCallback = procedure ConsoleOkCB();
+	};
+};
+
+
+object ConsoleDialogClear : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              6;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                95;
+      XmNlabelString =               'Clear';
+      XmNrecomputeSize =            false;
+      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+   callbacks
+   {
+   		XmNactivateCallback = procedure ConsoleClearCB();
+	};
+};
+
+object ConsoleDialogStart : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              6;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               100;
+      XmNlabelString =               'Start';
+      XmNshowAsDefault =             1;
+!      XmNrecomputeSize =            false;
+      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+   callbacks
+   {
+   		XmNactivateCallback = procedure ConsoleStartCB();
+	};
+};
+
+object ConsoleDialogInterrupt : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              6;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               20;
+      XmNlabelString =               'Interrupt';
+!      XmNrecomputeSize =            false;
+!      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+   callbacks
+   {
+   		XmNactivateCallback = procedure ConsoleInterruptCB();
+	};
+};
+
+object ConsoleDialogList : XmScrolledList
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              10;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              80;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               10;
+	  XmNbackground =				appDialogBackgroundColor;
+      XmNwidth =                     450;
+      XmNheight =                    220;
+      XmNscrollingPolicy =                    XmAUTOMATIC;
+      XmNscrollBarDisplayPolicy =                    XmSTATIC;
+      XmNlistSizePolicy =                    XmCONSTANT;
+   };
+};
+
+object ConsoleDialogLabel : XmLabel
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              35;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               250;
+      XmNlabelString =               'Hostname :';
+!      XmNrecomputeSize =            false;
+!      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+
+};
+object ConsoleDialogHostname : XmTextField
+{
+   arguments
+   {
+      XmNbottomAttachment	=	XmATTACH_FORM;
+      XmNbottomOffset		=	10;
+      XmNrightAttachment		=	XmATTACH_FORM;
+      XmNrightOffset			=	175;
+	  XmNbackground =				appDialogBackgroundColor;
+   };
+   callbacks
+   {
+   		XmNactivateCallback = procedure ConsoleStartCB();
+	};
+};

@@ -1,0 +1,3020 @@
+/*******************************************************************************
+	Menu description
+	
+	Comment:				This Section describes the Pull Down and Popup 
+							Menu Hierachy 
+							
+	Programmer:				Alex
+	Creation Date:			22/02/95
+	Last Modify Date:		08/03/95
+
+********************************************************************************/
+
+include file 'menuAttributes.uil';
+procedure 
+	FileHelpMenuCB(integer);
+	FileMenuCB(integer);
+	RescaleCB(integer);
+	RescaleHelpMenuCB();
+	HelpToggleCB();
+	AboutCB();
+	HelpHelpMenuCB(integer);
+	ClearStatusCB();
+	NetHelpMenuCB(integer);
+	NetMenuCB(integer);
+	SwnHelpMenuCB(integer);
+	SwnMenuCB(integer);
+	GridHelpMenuCB();
+	GridCB(integer);
+	ZoomHelpMenuCB();
+	ZoomCB(integer);
+	EditHelpMenuCB(integer);
+	EditMenuCB(integer);
+	ActionsCB(integer);
+	SetActionsCB(integer);
+	PrintAreaCB(integer);
+	modify_menu_procCB(integer);
+	ViewHelpMenuCB(integer);
+	ViewModeCB(integer);
+	ViewMenuCB(integer);
+	PinvActionsCB(integer);
+	TinvActionsCB(integer);
+	EGSPNHelpMenuCB(integer);
+	EGSPNMenuCB(integer);
+
+identifier
+	FILE_MENU;
+	FILE_NEW_MITEM;
+ 	FILE_OPEN_MITEM;
+	FILE_MERGE_MITEM;
+	FILE_SAVE_MITEM;
+	FILE_SAVEAS_MITEM;
+	FILE_REMOVE_RESULTS_MITEM;
+	FILE_REMOVE_ALL_MITEM;
+	FILE_COMMENT_MITEM;
+	FILE_PRINT_MITEM;
+	FILE_OPTIONS_MITEM;
+	FILE_EXIT_MITEM;
+	
+	EDIT_UNDO_MITEM;
+	EDIT_ADD_MITEM;
+	EDIT_CUT_MITEM;
+	EDIT_PASTE_MITEM;
+	EDIT_MOVE_MITEM;
+
+	EDIT_MODIFY_MITEM;
+	EDIT_LAYERS_MITEM;
+	EDIT_MODIFY_CLOCKWISE_MITEM;
+	EDIT_MODIFY_FLIPX_MITEM;
+	EDIT_MODIFY_FLIPY_MITEM;
+	EDIT_MIRROR_MITEM;
+	
+	FLIP_XAXIS;
+	FLIP_YAXIS;
+
+	ROTATE45;
+	ROTATE90;
+	ROTATE135;
+	ROTATE180;
+	ROTATEM135;
+	ROTATEM90;
+	ROTATEM45;
+	
+	VIEW_SPLINE_MITEM;
+	VIEW_TAG_MITEM;
+	VIEW_RATE_MITEM;
+	VIEW_OVERVIEW_MITEM;
+ 	VIEW_SEARCH_MITEM;
+ 	VIEW_PRINTAREA_MITEM;
+ 	VIEW_LAYERS_MITEM;
+
+ 	GRID_NONE_MITEM;
+ 	GRID_5_MITEM;
+ 	GRID_10_MITEM;
+ 	GRID_20_MITEM;
+ 	GRID_30_MITEM;
+ 	GRID_40_MITEM;
+ 	GRID_50_MITEM;
+
+ 	ZOOM_1_MITEM;
+ 	ZOOM_3_2_MITEM;
+ 	ZOOM_2_MITEM;
+ 	ZOOM_1_2_MITEM;
+ 	ZOOM_3_4_MITEM;
+
+ 	RESCALE_05_MITEM;
+ 	RESCALE_06_MITEM;
+ 	RESCALE_07_MITEM;
+ 	RESCALE_08_MITEM;
+ 	RESCALE_09_MITEM;
+ 	RESCALE_10_MITEM;
+ 	RESCALE_11_MITEM;
+ 	RESCALE_12_MITEM;
+ 	RESCALE_13_MITEM;
+ 	RESCALE_14_MITEM;
+ 	RESCALE_15_MITEM;
+ 	RESCALE_16_MITEM;
+ 	RESCALE_17_MITEM;
+ 	RESCALE_18_MITEM;
+ 	RESCALE_19_MITEM;
+ 	RESCALE_20_MITEM;
+
+ 	NET_STRUCT_PINV_MITEM;
+ 	NET_STRUCT_TINV_MITEM;
+ 	NET_STRUCT_MINDEAD_MITEM;
+ 	NET_STRUCT_MINTRAP_MITEM;
+ 	NET_STRUCT_ECS_MITEM;
+ 	NET_STRUCT_STRUBOU_MITEM;
+ 	NET_SOLVE_TRG_MITEM;
+ 	NET_SOLVE_EMC_MITEM;
+ 	NET_SOLVE_GSPN_STST_MITEM;
+ 	NET_SOLVE_GSPN_TRAN_MITEM;
+ 	NET_SIMULATION_MITEM;
+/****11/6/10 MDD by Marco***/
+	GSPN_MDD;
+/****11/6/10 MDD by Marco***/
+	SWN_SYM_SIMULATION;
+	SWN_SYM_COMPUTERG;
+	SWN_SYM_TRANSIENT;
+	SWN_ORD_SIMULATION;
+	SWN_ORD_COMPUTERG;
+	SWN_ORD_TRANSIENT;
+        SWN_ORD_UNFOLD;
+/****17/7/08 ESRG by Marco***/
+	SWN_ESRG;
+	SWN_DSRG;
+/****17/7/08 ESRG by Marco***/
+
+	EGSPN_SIMULATION;
+	EGSPN_COMPUTERG;
+	EGSPN_TRANSIENT;
+
+ 	HELP_MOUSE_HELP_MITEM;
+ 	HELP_ABOUT_MITEM;
+
+	ADD_MITEM;
+	CHANGE_MITEM;
+	SELECT_MITEM;
+	MOVE_MITEM;
+	DELETE_MITEM;
+	SHOW_MITEM;
+	PASTE_MITEM;
+	ROTATE_MITEM;
+	PRINTAREA_MITEM;
+	ENDSHOW_MITEM;
+	REDRAW_MITEM;
+	
+	PINV_MITEM;
+	MINDEAD_MITEM;
+	MINTRAPS_MITEM;
+	IMPPLACES_MITEM;
+	ABSMB_MITEM;
+	AVEMB_MITEM;
+	
+	TINV_MITEM;
+	ECS_MITEM;
+	ME_MITEM;
+	SC_MITEM;
+	CC_MITEM;
+	UNBSEQ_MITEM;
+	ACTLIVBOUND_MITEM;
+	LIVBOUND_MITEM;
+	THRBOUND_MITEM;
+	
+!*******************  COMMON	**********************
+
+object Sep : XmSeparator {};	
+	
+!*******************  MENU BAR	**********************
+	
+object MenuBar : XmMenuBar
+{
+	controls
+	{
+		XmCascadeButton  FileTopic;
+		XmCascadeButton  EditTopic;
+		XmCascadeButton  ViewTopic;
+		XmCascadeButton  GridTopic;
+		XmCascadeButton  ZoomTopic;
+		XmCascadeButton  RescaleTopic;
+		XmCascadeButton  NetTopic;
+		XmCascadeButton  SwnTopic;
+		XmCascadeButton  EGSPNTopic;
+		XmCascadeButton  HelpTopic;
+	};
+	arguments
+	{
+		XmNbackground = maMenuBarBackground;
+		XmNforeground = maMenuBarForeground;
+		XmNmenuHelpWidget = HelpTopic;
+	};
+};
+
+!*******************  MENU FILE	**********************
+	
+object	FileTopic : XmCascadeButton 
+{
+	controls
+	{
+		XmPulldownMenu  FilePane;
+	};
+	arguments
+	{
+		XmNfontList		= maMenuBarFont;
+		XmNlabelString	= maFileTopicLabel;
+		XmNmnemonic		= keysym(maFileTopicMnemonic);
+		XmNbackground = maMenuBarBackground;
+	};
+};
+
+object	FilePane : XmPulldownMenu
+{
+	controls
+	{
+		XmPushButton  File_New;
+		XmPushButton  File_Open;
+		XmPushButton  File_Merge;
+		XmPushButton  File_Save;
+		XmPushButton  File_SaveAs;
+		XmSeparator   Sep;
+		XmPushButton  File_RemoveResults;
+		XmPushButton  File_RemoveAll;
+		XmSeparator   Sep;
+		XmPushButton  File_Comment;
+		XmSeparator   Sep;
+		XmPushButton  File_Options;
+		XmSeparator   Sep;
+		XmPushButton  File_Print;
+		XmSeparator   Sep;
+		XmPushButton  File_Exit;
+	};
+	arguments
+	{
+		XmNtearOffModel = maFileTearOff;
+		XmNbackground = maPullDownBackground;
+		XmNforeground = maPullDownForeground;
+	};
+	callbacks
+	{
+		XmNunmapCallback = procedure ClearStatusCB();
+	};
+};
+
+object File_New : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	 		= maMenuFont;
+		XmNlabelString		= maFileNewLabel;
+		XmNmnemonic			= keysym(maFileNewMnemonic);
+		XmNaccelerator		= maFileNewAccelerator;
+		XmNacceleratorText 	= maFileNewAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure FileHelpMenuCB(FILE_NEW_MITEM);
+		XmNactivateCallback = procedure FileMenuCB(FILE_NEW_MITEM);
+	};
+};
+
+object File_Open : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maFileOpenLabel;
+		XmNmnemonic			= keysym(maFileOpenMnemonic);
+		XmNaccelerator		= maFileOpenAccelerator;
+		XmNacceleratorText 	= maFileOpenAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure FileHelpMenuCB(FILE_OPEN_MITEM);
+		XmNactivateCallback = procedure FileMenuCB(FILE_OPEN_MITEM);
+	};
+};
+
+object File_Merge : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maFileMergeLabel;
+		XmNmnemonic			= keysym(maFileMergeMnemonic);
+		XmNaccelerator		= maFileMergeAccelerator;
+		XmNacceleratorText 	= maFileMergeAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure FileHelpMenuCB(FILE_MERGE_MITEM);
+		XmNactivateCallback = procedure FileMenuCB(FILE_MERGE_MITEM);
+	};
+};
+
+object File_Save : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maFileSaveLabel;
+		XmNmnemonic			= keysym(maFileSaveMnemonic);
+		XmNaccelerator		= maFileSaveAccelerator;
+		XmNacceleratorText 	= maFileSaveAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure FileHelpMenuCB(FILE_SAVE_MITEM);
+		XmNactivateCallback = procedure FileMenuCB(FILE_SAVE_MITEM);
+	};
+};
+
+object File_SaveAs : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maFileSaveAsLabel;
+		XmNmnemonic			= keysym(maFileSaveAsMnemonic);
+		XmNaccelerator		= maFileSaveAsAccelerator;
+		XmNacceleratorText 	= maFileSaveAsAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure FileHelpMenuCB(FILE_SAVEAS_MITEM);
+		XmNactivateCallback = procedure FileMenuCB(FILE_SAVEAS_MITEM);
+	};
+};
+
+object File_RemoveResults : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maFileRemoveResLabel;
+		XmNmnemonic			= keysym(maFileRemoveResMnemonic);
+		XmNaccelerator		= maFileRemoveResAccelerator;
+		XmNacceleratorText 	= maFileRemoveResAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure FileHelpMenuCB(FILE_REMOVE_RESULTS_MITEM);
+		XmNactivateCallback = procedure FileMenuCB(FILE_REMOVE_RESULTS_MITEM);
+	};
+};
+
+object File_RemoveAll : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maFileRemoveAllLabel;
+		XmNmnemonic			= keysym(maFileRemoveAllMnemonic);
+		XmNaccelerator		= maFileRemoveAllAccelerator;
+		XmNacceleratorText 	= maFileRemoveAllAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure FileHelpMenuCB(FILE_REMOVE_ALL_MITEM);
+		XmNactivateCallback = procedure FileMenuCB(FILE_REMOVE_ALL_MITEM);
+	};
+};
+
+object File_Comment : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maFileCommentLabel;
+		XmNmnemonic			= keysym(maFileCommentMnemonic);
+		XmNaccelerator		= maFileCommentAccelerator;
+		XmNacceleratorText 	= maFileCommentAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure FileHelpMenuCB(FILE_COMMENT_MITEM);
+		XmNactivateCallback = procedure FileMenuCB(FILE_COMMENT_MITEM);
+	};
+};
+
+object File_Options : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maFileOptionsLabel;
+		XmNmnemonic			= keysym(maFileOptionsMnemonic);
+!		XmNaccelerator		= maFileOptionsAccelerator;
+!		XmNacceleratorText 	= maFileOptionsAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure FileHelpMenuCB(FILE_OPTIONS_MITEM);
+		XmNactivateCallback = procedure FileMenuCB(FILE_OPTIONS_MITEM);
+	};
+};
+
+
+object File_Print : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maFilePrintLabel;
+		XmNmnemonic			= keysym(maFilePrintMnemonic);
+		XmNaccelerator		= maFilePrintAccelerator;
+		XmNacceleratorText 	= maFilePrintAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure FileHelpMenuCB(FILE_PRINT_MITEM);
+		XmNactivateCallback = procedure FileMenuCB(FILE_PRINT_MITEM);
+	};
+};
+
+object File_Exit : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maFileExitLabel;
+		XmNmnemonic			= keysym(maFileExitMnemonic);
+		XmNaccelerator		= maFileExitAccelerator;
+		XmNacceleratorText 	= maFileExitAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure FileHelpMenuCB(FILE_EXIT_MITEM);
+		XmNactivateCallback = procedure FileMenuCB(FILE_EXIT_MITEM);
+	};
+};
+
+!*******************  MENU EDIT	**********************
+
+object	EditTopic : XmCascadeButton
+{
+	controls
+	{
+		XmPulldownMenu  Edit_Pane;
+	};
+	arguments
+	{
+		XmNfontList	  = maMenuBarFont;
+		XmNlabelString	= maEditTopicLabel;
+		XmNmnemonic		= keysym(maEditTopicMnemonic);
+		XmNbackground = maMenuBarBackground;
+	};
+};
+
+object	Edit_Pane : XmPulldownMenu
+{
+	controls
+	{
+		XmPushButton  Edit_Undo;
+		XmSeparator   Sep;
+		XmPushButton  Edit_Add;
+		XmPushButton  Edit_Cut;
+		XmPushButton  Edit_Paste;
+		XmPushButton  Edit_Move;
+		XmCascadeButton  Edit_Modify;
+		XmSeparator   Sep;
+		XmPushButton  Edit_Layers;
+	};
+	arguments
+	{
+		XmNtearOffModel = maEditTearOff;
+		XmNbackground = maPullDownBackground;
+		XmNforeground = maPullDownForeground;
+	};
+	callbacks
+	{
+		XmNunmapCallback = procedure ClearStatusCB();
+	};
+};
+
+object Edit_Undo : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	 	    = maMenuFont;
+		XmNlabelString		= maEditUndoLabel;
+		XmNmnemonic			= keysym(maEditUndoMnemonic);
+		XmNaccelerator		= maEditUndoAccelerator;
+		XmNacceleratorText 	= maEditUndoAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure EditHelpMenuCB(EDIT_UNDO_MITEM);
+		XmNactivateCallback = procedure EditMenuCB(EDIT_UNDO_MITEM);
+	};
+};
+
+object Edit_Add : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maEditAddLabel;
+		XmNmnemonic			= keysym(maEditAddMnemonic);
+		XmNaccelerator		= maEditAddAccelerator;
+		XmNacceleratorText 	= maEditAddAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure EditHelpMenuCB(EDIT_ADD_MITEM);
+		XmNactivateCallback = procedure SetActionsCB(ADD_MITEM);
+	};
+};
+
+object Edit_Cut : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maEditCutLabel;
+		XmNmnemonic			= keysym(maEditCutMnemonic);
+		XmNaccelerator		= maEditCutAccelerator;
+		XmNacceleratorText 	= maEditCutAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure EditHelpMenuCB(EDIT_CUT_MITEM);
+		XmNactivateCallback = procedure SetActionsCB(DELETE_MITEM);
+	};
+};
+
+object Edit_Paste : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maEditPasteLabel;
+		XmNmnemonic			= keysym(maEditPasteMnemonic);
+		XmNaccelerator		= maEditPasteAccelerator;
+		XmNacceleratorText 	= maEditPasteAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure EditHelpMenuCB(EDIT_PASTE_MITEM);
+		XmNactivateCallback = procedure EditMenuCB(EDIT_PASTE_MITEM);
+	};
+};
+
+object Edit_Move : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maEditMoveLabel;
+		XmNmnemonic			= keysym(maEditMoveMnemonic);
+		XmNaccelerator		= maEditMoveAccelerator;
+		XmNacceleratorText 	= maEditMoveAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure EditHelpMenuCB(EDIT_MOVE_MITEM);
+		XmNactivateCallback = procedure SetActionsCB(MOVE_MITEM);
+	};
+};
+
+!object Edit_PrintArea : XmPushButton
+!{
+!	arguments
+!	{
+!		XmNfontList	  = maMenuFont;
+!		XmNlabelString		= maEditPrintAreaLabel;
+!		XmNmnemonic			= keysym(maEditPrintAreaMnemonic);
+!		XmNaccelerator		= maEditPrintAreaAccelerator;
+!		XmNacceleratorText 	= maEditPrintAreaAcceleratorText;
+!	};
+!	callbacks
+!	{
+!		XmNarmCallback = procedure EditHelpMenuCB(EDIT_PRINTAREA_MITEM);
+!		XmNactivateCallback = procedure PrintAreaCB(EDIT_PRINTAREA_MITEM);
+!	};
+!};
+
+object Edit_Layers : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maEditLayersLabel;
+		XmNmnemonic			= keysym(maEditLayersMnemonic);
+		XmNaccelerator		= maEditLayersAccelerator;
+		XmNacceleratorText 	= maEditLayersAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure EditHelpMenuCB(EDIT_LAYERS_MITEM);
+		XmNactivateCallback = procedure EditMenuCB(EDIT_LAYERS_MITEM);
+	};
+};
+
+object Edit_Modify : XmCascadeButton
+{	
+	controls
+	{
+		XmPulldownMenu	Edit_Modify_SubPane;
+	};
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maEditModifyLabel;
+		XmNmnemonic			= keysym(maEditModifyMnemonic);
+		XmNbackground = maPullDownBackground;
+	};
+};
+
+object	Edit_Modify_SubPane : XmPulldownMenu
+{
+	controls
+	{
+		XmCascadeButton  Clockwise_Rotation;
+		XmPushButton   Flip_X_Axis;
+		XmPushButton   Flip_Y_Axis;
+		XmPushButton   Mirror ;
+	};
+	arguments
+	{
+		XmNbackground = maPullDownBackground;
+		XmNforeground = maPullDownForeground;
+	};
+	callbacks
+	{
+		XmNmapCallback = procedure EditHelpMenuCB(EDIT_MODIFY_MITEM);
+		XmNunmapCallback = procedure ClearStatusCB();
+	};
+};
+
+object Flip_X_Axis : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maEditModifyFXALabel;
+		XmNmnemonic			= keysym(maEditModifyFXAMnemonic);
+		XmNaccelerator		= maEditModifyFXAAccelerator;
+		XmNacceleratorText 	= maEditModifyFXAAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure EditHelpMenuCB(EDIT_MODIFY_FLIPX_MITEM);
+		XmNactivateCallback = procedure modify_menu_procCB(FLIP_XAXIS);
+	};
+};
+	
+object Flip_Y_Axis : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maEditModifyFYALabel;
+		XmNmnemonic			= keysym(maEditModifyFYAMnemonic);
+		XmNaccelerator		= maEditModifyFYAAccelerator;
+		XmNacceleratorText 	= maEditModifyFYAAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure EditHelpMenuCB(EDIT_MODIFY_FLIPY_MITEM);
+		XmNactivateCallback = procedure modify_menu_procCB(FLIP_YAXIS);
+	};
+};
+
+object Mirror : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maEditModifyMirrorLabel;
+		XmNmnemonic			= keysym(maEditModifyMirrorMnemonic);
+		XmNaccelerator		= maEditModifyMirrorAccelerator;
+		XmNacceleratorText 	= maEditModifyMirrorAccelText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure EditHelpMenuCB(EDIT_MIRROR_MITEM);
+		XmNactivateCallback = procedure EditMenuCB(EDIT_MIRROR_MITEM);
+	};
+};
+
+object Clockwise_Rotation : XmCascadeButton
+{	
+	controls
+	{
+		XmPulldownMenu	Clockwise_Rotation_SubPane;
+	};
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maEditModifyRotateLabel;
+		XmNmnemonic			= keysym(maEditModifyRotateMnemonic);
+		XmNbackground = maPullDownBackground;
+	};
+};
+
+object	Clockwise_Rotation_SubPane : XmPulldownMenu
+{
+	controls
+	{
+		XmPushButton  Clockwise_Rotation_45;
+		XmPushButton  Clockwise_Rotation_90;
+		XmPushButton  Clockwise_Rotation_135;
+		XmPushButton  Clockwise_Rotation_180;
+		XmPushButton  Clockwise_Rotation_135m;
+		XmPushButton  Clockwise_Rotation_90m;
+		XmPushButton  Clockwise_Rotation_45m;
+	};
+	arguments
+	{
+		XmNbackground = maPullDownBackground;
+		XmNforeground = maPullDownForeground;
+	};
+	callbacks
+	{
+		XmNmapCallback = procedure EditHelpMenuCB(EDIT_MODIFY_CLOCKWISE_MITEM);
+		XmNunmapCallback = procedure ClearStatusCB();
+	};
+};
+
+object Clockwise_Rotation_45 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maEditModifyRot45Label;
+!		XmNmnemonic			= keysym(maEditModifyRot45Mnemonic);
+		XmNaccelerator		= maEditModifyRot45Accelerator;
+		XmNacceleratorText 	= maEditModifyRot45AccelText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure modify_menu_procCB(ROTATE45);
+	};
+};
+
+object Clockwise_Rotation_90 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maEditModifyRot90Label;
+!		XmNmnemonic			= keysym(maEditModifyRot90Mnemonic);
+		XmNaccelerator		= maEditModifyRot90Accelerator;
+		XmNacceleratorText 	= maEditModifyRot90AccelText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure modify_menu_procCB(ROTATE90);
+	};
+};
+
+object Clockwise_Rotation_135 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maEditModifyRot135Label;
+!		XmNmnemonic			= keysym(maEditModifyRot135Mnemonic);
+		XmNaccelerator		= maEditModifyRot135Accelerator;
+		XmNacceleratorText 	= maEditModifyRot135AccelText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure modify_menu_procCB(ROTATE135);
+	};
+};
+
+object Clockwise_Rotation_180 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maEditModifyRot180Label;
+!		XmNmnemonic			= keysym(maEditModifyRot180Mnemonic);
+		XmNaccelerator		= maEditModifyRot180Accelerator;
+		XmNacceleratorText 	= maEditModifyRot180AccelText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure modify_menu_procCB(ROTATE180);
+	};
+};
+
+object Clockwise_Rotation_135m : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maEditModifyRot135mLabel;
+!		XmNmnemonic			= keysym(maEditModifyRot135mMnemonic);
+		XmNaccelerator		= maEditModifyRot135mAccelerator;
+		XmNacceleratorText 	= maEditModifyRot135mAccelText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure modify_menu_procCB(ROTATEM135);
+	};
+};
+
+object Clockwise_Rotation_90m : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maEditModifyRot90mLabel;
+!		XmNmnemonic			= keysym(maEditModifyRot90mMnemonic);
+		XmNaccelerator		= maEditModifyRot90mAccelerator;
+		XmNacceleratorText 	= maEditModifyRot90mAccelText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure modify_menu_procCB(ROTATEM90);
+	};
+};
+
+object Clockwise_Rotation_45m : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maEditModifyRot45mLabel;
+!		XmNmnemonic			= keysym(maEditModifyRot45mMnemonic);
+		XmNaccelerator		= maEditModifyRot45mAccelerator;
+		XmNacceleratorText 	= maEditModifyRot45mAccelText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure modify_menu_procCB(ROTATEM45);
+	};
+};
+
+!*******************  MENU VIEW	**********************
+
+object	ViewTopic : XmCascadeButton
+{
+	controls
+	{
+		XmPulldownMenu  View_Pane;
+	};
+	arguments
+	{
+		XmNfontList	  = maMenuBarFont;
+		XmNlabelString	= maViewTopicLabel;
+		XmNmnemonic		= keysym(maViewTopicMnemonic);
+		XmNbackground = maMenuBarBackground;
+	};
+};
+
+object	View_Pane : XmPulldownMenu
+{
+	controls
+	{
+		XmToggleButton  View_Spline;
+		XmToggleButton  View_Tag;
+		XmToggleButton  View_Rate;
+		XmSeparator  Sep;
+		XmToggleButton  View_Overview;
+		XmSeparator  Sep;
+		XmPushButton  View_Search;
+		XmSeparator  Sep;
+		XmToggleButton  View_PrintArea;
+		XmSeparator  Sep;
+		XmPushButton  View_Layers;
+	};
+	arguments
+	{
+		XmNtearOffModel = maViewTearOff;
+		XmNbackground = maPullDownBackground;
+		XmNforeground = maPullDownForeground;
+	};
+	callbacks
+	{
+		XmNunmapCallback = procedure ClearStatusCB();
+	};
+};
+
+object View_Spline : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maViewSplineLabel;
+		XmNmnemonic			= keysym(maViewSplineMnemonic);
+		XmNaccelerator		= maViewSplineAccelerator;
+		XmNacceleratorText 	= maViewSplineAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure ViewHelpMenuCB(VIEW_SPLINE_MITEM);
+		XmNvalueChangedCallback = procedure ViewModeCB(VIEW_SPLINE_MITEM);
+	};
+};
+
+object View_Tag : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maViewTagLabel;
+		XmNmnemonic			= keysym(maViewTagMnemonic);
+		XmNaccelerator		= maViewTagAccelerator;
+		XmNacceleratorText 	= maViewTagAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure ViewHelpMenuCB(VIEW_TAG_MITEM);
+		XmNvalueChangedCallback = procedure ViewModeCB(VIEW_TAG_MITEM);
+	};
+};
+
+object View_Rate : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maViewRateLabel;
+		XmNmnemonic			= keysym(maViewRateMnemonic);
+		XmNaccelerator		= maViewRateAccelerator;
+		XmNacceleratorText 	= maViewRateAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure ViewHelpMenuCB(VIEW_RATE_MITEM);
+		XmNvalueChangedCallback = procedure ViewModeCB(VIEW_RATE_MITEM);
+	};
+};
+
+object View_Overview : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maViewOverviewLabel;
+		XmNmnemonic			= keysym(maViewOverviewMnemonic);
+		XmNaccelerator		= maViewOverviewAccelerator;
+		XmNacceleratorText 	= maViewOverviewAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure ViewHelpMenuCB(VIEW_OVERVIEW_MITEM);
+		XmNvalueChangedCallback = procedure ViewModeCB(VIEW_OVERVIEW_MITEM);
+	};
+};
+
+object View_Search : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maViewSearchLabel;
+		XmNmnemonic			= keysym(maViewSearchMnemonic);
+		XmNaccelerator		= maViewSearchAccelerator;
+		XmNacceleratorText 	= maViewSearchAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure ViewHelpMenuCB(VIEW_SEARCH_MITEM);
+		XmNactivateCallback = procedure ViewMenuCB(VIEW_SEARCH_MITEM);
+	};
+};
+
+object View_PrintArea : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maViewPrintAreaLabel;
+		XmNmnemonic			= keysym(maViewPrintAreaMnemonic);
+		XmNaccelerator		= maViewPrintAreaAccelerator;
+		XmNacceleratorText 	= maViewPrintAreaAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure ViewHelpMenuCB(VIEW_PRINTAREA_MITEM);
+		XmNvalueChangedCallback = procedure ViewModeCB(VIEW_PRINTAREA_MITEM);
+	};
+};
+
+object View_Layers : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maViewLayersLabel;
+		XmNmnemonic			= keysym(maViewLayersMnemonic);
+		XmNaccelerator		= maViewLayersAccelerator;
+		XmNacceleratorText 	= maViewLayersAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure ViewHelpMenuCB(VIEW_LAYERS_MITEM);
+		XmNactivateCallback = procedure ViewMenuCB(VIEW_LAYERS_MITEM);
+	};
+};
+
+!*******************  MENU GRID	**********************
+
+object	GridTopic : XmCascadeButton
+{
+	controls
+	{
+		XmPulldownMenu  Grid_Pane;
+	};
+	arguments
+	{
+		XmNfontList	  = maMenuBarFont;
+		XmNlabelString	= maGridTopicLabel;
+		XmNmnemonic		= keysym(maGridTopicMnemonic);
+		XmNbackground = maMenuBarBackground;
+	};
+};
+
+object	Grid_Pane : XmPulldownMenu
+{
+	controls
+	{
+		XmToggleButton  Grid_None;
+		XmToggleButton  Grid_5 ;
+		XmToggleButton  Grid_10 ;
+		XmToggleButton  Grid_20 ;
+		XmToggleButton  Grid_30 ;
+		XmToggleButton  Grid_40 ;
+		XmToggleButton  Grid_50 ;
+	};
+	arguments
+	{
+		XmNtearOffModel = maGridTearOff;
+		XmNbackground = maPullDownBackground;
+		XmNforeground = maPullDownForeground;
+		XmNradioBehavior = true;
+		XmNradioAlwaysOne = true;
+	};
+	callbacks
+	{
+		XmNunmapCallback = procedure ClearStatusCB();
+		XmNmapCallback = procedure GridHelpMenuCB();
+	};
+};
+
+object Grid_None : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maGridNoneLabel;
+		XmNmnemonic			= keysym(maGridNoneMnemonic);
+		XmNaccelerator		= maGridNoneAccelerator;
+		XmNacceleratorText 	= maGridNoneAcceleratorText;
+		XmNset				= true;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure GridCB(GRID_NONE_MITEM);
+	};
+};
+
+object Grid_5 : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maGrid5Label;
+		XmNmnemonic			= keysym(maGrid5Mnemonic);
+		XmNaccelerator		= maGrid5Accelerator;
+		XmNacceleratorText 	= maGrid5AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure GridCB(GRID_5_MITEM);
+	};
+};
+
+object Grid_10 : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maGrid10Label;
+		XmNmnemonic			= keysym(maGrid10Mnemonic);
+		XmNaccelerator		= maGrid10Accelerator;
+		XmNacceleratorText 	= maGrid10AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure GridCB(GRID_10_MITEM);
+	};
+};
+
+object Grid_20 : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maGrid20Label;
+		XmNmnemonic			= keysym(maGrid20Mnemonic);
+		XmNaccelerator		= maGrid20Accelerator;
+		XmNacceleratorText 	= maGrid20AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure GridCB(GRID_20_MITEM);
+	};
+};
+
+object Grid_30 : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maGrid30Label;
+		XmNmnemonic			= keysym(maGrid30Mnemonic);
+		XmNaccelerator		= maGrid30Accelerator;
+		XmNacceleratorText 	= maGrid30AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure GridCB(GRID_30_MITEM);
+	};
+};
+
+object Grid_40 : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maGrid40Label;
+		XmNmnemonic			= keysym(maGrid40Mnemonic);
+		XmNaccelerator		= maGrid40Accelerator;
+		XmNacceleratorText 	= maGrid40AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure GridCB(GRID_40_MITEM);
+	};
+};
+
+object Grid_50 : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maGrid50Label;
+		XmNmnemonic			= keysym(maGrid50Mnemonic);
+		XmNaccelerator		= maGrid50Accelerator;
+		XmNacceleratorText 	= maGrid50AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure GridCB(GRID_50_MITEM);
+	};
+};
+
+!*******************  MENU ZOOM	**********************
+
+object	ZoomTopic : XmCascadeButton
+{
+	controls
+	{
+		XmPulldownMenu  Zoom_Pane;
+	};
+	arguments
+	{
+		XmNfontList	  = maMenuBarFont;
+		XmNlabelString	= maZoomTopicLabel;
+		XmNmnemonic		= keysym(maZoomTopicMnemonic);
+		XmNbackground = maMenuBarBackground;
+	};
+};
+
+object	Zoom_Pane : XmPulldownMenu
+{
+	controls
+	{
+		XmToggleButton   Zoom_1;
+		XmToggleButton   Zoom_3_2;
+		XmToggleButton   Zoom_2;
+		XmToggleButton   Zoom_1_2;
+		XmToggleButton   Zoom_3_4;
+	};
+	arguments
+	{
+		XmNtearOffModel = maZoomTearOff;
+		XmNbackground = maPullDownBackground;
+		XmNforeground = maPullDownForeground;
+		XmNradioBehavior = true;
+		XmNradioAlwaysOne = true;
+	};
+	callbacks
+	{
+		XmNunmapCallback = procedure ClearStatusCB();
+		XmNmapCallback = procedure ZoomHelpMenuCB();
+	};
+};
+
+object Zoom_1 : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maZoom1Label;
+!		XmNmnemonic			= keysym(maZoom1Mnemonic);
+		XmNaccelerator		= maZoom1Accelerator;
+		XmNacceleratorText 	= maZoom1AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure ZoomCB(ZOOM_1_MITEM);
+	};
+};
+
+object Zoom_3_2 : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maZoom3_2Label;
+!		XmNmnemonic			= keysym(maZoom3_2Mnemonic);
+		XmNaccelerator		= maZoom3_2Accelerator;
+		XmNacceleratorText 	= maZoom3_2AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure ZoomCB(ZOOM_3_2_MITEM);
+	};
+};
+
+object Zoom_2 : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maZoom2Label;
+!		XmNmnemonic			= keysym(maZoom2Mnemonic);
+		XmNaccelerator		= maZoom2Accelerator;
+		XmNacceleratorText 	= maZoom2AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure ZoomCB(ZOOM_2_MITEM);
+	};
+};
+
+object Zoom_1_2 : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maZoom1_2Label;
+!		XmNmnemonic			= keysym(maZoom1_2Mnemonic);
+		XmNaccelerator		= maZoom1_2Accelerator;
+		XmNacceleratorText 	= maZoom1_2AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure ZoomCB(ZOOM_1_2_MITEM);
+	};
+};
+
+object Zoom_3_4 : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maZoom3_4Label;
+!		XmNmnemonic			= keysym(maZoom3_4Mnemonic);
+		XmNaccelerator		= maZoom3_4Accelerator;
+		XmNacceleratorText 	= maZoom3_4AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure ZoomCB(ZOOM_3_4_MITEM);
+	};
+};
+
+!*******************  MENU RESCALE	**********************
+
+object	RescaleTopic : XmCascadeButton
+{
+	controls
+	{
+		XmPulldownMenu  Rescale_Pane;
+	};
+	arguments
+	{
+		XmNfontList	  = maMenuBarFont;
+		XmNlabelString	= maRescaleTopicLabel;
+		XmNmnemonic		= keysym(maRescaleTopicMnemonic);
+		XmNbackground = maMenuBarBackground;
+	};
+};
+
+object	Rescale_Pane : XmPulldownMenu
+{
+	controls
+	{
+		XmPushButton Rescale_05;
+		XmPushButton Rescale_06;
+		XmPushButton Rescale_07;
+		XmPushButton Rescale_08;
+		XmPushButton Rescale_09;
+		XmPushButton Rescale_10;
+		XmPushButton Rescale_11;
+		XmPushButton Rescale_12;
+		XmPushButton Rescale_13;
+		XmPushButton Rescale_14;
+		XmPushButton Rescale_15;
+		XmPushButton Rescale_16;
+		XmPushButton Rescale_17;
+		XmPushButton Rescale_18;
+		XmPushButton Rescale_19;
+		XmPushButton Rescale_20;
+	};
+	arguments
+	{
+		XmNtearOffModel = maRescaleTearOff;
+		XmNbackground = maPullDownBackground;
+		XmNforeground = maPullDownForeground;
+	};
+	callbacks
+	{
+		XmNunmapCallback = procedure ClearStatusCB();
+		XmNmapCallback = procedure RescaleHelpMenuCB();
+	};
+};
+
+object Rescale_05 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maRescale05Label;
+!		XmNmnemonic			= keysym(maRescale05Mnemonic);
+		XmNaccelerator		= maRescale05Accelerator;
+		XmNacceleratorText 	= maRescale05AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure RescaleCB(RESCALE_05_MITEM);
+	};
+};
+
+object Rescale_06 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maRescale06Label;
+!		XmNmnemonic			= keysym(maRescale06Mnemonic);
+		XmNaccelerator		= maRescale06Accelerator;
+		XmNacceleratorText 	= maRescale06AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure RescaleCB(RESCALE_06_MITEM);
+	};
+};
+
+object Rescale_07 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maRescale07Label;
+!		XmNmnemonic			= keysym(maRescale07Mnemonic);
+		XmNaccelerator		= maRescale07Accelerator;
+		XmNacceleratorText 	= maRescale07AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure RescaleCB(RESCALE_07_MITEM);
+	};
+};
+
+object Rescale_08 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maRescale08Label;
+!		XmNmnemonic			= keysym(maRescale08Mnemonic);
+		XmNaccelerator		= maRescale08Accelerator;
+		XmNacceleratorText 	= maRescale08AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure RescaleCB(RESCALE_08_MITEM);
+	};
+};
+
+object Rescale_09 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maRescale09Label;
+!		XmNmnemonic			= keysym(maRescale09Mnemonic);
+		XmNaccelerator		= maRescale09Accelerator;
+		XmNacceleratorText 	= maRescale09AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure RescaleCB(RESCALE_09_MITEM);
+	};
+};
+
+object Rescale_10 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maRescale10Label;
+!		XmNmnemonic			= keysym(maRescale10Mnemonic);
+		XmNaccelerator		= maRescale10Accelerator;
+		XmNacceleratorText 	= maRescale10AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure RescaleCB(RESCALE_10_MITEM);
+	};
+};
+
+object Rescale_11 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maRescale11Label;
+!		XmNmnemonic			= keysym(maRescale11Mnemonic);
+		XmNaccelerator		= maRescale11Accelerator;
+		XmNacceleratorText 	= maRescale11AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure RescaleCB(RESCALE_11_MITEM);
+	};
+};
+
+object Rescale_12 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maRescale12Label;
+!		XmNmnemonic			= keysym(maRescale12Mnemonic);
+		XmNaccelerator		= maRescale12Accelerator;
+		XmNacceleratorText 	= maRescale12AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure RescaleCB(RESCALE_12_MITEM);
+	};
+};
+
+object Rescale_13 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maRescale13Label;
+!		XmNmnemonic			= keysym(maRescale13Mnemonic);
+		XmNaccelerator		= maRescale13Accelerator;
+		XmNacceleratorText 	= maRescale13AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure RescaleCB(RESCALE_13_MITEM);
+	};
+};
+
+object Rescale_14 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maRescale14Label;
+!		XmNmnemonic			= keysym(maRescale14Mnemonic);
+		XmNaccelerator		= maRescale14Accelerator;
+		XmNacceleratorText 	= maRescale14AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure RescaleCB(RESCALE_14_MITEM);
+	};
+};
+
+object Rescale_15 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maRescale15Label;
+!		XmNmnemonic			= keysym(maRescale15Mnemonic);
+		XmNaccelerator		= maRescale15Accelerator;
+		XmNacceleratorText 	= maRescale15AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure RescaleCB(RESCALE_15_MITEM);
+	};
+};
+
+object Rescale_16 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maRescale16Label;
+!		XmNmnemonic			= keysym(maRescale16Mnemonic);
+		XmNaccelerator		= maRescale16Accelerator;
+		XmNacceleratorText 	= maRescale16AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure RescaleCB(RESCALE_16_MITEM);
+	};
+};
+
+object Rescale_17 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maRescale17Label;
+!		XmNmnemonic			= keysym(maRescale17Mnemonic);
+		XmNaccelerator		= maRescale17Accelerator;
+		XmNacceleratorText 	= maRescale17AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure RescaleCB(RESCALE_17_MITEM);
+	};
+};
+
+object Rescale_18 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maRescale18Label;
+!		XmNmnemonic			= keysym(maRescale18Mnemonic);
+		XmNaccelerator		= maRescale18Accelerator;
+		XmNacceleratorText 	= maRescale18AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure RescaleCB(RESCALE_18_MITEM);
+	};
+};
+
+object Rescale_19 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maRescale19Label;
+!		XmNmnemonic			= keysym(maRescale19Mnemonic);
+		XmNaccelerator		= maRescale19Accelerator;
+		XmNacceleratorText 	= maRescale19AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure RescaleCB(RESCALE_19_MITEM);
+	};
+};
+
+object Rescale_20 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maRescale20Label;
+!		XmNmnemonic			= keysym(maRescale20Mnemonic);
+		XmNaccelerator		= maRescale20Accelerator;
+		XmNacceleratorText 	= maRescale20AcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure RescaleCB(RESCALE_20_MITEM);
+	};
+};
+
+!*******************  MENU NET	**********************
+
+object	NetTopic : XmCascadeButton
+{
+	controls
+	{
+		XmPulldownMenu  Net_Pane;
+	};
+	arguments
+	{
+		XmNfontList	  = maMenuBarFont;
+		XmNlabelString	= maNetTopicLabel;
+		XmNmnemonic		= keysym(maNetTopicMnemonic);
+		XmNbackground = maMenuBarBackground;
+	};
+};
+
+object	Net_Pane : XmPulldownMenu
+{
+	controls
+	{
+		XmCascadeButton  Net_Struct;
+		XmCascadeButton  Net_Solve;
+		XmSeparator  Sep;
+		XmPushButton  Net_Simulation;
+	};
+	arguments
+	{
+		XmNtearOffModel = maNetTearOff;
+		XmNbackground = maPullDownBackground;
+		XmNforeground = maPullDownForeground;
+	};
+	callbacks
+	{
+		XmNunmapCallback = procedure ClearStatusCB();
+	};
+};
+
+object	Net_Struct : XmCascadeButton
+{
+	controls
+	{
+		XmPulldownMenu  Struct_SubPane;
+	};
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString	= maNetStructLabel;
+		XmNmnemonic		= keysym(maNetStructMnemonic);
+		XmNbackground = maPullDownBackground;
+	};
+};
+
+object	Struct_SubPane : XmPulldownMenu
+{
+	controls
+	{
+		XmPushButton  Net_Struct_P_Invariants;
+		XmPushButton  Net_Struct_T_Invariants;
+		XmSeparator  Sep;
+		XmPushButton  Net_Struct_Minimal_Deadlocks;
+		XmPushButton  Net_Struct_Minimal_Traps;
+		XmSeparator  Sep;
+		XmPushButton  Net_Struct_ECS;
+		XmPushButton Net_Struct_Struct_Bound ;
+	};
+	arguments
+	{
+		XmNbackground = maPullDownBackground;
+		XmNforeground = maPullDownForeground;
+	};
+	callbacks
+	{
+		XmNunmapCallback = procedure ClearStatusCB();
+	};
+};
+
+object	Net_Struct_P_Invariants : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maNetStructPinvLabel;
+		XmNmnemonic			= keysym(maNetStructPinvMnemonic);
+		XmNaccelerator		= maNetStructPinvAccelerator;
+		XmNacceleratorText 	= maNetStructPinvAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure NetHelpMenuCB(NET_STRUCT_PINV_MITEM);
+		XmNactivateCallback = procedure NetMenuCB(NET_STRUCT_PINV_MITEM);
+	};
+};
+
+object	Net_Struct_T_Invariants : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maNetStructTinvLabel;
+		XmNmnemonic			= keysym(maNetStructTinvMnemonic);
+		XmNaccelerator		= maNetStructTinvAccelerator;
+		XmNacceleratorText 	= maNetStructTinvAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure NetHelpMenuCB(NET_STRUCT_TINV_MITEM);
+		XmNactivateCallback = procedure NetMenuCB(NET_STRUCT_TINV_MITEM);
+	};
+};
+
+object	Net_Struct_Minimal_Deadlocks : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maNetStructMDLabel;
+		XmNmnemonic			= keysym(maNetStructMDMnemonic);
+		XmNaccelerator		= maNetStructMDAccelerator;
+		XmNacceleratorText 	= maNetStructMDAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure NetHelpMenuCB(NET_STRUCT_MINDEAD_MITEM);
+		XmNactivateCallback = procedure NetMenuCB(NET_STRUCT_MINDEAD_MITEM);
+	};
+};
+
+object	Net_Struct_Minimal_Traps : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maNetStructMTLabel;
+		XmNmnemonic			= keysym(maNetStructMTMnemonic);
+		XmNaccelerator		= maNetStructMTAccelerator;
+		XmNacceleratorText 	= maNetStructMTAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure NetHelpMenuCB(NET_STRUCT_MINTRAP_MITEM);
+		XmNactivateCallback = procedure NetMenuCB(NET_STRUCT_MINTRAP_MITEM);
+	};
+};
+
+object	Net_Struct_ECS : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maNetStructECSLabel;
+		XmNmnemonic			= keysym(maNetStructECSMnemonic);
+		XmNaccelerator		= maNetStructECSAccelerator;
+		XmNacceleratorText 	= maNetStructECSAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure NetHelpMenuCB(NET_STRUCT_ECS_MITEM);
+		XmNactivateCallback = procedure NetMenuCB(NET_STRUCT_ECS_MITEM);
+	};
+};
+
+object	Net_Struct_Struct_Bound : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maNetStructSBLabel;
+		XmNmnemonic			= keysym(maNetStructSBMnemonic);
+		XmNaccelerator		= maNetStructSBAccelerator;
+		XmNacceleratorText 	= maNetStructSBAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure NetHelpMenuCB(NET_STRUCT_STRUBOU_MITEM);
+		XmNactivateCallback = procedure NetMenuCB(NET_STRUCT_STRUBOU_MITEM);
+	};
+};
+
+object	Net_Solve : XmCascadeButton
+{
+	controls
+	{
+		XmPulldownMenu  Solve_SubPane;
+	};
+	arguments
+	{
+
+		XmNfontList	  = maMenuFont;
+		XmNlabelString	= maNetSolveLabel;
+		XmNmnemonic		= keysym(maNetSolveMnemonic);
+		XmNbackground = maPullDownBackground;
+	};
+};
+
+object	Solve_SubPane : XmPulldownMenu
+{
+	controls
+	{
+		XmPushButton  Net_Solve_Compute_TRG;
+		XmPushButton  Net_Solve_Compute_EMC;
+		XmSeparator  Sep;
+		XmCascadeButton  Net_Solve_GSPN_Solution;
+	};
+	arguments
+	{
+		XmNbackground = maPullDownBackground;
+		XmNforeground = maPullDownForeground;
+	};
+	callbacks
+	{
+		XmNunmapCallback = procedure ClearStatusCB();
+	};
+};
+
+object	Net_Solve_Compute_TRG : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maNetSolveTRGLabel;
+		XmNmnemonic			= keysym(maNetSolveTRGMnemonic);
+		XmNaccelerator		= maNetSolveTRGAccelerator;
+		XmNacceleratorText 	= maNetSolveTRGAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure NetHelpMenuCB(NET_SOLVE_TRG_MITEM);
+		XmNactivateCallback = procedure NetMenuCB(NET_SOLVE_TRG_MITEM);
+	};
+};
+
+object	Net_Solve_Compute_EMC : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maNetSolveEMCLabel;
+		XmNmnemonic			= keysym(maNetSolveEMCMnemonic);
+		XmNaccelerator		= maNetSolveEMCAccelerator;
+		XmNacceleratorText 	= maNetSolveEMCAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure NetHelpMenuCB(NET_SOLVE_EMC_MITEM);
+		XmNactivateCallback = procedure NetMenuCB(NET_SOLVE_EMC_MITEM);
+	};
+};
+
+object	Net_Solve_GSPN_Solution : XmCascadeButton
+{
+	controls
+	{
+		XmPulldownMenu  GSPN_Solution_SubPane;
+	};
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString	= maNetGSPNLabel;
+		XmNmnemonic		= keysym(maNetGSPNMnemonic);
+	};
+};
+
+object	GSPN_Solution_SubPane : XmPulldownMenu
+{
+	controls
+	{
+		XmPushButton  Net_Solve_Solution_Steady_State;
+		XmPushButton  Net_Solve_Solution_Transient;
+/****10/6/10 MDD by Marco***/
+		XmPushButton  GSPN_Symbolic_ComuteMDD;
+/****10/6/10 MDD by Marco***/
+	};
+	arguments
+	{
+		XmNbackground = maPullDownBackground;
+		XmNforeground = maPullDownForeground;
+	};
+	callbacks
+	{
+		XmNunmapCallback = procedure ClearStatusCB();
+	};
+};
+
+object	Net_Solve_Solution_Steady_State : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maNetSolveGSPNSSLabel;
+		XmNmnemonic			= keysym(maNetSolveGSPNSSMnemonic);
+		XmNaccelerator		= maNetSolveGSPNSSAccelerator;
+		XmNacceleratorText 	= maNetSolveGSPNSSAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure NetHelpMenuCB(NET_SOLVE_GSPN_STST_MITEM);
+		XmNactivateCallback = procedure NetMenuCB(NET_SOLVE_GSPN_STST_MITEM);
+	};
+};
+
+object	Net_Solve_Solution_Transient : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maNetSolveGSPNSTLabel;
+		XmNmnemonic			= keysym(maNetSolveGSPNSTMnemonic);
+		XmNaccelerator		= maNetSolveGSPNSTAccelerator;
+		XmNacceleratorText 	= maNetSolveGSPNSTAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure NetHelpMenuCB(NET_SOLVE_GSPN_TRAN_MITEM);
+		XmNactivateCallback = procedure NetMenuCB(NET_SOLVE_GSPN_TRAN_MITEM);
+	};
+};
+
+object	Net_Simulation : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString		= maNetSimulationLabel;
+		XmNmnemonic			= keysym(maNetSimulationMnemonic);
+		XmNaccelerator		= maNetSimulationAccelerator;
+		XmNacceleratorText 	= maNetSimulationAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure NetHelpMenuCB(NET_SIMULATION_MITEM);
+		XmNactivateCallback = procedure NetMenuCB(NET_SIMULATION_MITEM);
+	};
+};
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+!*******************  MENU SWN	**********************
+
+object	SwnTopic : XmCascadeButton
+{
+	controls
+	{
+		XmPulldownMenu  Swn_Pane;
+	};
+	arguments
+	{
+		XmNfontList	  = maMenuBarFont;
+		XmNlabelString	= maSwnTopicLabel;
+		XmNmnemonic		= keysym(maSwnTopicMnemonic);
+		XmNbackground = maMenuBarBackground;
+	};
+};
+
+object	Swn_Pane : XmPulldownMenu
+{
+	controls
+	{
+		XmCascadeButton  Swn_Symbolic;
+		XmCascadeButton  Swn_Ordinary;
+	};
+	arguments
+	{
+		XmNtearOffModel = maSwnTearOff;
+		XmNbackground = maPullDownBackground;
+		XmNforeground = maPullDownForeground;
+	};
+	callbacks
+	{
+		XmNunmapCallback = procedure ClearStatusCB();
+	};
+};
+
+object	Swn_Symbolic : XmCascadeButton
+{
+	controls
+	{
+		XmPulldownMenu  Symbolic_SubPane;
+	};
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString	= maSwnSymbolicLabel;
+		XmNmnemonic		= keysym(maSwnSymbolicMnemonic);
+		XmNbackground = maPullDownBackground;
+	};
+};
+
+object	Symbolic_SubPane : XmPulldownMenu
+{
+	controls
+	{
+		XmPushButton  Swn_Symbolic_Simulation;
+		XmPushButton  Swn_Symbolic_ComputeRG;
+/****17/7/08 ESRG by Marco***/
+		XmPushButton  Swn_Symbolic_ComuteESRG;
+		XmPushButton  Swn_Symbolic_ComuteDSRG;
+/****17/7/08 ESRG by Marco***/
+		XmPushButton  Swn_Symbolic_Transient;
+	};
+	arguments
+	{
+		XmNbackground = maPullDownBackground;
+		XmNforeground = maPullDownForeground;
+	};
+	callbacks
+	{
+		XmNunmapCallback = procedure ClearStatusCB();
+	};
+};
+
+object Swn_Symbolic_Simulation : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maSwnSymSimuLabel;
+		XmNmnemonic			= keysym(maSwnSymSimuMnemonic);
+		XmNaccelerator		= maSwnSymSimuAccelerator;
+		XmNacceleratorText 	= maSwnSymSimuAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure SwnHelpMenuCB(SWN_SYM_SIMULATION);
+		XmNactivateCallback = procedure SwnMenuCB(SWN_SYM_SIMULATION);
+	};
+};
+
+object Swn_Symbolic_ComputeRG : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maSwnSymCompRGLabel;
+		XmNmnemonic			= keysym(maSwnSymCompRGMnemonic);
+		XmNaccelerator		= maSwnSymCompRGAccelerator;
+		XmNacceleratorText 	= maSwnSymCompRGAccelText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure SwnHelpMenuCB(SWN_SYM_COMPUTERG);
+		XmNactivateCallback = procedure SwnMenuCB(SWN_SYM_COMPUTERG);
+	};
+};
+
+/****17/7/08 ESRG by Marco***/
+object Swn_Symbolic_ComuteESRG: XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maSwnESRGLabel;
+		XmNmnemonic			= keysym(maSwnESRGMnemonic);
+		XmNaccelerator		= maSwnESRGAccelerator;
+		XmNacceleratorText 	= maSwnESRGAccelText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure SwnHelpMenuCB(SWN_ESRG);
+		XmNactivateCallback = procedure SwnMenuCB(SWN_ESRG);
+	};
+};
+object Swn_Symbolic_ComuteDSRG: XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maSwnDSRGLabel;
+		XmNmnemonic			= keysym(maSwnDSRGMnemonic);
+		XmNaccelerator		= maSwnDSRGAccelerator;
+		XmNacceleratorText 	= maSwnDSRGAccelText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure SwnHelpMenuCB(SWN_DSRG);
+		XmNactivateCallback = procedure SwnMenuCB(SWN_DSRG);
+	};
+};
+/****17/7/08 ESRG by Marco***/
+
+
+/****10/6/10 MDD by Marco***/
+object GSPN_Symbolic_ComuteMDD: XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maGSPNMDDLabel;
+		XmNmnemonic			= keysym(maGSPNMDDMnemonic);
+		XmNaccelerator		= maGSPNMDDAccelerator;
+		XmNacceleratorText 	= maGSPNMDDAccelText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure SwnHelpMenuCB(GSPN_MDD);
+		XmNactivateCallback = procedure SwnMenuCB(GSPN_MDD);
+	};
+};
+		
+/****10/6/10 MDD by Marco***/
+
+
+
+object Swn_Symbolic_Transient : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maSwnSymTransientLabel;
+		XmNmnemonic			= keysym(maSwnSymTransientMnemonic);
+		XmNaccelerator		= maSwnSymTransientAccelerator;
+		XmNacceleratorText 	= maSwnSymTransientAccelText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure SwnHelpMenuCB(SWN_SYM_TRANSIENT);
+		XmNactivateCallback = procedure SwnMenuCB(SWN_SYM_TRANSIENT);
+	};
+};
+
+
+object	Swn_Ordinary : XmCascadeButton
+{
+	controls
+	{
+		XmPulldownMenu  Ordinary_SubPane;
+	};
+	arguments
+	{
+		XmNfontList	  = maMenuFont;
+		XmNlabelString	= maSwnOrdinaryLabel;
+		XmNmnemonic		= keysym(maSwnOrdinaryMnemonic);
+		XmNbackground = maPullDownBackground;
+	};
+};
+
+object	Ordinary_SubPane : XmPulldownMenu
+{
+	controls
+	{
+		XmPushButton  Swn_Ordinary_Simulation;
+		XmPushButton  Swn_Ordinary_ComputeRG;
+		XmPushButton  Swn_Ordinary_Transient;
+                XmPushButton  Swn_Ordinary_Unfold;
+	};
+	arguments
+	{
+		XmNbackground = maPullDownBackground;
+		XmNforeground = maPullDownForeground;
+	};
+	callbacks
+	{
+!		XmNunmapCallback = procedure ClearStatusCB();
+	};
+};
+
+object Swn_Ordinary_Simulation : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maSwnOrdSimuLabel;
+		XmNmnemonic			= keysym(maSwnOrdSimuMnemonic);
+		XmNaccelerator		= maSwnOrdSimuAccelerator;
+		XmNacceleratorText 	= maSwnOrdSimuAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure SwnHelpMenuCB(SWN_ORD_SIMULATION);
+		XmNactivateCallback = procedure SwnMenuCB(SWN_ORD_SIMULATION);
+	};
+};
+
+object Swn_Ordinary_ComputeRG : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maSwnOrdCompRGLabel;
+		XmNmnemonic			= keysym(maSwnOrdCompRGMnemonic);
+		XmNaccelerator		= maSwnOrdCompRGAccelerator;
+		XmNacceleratorText 	= maSwnOrdCompRGAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure SwnHelpMenuCB(SWN_ORD_COMPUTERG);
+		XmNactivateCallback = procedure SwnMenuCB(SWN_ORD_COMPUTERG);
+	};
+};
+
+object Swn_Ordinary_Transient : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maSwnOrdTransientLabel;
+		XmNmnemonic			= keysym(maSwnOrdTransientMnemonic);
+		XmNaccelerator		= maSwnOrdTransientAccelerator;
+		XmNacceleratorText 	= maSwnOrdTransientAccelText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure SwnHelpMenuCB(SWN_ORD_TRANSIENT);
+		XmNactivateCallback = procedure SwnMenuCB(SWN_ORD_TRANSIENT);
+	};
+};
+
+object Swn_Ordinary_Unfold : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maSwnOrdUnfoldLabel;
+		XmNmnemonic			= keysym(maSwnOrdUnfoldMnemonic);
+		XmNaccelerator		= maSwnOrdUnfoldAccelerator;
+		XmNacceleratorText 	= maSwnOrdUnfoldAccelText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure SwnHelpMenuCB(SWN_ORD_UNFOLD);
+		XmNactivateCallback = procedure SwnMenuCB(SWN_ORD_UNFOLD);
+	};
+};
+
+
+!*******************  MENU EGSPN	**********************
+
+object	EGSPNTopic : XmCascadeButton
+{
+	controls
+	{
+		XmPulldownMenu  EGSPN_Pane;
+	};
+	arguments
+	{
+		XmNfontList	  = maMenuBarFont;
+		XmNlabelString	= maEGSPNTopicLabel;
+		XmNmnemonic		= keysym(maEGSPNTopicMnemonic);
+		XmNbackground = maMenuBarBackground;
+	};
+};
+
+object	EGSPN_Pane : XmPulldownMenu
+{
+	controls
+	{
+		XmPushButton  EGSPN_Simulation;
+		XmPushButton  EGSPN_ComputeRG;
+		XmPushButton  EGSPN_Transient;
+	};
+	arguments
+	{
+		XmNtearOffModel = maNetTearOff;
+		XmNbackground = maPullDownBackground;
+		XmNforeground = maPullDownForeground;
+	};
+	callbacks
+	{
+		XmNunmapCallback = procedure ClearStatusCB();
+	};
+};
+
+object EGSPN_Simulation : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maEGSPNSimuLabel;
+		XmNmnemonic			= keysym(maEGSPNSimuMnemonic);
+		XmNaccelerator		= maEGSPNSimuAccelerator;
+		XmNacceleratorText 	= maEGSPNSimuAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure EGSPNHelpMenuCB(EGSPN_SIMULATION);
+		XmNactivateCallback = procedure EGSPNMenuCB(EGSPN_SIMULATION);
+	};
+};
+
+object EGSPN_ComputeRG : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maEGSPNCompRGLabel;
+		XmNmnemonic			= keysym(maEGSPNCompRGMnemonic);
+		XmNaccelerator		= maEGSPNCompRGAccelerator;
+		XmNacceleratorText 	= maEGSPNCompRGAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure EGSPNHelpMenuCB(EGSPN_COMPUTERG);
+		XmNactivateCallback = procedure EGSPNMenuCB(EGSPN_COMPUTERG);
+	};
+};
+
+object EGSPN_Transient : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maEGSPNTransientLabel;
+		XmNmnemonic			= keysym(maEGSPNTransientMnemonic);
+		XmNaccelerator		= maEGSPNTransientAccelerator;
+		XmNacceleratorText 	= maEGSPNTransientAccelText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure EGSPNHelpMenuCB(EGSPN_TRANSIENT);
+		XmNactivateCallback = procedure EGSPNMenuCB(EGSPN_TRANSIENT);
+	};
+};
+
+
+
+!*******************  MENU HELP	**********************
+	
+object	HelpTopic : XmCascadeButton
+{
+	controls
+	{
+		XmPulldownMenu  Help_Pane;
+	};
+	arguments
+	{
+		XmNfontList	  = maMenuBarFont;
+		XmNlabelString	= maHelpTopicLabel;
+		XmNmnemonic		= keysym(maHelpTopicMnemonic);
+		XmNbackground = maMenuBarBackground;
+	};
+};
+
+object	Help_Pane : XmPulldownMenu
+{
+	controls
+	{
+		XmToggleButton  Help_Toggle;
+		XmSeparator  Sep;
+		XmPushButton  Help_About;
+	};
+	arguments
+	{
+		XmNtearOffModel = maHelpTearOff;
+		XmNbackground = maPullDownBackground;
+		XmNforeground = maPullDownForeground;
+	};
+	callbacks
+	{
+		XmNunmapCallback = procedure ClearStatusCB();
+	};
+};
+
+object Help_Toggle : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maHelpToggleLabel;
+		XmNmnemonic			= keysym(maHelpToggleMnemonic);
+		XmNaccelerator		= maHelpToggleAccelerator;
+		XmNacceleratorText 	= maHelpToggleAcceleratorText;
+		XmNbackground = maPullDownBackground;
+!		XmNset				= true;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure HelpHelpMenuCB(HELP_MOUSE_HELP_MITEM);
+		XmNvalueChangedCallback = procedure HelpToggleCB();
+	};
+};
+
+object Help_About : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maHelpAboutLabel;
+		XmNmnemonic			= keysym(maHelpAboutMnemonic);
+		XmNaccelerator		= maHelpAboutAccelerator;
+		XmNacceleratorText 	= maHelpAboutAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNarmCallback = procedure HelpHelpMenuCB(HELP_ABOUT_MITEM);
+		XmNactivateCallback = procedure AboutCB();
+	};
+};
+
+
+!*******************  DRAWING MENU POPUP 	**********************
+	
+object	Popup : XmPopupMenu
+{
+	controls
+	{
+		XmToggleButton  Add_Pop;
+		XmToggleButton  Change_Pop;
+		XmToggleButton  Select_Pop;
+		XmToggleButton  Move_Pop;
+		XmToggleButton  Delete_Pop;
+		XmToggleButton  Rotate_Pop;
+		XmSeparator  Sep;
+		XmPushButton  	Show_Pop;
+		XmSeparator  Sep;
+		XmPushButton  Paste_Pop;
+		XmSeparator  Sep;
+		XmToggleButton  Printarea_Pop;
+		XmSeparator  Sep;
+		XmPushButton  Redraw_Pop;
+	};
+	arguments
+	{
+		XmNbackground = maPullDownBackground;
+		XmNforeground = maPullDownForeground;
+		XmNradioBehavior = true;
+		XmNradioAlwaysOne = true;
+	};
+};
+
+object Add_Pop : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maAdd_PopLabel;
+		XmNmnemonic			= keysym(maAdd_PopMnemonic);
+		XmNaccelerator		= maAdd_PopAccelerator;
+		XmNacceleratorText 	= maAdd_PopAcceleratorText;
+		XmNset				= true;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure ActionsCB(ADD_MITEM);
+	};
+};
+object Change_Pop : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maChange_PopLabel;
+		XmNmnemonic			= keysym(maChange_PopMnemonic);
+		XmNaccelerator		= maChange_PopAccelerator;
+		XmNacceleratorText 	= maChange_PopAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure ActionsCB(CHANGE_MITEM);
+	};
+};
+object Select_Pop : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maSelect_PopLabel;
+		XmNmnemonic			= keysym(maSelect_PopMnemonic);
+		XmNaccelerator		= maSelect_PopAccelerator;
+		XmNacceleratorText 	= maSelect_PopAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure ActionsCB(SELECT_MITEM);
+	};
+};
+object Move_Pop : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maMove_PopLabel;
+		XmNmnemonic			= keysym(maMove_PopMnemonic);
+		XmNaccelerator		= maMove_PopAccelerator;
+		XmNacceleratorText 	= maMove_PopAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure ActionsCB(MOVE_MITEM);
+	};
+};
+object Delete_Pop : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maDelete_PopLabel;
+		XmNmnemonic			= keysym(maDelete_PopMnemonic);
+		XmNaccelerator		= maDelete_PopAccelerator;
+		XmNacceleratorText 	= maDelete_PopAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure ActionsCB(DELETE_MITEM);
+	};
+};
+object Show_Pop : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maShow_PopLabel;
+		XmNmnemonic			= keysym(maShow_PopMnemonic);
+		XmNaccelerator		= maShow_PopAccelerator;
+		XmNacceleratorText 	= maShow_PopAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure ActionsCB(SHOW_MITEM);
+	};
+};
+object Rotate_Pop : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maRotate_PopLabel;
+		XmNmnemonic			= keysym(maRotate_PopMnemonic);
+		XmNaccelerator		= maRotate_PopAccelerator;
+		XmNacceleratorText 	= maRotate_PopAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure ActionsCB(ROTATE_MITEM);
+	};
+};
+
+object Printarea_Pop : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maPrintarea_PopLabel;
+		XmNmnemonic			= keysym(maPrintarea_PopMnemonic);
+		XmNaccelerator		= maPrintarea_PopAccelerator;
+		XmNacceleratorText 	= maPrintarea_PopAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure ActionsCB(PRINTAREA_MITEM);
+	};
+};
+
+object Paste_Pop : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maPaste_PopLabel;
+		XmNmnemonic			= keysym(maPaste_PopMnemonic);
+		XmNaccelerator		= maPaste_PopAccelerator;
+		XmNacceleratorText 	= maPaste_PopAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure EditMenuCB(EDIT_PASTE_MITEM);
+	};
+};
+
+object Redraw_Pop : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maRedraw_PopLabel;
+		XmNmnemonic			= keysym(maRedraw_PopMnemonic);
+		XmNaccelerator		= maRedraw_PopAccelerator;
+		XmNacceleratorText 	= maRedraw_PopAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure ActionsCB(REDRAW_MITEM);
+	};
+};
+!*******************  ENDSHOW MENU POPUP 	**********************
+	
+object	EndShowPopup : XmPopupMenu
+{
+	controls
+	{
+		XmPushButton	EndShow_Pop;
+	};
+	arguments
+	{
+		XmNbackground = maPullDownBackground;
+		XmNforeground = maPullDownForeground;
+		XmNradioBehavior = true;
+		XmNradioAlwaysOne = true;
+	};
+};
+
+!*******************  PINV MENU POPUP 	**********************
+	
+object	PinvPopup : XmPopupMenu
+{
+	controls
+	{
+		XmToggleButton  Pinv_Pop;
+		XmToggleButton  MinDead_Pop;
+		XmToggleButton  MinTraps_Pop;
+		XmToggleButton  ImpPlaces_Pop;
+		XmToggleButton  AbsMB_Pop;
+		XmToggleButton  AveMB_Pop;
+		XmSeparator  	Sep;
+		XmPushButton	EndShow_Pop;
+	};
+	arguments
+	{
+		XmNbackground = maPullDownBackground;
+		XmNforeground = maPullDownForeground;
+		XmNradioBehavior = true;
+		XmNradioAlwaysOne = true;
+	};
+};
+
+object Pinv_Pop : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maPinv_PopLabel;
+		XmNmnemonic			= keysym(maPinv_PopMnemonic);
+		XmNaccelerator		= maPinv_PopAccelerator;
+		XmNacceleratorText 	= maPinv_PopAcceleratorText;
+		XmNset				= true;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure PinvActionsCB(PINV_MITEM);
+	};
+};
+object MinDead_Pop : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maMinDead_PopLabel;
+		XmNmnemonic			= keysym(maMinDead_PopMnemonic);
+		XmNaccelerator		= maMinDead_PopAccelerator;
+		XmNacceleratorText 	= maMinDead_PopAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure PinvActionsCB(MINDEAD_MITEM);
+	};
+};
+object MinTraps_Pop : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maMinTraps_PopLabel;
+		XmNmnemonic			= keysym(maMinTraps_PopMnemonic);
+		XmNaccelerator		= maMinTraps_PopAccelerator;
+		XmNacceleratorText 	= maMinTraps_PopAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure PinvActionsCB(MINTRAPS_MITEM);
+	};
+};
+object ImpPlaces_Pop : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maImpPlaces_PopLabel;
+		XmNmnemonic			= keysym(maImpPlaces_PopMnemonic);
+		XmNaccelerator		= maImpPlaces_PopAccelerator;
+		XmNacceleratorText 	= maImpPlaces_PopAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure PinvActionsCB(IMPPLACES_MITEM);
+	};
+};
+object AbsMB_Pop : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maAbsMB_PopLabel;
+		XmNmnemonic			= keysym(maAbsMB_PopMnemonic);
+		XmNaccelerator		= maAbsMB_PopAccelerator;
+		XmNacceleratorText 	= maAbsMB_PopAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure PinvActionsCB(ABSMB_MITEM);
+	};
+};
+object AveMB_Pop : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maAveMB_PopLabel;
+		XmNmnemonic			= keysym(maAveMB_PopMnemonic);
+		XmNaccelerator		= maAveMB_PopAccelerator;
+		XmNacceleratorText 	= maAveMB_PopAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure PinvActionsCB(AVEMB_MITEM);
+	};
+};
+
+object EndShow_Pop : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maEndShow_PopLabel;
+		XmNmnemonic			= keysym(maEndShow_PopMnemonic);
+		XmNaccelerator		= maEndShow_PopAccelerator;
+		XmNacceleratorText 	= maEndShow_PopAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure ActionsCB(ENDSHOW_MITEM);
+	};
+};
+
+!*******************  TINV MENU POPUP 	**********************
+	
+object	TinvPopup : XmPopupMenu
+{
+	controls
+	{
+		XmToggleButton  Tinv_Pop;
+		XmToggleButton  ECS_Pop;
+		XmToggleButton  ME_Pop;
+		XmToggleButton  SC_Pop;
+		XmToggleButton  CC_Pop;
+		XmToggleButton  UnbSeq_Pop;
+		XmToggleButton  ActLivBound_Pop;
+		XmToggleButton  LivBounds_Pop;
+		XmToggleButton  ThrBounds_Pop;
+		XmSeparator  	Sep;
+		XmPushButton	EndShow_Pop;
+	};
+	arguments
+	{
+		XmNbackground = maPullDownBackground;
+		XmNforeground = maPullDownForeground;
+		XmNradioBehavior = true;
+		XmNradioAlwaysOne = true;
+	};
+};
+
+object Tinv_Pop : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maTinv_PopLabel;
+		XmNmnemonic			= keysym(maTinv_PopMnemonic);
+		XmNaccelerator		= maTinv_PopAccelerator;
+		XmNacceleratorText 	= maTinv_PopAcceleratorText;
+		XmNset				= true;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure TinvActionsCB(TINV_MITEM);
+	};
+};
+
+object ECS_Pop : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maECS_PopLabel;
+		XmNmnemonic			= keysym(maECS_PopMnemonic);
+		XmNaccelerator		= maECS_PopAccelerator;
+		XmNacceleratorText 	= maECS_PopAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure TinvActionsCB(ECS_MITEM);
+	};
+};
+
+object ME_Pop : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maME_PopLabel;
+		XmNmnemonic			= keysym(maME_PopMnemonic);
+		XmNaccelerator		= maME_PopAccelerator;
+		XmNacceleratorText 	= maME_PopAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure TinvActionsCB(ME_MITEM);
+	};
+};
+
+object SC_Pop : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maSC_PopLabel;
+		XmNmnemonic			= keysym(maSC_PopMnemonic);
+		XmNaccelerator		= maSC_PopAccelerator;
+		XmNacceleratorText 	= maSC_PopAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure TinvActionsCB(SC_MITEM);
+	};
+};
+
+object CC_Pop : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maCC_PopLabel;
+		XmNmnemonic			= keysym(maCC_PopMnemonic);
+		XmNaccelerator		= maCC_PopAccelerator;
+		XmNacceleratorText 	= maCC_PopAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure TinvActionsCB(CC_MITEM);
+	};
+};
+
+object UnbSeq_Pop : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maUnbSeq_PopLabel;
+		XmNmnemonic			= keysym(maUnbSeq_PopMnemonic);
+		XmNaccelerator		= maUnbSeq_PopAccelerator;
+		XmNacceleratorText 	= maUnbSeq_PopAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure TinvActionsCB(UNBSEQ_MITEM);
+	};
+};
+
+object ActLivBound_Pop : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maActLivBound_PopLabel;
+		XmNmnemonic			= keysym(maActLivBound_PopMnemonic);
+		XmNaccelerator		= maActLivBound_PopAccelerator;
+		XmNacceleratorText 	= maActLivBound_PopAccelText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure TinvActionsCB(ACTLIVBOUND_MITEM);
+	};
+};
+
+object LivBounds_Pop : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maLivBounds_PopLabel;
+		XmNmnemonic			= keysym(maLivBounds_PopMnemonic);
+		XmNaccelerator		= maLivBounds_PopAccelerator;
+		XmNacceleratorText 	= maLivBounds_PopAccelText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure TinvActionsCB(LIVBOUND_MITEM);
+	};
+};
+
+object ThrBounds_Pop : XmToggleButton
+{
+	arguments
+	{
+		XmNfontList	  		= maMenuFont;
+		XmNlabelString		= maThrBounds_PopLabel;
+		XmNmnemonic			= keysym(maThrBounds_PopMnemonic);
+		XmNaccelerator		= maThrBounds_PopAccelerator;
+		XmNacceleratorText 	= maThrBounds_PopAcceleratorText;
+		XmNbackground = maPullDownBackground;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure TinvActionsCB(THRBOUND_MITEM);
+	};
+};
+

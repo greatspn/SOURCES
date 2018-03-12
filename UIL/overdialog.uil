@@ -1,0 +1,58 @@
+/*******************************************************************************
+	Overview Dialog
+	
+	Comment:				This Section Describes the Overview Dialog 
+							
+	Programmer:				Alex
+	Creation Date:			22/2/95
+	Last Modify Date:		23/2/95
+
+********************************************************************************/
+identifier
+	OVERVIEW_ADDRESS;
+	
+procedure
+	RedrawOverviewCB(integer);
+	
+object  OverDialog : XmFormDialog
+{
+	controls
+	{
+		XmDrawingArea  OverDialog_Draw;
+	};
+	arguments
+	{
+		XmNdialogTitle 			= 	"Net Overview";
+		XmNwidth 				=	402;
+		XmNheight 				=	242;
+		XmNautoUnmanage 		=	false;
+		XmNdialogStyle			=	XmDIALOG_MODELESS;
+		XmNresizePolicy = XmRESIZE_NONE;
+		XmNnoResize				=	true;
+		XmNtransient			=	true;
+!		XmNmwmFunctions 		=	4;
+		XmNmwmDecorations		=	10;
+		XmNmappedWhenManaged	= 	false;
+	};
+
+};
+
+object OverDialog_Draw : XmDrawingArea
+{
+	arguments
+	{
+		XmNbackground 		=	colorWhite;
+		XmNtopAttachment 	=	XmATTACH_FORM;
+		XmNtopOffset		=	1;
+		XmNbottomAttachment	=	XmATTACH_FORM;
+		XmNbottomOffset 	=	1;
+		XmNleftAttachment 	=	XmATTACH_FORM;
+		XmNleftOffset 		=	1;
+		XmNrightAttachment 	=	XmATTACH_FORM;
+		XmNrightOffset 		=	1;
+	};
+	callbacks
+	{
+!		XmNexposeCallback = procedure RedrawOverviewCB(OVERVIEW_ADDRESS);
+	};
+};

@@ -1,0 +1,740 @@
+
+INCDIRS		= $(MOTIF_INCLUDE_DIR)
+LIBDIRS		= $(MOTIF_LIB_DIR)
+MLIBS		= $(MOTIF_LIB) Xt X11 m 
+#MLIBS		= Xt X11 m 
+
+#MOTIF_SLIB      = -static $(MOTIF_LIB:%=-l%)
+
+CFLAGS	      = -O3 -D$(GREAT_PLATFORM) 
+#CFLAGS	      = -O3 -fsigned-char -D$(GREAT_PLATFORM) 
+
+DEST	      = ./
+
+EXTHDRS	      = ../simsrc2/simul_decl.h
+
+BIN 		=	../../$(GSPN2BINS)/bin$(GREAT_REVISION)
+
+BINS 		=	bin
+
+BINDIR		=	 $(BIN)/
+
+HDRS	      = Canvas.h \
+		Display.h \
+		MenuCallBacks.h \
+		Prova.h \
+		Sundef.h \
+		Zoom.h \
+		aboutdialog.h \
+		alloc.h \
+		arc.h \
+		arcdialog.h \
+		box.h \
+		buttons.h \
+		cc.h \
+		choices.h \
+		chop.h \
+		circle.h \
+		color.h \
+		colordialog.h \
+		commentdialog.h \
+		consoledialog.h \
+		const.h \
+		convers.h \
+		cursorsbits.h \
+		deadl.h \
+		defines.h \
+		draw.h \
+		ecs.h \
+		errordialog.h \
+		filer.h \
+		funct.h \
+		global.h \
+		grid.h \
+		implp.h \
+		infodialog.h \
+		inputdialog.h \
+		layer.h \
+		layereditdialog.h \
+		layerviewdialog.h \
+		line.h \
+		lisp.h \
+		liveness.h \
+		mark.h \
+		markdialog.h \
+		mdgrammardialog.h \
+		me.h \
+		menu.h \
+		menuH.h \
+		menuS.h \
+		menuinit.h \
+		menuvalues.h \
+		move.h \
+		object.h \
+		optionsdialog.h \
+		overview.h \
+		parse.h \
+		pinv.h \
+		place.h \
+		placedialog.h \
+		postscript.h \
+		printarea.h \
+		printdialog.h \
+		rate.h \
+		ratedialog.h \
+		res.h \
+		rescale.h \
+		resultdialog.h \
+		sc.h \
+		showdialog.h \
+		showgdi.h \
+		simdialog.h \
+		solvedialog.h \
+		spline.h \
+		swn.h \
+		tag.h \
+		tinv.h \
+		toolkit.h \
+		trans.h \
+		transdialog.h \
+		trap.h \
+		unbound.h \
+                unfold.h \
+		var1.h \
+		warningdialog.h \
+		zoom.h
+
+INSTALL	      = /etc/install
+
+CC	      ?= gcc
+LD	      ?= gcc
+
+LDFLAGS	      = 
+
+LIBS	      =
+
+MAKEFILE      = Makefile.all
+
+OBJS	      = Display.o \
+		MenuCallBacks.o \
+		aboutdialog.o \
+		afire.o \
+		alloc.o \
+		animation.o \
+		arc.o \
+		arcdialog.o \
+		box.o \
+		canvas.o \
+		cc.o \
+		chop.o \
+		circle.o \
+		color.o \
+		colordialog.o \
+		command.o \
+		commentdialog.o \
+		compact.o \
+		consoledialog.o \
+		deadl.o \
+		dismsg.o \
+		drag.o \
+		draw.o \
+		ecs.o \
+		errordialog.o \
+		filer.o \
+		fire.o \
+		flpinv.o \
+		fltinv.o \
+		getmsg.o \
+		global.o \
+		grid.o \
+		help.o \
+		help2.o \
+		highlig.o \
+		histo.o \
+		implp.o \
+		indprest.o \
+		infodialog.o \
+		inputdialog.o \
+		layer.o \
+		layereditdialog.o \
+		layerviewdialog.o \
+		line.o \
+		lisp.o \
+		liveness.o \
+		load.o \
+		lpabso.o \
+		lpbounds.o \
+		main.o \
+		mark.o \
+		markdialog.o \
+		mdgrammardialog.o \
+		me.o \
+		menu.o \
+		menuinit.o \
+		mirror.o \
+		modify.o \
+		mouse.o \
+		move.o \
+		near.o \
+		net.o \
+		optionsdialog.o \
+		overview.o \
+		panel.o \
+		parse.o \
+		pinv.o \
+		place.o \
+		placedialog.o \
+		popup.o \
+		postscript.o \
+		printarea.o \
+		printdialog.o \
+		rate.o \
+		ratedialog.o \
+		res.o \
+		rescale.o \
+		restore.o \
+		resultdialog.o \
+		save.o \
+		sc.o \
+		search.o \
+		search2.o \
+		select.o \
+		showdialog.o \
+		showgdi.o \
+		simpan.o \
+		solvedialog.o \
+		spline.o \
+		swn.o \
+		tag.o \
+		tinv.o \
+		tokens.o \
+		toolkit.o \
+		tramd.o \
+		trans.o \
+		transdialog.o \
+		trap.o \
+		unbound.o \
+                unfold.o \
+		warningdialog.o \
+		zoom.o
+
+PRINT	      = pr
+
+PROGRAM       = ../../$(GSPN2BINS)/GreatSPN$(GREAT_REVISION)
+
+SHELL	      = /bin/sh
+
+SRCS	      = Display.c \
+		MenuCallBacks.c \
+		aboutdialog.c \
+		afire.c \
+		alloc.c \
+		animation.c \
+		arc.c \
+		arcdialog.c \
+		box.c \
+		canvas.c \
+		cc.c \
+		chop.c \
+		circle.c \
+		color.c \
+		colordialog.c \
+		command.c \
+		commentdialog.c \
+		compact.c \
+		consoledialog.c \
+		deadl.c \
+		dismsg.c \
+		drag.c \
+		draw.c \
+		ecs.c \
+		errordialog.c \
+		filer.c \
+		fire.c \
+		flpinv.c \
+		fltinv.c \
+		getmsg.c \
+		global.c \
+		grid.c \
+		help.c \
+		help2.c \
+		highlig.c \
+		histo.c \
+		implp.c \
+		indprest.c \
+		infodialog.c \
+		inputdialog.c \
+		layer.c \
+		layereditdialog.c \
+		layerviewdialog.c \
+		line.c \
+		lisp.c \
+		liveness.c \
+		load.c \
+		lpabso.c \
+		lpbounds.c \
+		main.c \
+		mark.c \
+		markdialog.c \
+		mdgrammardialog.c \
+		me.c \
+		menu.c \
+		menuinit.c \
+		mirror.c \
+		modify.c \
+		mouse.c \
+		move.c \
+		near.c \
+		net.c \
+		optionsdialog.c \
+		overview.c \
+		panel.c \
+		parse.c \
+		pinv.c \
+		place.c \
+		placedialog.c \
+		popup.c \
+		postscript.c \
+		printarea.c \
+		printdialog.c \
+		rate.c \
+		ratedialog.c \
+		res.c \
+		rescale.c \
+		restore.c \
+		resultdialog.c \
+		save.c \
+		sc.c \
+		search.c \
+		search2.c \
+		select.c \
+		showdialog.c \
+		showgdi.c \
+		simpan.c \
+		solvedialog.c \
+		spline.c \
+		swn.c \
+		tag.c \
+		tinv.c \
+		tokens.c \
+		toolkit.c \
+		tramd.c \
+		trans.c \
+		transdialog.c \
+		trap.c \
+		unbound.c \
+                unfold.c \
+		warningdialog.c \
+		zoom.c
+COMMANDS		=	../../$(BINS)/PrintCommand \
+					../../$(BINS)/RemoveResCommand \
+					../../$(BINS)/RemoveAllCommand
+
+
+OBJDIR		= ./
+
+GreatSPN_PACKAGE : $(BIN) $(PROGRAM) $(COMMANDS)
+
+$(BIN) :
+	mkdir $(BIN)
+
+$(BINDIR)%.o:	%.c
+		$(CC) $(CFLAGS) $(INCDIRS:%=-I%) -c $< -o $@
+
+all:		$(PROGRAM)
+
+$(PROGRAM):     $(OBJS:%=$(BINDIR)%) 
+		$(CC) $(OBJS:%=$(BINDIR)%) $(LIBDIRS:%=-L%) $(LDFLAGS) -o $(PROGRAM) $(MOTIF_SLIB) $(MLIBS:%=-l%)  $(SOCKET_LIB)
+
+../../$(BINS)/PrintCommand:	PrintCommand.csh
+		@echo "Creating  $@ ..." 
+		cp $< $@
+		chmod 755 $@
+
+../../$(BINS)/RemoveResCommand: RemoveResCommand
+		@echo "Creating  $@ ..." 
+		cp $< $@
+		chmod 755 $@
+		
+../../$(BINS)/RemoveAllCommand: RemoveAllCommand
+		@echo "Creating  $@ ..." 
+		cp $< $@
+		chmod 755 $@
+		
+
+#@$(LD) $(LDFLAGS) $(OBJS:%=$(OBJDIR)%) $(LIBS) -o $(PROGRAM)
+		@echo "done"
+
+clean:;		@rm -f $(OBJS) core
+
+clobber:;	@rm -f $(OBJS) $(PROGRAM) core tags
+
+depend:;	@mkmf -f $(MAKEFILE) ROOT=$(ROOT)
+
+echo:;		@echo $(HDRS) $(SRCS)
+
+index:;		@ctags -wx $(HDRS) $(SRCS)
+
+install:	$(PROGRAM)
+		@echo Installing $(PROGRAM) in $(DEST)
+		@-strip $(PROGRAM)
+		@if [ $(DEST) != . ]; then \
+		(rm -f $(DEST)/$(PROGRAM); $(INSTALL) -f $(DEST) $(PROGRAM)); fi
+
+print:;		@$(PRINT) $(HDRS) $(SRCS)
+
+tags:           $(HDRS) $(SRCS); @ctags $(HDRS) $(SRCS)
+
+update:		$(DEST)/$(PROGRAM)
+
+#$(DEST)/$(PROGRAM): $(SRCS) $(LIBS) $(HDRS) $(EXTHDRS)
+#	@$(MAKE) -f $(MAKEFILE) ROOT=$(ROOT) DEST=$(DEST) install
+###
+$(BINDIR)Display.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h
+$(BINDIR)MenuCallBacks.o: global.h convers.h defines.h const.h object.h choices.h \
+	funct.h var1.h alloc.h Display.h warningdialog.h errordialog.h \
+	infodialog.h toolkit.h menuvalues.h grid.h menuH.h aboutdialog.h \
+	overview.h showgdi.h layereditdialog.h layerviewdialog.h \
+	commentdialog.h printdialog.h optionsdialog.h printarea.h filer.h
+$(BINDIR)aboutdialog.o: global.h convers.h defines.h const.h object.h choices.h \
+	funct.h var1.h alloc.h Display.h warningdialog.h errordialog.h \
+	infodialog.h toolkit.h aboutdialog.h
+$(BINDIR)afire.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h
+$(BINDIR)alloc.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h
+$(BINDIR)animation.o: ../simsrc2/simul_decl.h global.h convers.h defines.h const.h \
+	object.h choices.h funct.h var1.h alloc.h Display.h warningdialog.h \
+	errordialog.h infodialog.h toolkit.h
+$(BINDIR)arc.o: global.h convers.h defines.h const.h object.h choices.h funct.h var1.h \
+	alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h menuS.h arcdialog.h chop.h draw.h line.h res.h liveness.h \
+	rate.h showgdi.h showdialog.h resultdialog.h arc.h
+$(BINDIR)arcdialog.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h draw.h res.h liveness.h rate.h showgdi.h showdialog.h \
+	resultdialog.h parse.h arcdialog.h
+$(BINDIR)box.o: global.h convers.h defines.h const.h object.h choices.h funct.h var1.h \
+	alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h showgdi.h box.h
+$(BINDIR)canvas.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h Canvas.h draw.h liveness.h res.h rate.h showgdi.h \
+	showdialog.h resultdialog.h grid.h
+$(BINDIR)cc.o: global.h convers.h defines.h const.h object.h choices.h funct.h var1.h \
+	alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h cc.h
+$(BINDIR)chop.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h chop.h
+$(BINDIR)circle.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h postscript.h circle.h
+$(BINDIR)color.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h draw.h showgdi.h arcdialog.h placedialog.h transdialog.h \
+	mark.h lisp.h color.h
+$(BINDIR)colordialog.o: global.h convers.h defines.h const.h object.h choices.h \
+	funct.h var1.h alloc.h Display.h warningdialog.h errordialog.h \
+	infodialog.h toolkit.h parse.h color.h draw.h mark.h lisp.h res.h \
+	liveness.h rate.h showgdi.h showdialog.h resultdialog.h colordialog.h
+$(BINDIR)command.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h trap.h deadl.h ecs.h res.h liveness.h rate.h showgdi.h \
+	showdialog.h resultdialog.h tinv.h pinv.h sc.h unbound.h unfold.h me.h \
+	inputdialog.h menuinit.h
+$(BINDIR)commentdialog.o: global.h convers.h defines.h const.h object.h choices.h \
+	funct.h var1.h alloc.h Display.h warningdialog.h errordialog.h \
+	infodialog.h toolkit.h commentdialog.h
+$(BINDIR)consoledialog.o: global.h convers.h defines.h const.h object.h choices.h \
+	funct.h var1.h alloc.h Display.h warningdialog.h errordialog.h \
+	infodialog.h toolkit.h consoledialog.h
+$(BINDIR)deadl.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h chop.h draw.h mark.h deadl.h
+$(BINDIR)dismsg.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h
+$(BINDIR)drag.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h chop.h draw.h mark.h res.h liveness.h rate.h showgdi.h \
+	showdialog.h resultdialog.h
+$(BINDIR)draw.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h postscript.h circle.h spline.h arc.h showgdi.h color.h \
+	box.h overview.h tag.h mark.h lisp.h rate.h res.h liveness.h \
+	showdialog.h resultdialog.h draw.h
+$(BINDIR)ecs.o: global.h convers.h defines.h const.h object.h choices.h funct.h var1.h \
+	alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h draw.h showgdi.h ecs.h
+$(BINDIR)errordialog.o: global.h convers.h defines.h const.h object.h choices.h \
+	funct.h var1.h alloc.h Display.h warningdialog.h errordialog.h \
+	infodialog.h toolkit.h
+$(BINDIR)filer.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h postscript.h
+$(BINDIR)fire.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h draw.h mark.h
+$(BINDIR)flpinv.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h
+$(BINDIR)fltinv.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h
+$(BINDIR)getmsg.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h
+$(BINDIR)global.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h
+$(BINDIR)grid.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h showgdi.h menuinit.h grid.h menuvalues.h
+$(BINDIR)help.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h
+$(BINDIR)help2.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h
+$(BINDIR)highlig.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h draw.h
+$(BINDIR)histo.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h draw.h
+$(BINDIR)implp.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h draw.h showgdi.h implp.h
+$(BINDIR)indprest.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h draw.h res.h liveness.h rate.h showgdi.h showdialog.h \
+	resultdialog.h
+$(BINDIR)infodialog.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h
+$(BINDIR)inputdialog.o: global.h convers.h defines.h const.h object.h choices.h \
+	funct.h var1.h alloc.h Display.h warningdialog.h errordialog.h \
+	infodialog.h toolkit.h inputdialog.h
+$(BINDIR)layer.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h layerviewdialog.h layereditdialog.h layer.h
+$(BINDIR)layereditdialog.o: global.h convers.h defines.h const.h object.h choices.h \
+	funct.h var1.h alloc.h Display.h warningdialog.h errordialog.h \
+	infodialog.h toolkit.h showgdi.h layer.h layerviewdialog.h draw.h \
+	layereditdialog.h
+$(BINDIR)layerviewdialog.o: global.h convers.h defines.h const.h object.h choices.h \
+	funct.h var1.h alloc.h Display.h warningdialog.h errordialog.h \
+	infodialog.h toolkit.h layer.h layereditdialog.h showgdi.h draw.h \
+	layerviewdialog.h
+$(BINDIR)line.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h draw.h arc.h chop.h line.h
+$(BINDIR)lisp.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h colordialog.h showdialog.h showgdi.h lisp.h
+$(BINDIR)liveness.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h showgdi.h rate.h res.h liveness.h showdialog.h \
+	resultdialog.h
+$(BINDIR)load.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h menuS.h chop.h trap.h cc.h deadl.h ecs.h res.h liveness.h \
+	rate.h showgdi.h showdialog.h resultdialog.h tinv.h pinv.h sc.h \
+	unbound.h unfold.h me.h
+$(BINDIR)lpabso.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h
+$(BINDIR)lpbounds.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h
+$(BINDIR)main.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h Prova.h buttons.h menuvalues.h arcdialog.h aboutdialog.h \
+	colordialog.h placedialog.h transdialog.h showdialog.h \
+	optionsdialog.h solvedialog.h resultdialog.h ratedialog.h \
+	printdialog.h mdgrammardialog.h layerviewdialog.h layereditdialog.h \
+	markdialog.h consoledialog.h commentdialog.h overview.h showgdi.h \
+	rescale.h grid.h filer.h MenuCallBacks.h simdialog.h zoom.h
+$(BINDIR)mark.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h draw.h showgdi.h markdialog.h placedialog.h res.h \
+	liveness.h rate.h showdialog.h resultdialog.h mark.h
+$(BINDIR)markdialog.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h parse.h mark.h res.h liveness.h rate.h showgdi.h \
+	showdialog.h resultdialog.h markdialog.h
+$(BINDIR)mdgrammardialog.o: global.h convers.h defines.h const.h object.h choices.h \
+	funct.h var1.h alloc.h Display.h warningdialog.h errordialog.h \
+	infodialog.h toolkit.h mdgrammardialog.h
+$(BINDIR)me.o: global.h convers.h defines.h const.h object.h choices.h funct.h var1.h \
+	alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h me.h
+$(BINDIR)menu.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h menu.h menuS.h menuvalues.h buttons.h place.h trans.h \
+	move.h arc.h color.h box.h line.h tag.h mark.h trap.h cc.h deadl.h \
+	ecs.h implp.h lisp.h liveness.h rate.h res.h showgdi.h showdialog.h \
+	resultdialog.h grid.h tinv.h pinv.h sc.h unbound.h unfold.h me.h printarea.h
+$(BINDIR)menuinit.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h menuH.h menuS.h menuvalues.h menuinit.h
+$(BINDIR)mirror.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h chop.h draw.h res.h liveness.h rate.h showgdi.h \
+	showdialog.h resultdialog.h
+$(BINDIR)modify.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h box.h
+$(BINDIR)mouse.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h
+$(BINDIR)move.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h chop.h draw.h mark.h rate.h lisp.h arc.h res.h liveness.h \
+	showgdi.h showdialog.h resultdialog.h move.h
+$(BINDIR)near.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h
+$(BINDIR)net.o: global.h convers.h defines.h const.h object.h choices.h funct.h var1.h \
+	alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h res.h liveness.h rate.h showgdi.h showdialog.h \
+	resultdialog.h
+$(BINDIR)optionsdialog.o: global.h convers.h defines.h const.h object.h choices.h \
+	funct.h var1.h alloc.h Display.h warningdialog.h errordialog.h \
+	infodialog.h toolkit.h optionsdialog.h
+$(BINDIR)overview.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h chop.h overview.h
+$(BINDIR)panel.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h menuH.h menuinit.h printarea.h
+$(BINDIR)parse.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h parse.h
+$(BINDIR)pinv.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h menuS.h pinv.h
+$(BINDIR)place.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h draw.h placedialog.h mark.h arc.h res.h liveness.h rate.h \
+	showgdi.h showdialog.h resultdialog.h place.h
+$(BINDIR)placedialog.o: global.h convers.h defines.h const.h object.h choices.h \
+	funct.h var1.h alloc.h Display.h warningdialog.h errordialog.h \
+	infodialog.h toolkit.h parse.h draw.h mark.h printarea.h res.h \
+	liveness.h rate.h showgdi.h showdialog.h resultdialog.h placedialog.h
+$(BINDIR)popup.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h
+$(BINDIR)postscript.o: global.h GREAT_C_REVISION convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h postscript.h
+$(BINDIR)printarea.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h box.h draw.h showgdi.h arcdialog.h placedialog.h \
+	transdialog.h mark.h lisp.h
+$(BINDIR)printdialog.o: global.h convers.h defines.h const.h object.h choices.h \
+	funct.h var1.h alloc.h Display.h warningdialog.h errordialog.h \
+	infodialog.h toolkit.h postscript.h draw.h overview.h showgdi.h \
+	printarea.h filer.h printdialog.h
+$(BINDIR)rate.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h liveness.h showgdi.h showdialog.h ratedialog.h \
+	transdialog.h res.h rate.h resultdialog.h
+$(BINDIR)ratedialog.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h parse.h rate.h res.h liveness.h showgdi.h showdialog.h \
+	resultdialog.h ratedialog.h
+$(BINDIR)res.o: res.h global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h liveness.h rate.h showgdi.h showdialog.h resultdialog.h
+$(BINDIR)rescale.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h menuvalues.h chop.h rescale.h
+$(BINDIR)restore.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h
+$(BINDIR)resultdialog.o: global.h convers.h defines.h const.h object.h choices.h \
+	funct.h var1.h alloc.h Display.h warningdialog.h errordialog.h \
+	infodialog.h toolkit.h parse.h res.h liveness.h rate.h showgdi.h \
+	showdialog.h resultdialog.h
+$(BINDIR)save.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h layer.h
+$(BINDIR)sc.o: global.h convers.h defines.h const.h object.h choices.h funct.h var1.h \
+	alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h showgdi.h sc.h
+$(BINDIR)search.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h
+$(BINDIR)search2.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h
+$(BINDIR)select.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h menuS.h box.h chop.h draw.h mark.h lisp.h rate.h res.h \
+	liveness.h showgdi.h showdialog.h resultdialog.h
+$(BINDIR)showdialog.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h showdialog.h
+$(BINDIR)showgdi.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h postscript.h overview.h showgdi.h
+$(BINDIR)simpan.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h
+$(BINDIR)solvedialog.o: global.h convers.h defines.h const.h object.h choices.h \
+	funct.h var1.h alloc.h Display.h warningdialog.h errordialog.h \
+	infodialog.h toolkit.h solvedialog.h
+$(BINDIR)spline.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h postscript.h circle.h showgdi.h chop.h draw.h spline.h
+$(BINDIR)swn.o: global.h convers.h defines.h const.h object.h choices.h funct.h var1.h \
+	alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h res.h liveness.h rate.h showgdi.h showdialog.h \
+	resultdialog.h swn.h
+$(BINDIR)tag.o: global.h convers.h defines.h const.h object.h choices.h funct.h var1.h \
+	alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h showgdi.h draw.h transdialog.h placedialog.h markdialog.h \
+	ratedialog.h resultdialog.h colordialog.h tag.h
+$(BINDIR)tinv.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h tinv.h
+$(BINDIR)tokens.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h draw.h
+$(BINDIR)toolkit.o: global.h GREAT_C_REVISION convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h cursorsbits.h
+$(BINDIR)tramd.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h
+$(BINDIR)trans.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h transdialog.h draw.h chop.h arc.h res.h liveness.h rate.h \
+	showgdi.h showdialog.h resultdialog.h trans.h
+$(BINDIR)transdialog.o: global.h convers.h defines.h const.h object.h choices.h \
+	funct.h var1.h alloc.h Display.h warningdialog.h errordialog.h \
+	infodialog.h toolkit.h parse.h draw.h trans.h mdgrammardialog.h tag.h \
+	rate.h res.h liveness.h showgdi.h showdialog.h resultdialog.h \
+	transdialog.h
+$(BINDIR)trap.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h trap.h
+$(BINDIR)unbound.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h consoledialog.h showgdi.h unbound.h
+$(BINDIR)unfold.o: global.h convers.h defines.h const.h object.h choices.h funct.h var1.h \
+	alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h res.h liveness.h rate.h showgdi.h showdialog.h \
+	resultdialog.h unfold.h
+$(BINDIR)warningdialog.o: global.h convers.h defines.h const.h object.h choices.h \
+	funct.h var1.h alloc.h Display.h warningdialog.h errordialog.h \
+	infodialog.h toolkit.h
+$(BINDIR)zoom.o: global.h convers.h defines.h const.h object.h choices.h funct.h \
+	var1.h alloc.h Display.h warningdialog.h errordialog.h infodialog.h \
+	toolkit.h showgdi.h menuvalues.h menuinit.h zoom.h

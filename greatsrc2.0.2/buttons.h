@@ -1,0 +1,11 @@
+#define PLACE_BUTTON		0
+#define IMTRANS_BUTTON		1
+#define EXTRANS_BUTTON		2
+#define DETRANS_BUTTON		3
+#define ARC_BUTTON		4
+#define TOKEN_BUTTON		5
+#define RATES_BUTTON		6
+#define RESULTS_BUTTON		7
+#define TAG_BUTTON		8
+#define COLOR_BUTTON		9
+

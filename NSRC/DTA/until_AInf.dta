@@ -1,0 +1,21 @@
+
+// Until DTA with time interval [alpha, INF) with (0 < alpha < INF)
+DTA Until_Inf = { 
+	CLOCKVALUESET = { alpha }
+	ACTIONSET = { }
+	ATOMICPROPOSITIONSET = { PHI, PSI }
+
+	LOCATIONS = {
+		INITIAL l_0 : PHI;
+		        l_1 : PHI && !PSI;
+		  FINAL l_2 : PSI;
+	}
+
+	EDGES = {
+		l_0 -> l_0 (x<alpha, Act);
+		l_0 -> l_1 (x=alpha, #);
+		l_0 -> l_2 (x=alpha, #);
+		l_1 -> l_1 (x>alpha, Act);
+		l_1 -> l_2 (x>alpha, Act);
+	}
+}

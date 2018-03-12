@@ -1,0 +1,29 @@
+/*******************************************************************************
+        File Dialog Box
+
+        Comment: This Section Describes the File Dialog Box
+
+        Programmer:                     Alex
+        Creation Date:                  09/3/95
+        Last Modify Date:               13/06/96
+
+********************************************************************************/
+
+object  FileDialog : XmFileSelectionDialog
+{
+	controls
+   {
+		Xm_Help unmanaged {};
+
+    };
+    arguments
+    {
+		XmNresizePolicy   = XmRESIZE_NONE;
+		XmNdialogStyle =  	XmDIALOG_APPLICATION_MODAL;
+		XmNdialogTitle =  	'File Dialog';
+		XmNautoUnmanage = 	false;
+!		XmNbackground =		appDialogBackgroundColor;
+		XmNwidth =			420;
+		XmNheight 	=		300;
+	};
+};

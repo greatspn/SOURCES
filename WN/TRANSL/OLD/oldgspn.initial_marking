@@ -1,0 +1,56 @@
+marking : LT kexpression GT
+	{
+         addm0 = 0;
+         if(exp_on)
+          {
+	   emit(TYPEEND,"",0.0);
+           addm0 += evaluate_expression(pcode_h,NULL) * enn_sign;
+           push_expression(pcode_h,pcode_t);
+           pcode_h = pcode_t = NULL;
+          }
+         else
+          addm0 += enn_sign;
+         enn_sign = 1;
+	}
+             opzguard 
+	   | marking plusop
+	{
+	 enn_sign = sign;
+	 sign=1;
+	}
+	      LT kexpression GT
+	{
+         if(exp_on)
+          {
+	   emit(TYPEEND,"",0.0);
+           addm0 += evaluate_expression(pcode_h,NULL) * enn_sign;
+           push_expression(pcode_h,pcode_t);
+           pcode_h = pcode_t = NULL;
+          }
+         else
+          addm0 += enn_sign;
+	 enn_sign=1;
+	}
+	   opzguard 
+	   ;
+opzguard   : OBRCK 
+	{
+         if(parse_DEF==FUNCTION)
+          ptr->guard = NULL;
+	 prd_h = prd_t = NULL;
+	}
+	     pred
+	{
+         gen(TYPEEND,"");
+         if(parse_DEF==FUNCTION)
+          ptr->guard = prd_h;
+         else if(parse_DEF==INITIAL_MARKING)
+          {
+	   addm0 *= verify_predicate_constraint(prd_h,NULL);
+           push_predicate(prd_h,prd_t);
+	   prd_h = prd_t = NULL;
+          }
+	}
+	     CBRCK
+           |
+	   ;

@@ -1,0 +1,2 @@
+A(1<PrRest1,sl1>)B(1<Pr10,sl1>)turn(1<PrRest1,sl1>1<PrRest2,sl0>)P1(1<Pr10,sl0>1<PrRest1,sl0>1<PrRest2,sl0>)CompFlag(1<PrRest1,sl1>1<PrRest2,sl1>)
+|sl1|=1 |sl0|=1 |PrRest2|=1 |Pr10|=1 |PrRest1|=1 

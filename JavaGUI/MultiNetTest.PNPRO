@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="New project" version="121">
+  <gspn name="PN1" show-fluid-cmd="false">
+    <nodes>
+      <place name="P0" x="5.0" y="4.0"/>
+      <transition name="T0" nservers-x="0.5" type="EXP" x="11.55" y="4.0"/>
+      <template name="n" type="INTEGER" x="6.0" y="9.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" tail="P0"/>
+    </edges>
+  </gspn>
+  <gspn name="PN2">
+    <nodes>
+      <place name="P0" x="6.0" y="5.0"/>
+      <transition name="T0" nservers-x="0.5" type="EXP" x="12.55" y="6.0"/>
+      <template name="r" type="REAL" x="7.0" y="10.0"/>
+      <template name="n" type="INTEGER" x="10.0" y="10.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" tail="P0"/>
+    </edges>
+  </gspn>
+</project>

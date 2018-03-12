@@ -1,0 +1,26 @@
+/*******************************************************************************
+        Warning Message Box
+
+        Comment: This Section Describes the Warning Message Box
+
+        Programmer:                     Alex
+        Creation Date:                  24/2/95
+        Last Modify Date:               24/2/95
+
+********************************************************************************/
+
+object  WarningDialog : XmWarningDialog
+{
+        controls
+        {
+		Xm_Help unmanaged {};
+        };
+        arguments
+        {
+		XmNnoResize = 		true;
+		XmNdialogStyle =  	XmDIALOG_APPLICATION_MODAL;
+		XmNdialogTitle =  	'Warning';
+		XmNautoUnmanage = 	true;
+		XmNbackground =				appDialogBackgroundColor;
+        };
+};

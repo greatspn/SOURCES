@@ -1,0 +1,101 @@
+/*******************************************************************************
+        Comment Dialog
+
+        Comment:                        This Section Describes the Comment Dialog
+
+        Programmer:                     Alex
+        Creation Date:                  22/2/95
+        Last Modify Date:               17/3/95
+
+********************************************************************************/
+procedure
+	EditCommentOKCB();
+	
+object  CommentDialog : XmFormDialog
+{
+        controls
+        {
+		XmText CommentDialogScrolledText;
+		XmPushButton CommentDialogOK;
+		XmPushButton CommentDialogCancel;
+		XmSeparator CommentDialogSeparator;	
+        };
+        arguments
+        {
+		XmNminWidth =  286;
+		XmNminHeight =  176;
+		XmNdialogStyle =  XmDIALOG_APPLICATION_MODAL;
+		XmNdialogTitle =  'Edit Net Comment';
+		XmNautoUnmanage = true;
+				XmNbackground =				appDialogBackgroundColor;
+        };
+};
+object CommentDialogCancel : XmPushButton
+{
+	arguments
+	{
+		XmNwidth =  50;
+		XmNheight =	30;
+		XmNrecomputeSize = false;
+		XmNbottomAttachment =	XmATTACH_FORM;
+		XmNbottomOffset =	10;
+		XmNrightAttachment = 	XmATTACH_FORM;
+		XmNrightOffset =	20;
+		XmNlabelString = 	'Cancel';
+        };
+};
+
+object CommentDialogOK : XmPushButton
+{
+	arguments
+	{
+		XmNwidth =  50;
+		XmNheight =	30;
+		XmNrecomputeSize = false;
+		XmNbottomAttachment =	XmATTACH_FORM;
+		XmNbottomOffset =	10;
+		XmNleftAttachment =	XmATTACH_FORM;
+		XmNleftOffset =		20;
+		XmNlabelString = 	'Ok';
+    };
+	callbacks
+	{
+		XmNactivateCallback = procedure EditCommentOKCB();
+	};
+};
+
+object CommentDialogSeparator : XmSeparator
+{
+	arguments
+	{
+		XmNtopAttachment =	XmATTACH_OPPOSITE_FORM;
+		XmNtopOffset =		-70;
+		XmNleftAttachment =	XmATTACH_FORM;
+		XmNleftOffset =		1;
+		XmNrightAttachment =	XmATTACH_FORM;
+		XmNrightOffset =	1;
+    };
+};
+
+object CommentDialogScrolledText : XmText
+{
+        arguments
+        {
+			XmNtopAttachment =	XmATTACH_FORM;
+			XmNtopOffset =		10;
+			XmNbottomAttachment =	XmATTACH_FORM;
+			XmNbottomOffset =	80;
+			XmNleftAttachment =	XmATTACH_FORM;
+			XmNleftOffset =		10;
+			XmNrightAttachment = 	XmATTACH_FORM;
+			XmNrightOffset =	10;
+			XmNeditMode =		XmMULTI_LINE_EDIT;
+			XmNmaxLength =		appMaxCommentLength;
+			XmNresizeHeight =	false; 
+			XmNresizeWidth =       	false; 
+			XmNcolumns =		40;
+			XmNrows =		15;
+			XmNwordWrap =		true;
+			XmNbackground =				appDialogBackgroundColor;
+        };
+};

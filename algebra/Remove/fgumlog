@@ -1,0 +1,1397 @@
+
+Reading .....
+Numero Layers Caricati 0
+
+File fg.net read in.
+
+Reading .....
+Numero Layers Caricati 0
+
+File um.net read in.
+Max: 6.094445e+00, 3.656667e+02
+Max: 8.183335e+00, 4.910001e+02
+ Superposition over Places & Transitions Started
+    The joined comment is:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  Marking Parameters in Result:
+
+  Rate Parameters in Result:
+
+  Lisps in Result:
+
+    Ntr1: 15, Ntr2: 32
+ Transitions of 1st Operand
+ Full Tag: 'flat_fg|flat'
+  Tag: 'flat_fg'
+  NofLabels: 1, Labels: 'flat', 
+  End: 
+ Full Tag: 'flat_fg|flat'
+  Tag: 'flat_fg'
+  NofLabels: 1, Labels: 'flat', 
+  End: 
+ Full Tag: 'interm'
+  Tag: 'interm'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'flat_fg|flat'
+  Tag: 'flat_fg'
+  NofLabels: 1, Labels: 'flat', 
+  End: 
+ Full Tag: 'start_if'
+  Tag: 'start_if'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'end_if'
+  Tag: 'end_if'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'end_tf'
+  Tag: 'end_tf'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'trans'
+  Tag: 'trans'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'perm'
+  Tag: 'perm'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'clFG_fg|clFG'
+  Tag: 'clFG_fg'
+  NofLabels: 1, Labels: 'clFG', 
+  End: 
+ Full Tag: 'clFG_fg|clFG'
+  Tag: 'clFG_fg'
+  NofLabels: 1, Labels: 'clFG', 
+  End: 
+ Full Tag: 'clFG_fg|clFG'
+  Tag: 'clFG_fg'
+  NofLabels: 1, Labels: 'clFG', 
+  End: 
+ Full Tag: 'noclFG_fg|noclFG'
+  Tag: 'noclFG_fg'
+  NofLabels: 1, Labels: 'noclFG', 
+  End: 
+ Full Tag: 'clFG_fg|clFG'
+  Tag: 'clFG_fg'
+  NofLabels: 1, Labels: 'clFG', 
+  End: 
+ Full Tag: 'clFG_fg|clFG'
+  Tag: 'clFG_fg'
+  NofLabels: 1, Labels: 'clFG', 
+  End: 
+ Transitions of 2nd Operand
+ Full Tag: 'flat_um|flat'
+  Tag: 'flat_um'
+  NofLabels: 1, Labels: 'flat', 
+  End: 
+ Full Tag: 'flat_um|flat'
+  Tag: 'flat_um'
+  NofLabels: 1, Labels: 'flat', 
+  End: 
+ Full Tag: 'recov_um|recov'
+  Tag: 'recov_um'
+  NofLabels: 1, Labels: 'recov', 
+  End: 
+ Full Tag: 'extop'
+  Tag: 'extop'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'activity'
+  Tag: 'activity'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'Etermp_um|Etermp'
+  Tag: 'Etermp_um'
+  NofLabels: 1, Labels: 'Etermp', 
+  End: 
+ Full Tag: 'Stermc_um|Stermc'
+  Tag: 'Stermc_um'
+  NofLabels: 1, Labels: 'Stermc', 
+  End: 
+ Full Tag: 'Erecc_um|Erecc'
+  Tag: 'Erecc_um'
+  NofLabels: 1, Labels: 'Erecc', 
+  End: 
+ Full Tag: 'Srecc_um|Srecc'
+  Tag: 'Srecc_um'
+  NofLabels: 1, Labels: 'Srecc', 
+  End: 
+ Full Tag: 'Ekickc_um|Ekickc'
+  Tag: 'Ekickc_um'
+  NofLabels: 1, Labels: 'Ekickc', 
+  End: 
+ Full Tag: 'Skickc_um|Skickc'
+  Tag: 'Skickc_um'
+  NofLabels: 1, Labels: 'Skickc', 
+  End: 
+ Full Tag: 'Ekickp_um|Ekickp'
+  Tag: 'Ekickp_um'
+  NofLabels: 1, Labels: 'Ekickp', 
+  End: 
+ Full Tag: 'Skickp_um|Skickp'
+  Tag: 'Skickp_um'
+  NofLabels: 1, Labels: 'Skickp', 
+  End: 
+ Full Tag: 'Erecp_um|Erecp'
+  Tag: 'Erecp_um'
+  NofLabels: 1, Labels: 'Erecp', 
+  End: 
+ Full Tag: 'Srecp_um|Srecp'
+  Tag: 'Srecp_um'
+  NofLabels: 1, Labels: 'Srecp', 
+  End: 
+ Full Tag: 'Etermp_um|Etermp'
+  Tag: 'Etermp_um'
+  NofLabels: 1, Labels: 'Etermp', 
+  End: 
+ Full Tag: 'Stermp_um|Stermp'
+  Tag: 'Stermp_um'
+  NofLabels: 1, Labels: 'Stermp', 
+  End: 
+ Full Tag: 'reinfromdet_um|reinfromdet'
+  Tag: 'reinfromdet_um'
+  NofLabels: 1, Labels: 'reinfromdet', 
+  End: 
+ Full Tag: 'withkick'
+  Tag: 'withkick'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'samecomp'
+  Tag: 'samecomp'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'nokick'
+  Tag: 'nokick'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'changecomp'
+  Tag: 'changecomp'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'no_extop'
+  Tag: 'no_extop'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'Spau_um|Spau'
+  Tag: 'Spau_um'
+  NofLabels: 1, Labels: 'Spau', 
+  End: 
+ Full Tag: 'Epau_um|Epau'
+  Tag: 'Epau_um'
+  NofLabels: 1, Labels: 'Epau', 
+  End: 
+ Full Tag: 'ext_op'
+  Tag: 'ext_op'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'newcomp'
+  Tag: 'newcomp'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'end'
+  Tag: 'end'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'Scont_um|Scont'
+  Tag: 'Scont_um'
+  NofLabels: 1, Labels: 'Scont', 
+  End: 
+ Full Tag: 'Econt_um|Econt'
+  Tag: 'Econt_um'
+  NofLabels: 1, Labels: 'Econt', 
+  End: 
+ Full Tag: 'Esetup_um|Esetup'
+  Tag: 'Esetup_um'
+  NofLabels: 1, Labels: 'Esetup', 
+  End: 
+ Full Tag: 'Ssetup_um|Ssetup'
+  Tag: 'Ssetup_um'
+  NofLabels: 1, Labels: 'Ssetup', 
+  End: 
+ Join Matrice:
+      1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      
+    Npl1: 7, Npl2: 24
+ Places of 1st Operand
+  Tag: 'mboxclean_fg'
+  NofLabels: 1, Labels: 'mboxclean', 
+  End: 
+  Tag: 'act_pf'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'act_if'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'lat_if'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'act_tf'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'tf_gone'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'no_fault'
+  NofLabels: 0, Labels: 
+  End: 
+ Places of 2nd Operand
+  Tag: 'errorstate'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'mboxerr_um'
+  NofLabels: 1, Labels: 'mboxerr', 
+  End: 
+  Tag: 'P62'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P71'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P69'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P70'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P63'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P59'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P61'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P58'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'waitextop'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P67'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'mboxclean_um'
+  NofLabels: 1, Labels: 'mboxclean', 
+  End: 
+  Tag: 'P53'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P60'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P55'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P56'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P40'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'exe_ord'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'init'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'start'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P39'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P54'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'ok'
+  NofLabels: 0, Labels: 
+  End: 
+ Join Matrice:
+      0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      
+  Exp Transitions in Result:
+    flat_fg|flat:  Layers: 
+    flat_fg|flat:  Layers: 
+    flat_fg|flat:  Layers: 
+    flat_fg|flat:  Layers: 
+    interm:  Layers: 
+    flat_fg|flat:  Layers: 
+    flat_fg|flat:  Layers: 
+    start_if:  Layers: 
+    end_if:  Layers: 
+    end_tf:  Layers: 
+    trans:  Layers: 
+    perm:  Layers: 
+    recov_um|recov:  Layers: 
+    extop:  Layers: 
+    activity:  Layers: 
+
+  Imm Transitions in Result:
+    G2: 1
+    clFG_fg|clFG:  Layers: 
+    clFG_fg|clFG:  Layers: 
+    clFG_fg|clFG:  Layers: 
+    noclFG_fg|noclFG:  Layers: 
+    clFG_fg|clFG:  Layers: 
+    clFG_fg|clFG:  Layers: 
+    Etermp_um|Etermp:  Layers: 
+    Stermc_um|Stermc:  Layers: 
+    Erecc_um|Erecc:  Layers: 
+    Srecc_um|Srecc:  Layers: 
+    Ekickc_um|Ekickc:  Layers: 
+    Skickc_um|Skickc:  Layers: 
+    Ekickp_um|Ekickp:  Layers: 
+    Skickp_um|Skickp:  Layers: 
+    Erecp_um|Erecp:  Layers: 
+    Srecp_um|Srecp:  Layers: 
+    Etermp_um|Etermp:  Layers: 
+    Stermp_um|Stermp:  Layers: 
+    reinfromdet_um|reinfromdet:  Layers: 
+    withkick:  Layers: 
+    samecomp:  Layers: 
+    nokick:  Layers: 
+    changecomp:  Layers: 
+    no_extop:  Layers: 
+    Spau_um|Spau:  Layers: 
+    Epau_um|Epau:  Layers: 
+    ext_op:  Layers: 
+    newcomp:  Layers: 
+    end:  Layers: 
+    Scont_um|Scont:  Layers: 
+    Econt_um|Econt:  Layers: 
+    Esetup_um|Esetup:  Layers: 
+    Ssetup_um|Ssetup:  Layers: 
+
+ Number of tr.s: 48
+  Mapping of transitions s:
+     0 0
+     1 2
+     2 4
+     3 5
+     4 7
+     5 8
+     6 9
+     7 10
+     8 11
+     9 15
+     10 16
+     11 17
+     12 18
+     13 19
+     14 20
+
+     0 0
+     1 0
+     2 12
+     3 13
+     4 14
+     5 21
+     6 22
+     7 23
+     8 24
+     9 25
+     10 26
+     11 27
+     12 28
+     13 29
+     14 30
+     15 31
+     16 32
+     17 33
+     18 34
+     19 35
+     20 36
+     21 37
+     22 38
+     23 39
+     24 40
+     25 41
+     26 42
+     27 43
+     28 44
+     29 45
+     30 46
+     31 47
+Npl1: 7, Npl2: 24, NplR: 30
+  Places in Result:
+    mboxclean_fg|mboxclean:  Layers: 
+    act_pf:  Layers: 
+    act_if:  Layers: 
+    lat_if:  Layers: 
+    act_tf:  Layers: 
+    tf_gone:  Layers: 
+    no_fault:  Layers: 
+    errorstate:  Layers: 
+    mboxerr_um|mboxerr:  Layers: 
+    P62:  Layers: 
+    P71:  Layers: 
+    P69:  Layers: 
+    P70:  Layers: 
+    P63:  Layers: 
+    P59:  Layers: 
+    P61:  Layers: 
+    P58:  Layers: 
+    waitextop:  Layers: 
+    P67:  Layers: 
+    P53:  Layers: 
+    P60:  Layers: 
+    P55:  Layers: 
+    P56:  Layers: 
+    P40:  Layers: 
+    exe_ord:  Layers: 
+    init:  Layers: 
+    start:  Layers: 
+    P39:  Layers: 
+    P54:  Layers: 
+    ok:  Layers: 
+
+  Mapping of places s:
+     0 0
+     1 1
+     2 2
+     3 3
+     4 4
+     5 5
+     6 6
+
+     0 7
+     1 8
+     2 9
+     3 10
+     4 11
+     5 12
+     6 13
+     7 14
+     8 15
+     9 16
+     10 17
+     11 18
+     12 0
+     13 19
+     14 20
+     15 21
+     16 22
+     17 23
+     18 24
+     19 25
+     20 26
+     21 27
+     22 28
+     23 29
+
+Pl: P54, Tr: Ssetup_um|Ssetup, tr: 31, pl: 22
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 28, Its place: P54
+  TrIndex: 47, Its trans: Ssetup_um|Ssetup
+
+Pl: start, Tr: Ssetup_um|Ssetup, tr: 31, pl: 20
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 26, Its place: start
+  TrIndex: 47, Its trans: Ssetup_um|Ssetup
+
+Pl: init, Tr: Esetup_um|Esetup, tr: 30, pl: 19
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 25, Its place: init
+  TrIndex: 46, Its trans: Esetup_um|Esetup
+
+Pl: P54, Tr: Esetup_um|Esetup, tr: 30, pl: 22
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 28, Its place: P54
+  TrIndex: 46, Its trans: Esetup_um|Esetup
+
+Pl: exe_ord, Tr: Econt_um|Econt, tr: 29, pl: 18
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 24, Its place: exe_ord
+  TrIndex: 45, Its trans: Econt_um|Econt
+
+Pl: P40, Tr: Econt_um|Econt, tr: 29, pl: 17
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 23, Its place: P40
+  TrIndex: 45, Its trans: Econt_um|Econt
+
+Pl: P40, Tr: Scont_um|Scont, tr: 28, pl: 17
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 23, Its place: P40
+  TrIndex: 44, Its trans: Scont_um|Scont
+
+Pl: init, Tr: Scont_um|Scont, tr: 28, pl: 19
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 25, Its place: init
+  TrIndex: 44, Its trans: Scont_um|Scont
+
+Pl: P60, Tr: end, tr: 27, pl: 14
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 20, Its place: P60
+  TrIndex: 43, Its trans: end
+
+Pl: ok, Tr: end, tr: 27, pl: 23
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 29, Its place: ok
+  TrIndex: 43, Its trans: end
+
+Pl: P67, Tr: newcomp, tr: 26, pl: 11
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 18, Its place: P67
+  TrIndex: 42, Its trans: newcomp
+
+Pl: ok, Tr: newcomp, tr: 26, pl: 23
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 29, Its place: ok
+  TrIndex: 42, Its trans: newcomp
+
+Pl: P58, Tr: ext_op, tr: 25, pl: 9
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 16, Its place: P58
+  TrIndex: 41, Its trans: ext_op
+
+Pl: P67, Tr: ext_op, tr: 25, pl: 11
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 18, Its place: P67
+  TrIndex: 41, Its trans: ext_op
+
+Pl: waitextop, Tr: Epau_um|Epau, tr: 24, pl: 10
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 17, Its place: waitextop
+  TrIndex: 40, Its trans: Epau_um|Epau
+
+Pl: P61, Tr: Epau_um|Epau, tr: 24, pl: 8
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 15, Its place: P61
+  TrIndex: 40, Its trans: Epau_um|Epau
+
+Pl: P61, Tr: Spau_um|Spau, tr: 23, pl: 8
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 15, Its place: P61
+  TrIndex: 39, Its trans: Spau_um|Spau
+
+Pl: P58, Tr: Spau_um|Spau, tr: 23, pl: 9
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 16, Its place: P58
+  TrIndex: 39, Its trans: Spau_um|Spau
+
+Pl: P59, Tr: no_extop, tr: 22, pl: 7
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 14, Its place: P59
+  TrIndex: 38, Its trans: no_extop
+
+Pl: P67, Tr: no_extop, tr: 22, pl: 11
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 18, Its place: P67
+  TrIndex: 38, Its trans: no_extop
+
+Pl: P70, Tr: changecomp, tr: 21, pl: 5
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 12, Its place: P70
+  TrIndex: 37, Its trans: changecomp
+
+Pl: P59, Tr: changecomp, tr: 21, pl: 7
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 14, Its place: P59
+  TrIndex: 37, Its trans: changecomp
+
+Pl: exe_ord, Tr: nokick, tr: 20, pl: 18
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 24, Its place: exe_ord
+  TrIndex: 36, Its trans: nokick
+
+Pl: P69, Tr: nokick, tr: 20, pl: 4
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 11, Its place: P69
+  TrIndex: 36, Its trans: nokick
+
+Pl: P69, Tr: samecomp, tr: 19, pl: 4
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 11, Its place: P69
+  TrIndex: 35, Its trans: samecomp
+
+Pl: P59, Tr: samecomp, tr: 19, pl: 7
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 14, Its place: P59
+  TrIndex: 35, Its trans: samecomp
+
+Pl: P71, Tr: withkick, tr: 18, pl: 3
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 10, Its place: P71
+  TrIndex: 34, Its trans: withkick
+
+Pl: P69, Tr: withkick, tr: 18, pl: 4
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 11, Its place: P69
+  TrIndex: 34, Its trans: withkick
+
+Pl: start, Tr: reinfromdet_um|reinfromdet, tr: 17, pl: 20
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 26, Its place: start
+  TrIndex: 33, Its trans: reinfromdet_um|reinfromdet
+
+Pl: errorstate, Tr: reinfromdet_um|reinfromdet, tr: 17, pl: 0
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 7, Its place: errorstate
+  TrIndex: 33, Its trans: reinfromdet_um|reinfromdet
+
+Pl: P39, Tr: Stermp_um|Stermp, tr: 16, pl: 21
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 27, Its place: P39
+  TrIndex: 32, Its trans: Stermp_um|Stermp
+
+Pl: init, Tr: Stermp_um|Stermp, tr: 16, pl: 19
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 25, Its place: init
+  TrIndex: 32, Its trans: Stermp_um|Stermp
+
+Pl: start, Tr: Etermp_um|Etermp, tr: 15, pl: 20
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 26, Its place: start
+  TrIndex: 31, Its trans: Etermp_um|Etermp
+
+Pl: P39, Tr: Etermp_um|Etermp, tr: 15, pl: 21
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 27, Its place: P39
+  TrIndex: 31, Its trans: Etermp_um|Etermp
+
+Pl: P56, Tr: Srecp_um|Srecp, tr: 14, pl: 16
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 22, Its place: P56
+  TrIndex: 30, Its trans: Srecp_um|Srecp
+
+Pl: init, Tr: Srecp_um|Srecp, tr: 14, pl: 19
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 25, Its place: init
+  TrIndex: 30, Its trans: Srecp_um|Srecp
+
+Pl: init, Tr: Erecp_um|Erecp, tr: 13, pl: 19
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 25, Its place: init
+  TrIndex: 29, Its trans: Erecp_um|Erecp
+
+Pl: P56, Tr: Erecp_um|Erecp, tr: 13, pl: 16
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 22, Its place: P56
+  TrIndex: 29, Its trans: Erecp_um|Erecp
+
+Pl: P55, Tr: Skickp_um|Skickp, tr: 12, pl: 15
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 21, Its place: P55
+  TrIndex: 28, Its trans: Skickp_um|Skickp
+
+Pl: init, Tr: Skickp_um|Skickp, tr: 12, pl: 19
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 25, Its place: init
+  TrIndex: 28, Its trans: Skickp_um|Skickp
+
+Pl: init, Tr: Ekickp_um|Ekickp, tr: 11, pl: 19
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 25, Its place: init
+  TrIndex: 27, Its trans: Ekickp_um|Ekickp
+
+Pl: P55, Tr: Ekickp_um|Ekickp, tr: 11, pl: 15
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 21, Its place: P55
+  TrIndex: 27, Its trans: Ekickp_um|Ekickp
+
+Pl: P62, Tr: Skickc_um|Skickc, tr: 10, pl: 2
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 9, Its place: P62
+  TrIndex: 26, Its trans: Skickc_um|Skickc
+
+Pl: P71, Tr: Skickc_um|Skickc, tr: 10, pl: 3
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 10, Its place: P71
+  TrIndex: 26, Its trans: Skickc_um|Skickc
+
+Pl: exe_ord, Tr: Ekickc_um|Ekickc, tr: 9, pl: 18
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 24, Its place: exe_ord
+  TrIndex: 25, Its trans: Ekickc_um|Ekickc
+
+Pl: P62, Tr: Ekickc_um|Ekickc, tr: 9, pl: 2
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 9, Its place: P62
+  TrIndex: 25, Its trans: Ekickc_um|Ekickc
+
+Pl: P63, Tr: Srecc_um|Srecc, tr: 8, pl: 6
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 13, Its place: P63
+  TrIndex: 24, Its trans: Srecc_um|Srecc
+
+Pl: P70, Tr: Srecc_um|Srecc, tr: 8, pl: 5
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 12, Its place: P70
+  TrIndex: 24, Its trans: Srecc_um|Srecc
+
+Pl: init, Tr: Erecc_um|Erecc, tr: 7, pl: 19
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 25, Its place: init
+  TrIndex: 23, Its trans: Erecc_um|Erecc
+
+Pl: P63, Tr: Erecc_um|Erecc, tr: 7, pl: 6
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 13, Its place: P63
+  TrIndex: 23, Its trans: Erecc_um|Erecc
+
+Pl: P53, Tr: Stermc_um|Stermc, tr: 6, pl: 13
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 19, Its place: P53
+  TrIndex: 22, Its trans: Stermc_um|Stermc
+
+Pl: P60, Tr: Stermc_um|Stermc, tr: 6, pl: 14
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 20, Its place: P60
+  TrIndex: 22, Its trans: Stermc_um|Stermc
+
+Pl: start, Tr: Etermp_um|Etermp, tr: 5, pl: 20
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 26, Its place: start
+  TrIndex: 21, Its trans: Etermp_um|Etermp
+
+Pl: mboxclean_um|mboxclean, Tr: Etermp_um|Etermp, tr: 5, pl: 12
+multr: 1, simpletr:1, mulpl: 1, simplepl: 0, 
+Ide szalad: 0
+  PlIndex: 0, Its place: mboxclean_fg|mboxclean
+  TrIndex: 21, Its trans: Etermp_um|Etermp
+
+Pl: P53, Tr: Etermp_um|Etermp, tr: 5, pl: 13
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 19, Its place: P53
+  TrIndex: 21, Its trans: Etermp_um|Etermp
+
+Pl: ok, Tr: activity, tr: 4, pl: 23
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 29, Its place: ok
+  TrIndex: 14, Its trans: activity
+
+Pl: exe_ord, Tr: activity, tr: 4, pl: 18
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 24, Its place: exe_ord
+  TrIndex: 14, Its trans: activity
+
+Pl: init, Tr: extop, tr: 3, pl: 19
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 25, Its place: init
+  TrIndex: 13, Its trans: extop
+
+Pl: waitextop, Tr: extop, tr: 3, pl: 10
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 17, Its place: waitextop
+  TrIndex: 13, Its trans: extop
+
+Pl: start, Tr: recov_um|recov, tr: 2, pl: 20
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 26, Its place: start
+  TrIndex: 12, Its trans: recov_um|recov
+
+Pl: errorstate, Tr: recov_um|recov, tr: 2, pl: 0
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 7, Its place: errorstate
+  TrIndex: 12, Its trans: recov_um|recov
+
+Pl: mboxerr_um|mboxerr, Tr: flat_um|flat, tr: 1, pl: 1
+multr: 3, simpletr:0, mulpl: 1, simplepl: 1, 
+  PlIndex: 8, Its place: mboxerr_um|mboxerr
+Ide szalad: 1
+  TrIndex: 1, Its trans: flat_fg|flat
+  PlIndex: 8, Its place: mboxerr_um|mboxerr
+Ide szalad: 3
+  TrIndex: 3, Its trans: flat_fg|flat
+  PlIndex: 8, Its place: mboxerr_um|mboxerr
+Ide szalad: 6
+  TrIndex: 6, Its trans: flat_fg|flat
+
+Pl: errorstate, Tr: flat_um|flat, tr: 1, pl: 0
+multr: 3, simpletr:0, mulpl: 1, simplepl: 1, 
+  PlIndex: 7, Its place: errorstate
+Ide szalad: 1
+  TrIndex: 1, Its trans: flat_fg|flat
+  PlIndex: 7, Its place: errorstate
+Ide szalad: 3
+  TrIndex: 3, Its trans: flat_fg|flat
+  PlIndex: 7, Its place: errorstate
+Ide szalad: 6
+  TrIndex: 6, Its trans: flat_fg|flat
+
+Pl: waitextop, Tr: flat_um|flat, tr: 1, pl: 10
+multr: 3, simpletr:0, mulpl: 1, simplepl: 1, 
+  PlIndex: 17, Its place: waitextop
+Ide szalad: 1
+  TrIndex: 1, Its trans: flat_fg|flat
+  PlIndex: 17, Its place: waitextop
+Ide szalad: 3
+  TrIndex: 3, Its trans: flat_fg|flat
+  PlIndex: 17, Its place: waitextop
+Ide szalad: 6
+  TrIndex: 6, Its trans: flat_fg|flat
+
+Pl: mboxerr_um|mboxerr, Tr: flat_um|flat, tr: 0, pl: 1
+multr: 3, simpletr:0, mulpl: 1, simplepl: 1, 
+  PlIndex: 8, Its place: mboxerr_um|mboxerr
+Ide szalad: 0
+  TrIndex: 0, Its trans: flat_fg|flat
+  PlIndex: 8, Its place: mboxerr_um|mboxerr
+Ide szalad: 2
+  TrIndex: 2, Its trans: flat_fg|flat
+  PlIndex: 8, Its place: mboxerr_um|mboxerr
+Ide szalad: 5
+  TrIndex: 5, Its trans: flat_fg|flat
+
+Pl: errorstate, Tr: flat_um|flat, tr: 0, pl: 0
+multr: 3, simpletr:0, mulpl: 1, simplepl: 1, 
+  PlIndex: 7, Its place: errorstate
+Ide szalad: 0
+  TrIndex: 0, Its trans: flat_fg|flat
+  PlIndex: 7, Its place: errorstate
+Ide szalad: 2
+  TrIndex: 2, Its trans: flat_fg|flat
+  PlIndex: 7, Its place: errorstate
+Ide szalad: 5
+  TrIndex: 5, Its trans: flat_fg|flat
+
+Pl: exe_ord, Tr: flat_um|flat, tr: 0, pl: 18
+multr: 3, simpletr:0, mulpl: 1, simplepl: 1, 
+  PlIndex: 24, Its place: exe_ord
+Ide szalad: 0
+  TrIndex: 0, Its trans: flat_fg|flat
+  PlIndex: 24, Its place: exe_ord
+Ide szalad: 2
+  TrIndex: 2, Its trans: flat_fg|flat
+  PlIndex: 24, Its place: exe_ord
+Ide szalad: 5
+  TrIndex: 5, Its trans: flat_fg|flat
+Place: no_fault, Transition: clFG_fg|clFG, type: o
+Place: mboxclean_fg|mboxclean, Transition: clFG_fg|clFG, type: i
+Place: act_pf, Transition: clFG_fg|clFG, type: i
+Place: no_fault, Transition: clFG_fg|clFG, type: o
+Place: mboxclean_fg|mboxclean, Transition: clFG_fg|clFG, type: i
+Place: act_if, Transition: clFG_fg|clFG, type: i
+Place: no_fault, Transition: noclFG_fg|noclFG, type: o
+Place: mboxclean_fg|mboxclean, Transition: noclFG_fg|noclFG, type: i
+Place: no_fault, Transition: noclFG_fg|noclFG, type: i
+Place: no_fault, Transition: clFG_fg|clFG, type: o
+Place: mboxclean_fg|mboxclean, Transition: clFG_fg|clFG, type: i
+Place: lat_if, Transition: clFG_fg|clFG, type: i
+Place: no_fault, Transition: clFG_fg|clFG, type: o
+Place: mboxclean_fg|mboxclean, Transition: clFG_fg|clFG, type: i
+Place: act_tf, Transition: clFG_fg|clFG, type: i
+Place: no_fault, Transition: clFG_fg|clFG, type: o
+Place: mboxclean_fg|mboxclean, Transition: clFG_fg|clFG, type: i
+Place: tf_gone, Transition: clFG_fg|clFG, type: i
+Place: act_pf, Transition: perm, type: o
+Place: no_fault, Transition: perm, type: i
+Place: act_tf, Transition: trans, type: o
+Place: no_fault, Transition: trans, type: i
+Place: tf_gone, Transition: end_tf, type: o
+Place: act_tf, Transition: end_tf, type: i
+Place: lat_if, Transition: end_if, type: o
+Place: act_if, Transition: end_if, type: i
+Place: act_if, Transition: start_if, type: o
+Place: lat_if, Transition: start_if, type: i
+Place: act_if, Transition: flat_fg|flat, type: o
+Place: act_if, Transition: flat_fg|flat, type: o
+Place: act_if, Transition: flat_fg|flat, type: i
+Place: act_if, Transition: flat_fg|flat, type: i
+Place: act_if, Transition: interm, type: o
+Place: no_fault, Transition: interm, type: i
+Place: act_pf, Transition: flat_fg|flat, type: o
+Place: act_pf, Transition: flat_fg|flat, type: o
+Place: act_pf, Transition: flat_fg|flat, type: i
+Place: act_pf, Transition: flat_fg|flat, type: i
+Place: act_tf, Transition: flat_fg|flat, type: o
+Place: act_tf, Transition: flat_fg|flat, type: o
+Place: act_tf, Transition: flat_fg|flat, type: i
+Place: act_tf, Transition: flat_fg|flat, type: i
+Place: P54, Transition: Ssetup_um|Ssetup, type: o
+Place: start, Transition: Ssetup_um|Ssetup, type: i
+Place: init, Transition: Esetup_um|Esetup, type: o
+Place: P54, Transition: Esetup_um|Esetup, type: i
+Place: exe_ord, Transition: Econt_um|Econt, type: o
+Place: P40, Transition: Econt_um|Econt, type: i
+Place: P40, Transition: Scont_um|Scont, type: o
+Place: init, Transition: Scont_um|Scont, type: i
+Place: P60, Transition: end, type: o
+Place: ok, Transition: end, type: i
+Place: P67, Transition: newcomp, type: o
+Place: ok, Transition: newcomp, type: i
+Place: P58, Transition: ext_op, type: o
+Place: P67, Transition: ext_op, type: i
+Place: waitextop, Transition: Epau_um|Epau, type: o
+Place: P61, Transition: Epau_um|Epau, type: i
+Place: P61, Transition: Spau_um|Spau, type: o
+Place: P58, Transition: Spau_um|Spau, type: i
+Place: P59, Transition: no_extop, type: o
+Place: P67, Transition: no_extop, type: i
+Place: P70, Transition: changecomp, type: o
+Place: P59, Transition: changecomp, type: i
+Place: exe_ord, Transition: nokick, type: o
+Place: P69, Transition: nokick, type: i
+Place: P69, Transition: samecomp, type: o
+Place: P59, Transition: samecomp, type: i
+Place: P71, Transition: withkick, type: o
+Place: P69, Transition: withkick, type: i
+Place: start, Transition: reinfromdet_um|reinfromdet, type: o
+Place: errorstate, Transition: reinfromdet_um|reinfromdet, type: i
+Place: P39, Transition: Stermp_um|Stermp, type: o
+Place: init, Transition: Stermp_um|Stermp, type: i
+Place: start, Transition: Etermp_um|Etermp, type: o
+Place: P39, Transition: Etermp_um|Etermp, type: i
+Place: P56, Transition: Srecp_um|Srecp, type: o
+Place: init, Transition: Srecp_um|Srecp, type: i
+Place: init, Transition: Erecp_um|Erecp, type: o
+Place: P56, Transition: Erecp_um|Erecp, type: i
+Place: P55, Transition: Skickp_um|Skickp, type: o
+Place: init, Transition: Skickp_um|Skickp, type: i
+Place: init, Transition: Ekickp_um|Ekickp, type: o
+Place: P55, Transition: Ekickp_um|Ekickp, type: i
+Place: P62, Transition: Skickc_um|Skickc, type: o
+Place: P71, Transition: Skickc_um|Skickc, type: i
+Place: exe_ord, Transition: Ekickc_um|Ekickc, type: o
+Place: P62, Transition: Ekickc_um|Ekickc, type: i
+Place: P63, Transition: Srecc_um|Srecc, type: o
+Place: P70, Transition: Srecc_um|Srecc, type: i
+Place: init, Transition: Erecc_um|Erecc, type: o
+Place: P63, Transition: Erecc_um|Erecc, type: i
+Place: P53, Transition: Stermc_um|Stermc, type: o
+Place: P60, Transition: Stermc_um|Stermc, type: i
+Place: start, Transition: Etermp_um|Etermp, type: o
+Place: mboxclean_fg|mboxclean, Transition: Etermp_um|Etermp, type: o
+Place: P53, Transition: Etermp_um|Etermp, type: i
+Place: ok, Transition: activity, type: o
+Place: exe_ord, Transition: activity, type: i
+Place: init, Transition: extop, type: o
+Place: waitextop, Transition: extop, type: i
+Place: start, Transition: recov_um|recov, type: o
+Place: errorstate, Transition: recov_um|recov, type: i
+Place: mboxerr_um|mboxerr, Transition: flat_fg|flat, type: o
+Place: mboxerr_um|mboxerr, Transition: flat_fg|flat, type: o
+Place: mboxerr_um|mboxerr, Transition: flat_fg|flat, type: o
+Place: errorstate, Transition: flat_fg|flat, type: o
+Place: errorstate, Transition: flat_fg|flat, type: o
+Place: errorstate, Transition: flat_fg|flat, type: o
+Place: waitextop, Transition: flat_fg|flat, type: i
+Place: waitextop, Transition: flat_fg|flat, type: i
+Place: waitextop, Transition: flat_fg|flat, type: i
+Place: mboxerr_um|mboxerr, Transition: flat_fg|flat, type: o
+Place: mboxerr_um|mboxerr, Transition: flat_fg|flat, type: o
+Place: mboxerr_um|mboxerr, Transition: flat_fg|flat, type: o
+Place: errorstate, Transition: flat_fg|flat, type: o
+Place: errorstate, Transition: flat_fg|flat, type: o
+Place: errorstate, Transition: flat_fg|flat, type: o
+Place: exe_ord, Transition: flat_fg|flat, type: i
+Place: exe_ord, Transition: flat_fg|flat, type: i
+Place: exe_ord, Transition: flat_fg|flat, type: i
+ Superposition over Transitions & Places Finished
+  In save: Num. of objects counted
+  In save: Marking Parameters written
+  In save: Places written
+  In save: Rate Parameters written
+  In save: Groups written
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. flat_fg|flat: 2
+  In save in put_trans: first line is written for tr
+itt tart
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+itt tart
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. flat_fg|flat: 2
+  In save in put_trans: first line is written for tr
+itt tart
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+itt tart
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. flat_fg|flat: 2
+  In save in put_trans: first line is written for tr
+itt tart
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+itt tart
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. flat_fg|flat: 2
+  In save in put_trans: first line is written for tr
+itt tart
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+itt tart
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. interm: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. flat_fg|flat: 2
+  In save in put_trans: first line is written for tr
+itt tart
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+itt tart
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. flat_fg|flat: 2
+  In save in put_trans: first line is written for tr
+itt tart
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+itt tart
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. start_if: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. end_if: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. end_tf: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. trans: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. perm: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. recov_um|recov: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. extop: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. activity: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save: Timed transitions written
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. clFG_fg|clFG: 2
+  In save in put_trans: first line is written for tr
+itt tart
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. clFG_fg|clFG: 2
+  In save in put_trans: first line is written for tr
+itt tart
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. clFG_fg|clFG: 2
+  In save in put_trans: first line is written for tr
+itt tart
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. noclFG_fg|noclFG: 2
+  In save in put_trans: first line is written for tr
+itt tart
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. clFG_fg|clFG: 2
+  In save in put_trans: first line is written for tr
+itt tart
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. clFG_fg|clFG: 2
+  In save in put_trans: first line is written for tr
+itt tart
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Etermp_um|Etermp: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Stermc_um|Stermc: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Erecc_um|Erecc: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Srecc_um|Srecc: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Ekickc_um|Ekickc: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Skickc_um|Skickc: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Ekickp_um|Ekickp: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Skickp_um|Skickp: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Erecp_um|Erecp: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Srecp_um|Srecp: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Etermp_um|Etermp: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Stermp_um|Stermp: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. reinfromdet_um|reinfromdet: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. withkick: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. samecomp: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. nokick: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. changecomp: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. no_extop: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Spau_um|Spau: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Epau_um|Epau: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. ext_op: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. newcomp: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. end: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Scont_um|Scont: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Econt_um|Econt: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Esetup_um|Esetup: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Ssetup_um|Ssetup: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save: Immediate transitions written

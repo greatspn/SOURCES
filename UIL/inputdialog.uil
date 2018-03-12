@@ -1,0 +1,27 @@
+/*******************************************************************************
+        Input Message Box
+
+        Comment: This Section Describes the Input Message Box
+
+        Programmer:                     Alex
+        Creation Date:                  29/3/95
+        Last Modify Date:               29/3/95
+
+********************************************************************************/
+
+object  InputDialog : XmPromptDialog
+{
+        controls
+        {
+			Xm_Help unmanaged {};
+!			Xm_Cancel unmanaged {};
+        };
+        arguments
+        {
+		XmNnoResize = 		true;
+		XmNdialogStyle =  	XmDIALOG_APPLICATION_MODAL;
+		XmNdialogTitle =  	'Input';
+		XmNautoUnmanage = 	true;
+		XmNbackground =		appDialogBackgroundColor;
+        };
+};

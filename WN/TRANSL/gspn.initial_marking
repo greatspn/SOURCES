@@ -1,0 +1,44 @@
+marking : {totm0=addm0=0;enn_sign=1;} opzexpression opzguard | 
+                     marking plusop { enn_sign = sign; sign=1;} opzexpression opzguard;
+opzexpression: LT kexpression GT
+               {
+                emit(TYPEEND,"",0.0,0);
+                if(parse_DEF == INITIAL_MARKING)
+                 {
+                  addm0 = evaluate_expression(pcode_h,NULL) * enn_sign;
+                  push_expression(pcode_h,pcode_t);
+                 }
+                else if(parse_DEF==FUNCTION)
+                 ptr->expression = pcode_h;
+                pcode_h = pcode_t = NULL;
+               }
+            |
+               { 
+                if(parse_DEF == INITIAL_MARKING) 
+                 addm0 = enn_sign;
+               }
+            ; 
+opzguard   : OBRCK 
+	{
+	 prd_h = prd_t = NULL;
+	}
+	     pred
+	{
+         gen(TYPEEND,"");
+         if(parse_DEF==FUNCTION)
+          ptr->guard = prd_h;
+         else if(parse_DEF==INITIAL_MARKING)
+          {
+	   addm0 *= verify_predicate_constraint(prd_h,NULL);
+           push_predicate(prd_h,prd_t);
+	   prd_h = prd_t = NULL;
+           totm0 += addm0;
+          }
+	}
+	     CBRCK
+           |
+          {
+           if(parse_DEF==INITIAL_MARKING)
+            totm0 += addm0;
+          }
+	   ;

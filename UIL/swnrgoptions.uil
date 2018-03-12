@@ -1,0 +1,302 @@
+/*******************************************************************************
+        SWN RG Options Dialog
+        
+        Comment:  This Section Describes the Options Dialog 
+                                                        
+        Programmer:                     Alex,Rossano
+        Creation Date:                  6/6/95
+        Last Modify Date:               6/6/95
+
+********************************************************************************/
+procedure
+	OkSwnRGDialogCB();
+	CancelSwnRGDialogCB();
+	/*Editor1SWNDialogCB();*/
+	SwnDSRGDialog_GardCB();
+
+
+object  SwnRGDialog : XmFormDialog
+{
+        controls
+        {
+				XmToggleButton SwnRGDialog_VerboseShow;
+				XmSeparator  SwnRGDialog_Sep1;
+				XmPushButton  SwnRGDialog_Ok;
+				XmPushButton  SwnRGDialog_Cancel;
+        };
+        arguments
+        {
+                XmNdialogStyle                  =       XmDIALOG_FULL_APPLICATION_MODAL;
+                XmNdialogTitle       =       "SWN RG Options";
+                XmNwidth             =       236;
+                XmNheight            =       132;
+                XmNautoUnmanage      =       false;
+                XmNnoResize          =       true;
+				XmNbackground =				appDialogBackgroundColor;
+				XmNdefaultButton =			SwnRGDialog_Ok;
+        };
+
+};
+
+
+
+object SwnRGDialog_Sep1 : XmSeparator
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              56;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                1;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                1;
+   };
+};
+
+
+object SwnRGDialog_Ok : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              10;
+      XmNleftAttachment =           XmATTACH_FORM;
+      XmNleftOffset =               10;
+      XmNlabelString =               'Ok';
+      XmNshowAsDefault =             1;
+      XmNrecomputeSize =            false;
+      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+    callbacks
+    {
+   		XmNactivateCallback =	procedure OkSwnRGDialogCB();
+	};
+};
+
+object SwnRGDialog_Cancel : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              10;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               10;
+      XmNlabelString =               'Cancel';
+      XmNrecomputeSize =            false;
+      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+    callbacks
+    {
+   		XmNactivateCallback =	procedure CancelSwnRGDialogCB();
+	};
+};
+
+
+object SwnRGDialog_VerboseShow : XmToggleButton
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              10;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                60;
+      XmNrecomputeSize=                        true;
+      XmNfillOnSelect=                       true;
+      XmNselectColor=                          colorBlack;
+      XmNmarginWidth=                          0;
+      XmNmarginHeight=                         0;
+      XmNlabelString =             			'Verbose Show';
+   };
+};
+
+
+
+
+
+
+/***************17/7/08 ESRG by Marco************************/
+object SwnESRGDialog : XmFormDialog
+{
+        controls
+        {
+				XmToggleButton SwnRGDialog_VerboseShow;
+				XmToggleButton SwnESRGDialog_ExacStrong;
+				XmSeparator  SwnRGDialog_Sep1;
+				XmPushButton  SwnRGDialog_Ok;
+				XmPushButton  SwnRGDialog_Cancel;
+        };
+        arguments
+        {
+                XmNdialogStyle                  =       XmDIALOG_FULL_APPLICATION_MODAL;
+                XmNdialogTitle       =       "SWN ESRG Options";
+                XmNwidth             =       216;
+                XmNheight            =       132;
+                XmNautoUnmanage      =       false;
+                XmNnoResize          =       true;
+				XmNbackground =				appDialogBackgroundColor;
+				XmNdefaultButton =			SwnRGDialog_Ok;
+        };
+
+};
+
+
+object SwnESRGDialog_ExacStrong : XmToggleButton
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              40;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                60;
+      XmNrecomputeSize=                        true;
+      XmNfillOnSelect=                       true;
+      XmNselectColor=                          colorBlack;
+      XmNmarginWidth=                          0;
+      XmNmarginHeight=                         0;
+      XmNlabelString =             			'Ex(Off)/St(On)';
+   };
+};
+
+
+object SwnDSRGDialog : XmFormDialog
+{
+        controls
+        {
+				XmToggleButton SwnRGDialog_VerboseShow;
+				XmPushButton  SwnDSRGDialog_Gard;
+				XmSeparator  SwnRGDialog_Sep1;
+				XmPushButton  SwnRGDialog_Ok;
+				XmPushButton  SwnRGDialog_Cancel;
+        };
+        arguments
+        {
+                XmNdialogStyle                  =       XmDIALOG_FULL_APPLICATION_MODAL;
+                XmNdialogTitle       =       "SWN DSRG Options";
+                XmNwidth             =       216;
+                XmNheight            =       132;
+                XmNautoUnmanage      =       false;
+                XmNnoResize          =       true;
+				XmNbackground =				appDialogBackgroundColor;
+				XmNdefaultButton =			SwnRGDialog_Ok;
+        };
+
+};
+
+
+object   SwnDSRGDialog_Gard: XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              60;
+      XmNleftAttachment =           XmATTACH_FORM;
+      XmNleftOffset =               55;
+      XmNlabelString =               'Guard Editor';
+      XmNshowAsDefault =             1;
+      XmNrecomputeSize =            false;
+      XmNwidth =                     90;
+      XmNheight =                    30;
+   };
+    callbacks
+    {
+   		XmNactivateCallback= procedure SwnDSRGDialog_GardCB();
+	};
+};
+
+
+
+/***************17/7/08 ESRG by Marco************************/
+
+
+/***************10/6/10 MDD by Marco************************/
+object GSPNMDDDialog : XmFormDialog
+{
+        controls
+        {
+				XmToggleButton GSPNMDDDialog_ExacStrong;
+				XmToggleButton GSPNMDDDialog_Next;
+				XmLabel GSPNMDDOptionsDialog_Label1;
+				XmTextField  GSPNMDDOptionsDialog_PX;
+				XmSeparator  SwnRGDialog_Sep1;
+				XmPushButton  SwnRGDialog_Ok;
+				XmPushButton  SwnRGDialog_Cancel;
+        };
+        arguments
+        {
+                XmNdialogStyle                  =       XmDIALOG_FULL_APPLICATION_MODAL;
+                XmNdialogTitle       =       "MDD Options";
+                XmNwidth             =       216;
+                XmNheight            =       200;
+                XmNautoUnmanage      =       false;
+                XmNnoResize          =       true;
+				XmNbackground =				appDialogBackgroundColor;
+				XmNdefaultButton =			SwnRGDialog_Ok;
+        };
+
+};
+
+
+object GSPNMDDDialog_ExacStrong : XmToggleButton
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              10;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+      XmNrecomputeSize=                        true;
+      XmNfillOnSelect=                       true;
+      XmNselectColor=                          colorBlack;
+      XmNmarginWidth=                          0;
+      XmNmarginHeight=                         0;
+      XmNlabelString =             			'MTDD(Off)/EV+MDD(On)';
+   };
+};
+
+object GSPNMDDDialog_Next : XmToggleButton
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              40;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+      XmNrecomputeSize=                        true;
+      XmNfillOnSelect=                       true;
+      XmNselectColor=                          colorBlack;
+      XmNmarginWidth=                          0;
+      XmNmarginHeight=                         0;
+      XmNlabelString =             			'Next State Function(On)';
+   };
+};
+
+object GSPNMDDOptionsDialog_Label1 : XmLabel
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              70;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+      XmNlabelString =             'Places bound';
+   };
+};
+
+
+object GSPNMDDOptionsDialog_PX : XmTextField
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              100;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+	  XmNbackground =				appDialogBackgroundColor;
+   };
+};
+
+
+/***************10/6/10 MDD by Marco************************/
+

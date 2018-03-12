@@ -1,0 +1,75 @@
+/*******************************************************************************
+	Mouse Help Dialog
+	
+	Comment:			This Section Describes the Mouse Help Dialog 
+							
+	Programmer:			Alex
+	Creation Date:			12/06/95
+	Last Modify Date:		12/06/95
+
+********************************************************************************/
+
+	
+object  MouseHelpDialog : XmFormDialog
+{
+	controls
+	{
+		XmLabel  MouseHelpLabelLeft;
+		XmLabel  MouseHelpLabelMiddle;
+		XmLabel  MouseHelpLabelRight;
+	};
+	arguments
+	{
+		XmNdialogTitle 			= 	"Mouse Help";
+		XmNwidth 				=	220;
+		XmNheight 				=	122;
+		XmNautoUnmanage 		=	false;
+		XmNdialogStyle			=	XmDIALOG_MODELESS;
+		XmNnoResize				=	false;
+		XmNtransient			=	true;
+!		XmNmwmFunctions 		=	4;
+		XmNmwmDecorations		=	10;
+		XmNmappedWhenManaged	= 	true;
+		XmNbackground 		=	colorWhite;
+		XmNforeground 		=	colorBlack;
+		XmNresizePolicy		=	XmRESIZE_NONE;
+		XmNbackgroundPixmap	=	bmpMouseLogo;
+	};
+
+};
+
+object MouseHelpLabelLeft : XmLabel
+{
+	arguments
+	{
+		XmNtopAttachment 	=	XmATTACH_FORM;
+		XmNtopOffset		=	8;
+		XmNleftAttachment 	=	XmATTACH_FORM;
+		XmNleftOffset 		=	21;
+		XmNfontList		=	fontMouseHelp;
+	};
+};
+
+object MouseHelpLabelMiddle : XmLabel
+{
+	arguments
+	{
+		XmNtopAttachment 	=	XmATTACH_FORM;
+		XmNtopOffset		=	28;
+		XmNleftAttachment 	=	XmATTACH_FORM;
+		XmNleftOffset 		=	27;
+		XmNfontList		=	fontMouseHelp;
+	};
+};
+
+object MouseHelpLabelRight : XmLabel
+{
+	arguments
+	{
+		XmNtopAttachment 	=	XmATTACH_FORM;
+		XmNtopOffset		=	50;
+		XmNleftAttachment 	=	XmATTACH_FORM;
+		XmNleftOffset 		=	35;
+		XmNfontList		=	fontMouseHelp;
+	};
+};

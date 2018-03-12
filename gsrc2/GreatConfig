@@ -1,0 +1,37 @@
+@	GreatSPN Shell error codes
+
+1	pinvar
+2	tinvar
+3	deadlock
+4	unbound
+5	strong_con
+6	liveness
+7	struct
+8	grg_prep
+9	grg_stndrd
+10	gmt_prep
+11	gmt_stndrd
+12	ggsc
+13	gst_prep
+14	gst_stndrd
+15	throughput
+16	gtrc
+17  implp
+18  disab_lp
+19  mark_lp
+20  swn_sym_sim
+21  swn_ord_sim
+22  swn_sym_rg
+23  swn_ord_rg
+24  swn_stndrd
+25  swn_ggsc
+26  swn_gst_stndrd
+30	rm
+31	cp
+32  cat
+33  mv
+34  gspn_rg
+35  gspn_sim
+27  swn_gst_prep
+36  swn_ntrs
+37  gspn_tr 

@@ -1,0 +1,67 @@
+/*
+ *  precompiled.h
+ *  CslTA-Solver
+ *
+ *  Precompiled Header file for the project.
+ *
+ */
+
+#ifdef __cplusplus
+
+#ifdef WIN32
+# define _CRT_SECURE_NO_WARNINGS
+# define _CRT_SECURE_NO_DEPRECATE
+#endif
+
+#include <cstdlib>
+#include <limits>
+#include <string>
+#include <vector>
+#include <map>
+#include <set>
+#include <list>
+#include <iostream> 
+#include <utility>
+#include <algorithm>
+#include <memory>
+#include <iomanip>
+#include <fstream>
+#include <sstream>
+#include <boost/graph/graph_traits.hpp>
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/transitive_closure.hpp>
+#include <boost/graph/strong_components.hpp>
+#include <boost/graph/filtered_graph.hpp>
+#include <boost/graph/graph_utility.hpp>
+#include <boost/tokenizer.hpp>
+#include <boost/format.hpp>
+#include <boost/tuple/tuple_comparison.hpp>
+
+
+#ifdef WIN32
+# include <direct.h>
+# define chdir(x)   _chdir(x)
+# define getcwd(x)  _getcwd(x)
+# define DIRSEP     '\\'
+#else
+# include <unistd.h>
+# include <sys/param.h>    // for MAXPATHLEN
+# define DIRSEP     '/'
+#endif
+
+
+#ifdef WIN32
+
+int inline myisdigit(int x) { if(x<0) return false; else return isdigit(x); }
+#define isdigit(x) myisdigit(x)
+
+int inline myisalpha(int x) { if(x<0) return false; else return isalpha(x); }
+#define isalpha(x) myisalpha(x)
+
+int inline myisalnum(int x) { if(x<0) return false; else return isalnum(x); }
+#define isalnum(x) myisalnum(x)
+
+#endif
+
+
+#endif

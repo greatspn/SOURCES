@@ -1,0 +1,483 @@
+/*******************************************************************************
+        Trans Dialog
+        
+        Comment:	This Section Describes the Trans Dialog 
+                                                        
+        Programmer:                     Alex
+        Creation Date:                  28/2/95
+        Last Modify Date:               10/3/95
+
+********************************************************************************/
+identifier
+	FLAG_PROCESS;
+	FLAG_ABORT;
+	TRANS_EXP;
+	TRANS_DET;
+	TRANS_IMM;
+	
+procedure
+	ScaleCB();
+	SelectOneCB();
+	ProcessCRCB();
+	MarkDepCB();
+	CancelTransDialogCB();
+	SetTransKindCB(integer);
+	SetTransTypeCB(integer);
+	ShowMDHelpCB();
+	
+object  TransChangeDialog : XmFormDialog
+{
+	controls
+	{
+				XmRowColumn  TransChangeDialog_RC;
+				XmPushButton  TransChangeDialog_Ok;
+				XmPushButton  TransChangeDialog_Cancel;
+				XmPushButton  TransChangeDialog_Help;
+				XmSeparator  TransChangeDialog_Sep1;
+				XmSeparator  TransChangeDialog_Sep2;
+				XmSeparator  TransChangeDialog_Sep3;
+				XmRowColumn  TransChangeDialog_RC3;
+				XmLabel  TransChangeDialog_Label1;
+				XmLabel  TransChangeDialog_Label2;
+				XmLabel  TransChangeDialog_Label3;
+				XmScrolledText  TransChangeDialog_Text;
+				XmScale  TransChangeDialog_Pri;
+				XmTextField  TransChangeDialog_Tag;
+				XmTextField  TransChangeDialog_Color;
+				XmScrolledList  EnablingDialog_Scroller;
+				XmScale  EnablingDialog_Scale;
+	};
+	arguments
+	{
+		XmNdialogTitle	=	"Change Transition Properties";
+		XmNwidth		=	340;
+		XmNheight		=	366;
+		XmNautoUnmanage	=	false;
+		XmNdialogStyle	=	XmDIALOG_FULL_APPLICATION_MODAL;
+		XmNnoResize		=	true;
+		XmNresizePolicy	=   XmRESIZE_NONE;
+		XmNbackground	=	appDialogBackgroundColor;
+	};
+};
+					
+object TransChangeDialog_RC : XmRowColumn
+{
+   controls
+   {
+       XmToggleButton  TransChangeDialog_Imm;
+       XmToggleButton  TransChangeDialog_Exp;
+       XmToggleButton  TransChangeDialog_Det;
+   };
+   arguments
+   {
+      XmNtopAttachment	=	XmATTACH_FORM;
+      XmNtopOffset 		=	10;
+      XmNleftAttachment =	XmATTACH_FORM;
+      XmNleftOffset 	=	50;
+      XmNpacking		=	XmPACK_COLUMN;
+      XmNorientation	=	XmHORIZONTAL;
+      XmNradioBehavior	=	true;
+      XmNradioAlwaysOne	=	true;
+	  XmNbackground 	=	appDialogBackgroundColor;
+   };
+};
+
+list TransChangeDialogToggles1 : arguments
+{
+      XmNrecomputeSize		=	true;
+      XmNfillOnSelect		=	true;
+      XmNselectColor		=	colorBlack;
+      XmNmarginWidth		=	0;
+      XmNmarginHeight		=	0;
+      XmNlabelType			=	XmPIXMAP;
+      XmNindicatorOn		=	false;
+      XmNshadowThickness	=	2;
+};
+
+list TransChangeDialogToggles2 : arguments
+{
+      XmNrecomputeSize		=	true;
+      XmNfillOnSelect		=	true;
+      XmNselectColor		=	colorBlack;
+      XmNmarginWidth		=	0;
+      XmNmarginHeight		=	0;
+      XmNshadowThickness	=	0;
+	  
+};
+
+object TransChangeDialog_Imm : XmToggleButton
+{
+   arguments
+   {
+		arguments TransChangeDialogToggles1;
+	   XmNlabelPixmap		= bmpITrans;	
+   };
+   callbacks
+   {
+   		XmNvalueChangedCallback = procedure SetTransKindCB(TRANS_IMM);
+   };
+};
+
+object TransChangeDialog_Exp : XmToggleButton
+{
+   arguments
+   {
+		arguments TransChangeDialogToggles1;
+	   XmNlabelPixmap		= bmpETrans;	
+   };
+   callbacks
+   {
+   		XmNvalueChangedCallback = procedure SetTransKindCB(TRANS_EXP);
+   };
+};
+
+object TransChangeDialog_Det : XmToggleButton
+{
+   arguments
+   {
+		arguments TransChangeDialogToggles1;
+	   XmNlabelPixmap		= bmpDTrans;	
+   };
+   callbacks
+   {
+   		XmNvalueChangedCallback = procedure SetTransKindCB(TRANS_DET);
+   };
+};
+
+
+object TransChangeDialog_RC3 : XmRowColumn
+{
+   controls
+   {
+       XmToggleButton  TransChangeDialog_Infinite;
+       XmToggleButton  TransChangeDialog_MarkDep;
+       XmToggleButton  TransChangeDialog_NServ;
+       XmToggleButton  TransChangeDialog_LoadDep;
+   };
+   arguments
+   {
+      XmNtopAttachment	=	XmATTACH_FORM;
+      XmNtopOffset 		=	450;
+      XmNleftAttachment =	XmATTACH_FORM;
+      XmNleftOffset 	=	200;
+      XmNpacking		=	XmPACK_TIGHT;
+!      XmNorientation	=	XmHORIZONTAL;
+      XmNradioBehavior	=	true;
+      XmNradioAlwaysOne	=	true;
+	  XmNbackground 	=	appDialogBackgroundColor;
+	 
+		XmNmappedWhenManaged = false;
+   };
+};
+
+object TransChangeDialog_Infinite : XmToggleButton
+{
+   arguments
+   {
+		arguments TransChangeDialogToggles2;
+      XmNlabelString =                         'Infinite';
+   };
+   callbacks
+   {
+   		XmNvalueChangedCallback = procedure MarkDepCB();
+   };
+};
+
+object TransChangeDialog_MarkDep : XmToggleButton
+{
+   arguments
+   {
+		arguments TransChangeDialogToggles2;
+      XmNlabelString =                         'Marking Dependent';
+   };
+   callbacks
+   {
+   		XmNvalueChangedCallback = procedure MarkDepCB();
+   };
+};
+
+object TransChangeDialog_NServ : XmToggleButton
+{
+   arguments
+   {
+		arguments TransChangeDialogToggles2;
+      XmNlabelString =                         'n-Server';
+   };
+   callbacks
+   {
+   		XmNvalueChangedCallback = procedure MarkDepCB();
+   };
+};
+
+object TransChangeDialog_LoadDep : XmToggleButton
+{
+   arguments
+   {
+		arguments TransChangeDialogToggles2;
+      XmNlabelString =                         'Load Dependent';
+   };
+   callbacks
+   {
+   		XmNvalueChangedCallback = procedure MarkDepCB();
+   };
+};
+
+object TransChangeDialog_Sep1 : XmSeparator
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              140;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                1;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                1;
+   };
+};
+
+object TransChangeDialog_Sep2 : XmSeparator
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              370;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                1;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                1;
+   };
+};
+
+object TransChangeDialog_Sep3 : XmSeparator
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              60;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                1;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                1;
+   };
+};
+object TransChangeDialog_Ok : XmPushButton
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              324;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               70;
+      XmNlabelString =               'Ok';
+      XmNshowAsDefault =             1;
+      XmNrecomputeSize =            false;
+      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+   callbacks
+   {
+   		XmNactivateCallback = procedure SetTransTypeCB(FLAG_PROCESS);
+   };
+};
+object TransChangeDialog_Cancel : XmPushButton
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              330;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               10;
+      XmNlabelString =               'Cancel';
+      XmNrecomputeSize =            false;
+      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+   callbacks
+   {
+   		XmNactivateCallback = procedure CancelTransDialogCB();
+   };
+};
+
+object TransChangeDialog_Help : XmPushButton widget
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              330;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+      XmNlabelString =               'MD Grammar Help ...';
+      XmNrecomputeSize =            false;
+      XmNwidth =                     150;
+      XmNheight =                    30;
+	  XmNbackground 	=	appDialogBackgroundColor;
+   };
+   callbacks
+   {
+   		XmNactivateCallback = procedure ShowMDHelpCB();
+   };
+};
+
+
+object TransChangeDialog_Label1 : XmLabel
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              150;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+      XmNlabelString =                         'Rate :';
+   };
+};
+
+object TransChangeDialog_Label2 : XmLabel
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              70;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+      XmNlabelString =                         'Tag :';
+   };
+};
+
+object TransChangeDialog_Label3 : XmLabel
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              70;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                180;
+      XmNlabelString =                         'Color Label :';
+   };
+};
+	
+object TransChangeDialog_Text : XmScrolledText
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              175;
+      XmNbottomAttachment =          XmATTACH_OPPOSITE_FORM;
+      XmNbottomOffset =              -300;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+	  XmNbackground =				appDialogBackgroundColor;
+	  XmNeditMode =					XmMULTI_LINE_EDIT;
+      XmNwidth =                     300;
+   };
+   callbacks
+   {
+   		XmNactivateCallback =	procedures 
+								{
+									ProcessCRCB();
+									SetTransTypeCB(FLAG_ABORT);
+								};
+   		XmNlosingFocusCallback = procedure ProcessCRCB();
+   };
+};
+
+object TransChangeDialog_Pri : XmScale
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              300;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+	  XmNorientation	=	XmHORIZONTAL;
+	  XmNminimum	=	1;
+	  XmNmaximum	=	126;
+	  XmNshowValue	=	true;
+		XmNwidth		=	180;
+		XmNheight		=	60;   
+		  XmNbackground 	=	appDialogBackgroundColor;
+		XmNmappedWhenManaged = false;
+	};
+};
+
+object TransChangeDialog_Tag : XmTextField
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              95;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+	  XmNbackground =				appDialogBackgroundColor;
+   };
+   callbacks
+   {
+   		XmNactivateCallback = procedure SetTransTypeCB(FLAG_PROCESS);
+   };
+};
+
+object TransChangeDialog_Color : XmTextField
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              95;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                10;
+	  XmNbackground =				appDialogBackgroundColor;
+   };
+   callbacks
+   {
+   		XmNactivateCallback = procedure SetTransTypeCB(FLAG_PROCESS);
+   };
+};
+
+object EnablingDialog_Scroller : XmScrolledList
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              380;
+      XmNrightAttachment =            XmATTACH_OPPOSITE_FORM;
+      XmNrightOffset =                -190;
+      XmNbottomAttachment =          XmATTACH_OPPOSITE_FORM;
+      XmNbottomOffset =              -490;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+	  	XmNbackground =				appDialogBackgroundColor;
+		
+		XmNscrollingPolicy =				XmAUTOMATIC;
+		XmNscrollBarDisplayPolicy =			XmAS_NEEDED;
+		XmNselectionPolicy =				XmSINGLE_SELECT;
+!		XmNlistSizePolicy =					XmCONSTANT;
+!		XmNvisibleItemCount =				10;
+!		XmNvisualPolicy =					XmSTATIC;
+		XmNheight	=	160;
+   };
+   callbacks
+   {
+   		XmNsingleSelectionCallback = procedure SelectOneCB();
+   };
+};
+
+object EnablingDialog_Scale : XmScale
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              472;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+	  XmNorientation	=	XmHORIZONTAL;
+	  XmNminimum	=	1;
+	  XmNmaximum	=	127;
+	  XmNshowValue	=	true;
+		XmNwidth		=	180;
+		XmNheight		=	60;
+	  XmNbackground 	=	appDialogBackgroundColor;
+	  
+   };
+   callbacks
+   {
+   		XmNvalueChangedCallback = procedure ScaleCB();
+   };
+};

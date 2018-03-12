@@ -1,0 +1,824 @@
+GNU Make version 3.62, by Richard Stallman and Roland McGrath.
+Copyright (C) 1988-1991 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE.
+
+Reading makefiles...
+Updating makefiles....
+ Considering target file `Makefile'.
+  Looking for an implicit rule for `Makefile'.
+  Trying pattern rule with stem `Makefile'.
+  Trying implicit dependency `Makefile,v'.
+  Trying pattern rule with stem `Makefile'.
+  Trying implicit dependency `RCS/Makefile,v'.
+  Trying pattern rule with stem `Makefile'.
+  Trying implicit dependency `s.Makefile'.
+  Trying pattern rule with stem `Makefile'.
+  Trying implicit dependency `SCCS/s.Makefile'.
+  Trying pattern rule with stem `Makefile'.
+  Trying implicit dependency `Makefile.o'.
+  Trying pattern rule with stem `Makefile'.
+  Trying implicit dependency `Makefile.c'.
+  Trying pattern rule with stem `Makefile'.
+  Trying implicit dependency `Makefile.cc'.
+  Trying pattern rule with stem `Makefile'.
+  Trying implicit dependency `Makefile.C'.
+  Trying pattern rule with stem `Makefile'.
+  Trying implicit dependency `Makefile.p'.
+  Trying pattern rule with stem `Makefile'.
+  Trying implicit dependency `Makefile.f'.
+  Trying pattern rule with stem `Makefile'.
+  Trying implicit dependency `Makefile.F'.
+  Trying pattern rule with stem `Makefile'.
+  Trying implicit dependency `Makefile.r'.
+  Trying pattern rule with stem `Makefile'.
+  Trying implicit dependency `Makefile.s'.
+  Trying pattern rule with stem `Makefile'.
+  Trying implicit dependency `Makefile.S'.
+  Trying pattern rule with stem `Makefile'.
+  Trying implicit dependency `Makefile.mod'.
+  Trying pattern rule with stem `Makefile'.
+  Trying implicit dependency `Makefile.sh'.
+  Trying pattern rule with stem `Makefile'.
+  Trying implicit dependency `Makefile.o'.
+  Looking for a rule with intermediate file `Makefile.o'.
+   Avoiding implicit rule recursion.
+   Trying pattern rule with stem `Makefile.o'.
+   Trying implicit dependency `Makefile.o,v'.
+   Trying pattern rule with stem `Makefile.o'.
+   Trying implicit dependency `RCS/Makefile.o,v'.
+   Trying pattern rule with stem `Makefile.o'.
+   Trying implicit dependency `s.Makefile.o'.
+   Trying pattern rule with stem `Makefile.o'.
+   Trying implicit dependency `SCCS/s.Makefile.o'.
+   Trying pattern rule with stem `Makefile'.
+   Trying implicit dependency `Makefile.c'.
+   Trying pattern rule with stem `Makefile'.
+   Trying implicit dependency `Makefile.cc'.
+   Trying pattern rule with stem `Makefile'.
+   Trying implicit dependency `Makefile.C'.
+   Trying pattern rule with stem `Makefile'.
+   Trying implicit dependency `Makefile.p'.
+   Trying pattern rule with stem `Makefile'.
+   Trying implicit dependency `Makefile.f'.
+   Trying pattern rule with stem `Makefile'.
+   Trying implicit dependency `Makefile.F'.
+   Trying pattern rule with stem `Makefile'.
+   Trying implicit dependency `Makefile.r'.
+   Trying pattern rule with stem `Makefile'.
+   Trying implicit dependency `Makefile.s'.
+   Trying pattern rule with stem `Makefile'.
+   Trying implicit dependency `Makefile.S'.
+   Trying pattern rule with stem `Makefile'.
+   Trying implicit dependency `Makefile.mod'.
+   Trying pattern rule with stem `Makefile'.
+   Trying implicit dependency `Makefile.c'.
+   Looking for a rule with intermediate file `Makefile.c'.
+    Avoiding implicit rule recursion.
+    Avoiding implicit rule recursion.
+    Trying pattern rule with stem `Makefile.c'.
+    Trying implicit dependency `Makefile.c,v'.
+    Trying pattern rule with stem `Makefile.c'.
+    Trying implicit dependency `RCS/Makefile.c,v'.
+    Trying pattern rule with stem `Makefile.c'.
+    Trying implicit dependency `s.Makefile.c'.
+    Trying pattern rule with stem `Makefile.c'.
+    Trying implicit dependency `SCCS/s.Makefile.c'.
+    Trying pattern rule with stem `Makefile'.
+    Trying implicit dependency `Makefile.y'.
+    Trying pattern rule with stem `Makefile'.
+    Trying implicit dependency `Makefile.l'.
+    Trying pattern rule with stem `Makefile'.
+    Trying implicit dependency `Makefile.cweb'.
+    Trying pattern rule with stem `Makefile'.
+    Trying implicit dependency `Makefile.y'.
+    Looking for a rule with intermediate file `Makefile.y'.
+     Avoiding implicit rule recursion.
+     Avoiding implicit rule recursion.
+     Avoiding implicit rule recursion.
+     Trying pattern rule with stem `Makefile.y'.
+     Trying implicit dependency `Makefile.y,v'.
+     Trying pattern rule with stem `Makefile.y'.
+     Trying implicit dependency `RCS/Makefile.y,v'.
+     Trying pattern rule with stem `Makefile.y'.
+     Trying implicit dependency `s.Makefile.y'.
+     Trying pattern rule with stem `Makefile.y'.
+     Trying implicit dependency `SCCS/s.Makefile.y'.
+    Trying pattern rule with stem `Makefile'.
+    Trying implicit dependency `Makefile.l'.
+    Looking for a rule with intermediate file `Makefile.l'.
+     Avoiding implicit rule recursion.
+     Avoiding implicit rule recursion.
+     Avoiding implicit rule recursion.
+     Trying pattern rule with stem `Makefile.l'.
+     Trying implicit dependency `Makefile.l,v'.
+     Trying pattern rule with stem `Makefile.l'.
+     Trying implicit dependency `RCS/Makefile.l,v'.
+     Trying pattern rule with stem `Makefile.l'.
+     Trying implicit dependency `s.Makefile.l'.
+     Trying pattern rule with stem `Makefile.l'.
+     Trying implicit dependency `SCCS/s.Makefile.l'.
+    Trying pattern rule with stem `Makefile'.
+    Trying implicit dependency `Makefile.cweb'.
+    Looking for a rule with intermediate file `Makefile.cweb'.
+     Avoiding implicit rule recursion.
+     Avoiding implicit rule recursion.
+     Avoiding implicit rule recursion.
+     Trying pattern rule with stem `Makefile.cweb'.
+     Trying implicit dependency `Makefile.cweb,v'.
+     Trying pattern rule with stem `Makefile.cweb'.
+     Trying implicit dependency `RCS/Makefile.cweb,v'.
+     Trying pattern rule with stem `Makefile.cweb'.
+     Trying implicit dependency `s.Makefile.cweb'.
+     Trying pattern rule with stem `Makefile.cweb'.
+     Trying implicit dependency `SCCS/s.Makefile.cweb'.
+   Trying pattern rule with stem `Makefile'.
+   Trying implicit dependency `Makefile.cc'.
+   Looking for a rule with intermediate file `Makefile.cc'.
+    Avoiding implicit rule recursion.
+    Avoiding implicit rule recursion.
+    Trying pattern rule with stem `Makefile.cc'.
+    Trying implicit dependency `Makefile.cc,v'.
+    Trying pattern rule with stem `Makefile.cc'.
+    Trying implicit dependency `RCS/Makefile.cc,v'.
+    Trying pattern rule with stem `Makefile.cc'.
+    Trying implicit dependency `s.Makefile.cc'.
+    Trying pattern rule with stem `Makefile.cc'.
+    Trying implicit dependency `SCCS/s.Makefile.cc'.
+   Trying pattern rule with stem `Makefile'.
+   Trying implicit dependency `Makefile.C'.
+   Looking for a rule with intermediate file `Makefile.C'.
+    Avoiding implicit rule recursion.
+    Avoiding implicit rule recursion.
+    Trying pattern rule with stem `Makefile.C'.
+    Trying implicit dependency `Makefile.C,v'.
+    Trying pattern rule with stem `Makefile.C'.
+    Trying implicit dependency `RCS/Makefile.C,v'.
+    Trying pattern rule with stem `Makefile.C'.
+    Trying implicit dependency `s.Makefile.C'.
+    Trying pattern rule with stem `Makefile.C'.
+    Trying implicit dependency `SCCS/s.Makefile.C'.
+   Trying pattern rule with stem `Makefile'.
+   Trying implicit dependency `Makefile.p'.
+   Looking for a rule with intermediate file `Makefile.p'.
+    Avoiding implicit rule recursion.
+    Avoiding implicit rule recursion.
+    Trying pattern rule with stem `Makefile.p'.
+    Trying implicit dependency `Makefile.p,v'.
+    Trying pattern rule with stem `Makefile.p'.
+    Trying implicit dependency `RCS/Makefile.p,v'.
+    Trying pattern rule with stem `Makefile.p'.
+    Trying implicit dependency `s.Makefile.p'.
+    Trying pattern rule with stem `Makefile.p'.
+    Trying implicit dependency `SCCS/s.Makefile.p'.
+    Trying pattern rule with stem `Makefile'.
+    Trying implicit dependency `Makefile.web'.
+    Trying pattern rule with stem `Makefile'.
+    Trying implicit dependency `Makefile.web'.
+    Looking for a rule with intermediate file `Makefile.web'.
+     Avoiding implicit rule recursion.
+     Avoiding implicit rule recursion.
+     Avoiding implicit rule recursion.
+     Trying pattern rule with stem `Makefile.web'.
+     Trying implicit dependency `Makefile.web,v'.
+     Trying pattern rule with stem `Makefile.web'.
+     Trying implicit dependency `RCS/Makefile.web,v'.
+     Trying pattern rule with stem `Makefile.web'.
+     Trying implicit dependency `s.Makefile.web'.
+     Trying pattern rule with stem `Makefile.web'.
+     Trying implicit dependency `SCCS/s.Makefile.web'.
+   Trying pattern rule with stem `Makefile'.
+   Trying implicit dependency `Makefile.f'.
+   Looking for a rule with intermediate file `Makefile.f'.
+    Avoiding implicit rule recursion.
+    Avoiding implicit rule recursion.
+    Trying pattern rule with stem `Makefile.f'.
+    Trying implicit dependency `Makefile.f,v'.
+    Trying pattern rule with stem `Makefile.f'.
+    Trying implicit dependency `RCS/Makefile.f,v'.
+    Trying pattern rule with stem `Makefile.f'.
+    Trying implicit dependency `s.Makefile.f'.
+    Trying pattern rule with stem `Makefile.f'.
+    Trying implicit dependency `SCCS/s.Makefile.f'.
+    Trying pattern rule with stem `Makefile'.
+    Trying implicit dependency `Makefile.F'.
+    Trying pattern rule with stem `Makefile'.
+    Trying implicit dependency `Makefile.r'.
+    Trying pattern rule with stem `Makefile'.
+    Trying implicit dependency `Makefile.F'.
+    Looking for a rule with intermediate file `Makefile.F'.
+     Avoiding implicit rule recursion.
+     Avoiding implicit rule recursion.
+     Avoiding implicit rule recursion.
+     Trying pattern rule with stem `Makefile.F'.
+     Trying implicit dependency `Makefile.F,v'.
+     Trying pattern rule with stem `Makefile.F'.
+     Trying implicit dependency `RCS/Makefile.F,v'.
+     Trying pattern rule with stem `Makefile.F'.
+     Trying implicit dependency `s.Makefile.F'.
+     Trying pattern rule with stem `Makefile.F'.
+     Trying implicit dependency `SCCS/s.Makefile.F'.
+    Trying pattern rule with stem `Makefile'.
+    Trying implicit dependency `Makefile.r'.
+    Looking for a rule with intermediate file `Makefile.r'.
+     Avoiding implicit rule recursion.
+     Avoiding implicit rule recursion.
+     Avoiding implicit rule recursion.
+     Trying pattern rule with stem `Makefile.r'.
+     Trying implicit dependency `Makefile.r,v'.
+     Trying pattern rule with stem `Makefile.r'.
+     Trying implicit dependency `RCS/Makefile.r,v'.
+     Trying pattern rule with stem `Makefile.r'.
+     Trying implicit dependency `s.Makefile.r'.
+     Trying pattern rule with stem `Makefile.r'.
+     Trying implicit dependency `SCCS/s.Makefile.r'.
+     Trying pattern rule with stem `Makefile'.
+     Rejecting impossible implicit dependent `Makefile.l'.
+   Trying pattern rule with stem `Makefile'.
+   Rejecting impossible implicit dependent `Makefile.F'.
+   Trying pattern rule with stem `Makefile'.
+   Rejecting impossible implicit dependent `Makefile.r'.
+   Trying pattern rule with stem `Makefile'.
+   Trying implicit dependency `Makefile.s'.
+   Looking for a rule with intermediate file `Makefile.s'.
+    Avoiding implicit rule recursion.
+    Avoiding implicit rule recursion.
+    Trying pattern rule with stem `Makefile.s'.
+    Trying implicit dependency `Makefile.s,v'.
+    Trying pattern rule with stem `Makefile.s'.
+    Trying implicit dependency `RCS/Makefile.s,v'.
+    Trying pattern rule with stem `Makefile.s'.
+    Trying implicit dependency `s.Makefile.s'.
+    Trying pattern rule with stem `Makefile.s'.
+    Trying implicit dependency `SCCS/s.Makefile.s'.
+    Trying pattern rule with stem `Makefile'.
+    Trying implicit dependency `Makefile.S'.
+    Trying pattern rule with stem `Makefile'.
+    Trying implicit dependency `Makefile.S'.
+    Looking for a rule with intermediate file `Makefile.S'.
+     Avoiding implicit rule recursion.
+     Avoiding implicit rule recursion.
+     Avoiding implicit rule recursion.
+     Trying pattern rule with stem `Makefile.S'.
+     Trying implicit dependency `Makefile.S,v'.
+     Trying pattern rule with stem `Makefile.S'.
+     Trying implicit dependency `RCS/Makefile.S,v'.
+     Trying pattern rule with stem `Makefile.S'.
+     Trying implicit dependency `s.Makefile.S'.
+     Trying pattern rule with stem `Makefile.S'.
+     Trying implicit dependency `SCCS/s.Makefile.S'.
+   Trying pattern rule with stem `Makefile'.
+   Rejecting impossible implicit dependent `Makefile.S'.
+   Trying pattern rule with stem `Makefile'.
+   Trying implicit dependency `Makefile.mod'.
+   Looking for a rule with intermediate file `Makefile.mod'.
+    Avoiding implicit rule recursion.
+    Avoiding implicit rule recursion.
+    Trying pattern rule with stem `Makefile.mod'.
+    Trying implicit dependency `Makefile.mod,v'.
+    Trying pattern rule with stem `Makefile.mod'.
+    Trying implicit dependency `RCS/Makefile.mod,v'.
+    Trying pattern rule with stem `Makefile.mod'.
+    Trying implicit dependency `s.Makefile.mod'.
+    Trying pattern rule with stem `Makefile.mod'.
+    Trying implicit dependency `SCCS/s.Makefile.mod'.
+  Trying pattern rule with stem `Makefile'.
+  Rejecting impossible implicit dependent `Makefile.c'.
+  Trying pattern rule with stem `Makefile'.
+  Rejecting impossible implicit dependent `Makefile.cc'.
+  Trying pattern rule with stem `Makefile'.
+  Rejecting impossible implicit dependent `Makefile.C'.
+  Trying pattern rule with stem `Makefile'.
+  Rejecting impossible implicit dependent `Makefile.p'.
+  Trying pattern rule with stem `Makefile'.
+  Rejecting impossible implicit dependent `Makefile.f'.
+  Trying pattern rule with stem `Makefile'.
+  Rejecting impossible implicit dependent `Makefile.F'.
+  Trying pattern rule with stem `Makefile'.
+  Rejecting impossible implicit dependent `Makefile.r'.
+  Trying pattern rule with stem `Makefile'.
+  Rejecting impossible implicit dependent `Makefile.s'.
+  Trying pattern rule with stem `Makefile'.
+  Rejecting impossible implicit dependent `Makefile.S'.
+  Trying pattern rule with stem `Makefile'.
+  Rejecting impossible implicit dependent `Makefile.mod'.
+  Trying pattern rule with stem `Makefile'.
+  Trying implicit dependency `Makefile.sh'.
+  Looking for a rule with intermediate file `Makefile.sh'.
+   Avoiding implicit rule recursion.
+   Trying pattern rule with stem `Makefile.sh'.
+   Trying implicit dependency `Makefile.sh,v'.
+   Trying pattern rule with stem `Makefile.sh'.
+   Trying implicit dependency `RCS/Makefile.sh,v'.
+   Trying pattern rule with stem `Makefile.sh'.
+   Trying implicit dependency `s.Makefile.sh'.
+   Trying pattern rule with stem `Makefile.sh'.
+   Trying implicit dependency `SCCS/s.Makefile.sh'.
+  No implicit rule found for `Makefile'.
+  Finished dependencies of target file `Makefile'.
+ No need to remake target `Makefile'.
+Updating goal targets....
+Considering target file `algebra'.
+ File `algebra' does not exist.
+  Considering target file `../C_obj/y.tab.o'.
+   File `../C_obj/y.tab.o' does not exist.
+   Looking for an implicit rule for `../C_obj/y.tab.o'.
+   Trying pattern rule with stem `y.tab'.
+   Trying implicit dependency `y.tab.c'.
+   Found an implicit rule for `../C_obj/y.tab.o'.
+    Considering target file `y.tab.c'.
+      Considering target file `yacc.y'.
+       Looking for an implicit rule for `yacc.y'.
+       Trying pattern rule with stem `yacc.y'.
+       Trying implicit dependency `yacc.y,v'.
+       Trying pattern rule with stem `yacc.y'.
+       Trying implicit dependency `RCS/yacc.y,v'.
+       Trying pattern rule with stem `yacc.y'.
+       Trying implicit dependency `s.yacc.y'.
+       Trying pattern rule with stem `yacc.y'.
+       Trying implicit dependency `SCCS/s.yacc.y'.
+       No implicit rule found for `yacc.y'.
+       Finished dependencies of target file `yacc.y'.
+      No need to remake target `yacc.y'.
+     Finished dependencies of target file `y.tab.c'.
+     Dependency `yacc.y' is older than dependent `y.tab.c'.
+    No need to remake target `y.tab.c'.
+   Finished dependencies of target file `../C_obj/y.tab.o'.
+  Must remake target `../C_obj/y.tab.o'.
+gcc -c -O3 -w -o -c y.tab.c  -o ../C_obj/y.tab.o
+  Successfully remade target file `../C_obj/y.tab.o'.
+  Considering target file `../C_obj/lex.yy.o'.
+   Looking for an implicit rule for `../C_obj/lex.yy.o'.
+   Trying pattern rule with stem `lex.yy'.
+   Trying implicit dependency `lex.yy.c'.
+   Found an implicit rule for `../C_obj/lex.yy.o'.
+    Considering target file `lex.yy.c'.
+      Considering target file `lex.l'.
+       Looking for an implicit rule for `lex.l'.
+       Trying pattern rule with stem `lex.l'.
+       Trying implicit dependency `lex.l,v'.
+       Trying pattern rule with stem `lex.l'.
+       Trying implicit dependency `RCS/lex.l,v'.
+       Trying pattern rule with stem `lex.l'.
+       Trying implicit dependency `s.lex.l'.
+       Trying pattern rule with stem `lex.l'.
+       Trying implicit dependency `SCCS/s.lex.l'.
+       No implicit rule found for `lex.l'.
+       Finished dependencies of target file `lex.l'.
+      No need to remake target `lex.l'.
+     Finished dependencies of target file `lex.yy.c'.
+     Dependency `lex.l' is older than dependent `lex.yy.c'.
+    No need to remake target `lex.yy.c'.
+   Finished dependencies of target file `../C_obj/lex.yy.o'.
+   Dependency `lex.yy.c' is older than dependent `../C_obj/lex.yy.o'.
+  No need to remake target `../C_obj/lex.yy.o'.
+  Considering target file `../C_obj/global.o'.
+   Looking for an implicit rule for `../C_obj/global.o'.
+   Trying pattern rule with stem `global'.
+   Trying implicit dependency `global.c'.
+   Found an implicit rule for `../C_obj/global.o'.
+    Considering target file `global.c'.
+     Looking for an implicit rule for `global.c'.
+     Trying pattern rule with stem `global.c'.
+     Trying implicit dependency `global.c,v'.
+     Trying pattern rule with stem `global.c'.
+     Trying implicit dependency `RCS/global.c,v'.
+     Trying pattern rule with stem `global.c'.
+     Trying implicit dependency `s.global.c'.
+     Trying pattern rule with stem `global.c'.
+     Trying implicit dependency `SCCS/s.global.c'.
+     Trying pattern rule with stem `global'.
+     Trying implicit dependency `global.y'.
+     Trying pattern rule with stem `global'.
+     Trying implicit dependency `global.l'.
+     Trying pattern rule with stem `global'.
+     Trying implicit dependency `global.cweb'.
+     Trying pattern rule with stem `global'.
+     Trying implicit dependency `global.y'.
+     Looking for a rule with intermediate file `global.y'.
+      Avoiding implicit rule recursion.
+      Trying pattern rule with stem `global.y'.
+      Trying implicit dependency `global.y,v'.
+      Trying pattern rule with stem `global.y'.
+      Trying implicit dependency `RCS/global.y,v'.
+      Trying pattern rule with stem `global.y'.
+      Trying implicit dependency `s.global.y'.
+      Trying pattern rule with stem `global.y'.
+      Trying implicit dependency `SCCS/s.global.y'.
+     Trying pattern rule with stem `global'.
+     Trying implicit dependency `global.l'.
+     Looking for a rule with intermediate file `global.l'.
+      Avoiding implicit rule recursion.
+      Trying pattern rule with stem `global.l'.
+      Trying implicit dependency `global.l,v'.
+      Trying pattern rule with stem `global.l'.
+      Trying implicit dependency `RCS/global.l,v'.
+      Trying pattern rule with stem `global.l'.
+      Trying implicit dependency `s.global.l'.
+      Trying pattern rule with stem `global.l'.
+      Trying implicit dependency `SCCS/s.global.l'.
+     Trying pattern rule with stem `global'.
+     Trying implicit dependency `global.cweb'.
+     Looking for a rule with intermediate file `global.cweb'.
+      Avoiding implicit rule recursion.
+      Trying pattern rule with stem `global.cweb'.
+      Trying implicit dependency `global.cweb,v'.
+      Trying pattern rule with stem `global.cweb'.
+      Trying implicit dependency `RCS/global.cweb,v'.
+      Trying pattern rule with stem `global.cweb'.
+      Trying implicit dependency `s.global.cweb'.
+      Trying pattern rule with stem `global.cweb'.
+      Trying implicit dependency `SCCS/s.global.cweb'.
+     No implicit rule found for `global.c'.
+     Finished dependencies of target file `global.c'.
+    No need to remake target `global.c'.
+   Finished dependencies of target file `../C_obj/global.o'.
+   Dependency `global.c' is older than dependent `../C_obj/global.o'.
+  No need to remake target `../C_obj/global.o'.
+  Considering target file `../C_obj/alloc.o'.
+   Looking for an implicit rule for `../C_obj/alloc.o'.
+   Trying pattern rule with stem `alloc'.
+   Trying implicit dependency `alloc.c'.
+   Found an implicit rule for `../C_obj/alloc.o'.
+    Considering target file `alloc.c'.
+     Looking for an implicit rule for `alloc.c'.
+     Trying pattern rule with stem `alloc.c'.
+     Trying implicit dependency `alloc.c,v'.
+     Trying pattern rule with stem `alloc.c'.
+     Trying implicit dependency `RCS/alloc.c,v'.
+     Trying pattern rule with stem `alloc.c'.
+     Trying implicit dependency `s.alloc.c'.
+     Trying pattern rule with stem `alloc.c'.
+     Trying implicit dependency `SCCS/s.alloc.c'.
+     Trying pattern rule with stem `alloc'.
+     Trying implicit dependency `alloc.y'.
+     Trying pattern rule with stem `alloc'.
+     Trying implicit dependency `alloc.l'.
+     Trying pattern rule with stem `alloc'.
+     Trying implicit dependency `alloc.cweb'.
+     Trying pattern rule with stem `alloc'.
+     Trying implicit dependency `alloc.y'.
+     Looking for a rule with intermediate file `alloc.y'.
+      Avoiding implicit rule recursion.
+      Trying pattern rule with stem `alloc.y'.
+      Trying implicit dependency `alloc.y,v'.
+      Trying pattern rule with stem `alloc.y'.
+      Trying implicit dependency `RCS/alloc.y,v'.
+      Trying pattern rule with stem `alloc.y'.
+      Trying implicit dependency `s.alloc.y'.
+      Trying pattern rule with stem `alloc.y'.
+      Trying implicit dependency `SCCS/s.alloc.y'.
+     Trying pattern rule with stem `alloc'.
+     Trying implicit dependency `alloc.l'.
+     Looking for a rule with intermediate file `alloc.l'.
+      Avoiding implicit rule recursion.
+      Trying pattern rule with stem `alloc.l'.
+      Trying implicit dependency `alloc.l,v'.
+      Trying pattern rule with stem `alloc.l'.
+      Trying implicit dependency `RCS/alloc.l,v'.
+      Trying pattern rule with stem `alloc.l'.
+      Trying implicit dependency `s.alloc.l'.
+      Trying pattern rule with stem `alloc.l'.
+      Trying implicit dependency `SCCS/s.alloc.l'.
+     Trying pattern rule with stem `alloc'.
+     Trying implicit dependency `alloc.cweb'.
+     Looking for a rule with intermediate file `alloc.cweb'.
+      Avoiding implicit rule recursion.
+      Trying pattern rule with stem `alloc.cweb'.
+      Trying implicit dependency `alloc.cweb,v'.
+      Trying pattern rule with stem `alloc.cweb'.
+      Trying implicit dependency `RCS/alloc.cweb,v'.
+      Trying pattern rule with stem `alloc.cweb'.
+      Trying implicit dependency `s.alloc.cweb'.
+      Trying pattern rule with stem `alloc.cweb'.
+      Trying implicit dependency `SCCS/s.alloc.cweb'.
+     No implicit rule found for `alloc.c'.
+     Finished dependencies of target file `alloc.c'.
+    No need to remake target `alloc.c'.
+   Finished dependencies of target file `../C_obj/alloc.o'.
+   Dependency `alloc.c' is older than dependent `../C_obj/alloc.o'.
+  No need to remake target `../C_obj/alloc.o'.
+  Considering target file `../C_obj/layer.o'.
+   Looking for an implicit rule for `../C_obj/layer.o'.
+   Trying pattern rule with stem `layer'.
+   Trying implicit dependency `layer.c'.
+   Found an implicit rule for `../C_obj/layer.o'.
+    Considering target file `layer.c'.
+     Looking for an implicit rule for `layer.c'.
+     Trying pattern rule with stem `layer.c'.
+     Trying implicit dependency `layer.c,v'.
+     Trying pattern rule with stem `layer.c'.
+     Trying implicit dependency `RCS/layer.c,v'.
+     Trying pattern rule with stem `layer.c'.
+     Trying implicit dependency `s.layer.c'.
+     Trying pattern rule with stem `layer.c'.
+     Trying implicit dependency `SCCS/s.layer.c'.
+     Trying pattern rule with stem `layer'.
+     Trying implicit dependency `layer.y'.
+     Trying pattern rule with stem `layer'.
+     Trying implicit dependency `layer.l'.
+     Trying pattern rule with stem `layer'.
+     Trying implicit dependency `layer.cweb'.
+     Trying pattern rule with stem `layer'.
+     Trying implicit dependency `layer.y'.
+     Looking for a rule with intermediate file `layer.y'.
+      Avoiding implicit rule recursion.
+      Trying pattern rule with stem `layer.y'.
+      Trying implicit dependency `layer.y,v'.
+      Trying pattern rule with stem `layer.y'.
+      Trying implicit dependency `RCS/layer.y,v'.
+      Trying pattern rule with stem `layer.y'.
+      Trying implicit dependency `s.layer.y'.
+      Trying pattern rule with stem `layer.y'.
+      Trying implicit dependency `SCCS/s.layer.y'.
+     Trying pattern rule with stem `layer'.
+     Trying implicit dependency `layer.l'.
+     Looking for a rule with intermediate file `layer.l'.
+      Avoiding implicit rule recursion.
+      Trying pattern rule with stem `layer.l'.
+      Trying implicit dependency `layer.l,v'.
+      Trying pattern rule with stem `layer.l'.
+      Trying implicit dependency `RCS/layer.l,v'.
+      Trying pattern rule with stem `layer.l'.
+      Trying implicit dependency `s.layer.l'.
+      Trying pattern rule with stem `layer.l'.
+      Trying implicit dependency `SCCS/s.layer.l'.
+     Trying pattern rule with stem `layer'.
+     Trying implicit dependency `layer.cweb'.
+     Looking for a rule with intermediate file `layer.cweb'.
+      Avoiding implicit rule recursion.
+      Trying pattern rule with stem `layer.cweb'.
+      Trying implicit dependency `layer.cweb,v'.
+      Trying pattern rule with stem `layer.cweb'.
+      Trying implicit dependency `RCS/layer.cweb,v'.
+      Trying pattern rule with stem `layer.cweb'.
+      Trying implicit dependency `s.layer.cweb'.
+      Trying pattern rule with stem `layer.cweb'.
+      Trying implicit dependency `SCCS/s.layer.cweb'.
+     No implicit rule found for `layer.c'.
+     Finished dependencies of target file `layer.c'.
+    No need to remake target `layer.c'.
+   Finished dependencies of target file `../C_obj/layer.o'.
+   Dependency `layer.c' is older than dependent `../C_obj/layer.o'.
+  No need to remake target `../C_obj/layer.o'.
+  Considering target file `../C_obj/save.o'.
+   Looking for an implicit rule for `../C_obj/save.o'.
+   Trying pattern rule with stem `save'.
+   Trying implicit dependency `save.c'.
+   Found an implicit rule for `../C_obj/save.o'.
+    Considering target file `save.c'.
+     Looking for an implicit rule for `save.c'.
+     Trying pattern rule with stem `save.c'.
+     Trying implicit dependency `save.c,v'.
+     Trying pattern rule with stem `save.c'.
+     Trying implicit dependency `RCS/save.c,v'.
+     Trying pattern rule with stem `save.c'.
+     Trying implicit dependency `s.save.c'.
+     Trying pattern rule with stem `save.c'.
+     Trying implicit dependency `SCCS/s.save.c'.
+     Trying pattern rule with stem `save'.
+     Trying implicit dependency `save.y'.
+     Trying pattern rule with stem `save'.
+     Trying implicit dependency `save.l'.
+     Trying pattern rule with stem `save'.
+     Trying implicit dependency `save.cweb'.
+     Trying pattern rule with stem `save'.
+     Trying implicit dependency `save.y'.
+     Looking for a rule with intermediate file `save.y'.
+      Avoiding implicit rule recursion.
+      Trying pattern rule with stem `save.y'.
+      Trying implicit dependency `save.y,v'.
+      Trying pattern rule with stem `save.y'.
+      Trying implicit dependency `RCS/save.y,v'.
+      Trying pattern rule with stem `save.y'.
+      Trying implicit dependency `s.save.y'.
+      Trying pattern rule with stem `save.y'.
+      Trying implicit dependency `SCCS/s.save.y'.
+     Trying pattern rule with stem `save'.
+     Trying implicit dependency `save.l'.
+     Looking for a rule with intermediate file `save.l'.
+      Avoiding implicit rule recursion.
+      Trying pattern rule with stem `save.l'.
+      Trying implicit dependency `save.l,v'.
+      Trying pattern rule with stem `save.l'.
+      Trying implicit dependency `RCS/save.l,v'.
+      Trying pattern rule with stem `save.l'.
+      Trying implicit dependency `s.save.l'.
+      Trying pattern rule with stem `save.l'.
+      Trying implicit dependency `SCCS/s.save.l'.
+     Trying pattern rule with stem `save'.
+     Trying implicit dependency `save.cweb'.
+     Looking for a rule with intermediate file `save.cweb'.
+      Avoiding implicit rule recursion.
+      Trying pattern rule with stem `save.cweb'.
+      Trying implicit dependency `save.cweb,v'.
+      Trying pattern rule with stem `save.cweb'.
+      Trying implicit dependency `RCS/save.cweb,v'.
+      Trying pattern rule with stem `save.cweb'.
+      Trying implicit dependency `s.save.cweb'.
+      Trying pattern rule with stem `save.cweb'.
+      Trying implicit dependency `SCCS/s.save.cweb'.
+     No implicit rule found for `save.c'.
+     Finished dependencies of target file `save.c'.
+    No need to remake target `save.c'.
+   Finished dependencies of target file `../C_obj/save.o'.
+   Dependency `save.c' is older than dependent `../C_obj/save.o'.
+  No need to remake target `../C_obj/save.o'.
+  Considering target file `../C_obj/load.o'.
+   Looking for an implicit rule for `../C_obj/load.o'.
+   Trying pattern rule with stem `load'.
+   Trying implicit dependency `load.c'.
+   Found an implicit rule for `../C_obj/load.o'.
+    Considering target file `load.c'.
+     Looking for an implicit rule for `load.c'.
+     Trying pattern rule with stem `load.c'.
+     Trying implicit dependency `load.c,v'.
+     Trying pattern rule with stem `load.c'.
+     Trying implicit dependency `RCS/load.c,v'.
+     Trying pattern rule with stem `load.c'.
+     Trying implicit dependency `s.load.c'.
+     Trying pattern rule with stem `load.c'.
+     Trying implicit dependency `SCCS/s.load.c'.
+     Trying pattern rule with stem `load'.
+     Trying implicit dependency `load.y'.
+     Trying pattern rule with stem `load'.
+     Trying implicit dependency `load.l'.
+     Trying pattern rule with stem `load'.
+     Trying implicit dependency `load.cweb'.
+     Trying pattern rule with stem `load'.
+     Trying implicit dependency `load.y'.
+     Looking for a rule with intermediate file `load.y'.
+      Avoiding implicit rule recursion.
+      Trying pattern rule with stem `load.y'.
+      Trying implicit dependency `load.y,v'.
+      Trying pattern rule with stem `load.y'.
+      Trying implicit dependency `RCS/load.y,v'.
+      Trying pattern rule with stem `load.y'.
+      Trying implicit dependency `s.load.y'.
+      Trying pattern rule with stem `load.y'.
+      Trying implicit dependency `SCCS/s.load.y'.
+     Trying pattern rule with stem `load'.
+     Trying implicit dependency `load.l'.
+     Looking for a rule with intermediate file `load.l'.
+      Avoiding implicit rule recursion.
+      Trying pattern rule with stem `load.l'.
+      Trying implicit dependency `load.l,v'.
+      Trying pattern rule with stem `load.l'.
+      Trying implicit dependency `RCS/load.l,v'.
+      Trying pattern rule with stem `load.l'.
+      Trying implicit dependency `s.load.l'.
+      Trying pattern rule with stem `load.l'.
+      Trying implicit dependency `SCCS/s.load.l'.
+     Trying pattern rule with stem `load'.
+     Trying implicit dependency `load.cweb'.
+     Looking for a rule with intermediate file `load.cweb'.
+      Avoiding implicit rule recursion.
+      Trying pattern rule with stem `load.cweb'.
+      Trying implicit dependency `load.cweb,v'.
+      Trying pattern rule with stem `load.cweb'.
+      Trying implicit dependency `RCS/load.cweb,v'.
+      Trying pattern rule with stem `load.cweb'.
+      Trying implicit dependency `s.load.cweb'.
+      Trying pattern rule with stem `load.cweb'.
+      Trying implicit dependency `SCCS/s.load.cweb'.
+     No implicit rule found for `load.c'.
+     Finished dependencies of target file `load.c'.
+    No need to remake target `load.c'.
+   Finished dependencies of target file `../C_obj/load.o'.
+   Dependency `load.c' is older than dependent `../C_obj/load.o'.
+  No need to remake target `../C_obj/load.o'.
+  Considering target file `../C_obj/algebra.o'.
+   Looking for an implicit rule for `../C_obj/algebra.o'.
+   Trying pattern rule with stem `algebra'.
+   Trying implicit dependency `algebra.c'.
+   Found an implicit rule for `../C_obj/algebra.o'.
+    Considering target file `algebra.c'.
+     Looking for an implicit rule for `algebra.c'.
+     Trying pattern rule with stem `algebra.c'.
+     Trying implicit dependency `algebra.c,v'.
+     Trying pattern rule with stem `algebra.c'.
+     Trying implicit dependency `RCS/algebra.c,v'.
+     Trying pattern rule with stem `algebra.c'.
+     Trying implicit dependency `s.algebra.c'.
+     Trying pattern rule with stem `algebra.c'.
+     Trying implicit dependency `SCCS/s.algebra.c'.
+     Trying pattern rule with stem `algebra'.
+     Trying implicit dependency `algebra.y'.
+     Trying pattern rule with stem `algebra'.
+     Trying implicit dependency `algebra.l'.
+     Trying pattern rule with stem `algebra'.
+     Trying implicit dependency `algebra.cweb'.
+     Trying pattern rule with stem `algebra'.
+     Trying implicit dependency `algebra.y'.
+     Looking for a rule with intermediate file `algebra.y'.
+      Avoiding implicit rule recursion.
+      Trying pattern rule with stem `algebra.y'.
+      Trying implicit dependency `algebra.y,v'.
+      Trying pattern rule with stem `algebra.y'.
+      Trying implicit dependency `RCS/algebra.y,v'.
+      Trying pattern rule with stem `algebra.y'.
+      Trying implicit dependency `s.algebra.y'.
+      Trying pattern rule with stem `algebra.y'.
+      Trying implicit dependency `SCCS/s.algebra.y'.
+     Trying pattern rule with stem `algebra'.
+     Trying implicit dependency `algebra.l'.
+     Looking for a rule with intermediate file `algebra.l'.
+      Avoiding implicit rule recursion.
+      Trying pattern rule with stem `algebra.l'.
+      Trying implicit dependency `algebra.l,v'.
+      Trying pattern rule with stem `algebra.l'.
+      Trying implicit dependency `RCS/algebra.l,v'.
+      Trying pattern rule with stem `algebra.l'.
+      Trying implicit dependency `s.algebra.l'.
+      Trying pattern rule with stem `algebra.l'.
+      Trying implicit dependency `SCCS/s.algebra.l'.
+     Trying pattern rule with stem `algebra'.
+     Trying implicit dependency `algebra.cweb'.
+     Looking for a rule with intermediate file `algebra.cweb'.
+      Avoiding implicit rule recursion.
+      Trying pattern rule with stem `algebra.cweb'.
+      Trying implicit dependency `algebra.cweb,v'.
+      Trying pattern rule with stem `algebra.cweb'.
+      Trying implicit dependency `RCS/algebra.cweb,v'.
+      Trying pattern rule with stem `algebra.cweb'.
+      Trying implicit dependency `s.algebra.cweb'.
+      Trying pattern rule with stem `algebra.cweb'.
+      Trying implicit dependency `SCCS/s.algebra.cweb'.
+     No implicit rule found for `algebra.c'.
+     Finished dependencies of target file `algebra.c'.
+    No need to remake target `algebra.c'.
+   Finished dependencies of target file `../C_obj/algebra.o'.
+   Dependency `algebra.c' is older than dependent `../C_obj/algebra.o'.
+  No need to remake target `../C_obj/algebra.o'.
+  Considering target file `y.tab.c'.
+  File `y.tab.c' was considered already.
+  Considering target file `lex.yy.c'.
+  File `lex.yy.c' was considered already.
+  Considering target file `global.c'.
+  File `global.c' was considered already.
+  Considering target file `alloc.c'.
+  File `alloc.c' was considered already.
+  Considering target file `layer.c'.
+  File `layer.c' was considered already.
+  Considering target file `save.c'.
+  File `save.c' was considered already.
+  Considering target file `load.c'.
+  File `load.c' was considered already.
+  Considering target file `algebra.c'.
+  File `algebra.c' was considered already.
+  Considering target file `global.h'.
+   Looking for an implicit rule for `global.h'.
+   Trying pattern rule with stem `global.h'.
+   Trying implicit dependency `global.h,v'.
+   Trying pattern rule with stem `global.h'.
+   Trying implicit dependency `RCS/global.h,v'.
+   Trying pattern rule with stem `global.h'.
+   Trying implicit dependency `s.global.h'.
+   Trying pattern rule with stem `global.h'.
+   Trying implicit dependency `SCCS/s.global.h'.
+   No implicit rule found for `global.h'.
+   Finished dependencies of target file `global.h'.
+  No need to remake target `global.h'.
+  Considering target file `alloc.h'.
+   Looking for an implicit rule for `alloc.h'.
+   Trying pattern rule with stem `alloc.h'.
+   Trying implicit dependency `alloc.h,v'.
+   Trying pattern rule with stem `alloc.h'.
+   Trying implicit dependency `RCS/alloc.h,v'.
+   Trying pattern rule with stem `alloc.h'.
+   Trying implicit dependency `s.alloc.h'.
+   Trying pattern rule with stem `alloc.h'.
+   Trying implicit dependency `SCCS/s.alloc.h'.
+   No implicit rule found for `alloc.h'.
+   Finished dependencies of target file `alloc.h'.
+  No need to remake target `alloc.h'.
+  Considering target file `layer.h'.
+   Looking for an implicit rule for `layer.h'.
+   Trying pattern rule with stem `layer.h'.
+   Trying implicit dependency `layer.h,v'.
+   Trying pattern rule with stem `layer.h'.
+   Trying implicit dependency `RCS/layer.h,v'.
+   Trying pattern rule with stem `layer.h'.
+   Trying implicit dependency `s.layer.h'.
+   Trying pattern rule with stem `layer.h'.
+   Trying implicit dependency `SCCS/s.layer.h'.
+   No implicit rule found for `layer.h'.
+   Finished dependencies of target file `layer.h'.
+  No need to remake target `layer.h'.
+  Considering target file `save.h'.
+   Looking for an implicit rule for `save.h'.
+   Trying pattern rule with stem `save.h'.
+   Trying implicit dependency `save.h,v'.
+   Trying pattern rule with stem `save.h'.
+   Trying implicit dependency `RCS/save.h,v'.
+   Trying pattern rule with stem `save.h'.
+   Trying implicit dependency `s.save.h'.
+   Trying pattern rule with stem `save.h'.
+   Trying implicit dependency `SCCS/s.save.h'.
+   No implicit rule found for `save.h'.
+   Finished dependencies of target file `save.h'.
+  No need to remake target `save.h'.
+ Finished dependencies of target file `algebra'.
+Must remake target `algebra'.
+gcc -O3 -w -o ../C_obj/y.tab.o ../C_obj/lex.yy.o ../C_obj/global.o ../C_obj/alloc.o ../C_obj/layer.o ../C_obj/save.o ../C_obj/load.o ../C_obj/algebra.o -o ../C_obj/y.tab.o -lm -ll -ly

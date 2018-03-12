@@ -1,0 +1,1153 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="pnml-test" version="121">
+  <gspn name="Multi-utility Company" show-fluid-cmd="false" view-rates="false">
+    <nodes>
+      <place domain="Z" label-x="1.0" label-y="-1.5" marking="&lt;All&gt;" name="IdleTechs" x="23.0" y="25.0"/>
+      <place domain="Cli" label-x="0.5" label-y="-1.5" marking="&lt;Tagged&gt;+10&lt;Anonim&gt;" name="Clients" x="19.0" y="19.0"/>
+      <transition delay-y="0.5" guard="c == Tagged" guard-x="0.5" magnets="THREE_PER_SIDE" name="taggedCalls" nservers="1" nservers-x="0.375" nservers-y="1.25" type="EXP" x="28.55" y="11.0"/>
+      <place domain="CxZ" label-x="-0.3125" label-y="-1.5625" name="OpenRequests" x="36.0" y="25.0"/>
+      <color-class definition="{North,East,West,South}" name="Z" x="41.5625" y="5.0"/>
+      <color-var domain="Z" name="a" x="42.1875" y="10.0"/>
+      <place domain="CxZ" label-x="-0.5" label-y="-1.5" name="MoveInsideZone" x="41.0" y="36.0"/>
+      <transition label-x="-4.5" label-y="-0.5" name="assignSameZone" priority="3" priority-x="-3.0" priority-y="0.5" rotation="1.5707963267948966" type="IMM" x="36.85" y="31.0"/>
+      <color-var domain="Z" name="r" x="42.25" y="11.0"/>
+      <transition guard="(r == North || a == West) &amp;&amp; (a == North || r == West) &amp;&amp; (r == North || a == South) &amp;&amp; (a == North || r == South) &amp;&amp; (r == West || a == South) &amp;&amp; (a == West || r == South) " guard-x="26.3125" guard-y="1.3125" label-x="3.5" label-y="-0.5" name="assignNextTo" priority="2" priority-x="1.25" priority-y="0.4375" rotation="1.5707963267948966" type="IMM" x="45.85" y="31.0"/>
+      <place domain="CxZxZ" label-x="3.0" label-y="-1.5" name="MovetoZ" x="45.0" y="36.0"/>
+      <transition delay="0.023446658851113716" delay-y="0.0" guard="(r == North &amp;&amp; a == West)||(r == West &amp;&amp; a == North)" guard-x="9.5" guard-y="0.5" label-x="4.5" label-y="-0.5" name="move_North_West" nservers-x="0.5" type="EXP" x="53.55" y="36.0"/>
+      <transition delay="0.03107198342827551" delay-y="0.0" guard="(r == North &amp;&amp; a == East) || (r == East &amp;&amp; a == North)" guard-x="9.5" guard-y="0.5" label-x="4.5" label-y="-0.5" name="move_North_East" nservers-x="0.5" type="EXP" x="53.55" y="39.0"/>
+      <transition delay="0.024834437086092717" delay-y="0.0" guard="(r == North &amp;&amp; a == South)||(r == South &amp;&amp; a == North)" guard-x="10.0" guard-y="0.5" label-x="4.5" label-y="-0.5" name="move_North_South" nservers-x="0.5" type="EXP" x="53.55" y="42.0"/>
+      <transition delay="0.037197768133911964" delay-x="1.0" delay-y="0.0" guard="(r == East &amp;&amp; a == West)||(a == East &amp;&amp; r == West)" guard-x="9.0" guard-y="0.5" label-x="4.0" label-y="-0.5" name="move_East_West" nservers-x="0.5" type="EXP" x="53.55" y="45.0"/>
+      <transition delay="0.026212319790301444" delay-x="1.0" delay-y="0.0" guard="(r == West &amp;&amp; a == South)||(a == West &amp;&amp; r == South)" guard-x="9.5" guard-y="0.5" label-x="4.5" label-y="-0.5" name="move_West_South" nservers-x="0.5" type="EXP" x="53.55" y="48.0"/>
+      <transition delay="0.05946481665014866" delay-x="0.875" delay-y="0.0625" guard="(r == East &amp;&amp; a == South)||(a == East &amp;&amp; r == South)" guard-x="9.5" guard-y="0.5" label-x="4.5" label-y="-0.5" name="move_East_South" nservers-x="0.5" type="EXP" x="53.55" y="51.0"/>
+      <place domain="CxZ" label-x="6.8125" label-y="0.0" name="StartSecuring" x="43.0" y="59.0"/>
+      <transition delay="0.045287188707187" label-x="-3.0" label-y="-0.5" name="securing" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="43.55" y="63.0"/>
+      <place domain="Cli" label-x="3.5" label-y="-1.5" name="Dispatch" x="36.0" y="16.0"/>
+      <transition label-x="1.875" label-y="-0.5" name="toWest" rotation="6.283185307179586" type="IMM" weight="15.6986" weight-x="4.0" weight-y="0.5" x="49.85" y="19.0"/>
+      <transition label-x="1.5" label-y="-0.5" name="toEast" rotation="6.283185307179586" type="IMM" weight="15.3517" weight-x="4.0" weight-y="0.5" x="49.85" y="22.0"/>
+      <transition label-x="1.5" label-y="-0.5" name="toSouth" rotation="6.283185307179586" type="IMM" weight="6.3425" weight-x="4.0" weight-y="0.5" x="49.85" y="25.0"/>
+      <transition label-x="1.75" label-y="-0.4375" name="toNorth" rotation="6.283185307179586" type="IMM" weight="15.7599" weight-x="4.5" weight-y="0.5" x="49.85" y="16.0"/>
+      <transition label-x="5.5" label-y="-0.5" name="assignNonConvenient" rotation="1.5707963267948966" type="IMM" x="53.85" y="31.0"/>
+      <color-class definition="{Anonim,Tagged}" name="Cli" x="40.875" y="6.0"/>
+      <color-var domain="Cli" name="c" x="42.25" y="12.0"/>
+      <transition guard="c == Tagged" name="endInTime" type="IMM" x="28.85" y="51.0"/>
+      <transition guard="c == Tagged" name="endTimeout" type="IMM" x="28.85" y="59.0"/>
+      <color-class alt-name-fn="LATEX_TEXT" definition="Cli * Z" name="CxZ" shown-as="\mathit{C}{\times}\!\mathit{Z}" x="39.125" y="7.0"/>
+      <color-class alt-name-fn="LATEX_TEXT" definition="Cli * Z * Z" name="CxZxZ" shown-as="\mathit{C}{\times}\!\mathit{Z}{\times}\!\mathit{Z}" x="38.0" y="8.0"/>
+      <place domain="Cli" label-x="-2.0" label-y="-1.5" name="ClientsWaiting" x="13.0" y="51.0"/>
+      <place domain="Cli" label-x="2.5" name="ClientsTimeout" x="13.0" y="59.0"/>
+      <transition delay="I[60]" delay-x="1.25" delay-y="0.0" guard="c == Tagged" guard-x="3.5" guard-y="0.5" label-x="3.0" label-y="-0.5" name="Timeout" rotation="1.5707963267948966" type="GEN" x="13.55" y="55.0"/>
+      <place magnets="ORTHOGONAL" marking="1" name="SingleServ" x="18.0" y="5.0"/>
+      <transition magnets="ORTHOGONAL" name="t0" type="IMM" x="16.85" y="9.0"/>
+      <place domain="Cli" label-x="1.0" label-y="-1.5" name="Arriving" x="22.0" y="9.0"/>
+      <place domain="CxZ" label-x="-3.8125" label-y="-0.4375" name="ReachedClient" x="43.0" y="51.0"/>
+      <transition guard="c == Anonim" guard-x="2.75" guard-y="0.5" label-x="2.6875" label-y="-0.625" name="endGeneral" type="IMM" x="50.85" y="55.0"/>
+      <transition delay-y="0.5" guard="c==Anonim" guard-x="0.5" magnets="THREE_PER_SIDE" name="anyCalls" nservers="1" nservers-x="0.4375" nservers-y="1.25" type="EXP" x="28.55" y="16.0"/>
+      <transition delay="0.033314825097168" delay-x="-8.0" delay-y="0.0" guard="a == North" guard-x="-3.0" guard-y="1.0" label-x="-3.5" label-y="-1.0" name="move_North" nservers-x="0.5" type="EXP" x="33.55" y="36.0"/>
+      <transition delay="0.048543689320388" delay-x="-8.0" delay-y="0.0" guard="a == West" guard-x="-3.0" guard-y="1.0" label-x="-3.5" label-y="-1.0" name="move_West" nservers-x="0.5" type="EXP" x="33.55" y="39.0"/>
+      <transition delay="0.05020920502092" delay-x="-7.5" delay-y="0.0" guard="a == East" guard-x="-2.5" guard-y="1.0" label-x="-3.0" label-y="-1.0" name="move_East" nservers-x="0.5" type="EXP" x="33.55" y="42.0"/>
+      <transition delay="0.024106066693451" delay-x="-7.5" delay-y="0.0" guard="a == South" guard-x="-2.5" guard-y="1.0" label-x="-3.0" label-y="-1.0" name="move_South" nservers-x="0.5" type="EXP" x="33.55" y="45.0"/>
+    </nodes>
+    <edges>
+      <arc head="t0" kind="INPUT" mult="&lt;c&gt;" mult-k="0.47275390625" mult-x="0.6875" mult-y="-0.062006683601296686" tail="Clients">
+        <point x="20.0" y="10.5"/>
+      </arc>
+      <arc head="assignSameZone" kind="INPUT" mult="&lt;c,a&gt;" mult-k="0.31259765625" mult-y="-0.0749450725808849" tail="OpenRequests"/>
+      <arc head="assignSameZone" kind="INPUT" mult="&lt;a&gt;" mult-k="0.69091796875" mult-x="0.08291015625000142" mult-y="-0.5929687499999972" tail="IdleTechs"/>
+      <arc head="assignNextTo" kind="INPUT" mult="&lt;c,r&gt;" mult-k="0.78076171875" mult-x="0.9920461818175426" mult-y="-0.33883394466407424" tail="OpenRequests">
+        <point x="46.0" y="29.5"/>
+      </arc>
+      <arc head="assignNextTo" kind="INPUT" mult="&lt;a&gt;" mult-k="0.45263671875" mult-x="0.0025712080921991287" mult-y="-0.5" tail="IdleTechs"/>
+      <arc head="MoveInsideZone" kind="OUTPUT" mult="&lt;c,a&gt;" mult-k="0.35009765625" mult-y="0.20000000000000284" tail="assignSameZone"/>
+      <arc head="MovetoZ" kind="OUTPUT" mult="&lt;c,a,r&gt;" mult-k="0.39990234375" mult-x="-1.5" mult-y="4.8828125E-4" tail="assignNextTo"/>
+      <arc head="move_North_West" kind="INPUT" mult="&lt;c,a,r&gt;" mult-x="1.1000000000000014" mult-y="-0.10000000000000142" tail="MovetoZ"/>
+      <arc head="move_North_East" kind="INPUT" mult="&lt;c,a,r&gt;" tail="MovetoZ"/>
+      <arc head="move_North_South" kind="INPUT" mult="&lt;c,a,r&gt;" tail="MovetoZ"/>
+      <arc head="move_East_West" kind="INPUT" mult="&lt;c,a,r&gt;" tail="MovetoZ"/>
+      <arc head="move_West_South" kind="INPUT" mult="&lt;c,a,r&gt;" tail="MovetoZ"/>
+      <arc head="move_East_South" kind="INPUT" mult="&lt;c,a,r&gt;" tail="MovetoZ"/>
+      <arc head="ReachedClient" kind="OUTPUT" mult="&lt;c,r&gt;" tail="move_North_West"/>
+      <arc head="ReachedClient" kind="OUTPUT" mult="&lt;c,r&gt;" tail="move_North_East"/>
+      <arc head="ReachedClient" kind="OUTPUT" mult="&lt;c,r&gt;" tail="move_North_South"/>
+      <arc head="ReachedClient" kind="OUTPUT" mult="&lt;c,r&gt;" tail="move_East_West"/>
+      <arc head="ReachedClient" kind="OUTPUT" mult="&lt;c,r&gt;" tail="move_West_South"/>
+      <arc head="ReachedClient" kind="OUTPUT" mult="&lt;c,r&gt;" tail="move_East_South"/>
+      <arc head="securing" kind="INPUT" mult="&lt;c,r&gt;" mult-y="0.0" tail="StartSecuring"/>
+      <arc head="IdleTechs" kind="OUTPUT" mult="&lt;r&gt;" mult-k="1.37509765625" mult-x="0.5" mult-y="-0.0030614984212178342" tail="securing">
+        <point x="24.0" y="64.0"/>
+      </arc>
+      <arc head="toNorth" kind="INPUT" mult="&lt;c&gt;" mult-k="0.46162109375000004" mult-x="-0.001074218749998579" mult-y="-0.5" tail="Dispatch"/>
+      <arc head="toWest" kind="INPUT" mult="&lt;c&gt;" mult-k="0.46357421875000004" mult-x="-0.02646484374999858" mult-y="-0.3907226562499986" tail="Dispatch"/>
+      <arc head="toEast" kind="INPUT" mult="&lt;c&gt;" mult-k="0.42197265625" mult-x="0.5143554687499972" mult-y="-0.2818359374999986" tail="Dispatch"/>
+      <arc head="toSouth" kind="INPUT" mult="&lt;c&gt;" mult-k="0.41201171875" mult-x="0.6438476562500028" mult-y="-0.20810546874999858" tail="Dispatch"/>
+      <arc head="OpenRequests" kind="OUTPUT" mult="&lt;c,North&gt;" mult-k="0.5700195312500002" mult-x="0.4102539062500057" mult-y="-0.13017578125000284" tail="toNorth"/>
+      <arc head="OpenRequests" kind="OUTPUT" mult="&lt;c,West&gt;" mult-k="0.53173828125" mult-x="-0.08740234375" mult-y="-0.1904296875" tail="toWest"/>
+      <arc head="OpenRequests" kind="OUTPUT" mult="&lt;c,East&gt;" mult-k="0.5364257812500001" mult-x="-0.02646484374999858" mult-y="-0.3592773437500014" tail="toEast"/>
+      <arc head="OpenRequests" kind="OUTPUT" mult="&lt;c,South&gt;" mult-k="0.5383789062500001" mult-x="-0.001074218749998579" mult-y="-0.5" tail="toSouth"/>
+      <arc head="Dispatch" kind="OUTPUT" mult="&lt;c&gt;" mult-k="1.3286132812499996" mult-x="0.625" mult-y="-0.25" tail="taggedCalls">
+        <point x="35.0" y="12.0"/>
+      </arc>
+      <arc head="assignNonConvenient" kind="INPUT" mult="&lt;c,r&gt;" mult-k="0.6422851562500002" mult-x="0.2790057565134276" mult-y="-0.6033399932819563" tail="OpenRequests">
+        <point x="54.0" y="29.5"/>
+      </arc>
+      <arc head="assignNonConvenient" kind="INPUT" mult="&lt;a&gt;" mult-k="0.3319335937500001" mult-x="0.013867187499997158" mult-y="-0.49580078124999716" tail="IdleTechs"/>
+      <arc head="MovetoZ" kind="OUTPUT" mult="&lt;c,a,r&gt;" mult-k="0.45244140624999996" mult-x="0.7390625000000028" mult-y="0.42802734375000284" tail="assignNonConvenient"/>
+      <arc head="endTimeout" kind="INPUT" mult="&lt;c,r&gt;" mult-k="0.23701171875" mult-x="0.9133789062500028" mult-y="0.4867187499999943" tail="ReachedClient"/>
+      <arc head="endInTime" kind="INPUT" mult="&lt;c,r&gt;" mult-k="0.5666992187500001" mult-x="0.3999999999999986" mult-y="0.5" tail="ReachedClient"/>
+      <arc head="ClientsWaiting" kind="OUTPUT" mult="&lt;c&gt;" mult-k="1.47666015625" mult-y="2.297448023931281E-4" tail="taggedCalls" tail-magnet="10">
+        <point x="14.0" y="12.0"/>
+      </arc>
+      <arc head="endInTime" kind="INPUT" mult="&lt;c&gt;" mult-k="0.28095703125000004" mult-x="-0.7541059012034061" mult-y="-0.5" tail="ClientsWaiting"/>
+      <arc head="endTimeout" kind="INPUT" mult="&lt;c&gt;" mult-k="0.21533203125" mult-x="0.13375531232041027" mult-y="-0.5" tail="ClientsTimeout"/>
+      <arc head="Timeout" kind="INPUT" mult="&lt;c&gt;" mult-x="-0.8125" mult-y="-0.14999999999999858" tail="ClientsWaiting"/>
+      <arc head="ClientsTimeout" kind="OUTPUT" mult="&lt;c&gt;" mult-k="0.37509765625" mult-x="-0.6875" mult-y="-0.08749999999999858" tail="Timeout"/>
+      <arc head="t0" kind="INPUT" tail="SingleServ">
+        <point x="14.0" y="6.0"/>
+        <point x="14.0" y="10.0"/>
+      </arc>
+      <arc head="Arriving" kind="OUTPUT" mult="&lt;c&gt;" mult-k="0.5833007812500001" mult-x="-0.10000000000000142" mult-y="-0.5" tail="t0"/>
+      <arc head="taggedCalls" head-magnet="9" kind="INPUT" mult="&lt;c&gt;" mult-k="0.4424804687499999" mult-x="0.16999999999999815" mult-y="-0.7125000000000004" tail="Arriving"/>
+      <arc head="SingleServ" kind="OUTPUT" mult-k="0.0" tail="taggedCalls" tail-magnet="3">
+        <point x="32.5" y="11.5"/>
+        <point x="32.5" y="6.0"/>
+      </arc>
+      <arc head="StartSecuring" kind="OUTPUT" mult="&lt;c,r&gt;" mult-k="0.44443359375" mult-x="9.765624999857891E-5" mult-y="0.5" tail="endTimeout"/>
+      <arc head="StartSecuring" kind="OUTPUT" mult="&lt;c,r&gt;" mult-k="0.77685546875" mult-x="0.6549804687499972" mult-y="-0.7164062500000057" tail="endInTime"/>
+      <arc head="Clients" kind="OUTPUT" mult="&lt;c&gt;" mult-k="1.2991210937499997" mult-x="0.09476153514361485" mult-y="-0.5" tail="securing">
+        <point x="44.0" y="65.5"/>
+        <point x="20.0" y="65.5"/>
+      </arc>
+      <arc head="endGeneral" kind="INPUT" mult="&lt;c,r&gt;" mult-k="0.42490234375" mult-x="-0.45000000000000284" mult-y="0.6500000000000057" tail="ReachedClient"/>
+      <arc head="Dispatch" kind="OUTPUT" mult="&lt;c&gt;" mult-x="0.20000000000000284" mult-y="-0.6000000000000014" tail="anyCalls"/>
+      <arc head="anyCalls" kind="INPUT" mult="&lt;c&gt;" mult-x="0.7256303404554529" mult-y="-0.2057350467247332" tail="Arriving">
+        <point x="25.5" y="17.0"/>
+      </arc>
+      <arc head="SingleServ" kind="OUTPUT" tail="anyCalls" tail-magnet="3">
+        <point x="33.0" y="16.5"/>
+        <point x="33.0" y="5.5"/>
+      </arc>
+      <arc head="StartSecuring" kind="OUTPUT" mult="&lt;c,r&gt;" mult-x="-0.29999999999999716" mult-y="-0.9000000000000057" tail="endGeneral"/>
+      <arc head="move_North" kind="INPUT" mult="&lt;c,a&gt;" mult-x="0.5" mult-y="0.5" tail="MoveInsideZone"/>
+      <arc head="move_West" kind="INPUT" mult="&lt;c,a&gt;" mult-x="0.5" mult-y="0.5" tail="MoveInsideZone"/>
+      <arc head="move_East" kind="INPUT" mult="&lt;c,a&gt;" mult-x="0.5" mult-y="0.5" tail="MoveInsideZone"/>
+      <arc head="move_South" kind="INPUT" mult="&lt;c,a&gt;" mult-x="0.5" mult-y="0.5" tail="MoveInsideZone"/>
+      <arc head="ReachedClient" kind="OUTPUT" mult="&lt;c,a&gt;" tail="move_North"/>
+      <arc head="ReachedClient" kind="OUTPUT" mult="&lt;c,a&gt;" tail="move_West"/>
+      <arc head="ReachedClient" kind="OUTPUT" mult="&lt;c,a&gt;" tail="move_East"/>
+      <arc head="ReachedClient" kind="OUTPUT" mult="&lt;c,a&gt;" tail="move_South"/>
+    </edges>
+  </gspn>
+  <gspn name="SWN" show-fluid-cmd="false" view-rates="false">
+    <nodes>
+      <color-class definition="{c1, c2, c3}" name="C" x="1.4375" y="2.0"/>
+      <color-class definition="circular {dA,dB,dC}" name="D" x="1.4375" y="3.0"/>
+      <color-var domain="C" name="c" x="18.9375" y="2.0"/>
+      <color-var domain="D" name="d" x="18.9375" y="3.0"/>
+      <color-class definition="C * D" name="CxD" x="1.125" y="4.0"/>
+      <place domain="C" marking="2&lt;All&gt;" name="P0" x="11.0" y="12.0"/>
+      <place domain="D" label-x="0.5" marking="2&lt;All&gt;" name="P1" x="27.0" y="12.0"/>
+      <transition guard="c==c || d==d &amp;&amp; c != c" guard-x="4.5" guard-y="-0.5" name="T0" nservers-x="0.5" type="EXP" x="15.55" y="6.0"/>
+      <transition guard="(c==c || d==d) &amp;&amp; c != c" name="T1" nservers-x="0.5" type="EXP" x="23.55" y="18.0"/>
+      <place domain="CxD" name="P2" x="19.0" y="12.0"/>
+      <transition name="T2" nservers-x="0.5" type="EXP" x="32.55" y="8.0"/>
+      <color-class definition="r{1..3}" name="R" x="1.5" y="6.0"/>
+      <place domain="R" label-x="-0.5" label-y="-1.5" marking="&lt;All&gt;+4&lt;r3&gt;" name="P3" x="36.0" y="5.0"/>
+      <place marking="3" name="P4" x="11.0" y="18.0"/>
+      <place name="P5" x="32.0" y="18.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" mult="&lt;c&gt;" mult-x="0.5999999999999996" mult-y="0.5999999999999996" tail="P0"/>
+      <arc head="P2" kind="OUTPUT" mult="&lt;c,d&gt;" mult-x="1.1999999999999993" mult-y="0.0" tail="T0"/>
+      <arc head="T0" kind="INPUT" mult="&lt;d--&gt;" tail="P1"/>
+      <arc head="T1" kind="INPUT" mult="&lt;c,d&gt;" mult-k="0.5735351562500001" mult-x="1.1999999999999993" mult-y="0.0" tail="P2"/>
+      <arc head="P0" kind="OUTPUT" mult="2&lt;c&gt;" tail="T1"/>
+      <arc head="P1" kind="OUTPUT" mult="&lt;d++&gt;" mult-x="0.6000000000000014" mult-y="0.5999999999999996" tail="T1"/>
+      <arc head="P1" kind="OUTPUT" mult="&lt;d&gt;+2&lt;d++&gt;" mult-k="0.75087890625" mult-x="-0.050023076129786403" mult-y="-0.8500076920432615" tail="T2">
+        <point x="28.5" y="7.5"/>
+      </arc>
+      <arc head="T2" kind="INPUT" mult="&lt;r3&gt;" tail="P3">
+        <point x="37.0" y="11.5"/>
+      </arc>
+      <arc head="T1" kind="INPUT" tail="P4"/>
+      <arc head="P5" kind="OUTPUT" tail="T1"/>
+    </edges>
+  </gspn>
+  <gspn name="PT-Grid" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place marking="45" name="P0" x="11.0" y="3.0"/>
+      <transition name="T0" nservers-x="0.5" type="EXP" x="15.55" y="3.0"/>
+      <place name="P1" x="19.0" y="3.0"/>
+      <transition name="T1" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="19.55" y="8.0"/>
+      <place name="P2" x="19.0" y="12.0"/>
+      <transition name="T2" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="19.55" y="17.0"/>
+      <place name="P3" x="19.0" y="21.0"/>
+      <transition name="T3" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="19.55" y="26.0"/>
+      <place name="P4" x="19.0" y="30.0"/>
+      <transition name="T4" nservers-x="0.5" type="EXP" x="15.55" y="30.0"/>
+      <place name="P5" x="11.0" y="30.0"/>
+      <transition name="T5" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="11.55" y="26.0"/>
+      <place name="P6" x="11.0" y="21.0"/>
+      <transition name="T6" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="11.55" y="17.0"/>
+      <place name="P7" x="11.0" y="12.0"/>
+      <transition name="T7" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="11.55" y="8.0"/>
+      <place marking="60" name="P8" x="3.0" y="12.0"/>
+      <transition name="T8" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="3.55" y="17.0"/>
+      <place name="P9" x="3.0" y="21.0"/>
+      <transition name="T9" nservers-x="0.5" type="EXP" x="7.55" y="12.0"/>
+      <transition name="T10" nservers-x="0.5" type="EXP" x="7.55" y="21.0"/>
+      <transition name="T11" nservers-x="0.5" type="EXP" x="15.55" y="12.0"/>
+      <transition name="T12" nservers-x="0.5" type="EXP" x="15.55" y="21.0"/>
+      <transition name="T13" nservers-x="0.5" type="EXP" x="23.55" y="12.0"/>
+      <transition name="T14" nservers-x="0.5" type="EXP" x="23.55" y="21.0"/>
+      <place name="P10" x="27.0" y="12.0"/>
+      <place name="P11" x="27.0" y="21.0"/>
+      <transition name="T15" nservers-x="0.5" type="EXP" x="31.55" y="12.0"/>
+      <transition name="T16" nservers-x="0.5" type="EXP" x="31.55" y="21.0"/>
+      <place name="P12" x="35.0" y="21.0"/>
+      <place name="P13" x="35.0" y="12.0"/>
+      <transition name="T17" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="27.55" y="8.0"/>
+      <transition name="T18" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="35.55" y="8.0"/>
+      <transition name="T19" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="27.55" y="17.0"/>
+      <transition name="T20" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="35.55" y="17.0"/>
+      <transition name="T21" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="27.55" y="26.0"/>
+      <transition name="T22" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="35.55" y="26.0"/>
+      <transition name="T23" nservers-x="0.5" type="EXP" x="31.55" y="30.0"/>
+      <transition name="T24" nservers-x="0.5" type="EXP" x="31.55" y="3.0"/>
+      <place marking="35" name="P14" x="27.0" y="3.0"/>
+      <place name="P15" x="35.0" y="3.0"/>
+      <place name="P16" x="27.0" y="30.0"/>
+      <place name="P17" x="35.0" y="30.0"/>
+      <transition name="T25" nservers-x="0.5" type="EXP" x="39.55" y="12.0"/>
+      <transition name="T26" nservers-x="0.5" type="EXP" x="39.55" y="21.0"/>
+      <place name="P18" x="43.0" y="12.0"/>
+      <place name="P19" x="43.0" y="21.0"/>
+      <transition name="T27" nservers-x="0.5" type="EXP" x="47.55" y="12.0"/>
+      <transition name="T28" nservers-x="0.5" type="EXP" x="47.55" y="21.0"/>
+      <place name="P20" x="51.0" y="12.0"/>
+      <place name="P21" x="51.0" y="21.0"/>
+      <transition name="T29" nservers-x="0.5" type="EXP" x="55.55" y="12.0"/>
+      <transition name="T30" nservers-x="0.5" type="EXP" x="55.55" y="21.0"/>
+      <place name="P22" x="59.0" y="12.0"/>
+      <place name="P23" x="59.0" y="21.0"/>
+      <transition name="T31" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="43.55" y="8.0"/>
+      <transition name="T32" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="43.55" y="17.0"/>
+      <transition name="T33" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="43.55" y="26.0"/>
+      <transition name="T34" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="51.55" y="26.0"/>
+      <transition name="T35" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="51.55" y="17.0"/>
+      <transition name="T36" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="51.55" y="8.0"/>
+      <place marking="66" name="P24" x="43.0" y="3.0"/>
+      <place name="P25" x="51.0" y="3.0"/>
+      <place name="P26" x="43.0" y="30.0"/>
+      <place name="P27" x="51.0" y="30.0"/>
+      <transition name="T37" nservers-x="0.5" type="EXP" x="47.55" y="30.0"/>
+      <transition name="T38" nservers-x="0.5" type="EXP" x="47.55" y="3.0"/>
+      <transition name="T39" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="59.55" y="17.0"/>
+    </nodes>
+    <edges>
+      <arc head="T9" kind="INPUT" mult="3" tail="P8"/>
+      <arc head="P7" kind="OUTPUT" mult="3" tail="T9"/>
+      <arc head="T11" kind="INPUT" mult="3" tail="P7"/>
+      <arc head="P2" kind="OUTPUT" mult="3" tail="T11"/>
+      <arc head="T13" kind="INPUT" mult="3" tail="P2"/>
+      <arc head="P10" kind="OUTPUT" mult="3" tail="T13"/>
+      <arc head="T15" kind="INPUT" mult="3" tail="P10"/>
+      <arc head="P13" kind="OUTPUT" mult="3" tail="T15"/>
+      <arc head="T25" kind="INPUT" mult="3" tail="P13"/>
+      <arc head="P18" kind="OUTPUT" mult="3" tail="T25"/>
+      <arc head="T27" kind="INPUT" mult="3" tail="P18"/>
+      <arc head="P20" kind="OUTPUT" mult="3" tail="T27"/>
+      <arc head="T29" kind="INPUT" mult="3" tail="P20"/>
+      <arc head="P22" kind="OUTPUT" mult="3" tail="T29"/>
+      <arc head="T39" kind="INPUT" mult="3" tail="P22"/>
+      <arc head="P23" kind="OUTPUT" mult="3" tail="T39"/>
+      <arc head="T30" kind="INPUT" mult="3" tail="P23"/>
+      <arc head="P21" kind="OUTPUT" mult="3" tail="T30"/>
+      <arc head="T28" kind="INPUT" mult="3" tail="P21"/>
+      <arc head="P19" kind="OUTPUT" mult="3" tail="T28"/>
+      <arc head="T26" kind="INPUT" mult="3" tail="P19"/>
+      <arc head="P12" kind="OUTPUT" mult="3" tail="T26"/>
+      <arc head="T16" kind="INPUT" mult="3" tail="P12"/>
+      <arc head="P11" kind="OUTPUT" mult="3" tail="T16"/>
+      <arc head="T14" kind="INPUT" mult="3" tail="P11"/>
+      <arc head="P3" kind="OUTPUT" mult="3" tail="T14"/>
+      <arc head="T12" kind="INPUT" mult="3" tail="P3"/>
+      <arc head="P6" kind="OUTPUT" mult="3" tail="T12"/>
+      <arc head="T10" kind="INPUT" mult="3" tail="P6"/>
+      <arc head="P9" kind="OUTPUT" mult="3" tail="T10"/>
+      <arc head="T8" kind="INPUT" mult="3" tail="P9"/>
+      <arc head="P8" kind="OUTPUT" mult="3" tail="T8"/>
+      <arc head="T7" kind="INPUT" mult="5" tail="P7"/>
+      <arc head="P0" kind="OUTPUT" mult="5" tail="T7"/>
+      <arc head="T0" kind="INPUT" mult="5" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" mult="5" tail="T0"/>
+      <arc head="T1" kind="INPUT" mult="5" tail="P1"/>
+      <arc head="P2" kind="OUTPUT" mult="5" tail="T1"/>
+      <arc head="T2" kind="INPUT" mult="5" tail="P2"/>
+      <arc head="P3" kind="OUTPUT" mult="5" tail="T2"/>
+      <arc head="T3" kind="INPUT" mult="5" tail="P3"/>
+      <arc head="P4" kind="OUTPUT" mult="5" tail="T3"/>
+      <arc head="T4" kind="INPUT" mult="5" tail="P4"/>
+      <arc head="P5" kind="OUTPUT" mult="5" tail="T4"/>
+      <arc head="T5" kind="INPUT" mult="5" tail="P5"/>
+      <arc head="P6" kind="OUTPUT" mult="5" tail="T5"/>
+      <arc head="T6" kind="INPUT" mult="5" tail="P6"/>
+      <arc head="P7" kind="OUTPUT" mult="5" tail="T6"/>
+      <arc head="T17" kind="INPUT" mult="7" tail="P10"/>
+      <arc head="P14" kind="OUTPUT" mult="7" tail="T17"/>
+      <arc head="T24" kind="INPUT" mult="7" tail="P14"/>
+      <arc head="P15" kind="OUTPUT" mult="7" tail="T24"/>
+      <arc head="T18" kind="INPUT" mult="7" tail="P15"/>
+      <arc head="P13" kind="OUTPUT" mult="7" tail="T18"/>
+      <arc head="T20" kind="INPUT" mult="7" tail="P13"/>
+      <arc head="P12" kind="OUTPUT" mult="7" tail="T20"/>
+      <arc head="T22" kind="INPUT" mult="7" tail="P12"/>
+      <arc head="P17" kind="OUTPUT" mult="7" tail="T22"/>
+      <arc head="T23" kind="INPUT" mult="7" tail="P17"/>
+      <arc head="P16" kind="OUTPUT" mult="7" tail="T23"/>
+      <arc head="T21" kind="INPUT" mult="7" tail="P16"/>
+      <arc head="P11" kind="OUTPUT" mult="7" tail="T21"/>
+      <arc head="T19" kind="INPUT" mult="7" tail="P11"/>
+      <arc head="P10" kind="OUTPUT" mult="7" tail="T19"/>
+      <arc head="T31" kind="INPUT" mult="11" tail="P18"/>
+      <arc head="P24" kind="OUTPUT" mult="11" tail="T31"/>
+      <arc head="T38" kind="INPUT" mult="11" tail="P24"/>
+      <arc head="P25" kind="OUTPUT" mult="11" tail="T38"/>
+      <arc head="T36" kind="INPUT" mult="11" tail="P25"/>
+      <arc head="P20" kind="OUTPUT" mult="11" tail="T36"/>
+      <arc head="T35" kind="INPUT" mult="11" tail="P20"/>
+      <arc head="P21" kind="OUTPUT" mult="11" tail="T35"/>
+      <arc head="T34" kind="INPUT" mult="11" tail="P21"/>
+      <arc head="P27" kind="OUTPUT" mult="11" tail="T34"/>
+      <arc head="T37" kind="INPUT" mult="11" tail="P27"/>
+      <arc head="P26" kind="OUTPUT" mult="11" tail="T37"/>
+      <arc head="T33" kind="INPUT" mult="11" tail="P26"/>
+      <arc head="P19" kind="OUTPUT" mult="11" tail="T33"/>
+      <arc head="T32" kind="INPUT" mult="11" tail="P19"/>
+      <arc head="P18" kind="OUTPUT" mult="11" tail="T32"/>
+    </edges>
+  </gspn>
+  <gspn name="TGrid" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <transition name="T0" nservers-x="0.5" type="EXP" x="10.55" y="11.0"/>
+      <place marking="15" name="P0" x="10.0" y="15.0"/>
+      <transition name="T1" nservers-x="0.5" type="EXP" x="10.55" y="20.0"/>
+      <place name="P1" x="14.0" y="20.0"/>
+      <transition name="T2" nservers-x="0.5" type="EXP" x="18.55" y="20.0"/>
+      <place marking="16" name="P2" x="18.0" y="15.0"/>
+      <transition name="T3" nservers-x="0.5" type="EXP" x="18.55" y="11.0"/>
+      <place name="P3" x="14.0" y="11.0"/>
+      <place name="P4" x="10.0" y="6.0"/>
+      <place name="P5" x="18.0" y="6.0"/>
+      <transition name="T4" nservers-x="0.5" type="EXP" x="10.55" y="2.0"/>
+      <transition name="T5" nservers-x="0.5" type="EXP" x="18.55" y="2.0"/>
+      <place name="P6" x="14.0" y="2.0"/>
+      <place name="P7" x="10.0" y="24.0"/>
+      <place name="P8" x="18.0" y="24.0"/>
+      <transition name="T6" nservers-x="0.5" type="EXP" x="10.55" y="29.0"/>
+      <transition name="T7" nservers-x="0.5" type="EXP" x="18.55" y="29.0"/>
+      <place name="P9" x="14.0" y="29.0"/>
+      <place name="P10" x="6.0" y="11.0"/>
+      <transition name="T8" nservers-x="0.5" type="EXP" x="2.55" y="11.0"/>
+      <place marking="24" name="P11" x="2.0" y="15.0"/>
+      <transition name="T9" nservers-x="0.5" type="EXP" x="2.55" y="20.0"/>
+      <place name="P12" x="6.0" y="20.0"/>
+      <place name="P13" x="22.0" y="11.0"/>
+      <place name="P14" x="22.0" y="20.0"/>
+      <transition name="T10" nservers-x="0.5" type="EXP" x="26.55" y="11.0"/>
+      <transition name="T11" nservers-x="0.5" type="EXP" x="26.55" y="20.0"/>
+      <place name="P15" x="26.0" y="15.0"/>
+    </nodes>
+    <edges>
+      <arc head="P10" kind="OUTPUT" mult="3" tail="T8"/>
+      <arc head="T0" kind="INPUT" mult="4" tail="P10"/>
+      <arc head="P3" kind="OUTPUT" mult="4" tail="T0"/>
+      <arc head="T3" kind="INPUT" mult="4" tail="P3"/>
+      <arc head="P13" kind="OUTPUT" mult="4" tail="T3"/>
+      <arc head="T10" kind="INPUT" mult="5" tail="P13"/>
+      <arc head="P15" kind="OUTPUT" mult="5" tail="T10"/>
+      <arc head="T11" kind="INPUT" mult="5" tail="P15"/>
+      <arc head="P14" kind="OUTPUT" mult="5" tail="T11"/>
+      <arc head="T2" kind="INPUT" mult="4" tail="P14"/>
+      <arc head="P1" kind="OUTPUT" mult="4" tail="T2"/>
+      <arc head="T1" kind="INPUT" mult="4" tail="P1"/>
+      <arc head="P12" kind="OUTPUT" mult="4" tail="T1"/>
+      <arc head="T9" kind="INPUT" mult="3" tail="P12"/>
+      <arc head="P11" kind="OUTPUT" mult="3" tail="T9"/>
+      <arc head="T8" kind="INPUT" mult="3" tail="P11"/>
+      <arc head="P6" kind="OUTPUT" mult="8" tail="T4"/>
+      <arc head="T5" kind="INPUT" mult="8" tail="P6"/>
+      <arc head="P5" kind="OUTPUT" mult="8" tail="T5"/>
+      <arc head="T3" kind="INPUT" mult="8" tail="P5"/>
+      <arc head="P2" kind="OUTPUT" mult="8" tail="T3"/>
+      <arc head="T2" kind="INPUT" mult="8" tail="P2"/>
+      <arc head="P8" kind="OUTPUT" mult="8" tail="T2"/>
+      <arc head="T7" kind="INPUT" mult="8" tail="P8"/>
+      <arc head="P9" kind="OUTPUT" mult="8" tail="T7"/>
+      <arc head="T6" kind="INPUT" mult="8" tail="P9"/>
+      <arc head="P7" kind="OUTPUT" mult="8" tail="T6"/>
+      <arc head="T1" kind="INPUT" mult="8" tail="P7"/>
+      <arc head="P0" kind="OUTPUT" mult="8" tail="T1"/>
+      <arc head="T0" kind="INPUT" mult="8" tail="P0"/>
+      <arc head="P4" kind="OUTPUT" mult="8" tail="T0"/>
+      <arc head="T4" kind="INPUT" mult="8" tail="P4"/>
+    </edges>
+  </gspn>
+  <measures gspn-name="PT-Grid" name="Measures">
+    <assignments/>
+    <rgmedd variable-order="HEURISTIC_PINV"/>
+    <formulas>
+      <formula language="STAT"/>
+    </formulas>
+  </measures>
+  <gspn name="Immed" show-color-cmd="false" show-fluid-cmd="false" view-rates="false">
+    <nodes>
+      <place marking="N" name="P0" x="7.0" y="10.0"/>
+      <transition name="t0" priority="2" type="IMM" x="13.85" y="6.0"/>
+      <transition name="t1" type="IMM" x="13.85" y="10.0"/>
+      <transition name="T0" nservers-x="0.5" type="EXP" x="13.55" y="14.0"/>
+      <place name="P1" x="20.0" y="6.0"/>
+      <place name="P2" x="20.0" y="10.0"/>
+      <place name="P3" x="20.0" y="14.0"/>
+      <transition name="t2" priority="3" type="IMM" x="13.85" y="2.0"/>
+      <place name="P4" x="20.0" y="2.0"/>
+      <transition name="T1" nservers-x="0.5" type="EXP" x="26.55" y="2.0"/>
+      <transition name="T2" nservers-x="0.5" type="EXP" x="26.55" y="6.0"/>
+      <transition name="T3" nservers-x="0.5" type="EXP" x="26.55" y="10.0"/>
+      <transition name="T4" nservers-x="0.5" type="EXP" x="26.55" y="14.0"/>
+      <place name="P5" x="34.0" y="10.0"/>
+      <constant consttype="INTEGER" name="N" value="130" x="2.0625" y="2.0"/>
+      <transition name="T5" nservers-x="0.5" type="EXP" x="39.55" y="10.0"/>
+    </nodes>
+    <edges>
+      <arc head="t0" kind="INPUT" mult="20" mult-x="0.625" mult-y="0.625" tail="P0"/>
+      <arc head="t1" kind="INPUT" mult="5" tail="P0"/>
+      <arc head="T0" kind="INPUT" tail="P0"/>
+      <arc head="P3" kind="OUTPUT" tail="T0"/>
+      <arc head="P2" kind="OUTPUT" mult="5" tail="t1"/>
+      <arc head="P1" kind="OUTPUT" mult="20" mult-x="0.5" mult-y="0.5" tail="t0"/>
+      <arc head="t2" kind="INPUT" mult="40" tail="P0"/>
+      <arc head="P4" kind="OUTPUT" mult="40" tail="t2"/>
+      <arc head="t2" kind="INHIBITOR" tail="P4">
+        <point x="17.5" y="1.0"/>
+      </arc>
+      <arc head="T4" kind="INPUT" tail="P3"/>
+      <arc head="T3" kind="INPUT" mult="5" tail="P2"/>
+      <arc head="T2" kind="INPUT" mult="20" tail="P1"/>
+      <arc head="T1" kind="INPUT" mult="40" tail="P4"/>
+      <arc head="P5" kind="OUTPUT" tail="T4"/>
+      <arc head="P5" kind="OUTPUT" mult="5" mult-x="0.0" mult-y="-0.5" tail="T3"/>
+      <arc head="P5" kind="OUTPUT" mult="20" mult-x="0.0" mult-y="-0.5" tail="T2"/>
+      <arc head="P5" kind="OUTPUT" mult="40" mult-y="0.0" tail="T1"/>
+      <arc head="T5" kind="INPUT" mult="N" tail="P5"/>
+      <arc head="P0" kind="OUTPUT" mult="N" tail="T5">
+        <point x="43.5" y="11.0"/>
+        <point x="43.5" y="19.0"/>
+        <point x="8.0" y="19.0"/>
+      </arc>
+      <arc head="t1" kind="INHIBITOR" mult="2" mult-k="1.2678710937499997" mult-x="-0.4375" mult-y="-0.3125" tail="P2">
+        <point x="18.0" y="9.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <measures gspn-name="SimpleLoadBal-COL-02" name="Measures 1">
+    <assignments/>
+    <greatspn/>
+    <formulas>
+      <formula language="STAT"/>
+    </formulas>
+  </measures>
+  <gspn name="LargeBound" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place marking="10" name="P0" x="11.0" y="6.0"/>
+      <transition name="T0" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="16.55" y="11.0"/>
+      <place name="P1" x="11.0" y="16.0"/>
+      <transition name="T1" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="6.55" y="11.0"/>
+      <place marking="10" name="P2" x="21.0" y="6.0"/>
+      <transition name="T2" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="26.55" y="11.0"/>
+      <place name="P3" x="21.0" y="16.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="T0"/>
+      <arc head="T1" kind="INPUT" tail="P1"/>
+      <arc head="P0" kind="OUTPUT" tail="T1"/>
+      <arc head="T0" kind="INPUT" tail="P2"/>
+      <arc head="P3" kind="OUTPUT" mult="100" tail="T0"/>
+      <arc head="T2" kind="INPUT" mult="100" tail="P3"/>
+      <arc head="P2" kind="OUTPUT" tail="T2"/>
+    </edges>
+  </gspn>
+  <gspn name="CSRepetitions-COL-02" view-rates="false">
+    <nodes>
+      <color-class definition="circular {Client1, Client2, Client3, Client4}" name="Client" x="35.0" y="2.0"/>
+      <color-class definition="circular {Server1, Server2}" name="Server" x="35.0" y="3.0"/>
+      <color-class definition="Client * Server" name="Computation" x="35.0" y="4.0"/>
+      <color-var domain="Client" name="c" x="35.0" y="5.0"/>
+      <color-var domain="Server" name="s" x="35.0" y="6.0"/>
+      <place label-x="1.5" label-y="2.0" marking="2" name="RequestBufferSlots" x="38.0" y="9.0"/>
+      <place domain="Client" label-x="1.0" label-y="-1.5" name="Client_Sending" x="12.0" y="9.0"/>
+      <place domain="Client" label-x="0.5" name="RequestBuffer" x="41.0" y="18.0"/>
+      <place domain="Server" label-x="0.5" label-y="1.0" marking="&lt;All&gt;" name="Server_Waiting" x="21.0" y="14.0"/>
+      <place domain="Client" label-x="0.5" marking="&lt;All&gt;" name="Client_Waiting" x="7.0" y="28.0"/>
+      <place domain="Computation" label-y="-1.5" name="Server_Anwering" x="9.0" y="2.0"/>
+      <transition name="Send_Request" nservers-x="0.5" type="EXP" x="26.55" y="5.0"/>
+      <transition label-y="1.5" name="Read_Request" nservers-x="0.5" type="EXP" x="25.55" y="9.0"/>
+      <transition label-y="0.0" name="Prepare_Request" nservers-x="0.5" type="EXP" x="18.55" y="21.0"/>
+      <transition label-y="-2.0" name="Lose_Request" nservers-x="0.5" type="EXP" x="48.55" y="14.0"/>
+      <transition label-y="0.0" name="Send_Answer" nservers-x="0.5" type="EXP" x="2.55" y="13.0"/>
+    </nodes>
+    <edges>
+      <arc head="Send_Request" head-magnet="0" kind="INPUT" tail="RequestBufferSlots" tail-magnet="0"/>
+      <arc head="RequestBufferSlots" head-magnet="0" kind="OUTPUT" tail="Read_Request" tail-magnet="0"/>
+      <arc head="Send_Request" head-magnet="0" kind="INPUT" mult="(&lt;c&gt;)" tail="Client_Sending" tail-magnet="0"/>
+      <arc head="Client_Sending" head-magnet="0" kind="OUTPUT" mult="(&lt;c&gt;)" tail="Send_Request" tail-magnet="0"/>
+      <arc head="RequestBuffer" head-magnet="0" kind="OUTPUT" mult="(&lt;c&gt;)" tail="Send_Request" tail-magnet="0"/>
+      <arc head="Read_Request" head-magnet="0" kind="INPUT" mult="(&lt;c&gt;)" tail="RequestBuffer" tail-magnet="0"/>
+      <arc head="Lose_Request" head-magnet="0" kind="INPUT" mult="(&lt;c&gt;)" tail="RequestBuffer" tail-magnet="0"/>
+      <arc head="Read_Request" head-magnet="0" kind="INPUT" mult="(&lt;s&gt;)" tail="Server_Waiting" tail-magnet="0"/>
+      <arc head="Server_Anwering" head-magnet="0" kind="OUTPUT" mult="(&lt;c, s&gt;)" tail="Read_Request" tail-magnet="0"/>
+      <arc head="Send_Answer" head-magnet="0" kind="INPUT" mult="(&lt;c&gt;)" tail="Client_Sending" tail-magnet="0"/>
+      <arc head="Server_Waiting" head-magnet="0" kind="OUTPUT" mult="(&lt;s&gt;)" tail="Send_Answer" tail-magnet="0"/>
+      <arc head="Prepare_Request" head-magnet="0" kind="INPUT" mult="(&lt;c&gt;)" tail="Client_Waiting" tail-magnet="0"/>
+      <arc head="Client_Sending" head-magnet="0" kind="OUTPUT" mult="(&lt;c&gt;)" tail="Prepare_Request" tail-magnet="0"/>
+      <arc head="Send_Answer" head-magnet="0" kind="INPUT" mult="(&lt;c, s&gt;)" tail="Server_Anwering" tail-magnet="0"/>
+      <arc head="Client_Waiting" head-magnet="0" kind="OUTPUT" mult="(&lt;c&gt;)" tail="Send_Answer" tail-magnet="0"/>
+    </edges>
+  </gspn>
+  <gspn name="SimpleLoadBal-COL-02" view-rates="false">
+    <nodes>
+      <color-class definition="enum {client_id1, client_id2}" name="client_id" x="48.0" y="4.0"/>
+      <color-class definition="circular {clients_no0, clients_no1, clients_no2}" name="clients_no" x="48.0" y="5.0"/>
+      <color-class definition="enum {server_id1, server_id2}" name="server_id" x="48.0" y="6.0"/>
+      <color-class definition="enum {lb_id1}" name="lb_id" x="48.0" y="7.0"/>
+      <color-class definition="client_id * server_id" name="client_id___server_id" x="48.0" y="8.0"/>
+      <color-class definition="lb_id * client_id" name="lb_id___client_id" x="48.0" y="9.0"/>
+      <color-class definition="server_id * clients_no" name="server_id___clients_no" x="48.0" y="10.0"/>
+      <color-var domain="client_id" name="c" x="48.0" y="11.0"/>
+      <color-var domain="server_id" name="s" x="48.0" y="12.0"/>
+      <color-var domain="lb_id" name="l" x="48.0" y="13.0"/>
+      <color-var domain="clients_no" name="l1" x="48.0" y="14.0"/>
+      <color-var domain="clients_no" name="l2" x="48.0" y="15.0"/>
+      <color-var domain="clients_no" name="ls" x="48.0" y="16.0"/>
+      <place domain="client_id" label-y="-2.0" marking="&lt;client_id1&gt; + &lt;client_id2&gt;" name="client_idle" x="46.0" y="29.0"/>
+      <place domain="client_id" label-y="0.0" name="client_waiting" x="38.0" y="31.0"/>
+      <place domain="client_id" label-y="0.0" name="client_request" x="20.0" y="34.0"/>
+      <place domain="client_id" label-y="0.0" name="client_ack" x="8.0" y="34.0"/>
+      <place domain="server_id" label-y="-2.0" marking="&lt;server_id1&gt; + &lt;server_id2&gt;" name="server_idle" x="30.0" y="33.0"/>
+      <place domain="server_id" label-y="0.0" name="server_waiting" x="39.0" y="26.0"/>
+      <place domain="server_id" label-y="0.0" name="server_processed" x="15.0" y="5.0"/>
+      <place domain="server_id" label-x="0.5" label-y="-1.5" name="server_notification" x="20.0" y="41.0"/>
+      <place domain="server_id" label-x="1.5" label-y="0.0" name="server_notification_ack" x="8.0" y="42.0"/>
+      <place domain="client_id___server_id" label-x="1.5" label-y="0.0" name="server_request" x="4.0" y="26.0"/>
+      <place domain="lb_id" label-y="0.0" marking="&lt;lb_id1&gt;" name="lb_idle" x="29.0" y="5.0"/>
+      <place domain="lb_id___client_id" label-y="0.0" name="lb_routing" x="41.0" y="11.0"/>
+      <place domain="lb_id" label-x="1.0" name="lb_balancing" x="26.0" y="47.0"/>
+      <place domain="server_id___clients_no" label-y="0.0" marking="&lt;server_id1, clients_no0&gt; + &lt;server_id2, clients_no0&gt;" name="lb_load" x="15.0" y="38.0"/>
+      <transition label-y="0.0" name="client_send" nservers-x="0.5" type="EXP" x="3.55" y="9.0"/>
+      <transition label-y="0.0" name="client_receive" nservers-x="0.5" type="EXP" x="16.55" y="28.0"/>
+      <transition label-y="0.0" name="server_process" nservers-x="0.5" type="EXP" x="29.55" y="27.0"/>
+      <transition label-y="0.0" name="server_notify" nservers-x="0.5" type="EXP" x="46.55" y="20.0"/>
+      <transition label-y="0.0" name="server_endloop" nservers-x="0.5" type="EXP" x="9.55" y="28.0"/>
+      <transition label-y="0.0" name="lb_receive_client" nservers-x="0.5" type="EXP" x="15.55" y="1.0"/>
+      <transition guard="l1 == l2 || l2 == l1++" label-y="0.0" name="lb_route_to_1" nservers-x="0.5" type="EXP" x="39.55" y="21.0"/>
+      <transition guard="l1 == l2++" label-x="0.5" name="lb_route_to_2" nservers-x="0.5" type="EXP" x="35.55" y="46.0"/>
+      <transition label-y="0.0" name="lb_idle_receive_notification" nservers-x="0.5" type="EXP" x="19.55" y="24.0"/>
+      <transition guard="l1 == l2 || l1 == l2++ || l2 == l1++" label-y="0.0" name="lb_no_balance" nservers-x="0.5" type="EXP" x="25.55" y="1.0"/>
+      <transition guard="l2 == l1++++" label-y="0.0" name="lb_balance_to_1" nservers-x="0.5" type="EXP" x="4.55" y="3.0"/>
+      <transition guard="l1 == l2++++" label-y="0.0" name="lb_balance_to_2" nservers-x="0.5" type="EXP" x="30.55" y="23.0"/>
+      <transition label-y="1.5" name="lb_balancing_receive_notification" nservers-x="0.5" type="EXP" x="12.55" y="50.0"/>
+    </nodes>
+    <edges>
+      <arc head="client_send" head-magnet="0" kind="INPUT" mult="&lt;c&gt;" tail="client_idle" tail-magnet="0"/>
+      <arc head="client_waiting" head-magnet="0" kind="OUTPUT" mult="&lt;c&gt;" tail="client_send" tail-magnet="0"/>
+      <arc head="client_request" head-magnet="0" kind="OUTPUT" mult="&lt;c&gt;" tail="client_send" tail-magnet="0"/>
+      <arc head="client_idle" head-magnet="0" kind="OUTPUT" mult="&lt;c&gt;" tail="client_receive" tail-magnet="0"/>
+      <arc head="client_receive" head-magnet="0" kind="INPUT" mult="&lt;c&gt;" tail="client_waiting" tail-magnet="0"/>
+      <arc head="client_receive" head-magnet="0" kind="INPUT" mult="&lt;c&gt;" tail="client_ack" tail-magnet="0"/>
+      <arc head="client_ack" head-magnet="0" kind="OUTPUT" mult="&lt;c&gt;" tail="server_process" tail-magnet="0"/>
+      <arc head="server_process" head-magnet="0" kind="INPUT" mult="&lt;s&gt;" tail="server_idle" tail-magnet="0"/>
+      <arc head="server_processed" head-magnet="0" kind="OUTPUT" mult="&lt;s&gt;" tail="server_process" tail-magnet="0"/>
+      <arc head="server_process" head-magnet="0" kind="INPUT" mult="&lt;c, s&gt;" tail="server_request" tail-magnet="0"/>
+      <arc head="server_waiting" head-magnet="0" kind="OUTPUT" mult="&lt;s&gt;" tail="server_notify" tail-magnet="0"/>
+      <arc head="server_notify" head-magnet="0" kind="INPUT" mult="&lt;s&gt;" tail="server_processed" tail-magnet="0"/>
+      <arc head="server_notification" head-magnet="0" kind="OUTPUT" mult="&lt;s&gt;" tail="server_notify" tail-magnet="0"/>
+      <arc head="server_idle" head-magnet="0" kind="OUTPUT" mult="&lt;s&gt;" tail="server_endloop" tail-magnet="0"/>
+      <arc head="server_endloop" head-magnet="0" kind="INPUT" mult="&lt;s&gt;" tail="server_waiting" tail-magnet="0"/>
+      <arc head="server_endloop" head-magnet="0" kind="INPUT" mult="&lt;s&gt;" tail="server_notification_ack" tail-magnet="0"/>
+      <arc head="lb_receive_client" head-magnet="0" kind="INPUT" mult="&lt;c&gt;" tail="client_request" tail-magnet="0"/>
+      <arc head="lb_receive_client" head-magnet="0" kind="INPUT" mult="&lt;l&gt;" tail="lb_idle" tail-magnet="0"/>
+      <arc head="lb_routing" head-magnet="0" kind="OUTPUT" mult="&lt;l, c&gt;" tail="lb_receive_client" tail-magnet="0"/>
+      <arc head="server_request" head-magnet="0" kind="OUTPUT" mult="&lt;c, server_id1&gt;" tail="lb_route_to_1" tail-magnet="0"/>
+      <arc head="lb_idle" head-magnet="0" kind="OUTPUT" mult="&lt;l&gt;" tail="lb_route_to_1" tail-magnet="0"/>
+      <arc head="lb_route_to_1" head-magnet="0" kind="INPUT" mult="&lt;l, c&gt;" tail="lb_routing" tail-magnet="0"/>
+      <arc head="lb_route_to_1" head-magnet="0" kind="INPUT" mult="&lt;server_id1, l1&gt; + &lt;server_id2, l2&gt;" tail="lb_load" tail-magnet="0"/>
+      <arc head="lb_load" head-magnet="0" kind="OUTPUT" mult="&lt;server_id1, l1++&gt; + &lt;server_id2, l2&gt;" tail="lb_route_to_1" tail-magnet="0"/>
+      <arc head="server_request" head-magnet="0" kind="OUTPUT" mult="&lt;c, server_id2&gt;" tail="lb_route_to_2" tail-magnet="0"/>
+      <arc head="lb_idle" head-magnet="0" kind="OUTPUT" mult="&lt;l&gt;" tail="lb_route_to_2" tail-magnet="0"/>
+      <arc head="lb_route_to_2" head-magnet="0" kind="INPUT" mult="&lt;l, c&gt;" tail="lb_routing" tail-magnet="0"/>
+      <arc head="lb_route_to_2" head-magnet="0" kind="INPUT" mult="&lt;server_id1, l1&gt; + &lt;server_id2, l2&gt;" mult-k="0.6624023437500001" tail="lb_load" tail-magnet="0"/>
+      <arc head="lb_load" head-magnet="0" kind="OUTPUT" mult="&lt;server_id1, l1&gt; + &lt;server_id2, l2++&gt;" mult-k="0.27490234375" tail="lb_route_to_2" tail-magnet="0"/>
+      <arc head="lb_idle_receive_notification" head-magnet="0" kind="INPUT" mult="&lt;s&gt;" tail="server_notification" tail-magnet="0"/>
+      <arc head="server_notification_ack" head-magnet="0" kind="OUTPUT" mult="&lt;s&gt;" tail="lb_idle_receive_notification" tail-magnet="0"/>
+      <arc head="lb_idle_receive_notification" head-magnet="0" kind="INPUT" mult="&lt;l&gt;" tail="lb_idle" tail-magnet="0"/>
+      <arc head="lb_balancing" head-magnet="0" kind="OUTPUT" mult="&lt;l&gt;" tail="lb_idle_receive_notification" tail-magnet="0"/>
+      <arc head="lb_idle_receive_notification" head-magnet="0" kind="INPUT" mult="&lt;s, ls&gt;" tail="lb_load" tail-magnet="0"/>
+      <arc head="lb_load" head-magnet="0" kind="OUTPUT" mult="&lt;s, ls--&gt;" tail="lb_idle_receive_notification" tail-magnet="0"/>
+      <arc head="lb_idle" head-magnet="0" kind="OUTPUT" mult="&lt;l&gt;" tail="lb_no_balance" tail-magnet="0"/>
+      <arc head="lb_no_balance" head-magnet="0" kind="INPUT" mult="&lt;l&gt;" tail="lb_balancing" tail-magnet="0"/>
+      <arc head="lb_no_balance" head-magnet="0" kind="INPUT" mult="&lt;server_id1, l1&gt; + &lt;server_id2, l2&gt;" tail="lb_load" tail-magnet="0"/>
+      <arc head="lb_load" head-magnet="0" kind="OUTPUT" mult="&lt;server_id1, l1&gt; + &lt;server_id2, l2&gt;" tail="lb_no_balance" tail-magnet="0"/>
+      <arc head="lb_balance_to_1" head-magnet="0" kind="INPUT" mult="&lt;c, server_id2&gt;" tail="server_request" tail-magnet="0"/>
+      <arc head="server_request" head-magnet="0" kind="OUTPUT" mult="&lt;c, server_id1&gt;" tail="lb_balance_to_1" tail-magnet="0"/>
+      <arc head="lb_idle" head-magnet="0" kind="OUTPUT" mult="&lt;l&gt;" tail="lb_balance_to_1" tail-magnet="0"/>
+      <arc head="lb_balance_to_1" head-magnet="0" kind="INPUT" mult="&lt;l&gt;" tail="lb_balancing" tail-magnet="0"/>
+      <arc head="lb_balance_to_1" head-magnet="0" kind="INPUT" mult="&lt;server_id1, l1&gt; + &lt;server_id2, l2&gt;" tail="lb_load" tail-magnet="0"/>
+      <arc head="lb_load" head-magnet="0" kind="OUTPUT" mult="&lt;server_id1, l1++&gt; + &lt;server_id2, l2--&gt;" tail="lb_balance_to_1" tail-magnet="0"/>
+      <arc head="lb_balance_to_2" head-magnet="0" kind="INPUT" mult="&lt;c, server_id1&gt;" tail="server_request" tail-magnet="0"/>
+      <arc head="server_request" head-magnet="0" kind="OUTPUT" mult="&lt;c, server_id2&gt;" tail="lb_balance_to_2" tail-magnet="0"/>
+      <arc head="lb_idle" head-magnet="0" kind="OUTPUT" mult="&lt;l&gt;" tail="lb_balance_to_2" tail-magnet="0"/>
+      <arc head="lb_balance_to_2" head-magnet="0" kind="INPUT" mult="&lt;l&gt;" tail="lb_balancing" tail-magnet="0"/>
+      <arc head="lb_balance_to_2" head-magnet="0" kind="INPUT" mult="&lt;server_id1, l1&gt; + &lt;server_id2, l2&gt;" tail="lb_load" tail-magnet="0"/>
+      <arc head="lb_load" head-magnet="0" kind="OUTPUT" mult="&lt;server_id1, l1--&gt; + &lt;server_id2, l2++&gt;" tail="lb_balance_to_2" tail-magnet="0"/>
+      <arc head="lb_balancing_receive_notification" head-magnet="0" kind="INPUT" mult="&lt;s&gt;" tail="server_notification" tail-magnet="0"/>
+      <arc head="server_notification_ack" head-magnet="0" kind="OUTPUT" mult="&lt;s&gt;" tail="lb_balancing_receive_notification" tail-magnet="0"/>
+      <arc head="lb_balancing_receive_notification" head-magnet="0" kind="INPUT" mult="&lt;l&gt;" tail="lb_balancing" tail-magnet="0"/>
+      <arc head="lb_balancing" head-magnet="0" kind="OUTPUT" mult="&lt;l&gt;" mult-k="0.43173828125" tail="lb_balancing_receive_notification" tail-magnet="0"/>
+      <arc head="lb_balancing_receive_notification" head-magnet="0" kind="INPUT" mult="&lt;s, ls&gt;" tail="lb_load" tail-magnet="0"/>
+      <arc head="lb_load" head-magnet="0" kind="OUTPUT" mult="&lt;s, ls--&gt;" mult-k="0.6249023437500001" tail="lb_balancing_receive_notification" tail-magnet="0"/>
+    </edges>
+  </gspn>
+  <gspn name="PetriNet">
+    <nodes>
+      <color-class definition="circular c{1..3}" name="C0" x="20.125" y="1.0"/>
+      <place domain="C0" marking="&lt;All&gt;" name="P0" x="3.0" y="7.0"/>
+      <transition name="T0" nservers-x="0.5" type="EXP" x="10.55" y="7.0"/>
+      <place domain="C0" marking="&lt;All&gt;" name="P1" x="28.0" y="7.0"/>
+      <transition name="T1" nservers-x="0.5" type="EXP" x="35.55" y="7.0"/>
+      <color-var domain="C0" name="x" x="19.9375" y="3.0"/>
+      <place domain="C0" name="P2" x="17.0" y="7.0"/>
+      <place domain="C0" name="P3" x="42.0" y="7.0"/>
+      <place domain="C0" marking="&lt;All&gt;" name="P4" x="3.0" y="18.0"/>
+      <transition name="T2" nservers-x="0.5" type="EXP" x="10.55" y="18.0"/>
+      <place domain="C0" marking="&lt;All&gt;" name="P6" x="28.0" y="18.0"/>
+      <transition name="T3" nservers-x="0.5" type="EXP" x="35.55" y="18.0"/>
+      <place domain="C0" name="P5" x="17.0" y="18.0"/>
+      <place domain="C0" name="P7" x="42.0" y="18.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" mult="&lt;x&gt;" mult-x="0.0" mult-y="-0.5" tail="P0"/>
+      <arc head="T1" kind="INPUT" mult="&lt;x++&gt;" mult-x="0.5" mult-y="-0.5" tail="P1"/>
+      <arc head="P2" kind="OUTPUT" mult="&lt;x&gt;" mult-x="0.0" mult-y="-0.5" tail="T0"/>
+      <arc head="P3" kind="OUTPUT" mult="&lt;x&gt;" mult-x="0.0" mult-y="-0.5" tail="T1"/>
+      <arc head="T2" kind="INPUT" mult="&lt;x&gt;" mult-x="0.0" mult-y="-0.5" tail="P4"/>
+      <arc head="T3" kind="INPUT" mult="&lt;x++&gt;" mult-x="0.5" mult-y="-0.5" tail="P6"/>
+      <arc head="P5" kind="OUTPUT" mult="&lt;x++&gt;" mult-x="0.0" mult-y="-0.5" tail="T2"/>
+      <arc head="P7" kind="OUTPUT" mult="&lt;x++&gt;" mult-x="0.0" mult-y="-0.5" tail="T3"/>
+    </edges>
+  </gspn>
+  <gspn name="Unfolding of PetriNet">
+    <nodes>
+      <place marking="1" name="P0c1" x="3.0" y="7.0"/>
+      <place marking="1" name="P0c2" x="3.0" y="10.0"/>
+      <place marking="1" name="P0c3" x="3.0" y="13.0"/>
+      <place marking="1" name="P1c1" x="28.0" y="7.0"/>
+      <place marking="1" name="P1c2" x="28.0" y="10.0"/>
+      <place marking="1" name="P1c3" x="28.0" y="13.0"/>
+      <place name="P2c1" x="17.0" y="7.0"/>
+      <place name="P2c2" x="17.0" y="10.0"/>
+      <place name="P2c3" x="17.0" y="13.0"/>
+      <place name="P3c1" x="42.0" y="7.0"/>
+      <place name="P3c2" x="42.0" y="10.0"/>
+      <place name="P3c3" x="42.0" y="13.0"/>
+      <place marking="1" name="P4c1" x="3.0" y="18.0"/>
+      <place marking="1" name="P4c2" x="3.0" y="21.0"/>
+      <place marking="1" name="P4c3" x="3.0" y="24.0"/>
+      <place marking="1" name="P6c1" x="28.0" y="18.0"/>
+      <place marking="1" name="P6c2" x="28.0" y="21.0"/>
+      <place marking="1" name="P6c3" x="28.0" y="24.0"/>
+      <place name="P5c1" x="17.0" y="18.0"/>
+      <place name="P5c2" x="17.0" y="21.0"/>
+      <place name="P5c3" x="17.0" y="24.0"/>
+      <place name="P7c1" x="42.0" y="18.0"/>
+      <place name="P7c2" x="42.0" y="21.0"/>
+      <place name="P7c3" x="42.0" y="24.0"/>
+      <transition name="T0_x_c1" nservers-x="0.5" type="EXP" x="10.55" y="7.0"/>
+      <transition name="T0_x_c2" nservers-x="0.5" type="EXP" x="10.55" y="10.0"/>
+      <transition name="T0_x_c3" nservers-x="0.5" type="EXP" x="10.55" y="13.0"/>
+      <transition name="T1_x_c1" nservers-x="0.5" type="EXP" x="35.55" y="7.0"/>
+      <transition name="T1_x_c2" nservers-x="0.5" type="EXP" x="35.55" y="10.0"/>
+      <transition name="T1_x_c3" nservers-x="0.5" type="EXP" x="35.55" y="13.0"/>
+      <transition name="T2_x_c1" nservers-x="0.5" type="EXP" x="10.55" y="18.0"/>
+      <transition name="T2_x_c2" nservers-x="0.5" type="EXP" x="10.55" y="21.0"/>
+      <transition name="T2_x_c3" nservers-x="0.5" type="EXP" x="10.55" y="24.0"/>
+      <transition name="T3_x_c1" nservers-x="0.5" type="EXP" x="35.55" y="18.0"/>
+      <transition name="T3_x_c2" nservers-x="0.5" type="EXP" x="35.55" y="21.0"/>
+      <transition name="T3_x_c3" nservers-x="0.5" type="EXP" x="35.55" y="24.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0_x_c1" kind="INPUT" tail="P0c1"/>
+      <arc head="P2c1" kind="OUTPUT" tail="T0_x_c1"/>
+      <arc head="T0_x_c2" kind="INPUT" tail="P0c2"/>
+      <arc head="P2c2" kind="OUTPUT" tail="T0_x_c2"/>
+      <arc head="T0_x_c3" kind="INPUT" tail="P0c3"/>
+      <arc head="P2c3" kind="OUTPUT" tail="T0_x_c3"/>
+      <arc head="P3c1" kind="OUTPUT" tail="T1_x_c1"/>
+      <arc head="T1_x_c1" kind="INPUT" tail="P1c2"/>
+      <arc head="P3c2" kind="OUTPUT" tail="T1_x_c2"/>
+      <arc head="T1_x_c2" kind="INPUT" tail="P1c3"/>
+      <arc head="P3c3" kind="OUTPUT" tail="T1_x_c3"/>
+      <arc head="T1_x_c3" kind="INPUT" tail="P1c1"/>
+      <arc head="T2_x_c1" kind="INPUT" tail="P4c1"/>
+      <arc head="P5c2" kind="OUTPUT" tail="T2_x_c1"/>
+      <arc head="T2_x_c2" kind="INPUT" tail="P4c2"/>
+      <arc head="P5c3" kind="OUTPUT" tail="T2_x_c2"/>
+      <arc head="T2_x_c3" kind="INPUT" tail="P4c3"/>
+      <arc head="P5c1" kind="OUTPUT" tail="T2_x_c3"/>
+      <arc head="T3_x_c1" kind="INPUT" tail="P6c2"/>
+      <arc head="P7c2" kind="OUTPUT" tail="T3_x_c1"/>
+      <arc head="T3_x_c2" kind="INPUT" tail="P6c3"/>
+      <arc head="P7c3" kind="OUTPUT" tail="T3_x_c2"/>
+      <arc head="T3_x_c3" kind="INPUT" tail="P6c1"/>
+      <arc head="P7c1" kind="OUTPUT" tail="T3_x_c3"/>
+    </edges>
+  </gspn>
+  <gspn name="SimpleLoadBal-COL-02sel" view-rates="false">
+    <nodes>
+      <color-class definition="circular {clients_no0, clients_no1, clients_no2}" name="clients_no" x="26.0" y="5.0"/>
+      <color-class definition="enum {server_id1, server_id2}" name="server_id" x="26.0" y="6.0"/>
+      <color-class definition="enum {lb_id1}" name="lb_id" x="26.0" y="7.0"/>
+      <color-class definition="server_id * clients_no" name="server_id___clients_no" x="26.0" y="8.0"/>
+      <color-var domain="server_id" name="s" x="26.3125" y="9.0"/>
+      <color-var domain="lb_id" name="l" x="26.4375" y="10.0"/>
+      <color-var domain="clients_no" name="ls" x="26.0625" y="11.0"/>
+      <place domain="server_id" label-y="-1.5" name="server_notification" x="7.0" y="9.0"/>
+      <place domain="server_id" label-x="3.0" name="server_notification_ack" x="24.0" y="21.0"/>
+      <place domain="lb_id" label-x="1.0" name="lb_balancing" x="7.0" y="23.0"/>
+      <place domain="server_id___clients_no" label-x="-3.0" label-y="-1.5" marking="&lt;server_id1, clients_no0&gt; + &lt;server_id2, clients_no0&gt;" name="lb_load" x="15.0" y="3.0"/>
+      <transition label-x="7.0" label-y="0.0" name="lb_balancing_receive_notification" nservers-x="0.5" type="EXP" x="13.55" y="15.0"/>
+    </nodes>
+    <edges>
+      <arc head="lb_balancing_receive_notification" head-magnet="0" kind="INPUT" mult="&lt;s&gt;" mult-x="0.5" mult-y="-0.5" tail="server_notification" tail-magnet="0"/>
+      <arc head="server_notification_ack" head-magnet="0" kind="OUTPUT" mult="&lt;s&gt;" mult-x="0.0" tail="lb_balancing_receive_notification" tail-magnet="0"/>
+      <arc head="lb_balancing_receive_notification" head-magnet="0" kind="INPUT" mult="&lt;l&gt;" mult-k="0.88408203125" mult-x="0.6004625289161556" mult-y="0.12109813620524079" tail="lb_balancing" tail-magnet="0">
+        <point x="9.5" y="19.5"/>
+      </arc>
+      <arc head="lb_balancing" head-magnet="0" kind="OUTPUT" mult="&lt;l&gt;" mult-k="1.2584960937499998" mult-x="0.6798114698601658" mult-y="0.2921131180839005" tail="lb_balancing_receive_notification" tail-magnet="0">
+        <point x="13.0" y="21.0"/>
+      </arc>
+      <arc head="lb_balancing_receive_notification" head-magnet="0" kind="INPUT" mult="&lt;s, ls&gt;" mult-k="1.18798828125" tail="lb_load" tail-magnet="0">
+        <point x="14.0" y="8.0"/>
+      </arc>
+      <arc head="lb_load" head-magnet="0" kind="OUTPUT" mult="&lt;s, ls--&gt;" mult-k="0.79404296875" mult-x="1.4904673798008403" mult-y="0.7123924062589104" tail="lb_balancing_receive_notification" tail-magnet="0">
+        <point x="19.0" y="9.5"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="SimpleLoadBal-PT-02sel" view-rates="false">
+    <nodes>
+      <place label-y="-1.5" name="server_notification_1" x="38.0" y="2.0"/>
+      <place label-y="-1.5" name="server_notification_2" x="38.0" y="7.0"/>
+      <place name="server_notification_ack_1" x="38.0" y="22.0"/>
+      <place name="server_notification_ack_2" x="38.0" y="28.0"/>
+      <place name="lb_balancing_1" x="12.0" y="29.0"/>
+      <place label-y="-1.5" marking="1" name="lb_load_1_0" x="7.0" y="2.0"/>
+      <place label-y="-1.5" name="lb_load_1_1" x="7.0" y="6.0"/>
+      <place label-y="-1.5" name="lb_load_1_2" x="7.0" y="11.0"/>
+      <place marking="1" name="lb_load_2_0" x="7.0" y="15.0"/>
+      <place name="lb_load_2_1" x="7.0" y="19.0"/>
+      <place name="lb_load_2_2" x="7.0" y="23.0"/>
+      <transition name="lb_balancing_receive_notification_2" nservers-x="0.5" type="EXP" x="21.55" y="11.0"/>
+      <transition name="lb_balancing_receive_notification_3" nservers-x="0.5" type="EXP" x="21.55" y="15.0"/>
+      <transition name="lb_balancing_receive_notification_5" nservers-x="0.5" type="EXP" x="21.55" y="19.0"/>
+      <transition name="lb_balancing_receive_notification_6" nservers-x="0.5" type="EXP" x="21.55" y="23.0"/>
+    </nodes>
+    <edges>
+      <arc head="lb_balancing_receive_notification_2" head-magnet="0" kind="INPUT" tail="server_notification_1" tail-magnet="0"/>
+      <arc head="server_notification_ack_1" head-magnet="0" kind="OUTPUT" tail="lb_balancing_receive_notification_2" tail-magnet="0"/>
+      <arc head="lb_balancing_receive_notification_2" head-magnet="0" kind="INPUT" tail="lb_balancing_1" tail-magnet="0"/>
+      <arc head="lb_balancing_1" head-magnet="0" kind="OUTPUT" tail="lb_balancing_receive_notification_2" tail-magnet="0"/>
+      <arc head="lb_load_1_0" head-magnet="0" kind="OUTPUT" tail="lb_balancing_receive_notification_2" tail-magnet="0"/>
+      <arc head="lb_balancing_receive_notification_2" head-magnet="0" kind="INPUT" tail="lb_load_1_1" tail-magnet="0"/>
+      <arc head="lb_balancing_receive_notification_3" head-magnet="0" kind="INPUT" tail="server_notification_1" tail-magnet="0"/>
+      <arc head="server_notification_ack_1" head-magnet="0" kind="OUTPUT" tail="lb_balancing_receive_notification_3" tail-magnet="0"/>
+      <arc head="lb_balancing_receive_notification_3" head-magnet="0" kind="INPUT" tail="lb_balancing_1" tail-magnet="0"/>
+      <arc head="lb_balancing_1" head-magnet="0" kind="OUTPUT" tail="lb_balancing_receive_notification_3" tail-magnet="0"/>
+      <arc head="lb_load_1_1" head-magnet="0" kind="OUTPUT" tail="lb_balancing_receive_notification_3" tail-magnet="0"/>
+      <arc head="lb_balancing_receive_notification_3" head-magnet="0" kind="INPUT" tail="lb_load_1_2" tail-magnet="0"/>
+      <arc head="lb_balancing_receive_notification_5" head-magnet="0" kind="INPUT" tail="server_notification_2" tail-magnet="0"/>
+      <arc head="server_notification_ack_2" head-magnet="0" kind="OUTPUT" tail="lb_balancing_receive_notification_5" tail-magnet="0"/>
+      <arc head="lb_balancing_receive_notification_5" head-magnet="0" kind="INPUT" tail="lb_balancing_1" tail-magnet="0"/>
+      <arc head="lb_balancing_1" head-magnet="0" kind="OUTPUT" tail="lb_balancing_receive_notification_5" tail-magnet="0"/>
+      <arc head="lb_load_2_0" head-magnet="0" kind="OUTPUT" tail="lb_balancing_receive_notification_5" tail-magnet="0"/>
+      <arc head="lb_balancing_receive_notification_5" head-magnet="0" kind="INPUT" tail="lb_load_2_1" tail-magnet="0"/>
+      <arc head="lb_balancing_receive_notification_6" head-magnet="0" kind="INPUT" tail="server_notification_2" tail-magnet="0"/>
+      <arc head="server_notification_ack_2" head-magnet="0" kind="OUTPUT" tail="lb_balancing_receive_notification_6" tail-magnet="0"/>
+      <arc head="lb_balancing_receive_notification_6" head-magnet="0" kind="INPUT" tail="lb_balancing_1" tail-magnet="0"/>
+      <arc head="lb_balancing_1" head-magnet="0" kind="OUTPUT" tail="lb_balancing_receive_notification_6" tail-magnet="0"/>
+      <arc head="lb_load_2_1" head-magnet="0" kind="OUTPUT" tail="lb_balancing_receive_notification_6" tail-magnet="0"/>
+      <arc head="lb_balancing_receive_notification_6" head-magnet="0" kind="INPUT" tail="lb_load_2_2" tail-magnet="0"/>
+    </edges>
+  </gspn>
+  <gspn name="Document" view-rates="false">
+    <nodes>
+      <color-class definition="circular {sens1, sens2}" name="sens" x="49.0" y="3.0"/>
+      <color-class definition="circular {compteur0, compteur1, compteur2}" name="compteur" x="49.0" y="4.0"/>
+      <color-class definition="circular {voitureA0, voitureA1, voitureA2, voitureA3, voitureA4}" name="voitureA" x="49.0" y="5.0"/>
+      <color-class definition="circular {voitureB0, voitureB1, voitureB2, voitureB3, voitureB4}" name="voitureB" x="49.0" y="6.0"/>
+      <color-var domain="sens" name="s" x="49.0" y="7.0"/>
+      <color-var domain="compteur" name="cpt" x="49.0" y="8.0"/>
+      <color-var domain="voitureA" name="cA" x="49.0" y="9.0"/>
+      <color-var domain="voitureB" name="cB" x="49.0" y="10.0"/>
+      <place label-y="0.0" marking="5" name="CAPACITE" x="11.0" y="4.0"/>
+      <place domain="voitureA" label-y="0.0" marking="&lt;voitureA0&gt;" name="NB_ATTENTE_A" x="25.0" y="44.0"/>
+      <place label-y="0.0" name="SORTI_A" x="9.0" y="42.0"/>
+      <place label-y="0.0" marking="4" name="ROUTE_A" x="23.0" y="36.0"/>
+      <place label-y="0.0" name="ATTENTE_A" x="14.0" y="39.0"/>
+      <place label-y="0.0" name="SUR_PONT_A" x="8.0" y="36.0"/>
+      <place domain="voitureB" label-y="0.0" marking="&lt;voitureB0&gt;" name="NB_ATTENTE_B" x="41.0" y="18.0"/>
+      <place label-y="0.0" name="SUR_PONT_B" x="15.0" y="10.0"/>
+      <place label-y="0.0" name="ATTENTE_B" x="43.0" y="6.0"/>
+      <place label-y="0.0" marking="4" name="ROUTE_B" x="50.0" y="15.0"/>
+      <place label-y="0.0" name="SORTI_B" x="3.0" y="32.0"/>
+      <place domain="sens" label-y="0.0" name="CONTROLEUR" x="28.0" y="14.0"/>
+      <place domain="sens" label-y="0.0" marking="&lt;sens1&gt;" name="CHOIX" x="15.0" y="15.0"/>
+      <place domain="compteur" label-y="0.0" marking="&lt;compteur0&gt;" name="COMPTEUR" x="41.0" y="37.0"/>
+      <place domain="sens" label-y="0.0" name="VIDANGE" x="23.0" y="23.0"/>
+      <transition label-y="0.0" name="enregistrement_A" nservers-x="0.5" type="EXP" x="16.55" y="33.0"/>
+      <transition label-y="0.0" name="liberation_A" nservers-x="0.5" type="EXP" x="13.55" y="27.0"/>
+      <transition guard="s == sens2 &amp;&amp; cB &gt; voitureB0" label-y="0.0" name="autorisation_B" nservers-x="0.5" type="EXP" x="40.55" y="12.0"/>
+      <transition label-y="0.0" name="basculement" nservers-x="0.5" type="EXP" x="2.55" y="12.0"/>
+      <transition label-y="0.0" name="liberation_B" nservers-x="0.5" type="EXP" x="2.55" y="22.0"/>
+      <transition label-y="0.0" name="enregistrement_B" nservers-x="0.5" type="EXP" x="50.55" y="21.0"/>
+      <transition guard="cpt &lt; compteur2" label-y="0.0" name="decision" nservers-x="0.5" type="EXP" x="49.55" y="24.0"/>
+      <transition guard="cpt == compteur2" label-y="0.0" name="altern_cpt" nservers-x="0.5" type="EXP" x="44.55" y="27.0"/>
+      <transition guard="s == sens1 &amp;&amp; cA == voitureA0 &amp;&amp; cB &gt; voitureB0" label-y="0.0" name="timeout_A" nservers-x="0.5" type="EXP" x="34.55" y="28.0"/>
+      <transition guard="s == sens2 &amp;&amp; cB == voitureB0 &amp;&amp; cA &gt; voitureA0" label-y="0.0" name="timeout_B" nservers-x="0.5" type="EXP" x="19.55" y="29.0"/>
+      <transition guard="s == sens1 &amp;&amp; cA &gt; voitureA0" name="autorisation_A" nservers-x="0.5" type="EXP" x="6.55" y="27.0"/>
+    </nodes>
+    <edges>
+      <arc head="NB_ATTENTE_A" head-magnet="0" kind="OUTPUT" mult="&lt;cA&gt;" tail="timeout_B" tail-magnet="0"/>
+      <arc head="NB_ATTENTE_B" head-magnet="0" kind="OUTPUT" mult="&lt;cB&gt;" tail="timeout_A" tail-magnet="0"/>
+      <arc head="timeout_B" head-magnet="0" kind="INPUT" mult="&lt;cA&gt;" tail="NB_ATTENTE_A" tail-magnet="0"/>
+      <arc head="timeout_A" head-magnet="0" kind="INPUT" mult="&lt;cB&gt;" tail="NB_ATTENTE_B" tail-magnet="0"/>
+      <arc head="timeout_A" head-magnet="0" kind="INPUT" mult="&lt;s&gt;" tail="CONTROLEUR" tail-magnet="0"/>
+      <arc head="timeout_B" head-magnet="0" kind="INPUT" mult="&lt;s&gt;" tail="CONTROLEUR" tail-magnet="0"/>
+      <arc head="autorisation_B" head-magnet="0" kind="INPUT" mult="&lt;s&gt;" tail="CONTROLEUR" tail-magnet="0"/>
+      <arc head="CONTROLEUR" head-magnet="0" kind="OUTPUT" mult="&lt;s&gt;" tail="decision" tail-magnet="0"/>
+      <arc head="decision" head-magnet="0" kind="INPUT" mult="&lt;s&gt;" tail="CHOIX" tail-magnet="0"/>
+      <arc head="CHOIX" head-magnet="0" kind="OUTPUT" mult="&lt;s&gt;" tail="autorisation_B" tail-magnet="0"/>
+      <arc head="CHOIX" head-magnet="0" kind="OUTPUT" mult="&lt;s&gt;" tail="basculement" tail-magnet="0"/>
+      <arc head="altern_cpt" head-magnet="0" kind="INPUT" mult="&lt;s&gt;" tail="CHOIX" tail-magnet="0"/>
+      <arc head="altern_cpt" head-magnet="0" kind="INPUT" mult="&lt;cpt&gt;" tail="COMPTEUR" tail-magnet="0"/>
+      <arc head="COMPTEUR" head-magnet="0" kind="OUTPUT" mult="&lt;cpt++&gt;" tail="decision" tail-magnet="0"/>
+      <arc head="decision" head-magnet="0" kind="INPUT" mult="&lt;cpt&gt;" tail="COMPTEUR" tail-magnet="0"/>
+      <arc head="timeout_A" head-magnet="0" kind="INPUT" mult="&lt;cpt&gt;" tail="COMPTEUR" tail-magnet="0"/>
+      <arc head="COMPTEUR" head-magnet="0" kind="OUTPUT" mult="&lt;compteur0&gt;" tail="timeout_A" tail-magnet="0"/>
+      <arc head="timeout_B" head-magnet="0" kind="INPUT" mult="&lt;cpt&gt;" tail="COMPTEUR" tail-magnet="0"/>
+      <arc head="COMPTEUR" head-magnet="0" kind="OUTPUT" mult="&lt;compteur0&gt;" tail="timeout_B" tail-magnet="0"/>
+      <arc head="COMPTEUR" head-magnet="0" kind="OUTPUT" mult="&lt;compteur0&gt;" tail="altern_cpt" tail-magnet="0"/>
+      <arc head="VIDANGE" head-magnet="0" kind="OUTPUT" mult="&lt;s++&gt;" tail="timeout_B" tail-magnet="0"/>
+      <arc head="basculement" head-magnet="0" kind="INPUT" mult="&lt;s&gt;" tail="VIDANGE" tail-magnet="0"/>
+      <arc head="VIDANGE" head-magnet="0" kind="OUTPUT" mult="&lt;s++&gt;" tail="altern_cpt" tail-magnet="0"/>
+      <arc head="VIDANGE" head-magnet="0" kind="OUTPUT" mult="&lt;s++&gt;" tail="timeout_A" tail-magnet="0"/>
+      <arc head="SUR_PONT_B" head-magnet="0" kind="OUTPUT" tail="autorisation_B" tail-magnet="0"/>
+      <arc head="liberation_B" head-magnet="0" kind="INPUT" tail="SUR_PONT_B" tail-magnet="0"/>
+      <arc head="enregistrement_B" head-magnet="0" kind="INPUT" mult="&lt;cB&gt;" tail="NB_ATTENTE_B" tail-magnet="0"/>
+      <arc head="timeout_B" head-magnet="0" kind="INPUT" mult="&lt;cB&gt;" tail="NB_ATTENTE_B" tail-magnet="0"/>
+      <arc head="NB_ATTENTE_B" head-magnet="0" kind="OUTPUT" mult="&lt;cB++&gt;" tail="enregistrement_B" tail-magnet="0"/>
+      <arc head="NB_ATTENTE_B" head-magnet="0" kind="OUTPUT" mult="&lt;cB&gt;" tail="timeout_B" tail-magnet="0"/>
+      <arc head="autorisation_B" head-magnet="0" kind="INPUT" mult="&lt;cB&gt;" tail="NB_ATTENTE_B" tail-magnet="0"/>
+      <arc head="NB_ATTENTE_B" head-magnet="0" kind="OUTPUT" mult="&lt;cB--&gt;" tail="autorisation_B" tail-magnet="0"/>
+      <arc head="ATTENTE_B" head-magnet="0" kind="OUTPUT" tail="enregistrement_B" tail-magnet="0"/>
+      <arc head="autorisation_B" head-magnet="0" kind="INPUT" tail="ATTENTE_B" tail-magnet="0"/>
+      <arc head="enregistrement_B" head-magnet="0" kind="INPUT" tail="ROUTE_B" tail-magnet="0"/>
+      <arc head="SORTI_A" head-magnet="0" kind="OUTPUT" tail="liberation_A" tail-magnet="0"/>
+      <arc head="SORTI_B" head-magnet="0" kind="OUTPUT" tail="liberation_B" tail-magnet="0"/>
+      <arc head="enregistrement_A" head-magnet="0" kind="INPUT" tail="ROUTE_A" tail-magnet="0"/>
+      <arc head="ATTENTE_A" head-magnet="0" kind="OUTPUT" tail="enregistrement_A" tail-magnet="0"/>
+      <arc head="CAPACITE" head-magnet="0" kind="OUTPUT" tail="liberation_A" tail-magnet="0"/>
+      <arc head="CAPACITE" head-magnet="0" kind="OUTPUT" tail="liberation_B" tail-magnet="0"/>
+      <arc head="autorisation_B" head-magnet="0" kind="INPUT" tail="CAPACITE" tail-magnet="0"/>
+      <arc head="CAPACITE" head-magnet="0" kind="OUTPUT" mult="5" tail="basculement" tail-magnet="0"/>
+      <arc head="basculement" head-magnet="0" kind="INPUT" mult="5" tail="CAPACITE" tail-magnet="0"/>
+      <arc head="liberation_A" head-magnet="0" kind="INPUT" tail="SUR_PONT_A" tail-magnet="0"/>
+      <arc head="enregistrement_A" head-magnet="0" kind="INPUT" mult="&lt;cA&gt;" tail="NB_ATTENTE_A" tail-magnet="0"/>
+      <arc head="NB_ATTENTE_A" head-magnet="0" kind="OUTPUT" mult="&lt;cA++&gt;" tail="enregistrement_A" tail-magnet="0"/>
+      <arc head="timeout_A" head-magnet="0" kind="INPUT" mult="&lt;cA&gt;" tail="NB_ATTENTE_A" tail-magnet="0"/>
+      <arc head="NB_ATTENTE_A" head-magnet="0" kind="OUTPUT" mult="&lt;cA&gt;" tail="timeout_A" tail-magnet="0"/>
+      <arc head="NB_ATTENTE_A" head-magnet="0" kind="OUTPUT" mult="&lt;cA--&gt;" tail="autorisation_A" tail-magnet="0"/>
+      <arc head="autorisation_A" head-magnet="0" kind="INPUT" mult="&lt;cA&gt;" tail="NB_ATTENTE_A" tail-magnet="0"/>
+      <arc head="SUR_PONT_A" head-magnet="0" kind="OUTPUT" tail="autorisation_A" tail-magnet="0"/>
+      <arc head="autorisation_A" head-magnet="0" kind="INPUT" tail="CAPACITE" tail-magnet="0"/>
+      <arc head="autorisation_A" head-magnet="0" kind="INPUT" tail="ATTENTE_A" tail-magnet="0"/>
+      <arc head="CHOIX" head-magnet="0" kind="OUTPUT" mult="&lt;s&gt;" tail="autorisation_A" tail-magnet="0"/>
+      <arc head="autorisation_A" head-magnet="0" kind="INPUT" mult="&lt;s&gt;" tail="CONTROLEUR" tail-magnet="0"/>
+    </edges>
+  </gspn>
+  <gspn name="1posto" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place marking="4" name="P0" x="7.0" y="7.0"/>
+      <transition name="T0" nservers-x="0.5" type="EXP" x="13.55" y="7.0"/>
+      <place name="P1" x="23.0" y="7.0"/>
+    </nodes>
+    <edges>
+      <arc head="P0" kind="OUTPUT" tail="T0"/>
+      <arc head="T0" kind="INHIBITOR" mult="10" tail="P0">
+        <point x="8.5" y="3.5"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="Eratosthenes-PT-010" view-rates="false">
+    <nodes>
+      <place label-y="0.0" marking="1" name="p2" x="6.0" y="14.0"/>
+      <place label-y="0.0" marking="1" name="p3" x="22.0" y="14.0"/>
+      <place label-y="0.0" marking="1" name="p6" x="18.0" y="3.0"/>
+      <place label-y="0.0" marking="1" name="p7" x="31.0" y="14.0"/>
+      <place label-y="0.0" marking="1" name="p4" x="12.0" y="3.0"/>
+      <place label-y="0.0" marking="1" name="p5" x="27.0" y="14.0"/>
+      <place label-y="0.0" marking="1" name="p8" x="25.0" y="3.0"/>
+      <place label-y="0.0" marking="1" name="p9" x="29.0" y="3.0"/>
+      <place label-y="0.0" marking="1" name="p10" x="33.0" y="3.0"/>
+      <transition label-y="1.5" name="t10_2" nservers-x="0.5" type="EXP" x="10.55" y="8.0"/>
+      <transition label-y="0.0" name="t6_2" nservers-x="0.5" type="EXP" x="18.55" y="13.0"/>
+      <transition label-y="0.0" name="t6_3" nservers-x="0.5" type="EXP" x="22.55" y="8.0"/>
+      <transition label-y="0.0" name="t8_2" nservers-x="0.5" type="EXP" x="15.55" y="11.0"/>
+      <transition label-y="0.0" name="t10_5" nservers-x="0.5" type="EXP" x="33.55" y="7.0"/>
+      <transition label-y="0.0" name="t9_3" nservers-x="0.5" type="EXP" x="26.55" y="8.0"/>
+      <transition label-y="0.0" name="t8_4" nservers-x="0.5" type="EXP" x="15.55" y="8.0"/>
+      <transition label-y="0.0" name="t4_2" nservers-x="0.5" type="EXP" x="6.55" y="8.0"/>
+    </nodes>
+    <edges>
+      <arc head="t10_2" head-magnet="0" kind="INPUT" tail="p2" tail-magnet="0"/>
+      <arc head="t10_2" head-magnet="0" kind="INPUT" tail="p10" tail-magnet="0"/>
+      <arc head="p2" head-magnet="0" kind="OUTPUT" tail="t10_2" tail-magnet="0"/>
+      <arc head="t6_2" head-magnet="0" kind="INPUT" tail="p2" tail-magnet="0"/>
+      <arc head="t6_2" head-magnet="0" kind="INPUT" tail="p6" tail-magnet="0"/>
+      <arc head="p2" head-magnet="0" kind="OUTPUT" tail="t6_2" tail-magnet="0"/>
+      <arc head="t6_3" head-magnet="0" kind="INPUT" tail="p3" tail-magnet="0"/>
+      <arc head="t6_3" head-magnet="0" kind="INPUT" tail="p6" tail-magnet="0"/>
+      <arc head="p3" head-magnet="0" kind="OUTPUT" tail="t6_3" tail-magnet="0"/>
+      <arc head="t8_2" head-magnet="0" kind="INPUT" tail="p2" tail-magnet="0"/>
+      <arc head="t8_2" head-magnet="0" kind="INPUT" tail="p8" tail-magnet="0"/>
+      <arc head="p2" head-magnet="0" kind="OUTPUT" tail="t8_2" tail-magnet="0"/>
+      <arc head="t10_5" head-magnet="0" kind="INPUT" tail="p5" tail-magnet="0"/>
+      <arc head="t10_5" head-magnet="0" kind="INPUT" tail="p10" tail-magnet="0"/>
+      <arc head="p5" head-magnet="0" kind="OUTPUT" tail="t10_5" tail-magnet="0"/>
+      <arc head="t9_3" head-magnet="0" kind="INPUT" tail="p9" tail-magnet="0"/>
+      <arc head="t9_3" head-magnet="0" kind="INPUT" tail="p3" tail-magnet="0"/>
+      <arc head="p3" head-magnet="0" kind="OUTPUT" tail="t9_3" tail-magnet="0"/>
+      <arc head="t8_4" head-magnet="0" kind="INPUT" tail="p4" tail-magnet="0"/>
+      <arc head="t8_4" head-magnet="0" kind="INPUT" tail="p8" tail-magnet="0"/>
+      <arc head="p4" head-magnet="0" kind="OUTPUT" tail="t8_4" tail-magnet="0"/>
+      <arc head="t4_2" head-magnet="0" kind="INPUT" tail="p4" tail-magnet="0"/>
+      <arc head="t4_2" head-magnet="0" kind="INPUT" tail="p2" tail-magnet="0"/>
+      <arc head="p2" head-magnet="0" kind="OUTPUT" tail="t4_2" tail-magnet="0"/>
+    </edges>
+  </gspn>
+  <gspn name="SyphonTraps" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place name="P0" x="3.0" y="18.0"/>
+      <transition name="T0" nservers-x="0.5" type="EXP" x="7.55" y="14.0"/>
+      <transition name="T1" nservers-x="0.5" type="EXP" x="7.55" y="22.0"/>
+      <place name="P1" x="11.0" y="18.0"/>
+      <transition name="T2" nservers-x="0.5" type="EXP" x="15.55" y="14.0"/>
+      <transition name="T3" nservers-x="0.5" type="EXP" x="15.55" y="22.0"/>
+      <place name="P2" x="19.0" y="18.0"/>
+      <place marking="2" name="Syp1" x="3.0" y="3.0"/>
+      <place marking="3" name="Syp2" x="11.0" y="3.0"/>
+      <place marking="4" name="Syp3" x="19.0" y="3.0"/>
+      <place name="Syp4" x="11.0" y="10.0"/>
+      <transition name="T4" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="3.55" y="9.0"/>
+      <transition name="T5" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="11.55" y="7.0"/>
+      <transition name="T6" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="11.55" y="14.0"/>
+      <transition name="T7" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="19.55" y="10.0"/>
+      <place name="Trap4" x="11.0" y="25.0"/>
+      <transition name="T8" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="3.55" y="25.0"/>
+      <transition name="T9" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="11.55" y="22.0"/>
+      <transition name="T10" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="19.55" y="25.0"/>
+      <transition name="T11" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="11.55" y="29.0"/>
+      <place name="Trap2" x="11.0" y="33.0"/>
+      <place name="Trap1" x="3.0" y="33.0"/>
+      <place name="Trap3" x="19.0" y="33.0"/>
+      <place marking="1" name="Syp5" x="26.0" y="3.0"/>
+      <transition name="T12" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="26.55" y="9.0"/>
+      <place marking="1" name="P12" x="26.0" y="14.0"/>
+      <place name="Trap5" x="26.0" y="33.0"/>
+      <transition name="T13" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="26.55" y="27.0"/>
+      <place marking="1" name="P14" x="26.0" y="21.0"/>
+      <place marking="5" name="Syp6" x="30.0" y="18.0"/>
+      <transition name="T14" nservers-x="0.5" type="EXP" x="35.55" y="18.0"/>
+      <place name="P3" x="40.0" y="18.0"/>
+      <transition name="T15" nservers-x="0.5" type="EXP" x="45.55" y="18.0"/>
+      <place marking="1" name="Trap6" x="50.0" y="18.0"/>
+      <transition name="T16" nservers-x="0.5" rotation="0.7853981633974483" type="EXP" x="37.55" y="15.0"/>
+      <place name="P5" x="34.0" y="12.0"/>
+      <transition name="T17" nservers-x="0.5" rotation="2.356194490192345" type="EXP" x="43.55" y="15.0"/>
+      <place name="P6" x="46.0" y="12.0"/>
+      <place name="P7" x="40.0" y="6.0"/>
+      <transition name="T18" nservers-x="0.5" rotation="2.356194490192345" type="EXP" x="37.55" y="9.0"/>
+      <transition name="T19" nservers-x="0.5" rotation="0.7853981633974483" type="EXP" x="43.55" y="9.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="T0"/>
+      <arc head="T1" kind="INPUT" tail="P1"/>
+      <arc head="P0" kind="OUTPUT" tail="T1"/>
+      <arc head="T2" kind="INPUT" tail="P1"/>
+      <arc head="P2" kind="OUTPUT" tail="T2"/>
+      <arc head="T3" kind="INPUT" tail="P2"/>
+      <arc head="P1" kind="OUTPUT" tail="T3"/>
+      <arc head="T4" kind="INPUT" tail="Syp1"/>
+      <arc head="P0" kind="OUTPUT" tail="T4"/>
+      <arc head="T5" kind="INPUT" tail="Syp2"/>
+      <arc head="Syp4" kind="OUTPUT" tail="T5"/>
+      <arc head="T6" kind="INPUT" tail="Syp4"/>
+      <arc head="P1" kind="OUTPUT" tail="T6"/>
+      <arc head="T7" kind="INPUT" tail="Syp3"/>
+      <arc head="P2" kind="OUTPUT" tail="T7"/>
+      <arc head="T8" kind="INPUT" tail="P0"/>
+      <arc head="Trap1" kind="OUTPUT" tail="T8"/>
+      <arc head="T9" kind="INPUT" tail="P1"/>
+      <arc head="Trap4" kind="OUTPUT" tail="T9"/>
+      <arc head="T11" kind="INPUT" tail="Trap4"/>
+      <arc head="Trap2" kind="OUTPUT" tail="T11"/>
+      <arc head="T10" kind="INPUT" tail="P2"/>
+      <arc head="Trap3" kind="OUTPUT" tail="T10"/>
+      <arc head="T12" kind="INPUT" tail="Syp5"/>
+      <arc head="P12" kind="OUTPUT" tail="T12"/>
+      <arc head="T12" kind="INPUT" tail="P12"/>
+      <arc head="T13" kind="INPUT" tail="P14"/>
+      <arc head="P14" kind="OUTPUT" tail="T13"/>
+      <arc head="Trap5" kind="OUTPUT" tail="T13"/>
+      <arc head="T13" kind="INHIBITOR" tail="Trap5">
+        <point x="30.0" y="30.5"/>
+      </arc>
+      <arc head="T14" kind="INPUT" mult="2" mult-k="0.81142578125" mult-x="-0.2569919533211902" mult-y="-0.6556955126121409" tail="Syp6">
+        <point x="33.5" y="18.0"/>
+      </arc>
+      <arc head="Syp6" kind="OUTPUT" mult-k="1.14697265625" tail="T14">
+        <point x="34.0" y="20.0"/>
+      </arc>
+      <arc head="P3" kind="OUTPUT" tail="T14"/>
+      <arc head="T15" kind="INPUT" tail="P3"/>
+      <arc head="Trap6" kind="OUTPUT" mult="2" mult-k="1.12685546875" tail="T15">
+        <point x="48.0" y="18.0"/>
+      </arc>
+      <arc head="T15" kind="INPUT" mult-k="0.91748046875" tail="Trap6">
+        <point x="48.5" y="20.0"/>
+      </arc>
+      <arc head="T16" kind="INPUT" tail="P3"/>
+      <arc head="P5" kind="OUTPUT" tail="T16"/>
+      <arc head="T18" kind="INPUT" tail="P5"/>
+      <arc head="P7" kind="OUTPUT" tail="T18"/>
+      <arc head="T19" kind="INPUT" tail="P7"/>
+      <arc head="P6" kind="OUTPUT" tail="T19"/>
+      <arc head="T17" kind="INPUT" tail="P6"/>
+      <arc head="P3" kind="OUTPUT" tail="T17"/>
+    </edges>
+  </gspn>
+  <gspn name="HouseConstruction-PT-002" view-rates="false">
+    <nodes>
+      <place label-x="-2.0" label-y="-0.4" marking="2" name="p1" x="25.6" y="1.7"/>
+      <place label-x="-2.1" label-y="-0.5" name="p2" x="25.6" y="7.6"/>
+      <place label-x="-2.0" label-y="-0.3" name="p3" x="25.6" y="13.5"/>
+      <place label-x="1.9" label-y="-0.2" name="p4" x="15.6" y="16.7"/>
+      <place label-x="-1.9" label-y="-0.4" name="p6" x="27.0" y="20.0"/>
+      <place label-x="-2.0" label-y="-0.3" name="p5" x="44.6" y="16.7"/>
+      <place label-x="1.9" label-y="-0.2" name="p7" x="20.6" y="23.0"/>
+      <place label-x="-2.0" label-y="-0.3" name="p15" x="20.6" y="36.6"/>
+      <place label-x="2.5" label-y="-0.3" name="p11" x="20.6" y="29.2"/>
+      <place label-x="2.5" label-y="-0.4" name="p12" x="25.6" y="29.2"/>
+      <place label-x="-0.1" label-y="1.3" name="p8" x="30.8" y="23.0"/>
+      <place label-x="-0.3" label-y="1.4" name="p9" x="40.5" y="23.0"/>
+      <place label-x="-1.9" label-y="-0.3" name="p10" x="35.6" y="26.1"/>
+      <place label-x="-1.9" label-y="-0.4" name="p13" x="44.6" y="29.2"/>
+      <place label-x="-1.9" label-y="-0.4" name="p17" x="35.6" y="39.7"/>
+      <place label-x="-1.9" label-y="-0.4" name="p14" x="35.6" y="32.8"/>
+      <place label-x="-1.9" label-y="-0.4" name="p19" x="44.6" y="43.2"/>
+      <place label-x="2.4" label-y="-0.4" name="p20" x="36.0" y="47.0"/>
+      <place label-x="2.5" label-y="-0.4" name="p18" x="25.6" y="43.2"/>
+      <place label-x="-1.9" label-y="-0.4" name="p22" x="44.6" y="49.7"/>
+      <place label-x="-1.9" label-y="-0.4" name="p27" x="44.6" y="57.5"/>
+      <place label-x="2.4" label-y="-0.2" name="p26" x="25.6" y="57.5"/>
+      <place label-x="2.5" label-y="-0.2" name="p21" x="25.6" y="49.7"/>
+      <place label-x="0.1" label-y="1.3" name="p23" x="35.6" y="53.2"/>
+      <place label-x="2.5" label-y="-0.3" name="p25" x="15.6" y="57.5"/>
+      <place label-x="2.6" label-y="-0.3" name="p16" x="15.6" y="39.7"/>
+      <transition label-x="-2.2" label-y="0.4" name="t1" nservers-x="0.5" type="EXP" x="25.5" y="5.2"/>
+      <transition label-x="-2.2" label-y="0.2" name="t2" nservers-x="0.5" type="EXP" x="25.5" y="11.2"/>
+      <transition label-x="-2.1" label-y="1.0" name="t3" nservers-x="0.5" type="EXP" x="25.5" y="17.3"/>
+      <transition label-x="-2.1" label-y="1.0" name="t4" nservers-x="0.5" type="EXP" x="25.5" y="23.6"/>
+      <transition label-x="-2.1" label-y="0.3" name="t6" nservers-x="0.5" type="EXP" x="44.5" y="23.7"/>
+      <transition label-x="1.6" label-y="0.3" name="t7" nservers-x="0.5" type="EXP" x="20.5" y="26.7"/>
+      <transition label-x="2.2" label-y="0.3" name="t10" nservers-x="0.5" type="EXP" x="15.5" y="37.2"/>
+      <transition label-x="1.6" label-y="0.1" name="t9" nservers-x="0.5" type="EXP" x="20.5" y="33.4"/>
+      <transition label-x="-0.4" label-y="1.3" name="t5" nservers-x="0.5" type="EXP" x="35.5" y="23.6"/>
+      <transition label-x="-1.5" label-y="1.3" name="t8" nservers-x="0.5" type="EXP" x="35.5" y="29.8"/>
+      <transition label-x="-1.4" label-y="1.3" name="t11" nservers-x="0.5" type="EXP" x="35.5" y="37.2"/>
+      <transition label-x="-1.4" label-y="1.3" name="t13" nservers-x="0.5" type="EXP" x="35.5" y="43.8"/>
+      <transition label-x="-2.1" label-y="0.2" name="t17" nservers-x="0.5" type="EXP" x="44.5" y="53.8"/>
+      <transition label-x="-1.5" label-y="1.3" name="t18" nservers-x="0.5" type="EXP" x="25.5" y="61.1"/>
+      <transition label-x="-2.1" label-y="0.2" name="t15" nservers-x="0.5" type="EXP" x="44.5" y="47.0"/>
+      <transition label-x="2.2" label-y="0.4" name="t14" nservers-x="0.5" type="EXP" x="25.5" y="47.0"/>
+      <transition label-x="2.2" label-y="0.3" name="t16" nservers-x="0.5" type="EXP" x="25.5" y="53.8"/>
+      <transition label-x="2.2" label-y="0.2" name="t12" nservers-x="0.5" type="EXP" x="15.5" y="43.8"/>
+    </nodes>
+    <edges>
+      <arc head="t1" head-magnet="0" kind="INPUT" tail="p1" tail-magnet="0"/>
+      <arc head="p2" head-magnet="0" kind="OUTPUT" tail="t1" tail-magnet="0"/>
+      <arc head="t2" head-magnet="0" kind="INPUT" tail="p2" tail-magnet="0"/>
+      <arc head="p3" head-magnet="0" kind="OUTPUT" tail="t2" tail-magnet="0"/>
+      <arc head="t3" head-magnet="0" kind="INPUT" tail="p3" tail-magnet="0"/>
+      <arc head="p6" head-magnet="0" kind="OUTPUT" tail="t3" tail-magnet="0"/>
+      <arc head="t10" head-magnet="0" kind="INPUT" tail="p4" tail-magnet="0"/>
+      <arc head="p4" head-magnet="0" kind="OUTPUT" tail="t3" tail-magnet="0"/>
+      <arc head="p7" head-magnet="0" kind="OUTPUT" tail="t4" tail-magnet="0"/>
+      <arc head="t4" head-magnet="0" kind="INPUT" tail="p6" tail-magnet="0"/>
+      <arc head="p11" head-magnet="0" kind="OUTPUT" tail="t7" tail-magnet="0"/>
+      <arc head="t7" head-magnet="0" kind="INPUT" tail="p7" tail-magnet="0"/>
+      <arc head="t10" head-magnet="0" kind="INPUT" tail="p15" tail-magnet="0"/>
+      <arc head="p5" head-magnet="0" kind="OUTPUT" tail="t3" tail-magnet="0"/>
+      <arc head="t9" head-magnet="0" kind="INPUT" tail="p11" tail-magnet="0"/>
+      <arc head="p15" head-magnet="0" kind="OUTPUT" tail="t9" tail-magnet="0"/>
+      <arc head="p12" head-magnet="0" kind="OUTPUT" tail="t4" tail-magnet="0"/>
+      <arc head="t6" head-magnet="0" kind="INPUT" tail="p5" tail-magnet="0"/>
+      <arc head="t5" head-magnet="0" kind="INPUT" tail="p9" tail-magnet="0"/>
+      <arc head="t5" head-magnet="0" kind="INPUT" tail="p8" tail-magnet="0"/>
+      <arc head="p9" head-magnet="0" kind="OUTPUT" tail="t6" tail-magnet="0"/>
+      <arc head="p8" head-magnet="0" kind="OUTPUT" tail="t4" tail-magnet="0"/>
+      <arc head="t8" head-magnet="0" kind="INPUT" tail="p10" tail-magnet="0"/>
+      <arc head="t8" head-magnet="0" kind="INPUT" tail="p13" tail-magnet="0"/>
+      <arc head="p13" head-magnet="0" kind="OUTPUT" tail="t6" tail-magnet="0"/>
+      <arc head="p10" head-magnet="0" kind="OUTPUT" tail="t5" tail-magnet="0"/>
+      <arc head="t8" head-magnet="0" kind="INPUT" tail="p12" tail-magnet="0"/>
+      <arc head="t13" head-magnet="0" kind="INPUT" tail="p17" tail-magnet="0"/>
+      <arc head="p17" head-magnet="0" kind="OUTPUT" tail="t11" tail-magnet="0"/>
+      <arc head="t11" head-magnet="0" kind="INPUT" tail="p14" tail-magnet="0"/>
+      <arc head="p14" head-magnet="0" kind="OUTPUT" tail="t8" tail-magnet="0"/>
+      <arc head="p18" head-magnet="0" kind="OUTPUT" tail="t13" tail-magnet="0"/>
+      <arc head="p20" head-magnet="0" kind="OUTPUT" tail="t13" tail-magnet="0"/>
+      <arc head="p19" head-magnet="0" kind="OUTPUT" tail="t13" tail-magnet="0"/>
+      <arc head="t18" head-magnet="0" kind="INPUT" tail="p27" tail-magnet="0">
+        <point x="45.2" y="61.1"/>
+      </arc>
+      <arc head="t15" head-magnet="0" kind="INPUT" tail="p20" tail-magnet="0"/>
+      <arc head="t15" head-magnet="0" kind="INPUT" tail="p19" tail-magnet="0"/>
+      <arc head="p22" head-magnet="0" kind="OUTPUT" tail="t15" tail-magnet="0"/>
+      <arc head="t17" head-magnet="0" kind="INPUT" tail="p22" tail-magnet="0"/>
+      <arc head="p27" head-magnet="0" kind="OUTPUT" tail="t17" tail-magnet="0"/>
+      <arc head="p21" head-magnet="0" kind="OUTPUT" tail="t14" tail-magnet="0"/>
+      <arc head="t14" head-magnet="0" kind="INPUT" tail="p18" tail-magnet="0"/>
+      <arc head="p26" head-magnet="0" kind="OUTPUT" tail="t16" tail-magnet="0"/>
+      <arc head="t16" head-magnet="0" kind="INPUT" tail="p21" tail-magnet="0"/>
+      <arc head="p16" head-magnet="0" kind="OUTPUT" tail="t10" tail-magnet="0"/>
+      <arc head="p25" head-magnet="0" kind="OUTPUT" tail="t12" tail-magnet="0"/>
+      <arc head="t12" head-magnet="0" kind="INPUT" tail="p16" tail-magnet="0"/>
+      <arc head="p23" head-magnet="0" kind="OUTPUT" tail="t17" tail-magnet="0"/>
+      <arc head="t18" head-magnet="0" kind="INPUT" tail="p26" tail-magnet="0"/>
+      <arc head="t16" head-magnet="0" kind="INPUT" tail="p23" tail-magnet="0"/>
+      <arc head="t18" head-magnet="0" kind="INPUT" tail="p25" tail-magnet="0">
+        <point x="16.2" y="61.1"/>
+      </arc>
+    </edges>
+  </gspn>
+</project>

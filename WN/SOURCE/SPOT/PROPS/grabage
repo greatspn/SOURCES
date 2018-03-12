@@ -1,0 +1,58 @@
+/*
+PART_MAT_P GetRefinedPartitions(TYPE_P** sym_mark1_PM ,TYPE_P sym_mark1_NbElPM,
+				TYPE_P** sym_mark2_PM ,TYPE_P sym_mark2_NbElPM )  
+{
+  Ckey* org_key=NULL;
+  PART_MAT_P org_data=NULL;
+  
+  Ckey* key=malloc(sizeof(Ckey));
+
+  if(sym_mark1_NbElPM > sym_mark2_NbElPM )
+    {  
+      key->p1 = sym_mark1_NbElPM;
+      key->p2 = sym_mark2_NbElPM;
+    }
+  else
+    {
+      key->p2 = sym_mark1_NbElPM;
+      key->p1 = sym_mark2_NbElPM;
+    }
+  
+  if( cache_table_lookup(key ,&org_key, &org_data ) == TRUE) {
+    
+    // reu++;
+    //    printf("reu = %d, ech = %d \n",reu,ech); 
+    free(key);
+
+    return org_data;
+  }
+  else {
+   
+    // ech++;
+     
+    PART_MAT_P PMS = ( PART_MAT_P)calloc(2 , sizeof(PART_MAT));;
+    PART_MAT_P PM  = NULL;
+    
+    PMS[0].PART_MAT=sym_mark1_PM;
+    PMS[0].NbElPM=sym_mark1_NbElPM;
+    
+    PMS[1].PART_MAT=sym_mark2_PM;
+    PMS[1].NbElPM=sym_mark2_NbElPM;
+    
+    PM=FindDisjParts3( PMS, 2);
+    TreatOrdredClasses(PM->PART_MAT, PM->NbElPM);
+    /* 
+    if(g_hash_table_size(cache_table) >=  max_cache_table)
+      g_hash_table_foreach_remove  (cache_table,
+				       destroy_keys,
+				       NULL);
+    */
+    // printf(" size cache : %d ,size hash :%d \n, ",   g_hash_table_size(cache_table) ,g_hash_table_size(hash_table) );
+    PM->Ref=0;
+    cache_insert (key, PM );
+    //    printf("reu = %d, ech = %d \n",reu,ech);   
+
+    free(PMS);
+    return PM;
+  }
+}*/

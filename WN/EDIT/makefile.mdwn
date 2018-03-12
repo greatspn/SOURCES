@@ -1,0 +1,18 @@
+#directories
+SSOU = SOLVE
+CSOU = SOURCE/SHARED
+GSOU = SOURCE/REACHAB
+RSOU = SOURCE/READNET
+EDT = EDIT
+SFK = SUPPORT
+INC = INCLUDE
+BCK = BACKUP
+TRS = TRANSL
+OBJ = ../../$(GSPN2BINS)/2bin
+BINDIR=../../$(GSPN2BINS)
+
+
+
+MDWN:
+	cd ./SOURCE/MDWN; ./configure; make; cp ./src/MDWN2WN ../../$(BINDIR)/; cp ./src/MDP ../../$(BINDIR)/; cp ./src/RG2RRG ../../$(BINDIR)/; cp ./src/MDWN2MDP.sh ../../../../bin/mdwn2mdp; cp ./src/MDWNSolve.sh ../../../../bin/mdwnsolve;  cp ./src/MDWN2PRISM.sh ../../../../bin/mdwn2Prism; chmod u+x  ../../../../bin/mdwnsolve; chmod u+x  ../../../../bin/mdwn2mdp;  chmod u+x  ../../../../bin/mdwn2Prism;  make clean
+

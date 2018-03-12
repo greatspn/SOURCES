@@ -1,0 +1,127 @@
+/*******************************************************************************
+        About Dialog
+        
+        Comment:  This Section Describes the About Dialog 
+                                                        
+        Programmer:                     Alex
+        Creation Date:                  27/2/95
+        Last Modify Date:               27/2/95
+
+********************************************************************************/
+	
+object   AboutDialog :  XmFormDialog
+{
+	controls
+	{
+		XmPushButton	AboutOk;
+		XmSeparator		AboutSep;
+		XmLabel			AboutPixmap;
+		XmFrame			AboutNetFrame1;
+		XmFrame			AboutNetFrame2;
+	};
+	arguments
+	{
+		XmNdialogTitle		=	"About";
+		XmNwidth				=	500;
+		XmNheight         =	212;
+		XmNautoUnmanage	=	true;
+		XmNdialogStyle		=	XmDIALOG_MODELESS;
+		XmNnoResize 	   =	true;
+		XmNresizePolicy   =	XmRESIZE_NONE;
+		XmNbackground 		=	appDialogBackgroundColor;
+	};
+};
+
+object AboutPixmap : XmLabel
+{
+   arguments
+   {
+		XmNtopAttachment		=	XmATTACH_FORM;
+		XmNtopOffset			=	20;
+		XmNrightAttachment	=	XmATTACH_FORM;
+		XmNrightOffset			=	10;
+		XmNlabelType			=	XmPIXMAP;
+		XmNlabelPixmap			= 	bmpLogo;
+   };
+};
+
+object AboutSep : XmSeparator
+{
+   arguments
+   {
+      XmNbottomAttachment	=	XmATTACH_FORM;
+      XmNbottomOffset		=	50;
+      XmNleftAttachment		=	XmATTACH_FORM;
+      XmNleftOffset			=	1;
+      XmNrightAttachment	=	XmATTACH_FORM;
+      XmNrightOffset			=	1;
+   };
+};
+			
+object  AboutOk : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment	=	XmATTACH_FORM;
+      XmNbottomOffset		=	4;
+      XmNleftAttachment		=	XmATTACH_FORM;
+      XmNleftOffset			=	215;
+      XmNlabelString			=	'Ok';
+      XmNshowAsDefault		=	1;
+      XmNrecomputeSize		=	false;
+      XmNwidth					=	50;
+      XmNheight				=	30;
+   };
+};
+
+object AboutNetFrame1 : XmFrame
+{
+	controls
+	{
+		XmLabel AboutNetPixmap;
+	};
+   arguments
+   {
+      XmNtopAttachment	=	XmATTACH_FORM;
+      XmNtopOffset		=	10;
+      XmNleftAttachment =	XmATTACH_FORM;
+      XmNleftOffset		=	10;
+		XmNbackground		=	appDialogBackgroundColor;
+   };
+};
+
+object AboutNetPixmap : XmLabel	widget
+{
+   arguments
+   {
+   		XmNlabelType	=	XmPIXMAP;
+		XmNlabelPixmap			= 	bmpNetLogo;
+		XmNbackground		=	appDialogBackgroundColor;
+   };
+};
+
+object AboutNetFrame2 : XmFrame
+{
+	controls
+	{
+		XmLabel AboutFacePixmap;
+	};
+   arguments
+   {
+      XmNtopAttachment		=	XmATTACH_FORM;
+      XmNtopOffset			=	10;
+      XmNleftAttachment		=	XmATTACH_FORM;
+      XmNleftOffset			=	20;
+	  XmNmappedWhenManaged	=	false;
+	  XmNbackground			=	appDialogBackgroundColor;
+   };
+};
+
+object AboutFacePixmap : XmLabel
+{
+   arguments
+   {
+		XmNlabelType	=	XmPIXMAP;
+		XmNlabelPixmap			= 	bmpFaceLogo;
+   };
+};

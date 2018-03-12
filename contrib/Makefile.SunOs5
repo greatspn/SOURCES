@@ -1,0 +1,21 @@
+PLATFORM:=$(shell ./version.sh)
+GSPN2BINS?=$(PLATFORM)
+ 
+makeall: ../../$(GSPN2BINS) ../../bin ../../$(GSPN2BINS)/first ../../bin/greatspn ../../bin/great_package.sh ../../bin/greatspn_version
+
+../../$(GSPN2BINS):
+	mkdir ../../$(GSPN2BINS)
+../../bin:
+	mkdir ../../bin
+ 
+../../$(GSPN2BINS)/first: first.c
+	$(CC) -o ../../$(GSPN2BINS)/first $(MOTIF_LIB_DIR:%=-L%) $(MOTIF_INCLUDE_DIR:%=-I%) first.c -lXm -lXt -lX11
+../../bin/greatspn: greatspn.sh
+	cp greatspn.sh ../../bin/greatspn
+	chmod 750 ../../bin/greatspn
+../../bin/great_package.sh: great_package.sh
+	echo GSPN2PACKAGE=$(CURDIR)/../.. > ../../bin/great_package.sh
+	cat great_package.sh >> ../../bin/great_package.sh
+../../bin/greatspn_version: version.sh
+	cp version.sh ../../bin/greatspn_version
+	chmod 750 ../../bin/greatspn_version

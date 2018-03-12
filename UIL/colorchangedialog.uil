@@ -1,0 +1,240 @@
+/*******************************************************************************
+        Color Change Dialog
+        
+        Comment:     This Section Describes the Color Change Dialog 
+                                                        
+        Programmer:                             Alex
+        Creation Date:                  27/2/95
+        Last Modify Date:               09/3/95
+
+********************************************************************************/
+identifier
+	COLORSET;
+	COLORMARK;
+	COLORFUN;
+procedure
+	CancelColorDialogCB();
+	ChangeColorTypeCB(integer);
+	SetColorTypeCB();
+	
+object  ColorChangeDialog : XmFormDialog
+{
+        controls
+        {
+				XmPushButton  ColorChangeDialog_Ok;
+				XmPushButton  ColorChangeDialog_Cancel;
+				XmSeparator  ColorChangeDialog_Sep1;
+				XmSeparator  ColorChangeDialog_Sep2;
+				XmLabel  ColorChangeDialog_Label1;
+				XmLabel  ColorChangeDialog_Label2;
+				XmTextField  ColorChangeDialog_Tag;
+				XmRowColumn  ColorChangeDialog_RC;
+				XmScrolledText ColorChangeDialog_Color;
+         };
+        arguments
+        {
+                XmNdialogTitle                  =       "Change Color";
+                XmNwidth                                =       310;
+                XmNheight                               =       280;
+                XmNautoUnmanage                 =       false;
+                XmNdialogStyle                  =       XmDIALOG_FULL_APPLICATION_MODAL;
+                XmNnoResize                             =       true;
+				XmNbackground =				appDialogBackgroundColor;
+        };
+
+};
+
+object ColorChangeDialog_RC : XmRowColumn
+{
+   controls
+   {
+		XmToggleButton  ColorChangeDialog_Colorset;
+		XmToggleButton  ColorChangeDialog_Marking;
+		XmToggleButton  ColorChangeDialog_Function;
+   };
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              10;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                180;
+	  
+      XmNpacking=                   XmPACK_TIGHT;
+      XmNradioBehavior=             true;
+      XmNradioAlwaysOne=            true;
+	  XmNbackground =				colorLight;
+   };
+};
+      
+object ColorChangeDialog_Colorset : XmToggleButton
+{
+   arguments
+   {
+      XmNrecomputeSize=                        true;
+      XmNfillOnSelect=                       true;
+      XmNselectColor=                          colorBlack;
+      XmNmarginWidth=                          0;
+      XmNmarginHeight=                         0;
+      XmNlabelString =             'Colorset';
+   };
+   callbacks
+   {
+   		XmNvalueChangedCallback = procedure ChangeColorTypeCB(COLORSET);
+   };
+};
+
+object ColorChangeDialog_Marking : XmToggleButton
+{
+   arguments
+   {
+      XmNrecomputeSize=                        true;
+      XmNfillOnSelect=                       true;
+      XmNselectColor=                          colorBlack;
+      XmNmarginWidth=                          0;
+      XmNmarginHeight=                         0;
+      XmNlabelString =             'Marking';
+   };
+   callbacks
+   {
+   		XmNvalueChangedCallback = procedure ChangeColorTypeCB(COLORMARK);
+   };
+};
+
+object ColorChangeDialog_Function : XmToggleButton
+{
+   arguments
+   {
+      XmNrecomputeSize=                        true;
+      XmNfillOnSelect=                       true;
+      XmNselectColor=                          colorBlack;
+      XmNmarginWidth=                          0;
+      XmNmarginHeight=                         0;
+      XmNlabelString =             'Function';
+   };
+   callbacks
+   {
+   		XmNvalueChangedCallback = procedure ChangeColorTypeCB(COLORFUN);
+   };
+};
+
+object ColorChangeDialog_Sep1 : XmSeparator
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              87;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                1;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                1;
+   };
+};
+
+object ColorChangeDialog_Sep2 : XmSeparator
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              52;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                1;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                1;
+   };
+};
+
+object ColorChangeDialog_Ok : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              4;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                20;
+      XmNlabelString =               'Ok';
+      XmNshowAsDefault =             1;
+      XmNrecomputeSize =            false;
+      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+   callbacks
+   {
+   		XmNactivateCallback = procedure SetColorTypeCB();
+   };
+};
+
+object ColorChangeDialog_Cancel : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              10;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               26;
+      XmNlabelString =               'Cancel';
+      XmNrecomputeSize =            false;
+      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+   callbacks
+   {
+   		XmNactivateCallback = procedure CancelColorDialogCB();
+   };
+};
+
+
+object ColorChangeDialog_Label1 : XmLabel
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              97;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+      XmNlabelString =             'Definition :';
+   };
+};
+
+object ColorChangeDialog_Label2 : XmLabel
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              10;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+      XmNlabelString =                         'Label :';
+   };
+};
+
+
+object ColorChangeDialog_Color : XmScrolledText
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              119;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+	  XmNbackground =				appDialogBackgroundColor;
+      XmNwidth =                     290;
+      XmNheight =                    99;
+	  XmNeditMode =					XmMULTI_LINE_EDIT;
+   };
+};
+
+object ColorChangeDialog_Tag : XmTextField
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              32;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+	  XmNbackground =				appDialogBackgroundColor;
+   };
+   callbacks
+   {
+   		XmNactivateCallback = procedure SetColorTypeCB();
+   };
+};

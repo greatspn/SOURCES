@@ -1,0 +1,237 @@
+/*******************************************************************************
+        Edit Layer Dialog
+        
+        Comment:   This Section Describes the Edit Layer Dialog 
+                                                        
+        Programmer:                             Alex
+        Creation Date:                  27/2/95
+        Last Modify Date:               14/3/95
+
+********************************************************************************/
+procedure
+	EditLayerListSelectCB();
+	EditLayerActionCB(integer);
+	EditLayerDoneCB();
+	LayerEditDeleteCB();
+	LayerEditViewCB();
+	
+identifier
+	ACTION_ADD;
+	ACTION_RENAME;
+	
+object  LayerEditDialog : XmFormDialog
+{
+        controls
+        {
+				XmSeparator  LayerEditDialog_Sep;
+				XmScrolledList  LayerEditDialog_Scroller;
+				XmPushButton  LayerEditDialog_Add;
+				XmPushButton  LayerEditDialog_Done;
+				XmPushButton  LayerEditDialog_Rename;
+				XmPushButton  LayerEditDialog_Delete;
+				XmPushButton  LayerEditDialog_View;
+				XmPushButton  LayerEditDialog_Ok;
+				XmPushButton  LayerEditDialog_Cancel;
+				XmTextField	  LayerEditDialog_Text;
+		};
+        arguments
+        {
+                XmNdialogTitle                  =       "Edit Layers";
+                XmNwidth                        =       310;
+                XmNheight                       =       254;
+                XmNminWidth                     =       300;
+                XmNminHeight                    =       254;
+                XmNautoUnmanage                 =       false;
+				XmNbackground 					=		appDialogBackgroundColor;
+        };
+
+};
+
+
+object LayerEditDialog_Sep : XmSeparator
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_OPPOSITE_FORM;
+      XmNtopOffset =              -50;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                1;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                1;
+   };
+};
+
+object LayerEditDialog_Add : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_OPPOSITE_FORM;
+      XmNbottomOffset =              -85;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                10;
+      XmNlabelString =               'Add';
+      XmNrecomputeSize =            false;
+      XmNwidth =                     60;
+      XmNheight =                    30;
+	  XmNshowAsDefault	=				1;
+   };
+   callbacks
+   {
+   	XmNactivateCallback = procedure EditLayerActionCB(ACTION_ADD);
+	};
+};
+
+object LayerEditDialog_Done : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_OPPOSITE_FORM;
+      XmNbottomOffset =              -45;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               10;
+      XmNlabelString =               'Done';
+      XmNrecomputeSize =            false;
+!      XmNshowAsDefault =             1;
+      XmNwidth =                     60;
+      XmNheight =                    30;
+   };
+   callbacks
+   {
+   	XmNactivateCallback = procedure EditLayerDoneCB();
+	};
+};
+
+object LayerEditDialog_Rename : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_OPPOSITE_FORM;
+      XmNbottomOffset =              -125;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               10;
+      XmNlabelString =               'Rename';
+      XmNrecomputeSize =            false;
+      XmNwidth =                     60;
+      XmNheight =                    30;
+   };
+   callbacks
+   {
+   	XmNactivateCallback = procedure EditLayerActionCB(ACTION_RENAME);
+	};
+};
+
+object LayerEditDialog_View : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_OPPOSITE_FORM;
+      XmNbottomOffset =              -200;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               10;
+      XmNlabelString =               'View';
+      XmNrecomputeSize =            false;
+      XmNwidth =                     60;
+      XmNheight =                    30;
+   };
+   callbacks
+   {
+   	XmNactivateCallback = procedure LayerEditViewCB();
+	};
+};
+
+object LayerEditDialog_Delete : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_OPPOSITE_FORM;
+      XmNbottomOffset =              -160;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               10;
+      XmNlabelString =               'Delete';
+      XmNrecomputeSize =            false;
+      XmNwidth =                     60;
+      XmNheight =                    30;
+   };
+   callbacks
+   {
+   	XmNactivateCallback = procedure LayerEditDeleteCB();
+	};
+};
+
+object LayerEditDialog_Ok : XmPushButton
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_OPPOSITE_FORM;
+      XmNtopOffset =              -46;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               80;
+      XmNlabelString =               'Ok';
+      XmNrecomputeSize =            false;
+      XmNwidth =                     60;
+      XmNheight =                    30;
+	  XmNshowAsDefault =			1;
+   };
+};
+
+object LayerEditDialog_Cancel : XmPushButton
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_OPPOSITE_FORM;
+      XmNtopOffset =              -46;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               10;
+      XmNlabelString =               'Cancel';
+      XmNrecomputeSize =            false;
+      XmNwidth =                     60;
+      XmNheight =                    30;
+   };
+};
+
+
+object LayerEditDialog_Text : XmTextField
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_OPPOSITE_FORM;
+      XmNtopOffset =              -40;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                156;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+	  XmNbackground =				appDialogBackgroundColor;
+   };
+};
+
+
+object LayerEditDialog_Scroller : XmScrolledList
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              10;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                100;
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              60;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+	  	XmNbackground =				appDialogBackgroundColor;
+		
+		XmNscrollingPolicy =				XmAUTOMATIC;
+		XmNscrollBarDisplayPolicy =			XmAS_NEEDED;
+		XmNselectionPolicy =				XmMULTIPLE_SELECT;
+		XmNlistSizePolicy =					XmCONSTANT;
+		XmNvisibleItemCount =				10;
+!MOTIF 2.0
+!	XmNvisualPolicy =					XmSTATIC;
+   };
+   callbacks
+   {
+   	XmNmultipleSelectionCallback = procedure EditLayerListSelectCB();
+	};
+};
+
+
+

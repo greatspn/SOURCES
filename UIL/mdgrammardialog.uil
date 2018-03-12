@@ -1,0 +1,131 @@
+/*******************************************************************************
+        Marking Dependent Grammar Help Dialog
+        
+        Comment:   This Section Describes the Marking Dependent Grammar Help Dialog 
+                                                        
+        Programmer:                     Alex
+        Creation Date:                  27/2/95
+        Last Modify Date:               11/3/95
+
+********************************************************************************/
+procedure
+	HideMDGrammarDialogCB();
+	
+object  MDGrammarDialog : XmFormDialog
+{
+        controls
+        {
+				XmText  MDGrammarDialog_Text;
+				XmSeparator  MDGrammarDialog_Sep1;
+				XmPushButton  MDGrammarDialog_Done;
+		};
+        arguments
+        {
+                XmNdialogTitle                  =       "Marking-Dependentent Rate Definition Grammar (BNF)";
+!                XmNwidth                        =       260;
+!                XmNheight                       =       200;
+                XmNautoUnmanage                 =       true;
+				XmNnoResize						=		true;
+				XmNbackground 					=		appDialogBackgroundColor;
+				XmNmappedWhenManaged			= 		true;
+        };
+
+};
+
+object  ResGrammarDialog : XmFormDialog
+{
+        controls
+        {
+				XmText  MDGrammarDialog_ResText;
+				XmSeparator  MDGrammarDialog_Sep1;
+				XmPushButton  MDGrammarDialog_Done;
+		};
+        arguments
+        {
+                XmNdialogTitle                  =       "Result Definition Grammar (BNF)";
+!                XmNwidth                        =       260;
+!                XmNheight                       =       200;
+                XmNautoUnmanage                 =       true;
+				XmNnoResize						=		true;
+				XmNbackground 					=		appDialogBackgroundColor;
+				XmNmappedWhenManaged			= 		true;
+        };
+
+};
+
+object MDGrammarDialog_Text : XmText
+{
+	arguments
+	{
+		XmNtopAttachment =				XmATTACH_FORM;
+		XmNtopOffset =					10;
+		XmNbottomAttachment =				XmATTACH_FORM;
+		XmNbottomOffset =					70;
+		XmNleftAttachment =				XmATTACH_FORM;
+		XmNleftOffset =					10;
+		XmNrightAttachment =				XmATTACH_FORM;
+		XmNrightOffset =					10;
+		XmNvalue =  					appMDgrammarHelpString;
+		
+		XmNeditMode =					XmMULTI_LINE_EDIT;
+		XmNcursorPositionVisible =		false;
+        XmNwidth                        =       440;
+        XmNheight                       =       220;
+		XmNbackground 					=		appDialogBackgroundColor;
+	};
+};
+
+object MDGrammarDialog_ResText : XmText
+{
+	arguments
+	{
+		XmNtopAttachment =				XmATTACH_FORM;
+		XmNtopOffset =					10;
+		XmNbottomAttachment =				XmATTACH_FORM;
+		XmNbottomOffset =					70;
+		XmNleftAttachment =				XmATTACH_FORM;
+		XmNleftOffset =					10;
+		XmNrightAttachment =				XmATTACH_FORM;
+		XmNrightOffset =					10;
+		XmNvalue =  					appResGrammarHelpString;
+		
+		XmNeditMode =					XmMULTI_LINE_EDIT;
+		XmNcursorPositionVisible =		false;
+        XmNwidth                        =       440;
+        XmNheight                       =       220;
+		XmNbackground 					=		appDialogBackgroundColor;
+	};
+};
+
+object MDGrammarDialog_Sep1 : XmSeparator
+{
+	arguments
+	{
+		XmNtopAttachment =				XmATTACH_FORM;
+		XmNtopOffset =					245;
+		XmNleftAttachment =				XmATTACH_FORM;
+		XmNleftOffset =					1;
+		XmNrightAttachment =			XmATTACH_FORM;
+		XmNrightOffset =				1;
+	};
+};
+
+object MDGrammarDialog_Done : XmPushButton
+{
+	arguments
+	{
+		XmNbottomAttachment =				XmATTACH_FORM;
+		XmNbottomOffset =					4;
+		XmNleftAttachment =				XmATTACH_FORM;
+		XmNleftOffset =					200;
+		
+		XmNshowAsDefault =				1;
+        XmNwidth                        =       50;
+        XmNheight                       =       30;
+		XmNlabelString =				'Done';
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure	HideMDGrammarDialogCB();
+	};
+};

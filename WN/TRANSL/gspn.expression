@@ -1,0 +1,174 @@
+mdrate	   : condlist EVER 
+	     COLON
+	{
+	 pmd = (MDrate_p)emalloc(sizeof(struct MD_RATE));
+	 pmd->next = mdptr;
+	 mdptr = pmd;
+	 pmd->guard = NULL;
+	 pmd->code = NULL;
+	 prd_h = prd_t = NULL;
+	 pcode_h = pcode_t = NULL;
+	}
+	     kexpression SEMICOLON
+	{
+	 if(exp_on)
+          {
+           emit(TYPEEND,"",0.0,0);
+	   pmd->code = pcode_h;
+          } 
+         else
+	  pmd->code = NULL;
+	 tabt[nmd].md_rate_val = mdptr;
+	 mdptr = NULL;
+	}
+           |
+            EVER
+	    COLON
+	{
+	 pmd=(MDrate_p)emalloc(sizeof(struct MD_RATE));
+	 pmd->next = mdptr;
+	 mdptr = pmd;
+	 pmd->guard = NULL;
+	 pmd->code = NULL;
+	 prd_h = prd_t = NULL;
+	 pcode_h = pcode_t = NULL;
+	}
+	     kexpression SEMICOLON
+	{
+         if(exp_on)
+          {
+	   emit(TYPEEND,"",0.0,0);
+	   pmd->code = pcode_h;
+          }
+         else
+          pmd->code = NULL;
+	 tabt[nmd].md_rate_val = mdptr;
+	 mdptr = NULL;
+	}
+	   ;
+condlist   : condlist  WHEN 
+	{
+	 pmd = (MDrate_p)emalloc(sizeof(struct MD_RATE));
+	 pmd->next = mdptr;
+	 mdptr = pmd;
+	 pmd->guard = NULL;
+	 pmd->code = NULL;
+	 prd_h = prd_t = NULL;
+	 pcode_h = pcode_t = NULL;
+	}
+	     OBRCK
+	     pred
+	{
+	 gen(TYPEEND,"");
+	 pmd->guard = prd_h;
+	 check_predicate(pmd->guard,MDRATE);
+	}
+	     CBRCK
+	     COLON kexpression SEMICOLON
+	{
+         if(exp_on)
+          {
+	   emit(TYPEEND,"",0.0,0);
+	   pmd->code = pcode_h;
+          }
+         else
+          pmd->code = NULL;
+	}
+	   |  WHEN
+	{
+	 pmd=(MDrate_p)emalloc(sizeof(struct MD_RATE));
+	 pmd->next=mdptr;
+	 mdptr=pmd;
+	 pmd->guard = NULL;
+	 pmd->code = NULL;
+	 prd_h = prd_t = NULL;
+	 pcode_h = pcode_t = NULL;
+	}
+	     OBRCK
+	     pred
+	{
+	 gen(TYPEEND,"");
+	 pmd->guard = prd_h;
+	 check_predicate(pmd->guard,MDRATE);
+	}
+	     CBRCK
+	     COLON kexpression SEMICOLON
+	{
+         if(exp_on)
+          {
+	   emit(TYPEEND,"",0.0,0);
+	   pmd->code = pcode_h;
+          }
+         else
+          pmd->code = NULL;
+	}
+	   ;
+kexpression   :  kexpression plusop vterm
+	{
+	 emit(sign==1 ? TYPEPLUS : TYPEMINUS,"",0.0,0);
+	}
+	   | vterm
+	   ;
+vterm	   : vterm mulop vfatt
+	{
+	 emit(prsign==1 ? TYPEMOLT : TYPEDIV,"",0.0,0);
+	}
+	   | vfatt
+	   ;
+vfatt	   : 
+           | SQRT OPAR kexpression CPAR
+	{
+	 emit(TYPESQRT,"",0.0,0);
+	}
+           | POW OPAR kexpression  COMMA kexpression CPAR
+	{
+	 emit(TYPEPOW,"",0.0,0);
+	}
+           | FACT OPAR kexpression CPAR
+        {
+         emit(TYPEFACT,"",0.0,0);
+        }
+           | COMB OPAR kexpression  COMMA kexpression CPAR
+        {
+         emit(TYPECOMB,"",0.0,0);
+        }
+	   | OPAR kexpression CPAR
+           | NUM
+        {
+         emit(TYPENUM,"",0.0,str_val);
+        }
+	   | STRING
+	{
+	 emit(TYPEPAR,str_in,0.0,0);
+	}
+	   | MAXT OPAR kexpression COMMA kexpression CPAR
+	{
+	 emit(TYPEMAX,"",0.0,0);
+	}
+	   | MINT OPAR kexpression COMMA  kexpression CPAR
+	{
+	 emit(TYPEMIN,"",0.0,0);
+	}
+	   | DIESIS STRING
+	{
+	 emit(TYPEMARK,str_in,0.0,0);
+	}
+	   ;
+plusop	   : PLUS
+	{
+	 sign = 1;
+	}
+	   | MINUS
+	{
+	 sign = -1;
+	}
+	   ;
+mulop	   : MOLT
+	{
+	 prsign = 1;
+	}
+	   | DIV
+	{
+	 prsign = 0;
+	}
+	   ;

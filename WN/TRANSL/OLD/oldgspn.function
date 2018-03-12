@@ -1,0 +1,42 @@
+function :  LT kexpression GT
+	{
+	 ptr=(Coeff_p)emalloc(sizeof(struct ENN_COEFF));
+	 ptr->enn_coef = enn_sign;
+	 enn_sign=1;
+         if(exp_on)
+          {
+	   emit(TYPEEND,"",0.0);
+           ptr->expression = pcode_h;
+           pcode_h = pcode_t = NULL;
+          }
+         else
+          ptr->expression = NULL;
+	 ptr->next = fun_ptr;/* Settare fun_ptr a NULL prima di parse */
+	 fun_ptr = ptr;
+	 ptr->guard = NULL;
+	}
+             opzguard 
+	   | function plusop 
+	{
+	 enn_sign = sign;
+	 sign=1;
+	}
+	      LT kexpression GT
+	{
+	 ptr=(Coeff_p)emalloc(sizeof(struct ENN_COEFF));
+	 ptr->enn_coef = enn_sign;
+	 enn_sign=1;
+         if(exp_on)
+          {
+	   emit(TYPEEND,"",0.0);
+           ptr->expression = pcode_h;
+           pcode_h = pcode_t = NULL;
+          }
+         else
+          ptr->expression = NULL;
+	 ptr->next = fun_ptr;/* Settare fun_ptr a NULL prima di parse */
+	 fun_ptr = ptr;
+	 ptr->guard = NULL;
+	}
+	   opzguard 
+	   ;

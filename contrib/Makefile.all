@@ -1,0 +1,7 @@
+first: first.c
+	$(CC) -o first -L$(MOTIF_LIB_DIR) -I$(MOTIF_INCLUDE_DIR) first.c -lXm -lXt
+	mv first ../../bin
+	cp greatspn.sh ../../bin/greatspn
+	chmod 750 ../../bin/greatspn
+	cp version.sh ../../bin/greatspn_version
+	chmod 750 ../../bin/greatspn_version

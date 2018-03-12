@@ -1,0 +1,393 @@
+/*******************************************************************************
+        SWN SimulationOptions Dialog
+        
+        Comment:  This Section Describes the Options Dialog 
+                                                        
+        Programmer:                     Alex,Rossano
+        Creation Date:                  6/6/95
+        Last Modify Date:               6/6/95
+
+********************************************************************************/
+procedure
+	OkSimOptionsDialogCB();
+	CancelSimOptionsDialogCB();
+	SwnSimOptionsCB(integer);
+	
+identifier
+	SWN_CLEVEL_60;
+	SWN_CLEVEL_70;
+	SWN_CLEVEL_80;
+	SWN_CLEVEL_90;
+	SWN_CLEVEL_95;
+	SWN_CLEVEL_99;
+
+object  SimOptionsDialog : XmFormDialog
+{
+        controls
+        {
+				XmLabel SimOptionsDialog_Label1;
+				XmLabel SimOptionsDialog_Label2;
+				XmLabel SimOptionsDialog_Label3;
+				XmLabel SimOptionsDialog_Label4;
+				XmLabel SimOptionsDialog_Label5;
+				XmLabel SimOptionsDialog_Label6;				
+				XmTextField  SimOptionsDialog_InitWasteText;
+				XmTextField  SimOptionsDialog_MidWasteText;
+				XmTextField  SimOptionsDialog_MinBatchText;
+				XmTextField  SimOptionsDialog_MaxBatchText;
+				XmTextField  SimOptionsDialog_ApproxText;
+				XmTextField  SimOptionsDialog_SeedText;
+				XmToggleButton SimOptionsDialog_VerboseShow;
+				XmOptionMenu  SimOptionsDialog_ConfButton;
+				XmSeparator  SimOptionsDialog_Sep1;
+				XmPushButton  SimOptionsDialog_Ok;
+				XmPushButton  SimOptionsDialog_Cancel;
+        };
+        arguments
+        {
+                 XmNdialogStyle                  =       XmDIALOG_FULL_APPLICATION_MODAL;
+               XmNdialogTitle       =       "SWN Simulation Options";
+                XmNwidth             =       300;
+                XmNheight            =       300;
+                XmNautoUnmanage      =       false;
+                XmNnoResize          =       true;
+				XmNbackground =				appDialogBackgroundColor;
+				XmNdefaultButton =			SimOptionsDialog_Ok;
+        };
+
+};
+
+
+
+object SimOptionsDialog_Sep1 : XmSeparator
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              56;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                1;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                1;
+   };
+};
+
+
+object SimOptionsDialog_Ok : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              10;
+      XmNleftAttachment =           XmATTACH_FORM;
+      XmNleftOffset =               10;
+      XmNlabelString =               'Ok';
+      XmNshowAsDefault =             1;
+      XmNrecomputeSize =            false;
+      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+    callbacks
+    {
+   		XmNactivateCallback =	procedure OkSimOptionsDialogCB();
+	};
+};
+
+object SimOptionsDialog_Cancel : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              10;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               10;
+      XmNlabelString =               'Cancel';
+      XmNrecomputeSize =            false;
+      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+    callbacks
+    {
+   		XmNactivateCallback =	procedure CancelSimOptionsDialogCB();
+	};
+};
+
+
+
+object SimOptionsDialog_VerboseShow : XmToggleButton
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              200;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                150;
+      XmNrecomputeSize=                        true;
+      XmNfillOnSelect=                       true;
+      XmNselectColor=                          colorBlack;
+      XmNmarginWidth=                          0;
+      XmNmarginHeight=                         0;
+      XmNlabelString =             			'Verbose Show';
+   };
+};
+
+object SimOptionsDialog_Label1 : XmLabel
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              10;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+      XmNlabelString =             'Initial Transitory';
+   };
+};
+
+object SimOptionsDialog_Label2 : XmLabel
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              10;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                150;
+      XmNlabelString =             'Batch Spacing';
+   };
+};
+
+object SimOptionsDialog_Label3 : XmLabel
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              70;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+      XmNlabelString =             'Minimum Batch Length';
+   };
+};
+
+object SimOptionsDialog_Label4 : XmLabel
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              70;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                150;
+      XmNlabelString =             'Maximum Batch Length';
+   };
+};
+
+object SimOptionsDialog_Label5 : XmLabel
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              130;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+      XmNlabelString =             'Seed';
+   };
+};
+
+object SimOptionsDialog_Label6 : XmLabel
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              130;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                150;
+      XmNlabelString =             'Accuracy';
+   };
+};
+
+
+object SimOptionsDialog_InitWasteText : XmTextField
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              30;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+	  XmNbackground =				appDialogBackgroundColor;
+   };
+};
+
+object SimOptionsDialog_MidWasteText : XmTextField
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              30;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                150;
+	  XmNbackground =				appDialogBackgroundColor;
+   };
+};
+object SimOptionsDialog_MinBatchText : XmTextField
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              90;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+	  XmNbackground =				appDialogBackgroundColor;
+   };
+};
+object SimOptionsDialog_MaxBatchText : XmTextField
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              90;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                150;
+	  XmNbackground =				appDialogBackgroundColor;
+   };
+};
+object SimOptionsDialog_ApproxText : XmTextField
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              150;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                150;
+	  XmNbackground =				appDialogBackgroundColor;
+   };
+};
+object SimOptionsDialog_SeedText : XmTextField
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              150;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+	  XmNbackground =				appDialogBackgroundColor;
+   };
+};
+
+
+
+object SimOptionsDialog_ConfButton : XmOptionMenu
+{
+ 	controls
+	{
+		XmPulldownMenu  SimOptionsDialog_OptionPane;
+	};
+  	arguments
+   	{
+      XmNlabelString =             compound_string('Confidence',separate=true) & compound_string('Level');
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              190;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+	  XmNbackground =				appDialogBackgroundColor;
+   };
+};
+
+object	SimOptionsDialog_OptionPane : XmPulldownMenu
+{
+	controls
+	{
+		XmPushButton  SimOptionsDialog_Option60;
+		XmPushButton  SimOptionsDialog_Option70;
+		XmPushButton  SimOptionsDialog_Option80;
+		XmPushButton  SimOptionsDialog_Option90;
+		XmPushButton  SimOptionsDialog_Option95;
+		XmPushButton  SimOptionsDialog_Option99;
+	};
+	arguments
+	{
+		XmNbackground = maPullDownBackground;
+		XmNforeground = maPullDownForeground;
+	};
+	callbacks
+	{
+!		XmNunmapCallback = procedure ClearStatusCB();
+	};
+};
+
+object SimOptionsDialog_Option60 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	 		= maMenuFont;
+		XmNlabelString		= '60';
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure SwnSimOptionsCB(SWN_CLEVEL_60);
+	};
+};
+
+object SimOptionsDialog_Option70 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	 		= maMenuFont;
+		XmNlabelString		= '70';
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure SwnSimOptionsCB(SWN_CLEVEL_70);
+	};
+};
+
+object SimOptionsDialog_Option80 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	 		= maMenuFont;
+		XmNlabelString		= '80';
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure SwnSimOptionsCB(SWN_CLEVEL_80);
+	};
+};
+
+object SimOptionsDialog_Option90 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	 		= maMenuFont;
+		XmNlabelString		= '90';
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure SwnSimOptionsCB(SWN_CLEVEL_90);
+	};
+};
+
+object SimOptionsDialog_Option95 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	 		= maMenuFont;
+		XmNlabelString		= '95';
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure SwnSimOptionsCB(SWN_CLEVEL_95);
+	};
+};
+
+object SimOptionsDialog_Option99 : XmPushButton
+{
+	arguments
+	{
+		XmNfontList	 		= maMenuFont;
+		XmNlabelString		= '99';
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure SwnSimOptionsCB(SWN_CLEVEL_99);
+	};
+};
+

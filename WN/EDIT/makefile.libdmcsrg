@@ -1,0 +1,229 @@
+#directories
+SSOU = SOLVE
+CSOU = SOURCE/SHARED
+GSOU = SOURCE/REACHAB
+RSOU = SOURCE/READNET
+# SPOTSOU = SOURCE/SPOT
+EDT = EDIT
+SFK = SUPPORT
+INC = INCLUDE
+BCK = BACKUP
+TRS = TRANSL
+OBJ = ../../$(GSPN2BINS)/2bin/LIBDMC
+BINDIR=../../$(GSPN2BINS)
+LIBDIR=$(OBJ)/lib
+
+#commands
+COMP = $(CC) -fpic -pthread $(CFLAGS) -o
+#LINK =  ar r
+
+#######################CONFIG #####################################
+# Uncommment the following for Linux 
+ LINK = $(CC)  -O3 -dynamiclib -Wl,--soname,libgspndmcSRG.dylib.1 -o
+# Uncommment the following for MacOS X 
+# LINK = $(CC)  -g -dynamiclib  -single_module -o
+###########################################################
+
+
+LFLAGS = -lm -l$(LEX_LIB) $(SOCKET_LIB)
+
+
+#files groups
+EXECUTABLES  =  WNSRG
+T_INCLUDES = ${INC}/const.h \
+	     ${INC}/struct.h \
+	     ${INC}/var_ext.h \
+	     ${INC}/decl.h \
+	     ${INC}/fun_ext.h \
+	     ${INC}/macros.h \
+	     ${INC}/gspndmclib.h
+T_OBJECTS = ${OBJ}/getline.o \
+	    ${OBJ}/ealloc.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_main.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_grammar.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_service.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_token.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_dimensio.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_errors.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_compact.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_common.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_report.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_enabling.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_fire.o\
+	    ${OBJ}/LIBSRGSYMBOLIC_split.o\
+	    ${OBJ}/LIBSRGSYMBOLIC_group.o\
+	    ${OBJ}/LIBSRGSYMBOLIC_shared1.o\
+	    ${OBJ}/LIBSRGSYMBOLIC_shared2.o\
+	    ${OBJ}/LIBSRGSYMBOLIC_outdom.o\
+	    ${OBJ}/LIBSRGSYMBOLIC_degree.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_precheck.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_flush.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_graph_se.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_canonic.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_schemes.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_libgraph.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_stack.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_convert.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_rg_files.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_rgengwn.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_read_arc.o \
+            ${OBJ}/LIBSRGSYMBOLIC_read_t_c.o \
+            ${OBJ}/LIBSRGSYMBOLIC_read_NET.o \
+            ${OBJ}/LIBSRGSYMBOLIC_read_DEF.o \
+            ${OBJ}/LIBSRGSYMBOLIC_read_t_s.o \
+	    ${OBJ}/LIBSRGSYMBOLIC_wn_yac.o
+T_SOURCES = ${CSOU}/main.c \
+	    ${CSOU}/service.c \
+	    ${CSOU}/token.c \
+	    ${CSOU}/dimensio.c \
+	    ${CSOU}/errors.c \
+	    ${SSOU}/compact.c \
+	    ${CSOU}/common.c \
+	    ${CSOU}/enabling.c	\
+	    ${CSOU}/fire.c\
+	    ${CSOU}/split.c\
+	    ${CSOU}/group.c\
+	    ${CSOU}/shared1.c\
+	    ${CSOU}/shared2.c\
+	    ${CSOU}/outdom.c\
+	    ${CSOU}/report.c\
+	    ${CSOU}/precheck.c \
+	    ${CSOU}/flush.c \
+	    ${CSOU}/degree.c \
+	    ${GSOU}/graph_se.c\
+	    ${GSOU}/canonic.c\
+	    ${GSOU}/schemes.c\
+	    ${GSOU}/graph.c\
+	    ${GSOU}/stack.c\
+	    ${GSOU}/convert.c\
+	    ${GSOU}/rg_files.c\
+	    ${GSOU}/rgengwn.c\
+	    ${RSOU}/read_arc.c \
+	    ${RSOU}/read_t_c.c \
+	    ${RSOU}/read_NET.c \
+	    ${RSOU}/read_DEF.c \
+	    ${RSOU}/read_t_s.c \
+	    ${RSOU}/wn_yac.c
+T_LEX = ${TRS}/wn.lex 
+T_YACC = ${TRS}/wn.yac
+
+$(LIBDIR)/libgspndmcSRG.so : ${T_INCLUDES} ${T_OBJECTS} ${T_LEX} ${T_YACC}
+	${LINK} $(LIBDIR)/libgspndmcSRG.so ${T_OBJECTS} ${LFLAGS}
+
+${OBJ}/LIBSRGSYMBOLIC_main.o : ${CSOU}/main.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_main.o ${CSOU}/main.c
+
+${OBJ}/LIBSRGSYMBOLIC_outdom.o : ${CSOU}/outdom.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_outdom.o ${CSOU}/outdom.c
+
+${OBJ}/LIBSRGSYMBOLIC_shared1.o : ${CSOU}/shared1.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_shared1.o ${CSOU}/shared1.c
+
+${OBJ}/LIBSRGSYMBOLIC_shared2.o : ${CSOU}/shared2.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_shared2.o ${CSOU}/shared2.c
+
+${OBJ}/LIBSRGSYMBOLIC_precheck.o : ${CSOU}/precheck.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_precheck.o ${CSOU}/precheck.c
+
+${OBJ}/LIBSRGSYMBOLIC_split.o : ${CSOU}/split.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_split.o ${CSOU}/split.c
+
+${OBJ}/LIBSRGSYMBOLIC_group.o : ${CSOU}/group.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_group.o ${CSOU}/group.c
+
+${OBJ}/LIBSRGSYMBOLIC_fire.o : ${CSOU}/fire.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_fire.o ${CSOU}/fire.c
+
+${OBJ}/LIBSRGSYMBOLIC_degree.o : ${CSOU}/degree.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_degree.o ${CSOU}/degree.c
+
+${OBJ}/LIBSRGSYMBOLIC_flush.o : ${CSOU}/flush.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_flush.o ${CSOU}/flush.c
+       
+${OBJ}/LIBSRGSYMBOLIC_compact.o : ${SSOU}/compact.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_compact.o ${SSOU}/compact.c
+       
+${OBJ}/LIBSRGSYMBOLIC_common.o : ${CSOU}/common.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_common.o ${CSOU}/common.c
+       
+${OBJ}/LIBSRGSYMBOLIC_errors.o : ${CSOU}/errors.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_errors.o ${CSOU}/errors.c
+       
+${OBJ}/LIBSRGSYMBOLIC_dimensio.o : ${CSOU}/dimensio.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_dimensio.o ${CSOU}/dimensio.c
+       
+${OBJ}/LIBSRGSYMBOLIC_token.o : ${CSOU}/token.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_token.o ${CSOU}/token.c
+       
+${OBJ}/LIBSRGSYMBOLIC_service.o : ${CSOU}/service.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_service.o ${CSOU}/service.c
+       
+${OBJ}/LIBSRGSYMBOLIC_enabling.o : ${CSOU}/enabling.c ${T_INCLUDES} ${INC}/shared.h
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_enabling.o ${CSOU}/enabling.c
+
+${OBJ}/LIBSRGSYMBOLIC_report.o : ${CSOU}/report.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_report.o ${CSOU}/report.c
+
+${OBJ}/LIBSRGSYMBOLIC_canonic.o : ${GSOU}/canonic.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_canonic.o ${GSOU}/canonic.c
+       
+${OBJ}/LIBSRGSYMBOLIC_schemes.o : ${GSOU}/schemes.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_schemes.o ${GSOU}/schemes.c
+       
+${OBJ}/LIBSRGSYMBOLIC_libgraph.o : ${GSOU}/graph.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_libgraph.o ${GSOU}/graph.c
+       
+${OBJ}/LIBSRGSYMBOLIC_graph_se.o : ${GSOU}/graph_se.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_graph_se.o ${GSOU}/graph_se.c
+
+${OBJ}/LIBSRGSYMBOLIC_rgengwn.o : ${GSOU}/rgengwn.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_rgengwn.o ${GSOU}/rgengwn.c
+
+${OBJ}/LIBSRGSYMBOLIC_rg_files.o : ${GSOU}/rg_files.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_rg_files.o ${GSOU}/rg_files.c
+       
+${OBJ}/LIBSRGSYMBOLIC_stack.o : ${GSOU}/stack.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_stack.o ${GSOU}/stack.c
+       
+${OBJ}/LIBSRGSYMBOLIC_convert.o : ${GSOU}/convert.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_convert.o ${GSOU}/convert.c
+
+${OBJ}/LIBSRGSYMBOLIC_wn_yac.o : ${RSOU}/wn_yac.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_wn_yac.o ${RSOU}/wn_yac.c
+       
+${OBJ}/LIBSRGSYMBOLIC_read_arc.o : ${RSOU}/read_arc.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_read_arc.o ${RSOU}/read_arc.c
+       
+${OBJ}/LIBSRGSYMBOLIC_read_t_s.o : ${RSOU}/read_t_s.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_read_t_s.o ${RSOU}/read_t_s.c
+       
+${OBJ}/LIBSRGSYMBOLIC_read_t_c.o : ${RSOU}/read_t_c.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_read_t_c.o ${RSOU}/read_t_c.c
+       
+${OBJ}/LIBSRGSYMBOLIC_read_DEF.o : ${RSOU}/read_DEF.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_read_DEF.o ${RSOU}/read_DEF.c
+       
+${OBJ}/LIBSRGSYMBOLIC_read_NET.o : ${RSOU}/read_NET.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_read_NET.o ${RSOU}/read_NET.c
+       
+${OBJ}/LIBSRGSYMBOLIC_grammar.o : ${SFK}/grammar.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBSRGSYMBOLIC_grammar.o ${SFK}/grammar.c
+
+${OBJ}/ealloc.o : ${CSOU}/ealloc.c ${T_INCLUDES}
+	${COMP}  ${OBJ}/ealloc.o ${CSOU}/ealloc.c
+
+
+${OBJ}/getline.o : ${CSOU}/getline.c ${T_INCLUDES}
+	${COMP}  ${OBJ}/getline.o ${CSOU}/getline.c
+
+
+${SFK}/lex.c : ${TRS}/wn.lex
+	$(LEX) ${TRS}/wn.lex
+	mv lex.jj.c ${SFK}/lex.c
+	#ed ${SFK}/lex.c < ${EDT}/ed_lex
+
+${SFK}/grammar.c : ${TRS}/wn.yac ${SFK}/lex.c ${T_INCLUDES}
+	$(YACC) ${TRS}/wn.yac
+	mv y.tab.c ${SFK}/grammar.c
+	ed ${SFK}/grammar.c < ${EDT}/ed_gram
+

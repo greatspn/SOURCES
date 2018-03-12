@@ -1,0 +1,17 @@
+#directories
+SSOU = SOLVE
+CSOU = SOURCE/SHARED
+GSOU = SOURCE/REACHAB
+RSOU = SOURCE/READNET
+EDT = EDIT
+SFK = SUPPORT
+INC = INCLUDE
+BCK = BACKUP
+TRS = TRANSL
+OBJ = ../../$(GSPN2BINS)/2bin
+BINDIR=../../$(GSPN2BINS)
+
+
+
+UNFOLDING:
+	cd ./SOURCE/UNFOLDING;autoreconf -vfi; ./configure; make; mv ./src/swn-translator ../../$(BINDIR)/; cp ./unfolding.sh ../../../../bin/unfolding

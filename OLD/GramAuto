@@ -1,0 +1,51 @@
+automa:
+	| 
+	start '|' end '|' edges
+	;
+
+edges: 	|
+	edges rule
+	;
+
+end:  	NUMBER NUMBER
+        |
+	NUMBER '-'
+	;
+
+start:
+	|
+	start state
+	;
+ 
+
+state: NUMBER 
+	;
+
+rule:
+	source  exp trans exp destination 
+  	;
+source:
+	NUMBER
+	;
+
+
+destination:
+	NUMBER
+	;
+trans: 
+	STRING
+	;
+exp:
+	|formula
+  	| '(' formula ')'
+	| '(' exp '&' formula ')'
+	;
+
+formula:  
+  	STRING '<' NUMBER
+    		
+	|
+	STRING '>' NUMBER
+	|
+  	STRING '=' NUMBER 	
+  	;

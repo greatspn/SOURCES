@@ -1,0 +1,353 @@
+%include{ // Use the Lemon parser generator with C++ additions
+	#include <cstdio>
+	#include <cstring>
+	#include <cstdlib>
+	#include <iostream>
+	#include <iomanip>
+	#include <fstream>
+	#include <sstream>
+	#include <string>
+	#include <vector>
+	#include <memory>
+	#include <map>
+	#include <list>
+	#include <stack>
+	#include <queue>
+	#include <set>
+	#include <exception>
+	#include <algorithm>
+	#include <ctime>
+	#include <cfloat>
+	using namespace std;
+
+	#include <boost/optional.hpp>
+
+	#include "../numeric/numeric.h"
+	using namespace numerical;
+
+	#include "utils.h"
+	#include "sparsevector.h"
+	#include "ParserDefs.h"
+	#include "PetriNet.h"
+	#include "Measure.h"
+	#include "Language.h"
+	#include "DTA.h"
+	#include "CSLTA.h"
+
+	#define GetPN()		    (pExtraArgs->pPN)
+	#define GetDTA()		(pExtraArgs->pDTA)
+	#define Accept(output)  { pExtraArgs->pOutObj = output; }
+
+	// ExtraArgs, Token and the API declaration are in ParserDefs.h	
+
+	// Be sure that the C memory management is not used, otherwise C++ objects will break.
+	#define realloc ERROR
+	#define malloc ERROR
+	#define free ERROR
+
+	// Always generate the parser tracer
+	#ifdef NDEBUG
+	# undef NDEBUG
+	#endif
+
+	template<typename T> shared_ptr<MdepExpr<T>> makeConstLogicExpr(T value) {
+		return make_shared<ExprMdepExpr<T>>(make_shared<ConstValExpr<T>>(value));
+	}
+	shared_ptr<MdepExpr<bool>> TrueExpr()  {  return makeConstLogicExpr(true); }
+	shared_ptr<MdepExpr<bool>> FalseExpr() {  return makeConstLogicExpr(false); }
+	shared_ptr<MdepExpr<int>> ZeroExprInt()   {  return makeConstLogicExpr(int(0)); }
+	shared_ptr<MdepExpr<bool>> PlaceNotZero(const char* name, const PN* pPn) {
+		auto a = make_shared<PlaceMarkingMdepExpr<int>>(name, FindPlace(name, pPn));
+		auto b = make_shared<BinaryMdepExpr<bool,int,bool_binary_op<int>>>
+						(a, ZeroExprInt(), bool_binary_op<int>(CMPOP_NOT_EQ));
+		return b;
+	}
+	shared_ptr<MdepExpr<double>> PdfX = make_shared<ExprMdepExpr<double>>(make_shared<PdfXExpr>());
+}
+
+/* ----------- GENERAL PARSER CONFIGURATION -------------- */
+
+/* Prefix of all the lemon-generated functions. */
+%name PnParser
+/* Prefix of all the token constants defined in the generated header file. */
+%token_prefix TOKEN_
+/* Adds a fourth parameter to the Parse() function. */
+%extra_argument { ExtraParserArgs* pExtraArgs } 
+/* Block of code that is executed whenever the parser accepts its input string. */
+%parse_accept { pExtraArgs->status = PS_ACCEPTED; }
+/* Block of code that is executed whenever the parser failure strategy completes. */
+%parse_failure { pExtraArgs->status = PS_FAILED; }
+/* Block of code that is executed whenever the parser stack overflows. */
+%stack_overflow { pExtraArgs->status = PS_FAILED; cerr << "Parser stack overflow!" << endl; }
+/* Maximum stack size. */
+%stack_size 100
+/* Initial non-terminal of the grammar. */
+%start_symbol parser_entry
+
+/* ------------------ TYPE DECLARATIONS ------------------ */
+
+%token_type { Token* }
+
+%type        measure     	    { shared_ptr<MeasureExpr> }
+%destructor  measure     	    { $$.reset(); /*UNUSED(pExtraArgs);*/ }
+%type        int_const   	    { shared_ptr<Expr<int>> }
+%destructor  int_const   	    { $$.reset(); }
+%type        real_const   	    { shared_ptr<Expr<double>> }
+%destructor  real_const   	    { $$.reset(); }
+%type        int_marking        { shared_ptr<MdepExpr<int>> }
+%destructor  int_marking        { $$.reset(); }
+%type        int_mdexpr   	    { shared_ptr<MdepExpr<int>> }
+%destructor  int_mdexpr   	    { $$.reset(); }
+%type        real_mdexpr   	    { shared_ptr<MdepExpr<double>> }
+%destructor  real_mdexpr   	    { $$.reset(); }
+%type        logic_mdcond       { shared_ptr<MdepExpr<bool>> }
+%destructor  logic_mdcond       { $$.reset(); }
+%type        act_list		    { shared_ptr<DtaEdge> }
+%destructor  act_list           { $$.reset(); }
+%type        actset		        { shared_ptr<DtaEdge> }
+%destructor  actset             { $$.reset(); }
+%type        dta_edge		    { shared_ptr<DtaEdge> }
+%destructor  dta_edge           { $$.reset(); }
+%type        clock_value_list   { clock_value_bindings }
+%destructor  clock_value_list   { $$.clear(); }
+%type        transition_list    { action_bindings }
+%destructor  transition_list    { $$.clear(); }
+%type        spexpr_list        { ap_expr_bindings }
+%destructor  spexpr_list        { $$.clear(); }
+%type        dta_binding        { shared_ptr<DtaBinding> }
+%destructor  dta_binding        { $$.reset(); }
+%type        cslta_expr         { shared_ptr<AtomicPropExpr> }
+%destructor  cslta_expr         { $$.reset(); }
+%type        id_or_quoted_id    { std::string }
+%destructor  id_or_quoted_id    { $$.clear(); }
+%type        clock_id_name      { std::string }
+%destructor  clock_id_name      { $$.clear(); }
+%type        transition_id_name { std::string }
+%destructor  transition_id_name { $$.clear(); }
+%type        spexpr_name        { std::string }
+%destructor  spexpr_name        { $$.clear(); }
+
+
+%type        comp_op   		   { enum CompareOp }
+%type        unary_int_fn      { enum UnaryFunct }
+%type        unary_real_fn     { enum UnaryFunct }
+%type        binary_int_fn     { enum BinaryFunct }
+%type        binary_real_fn    { enum BinaryFunct }
+%type        opt_reset         { bool }
+%type        clock_constr      { pair<clockval_t, clockval_t> }
+%type        clock_value       { clockval_t }
+
+/* ------------ PRECEDENCE RULES OF OPERATORS ------------ */
+
+%left PLUS MINUS.
+%left TIMES DIV.
+%nonassoc LESS LESS_EQ EQ NOT_EQ GREATER GREATER_EQ.
+%left UNARY_NEG.
+%left OR.
+%left AND.
+%right NOT.
+
+/*****************************************************************************/
+
+/* ------------------ PARSEABLE OBJECTS ------------------ */
+
+parser_entry ::= GREATSPN_MEASURE measure(B) opt_semicolon END.			{ Accept(B); }
+parser_entry ::= GREATSPN_MDEPDELAY real_mdexpr(B) opt_semicolon END.	{ Accept(B); }
+parser_entry ::= GREATSPN_MDEARCMULT int_mdexpr(B) opt_semicolon END.	{ Accept(B); }
+parser_entry ::= GREATSPN_TRNGUARD logic_mdcond(B) opt_semicolon END.	{ Accept(B); }
+parser_entry ::= GREATSPN_GENERALPDF real_mdexpr(B) opt_semicolon END.	{ Accept(B); }
+parser_entry ::= DTA_EDGE_DEF dta_edge(B) END.							{ Accept(B); }
+parser_entry ::= DTA_STATE_PROPOSITION cslta_expr(B) END.				{ Accept(B); }
+parser_entry ::= DTA_BINDING_RULES dta_binding(B) END.					{ Accept(B); }
+parser_entry ::= CSLTA_EXPR cslta_expr(B) END.							{ Accept(B); }
+parser_entry ::= INVALID. 												{ }
+
+opt_semicolon ::= .
+opt_semicolon ::= SEMICOLON.
+
+/* ---------- INT/REAL VALUES AND EXPRESSIONS ------------ */
+
+real_const(A) ::= REALNUM(B).				{ A = make_shared<ConstValExpr<double>>(B->real);}
+real_const(A) ::= INTEGER(B).				{ A = make_shared<ConstValExpr<double>>(B->integer);}
+real_const(A) ::= G_RATE_PARAM(B).			{ A = FindRatePar(B->text.c_str(), GetPN()); }
+real_const(A) ::= G_MARK_PARAM(B).			{ A = make_shared<CastExpr<double, int>>(FindMarkPar(B->text.c_str(), GetPN())); }
+
+int_const(A) ::= INTEGER(B).				{ A = make_shared<ConstValExpr<int>>(B->integer); }
+int_const(A) ::= G_MARK_PARAM(B).			{ A = FindMarkPar(B->text.c_str(), GetPN()); }
+
+int_marking(A) ::= SHARP G_PLACE_ID(B).		{ A = make_shared<PlaceMarkingMdepExpr<int>>(B->text.c_str(), FindPlace(B->text.c_str(), GetPN())); }
+
+int_mdexpr(A) ::= int_const(B).							{ A = make_shared<ExprMdepExpr<int>>(B); }
+int_mdexpr(A) ::= int_marking(B).						{ A = B; }
+int_mdexpr(A) ::= OP_PAREN int_mdexpr(B) CL_PAREN.		{ A = B; }
+int_mdexpr(A) ::= int_mdexpr(B) PLUS int_mdexpr(C).		{ A = make_shared<BinaryMdepExpr<int,int,plus_binary_op<int>>>(B, C); }
+int_mdexpr(A) ::= int_mdexpr(B) MINUS int_mdexpr(C).	{ A = make_shared<BinaryMdepExpr<int,int,minus_binary_op<int>>>(B, C); }
+int_mdexpr(A) ::= int_mdexpr(B) TIMES int_mdexpr(C).	{ A = make_shared<BinaryMdepExpr<int,int,mult_binary_op<int>>>(B, C); }
+int_mdexpr(A) ::= int_mdexpr(B) DIV int_mdexpr(C).		{ A = make_shared<BinaryMdepExpr<int,int,div_binary_op<int>>>(B, C); }
+int_mdexpr(A) ::= binary_int_fn(FN) OP_SQPAR int_mdexpr(C) COMMA int_mdexpr(D) CL_SQPAR.	{ A = make_shared<BinaryMdepExpr<int,int,int_binary_op>>(C, D, int_binary_op(FN)); }
+int_mdexpr(A) ::= MINUS int_mdexpr(B). [NOT]			{ A = make_shared<UnaryMdepExpr<int,int,neg_unary_op<int>>>(B); }
+int_mdexpr(A) ::= unary_int_fn(FN) OP_SQPAR int_mdexpr(B) CL_SQPAR.		{ A = make_shared<UnaryMdepExpr<int,int,int_unary_op>>(B, int_unary_op(FN)); }
+int_mdexpr(A) ::= IF_FN OP_SQPAR logic_mdcond(LC) COMMA int_mdexpr(T) COMMA int_mdexpr(F) CL_SQPAR. {
+/**/											  		  A = make_shared<IfThenElseMdepExpr<int>>(LC, T, F); }
+int_mdexpr(A) ::= WHEN logic_mdcond(LC) COLON int_mdexpr(T) SEMICOLON EVER int_mdexpr(F) SEMICOLON. {
+/**/											 		  A = make_shared<IfThenElseMdepExpr<int>>(LC, T, F); }
+int_mdexpr(A) ::= EVER int_mdexpr(B) SEMICOLON.         { A = B; }
+
+unary_int_fn(A) ::= ABS_FN.							{ A = UF_ABS; }
+unary_int_fn(A) ::= FACTORIAL_FN.					{ A = UF_FACTORIAL; }
+
+binary_int_fn(A) ::= MIN_FN.						{ A = BF_MIN; }
+binary_int_fn(A) ::= MAX_FN.						{ A = BF_MAX; }
+binary_int_fn(A) ::= MOD_FN.						{ A = BF_MOD; }
+binary_int_fn(A) ::= BINOMIAL_FN.					{ A = BF_BINOMIAL; }
+binary_int_fn(A) ::= FRACT_FN.						{ A = BF_FRACT; }
+
+real_mdexpr(A) ::= real_const(B).							{ A = make_shared<ExprMdepExpr<double>>(B); }
+real_mdexpr(A) ::= int_marking(B).							{ A = make_shared<CastMdepExpr<double,int>>(B); }
+real_mdexpr(A) ::= PDF_X_VAR.								{ A = PdfX; }
+real_mdexpr(A) ::= OP_PAREN real_mdexpr(B) CL_PAREN.		{ A = B; }
+real_mdexpr(A) ::= real_mdexpr(B) PLUS real_mdexpr(C).		{ A = make_shared<BinaryMdepExpr<double,double,plus_binary_op<double>>>(B, C); }
+real_mdexpr(A) ::= real_mdexpr(B) MINUS real_mdexpr(C).		{ A = make_shared<BinaryMdepExpr<double,double,minus_binary_op<double>>>(B, C); }
+real_mdexpr(A) ::= real_mdexpr(B) TIMES real_mdexpr(C).		{ A = make_shared<BinaryMdepExpr<double,double,mult_binary_op<double>>>(B, C); }
+real_mdexpr(A) ::= real_mdexpr(B) DIV real_mdexpr(C).		{ A = make_shared<BinaryMdepExpr<double,double,div_binary_op<double>>>(B, C); }
+real_mdexpr(A) ::= binary_real_fn(FN) OP_SQPAR real_mdexpr(B) COMMA real_mdexpr(C) CL_SQPAR.	{ A = make_shared<BinaryMdepExpr<double,double,double_binary_op>>(B, C, double_binary_op(FN)); }
+real_mdexpr(A) ::= MINUS real_mdexpr(B). [NOT]				{ A = make_shared<UnaryMdepExpr<double,double,neg_unary_op<double>>>(B); }
+real_mdexpr(A) ::= unary_real_fn(FN) OP_SQPAR real_mdexpr(B) CL_SQPAR.  { A = make_shared<UnaryMdepExpr<double,double,double_unary_op>>(B, double_unary_op(FN)); }
+real_mdexpr(A) ::= LOG_FN OP_SQPAR real_mdexpr(B) CL_SQPAR.	{ A = make_shared<UnaryMdepExpr<double,double,log_unary_op>>(B); }
+real_mdexpr(A) ::= LOG_FN OP_SQPAR real_mdexpr(B) COMMA real_mdexpr(C) CL_SQPAR.  { A = make_shared<BinaryMdepExpr<double,double,log_binary_op>>(B, C); }
+real_mdexpr(A) ::= IF_FN OP_SQPAR logic_mdcond(LC) COMMA real_mdexpr(T) COMMA real_mdexpr(F) CL_SQPAR. {
+/**/											  			  A = make_shared<IfThenElseMdepExpr<double>>(LC, T, F); }
+real_mdexpr(A) ::= WHEN logic_mdcond(LC) COLON real_mdexpr(T) SEMICOLON EVER real_mdexpr(F) SEMICOLON. {
+/**/											  			  A = make_shared<IfThenElseMdepExpr<double>>(LC, T, F); }
+real_mdexpr(A) ::= EVER real_mdexpr(B) SEMICOLON.           { A = B; }
+
+unary_real_fn(A) ::= unary_int_fn(FN).				{ A = FN; }
+unary_real_fn(A) ::= SIN_FN.						{ A = UF_SIN; }
+unary_real_fn(A) ::= COS_FN.						{ A = UF_COS; }
+unary_real_fn(A) ::= TAN_FN.						{ A = UF_TAN; }
+unary_real_fn(A) ::= ARCSIN_FN.						{ A = UF_ARCSIN; }
+unary_real_fn(A) ::= ARCCOS_FN.						{ A = UF_ARCCOS; }
+unary_real_fn(A) ::= ARCTAN_FN.						{ A = UF_ARCTAN; }
+unary_real_fn(A) ::= EXP_FN.						{ A = UF_EXP; }
+unary_real_fn(A) ::= SQRT_FN.						{ A = UF_SQRT; }
+unary_real_fn(A) ::= CEIL_FN.						{ A = UF_CEIL; }
+unary_real_fn(A) ::= FLOOR_FN.						{ A = UF_FLOOR; }
+unary_real_fn(A) ::= DIRACDELTA_FN.					{ A = UF_DIRACDELTA; }
+
+binary_real_fn(A) ::= binary_int_fn(FN).			{ A = FN; }
+binary_real_fn(A) ::= POW_FN.						{ A = BF_POW; }
+binary_real_fn(A) ::= RECT_FN.						{ A = BF_RECT; }
+binary_real_fn(A) ::= UNIFORM_FN.					{ A = BF_UNIFORM; }
+binary_real_fn(A) ::= TRIANGULAR_FN.				{ A = BF_TRIANGULAR; }
+binary_real_fn(A) ::= ERLANG_FN.					{ A = BF_ERLANG; }
+binary_real_fn(A) ::= TRUNCATED_EXP_FN.				{ A = BF_TRUNCATED_EXP; }
+binary_real_fn(A) ::= PARETO_FN.					{ A = BF_PARETO; }
+
+/* ----------- LOGIC CONDITIONS OVER MARKINGS ------------ */
+
+logic_mdcond(A) ::= TRUE.										{ A = TrueExpr(); }
+logic_mdcond(A) ::= FALSE.										{ A = FalseExpr(); }
+logic_mdcond(A) ::= int_mdexpr(B) comp_op(OP) int_mdexpr(C).	{ A = make_shared<BinaryMdepExpr<bool,int,bool_binary_op<int>>>(B, C, bool_binary_op<int>(OP)); }
+logic_mdcond(A) ::= NOT logic_mdcond(B).						{ A = make_shared<UnaryMdepExpr<bool,bool,not_unary_op<bool>>>(B); }
+logic_mdcond(A) ::= OP_PAREN logic_mdcond(B) CL_PAREN.			{ A = B; }
+logic_mdcond(A) ::= logic_mdcond(B) AND logic_mdcond(C).		{ A = make_shared<BinaryMdepExpr<bool,bool,and_binary_op>>(B, C); }
+logic_mdcond(A) ::= logic_mdcond(B) OR logic_mdcond(C).			{ A = make_shared<BinaryMdepExpr<bool,bool,or_binary_op>>(B, C); }
+
+comp_op(A) ::= EQ.									{ A = CMPOP_EQ; }
+comp_op(A) ::= NOT_EQ.								{ A = CMPOP_NOT_EQ; }
+comp_op(A) ::= GREATER.								{ A = CMPOP_GREATER; }
+comp_op(A) ::= LESS.								{ A = CMPOP_LESS; }
+comp_op(A) ::= GREATER_EQ.							{ A = CMPOP_GREATER_EQ; }
+comp_op(A) ::= LESS_EQ.								{ A = CMPOP_LESS_EQ; }
+
+/* ---------------------- MEASURES ----------------------- */
+
+measure(A) ::= measure(B) PLUS measure(C).								{ A = make_shared<MeasureExpr_Binary>(B, '+', C); }
+measure(A) ::= measure(B) MINUS measure(C).								{ A = make_shared<MeasureExpr_Binary>(B, '-', C); }
+measure(A) ::= OPEN_P logic_mdcond(LC) CL_BRACK.						{ A = make_shared<MeasureExpr_P>(LC); }
+measure(A) ::= real_const(M) OPEN_P logic_mdcond(LC) CL_BRACK.			{ A = make_shared<MeasureExpr_Binary>(make_shared<MeasureExpr_Real>(M), '*', make_shared<MeasureExpr_P>(LC)); }
+measure(A) ::= OPEN_E int_mdexpr(B) CL_BRACK.							{ A = make_shared<MeasureExpr_E>(B, TrueExpr()); }
+measure(A) ::= real_const(M) OPEN_E int_mdexpr(B) CL_BRACK.				{ A = make_shared<MeasureExpr_Binary>(make_shared<MeasureExpr_Real>(M), '*', make_shared<MeasureExpr_E>(B, TrueExpr())); }
+measure(A) ::= OPEN_E int_mdexpr(B) DIV logic_mdcond(LC) CL_BRACK.		{ A = make_shared<MeasureExpr_E>(B, LC); }
+measure(A) ::= real_const(M) OPEN_E int_mdexpr(B) DIV logic_mdcond(LC) CL_BRACK. { A = make_shared<MeasureExpr_Binary>(make_shared<MeasureExpr_Real>(M), '*', make_shared<MeasureExpr_E>(B, LC)); }
+measure(A) ::= OPEN_X G_TRANSITION_ID(B) CL_BRACK.						{ A = make_shared<MeasureExpr_X>(B->text.c_str(), TrueExpr()); }
+measure(A) ::= real_const(M) OPEN_X G_TRANSITION_ID(B) CL_BRACK.		{ A = make_shared<MeasureExpr_Binary>(make_shared<MeasureExpr_Real>(M), '*', make_shared<MeasureExpr_X>(B->text.c_str(), TrueExpr())); }
+measure(A) ::= OPEN_X G_TRANSITION_ID(B) DIV logic_mdcond(LC) CL_BRACK.	{ A = make_shared<MeasureExpr_X>(B->text.c_str(), LC); }
+measure(A) ::= real_const(M) OPEN_X G_TRANSITION_ID(B) DIV logic_mdcond(LC) CL_BRACK. { A = make_shared<MeasureExpr_Binary>(make_shared<MeasureExpr_Real>(M), '*', make_shared<MeasureExpr_X>(B->text.c_str(), LC)); }
+
+/* --------------------- DTA EDGES ---------------------- */
+
+act_list(A) ::= .												  { A = make_shared<DtaEdge>(); }
+act_list(A) ::= G_ACTION_ID(B).									  { A = make_shared<DtaEdge>(); A->actset.actInds.push_back(FindActionInd(B->text.c_str(), GetDTA())); }
+act_list(A) ::= act_list(L) COMMA G_ACTION_ID(B).				  { L->actset.actInds.push_back(FindActionInd(B->text.c_str(), GetDTA())); A = L; }
+
+actset(A) ::= ACTS.												  { A = make_shared<DtaEdge>(); A->actset.type = AT_REJECTED_ACTIONS; }
+actset(A) ::= ACTS SETMINUS OP_BRACK act_list(L) CL_BRACK.		  { L->actset.type = AT_REJECTED_ACTIONS; A = L; }
+actset(A) ::= OP_BRACK act_list(L) CL_BRACK.					  { L->actset.type = AT_ACCEPTED_ACTIONS; A = L; }
+actset(A) ::= SHARP.											  { A = make_shared<DtaEdge>(); A->actset.type = AT_BOUNDARY; }
+
+clock_value(A) ::= G_CLOCKVALUE_ID(B).							  { A = FindClockValue(B->text.c_str(), GetDTA()); }
+clock_value(A) ::= INTEGER(B).									  { A = FindClockValue(to_string(B->integer).c_str(), GetDTA()); }
+
+clock_constr(A) ::= clock_value(B) LESS XCLK LESS clock_value(C). { A = make_pair(B, C); }
+clock_constr(A) ::= XCLK LESS clock_value(C).					  { A = make_pair(FindClockValue(CLOCK_VALUE_NAME_0, GetDTA()), C); }
+clock_constr(A) ::= clock_value(B) LESS XCLK.					  { A = make_pair(B, FindClockValue(CLOCK_VALUE_NAME_INFINITY, GetDTA())); }
+clock_constr(A) ::= XCLK GREATER clock_value(C).				  { A = make_pair(C, FindClockValue(CLOCK_VALUE_NAME_INFINITY, GetDTA())); }
+clock_constr(A) ::= clock_value(B) GREATER XCLK.				  { A = make_pair(FindClockValue(CLOCK_VALUE_NAME_0, GetDTA()), B); }
+clock_constr(A) ::= XCLK EQ clock_value(B).						  { A = make_pair(B, B); }
+
+opt_reset(A) ::= COMMA RESET.									  { A = true; }
+opt_reset(A) ::= .												  { A = false; }
+
+dta_edge(A) ::= OP_PAREN clock_constr(Cc) COMMA actset(As) opt_reset(Or) CL_PAREN. { A = As; A->alpha = Cc.first; A->beta = Cc.second; A->reset = Or; }
+
+/* ---------------- ABSTRACT DTA BINDING ----------------- */
+
+clock_id_name(A) ::= id_or_quoted_id(B). 					{ std::swap(A, B); }
+clock_id_name(A) ::= G_RATE_PARAM(B). 						{ A = B->text; }
+clock_id_name(A) ::= G_CLOCKVALUE_ID(B). 					{ A = B->text; }
+
+transition_id_name(A) ::= id_or_quoted_id(B). 				{ std::swap(A, B); }
+transition_id_name(A) ::= G_TRANSITION_ID(B). 				{ A = B->text; }
+transition_id_name(A) ::= G_ACTION_ID(B). 					{ A = B->text; }
+
+clock_value_list(A) ::= .															 { A.clear(); }
+clock_value_list(A) ::= clock_id_name(D) EQ real_const(B).							 { A.clear(); A.emplace_back(make_pair(D,B)); }
+clock_value_list(A) ::= clock_value_list(L) COMMA clock_id_name(D) EQ real_const(B). { L.emplace_back(make_pair(D,B)); std::swap(A, L); }
+
+transition_list(A) ::= .																	 { A.clear(); }
+transition_list(A) ::= transition_id_name(D) EQ G_TRANSITION_ID(B).							 { A.clear(); A.push_back(make_pair(D,BoundAction(B->text, FindTransition(B->text.c_str(), GetPN())))); }
+transition_list(A) ::= transition_list(L) COMMA transition_id_name(D) EQ G_TRANSITION_ID(B). { L.push_back(make_pair(D,BoundAction(B->text, FindTransition(B->text.c_str(), GetPN())))); std::swap(A, L); }
+
+spexpr_list(A) ::= .															{ A.clear(); }
+spexpr_list(A) ::= spexpr_name(D) EQ cslta_expr(B).								{ A.clear(); A.emplace_back(make_pair(D, B)); }
+spexpr_list(A) ::= spexpr_list(L) COMMA spexpr_name(D) EQ cslta_expr(B).		{ L.emplace_back(make_pair(D, B)); std::swap(A, L); }
+
+spexpr_name(A) ::= id_or_quoted_id(B).							{ std::swap(A, B); }
+spexpr_name(A) ::= G_ATOMIC_PROP_ID(B). 						{ A = B->text; }
+
+dta_binding(A) ::= clock_value_list(B).                                         { A = make_shared<DtaBinding>(); std::swap(A->clock_values, B); }
+dta_binding(A) ::= clock_value_list(B) OR transition_list(C) OR spexpr_list(D). { A = make_shared<DtaBinding>(); std::swap(A->clock_values, B); std::swap(A->trn_actions, C); std::swap(A->ap_exprs, D); }
+
+/* ------------------------ CSLTA ------------------------ */
+
+id_or_quoted_id(A) ::= ID(B).								{ A = B->text; }
+id_or_quoted_id(A) ::= STRING(B).							{ A = B->text; }
+
+cslta_expr(A) ::= TRUE.										{ A = make_shared<AtomicPropExpr_Const>(true); }
+cslta_expr(A) ::= FALSE.									{ A = make_shared<AtomicPropExpr_Const>(false); }
+cslta_expr(A) ::= G_ATOMIC_PROP_ID(B).						{ A = FindAtomicProposition(B->text.c_str(), GetDTA()); }
+cslta_expr(A) ::= G_PLACE_ID(B).							{ A = make_shared<AtomicPropExpr_MdepExpr>(PlaceNotZero(B->text.c_str(), GetPN())); }
+//cslta_expr(A) ::= int_mdexpr(B).							//{ A = make_shared<AtomicPropExpr_MdepExpr>(make_shared<BinaryMdepExpr<bool,int,bool_binary_op<int>>>(B, ZeroExprInt(), bool_binary_op<int>(CMPOP_NOT_EQ))); }
+cslta_expr(A) ::= int_mdexpr(B) comp_op(OP) int_mdexpr(C).	{ A = make_shared<AtomicPropExpr_MdepExpr>(make_shared<BinaryMdepExpr<bool,int,bool_binary_op<int>>>(B, C, bool_binary_op<int>(OP))); }
+cslta_expr(A) ::= OP_PAREN cslta_expr(B) CL_PAREN.			{ A = B; }
+cslta_expr(A) ::= NOT cslta_expr(B).						{ A = make_shared<AtomicPropExpr_NOT>(B); }
+cslta_expr(A) ::= cslta_expr(B) AND cslta_expr(C).			{ A = make_shared<AtomicPropExpr_BOP>(B, C, BBF_AND); }
+cslta_expr(A) ::= cslta_expr(B) OR cslta_expr(C).			{ A = make_shared<AtomicPropExpr_BOP>(B, C, BBF_OR); }
+//cslta_expr(A) ::= STEADY comp_op(B) real_const(C) OP_PAREN cslta_expr(D) CL_PAREN.			{}
+cslta_expr(A) ::= PROB_TA comp_op(B) real_const(C) id_or_quoted_id(D) OP_PAREN dta_binding(E) CL_PAREN.	{ 
+/**/ 														  A = make_shared<CsltaProbExpr>(ProbabilityConstr(B, C), D.c_str(), E); }
+
+/* ------------------------------------------------------- */
+
+

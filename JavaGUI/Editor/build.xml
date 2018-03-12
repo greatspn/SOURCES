@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+<!-- (If you delete it and reopen the project it will be recreated.) -->
+<!-- By default, only the Clean and Build commands use this build script. -->
+<!-- Commands such as Run, Debug, and Test only use this build script if -->
+<!-- the Compile on Save feature is turned off for the project. -->
+<!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
+<!-- in the project's Project Properties dialog box.-->
+<project name="Editor" default="default" basedir=".">
+    <description>Builds, tests, and runs the project Editor.</description>
+    <import file="nbproject/build-impl.xml"/>
+    <!--
+
+    There exist several targets which are by default empty and which can be 
+    used for execution of your tasks. These targets are usually executed 
+    before and after some main targets. They are: 
+
+      -pre-init:                 called before initialization of project properties
+      -post-init:                called after initialization of project properties
+      -pre-compile:              called before javac compilation
+      -post-compile:             called after javac compilation
+      -pre-compile-single:       called before javac compilation of single file
+      -post-compile-single:      called after javac compilation of single file
+      -pre-compile-test:         called before javac compilation of JUnit tests
+      -post-compile-test:        called after javac compilation of JUnit tests
+      -pre-compile-test-single:  called before javac compilation of single JUnit test
+      -post-compile-test-single: called after javac compilation of single JUunit test
+      -pre-jar:                  called before JAR building
+      -post-jar:                 called after JAR building
+      -post-clean:               called after cleaning build products
+
+    (Targets beginning with '-' are not intended to be called on their own.)
+
+    Example of inserting an obfuscator after compilation could look like this:
+
+        <target name="-post-compile">
+            <obfuscate>
+                <fileset dir="${build.classes.dir}"/>
+            </obfuscate>
+        </target>
+
+    For list of available properties check the imported 
+    nbproject/build-impl.xml file. 
+
+
+    Another way to customize the build is by overriding existing main targets.
+    The targets of interest are: 
+
+      -init-macrodef-javac:     defines macro for javac compilation
+      -init-macrodef-junit:     defines macro for junit execution
+      -init-macrodef-debug:     defines macro for class debugging
+      -init-macrodef-java:      defines macro for class execution
+      -do-jar:                  JAR building
+      run:                      execution of project 
+      -javadoc-build:           Javadoc generation
+      test-report:              JUnit report generation
+
+    An example of overriding the target for project execution could look like this:
+
+        <target name="run" depends="Editor-impl.jar">
+            <exec dir="bin" executable="launcher.exe">
+                <arg file="${dist.jar}"/>
+            </exec>
+        </target>
+
+    Notice that the overridden target depends on the jar target and not only on 
+    the compile target as the regular run target does. Again, for a list of available 
+    properties which you can use, check the target you are overriding in the
+    nbproject/build-impl.xml file. 
+
+    -->
+    
+    <taskdef name="bundleapp"
+             classname="com.oracle.appbundler.AppBundlerTask"   
+             classpath="lib/appbundler-1.0.jar" />
+    
+    <target name="bundle-app">
+        <bundleapp outputdirectory="dist"
+            name="GreatSPN Editor"
+            displayname="GreatSPN Editor"
+            identifier="org.unito.it.greatspneditor"
+            shortversion="1.1"
+            copyright="University of Torino, Italy"
+            icon="../Additional/greatspn.icns"
+            mainclassname="editor.Main">
+            <classpath file="dist/Editor.jar" />
+            <option value="-Djava.library.path=$APP_ROOT/Contents/Java/" />
+            <option value="-Dapple.laf.useScreenMenuBar=true"/>
+            <option value="-Dcom.apple.macos.useScreenMenuBar=true"/>
+            <option value="-enableassertions"/>
+            <option value="-splash:$APP_ROOT/Contents/Java/splash.png"/>
+        </bundleapp>
+        <copy todir="dist/GreatSPN Editor.app/Contents/Java/lib/">
+            <fileset dir="dist/lib/"/>
+        </copy>
+        <!-- <copy todir="dist/GreatSPN Editor.app/Contents/Java/" 
+              file="../MathProvider/dist/MathProvider.jar" /> -->
+        <copy toFile="dist/GreatSPN Editor.app/Contents/Resources/Icon.icns" 
+              file="../Additional/greatspn.icns" />
+        <copy todir="dist/GreatSPN Editor.app/Contents/Resources/" 
+              file="../Additional/pnpro-doc.icns" />
+        <copy todir="dist/GreatSPN Editor.app/Contents/Java/" 
+              file="../Additional/splash.png" />
+        <!-- USE OUR CUSTOM Info.plist SINCE THE ONE GENERATED BY THE APPBUNDLER
+             DOES NOT SUPPORT FILE EXTENSIONS -->
+        <copy toFile="dist/GreatSPN Editor.app/Contents/Info.plist" 
+              file="lib/CustomInfo.plist" overwrite="true" />
+    </target>
+
+
+    <!-- Add Build-Date attribute to the JAR file. -->
+    <target name="-pre-init">
+       <property name="project.name" value="My Library" />
+       <property name="version.num" value="1.4.1" />
+       <tstamp>
+          <format property="NOW" pattern="yyyy-MM-dd HH:mm:ss z" />
+       </tstamp>
+        <manifest file="MANIFEST.MF" mode="update">
+            <attribute name="Build-Date" value="${NOW}" />
+            <attribute name="Class-Path" value="lib/AbsoluteLayout.jar lib/antlr-runtime-4.2.1.jar lib/jlatexmath-1.0.4.jar lib/swing-layout-1.0.4.jar"/>
+        </manifest>
+    </target>
+    
+    <!-- Clean up Manifest.MF after build process -->
+    <target name="-post-jar">
+        <delete file="MANIFEST.MF"/>
+    </target>
+
+</project>

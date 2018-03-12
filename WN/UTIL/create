@@ -1,0 +1,88 @@
+#!/bin/csh -f
+if (  $1 == 'cs' ) then
+    rm -f TRANSL/wn.yac
+    cat TRANSL/wn.head TRANSL/common.yac TRANSL/wn.colour TRANSL/wn.domain TRANSL/wn.dynamic_subclass TRANSL/wn.initial_marking TRANSL/wn.function TRANSL/wn.predicate TRANSL/yyerror.c > TRANSL/wn.yac
+    $MAKE -f EDIT/makefile.cs 
+else if (  $1 == 'ss' ) then
+    cat TRANSL/wn.head TRANSL/common.yac TRANSL/wn.colour TRANSL/wn.domain TRANSL/wn.dynamic_subclass TRANSL/wn.initial_marking TRANSL/wn.function TRANSL/wn.predicate TRANSL/yyerror.c > TRANSL/wn.yac
+    $MAKE -f EDIT/makefile.ss 
+else if (  $1 == 'rg' ) then
+    cat TRANSL/wn.head TRANSL/common.yac TRANSL/wn.colour TRANSL/wn.domain TRANSL/wn.dynamic_subclass TRANSL/wn.initial_marking TRANSL/wn.function TRANSL/wn.predicate TRANSL/yyerror.c > TRANSL/wn.yac
+    $MAKE -f EDIT/makefile.rg 
+else if (  $1 == 'MDWNrg' ) then
+    rm -f TRANSL/wn.yac
+    cat TRANSL/wn.head TRANSL/common.yac TRANSL/wn.colour TRANSL/wn.domain TRANSL/wn.dynamic_subclass TRANSL/wn.initial_marking TRANSL/wn.function TRANSL/wn.predicate TRANSL/yyerror.c > TRANSL/wn.yac
+    $MAKE -f EDIT/makefile.MDWNrg 
+else if (  $1 == 'srg' ) then
+    rm -f TRANSL/wn.yac
+    cat TRANSL/wn.head TRANSL/common.yac TRANSL/wn.colour TRANSL/wn.domain TRANSL/wn.dynamic_subclass TRANSL/wn.initial_marking TRANSL/wn.function TRANSL/wn.predicate TRANSL/yyerror.c > TRANSL/wn.yac
+    $MAKE -f EDIT/makefile.srg 
+else if (  $1 == 'MDWNsrg' ) then
+	rm -f TRANSL/wn.yac
+	cat TRANSL/wn.head TRANSL/common.yac TRANSL/wn.colour TRANSL/wn.domain TRANSL/wn.dynamic_subclass TRANSL/wn.initial_marking TRANSL/wn.function TRANSL/wn.predicate TRANSL/yyerror.c > TRANSL/wn.yac
+    $MAKE -f EDIT/makefile.MDWNsrg 
+else if (  $1 == 'rgMEDD' ) then
+    rm -f TRANSL/wn.yac
+    cat TRANSL/wn.head TRANSL/common.yac TRANSL/wn.colour TRANSL/wn.domain TRANSL/wn.dynamic_subclass TRANSL/wn.initial_marking TRANSL/wn.function TRANSL/wn.predicate TRANSL/yyerror.c > TRANSL/wn.yac
+    $MAKE -f EDIT/makefile.rgMEDD 
+else if (  $1 == 'esrg' ) then 
+    rm -f TRANSL/wn.yac
+    cat TRANSL/wn.head TRANSL/common.yac TRANSL/wn.colour TRANSL/wn.domain TRANSL/wn.dynamic_subclass TRANSL/wn.initial_marking TRANSL/wn.function TRANSL/wn.predicate TRANSL/yyerror.c > TRANSL/wn.yac
+	 $MAKE -f EDIT/makefile.esrg         
+else if (  $1 == 'libssp' ) then 
+    cat TRANSL/wn.head TRANSL/common.yac TRANSL/wn.colour TRANSL/wn.domain TRANSL/wn.dynamic_subclass TRANSL/wn.initial_marking TRANSL/wn.function TRANSL/wn.predicate TRANSL/yyerror.c > TRANSL/wn.yac
+	$MAKE -f EDIT/makefile.libssp   
+else if (  $1 == 'libmcesrg' ) then 
+    cat TRANSL/wn.head TRANSL/common.yac TRANSL/wn.colour TRANSL/wn.domain TRANSL/wn.dynamic_subclass TRANSL/wn.initial_marking TRANSL/wn.function TRANSL/wn.predicate TRANSL/yyerror.c > TRANSL/wn.yac
+	$MAKE -f EDIT/makefile.libmcesrg   
+else if (  $1 == 'libmcdsrg' ) then 
+    cat TRANSL/wn.head TRANSL/common.yac TRANSL/wn.colour TRANSL/wn.domain TRANSL/wn.dynamic_subclass TRANSL/wn.initial_marking TRANSL/wn.function TRANSL/wn.predicate TRANSL/yyerror.c > TRANSL/wn.yac
+	$MAKE -f EDIT/makefile.libmcdsrg 
+else if (  $1 == 'librg' ) then 
+    rm -f TRANSL/wn.yac
+    cat TRANSL/wn.head TRANSL/common.yac TRANSL/wn.colour TRANSL/wn.domain TRANSL/wn.dynamic_subclass TRANSL/wn.initial_marking TRANSL/wn.function TRANSL/wn.predicate TRANSL/yyerror.c > TRANSL/wn.yac
+	 $MAKE -f EDIT/makefile.librg         
+else if (  $1 == 'libsrg' ) then 
+    rm -f TRANSL/wn.yac
+    cat TRANSL/wn.head TRANSL/common.yac TRANSL/wn.colour TRANSL/wn.domain TRANSL/wn.dynamic_subclass TRANSL/wn.initial_marking TRANSL/wn.function TRANSL/wn.predicate TRANSL/yyerror.c > TRANSL/wn.yac
+	 $MAKE -f EDIT/makefile.libsrg              
+else if (  $1 == 'libdmcrg' ) then 
+    rm -f TRANSL/wn.yac
+    cat TRANSL/wn.head TRANSL/common.yac TRANSL/wn.colour TRANSL/wn.domain TRANSL/wn.dynamic_subclass TRANSL/wn.initial_marking TRANSL/wn.function TRANSL/wn.predicate TRANSL/yyerror.c > TRANSL/wn.yac
+	 $MAKE -f EDIT/makefile.libdmcrg         
+else if (  $1 == 'libdmcsrg' ) then 
+    rm -f TRANSL/wn.yac
+    cat TRANSL/wn.head TRANSL/common.yac TRANSL/wn.colour TRANSL/wn.domain TRANSL/wn.dynamic_subclass TRANSL/wn.initial_marking TRANSL/wn.function TRANSL/wn.predicate TRANSL/yyerror.c > TRANSL/wn.yac
+	 $MAKE -f EDIT/makefile.libdmcsrg              
+else if (  $1 == 'gsrg' ) then
+     rm -f TRANSL/wn.yac
+    cat TRANSL/gspn.head TRANSL/common.yac TRANSL/gspn.tguard TRANSL/gspn.initial_marking TRANSL/gspn.function TRANSL/gspn.predicate TRANSL/yyerror.c > TRANSL/wn.yac
+	 $MAKE -f EDIT/makefile.gspnrg 
+else if (  $1 == 'gssim' ) then
+     rm -f TRANSL/wn.yac
+    cat TRANSL/gspn.head TRANSL/common.yac TRANSL/gspn.tguard TRANSL/gspn.initial_marking TRANSL/gspn.function TRANSL/gspn.predicate TRANSL/yyerror.c > TRANSL/wn.yac
+	 $MAKE -f EDIT/makefile.gspns
+else  if (  $1 == 'uf' ) then
+	rm -f TRANSL/wn.yac
+	cat TRANSL/wn.head TRANSL/common.yac TRANSL/wn.colour TRANSL/wn.domain TRANSL/wn.dynamic_subclass TRANSL/wn.initial_marking TRANSL/wn.function TRANSL/wn.predicate TRANSL/yyerror.c > TRANSL/wn.yac
+	cat TRANSL/gspn.head TRANSL/common.yac TRANSL/gspn.tguard TRANSL/gspn.initial_marking TRANSL/gspn.function TRANSL/gspn.predicate TRANSL/yyerror.c > TRANSL/wn_2.yac
+	$MAKE -f EDIT/makefile.unfolding
+else  if ($1 == 'PN2ODE') then
+	rm -f TRANSL/wn.yac
+	cat TRANSL/wn.head TRANSL/common.yac TRANSL/wn.colour TRANSL/wn.domain TRANSL/wn.dynamic_subclass TRANSL/wn.initial_marking TRANSL/wn.function TRANSL/wn.predicate TRANSL/yyerror.c > TRANSL/wn.yac
+	$MAKE -f EDIT/makefile.rgODE
+endif 
+endif
+endif
+endif
+endif
+endif
+endif
+endif
+endif
+endif
+endif
+endif
+endif
+endif
+exit(0)

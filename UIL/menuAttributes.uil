@@ -1,0 +1,733 @@
+/*******************************************************************************
+	Menu Attributes
+
+	Comment:				This Section describes the behaviour and appearance
+							of Pull Down and Pop Up Menus
+	
+	
+	Programmer:				Alex
+	Creation Date:			23/02/95
+	Last Modify Date:		08/03/95
+********************************************************************************/
+
+value
+
+/*******************************************************************************
+		Tear Off definitions for Menus
+		use:
+				XmTEAR_OFF_ENABLED 	to enable Tear off
+				XmTEAR_OFF_DISABLED to disable Tear Off
+********************************************************************************/
+	
+	maFileTearOff 		: 	XmTEAR_OFF_DISABLED;
+	maEditTearOff 		: 	XmTEAR_OFF_DISABLED;
+	maViewTearOff 		:	XmTEAR_OFF_DISABLED;
+	maGridTearOff 		:	XmTEAR_OFF_DISABLED;
+	maZoomTearOff 		:	XmTEAR_OFF_DISABLED;
+	maRescaleTearOff	:	XmTEAR_OFF_DISABLED;
+	maNetTearOff 		:	XmTEAR_OFF_DISABLED;
+	maSwnTearOff 		:	XmTEAR_OFF_DISABLED;
+	maHelpTearOff 		:	XmTEAR_OFF_DISABLED;
+
+	
+/*******************************************************************************
+WARNING	the attributes in the folliwing section MUST match with 
+		those defined in the menu.uil file		
+********************************************************************************/
+	
+	
+/*******************************************************************************
+		Labels And Accelerators for Menu FILE			
+********************************************************************************/
+	
+	maFileTopicLabel				:	'File';
+	maFileTopicMnemonic				:	'F';
+
+	maFileNewLabel					:	'New';
+	maFileNewMnemonic				:	'N';
+	maFileNewAccelerator			:	'Ctrl<KeyPress>n';	
+	maFileNewAcceleratorText		:	'CTRL+N';
+	
+	maFileOpenLabel					:	'Open ...';
+	maFileOpenMnemonic				:	'O';
+	maFileOpenAccelerator			:	'Ctrl<KeyPress>o';	
+	maFileOpenAcceleratorText		:	'CTRL+O';
+	
+	maFileMergeLabel				:	'Merge ...';
+	maFileMergeMnemonic				:	'M';
+	maFileMergeAccelerator			:	'Ctrl<KeyPress>m';	
+	maFileMergeAcceleratorText		:	'CTRL+M';
+	
+	maFileSaveLabel					:	'Save';
+	maFileSaveMnemonic				:	'S';
+	maFileSaveAccelerator			:	'Ctrl<KeyPress>s';	
+	maFileSaveAcceleratorText		:	'CTRL+S';
+	
+	maFileSaveAsLabel				:	'Save As ...';
+	maFileSaveAsMnemonic			:	'A';
+	maFileSaveAsAccelerator			:	'';	
+	maFileSaveAsAcceleratorText		:	'';
+
+	maFileRemoveResLabel		:	'Remove Results';
+	maFileRemoveResMnemonic		:	'R';
+	maFileRemoveResAccelerator	:	'';	
+	maFileRemoveResAcceleratorText		:	'';
+	
+	maFileRemoveAllLabel					:	'Remove All';
+	maFileRemoveAllMnemonic				:	'A';
+	maFileRemoveAllAccelerator			:	'';	
+	maFileRemoveAllAcceleratorText		:	'';
+		
+	maFileCommentLabel				:	'Comment ...';
+	maFileCommentMnemonic			:	'C';
+	maFileCommentAccelerator		:	'Meta<KeyPress>c';	
+	maFileCommentAcceleratorText	:	'ALT+C';
+
+	maFileOptionsLabel				:	'Options ...';
+	maFileOptionsMnemonic			:	't';
+	maFileOptionsAccelerator		:	'';	
+	maFileOptionsAcceleratorText	:	'';
+	
+	maFilePrintLabel				:	'Print ...';
+	maFilePrintMnemonic				:	'P';
+	maFilePrintAccelerator			:	'Meta<KeyPress>p';	
+	maFilePrintAcceleratorText		:	'ALT+P';
+	
+	maFileExitLabel					:	'Exit';
+	maFileExitMnemonic				:	'N';
+	maFileExitAccelerator			:	'Meta<KeyPress>x';	
+	maFileExitAcceleratorText		:	'ALT+X';
+	
+	
+/*******************************************************************************
+		Labels And Accelerators for Menu EDIT			
+********************************************************************************/
+	
+	maEditTopicLabel				:	'Edit';	
+	maEditTopicMnemonic				:	'E';
+
+	maEditUndoLabel					:	'Undo';
+	maEditUndoMnemonic				:	'U';
+	maEditUndoAccelerator			:	'Meta<KeyPress>u';	
+	maEditUndoAcceleratorText		:	'ALT+U';
+	
+	maEditAddLabel					:	'Add';
+	maEditAddMnemonic				:	'A';
+	maEditAddAccelerator			:	'Ctrl<KeyPress>a';	
+	maEditAddAcceleratorText		:	'CTRL+A';
+
+	maEditCutLabel					:	'Delete';
+	maEditCutMnemonic				:	'D';
+	maEditCutAccelerator			:	'Ctrl<KeyPress>d';	
+	maEditCutAcceleratorText		:	'CTRL+D';
+	
+	maEditPasteLabel				:	'End Selection';
+	maEditPasteMnemonic				:	'n';
+	maEditPasteAccelerator			:	'<KeyPress>Escape';	
+	maEditPasteAcceleratorText		:	'Esc';
+	
+	maEditMoveLabel					:	'Move';
+	maEditMoveMnemonic				:	'M';
+	maEditMoveAccelerator			:	'Ctrl<KeyPress>m';	
+	maEditMoveAcceleratorText		:	'CTRL+M';
+		
+	maEditLayersLabel				:	'Layers ...';
+	maEditLayersMnemonic			:	'L';
+	maEditLayersAccelerator			:	'';	
+	maEditLayersAcceleratorText		:	'';
+	
+	maEditModifyLabel					:	'Modify';
+	maEditModifyMnemonic				:	'd';
+
+	maEditModifyFXALabel				:	'Flip X Axis';
+	maEditModifyFXAMnemonic				:	'X';
+	maEditModifyFXAAccelerator			:	'';	
+	maEditModifyFXAAcceleratorText		:	'';
+
+	maEditModifyFYALabel				:	'Flip Y Axis';
+	maEditModifyFYAMnemonic				:	'Y';
+	maEditModifyFYAAccelerator			:	'';	
+	maEditModifyFYAAcceleratorText		:	'';
+
+	maEditModifyMirrorLabel				:	'Mirror';
+	maEditModifyMirrorMnemonic			:	'M';
+	maEditModifyMirrorAccelerator		:	'';	
+	maEditModifyMirrorAccelText	:	'';
+
+	maEditModifyRotateLabel				:	'Clockwise Rotation';
+	maEditModifyRotateMnemonic			:	'A';
+	
+	maEditModifyRot45Label				:	'  45';
+	maEditModifyRot45Mnemonic			:	'';
+	maEditModifyRot45Accelerator		:	'';	
+	maEditModifyRot45AccelText	:	'';
+
+	maEditModifyRot90Label				:	'  90';
+	maEditModifyRot90Mnemonic			:	'';
+	maEditModifyRot90Accelerator		:	'';	
+	maEditModifyRot90AccelText	:	'';
+
+	maEditModifyRot135Label				:	' 135';
+	maEditModifyRot135Mnemonic			:	'';
+	maEditModifyRot135Accelerator		:	'';	
+	maEditModifyRot135AccelText	:	'';
+
+	maEditModifyRot180Label				:	' 180';
+	maEditModifyRot180Mnemonic			:	'';
+	maEditModifyRot180Accelerator		:	'';	
+	maEditModifyRot180AccelText	:	'';
+
+	maEditModifyRot135mLabel			:	'-135';
+	maEditModifyRot135mMnemonic			:	'';
+	maEditModifyRot135mAccelerator		:	'';	
+	maEditModifyRot135mAccelText	:	'';
+
+	maEditModifyRot90mLabel				:	'-90';
+	maEditModifyRot90mMnemonic			:	'';
+	maEditModifyRot90mAccelerator		:	'';	
+	maEditModifyRot90mAccelText	:	'';
+
+	maEditModifyRot45mLabel				:	'-45';
+	maEditModifyRot45mMnemonic			:	'';
+	maEditModifyRot45mAccelerator		:	'';	
+	maEditModifyRot45mAccelText	:	'';
+
+	
+/*******************************************************************************
+		Labels And Accelerators for Menu VIEW			
+********************************************************************************/
+
+	maViewTopicLabel				:	'View';
+	maViewTopicMnemonic				:	'V';
+	
+	maViewSplineLabel				:	'Spline';
+	maViewSplineMnemonic			:	'S';
+	maViewSplineAccelerator			:	'Meta<KeyPress>l';	
+	maViewSplineAcceleratorText		:	'ALT+L';
+	
+	maViewTagLabel					:	'Tag';
+	maViewTagMnemonic				:	'T';
+	maViewTagAccelerator			:	'Meta<KeyPress>t';	
+	maViewTagAcceleratorText		:	'ALT+T';
+	
+	maViewRateLabel					:	'Rate';
+	maViewRateMnemonic				:	'a';
+	maViewRateAccelerator			:	'Meta<KeyPress>a';	
+	maViewRateAcceleratorText		:	'ALT+A';
+	
+	maViewOverviewLabel				:	'Overview';
+	maViewOverviewMnemonic			:	'O';
+	maViewOverviewAccelerator		:	'Meta<KeyPress>w';	
+	maViewOverviewAcceleratorText	:	'ALT+W';
+	
+	maViewSearchLabel				:	'Find ...';
+	maViewSearchMnemonic			:	'F';
+	maViewSearchAccelerator			:	'Meta<KeyPress>f';	
+	maViewSearchAcceleratorText		:	'ALT+F';
+	
+	maViewPrintAreaLabel			:	'Print Area';
+	maViewPrintAreaMnemonic			:	'A';
+	maViewPrintAreaAccelerator		:	'';	
+	maViewPrintAreaAcceleratorText	:	'';
+	
+	maViewLayersLabel				:	'Layers ...';
+	maViewLayersMnemonic			:	'L';
+	maViewLayersAccelerator			:	'';	
+	maViewLayersAcceleratorText		:	'';
+
+	
+/*******************************************************************************
+		Labels And Accelerators for Menu GRID			
+********************************************************************************/
+	
+	maGridTopicLabel			:	'Grid';
+	maGridTopicMnemonic			:	'G';
+	
+	maGridNoneLabel				:	'None';
+	maGridNoneMnemonic			:	'N';
+	maGridNoneAccelerator		:	'';	
+	maGridNoneAcceleratorText	:	'';
+	
+	maGrid5Label				:	'5';
+	maGrid5Mnemonic				:	'5';
+	maGrid5Accelerator			:	'';	
+	maGrid5AcceleratorText		:	'';
+	
+	maGrid10Label				:	'10';
+	maGrid10Mnemonic			:	'1';
+	maGrid10Accelerator			:	'';	
+	maGrid10AcceleratorText		:	'';
+	
+	maGrid20Label				:	'20';
+	maGrid20Mnemonic			:	'2';
+	maGrid20Accelerator			:	'';	
+	maGrid20AcceleratorText		:	'';
+	
+	maGrid30Label				:	'30';
+	maGrid30Mnemonic			:	'3';
+	maGrid30Accelerator			:	'';	
+	maGrid30AcceleratorText		:	'';
+	
+	maGrid40Label				:	'40';
+	maGrid40Mnemonic			:	'4';
+	maGrid40Accelerator			:	'';	
+	maGrid40AcceleratorText		:	'';
+	
+	maGrid50Label				:	'50';
+	maGrid50Mnemonic			:	'5';
+	maGrid50Accelerator			:	'';	
+	maGrid50AcceleratorText		:	'';
+	
+	
+/*******************************************************************************
+		Labels And Accelerators for Menu ZOOM			
+********************************************************************************/
+	
+	maZoomTopicLabel			:	'Zoom';
+	maZoomTopicMnemonic			:	'Z';
+
+	
+	maZoom1Label				:	'1';
+	maZoom1Mnemonic				:	'';
+	maZoom1Accelerator			:	'';	
+	maZoom1AcceleratorText		:	'';
+	
+	maZoom1_2Label				:	'1/2';
+	maZoom1_2Mnemonic			:	'';
+	maZoom1_2Accelerator		:	'';	
+	maZoom1_2AcceleratorText	:	'';
+	
+	maZoom3_2Label				:	'3/2';
+	maZoom3_2Mnemonic			:	'';
+	maZoom3_2Accelerator		:	'';	
+	maZoom3_2AcceleratorText	:	'';
+	
+	maZoom3_4Label				:	'3/4';
+	maZoom3_4Mnemonic			:	'';
+	maZoom3_4Accelerator		:	'';	
+	maZoom3_4AcceleratorText	:	'';
+	
+	maZoom2Label				:	'2';
+	maZoom2Mnemonic				:	'';
+	maZoom2Accelerator			:	'';	
+	maZoom2AcceleratorText		:	'';
+	
+	
+/*******************************************************************************
+		Labels And Accelerators for Menu RESCALE			
+********************************************************************************/
+	
+	maRescaleTopicLabel				:	'Rescale';
+	maRescaleTopicMnemonic			:	'R';
+	
+	maRescale05Label				:	' 0.5';
+	maRescale05Mnemonic				:	'';
+	maRescale05Accelerator			:	'';	
+	maRescale05AcceleratorText		:	'';
+	
+	maRescale06Label				:	' 0.6';
+	maRescale06Mnemonic				:	'';
+	maRescale06Accelerator			:	'';	
+	maRescale06AcceleratorText		:	'';
+	
+	maRescale07Label				:	' 0.7';
+	maRescale07Mnemonic				:	'';
+	maRescale07Accelerator			:	'';	
+	maRescale07AcceleratorText		:	'';
+	
+	maRescale08Label				:	' 0.8';
+	maRescale08Mnemonic				:	'';
+	maRescale08Accelerator			:	'';	
+	maRescale08AcceleratorText		:	'';
+	
+	maRescale09Label				:	' 0.9';
+	maRescale09Mnemonic				:	'';
+	maRescale09Accelerator			:	'';	
+	maRescale09AcceleratorText		:	'';
+	
+	maRescale10Label				:	' 1';
+	maRescale10Mnemonic				:	'';
+	maRescale10Accelerator			:	'';	
+	maRescale10AcceleratorText		:	'';
+	
+	maRescale11Label				:	' 1.1';
+	maRescale11Mnemonic				:	'';
+	maRescale11Accelerator			:	'';	
+	maRescale11AcceleratorText		:	'';
+	
+	maRescale12Label				:	' 1.2';
+	maRescale12Mnemonic				:	'';
+	maRescale12Accelerator			:	'';	
+	maRescale12AcceleratorText		:	'';
+	
+	maRescale13Label				:	' 1.3';
+	maRescale13Mnemonic				:	'';
+	maRescale13Accelerator			:	'';	
+	maRescale13AcceleratorText		:	'';
+	
+	maRescale14Label				:	' 1.4';
+	maRescale14Mnemonic				:	'';
+	maRescale14Accelerator			:	'';	
+	maRescale14AcceleratorText		:	'';
+	
+	maRescale15Label				:	' 1.5';
+	maRescale15Mnemonic				:	'';
+	maRescale15Accelerator			:	'';	
+	maRescale15AcceleratorText		:	'';
+	
+	maRescale16Label				:	' 1.6';
+	maRescale16Mnemonic				:	'';
+	maRescale16Accelerator			:	'';	
+	maRescale16AcceleratorText		:	'';
+	
+	maRescale17Label				:	' 1.7';
+	maRescale17Mnemonic				:	'';
+	maRescale17Accelerator			:	'';	
+	maRescale17AcceleratorText		:	'';
+	
+	maRescale18Label				:	' 1.8';
+	maRescale18Mnemonic				:	'';
+	maRescale18Accelerator			:	'';	
+	maRescale18AcceleratorText		:	'';
+	
+	maRescale19Label				:	' 1.9';
+	maRescale19Mnemonic				:	'';
+	maRescale19Accelerator			:	'';	
+	maRescale19AcceleratorText		:	'';
+	
+	maRescale20Label				:	' 2';
+	maRescale20Mnemonic				:	'';
+	maRescale20Accelerator			:	'';	
+	maRescale20AcceleratorText		:	'';
+	
+	
+/*******************************************************************************
+		Labels And Accelerators for Menu NET			
+********************************************************************************/
+	
+	maNetTopicLabel					:	'GSPN';
+	maNetTopicMnemonic				:	'N';
+	maNetStructLabel				:	'Struct';
+	maNetStructMnemonic				:	't';
+	maNetSolveLabel					:	'Solve';
+	maNetSolveMnemonic				:	'o';
+	
+	maNetSimulationLabel			:	'Simulation ...';
+	maNetSimulationMnemonic			:	'S';
+	maNetSimulationAccelerator		:	'';	
+	maNetSimulationAcceleratorText	:	'';
+	
+	maNetStructPinvLabel			:	'P Invariants';
+	maNetStructPinvMnemonic			:	'P';
+	maNetStructPinvAccelerator		:	'';	
+	maNetStructPinvAcceleratorText	:	'';
+	
+	maNetStructTinvLabel			:	'T Invariants';
+	maNetStructTinvMnemonic			:	'T';
+	maNetStructTinvAccelerator		:	'';	
+	maNetStructTinvAcceleratorText	:	'';
+	
+	maNetStructMDLabel				:	'Minimal Deadlocks';
+	maNetStructMDMnemonic			:	'D';
+	maNetStructMDAccelerator		:	'';	
+	maNetStructMDAcceleratorText	:	'';
+	
+	maNetStructMTLabel				:	'Minimal Traps';
+	maNetStructMTMnemonic			:	'M';
+	maNetStructMTAccelerator		:	'';	
+	maNetStructMTAcceleratorText		:	'';
+		
+	maNetStructECSLabel				:	'ECS Confusion ME SC CC';
+	maNetStructECSMnemonic			:	'E';
+	maNetStructECSAccelerator		:	'';	
+	maNetStructECSAcceleratorText	:	'';
+		
+	maNetStructSBLabel				:	'Structural Boundedness';
+	maNetStructSBMnemonic			:	'B';
+	maNetStructSBAccelerator		:	'';	
+	maNetStructSBAcceleratorText	:	'';
+	
+	maNetSolveTRGLabel				:	'Compute TRG';
+	maNetSolveTRGMnemonic			:	'T';
+	maNetSolveTRGAccelerator		:	'';	
+	maNetSolveTRGAcceleratorText	:	'';
+		
+	maNetSolveEMCLabel				:	'Compute EMC';
+	maNetSolveEMCMnemonic			:	'E';
+	maNetSolveEMCAccelerator		:	'';	
+	maNetSolveEMCAcceleratorText	:	'';
+
+	maNetGSPNLabel					:	'GSPN Solution';
+	maNetGSPNMnemonic				:	'G';
+		
+	maNetSolveGSPNSSLabel			:	'Steady State';
+	maNetSolveGSPNSSMnemonic		:	'S';
+	maNetSolveGSPNSSAccelerator		:	'';	
+	maNetSolveGSPNSSAcceleratorText	:	'';
+		
+	maNetSolveGSPNSTLabel			:	'Transient';
+	maNetSolveGSPNSTMnemonic		:	'T';
+	maNetSolveGSPNSTAccelerator		:	'';	
+	maNetSolveGSPNSTAcceleratorText	:	'';
+	
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+/*******************************************************************************
+		Labels And Accelerators for Menu SWN			
+********************************************************************************/
+	
+	maSwnTopicLabel					:	'Swn';
+	maSwnTopicMnemonic				:	'S';
+	
+	maSwnSymbolicLabel				:	'Symbolic';
+	maSwnSymbolicMnemonic			:	'S';
+	maSwnOrdinaryLabel				:	'Ordinary';
+	maSwnOrdinaryMnemonic			:	'O';
+	
+	maSwnSymSimuLabel			:	'Simulation';
+	maSwnSymSimuMnemonic			:	'S';
+	maSwnSymSimuAccelerator		:	'';	
+	maSwnSymSimuAcceleratorText	:	'';
+	
+	maSwnSymCompRGLabel				:	'Compute RG';
+	maSwnSymCompRGMnemonic			:	'C';
+	maSwnSymCompRGAccelerator		:	'';	
+	maSwnSymCompRGAccelText	:	'';
+
+/****17/7/08 ESRG by Marco***/
+
+	maSwnESRGLabel				:	'Compute ESRG';
+	maSwnESRGMnemonic			:	'E';
+	maSwnESRGAccelerator		:	'';	
+	maSwnESRGAccelText	:	'';
+
+	maSwnDSRGLabel				:	'Compute DSRG';
+	maSwnDSRGMnemonic			:	'D';
+	maSwnDSRGAccelerator		:	'';	
+	maSwnDSRGAccelText	:	'';
+
+/****17/7/08 ESRG by Marco***/
+/****10/6/10 ESRG by Marco***/
+	maGSPNMDDLabel				:	'RG -> MDD';
+	maGSPNMDDMnemonic			:	'M';
+	maGSPNMDDAccelerator		:	'';	
+	maGSPNMDDAccelText	:	'';
+/****10/6/10 ESRG by Marco***/	
+
+	maSwnSymTransientLabel				:	'Transient';
+	maSwnSymTransientMnemonic			:	'T';
+	maSwnSymTransientAccelerator		:	'';	
+	maSwnSymTransientAccelText	:	'';
+
+	maSwnOrdSimuLabel				:	'Simulation';
+	maSwnOrdSimuMnemonic			:	'S';
+	maSwnOrdSimuAccelerator		:	'';	
+	maSwnOrdSimuAcceleratorText	:	'';
+	
+	maSwnOrdCompRGLabel				:	'Compute RG';
+	maSwnOrdCompRGMnemonic			:	'C';
+	maSwnOrdCompRGAccelerator		:	'';	
+	maSwnOrdCompRGAcceleratorText	:	'';
+	maSwnOrdTransientLabel				:	'Transient';
+	maSwnOrdTransientMnemonic			:	'T';
+	maSwnOrdTransientAccelerator		:	'';	
+	maSwnOrdTransientAccelText	:	'';
+	maSwnOrdUnfoldLabel				:	'Unfold';
+	maSwnOrdUnfoldMnemonic			:	'U';
+	maSwnOrdUnfoldAccelerator		:	'';	
+	maSwnOrdUnfoldAccelText	:	'';
+
+/*******************************************************************************
+		Labels And Accelerators for Menu NET			
+********************************************************************************/
+	
+	maEGSPNTopicLabel					:	'E-GSPN';
+	maEGSPNTopicMnemonic				:	'E';
+
+	maEGSPNSimuLabel				:	'Simulation';
+	maEGSPNSimuMnemonic			:	'S';
+	maEGSPNSimuAccelerator		:	'';	
+	maEGSPNSimuAcceleratorText	:	'';
+	
+	maEGSPNCompRGLabel				:	'Compute RG';
+	maEGSPNCompRGMnemonic			:	'C';
+	maEGSPNCompRGAccelerator		:	'';	
+	maEGSPNCompRGAcceleratorText	:	'';
+
+	maEGSPNTransientLabel				:	'Transient';
+	maEGSPNTransientMnemonic			:	'T';
+	maEGSPNTransientAccelerator		:	'';	
+	maEGSPNTransientAccelText	:	'';
+
+/*******************************************************************************
+		Labels And Accelerators for Menu HELP			
+********************************************************************************/
+	
+	maHelpTopicLabel			:	'Help';
+	maHelpTopicMnemonic			:	'H';
+
+	maHelpToggleLabel			:	'Mouse Help';
+	maHelpToggleMnemonic		:	'H';
+	maHelpToggleAccelerator		:	'';	
+	maHelpToggleAcceleratorText	:	'';
+
+	maHelpAboutLabel			:	'About';
+	maHelpAboutMnemonic			:	'A';
+	maHelpAboutAccelerator		:	'';	
+	maHelpAboutAcceleratorText	:	'';
+
+	
+/*******************************************************************************
+		Labels And Accelerators for the DRAW POPUP Menu			
+********************************************************************************/
+	
+	maAdd_PopLabel			:	'Add';
+	maAdd_PopMnemonic		:	'A';
+	maAdd_PopAccelerator		:	'';	
+	maAdd_PopAcceleratorText	:	'';
+
+	maChange_PopLabel			:	'Change';
+	maChange_PopMnemonic		:	'C';
+	maChange_PopAccelerator		:	'';	
+	maChange_PopAcceleratorText	:	'';
+
+	maSelect_PopLabel			:	'Select';
+	maSelect_PopMnemonic		:	'S';
+	maSelect_PopAccelerator		:	'';	
+	maSelect_PopAcceleratorText	:	'';
+
+	maMove_PopLabel			:	'Move';
+	maMove_PopMnemonic		:	'M';
+	maMove_PopAccelerator		:	'';	
+	maMove_PopAcceleratorText	:	'';
+
+	maDelete_PopLabel			:	'Delete';
+	maDelete_PopMnemonic		:	'D';
+	maDelete_PopAccelerator		:	'';	
+	maDelete_PopAcceleratorText	:	'';
+
+	maShow_PopLabel			:	'Show';
+	maShow_PopMnemonic		:	'h';
+	maShow_PopAccelerator		:	'';	
+	maShow_PopAcceleratorText	:	'';
+
+	maRotate_PopLabel			:	'Rotate';
+	maRotate_PopMnemonic		:	't';
+	maRotate_PopAccelerator		:	'';	
+	maRotate_PopAcceleratorText	:	'';
+
+	maPrintarea_PopLabel			:	'Define Print Area';
+	maPrintarea_PopMnemonic			:	'A';
+	maPrintarea_PopAccelerator		:	'';	
+	maPrintarea_PopAcceleratorText	:	'';
+
+	maPaste_PopLabel			:	'End Selection';
+	maPaste_PopMnemonic			:	'n';
+	maPaste_PopAccelerator		:	'';	
+	maPaste_PopAcceleratorText	:	'';
+
+	maRedraw_PopLabel			:	'Redraw';
+	maRedraw_PopMnemonic			:	'R';
+	maRedraw_PopAccelerator		:	'';	
+	maRedraw_PopAcceleratorText	:	'';
+
+	
+/*******************************************************************************
+		Labels And Accelerators for the PINV POPUP Menu			
+********************************************************************************/
+	
+	maPinv_PopLabel			:	'P-invariants';
+	maPinv_PopMnemonic		:	'P';
+	maPinv_PopAccelerator		:	'';	
+	maPinv_PopAcceleratorText	:	'';
+
+	maMinDead_PopLabel			:	'Minimal deadlocks';
+	maMinDead_PopMnemonic		:	'd';
+	maMinDead_PopAccelerator		:	'';	
+	maMinDead_PopAcceleratorText	:	'';
+
+	maMinTraps_PopLabel			:	'Minimal traps';
+	maMinTraps_PopMnemonic		:	't';
+	maMinTraps_PopAccelerator		:	'';	
+	maMinTraps_PopAcceleratorText	:	'';
+
+	maImpPlaces_PopLabel			:	'Implicit Places';
+	maImpPlaces_PopMnemonic		:	'I';
+	maImpPlaces_PopAccelerator		:	'';	
+	maImpPlaces_PopAcceleratorText	:	'';
+
+	maAbsMB_PopLabel			:	'Absolute M. B.';
+	maAbsMB_PopMnemonic			:	'b';
+	maAbsMB_PopAccelerator		:	'';	
+	maAbsMB_PopAcceleratorText	:	'';
+
+	maAveMB_PopLabel			:	'Average M. B.';
+	maAveMB_PopMnemonic		:	'v';
+	maAveMB_PopAccelerator		:	'';	
+	maAveMB_PopAcceleratorText	:	'';
+
+	maEndShow_PopLabel			:	'End Show';
+	maEndShow_PopMnemonic		:	'd';
+	maEndShow_PopAccelerator		:	'';	
+	maEndShow_PopAcceleratorText	:	'';
+
+
+/*******************************************************************************
+		Labels And Accelerators for the TINV POPUP Menu			
+********************************************************************************/
+	
+	maTinv_PopLabel			:	'T-invariants';
+	maTinv_PopMnemonic		:	'T';
+	maTinv_PopAccelerator		:	'';	
+	maTinv_PopAcceleratorText	:	'';
+
+	maECS_PopLabel			:	'ECS';
+	maECS_PopMnemonic		:	'E';
+	maECS_PopAccelerator		:	'';	
+	maECS_PopAcceleratorText	:	'';
+
+	maME_PopLabel			:	'ME';
+	maME_PopMnemonic		:	'M';
+	maME_PopAccelerator		:	'';	
+	maME_PopAcceleratorText	:	'';
+
+	maSC_PopLabel			:	'SC';
+	maSC_PopMnemonic		:	'S';
+	maSC_PopAccelerator		:	'';	
+	maSC_PopAcceleratorText	:	'';
+
+	maCC_PopLabel			:	'CC';
+	maCC_PopMnemonic		:	'C';
+	maCC_PopAccelerator		:	'';	
+	maCC_PopAcceleratorText	:	'';
+
+	maUnbSeq_PopLabel			:	'Unbounded Sequences';
+	maUnbSeq_PopMnemonic		:	'U';
+	maUnbSeq_PopAccelerator		:	'';	
+	maUnbSeq_PopAcceleratorText	:	'';
+
+	maActLivBound_PopLabel			:	'Actual liveness Bounds';
+	maActLivBound_PopMnemonic		:	'A';
+	maActLivBound_PopAccelerator		:	'';	
+	maActLivBound_PopAccelText	:	'';
+
+	maLivBounds_PopLabel			:	'LP liveness Bounds';
+	maLivBounds_PopMnemonic		:	'l';
+	maLivBounds_PopAccelerator		:	'';	
+	maLivBounds_PopAccelText	:	'';
+
+	maThrBounds_PopLabel			:	'LP Throughput Bounds';
+	maThrBounds_PopMnemonic		:	'T';
+	maThrBounds_PopAccelerator		:	'';	
+	maThrBounds_PopAcceleratorText	:	'';
+
+	

@@ -1,0 +1,80 @@
+/*******************************************************************************
+	Histogram Dialog
+	
+	Comment:				This Section Describes the Histogram Dialog 
+							
+	Programmer:				Alex
+	Creation Date:			12/06/95
+	Last Modify Date:		12/06/95
+
+********************************************************************************/
+!identifier
+!	OVERVIEW_ADDRESS;
+	
+!procedure
+!	RedrawOverviewCB(integer);
+	
+
+object  HistoDialog : XmFormDialog
+{
+	controls
+	{
+		XmScrolledWindow  HistoDialog_Scroller;
+	};
+	arguments
+	{
+		XmNdialogTitle 			= 	"Histogram";
+		XmNwidth 				=	408;
+		XmNheight 				=	120;
+		XmNautoUnmanage 		=	false;
+		XmNdialogStyle			=	XmDIALOG_MODELESS;
+		XmNnoResize				=	false;
+		XmNtransient			=	true;
+!		XmNmwmFunctions 		=	4;
+		XmNmwmDecorations		=	14;
+		XmNmappedWhenManaged	= 	false;
+	};
+
+};
+
+object HistoDialog_Scroller : XmScrolledWindow
+{
+	controls
+	{
+		XmDrawingArea  HistoDialog_Draw;
+	};
+	arguments
+	{
+		XmNscrollingPolicy 	=	XmAUTOMATIC;
+		XmNtopAttachment 	=	XmATTACH_FORM;
+		XmNtopOffset		=	1;
+		XmNbottomAttachment	=	XmATTACH_FORM;
+		XmNbottomOffset 	=	1;
+		XmNleftAttachment 	=	XmATTACH_FORM;
+		XmNleftOffset 		=	1;
+		XmNrightAttachment 	=	XmATTACH_FORM;
+		XmNrightOffset 		=	1;
+	};
+};
+
+object HistoDialog_Draw : XmDrawingArea
+{
+	arguments
+	{
+!		XmNwidth 				=	402;
+!		XmNheight 				=	242;
+		XmNbackground 		=	colorWhite;
+!		XmNtopAttachment 	=	XmATTACH_FORM;
+!		XmNtopOffset		=	1;
+!		XmNbottomAttachment	=	XmATTACH_FORM;
+!		XmNbottomOffset 	=	1;
+!		XmNleftAttachment 	=	XmATTACH_FORM;
+!		XmNleftOffset 		=	1;
+!		XmNrightAttachment 	=	XmATTACH_FORM;
+!		XmNrightOffset 		=	1;
+	};
+	callbacks
+	{
+!		XmNexposeCallback = procedure RedrawOverviewCB(OVERVIEW_ADDRESS);
+	};
+};

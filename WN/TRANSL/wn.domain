@@ -1,0 +1,56 @@
+placedom   : placedom COMMA STRING
+	{/* Parsificazione del dominio di un posto */
+	 if((ind=get_index(str_in))==-1)
+	  {/* Errore */
+	   out_error(ERROR_UNEXISTING_CLASS,npl,0,0,0,str_in,NULL);
+	  }/* Errore */
+	 tabp[npl].comp_num++;
+	 if(tabp[npl].comp_num > MAX_PLACE_DOMAIN)
+	  {/* Errore */
+	   out_error(ERROR_LOW_MAX_PLACE,npl,0,0,0,NULL,NULL);
+	  }/* Errore */
+	 read_domain[tag] = ind;
+	 tag++;
+	}/* Parsificazione del dominio di un posto */
+	   | STRING
+	{/* Parsificazione del dominio di un posto */
+	 if((ind=get_index(str_in))==-1)
+	  {/* Errore */
+	   out_error(ERROR_UNEXISTING_CLASS,npl,0,0,0,str_in,NULL);
+	  }/* Errore */
+	 tag = 0;
+	 tabp[npl].comp_num = 1;
+	 read_domain[tag] = ind;
+	 tag++;
+	}/* Parsificazione del dominio di un posto */
+	   ;
+transdom   : OBRCK
+	{
+	 tabt[ntr].guard = NULL;
+	 prd_h = prd_t = NULL;
+	}
+	     pred
+	{
+	 gen(TYPEEND,"");
+
+	 tabt[ntr].guard = prd_h;
+
+#ifdef ESYMBOLIC
+	tabt[ntr].trans_type=ASYM_T;
+#endif
+	}
+	     CBRCK opzRESET
+           |
+           DIESIS
+        {
+         tabt[ntr].reset = TRUE;
+        }
+           |
+	   ;
+opzRESET   : DIESIS
+        {
+         tabt[ntr].reset = TRUE;
+        }
+           |
+           ;
+

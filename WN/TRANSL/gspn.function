@@ -1,0 +1,20 @@
+function : {
+            ptr=(Coeff_p)emalloc(sizeof(struct ENN_COEFF));
+            enn_sign=1;
+            ptr->enn_coef = enn_sign;
+	    ptr->guard = NULL;
+            ptr->expression = NULL;
+	    ptr->next = fun_ptr;/* Settare fun_ptr a NULL prima di parse */
+	    fun_ptr = ptr;
+           } opzexpression opzguard |
+           function plusop 
+           {
+	    enn_sign = sign;
+	    sign=1;
+            ptr=(Coeff_p)emalloc(sizeof(struct ENN_COEFF));
+            ptr->enn_coef = enn_sign;
+	    ptr->guard = NULL;
+            ptr->expression = NULL;
+	    ptr->next = fun_ptr;/* Settare fun_ptr a NULL prima di parse */
+	    fun_ptr = ptr;
+           } opzexpression opzguard;

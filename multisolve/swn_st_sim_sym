@@ -1,0 +1,400 @@
+# 
+cp $1.net $1:h/$1:t_nnffmm.net
+cp $1.def $1:h/$1:t_nnffmm.def
+/bin/rm -f $1.net.errors
+set egyeb = $1_egyeb
+set net = $1_nnffmm
+#echo $net
+
+set variable = `more $egyeb.variable`
+set simoptions = `more $egyeb.simulation`
+# number and names of results
+set resnames = ("" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "")
+set awkc = ("END" "{" "print(NF)" "}" )
+echo $awkc > $egyeb.awkc
+@ nres = `$MULTISOLVE_AWK -f $egyeb.awkc $egyeb.measures`
+@ cnt = 1
+while( $cnt <= $nres )
+    set awkc = ("BEGIN" "{" "i=0" "}" "{" "if(i==0) print("'$'$cnt"); i=i+1;" "}")
+    echo $awkc > $egyeb.awkc
+    set resnames[$cnt] = `$MULTISOLVE_AWK -f $egyeb.awkc $egyeb.measures`
+    echo $resnames[$cnt]
+    set error = `grep -l "$resnames[$cnt] " $net.net`
+    @ length = `echo $error | wc -c`
+    if ( $length == 0 ) then
+	set error = `grep -l "$resnames[$cnt] " $net.def`
+	@ length = `echo $error | wc -c`
+    	if ( $length == 0 ) then
+	    echo "Couldn't find result" $resnames[$cnt]"." > $1.net.errors
+	    /bin/rm $net.* $egyeb.*
+	    exit(1)
+	endif
+    endif
+    @ cnt ++
+end
+
+# number and names of variables to change
+set varnames = ("" "" "" "" "")
+set awkc = ("END" "{" "print(NF)" "}" )
+echo $awkc > $egyeb.awkc
+@ nvar = `$MULTISOLVE_AWK -f $egyeb.awkc $egyeb.parameters `
+@ cnt = 1
+while( $cnt <= $nvar )
+    set awkc = ("BEGIN" "{" "i=0" "}" "{" "if(i==0) print("'$'$cnt"); i=i+1;" "}")
+    echo $awkc > $egyeb.awkc
+    set varnames[$cnt] = `$MULTISOLVE_AWK -f $egyeb.awkc $egyeb.parameters`
+    echo $varnames[$cnt]
+    set error = `grep -l "$varnames[$cnt] " $net.net`
+    #echo "***" $error "***"
+    @ length = `echo $error | wc -c`
+    #echo "*****" $length
+    if ( $length == 0 ) then
+    	echo "Couldn't find transition (or variable)" $varnames[$cnt]"." > $1.net.errors
+	/bin/rm $net.* $egyeb.*
+	exit(1)
+    endif
+    @ cnt ++
+end
+
+    set error = `grep -l "$variable " $net.net`
+    #echo "***" $error "***"
+    @ length = `echo $error | wc -c`
+    #echo "*****" $length
+    if ( $length == 0 ) then
+    	echo "Couldn't find transition (or variable)" $variable"." > $1.net.errors
+	/bin/rm $net.* $egyeb.*
+	exit(1)
+    endif
+
+# values of parameters
+@ cnt = 1
+while( $cnt <= $nvar )
+    set awkc = ("BEGIN" "{" "i=0" "}" "{" "if(i==0) print("'$'$cnt"); i=i+1;" "}")
+    echo $awkc > $egyeb.awkc
+    set lowerb = `$MULTISOLVE_AWK -f $egyeb.awkc $egyeb.lbounds`
+    echo $awkc > $egyeb.awkc
+    set upperb = `$MULTISOLVE_AWK -f $egyeb.awkc $egyeb.ubounds`
+    echo $awkc > $egyeb.awkc
+    set step = `$MULTISOLVE_AWK -f $egyeb.awkc $egyeb.steps`
+    echo $lowerb $upperb $step
+    echo -n $lowerb > $egyeb.$varnames[$cnt]
+    @ more = 1
+    while( $more == 1 )
+	set bccommand = ($lowerb"+"$step)
+	echo $bccommand > $egyeb.bcc
+	set lowerb = `bc < $egyeb.bcc`
+	set bccommand = ("if("$lowerb" > "$upperb") 0")
+	echo $bccommand > $egyeb.bcc
+	set bccommand = ("if("$lowerb" <= "$upperb") 1")
+	echo $bccommand >> $egyeb.bcc
+	@ more = `bc < $egyeb.bcc`
+	if( $more == 1 ) then
+	    echo -n " " >> $egyeb.$varnames[$cnt]
+	    echo -n $lowerb >> $egyeb.$varnames[$cnt]
+	endif
+    end
+    echo "" >> $egyeb.$varnames[$cnt]
+    @ cnt ++
+end
+
+# values of transient times
+set lowerb = $2
+set upperb = $3
+set step = $4
+echo -n $lowerb > $egyeb.times
+@ more = 1
+while( $more == 1 )
+    set bccommand = ($lowerb"+"$step)
+    echo $bccommand > $egyeb.bcc
+    set lowerb = `bc < $egyeb.bcc`
+    set bccommand = ("if("$lowerb" > "$upperb") 0")
+    echo $bccommand > $egyeb.bcc
+    set bccommand = ("if("$lowerb" <= "$upperb") 1")
+    echo $bccommand >> $egyeb.bcc
+    @ more = `bc < $egyeb.bcc`
+    if( $more == 1 ) then
+        echo -n " " >> $egyeb.times
+        echo -n $lowerb >> $egyeb.times
+    endif
+end
+echo "" >> $egyeb.times
+
+if ( $nvar == 0 ) then
+echo -n "#" > $1.results
+echo -n `more $egyeb.variable` >> $1.results
+    while( $cnt <= $nres )
+	echo -n " " >> $1.results
+	echo -n $resnames[$cnt] >> $1.results	
+	@ cnt ++
+    end
+    echo "" >> $1.results
+endif
+
+# compute all the results
+if ( $nvar != 0 ) then
+echo -n "#" > $1.results
+echo -n `more $egyeb.variable` >> $1.results
+foreach v1 (`more $egyeb.$varnames[1]`)
+if( $nvar >= 2 ) then
+    foreach v2 (`more $egyeb.$varnames[2]`)
+    if(  $nvar >= 3 ) then
+	foreach v3 (`more $egyeb.$varnames[3]`)
+	if( $nvar >= 4 ) then
+	    foreach v4 (`more $egyeb.$varnames[4]`)
+	    if( $nvar >= 5 ) then
+		foreach v5 (`more $egyeb.$varnames[5]`)
+		    echo  $v1 $v2 $v3 $v4 $v5
+		    @ cnt = 1
+		    while( $cnt <= $nres )
+			echo -n " " >> $1.results
+			echo -n $resnames[$cnt] >> $1.results
+			set tmp = (","$varnames[1]"="$v1)
+			echo -n $tmp >> $1.results
+			set tmp = (","$varnames[2]"="$v2)
+			echo -n $tmp >> $1.results
+			set tmp = (","$varnames[3]"="$v3)
+			echo -n $tmp >> $1.results
+			set tmp = (","$varnames[4]"="$v4)
+			echo -n $tmp >> $1.results
+			set tmp = (","$varnames[5]"="$v5)
+			echo -n $tmp >> $1.results
+			@ cnt ++
+		    end
+		end
+	    else
+		echo  $v1 $v2 $v3 $v4
+		@ cnt = 1
+		while( $cnt <= $nres )
+		    echo -n " " >> $1.results
+		    echo -n $resnames[$cnt] >> $1.results
+		    set tmp = (","$varnames[1]"="$v1)
+		    echo -n $tmp >> $1.results
+		    set tmp = (","$varnames[2]"="$v2)
+		    echo -n $tmp >> $1.results
+		    set tmp = (","$varnames[3]"="$v3)
+		    echo -n $tmp >> $1.results
+		    set tmp = (","$varnames[4]"="$v4)
+		    echo -n $tmp >> $1.results
+		    @ cnt ++
+		end
+	    endif
+	else
+	    echo $v1 $v2 $v3
+	    @ cnt = 1
+	    while( $cnt <= $nres )
+		echo -n " " >> $1.results
+		echo -n $resnames[$cnt] >> $1.results
+		set tmp = (","$varnames[1]"="$v1)
+		echo -n $tmp >> $1.results
+		set tmp = (","$varnames[2]"="$v2)
+		echo -n $tmp >> $1.results
+		set tmp = (","$varnames[3]"="$v3)
+		echo -n $tmp >> $1.results
+		@ cnt ++
+	    end
+	endif
+	end
+    else
+	echo  $v1 $v2
+	@ cnt = 1
+	while( $cnt <= $nres )
+	    echo -n " " >> $1.results
+	    echo -n $resnames[$cnt] >> $1.results
+	    set tmp = (","$varnames[1]"="$v1)
+	    echo -n $tmp >> $1.results
+	    set tmp = (","$varnames[2]"="$v2)
+	    echo -n $tmp >> $1.results
+	    @ cnt ++
+	end
+    endif
+    end
+else
+    echo   $v1
+    @ cnt = 1
+    while( $cnt <= $nres )
+	echo -n " " >> $1.results
+	echo -n $resnames[$cnt] >> $1.results
+	set tmp = (","$varnames[1]"="$v1)
+	echo -n $tmp >> $1.results
+	@ cnt ++
+    end
+endif
+end
+echo "" >> $1.results
+endif
+
+set awkc = ("{" "for(i=2;i<=NF;i++) print("'$'"i);" "}")
+echo $awkc > $egyeb.awkc
+$MULTISOLVE_AWK -f $egyeb.awkc $1.results > $1.net.curves
+
+
+if ( $nvar == 0 ) then 
+cp $net.net $net.backup_net
+foreach t (`more $egyeb.times`)
+echo -n $t >> $1.results
+set awkc = ("{" "if (" '$' "1 == " '"'$variable'"' " ) " '$'" 2 = " $t "; print}")
+echo $awkc > $egyeb.awkc
+$MULTISOLVE_AWK -f $egyeb.awkc $net.net > $net.net.newnet
+mv $net.net.newnet $net.net
+${GREATSPN_SCRIPTDIR}/RMNET $net
+${GREATSPN_BINDIR}/WNSYMB $net $simoptions
+@ cnt = 1
+while( $cnt <= $nres )
+set awkc = ("{" "if (" '$' "1 == " '"'$resnames[$cnt]'"' " ||" '$' "1 == "'"'"Thru_"$resnames[$cnt]'"'") print " '$'" 3}")
+echo $awkc > $egyeb.awkc
+set value = `$MULTISOLVE_AWK -f $egyeb.awkc $net.sta`
+echo -n " " >> $1.results
+echo -n $value >> $1.results
+#echo $value
+@ cnt++
+end
+echo "" >> $1.results
+end 
+endif
+
+if ( $nvar != 0 ) then  
+cp $net.net $net.backup_net
+foreach t (`more $egyeb.times`)
+echo -n $t >> $1.results
+set awkc = ("{" "if (" '$' "1 == " '"'$variable'"' " ) " '$'" 2 = " $t "; print}")
+echo $awkc > $egyeb.awkc
+$MULTISOLVE_AWK -f $egyeb.awkc $net.net > $net.net.newnet
+mv $net.net.newnet $net.net
+foreach v1 (`more $egyeb.$varnames[1]`)
+set awkc = ("{" "if (" '$' "1 == " '"'$varnames[1]'"' " ) " '$'" 2 = " $v1 "; print}")
+echo $awkc > $egyeb.awkc
+$MULTISOLVE_AWK -f $egyeb.awkc $net.net > $net.net.newnet
+mv $net.net.newnet $net.net
+if( $nvar >= 2 ) then
+    foreach v2 (`more $egyeb.$varnames[2]`)
+    set awkc = ("{" "if (" '$' "1 == " '"'$varnames[2]'"' " ) " '$'" 2 = " $v2 "; print}")
+    echo $awkc > $egyeb.awkc
+    $MULTISOLVE_AWK -f $egyeb.awkc $net.net > $net.net.newnet
+    mv $net.net.newnet $net.net
+    if(  $nvar >= 3 ) then
+	foreach v3 (`more $egyeb.$varnames[3]`)
+	if( $nvar >= 4 ) then
+	    foreach v4 (`more $egyeb.$varnames[4]`)
+	    if( $nvar >= 5 ) then
+		foreach v5 (`more $egyeb.$varnames[5]`)
+		    echo $t $v1 $v2 $v3 $v4 $v5
+${GREATSPN_SCRIPTDIR}/RMNET $net
+		    ${GREATSPN_BINDIR}/WNSYMB $net $simoptions
+		    @ cnt = 1
+		    while( $cnt <= $nres )
+			set awkc = ("{" "if (" '$' "1 == " '"'$resnames[$cnt]'"' " ||" '$' "1 == "'"'"Thru_"$resnames[$cnt]'"'") print " '$'" 3}")
+			echo $awkc > $egyeb.awkc
+			set value = `$MULTISOLVE_AWK -f $egyeb.awkc $net.sta`
+
+			@ length = `echo $value | wc -c`
+			if ( $length == 0 ) then
+			    echo "Couldn't find result" $resnames[$cnt]"." > $1.net.errors
+			    /bin/rm $net.* $egyeb.*
+			    exit(1)
+			endif
+
+			echo -n " " >> $1.results
+			echo -n $value >> $1.results
+			#echo $value
+			@ cnt++
+		    end
+		end
+	    else
+		echo $t $v1 $v2 $v3 $v4
+${GREATSPN_SCRIPTDIR}/RMNET $net
+		${GREATSPN_BINDIR}/WNSYMB $net $simoptions
+		@ cnt = 1
+		while( $cnt <= $nres )
+		    set awkc = ("{" "if (" '$' "1 == " '"'$resnames[$cnt]'"' " ||" '$' "1 == "'"'"Thru_"$resnames[$cnt]'"'") print " '$'" 3}")
+		    echo $awkc > $egyeb.awkc
+		    set value = `$MULTISOLVE_AWK -f $egyeb.awkc $net.sta`
+			@ length = `echo $value | wc -c`
+			if ( $length == 0 ) then
+			    echo "Couldn't find result" $resnames[$cnt]"." > $1.net.errors
+			    /bin/rm $net.* $egyeb.*
+			    exit(1)
+			endif
+
+		    echo -n " " >> $1.results
+		    echo -n $value >> $1.results
+		    #echo $value
+		    @ cnt++
+		end
+	    endif
+	else
+	    echo $t $v1 $v2 $v3
+${GREATSPN_SCRIPTDIR}/RMNET $net
+	    ${GREATSPN_BINDIR}/WNSYMB $net $simoptions
+	    @ cnt = 1
+	    while( $cnt <= $nres )
+		set awkc = ("{" "if (" '$' "1 == " '"'$resnames[$cnt]'"' " ||" '$' "1 == "'"'"Thru_"$resnames[$cnt]'"'") print " '$'" 3}")
+		echo $awkc > $egyeb.awkc
+		set value = `$MULTISOLVE_AWK -f $egyeb.awkc $net.sta`
+			@ length = `echo $value | wc -c`
+			if ( $length == 0 ) then
+			    echo "Couldn't find result" $resnames[$cnt]"." > $1.net.errors
+			    /bin/rm $net.* $egyeb.*
+			    exit(1)
+			endif
+
+		echo -n " " >> $1.results
+		echo -n $value >> $1.results
+		#echo $value
+		@ cnt++
+	    end
+	endif
+	end
+    else
+	echo  $t $v1 $v2
+${GREATSPN_SCRIPTDIR}/RMNET $net
+	${GREATSPN_BINDIR}/WNSYMB $net $simoptions
+ 	@ cnt = 1
+	while( $cnt <= $nres )
+	    set awkc = ("{" "if (" '$' "1 == " '"'$resnames[$cnt]'"' " ||" '$' "1 == "'"'"Thru_"$resnames[$cnt]'"'") print " '$'" 3}")
+	    echo $awkc > $egyeb.awkc
+	    set value = `$MULTISOLVE_AWK -f $egyeb.awkc $net.sta`
+			@ length = `echo $value | wc -c`
+			if ( $length == 0 ) then
+			    echo "Couldn't find result" $resnames[$cnt]"." > $1.net.errors
+			    /bin/rm $net.* $egyeb.*
+			    exit(1)
+			endif
+
+	    echo -n " " >> $1.results
+	    echo -n $value >> $1.results
+	    #echo $value
+	    @ cnt++
+	end
+    endif
+    end
+else
+    echo  $t $v1
+${GREATSPN_SCRIPTDIR}/RMNET $net
+    ${GREATSPN_BINDIR}/WNSYMB $net $simoptions
+    @ cnt = 1
+    while( $cnt <= $nres )
+	    set awkc = ("{" "if (" '$' "1 == " '"'$resnames[$cnt]'"' " ||" '$' "1 == "'"'"Thru_"$resnames[$cnt]'"'") print " '$'" 3}")
+	echo $awkc > $egyeb.awkc
+	set value = `$MULTISOLVE_AWK -f $egyeb.awkc $net.sta`
+			@ length = `echo $value | wc -c`
+			if ( $length == 0 ) then
+			    echo "Couldn't find result" $resnames[$cnt]"." > $1.net.errors
+			    /bin/rm $net.* $egyeb.*
+			    exit(1)
+			endif
+
+	echo -n " " >> $1.results
+	echo -n $value >> $1.results
+	#echo $value
+	@ cnt++
+    end
+endif
+end
+echo "" >> $1.results
+end
+endif
+
+/bin/rm $net.*
+/bin/rm $egyeb.*
+
+

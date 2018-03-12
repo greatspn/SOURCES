@@ -1,0 +1,98 @@
+%{
+# include <stdio.h>
+# include <stdlib.h>
+# include <string.h>
+#include "../INCLUDE/const.h"
+# include "../INCLUDE/struct.h"
+# include "../INCLUDE/var_ext.h"
+# include "../INCLUDE/service.h"
+# include "../INCLUDE/macros.h"
+
+#define yyparse parser
+#define yylex jjlex
+#define yywrap jjwrap
+
+extern char *jjtext;
+int yylex();
+void yyerror (char const *s);
+
+extern void check_predicate();
+extern void push_expression();
+extern void push_predicate();
+extern int evaluate_expression();
+extern int optimized_set_token_marking();
+extern int optimized_nextvec();
+extern int set_token_marking();
+extern int get_dynamic_from_total();
+extern int nextvec();
+extern int get_pl_in();
+extern int get_index();
+extern int get_marking_parameter_offset();
+extern int fill_with_elements();
+extern int already_exist();
+extern int intersection();
+extern int check_obj_name();
+extern int get_class_card();
+extern int get_obj_id();
+extern int set_number_of_elements();
+extern int get_proj_num();
+extern int already_transformed();
+extern void *ecalloc();
+extern char *emalloc();
+extern void emit();
+extern void gen();
+extern void out_error();
+extern void insert_buf();
+
+int ind,i,j,sbc_ind,tag ;
+int objid;
+int n_sbcl,numobj,count ;
+int not_decl,stop,eqfl,relfl,distfl ;
+int low_val,enn_sign=1,sign=1,prsign=1;
+int proj_num;
+int coef_val,card_val;
+int pl,cl,disj;
+int addm0,totm0;
+
+int parsing_flag = UNKNOWN;
+int exp_on = TRUE;
+
+MDrate_p pmd = NULL;
+MDrate_p mdptr = NULL;
+
+
+Pred_p prd_h = NULL;
+Pred_p prd_t = NULL;
+
+Expr_p pcode_h = NULL;
+Expr_p pcode_t = NULL;
+
+struct MARKBUF * mpt = NULL;
+
+char temp[MAX_BUFFER][MAX_TAG_SIZE];
+
+char class_read[MAX_TAG_SIZE];
+char class_name[MAX_TAG_SIZE];
+char sbc_name[MAX_TAG_SIZE];
+char buffer[MAX_TAG_SIZE];
+char error_name[MAX_TAG_SIZE];
+%}
+%start grammar
+
+%token DSC O US CO S CARET D PD ESCL DISTANCE POINT ID OBRCS CBRCS VBAR
+%token MA FU NUM STRING OBRCK CBRCK MINUS PLUS COMMA
+%token NE EQ LT GT LE GE OPAR CPAR COLON MOLT DIV 
+%token OR AND NOT MD TD WHEN EVER MAXT MINT INV SQRT POW COMB FACT
+%token SEMICOLON REALNUM NEWLINE UNDERSCORE
+%token DIESIS FLUSH 
+
+%%
+grammar   :  MA 
+             marking
+	   | FU
+	     function
+	   | MD
+	     mdrate
+	   | TD
+	     transguard
+	   ;

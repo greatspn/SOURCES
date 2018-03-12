@@ -1,0 +1,981 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"mark",
+				"mark_type_ch	char"
+			],
+			[
+				"num_",
+				"num_marks	int *"
+			],
+			[
+				"print",
+				"print_stat_for_gui()	int"
+			],
+			[
+				"pri",
+				"print_stat_for_gui()	int"
+			],
+			[
+				"gu",
+				"gui_stat_flag	int"
+			],
+			[
+				"ope",
+				"operand(int i) const	const NewExpr &"
+			],
+			[
+				"pro",
+				"promotion_rule(const NewExpr &e, FullType t1, FullType t2)	FullType"
+			],
+			[
+				"ensu",
+				"ensure_same_domain(const NewExpr &e, FullType t1, FullType t2)	void"
+			],
+			[
+				"F",
+				"FullType	class"
+			],
+			[
+				"Color",
+				"ColorSet	struct"
+			],
+			[
+				"Colo",
+				"ColorClass	struct"
+			],
+			[
+				"Neut",
+				"NEUTRAL_COLOR_INDEX	const int"
+			],
+			[
+				"g_",
+				"g_builtin_ops	const Operator [57]"
+			],
+			[
+				"IN",
+				"INF_ARITY	const int"
+			],
+			[
+				"Operat",
+				"OperatorIndex	enum"
+			],
+			[
+				"Mul",
+				"MultiSet<>	enum"
+			],
+			[
+				"isa",
+				"isalpha(int _c)	int"
+			],
+			[
+				"mp",
+				"mpfloat	typedef"
+			],
+			[
+				"static",
+				"static_visitor<>	class"
+			],
+			[
+				"i",
+				"insert(const_iterator __position, const_reference __x)	iterator"
+			],
+			[
+				"run",
+				"running_for_MCC()	int"
+			],
+			[
+				"siz",
+				"size_type	typedef"
+			],
+			[
+				"int",
+				"intermDD	vector<dd_edge>"
+			],
+			[
+				"MODE",
+				"MODEL_INST"
+			],
+			[
+				"JA",
+				"JAVA_GUI_OBJECTS"
+			],
+			[
+				"PREFIX",
+				"PREFIX"
+			],
+			[
+				"Java",
+				"JavaGUI"
+			],
+			[
+				"obj",
+				"objects"
+			],
+			[
+				"CSL",
+				"CSLTA-GUI"
+			],
+			[
+				"CLEAN",
+				"CLEAN_TARGETS"
+			],
+			[
+				"tab",
+				"tabmp	struct MARK_PAR *"
+			],
+			[
+				"nm",
+				"nmp	int"
+			],
+			[
+				"out_",
+				"out_mult	int*"
+			],
+			[
+				"net",
+				"net_name	char [1024]"
+			],
+			[
+				"ext",
+				"extra_def	FILE *"
+			],
+			[
+				"fget",
+				"fgetpos(FILE *restrict, fpos_t *)	int"
+			],
+			[
+				"ferr",
+				"ferror(FILE *)	int"
+			],
+			[
+				"extr",
+				"extra_def	FILE *"
+			],
+			[
+				"p",
+				"p_max	double"
+			],
+			[
+				"ro",
+				"row_sum	double"
+			],
+			[
+				"add_",
+				"add_marking_param_to_change(const char *name, int new_val)	void"
+			],
+			[
+				"mpa",
+				"mpars_to_change	struct <anonymous> [32]"
+			],
+			[
+				"wil",
+				"wildcard"
+			],
+			[
+				"kno",
+				"knownActs	map<string, size_t>"
+			],
+			[
+				"e",
+				"erase(iterator __position)	iterator"
+			],
+			[
+				"e_",
+				"e_start	size_t"
+			],
+			[
+				"write",
+				"write_value(int mat, const Edge &e)	void"
+			],
+			[
+				"r",
+				"r_max	double"
+			],
+			[
+				"p_",
+				"p_max	double"
+			],
+			[
+				"cn",
+				"eof() const	bool"
+			],
+			[
+				"NO",
+				"NO_DEADLOCK"
+			],
+			[
+				"bool",
+				"boolExpr"
+			],
+			[
+				"Int",
+				"IntExprCond2"
+			],
+			[
+				"JAVA",
+				"JAVA_GUI_DIR"
+			],
+			[
+				"CS",
+				"CSLTA-GUI"
+			],
+			[
+				"uncertain",
+				"uncertainties"
+			],
+			[
+				"tr",
+				"trn_name	char[]"
+			],
+			[
+				"nt",
+				"ntr	int"
+			],
+			[
+				"ev",
+				"ev_p	Event_p"
+			],
+			[
+				"INT_MSET",
+				"INT_MSET_CONST_ID"
+			],
+			[
+				"REAL_M",
+				"REAL_MSET_CONST_ID"
+			],
+			[
+				"STA",
+				"STATEPROP_ID"
+			],
+			[
+				"COLO",
+				"COLORVAR_ID"
+			],
+			[
+				"COLOR",
+				"COLORDOMAIN_ID"
+			],
+			[
+				"COL",
+				"COLORSUBCLASS_ID"
+			],
+			[
+				"setT",
+				"setType"
+			],
+			[
+				"colo",
+				"colorVarDef"
+			],
+			[
+				"COLORV",
+				"COLORVAR_ID"
+			],
+			[
+				"num",
+				"num_states	int"
+			],
+			[
+				"from",
+				"from_vec	std::vector<int *>"
+			],
+			[
+				"buf",
+				"buf_size	const int"
+			],
+			[
+				"get",
+				"getRS()	MEDDLY::dd_edge *"
+			],
+			[
+				"res",
+				"result_ptr	RESULT*"
+			],
+			[
+				"RESU",
+				"RESULT	struct"
+			],
+			[
+				"key_",
+				"key_cache	std::vector<int>"
+			],
+			[
+				"dd_",
+				"dd_value	int"
+			],
+			[
+				"all_in",
+				"all_int2col_maps	map_int_to_coltoks*"
+			],
+			[
+				"s",
+				"show(FILE *strm) const	void"
+			],
+			[
+				"EV",
+				"EVTIMES	MEDDLY::forest::edge_labeling"
+			],
+			[
+				"fl",
+				"flush_rg()	void"
+			],
+			[
+				"ctmc",
+				"ctmc_from	std::vector<int *>"
+			],
+			[
+				"flu",
+				"flush_rg()	void"
+			],
+			[
+				"ctm",
+				"ctmc_to	std::vector<int *>"
+			],
+			[
+				"ct",
+				"ctmc_rate	std::vector<float>"
+			],
+			[
+				"ctmc_",
+				"ctmc_from	std::vector<int *>"
+			],
+			[
+				"marki",
+				"marking_to_insert	std::vector<int *>"
+			],
+			[
+				"getNS",
+				"getNSFtReal()	MEDDLY::dd_edge *"
+			],
+			[
+				"getN",
+				"getNSFtReal()	MEDDLY::dd_edge *"
+			],
+			[
+				"NSFt",
+				"NSFtReal	dd_edge *"
+			],
+			[
+				"insert",
+				"insert_transition_into_ddrg(dddRS::RSRG &rs, int *src_vec, double rate)	void"
+			],
+			[
+				"all_",
+				"all_pin"
+			],
+			[
+				"NUM_",
+				"NUM_PSF_STEPS	const int"
+			],
+			[
+				"NUM",
+				"NUM_TRN_STEPS	const int"
+			],
+			[
+				"net_",
+				"net_to_mddLevel	std::vector<int>"
+			],
+			[
+				"var_or",
+				"var_order_heuristic_FORCE_PINV(const dddRS::VariableOrderCriteria voc, std::vector<int> &out_order)	void"
+			],
+			[
+				"Comp",
+				"ComputingRG"
+			],
+			[
+				"VOC",
+				"VOC_FORCE_NES_HEURISTIC	dddRS::VariableOrderCriteria"
+			],
+			[
+				"var",
+				"varorder	const std::vector<int>&"
+			],
+			[
+				"min",
+				"min_varorder	std::vector<int>"
+			],
+			[
+				"pl_",
+				"pl_points	double[]"
+			],
+			[
+				"estimate_points",
+				"estimate_points_with_cogs(const std::vector<int> &varorder, const std::vector<double> &cog)	double"
+			],
+			[
+				"best",
+				"best_points	double"
+			],
+			[
+				"fill",
+				"fill_missing_vars	bool"
+			],
+			[
+				"VOC_",
+				"VOC_FORCE_HEURISTIC	dddRS::VariableOrderCriteria"
+			],
+			[
+				"in_",
+				"in_node	Node_p*"
+			],
+			[
+				"in",
+				"inptr	Node_p"
+			],
+			[
+				"VANI",
+				"VANISHING	RgStateType"
+			],
+			[
+				"pa",
+				"packedMarkings	sparse_seq_store<SparseMarking>"
+			],
+			[
+				"edge",
+				"edgeList	const rgedge_t"
+			],
+			[
+				"tim",
+				"timedReduxEdgeSet	TimedReduxEdgeSet"
+			],
+			[
+				"get_",
+				"get_preempted(size_t edgeInd) const	transition_set_id"
+			],
+			[
+				"push",
+				"push_back(value_type value, Args args...)	void"
+			],
+			[
+				"t",
+				"timedEdgeSets	TimedEdgeSet [2]"
+			],
+			[
+				"TimedR",
+				"TimedReduxEdgeSet	struct"
+			],
+			[
+				"Immed",
+				"ImmediateEdgeSet	struct"
+			],
+			[
+				"TimedEdge",
+				"TimedEdgeSet	struct"
+			],
+			[
+				"Timed",
+				"TimedEdgeSet	struct"
+			],
+			[
+				"BaseEd",
+				"BaseEdgeSet	struct"
+			],
+			[
+				"ge",
+				"enabledGenSets	table<col::uint_col<transition_set_id> >"
+			],
+			[
+				"pu",
+				"push_back(value_type value, Args args...)	void"
+			],
+			[
+				"transi",
+				"transition_set_id	typedef"
+			],
+			[
+				"state",
+				"stateInd	size_t"
+			],
+			[
+				"_exi",
+				"_exists(SeqTableKind stk, vec_const_iterator it, size_t len, size_t &hash, typename seq_store<Vec, Args...>::sequence_id &out_id)	bool"
+			],
+			[
+				"nu",
+				"num_inserted_seq() const	size_t"
+			],
+			[
+				"seq",
+				"seq_store<typename Vec, typename Args>	class"
+			],
+			[
+				"isE",
+				"isEmptySeq =	bool"
+			],
+			[
+				"make_hash",
+				"make_hash_internal(size_t len, vec_const_iterator &it)	size_t"
+			],
+			[
+				"prin",
+				"print(const sequence_id id) const	void"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "Packages/Makefile/Make.sublime-build",
+	"command_palette":
+	{
+		"height": 107.0,
+		"selected_items":
+		[
+			[
+				"sublime",
+				"Preferences: SublimeClang Settings – Default"
+			],
+			[
+				"subli",
+				"Preferences: SublimeClang Settings – User"
+			],
+			[
+				"pa",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 449.0
+	},
+	"console":
+	{
+		"height": 104.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/contrib/GreatSPN-MacOSX.sublime-project",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/Makefile",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/gsrc2/struct.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/DSPN-Tool/Semiflows.h",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/DSPN-Tool/Semiflows.cpp",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/gsrc2/pinvar.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/gsrc2/tinvar.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/READNET/read_NET.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/greatsrc2.0.2/load.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/algebra/Composition/load.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/algebra/Composition/algebra.c",
+		"/Users/elvio/Desktop/SVN-Unito/SOLVER/Test/DSPN-Tool/RegressionTest/mrpTest03.net",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/SHARED/main.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/INCLUDE/macros.h",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/CTL/CTLParser.yy",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/REACHAB/graphMEDD.cpp",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/CTL/CTL.cpp",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/greatsrc2.0.2/lpbounds.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/greatsrc2.0.2/BUGS/errordialog16092001.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/greatsrc2.0.2/animation.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/greatsrc2.0.2/cc.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/greatsrc2.0.2/lisp.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/REACHAB/rg_files.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/SHARED/medd.h",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/SHARED/meddEv.cpp",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/gsrc2/unbound.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/gsrc2/struct2.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/SHARED/mainMEDD.cpp",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/INCLUDE/struct.h",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/SHARED/mainODE.cpp",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/greatsrc2.0.2/save.c",
+		"/Users/elvio/Desktop/New project-GSPN-measures.solution/GSPN.dot",
+		"/Users/elvio/Desktop/New project-SWN-measures.solution/SWN.net",
+		"/Users/elvio/Desktop/New project-SWN-measures.solution/SWN.def",
+		"/Users/elvio/Desktop/New project-SWN-measures.solution/SWN.dot",
+		"/Users/elvio/Desktop/New project-Measures 1.solution/SWN.dot",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/REACHAB/graph.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/GSOL/PetriNet.cpp",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/GSOL/NetDefFileFormat.cpp",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/GSOL/Parser.lyy",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/GSOL/GSolToolMain.cpp",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/GSOL/Language.cpp",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/GSOL/Language.h",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/GSOL/ParserDefs.h",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/GSOL/PetriNet.h",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/grammar/ExprLang.g4",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/GSOL/Experiment.cpp",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/GSOL/utils.h",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/GSOL/ParserDefs.cpp",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/GSOL/OpaqueInt.h",
+		"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/memory",
+		"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/typeindex",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/GSOL/SymbolicCTL.cpp",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/VirtualMachineSupport/README.txt",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/VirtualMachineSupport/vbox_install_script.sh",
+		"/usr/local/include/boost/variant/variant.hpp",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/docs/grammar.html",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/READNET/read_DEF.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/READNET/read_t_c.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/READNET/read_t_s.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/READNET/wn_yac.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/REACHAB/convert.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/MCC/greatspn_tool_2015.sh",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/gsrc2/grg_stndrd.c",
+		"/Users/elvio/Library/Application Support/Sublime Text 2/Packages/User/Preferences.sublime-settings",
+		"/usr/local/include/boost/variant/detail/apply_visitor_unary.hpp",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/scripts/swn_tr_ex_ord.oc",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/scripts/swn_tr_ex_sym.oc",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/scripts/gspn_tr",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/scripts/gspn_tr_ex",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/scripts/swn_ord_tr",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/scripts/swn_sym_tr",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/scripts/gspn_tr_ex.oc",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/GSOL/irrXML/CXMLReaderImpl.h",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/CTL/CTLLexer.ll",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/CTL/CTL.h",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/GSOL/MeddlyGraph.h",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/SHARED/medd.cpp",
+		"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/vector",
+		"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/__split_buffer",
+		"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/iterator",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/GSOL/ApnnFileFormat.cpp",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/GSOL/Cacheable.h",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/GSOL/ReachabilityGraph.h",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/GSOL/Measure.h",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/GSOL/Measure.cpp",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/gsrc2/mark_lp.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/VirtualMachineSupport/run_as_root.sh",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/TRANSL/wn.l",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/GSOL/compact_table.h",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/NSRC/VirtualMachineSupport/upgrade-greatspn-from-svn.sh",
+		"/Users/elvio/Desktop/SVN-Unito/CSLTA-Journal/imgs/commands.sh",
+		"/Users/elvio/Desktop/SVN-Unito/CSLTA-Journal/imgs/read_results.sh",
+		"/Users/elvio/Desktop/SVN-Unito/CSLTA-Journal/imgs/phmission-test.sh",
+		"/Users/elvio/Desktop/HoliDesRepo/WP4/D4.6/template email.txt",
+		"/Users/elvio/Desktop/SVN-Unito/CSLTA-Journal/imgs/ResultD.txt",
+		"/Users/elvio/Desktop/SVN-Unito/CSLTA-Journal/imgs/ResultB2.txt",
+		"/Users/elvio/Desktop/SVN-Unito/CSLTA-Journal/imgs/ResultA.txt",
+		"/Users/elvio/Desktop/SVN-Unito/CSLTA-Journal/imgs/R1scc.txt",
+		"/Users/elvio/Desktop/SVN-Unito/CSLTA-Journal/imgs/R1impl.txt",
+		"/Users/elvio/Desktop/SVN-Unito/CSLTA-Journal/imgs/Rclosed.txt",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/JavaGUI/DISTRIB/install.sh",
+		"/Applications/NetBeans/NetBeans 7.4.app/Contents/Resources/NetBeans/etc/netbeans.conf",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOLVE/res_stndrd.y",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOLVE/gre_stndrd.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOLVE/res_stndrd.l",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/objects/swn_gst_prep/WN/SOLVE/res_stndrd.y.h",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/objects/swn_gst_prep/WN/SOLVE/res_stndrd.l.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/TRANSL/wn_grammar.y",
+		"/Users/elvio/Downloads/IndiciInReteColorata/FMScolorata1_1.def",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/gsrc2/newTR",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/gsrc2/newSO",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/gsrc2/newRG",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/gsrc2/newMT",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/gsrc2/gre.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/gsrc2/res_gram.y",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/UNFOLDING/unfold.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/UNFOLDING/load.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/UNFOLDING/object.h",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/UNFOLDING/save.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/UNFOLDING/save.h",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/gsrc2/gmt.p",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/REACHAB/graph_se.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/objects/JavaGUI/install.sh",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOURCE/UNFOLDING/evaluate.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/greatspnOLD/SOURCES/WN/SOURCE/READNET/read_NET.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOLVE/swn_gst_stndrd.c",
+		"/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/WN/SOLVE/swn_stndrd.c"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"ubound",
+			"Tool",
+			"GLPK_LIB",
+			"ubound",
+			"inv_prod",
+			"lbound",
+			"ubound",
+			"place->ubound",
+			"place->lbound",
+			"print_bounds",
+			"GRAPHMDP_LIB",
+			"LIBXMLPP2-6_LIB",
+			"ibxml++-2.6",
+			"glib",
+			"HAS_GLIB2_LIB",
+			"GLPK_LIB",
+			"GLIB-INCLUDE",
+			"glib",
+			"glpk",
+			"GRAPHMDP_LIB",
+			"glpk",
+			"install.sh",
+			"﻿",
+			"STAT",
+			"compute_sc",
+			"getarcs",
+			"fieldbuf",
+			"load_net",
+			"getname",
+			"java -jar",
+			"GSOL",
+			"print_stat_for_gui",
+			"invoked_from_gui",
+			"print_stat_for_gui",
+			"gui_stat_flag",
+			"read_NET_file",
+			"WN/SOLVE/swn_stndrd.c",
+			"max_vanish_id",
+			"dot_set_max_markings",
+			"f_dot",
+			"max_dot_markings",
+			".",
+			"dot_set_max_markings",
+			"dot_flag",
+			"id",
+			"marking_index",
+			"write_on_srg",
+			"dir",
+			"has_new_marking",
+			"//--------------------------------",
+			"mark_type",
+			"f_dot",
+			"dot_flag",
+			"write_dot",
+			"dot_flag",
+			"write_on_srg",
+			"marking_id",
+			"firing_edge_label",
+			"marking_node_descr",
+			"string1",
+			"string2",
+			"string_id",
+			"dot_flag",
+			"glpk",
+			"lmeddly",
+			"dot-F",
+			"print_stat_for_gui",
+			"startGlobal",
+			"RGMEDD",
+			"print_stat_for_gui",
+			"new_time",
+			"old_time",
+			"new_time",
+			"gui_stat_flag",
+			"create_statistics_data_structure",
+			"invoked_from_gui",
+			"RGMEDD",
+			"invoked_from_gui",
+			"gui_stat_flag",
+			"ord_tang",
+			"create_statistics_data_structure",
+			"dot_flag",
+			"finalize",
+			"build_graph",
+			"#{GUI}#",
+			"ALL",
+			"WNRG",
+			"MultiSet",
+			"INCLUDE_ELVIO_CPP_SOLVER",
+			"running_for_MCC",
+			"trn",
+			"con",
+			"e.",
+			"ScalarConstValExpr",
+			"typeof",
+			"type_check_expr",
+			"type_deducer",
+			"ValueType",
+			"ensure_domain",
+			"BOOLEANEAN",
+			"ExprType::BOOL",
+			"FullType::",
+			"ft",
+			"NEUTRAL_COLOR_CLASS",
+			"INT",
+			"int",
+			"ExprType",
+			"ValueType",
+			"Value",
+			"ValueType",
+			"ValueType ",
+			"operator_arity_bounds",
+			"g_ValueTypeName",
+			"type_deduction_exception",
+			"//",
+			"return",
+			"domain()",
+			"value_type()",
+			"Literal",
+			"value_type",
+			"type_deduction_exception",
+			"bool",
+			"ValueType",
+			"ExprLanguage",
+			"Langua",
+			"2, 2,",
+			"PRL",
+			", 2"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			",",
+			"MxA.get_slc_tuple(\\1)",
+			"MxA.get_slc_tuple(\\1",
+			"MxA.get_slc_tuple(\\1)",
+			"compact_column",
+			"\\1 < max_id",
+			"AtomicPropExpr_Const",
+			"AtomicPropExpr_MdepExpr",
+			"numeric_limits<double>::infinite()",
+			">>",
+			"nullptr",
+			"std::get<\\2>(*\\1)",
+			"std::get<\\2>(\\1)",
+			"shared_ptr",
+			"std::shared_ptr",
+			"MKSH<\\1>",
+			"MKSH(\\1)",
+			"MKSH(\\1)(",
+			"",
+			"transition_",
+			"TOKEN_",
+			"make_shared<\\1>",
+			"A = ",
+			"A =",
+			"measure(A) ::=",
+			"comp_op(A) ::=",
+			"logic_mdcond(A) ::=",
+			"binary_real_fn(A) ::=",
+			"unary_real_fn(A) ::=",
+			"/**/         |",
+			"CL_BRACK",
+			"OP_BRACK",
+			"SEMICOLON",
+			"COLON",
+			"COMMA",
+			"CL_SQPAR",
+			"OP_SQPAR",
+			"DIV",
+			"TIMES",
+			"MINUS",
+			"TIMES",
+			"PLUS",
+			"CL_PAREN",
+			"OP_PAREN",
+			"int_mdexpr(A) ::=",
+			"$1",
+			"Eval($1)+'/'",
+			"Eval($1)",
+			"\\$($1)",
+			"build",
+			"cd",
+			"filename_extension",
+			"filename_noext",
+			"safe_dirname",
+			"basename",
+			"dirname"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 34.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.clang":
+	{
+		"height": 100.0
+	},
+	"output.exec":
+	{
+		"height": 82.0
+	},
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"",
+				"/Users/elvio/Desktop/SVN-Unito/SOLVER/Sources/Makefile.shortened"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true
+}

@@ -1,0 +1,59 @@
+pred	   : pred
+	     OR 
+	     pterm
+        {
+	 gen(TYPEOR,"");
+	}
+	   | pterm
+	   ;
+pterm	   : pterm 
+	     AND 
+	     pfatt
+	{
+	 gen(TYPEAND,"");
+	}
+	   | pfatt
+	   ;
+pfatt	   : OPAR 
+	     pred
+	     CPAR
+	   | predop
+	     relop
+	     predop
+	   {
+	    gen(relfl," ");
+	   }
+	   ;
+relop      : EQ
+        {
+	 relfl = TYPEEQ;
+	}
+           | NE
+        {
+	 relfl = TYPENE;
+	}
+	   | LT
+        {
+	 relfl = TYPELT;
+	}
+	   | LE
+        {
+	 relfl = TYPELE;
+	}
+	   | GT
+        {
+	 relfl = TYPEGT;
+	}
+	   | GE
+        {
+	 relfl = TYPEGE;
+	}
+	   ;
+predop: kexpression 
+        {
+	 emit(TYPEEND,"",0.0,0);
+         gen(TYPENUM,"");
+         pcode_h = pcode_t = NULL;
+        }
+           ; 
+%%

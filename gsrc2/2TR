@@ -1,0 +1,12 @@
+#
+if ( ! $?GSPNBINS ) then
+        setenv GSPNBINS `arch`
+endif
+if ( ! $?GSPNHOME ) then
+        source ~/.GreatSPN_$GSPNBINS
+endif
+echo ""
+echo "Start Transient solution"
+time $GSPNHOME/2bin/gtrc nets/$1 $2 -e0.0000001 -i1000
+/bin/cp nets/$1.epd nets/$1.mpd
+csh -f -e $GSPNHOME/gst2 $1

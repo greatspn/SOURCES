@@ -1,0 +1,120 @@
+/*******************************
+  TABELLE VARIE
+*******************************/
+extern struct PLACES *tabp;
+extern struct COLORS *tabc;
+extern struct GROUP *tabg;
+extern struct TRANS *tabt;
+extern struct MARKING *tabm;
+extern struct RATE_PAR *tabrp;
+extern struct MARK_PAR *tabmp;
+extern struct TRANS_MD_RATE *tabmd;
+/*******************************
+  GRAMMAR INTERFACE
+*******************************/
+extern struct FUNBUF occ[];
+extern struct NODO *nodeptr,*node;
+extern struct ENN_COEFF *fun_ptr,*ptr;
+extern struct SBCBUF *sbc_pun,*buf_list;
+extern struct MARKBUF *mbuf;
+extern int ck,str_val,input_flag;
+extern int parse_DEF;
+extern float real_val;
+extern char temp2[];
+extern char str_in[];
+extern char bufname[] ;
+extern char error_name[] ;
+extern int comp_check,pl_ind,cnt,sbc_def_num,tot_sbc_num,num_of_token;
+/********************************************
+  CONTATORI OGGETTI DELLE TABELLE
+********************************************/
+extern int nmp,npl,ntr,nrp,ncl,nmd,nmr,ngr;
+extern int n_ord,n_unord;
+extern int el[];
+/********************************************
+             FILES DI SUPPORTO
+********************************************/
+/********************************************
+	    STRUTTURA PER LA MARCATURA
+********************************************/
+extern Net_Mark_p net_mark;
+/********************************************
+	    CONTATORI DI EVENTI
+********************************************/
+#ifdef SIMULATION
+#ifdef DEBUG_malloc
+extern int tot_event;
+extern int num_event;
+extern int max_ev;
+extern int min_ev;
+#endif
+#endif
+/********************************************
+	    STRUTTURE PER PRODOTTI CARTESIANI
+********************************************/
+extern Cart_p cart_place_ptr;
+extern Cart_p cart_trans_ptr;
+/********************************************
+	    VARIABILI DI MASSIME DIMENSIONI
+********************************************/
+extern int max_place_domain;
+extern int max_transition_domain;
+extern int max_cardinality;
+extern int max_colour_repetitions;
+extern int max_cl;
+extern int * pred_val;
+/********************************************
+	    FLAG PER LA LINEA DI COMANDO
+********************************************/
+extern int output_flag;
+extern int start;
+/********************************************
+	    STRUTTURE PER LE SOTTOCLASSI DINAMICHE
+********************************************/
+#ifdef SYMBOLIC
+extern int *** card;
+extern int ** num; 
+extern int * tot;
+#endif
+/********************************************
+	    DSDR
+********************************************/
+#ifdef SIMULATION
+#ifdef DSDR
+extern int M_DIST;
+extern int N_STAZ;
+#endif
+#endif
+/********************************************
+	    EXTERN DEL GRAFO DI RAGGIUNGIBILITA'
+********************************************/
+#ifdef REACHABILITY
+#ifdef SYMBOLIC
+
+extern double mark_ordinarie;
+extern double ord_tang;
+extern double ord_evan;
+extern double ord_dead;
+
+#endif
+extern int dim_max;
+extern int marcatura;
+extern int tro;
+extern int h;
+extern int tang;
+extern int evan;
+extern int dead;
+extern int home;
+extern int cont_tang;
+
+extern Tree_p initial_marking;
+extern Tree_p current_marking;
+
+extern FILE *srg;
+extern FILE *rgr_aux;
+extern FILE *wngr;
+extern FILE *van_path;
+extern FILE *ctrs;
+extern FILE *grg;
+extern FILE *string;
+#endif

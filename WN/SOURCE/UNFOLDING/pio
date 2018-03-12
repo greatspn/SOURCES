@@ -1,0 +1,234 @@
+
+Reading .....
+Numero Layers Caricati 0
+
+File /home/davide/ACSD05/NETS/example.net read in.
+
+Compute unfolded net ...
+  Class D
+SubClasses : 
+slow  
+ SubClass : slow
+Elements : 
+d1  d2  
+
+Class D with 2 elements:d1 d2 
+ 
+un_av) D 
+ 
+av) D 
+ Marking:  +1<, 1 S >
+
+loc) $_Uncolored 
+ 
+wait) D 
+ 
+srv) D 
+Expand transition s_srv
+
+ Var x
+ New Var Min 0 Max 2
+  Assignment x <-- d1
+Arc  +1 [] <,  1 x> 
+Result Arc
+Num El 2
+0) 1) 
+El 
+_d1 _d2 
+1 0 
+
+Add place  srv_d1
+
+Arc  +1 [] <,  1 x> 
+Result Arc
+Num El 2
+0) 1) 
+El 
+_d1 _d2 
+1 0 
+
+Add place  wait_d1
+
+Arc  +1 [] <,  1 x> 
+Result Arc
+Num El 2
+0) 1) 
+El 
+_d1 _d2 
+1 0 
+
+Add place  av_d1
+
+Assignment x <-- d2
+Arc  +1 [] <,  1 x> 
+Result Arc
+Num El 2
+0) 1) 
+El 
+_d1 _d2 
+0 1 
+
+Add place  srv_d2
+
+Arc  +1 [] <,  1 x> 
+Result Arc
+Num El 2
+0) 1) 
+El 
+_d1 _d2 
+0 1 
+
+Add place  wait_d2
+
+Arc  +1 [] <,  1 x> 
+Result Arc
+Num El 2
+0) 1) 
+El 
+_d1 _d2 
+0 1 
+
+Add place  av_d2
+
+Expand transition e_srv
+
+  Var x
+ New Var Min 0 Max 2
+ Assignment x <-- d1
+Arc  +1 [] <,  1 S > 
+S_Class
+Result Arc
+Num El 1
+0) 
+El 
+_ 
+1 
+
+Add place  loc_
+
+Arc  +1 [] <,  1 x> 
+Result Arc
+Num El 2
+0) 1) 
+El 
+_d1 _d2 
+1 0 
+
+Add place  un_av_d1
+
+Arc  +1 [] <,  1 x> 
+Result Arc
+Num El 2
+0) 1) 
+El 
+_d1 _d2 
+1 0 
+
+Assignment x <-- d2
+Arc  +1 [] <,  1 S > 
+S_Class
+Result Arc
+Num El 1
+0) 
+El 
+_ 
+1 
+
+Arc  +1 [] <,  1 x> 
+Result Arc
+Num El 2
+0) 1) 
+El 
+_d1 _d2 
+0 1 
+
+Add place  un_av_d2
+
+Arc  +1 [] <,  1 x> 
+Result Arc
+Num El 2
+0) 1) 
+El 
+_d1 _d2 
+0 1 
+
+Expand transition T10
+
+ Var x
+ New Var Min 0 Max 2
+ Assignment x <-- d1
+Arc  +1 [] <,  1 x> 
+Result Arc
+Num El 2
+0) 1) 
+El 
+_d1 _d2 
+1 0 
+
+Arc  +1 [] <,  1 x> 
+Result Arc
+Num El 2
+0) 1) 
+El 
+_d1 _d2 
+1 0 
+
+Assignment x <-- d2
+Arc  +1 [] <,  1 x> 
+Result Arc
+Num El 2
+0) 1) 
+El 
+_d1 _d2 
+0 1 
+
+Arc  +1 [] <,  1 x> 
+Result Arc
+Num El 2
+0) 1) 
+El 
+_d1 _d2 
+0 1 
+
+Expand transition tloc
+
+ Var x
+ New Var Min 0 Max 2
+ Assignment x <-- d1
+Arc  +1 [] <,  1 x> 
+Result Arc
+Num El 2
+0) 1) 
+El 
+_d1 _d2 
+1 0 
+
+Arc  +1 [] <,  1 S > 
+S_Class
+Result Arc
+Num El 1
+0) 
+El 
+_ 
+1 
+
+Assignment x <-- d2
+Arc  +1 [] <,  1 x> 
+Result Arc
+Num El 2
+0) 1) 
+El 
+_d1 _d2 
+0 1 
+
+Arc  +1 [] <,  1 S > 
+S_Class
+Result Arc
+Num El 1
+0) 
+El 
+_ 
+1 
+
+
+Writed net /home/davide/ACSD05/NETS/example_unf.

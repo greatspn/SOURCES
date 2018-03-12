@@ -1,0 +1,112 @@
+/***********************************************************************
+ *  File: measure_decl.h
+ *  Date: Torino, April 20 1993
+ *  Programmer: Giovanni Chiola
+ ***********************************************************************/
+
+#include "simul_decl.h"
+#include "../gsrc2/const.h"
+#include "../gsrc2/grg.h"
+
+
+#define MAX_TOKEN 32767
+
+
+extern FILE * nfp, * mpdfp, * tpdfp;
+
+struct Codbyt_descr {
+  unsigned char shift;
+  unsigned char mask;
+  unsigned short num_byte;
+  unsigned short link;
+};
+
+struct Place_descr {
+    unsigned char lbound;
+    unsigned char rubound;
+    struct Codbyt_descr cod;
+    unsigned short alb;
+    unsigned short aub;
+    double * tok_distr;
+    double * cum_distr;
+};
+ 
+typedef struct Place_descr * Place_p;
+ 
+struct Byte_descr {
+  unsigned char noitems;
+  unsigned char max_conf;
+  unsigned short first_item;
+};
+ 
+struct p_bound_s {
+    unsigned short min_t;
+    unsigned short max_t;
+};
+
+
+struct Cond_descr {
+  char op;
+  char type;
+  char top1;
+  char top2;
+  int op1;
+  int op2;
+};
+
+
+struct Prob_descr {
+  char type;
+  int place;
+  struct Cond_descr * cond;
+  double val;
+  double cumval;
+};
+typedef struct Prob_descr * Prob_p;
+
+union Op_val {
+  unsigned num;
+  double rval;
+};
+
+struct Op_descr {
+  char op;
+  char type;
+  union Op_val val;
+};
+
+struct Res_descr {
+  char type;
+  char * name;
+  struct Op_descr * oper;
+  double val;
+  double cumval;
+};
+typedef struct Res_descr * Res_p;
+
+struct Trans_descr {
+    unsigned short pri;
+    char * name;
+    unsigned long count;
+    unsigned long cumcount;
+};
+typedef struct Trans_descr * Trans_p;
+
+
+extern char * ecalloc();
+
+
+extern unsigned place_num, group_num, trans_num;
+extern unsigned sub_num;
+extern /*  PLACE ARRAY  */ Place_p p_list;
+extern /* CODING BYTES */ unsigned no_cod;
+extern struct Byte_descr * encoding;
+extern /* DECODED MARKING */ unsigned short *DM;
+extern unsigned char * cmarks, * c_m_p;
+extern unsigned maxprob;
+extern unsigned maxres;
+extern Prob_p Prob;
+extern Res_p Res;
+extern double cur_time;
+extern Trans_p t_list;
+

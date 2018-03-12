@@ -1,0 +1,1864 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="Progetto aTest1" version="121">
+  <gspn name="Semplice">
+    <nodes>
+      <place label-x="-1.0" marking="9" name="P0" x="6.0" y="3.0"/>
+      <place label-x="-1.0" name="P1" x="15.0" y="8.0"/>
+      <transition name="T0" nservers-x="0.5" type="EXP" x="12.55" y="3.0"/>
+      <transition name="T1" nservers-x="0.5" type="EXP" x="9.55" y="8.0"/>
+      <place marking="1" name="P2" x="24.0" y="13.0"/>
+      <transition name="T2" nservers-x="0.5" type="EXP" x="21.55" y="8.0"/>
+      <transition name="T3" nservers-x="0.5" type="EXP" x="18.55" y="13.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" mult="3" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="T0">
+        <point x="16.0" y="4.0"/>
+      </arc>
+      <arc head="T2" kind="INPUT" mult="2" tail="P1"/>
+      <arc head="P2" kind="OUTPUT" tail="T2">
+        <point x="25.0" y="9.0"/>
+      </arc>
+      <arc head="T3" kind="INPUT" tail="P2"/>
+      <arc head="P1" kind="OUTPUT" mult="2" tail="T3">
+        <point x="16.0" y="14.0"/>
+      </arc>
+      <arc head="T1" kind="INPUT" tail="P1"/>
+      <arc head="P0" kind="OUTPUT" mult="3" tail="T1">
+        <point x="7.0" y="9.0"/>
+      </arc>
+      <arc head="T2" kind="INHIBITOR" tail="P0">
+        <point x="11.0" y="1.0"/>
+        <point x="18.5" y="1.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="provaFunzioniVerbatim">
+    <nodes>
+      <place label-y="-2.4375" name="p12" partition="PART1" partition-y="-1.4375" x="7.0" y="10.4375"/>
+      <transition delay="0.1" delay-y="1.0625" name="t11" nservers="1" nservers-x="-1.0" nservers-y="1.5625" type="EXP" x="19.55" y="10.4375"/>
+      <place label-y="-2.4375" marking="m1" name="p11" partition="PART1" partition-y="-1.4375" x="15.0" y="10.4375"/>
+      <transition delay-x="0.1875" delay-y="0.875" name="t12" nservers="1" nservers-x="-0.8125" nservers-y="1.5" type="EXP" x="11.55" y="10.4375"/>
+      <place marking="1" name="p13" partition="PART1" x="7.0" y="15.0"/>
+      <transition delay="3.0" delay-x="-1.0" delay-y="1.5" name="t13" nservers="1" nservers-x="-1.5" rotation="6.283185307179586" type="EXP" x="11.55" y="15.0"/>
+      <place name="p14" partition="PART1" x="15.0" y="15.0"/>
+      <transition delay="FN:gg(46)" delay-x="-1.5" delay-y="1.5" name="t14" rotation="-0.0" type="GEN" x="22.55" y="15.0"/>
+      <place label-y="-2.4375" name="p22" partition="PART2" partition-y="-1.4375" x="26.0" y="10.4375"/>
+      <transition delay="0.15" delay-y="1.0625" name="t21" nservers="1" nservers-x="-1.0" nservers-y="1.5625" type="EXP" x="38.55" y="10.4375"/>
+      <place label-y="-2.4375" marking="m2" name="p21" partition="PART2" partition-y="-1.4375" x="34.0" y="10.4375"/>
+      <transition delay-x="0.1875" delay-y="0.8125" name="t22" nservers="1" nservers-x="-0.875" nservers-y="1.5" type="EXP" x="30.55" y="10.4375"/>
+      <place name="p23" partition="PART2" x="26.0" y="15.0"/>
+      <transition delay="4.0" delay-x="-0.5" delay-y="1.5" name="t23" nservers="1" nservers-x="-1.5" rotation="6.283185307179586" type="EXP" x="30.55" y="15.0"/>
+      <place name="p24" partition="PART2" x="34.0" y="15.0"/>
+      <transition delay="FN: MM(a,b,5)" delay-x="-3.0" delay-y="1.5" name="t24" type="GEN" x="41.55" y="15.0"/>
+      <constant consttype="REAL" name="delta1" value="1.0" x="2.0" y="4.0"/>
+      <constant consttype="REAL" name="delta2" value="3.0" x="2.0" y="5.0"/>
+      <constant consttype="INTEGER" name="m2" value="2" x="1.625" y="3.0"/>
+      <constant consttype="INTEGER" name="m1" value="2" x="1.625" y="2.0"/>
+      <transition delay="FN:MM(23)" name="D1" type="GEN" x="29.55" y="3.0"/>
+    </nodes>
+    <edges>
+      <arc head="t11" kind="INPUT" mult-k="0.77451171875" tail="p11"/>
+      <arc head="p12" kind="OUTPUT" mult-k="4.349902343750001" tail="t11">
+        <point x="22.0" y="11.4375"/>
+        <point x="22.0" y="8.125"/>
+        <point x="5.5" y="8.125"/>
+        <point x="5.5" y="11.4375"/>
+      </arc>
+      <arc head="t12" kind="INPUT" mult-k="0.5879882812500001" tail="p12"/>
+      <arc head="p11" kind="OUTPUT" mult-k="0.51396484375" tail="t12"/>
+      <arc head="p13" kind="OUTPUT" tail="t12"/>
+      <arc head="t12" kind="INPUT" tail="p13"/>
+      <arc head="t13" kind="INHIBITOR" mult-k="0.41162109375" tail="p12"/>
+      <arc head="t13" kind="INPUT" tail="p13"/>
+      <arc head="p14" kind="OUTPUT" mult-k="0.51298828125" tail="t13"/>
+      <arc head="t14" kind="INPUT" mult-k="0.6561523437500001" tail="p14"/>
+      <arc head="t21" kind="INPUT" mult-k="0.7163085937500001" tail="p21"/>
+      <arc head="p22" kind="OUTPUT" mult-k="2.07490234375" tail="t21">
+        <point x="41.5" y="11.4375"/>
+        <point x="41.5" y="8.125"/>
+        <point x="24.5" y="8.125"/>
+        <point x="24.5" y="11.4375"/>
+      </arc>
+      <arc head="t22" kind="INPUT" mult-k="0.55380859375" tail="p22"/>
+      <arc head="p21" kind="OUTPUT" mult-k="0.51396484375" tail="t22"/>
+      <arc head="p23" kind="OUTPUT" tail="t22"/>
+      <arc head="t22" kind="INPUT" tail="p23"/>
+      <arc head="t23" kind="INHIBITOR" mult-k="0.6274414062500001" tail="p22"/>
+      <arc head="t23" kind="INPUT" tail="p23"/>
+      <arc head="p24" kind="OUTPUT" mult-k="0.47470703125" tail="t23"/>
+      <arc head="t24" kind="INPUT" mult-k="0.7278320312500002" tail="p24"/>
+      <arc head="p23" kind="OUTPUT" mult-k="0.79990234375" tail="t14"/>
+      <arc head="p13" kind="OUTPUT" mult-k="0.6000976562500001" tail="t24">
+        <point x="44.0" y="16.0"/>
+        <point x="44.0" y="19.5"/>
+        <point x="4.5" y="19.5"/>
+        <point x="4.5" y="16.0"/>
+      </arc>
+      <arc head="D1" kind="INPUT" tail="p22"/>
+      <arc head="p21" kind="OUTPUT" tail="D1"/>
+    </edges>
+  </gspn>
+  <gspn name="GSPN markDep" show-color-cmd="false" show-fluid-cmd="false">
+    <nodes>
+      <place marking="5" name="P0" x="6.0" y="7.0"/>
+      <transition delay="2*#P0" name="T0" nservers-x="0.5" type="EXP" x="12.55" y="4.0"/>
+      <place name="P1" x="18.0" y="7.0"/>
+      <transition delay="If[#P0==3, 100, 4]" name="T1" nservers-x="0.5" type="EXP" x="12.55" y="10.0"/>
+      <transition delay="when #P0==1 : 2;  ever 3;" name="T2" nservers-x="0.5" type="EXP" x="12.55" y="14.0"/>
+      <constant consttype="INTEGER" name="N" value="0" x="25.0625" y="4.0"/>
+      <constant consttype="INTEGER" name="N1" value="0" x="24.75" y="6.0"/>
+      <constant consttype="REAL" name="R" value="0.0" x="25.0625" y="8.0"/>
+      <constant consttype="REAL" name="R1" value="0.0" x="24.75" y="10.0"/>
+      <template name="n" type="INTEGER" x="31.0" y="3.0"/>
+      <template name="n1" type="INTEGER" x="32.0" y="6.0"/>
+      <template name="r" type="REAL" x="33.0" y="9.0"/>
+      <template name="r1" type="REAL" x="33.0" y="12.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="T0"/>
+      <arc head="T1" kind="INPUT" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="T1"/>
+      <arc head="T2" kind="INPUT" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="T2"/>
+    </edges>
+  </gspn>
+  <measures gspn-name="GSPN markDep" name="GSPN markDep measures" simplified-UI="false">
+    <assignments>
+      <assignment bind-model="SINGLE_VALUE" single-val="" type="INTEGER" varname="n"/>
+      <assignment bind-model="SINGLE_VALUE" single-val="" type="INTEGER" varname="n1"/>
+      <assignment bind-model="SINGLE_VALUE" single-val="" type="REAL" varname="r"/>
+      <assignment bind-model="SINGLE_VALUE" single-val="" type="REAL" varname="r1"/>
+    </assignments>
+    <mc4cslta/>
+    <formulas>
+      <formula language="TRG"/>
+    </formulas>
+  </measures>
+  <gspn name="Kronecker">
+    <nodes>
+      <place label-y="-2.4375" name="p12" partition="PART1" partition-y="-1.4375" x="7.0" y="10.4375"/>
+      <transition delay="0.1" delay-y="1.0625" name="t11" nservers="1" nservers-x="-1.0" nservers-y="1.5625" type="EXP" x="19.55" y="10.4375"/>
+      <place label-y="-2.4375" marking="m1" name="p11" partition="PART1" partition-y="-1.4375" x="15.0" y="10.4375"/>
+      <transition delay-x="0.1875" delay-y="0.875" name="t12" nservers="1" nservers-x="-0.8125" nservers-y="1.5" type="EXP" x="11.55" y="10.4375"/>
+      <place marking="1" name="p13" partition="PART1" x="7.0" y="15.0"/>
+      <transition delay="3.0" delay-x="-1.0" delay-y="1.5" name="t13" nservers="1" nservers-x="-1.5" rotation="6.283185307179586" type="EXP" x="11.55" y="15.0"/>
+      <place name="p14" partition="PART1" x="15.0" y="15.0"/>
+      <transition delay="I[delta2]" delay-x="-2.5" delay-y="1.5" name="t14" rotation="-0.0" type="GEN" x="22.55" y="15.0"/>
+      <place label-y="-2.4375" name="p22" partition="PART2" partition-y="-1.4375" x="26.0" y="10.4375"/>
+      <transition delay="0.15" delay-y="1.0625" name="t21" nservers="1" nservers-x="-1.0" nservers-y="1.5625" type="EXP" x="38.55" y="10.4375"/>
+      <place label-y="-2.4375" marking="m2" name="p21" partition="PART2" partition-y="-1.4375" x="34.0" y="10.4375"/>
+      <transition delay-x="0.1875" delay-y="0.8125" name="t22" nservers="1" nservers-x="-0.875" nservers-y="1.5" type="EXP" x="30.55" y="10.4375"/>
+      <place name="p23" partition="PART2" x="26.0" y="15.0"/>
+      <transition delay="4.0" delay-x="-0.5" delay-y="1.5" name="t23" nservers="1" nservers-x="-1.5" rotation="6.283185307179586" type="EXP" x="30.55" y="15.0"/>
+      <place name="p24" partition="PART2" x="34.0" y="15.0"/>
+      <transition delay="I[delta1]" delay-x="-2.5" delay-y="1.5" name="t24" type="GEN" x="41.55" y="15.0"/>
+      <constant consttype="REAL" name="delta1" value="1.0" x="2.0" y="4.0"/>
+      <constant consttype="REAL" name="delta2" value="3.0" x="2.0" y="5.0"/>
+      <constant consttype="INTEGER" name="m2" value="2" x="1.625" y="3.0"/>
+      <constant consttype="INTEGER" name="m1" value="2" x="1.625" y="2.0"/>
+    </nodes>
+    <edges>
+      <arc head="t11" kind="INPUT" mult-k="0.77451171875" tail="p11"/>
+      <arc head="p12" kind="OUTPUT" mult-k="4.349902343750001" tail="t11">
+        <point x="22.0" y="11.4375"/>
+        <point x="22.0" y="8.125"/>
+        <point x="5.5" y="8.125"/>
+        <point x="5.5" y="11.4375"/>
+      </arc>
+      <arc head="t12" kind="INPUT" mult-k="0.5879882812500001" tail="p12"/>
+      <arc head="p11" kind="OUTPUT" mult-k="0.51396484375" tail="t12"/>
+      <arc head="p13" kind="OUTPUT" tail="t12"/>
+      <arc head="t12" kind="INPUT" tail="p13"/>
+      <arc head="t13" kind="INHIBITOR" mult-k="0.41162109375" tail="p12"/>
+      <arc head="t13" kind="INPUT" tail="p13"/>
+      <arc head="p14" kind="OUTPUT" mult-k="0.51298828125" tail="t13"/>
+      <arc head="t14" kind="INPUT" mult-k="0.6561523437500001" tail="p14"/>
+      <arc head="t21" kind="INPUT" mult-k="0.7163085937500001" tail="p21"/>
+      <arc head="p22" kind="OUTPUT" mult-k="2.07490234375" tail="t21">
+        <point x="41.5" y="11.4375"/>
+        <point x="41.5" y="8.125"/>
+        <point x="24.5" y="8.125"/>
+        <point x="24.5" y="11.4375"/>
+      </arc>
+      <arc head="t22" kind="INPUT" mult-k="0.55380859375" tail="p22"/>
+      <arc head="p21" kind="OUTPUT" mult-k="0.51396484375" tail="t22"/>
+      <arc head="p23" kind="OUTPUT" tail="t22"/>
+      <arc head="t22" kind="INPUT" tail="p23"/>
+      <arc head="t23" kind="INHIBITOR" mult-k="0.6274414062500001" tail="p22"/>
+      <arc head="t23" kind="INPUT" tail="p23"/>
+      <arc head="p24" kind="OUTPUT" mult-k="0.47470703125" tail="t23"/>
+      <arc head="t24" kind="INPUT" mult-k="0.7278320312500002" tail="p24"/>
+      <arc head="p23" kind="OUTPUT" mult-k="0.79990234375" tail="t14"/>
+      <arc head="p13" kind="OUTPUT" mult-k="0.6000976562500001" tail="t24">
+        <point x="44.0" y="16.0"/>
+        <point x="44.0" y="19.5"/>
+        <point x="4.5" y="19.5"/>
+        <point x="4.5" y="16.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <measures gspn-name="Kronecker" log-uuid="250e4cf7-75f3-4e62-9abb-4081187760e5" name="NsolveMeasures" simplified-UI="false">
+    <assignments/>
+    <mc4cslta/>
+    <formulas>
+      <formula language="STAT">
+        <result-table>
+          <stat-result name="STAT">
+            <bindings/>
+            <stat key="build_time" value="[User 0.000s, Sys 0.000s]"/>
+            <stat key="immediate_firings" value="0"/>
+            <stat key="num_tangible_markings" value="36"/>
+            <stat key="num_vanishing_markings" value="0"/>
+            <stat key="rg_class" value="MARKOV REGENERATIVE PROCESS"/>
+            <stat key="steady_state_solution_time" value="[User 0.017s, Sys 0.001s]"/>
+            <stat key="timed_firings" value="84"/>
+            <stat key="visited_vanishing_markings" value="0"/>
+          </stat-result>
+        </result-table>
+      </formula>
+      <formula language="ALL">
+        <result-table>
+          <all-measures name="ALL">
+            <bindings/>
+            <mean place="p11" value="1.65823"/>
+            <mean place="p12" value="0.341772"/>
+            <mean place="p13" value="0.150423"/>
+            <mean place="p14" value="0.336296"/>
+            <mean place="p21" value="1.51751"/>
+            <mean place="p22" value="0.482486"/>
+            <mean place="p23" value="0.176984"/>
+            <mean place="p24" value="0.336297"/>
+            <throughput transition="t11" value="0.0943735"/>
+            <throughput transition="t12" value="0.0943736"/>
+            <throughput transition="t13" value="0.168148"/>
+            <throughput transition="t14" value="0.0"/>
+            <throughput transition="t21" value="0.134947"/>
+            <throughput transition="t22" value="0.134947"/>
+            <throughput transition="t23" value="0.168148"/>
+            <throughput transition="t24" value="0.0"/>
+            <distrib place="p11" values="3 = 0.0562647 0.229243 0.714492 "/>
+            <distrib place="p12" values="3 = 0.714492 0.229243 0.0562647 "/>
+            <distrib place="p13" values="2 = 0.849577 0.150423 "/>
+            <distrib place="p14" values="2 = 0.663704 0.336296 "/>
+            <distrib place="p21" values="3 = 0.100352 0.281782 0.617866 "/>
+            <distrib place="p22" values="3 = 0.617866 0.281782 0.100352 "/>
+            <distrib place="p23" values="2 = 0.823016 0.176984 "/>
+            <distrib place="p24" values="2 = 0.663703 0.336297 "/>
+          </all-measures>
+        </result-table>
+      </formula>
+    </formulas>
+  </measures>
+  <gspn name="IREN Simulator">
+    <nodes>
+      <constant consttype="INTEGER" name="NC2" value="1" x="62.0625" y="15.0"/>
+      <place label-x="2.5" label-y="0.0" marking="Op" name="IdleOp" superpos-x="1.6000000000000014" superpos-y="-0.7999999999999998" x="22.0" y="3.0"/>
+      <place label-x="-0.2499980000000015" label-y="-2.125" name="OpAnswering" x="16.999998" y="8.0"/>
+      <place label-x="-4.0" label-y="0.0" name="IncomingCalls" superpos-x="-1.5999999999999996" superpos-y="-0.8999999999999999" x="11.0" y="3.0"/>
+      <place label-x="4.5" label-y="0.0" name="HighPriorityGas" x="27.0" y="10.0"/>
+      <place label-x="4.5" label-y="0.0" name="LowPriorityGas" x="27.0" y="15.0"/>
+      <place label-x="2.5" label-y="0.0" name="Water" x="6.0" y="10.0"/>
+      <place label-x="2.5" label-y="0.0" name="Electric" x="6.0" y="15.0"/>
+      <place label-x="-0.12499599999999589" label-y="-1.75" name="EndCall" superpos-x="-0.0625" superpos-y="-2.3125" x="16.0" y="13.0"/>
+      <transition label-y="-1.4999979999999997" magnets="THREE_PER_SIDE" name="isHG" superposition-tags="&lt;Run&gt;" type="IMM" weight="0.65" weight-x="3.3000040000000013" weight-y="0.75" x="22.849996000000004" y="8.0"/>
+      <transition label-x="7.999999994012796E-6" label-y="-1.4999980000000015" magnets="THREE_PER_SIDE" name="isLG" superposition-tags="&lt;Run&gt;" type="IMM" weight="0.3" weight-x="2.800003999999994" weight-y="0.7500019999999985" x="22.85" y="13.0"/>
+      <transition label-x="7.999999994012796E-6" label-y="-1.500003999999997" magnets="THREE_PER_SIDE" name="isHE" superposition-tags="&lt;Run&gt;" type="IMM" weight="0.65" weight-x="-0.14999600000000157" weight-y="0.7499980000000015" x="11.849996000000003" y="8.000001999999999"/>
+      <transition label-y="-1.4999980000000015" magnets="THREE_PER_SIDE" name="isLE" superposition-tags="&lt;Run&gt;" type="IMM" weight="0.3" weight-x="-0.19999600000000228" weight-y="0.75" x="11.849996000000003" y="13.0"/>
+      <transition label-x="1.999999998503199E-6" label-y="-1.499997999999998" magnets="THREE_PER_SIDE" name="inappropriate" superpos-x="-0.0625" superpos-y="-2.3125" superposition-tags="&lt;Run&gt;" type="IMM" weight="0.45" weight-x="-0.1999999999999993" weight-y="0.8000000000000007" x="22.849996000000004" y="17.999997999999998"/>
+      <transition label-y="-1.4999980000000015" name="clientSpeaking" superposition-tags="&lt;Stop&gt;" type="IMM" weight="0.55" x="11.85" y="18.0"/>
+      <transition label-y="-1.4999979999999997" magnets="THREE_PER_SIDE" name="answers" priority="2" priority-y="0.5" rotation="1.5707963267948966" superposition-tags="&lt;Run&gt;" type="IMM" x="17.85" y="4.0"/>
+      <text-box bold="true" border-color="none" fill-color="none" height="1.0" name="__textBox0" shadow="true" shape="ROUND_RECTANGLE" text-color="#1800bf" width="7.0625" x="23.0625" y="12.8125">[-0.20, +0.15]</text-box>
+      <text-box bold="true" border-color="none" fill-color="none" height="1.0" name="copy___textBox0" shadow="true" shape="ROUND_RECTANGLE" text-color="#1800bf" width="7.0625" x="23.03125" y="7.8125">[-0.30, +0.25]</text-box>
+      <text-box bold="true" border-color="none" fill-color="none" height="1.0" name="copy_copy___textBox0" shadow="true" shape="ROUND_RECTANGLE" text-color="#1800bf" width="7.0625" x="5.03125" y="7.75">[-0.30, +0.20]</text-box>
+      <text-box bold="true" border-color="none" fill-color="none" height="1.0" name="copy_copy_copy___textBox0" shadow="true" shape="ROUND_RECTANGLE" text-color="#1800bf" width="7.0625" x="5.018749999999999" y="12.7625">[-0.40, +0.15]</text-box>
+      <text-box bold="true" border-color="none" fill-color="none" height="1.0" name="copy_copy_copy_copy___textBox0" shadow="true" shape="ROUND_RECTANGLE" text-color="#1800bf" width="7.0625" x="22.90625" y="17.875">[-0.20, +0.30]</text-box>
+      <place label-x="-2.5625" label-y="0.2500000000000071" marking="N" name="Clients" x="27.0" y="20.0"/>
+      <constant consttype="INTEGER" name="N" value="0" x="62.0625" y="13.0"/>
+      <constant consttype="INTEGER" name="Op" value="0" x="61.75" y="11.0"/>
+    </nodes>
+    <edges>
+      <arc head="isHG" head-magnet="10" kind="INPUT" tail="OpAnswering" tail-magnet="0"/>
+      <arc head="HighPriorityGas" head-magnet="0" kind="OUTPUT" mult-k="0.81083984375" tail="isHG" tail-magnet="4">
+        <point x="26.0" y="9.0"/>
+      </arc>
+      <arc head="isLG" head-magnet="9" kind="INPUT" mult-k="0.47236328125000004" tail="OpAnswering" tail-magnet="0"/>
+      <arc head="LowPriorityGas" head-magnet="0" kind="OUTPUT" mult-k="0.7907226562500002" tail="isLG" tail-magnet="4">
+        <point x="25.5" y="14.0"/>
+      </arc>
+      <arc head="isHE" head-magnet="4" kind="INPUT" mult-k="0.7825195312500001" tail="OpAnswering" tail-magnet="0"/>
+      <arc head="Water" head-magnet="0" kind="OUTPUT" mult-k="1.10244140625" tail="isHE" tail-magnet="10">
+        <point x="9.0" y="9.0"/>
+      </arc>
+      <arc head="isLE" head-magnet="3" kind="INPUT" mult-k="0.31865234375000007" tail="OpAnswering" tail-magnet="0"/>
+      <arc head="Electric" head-magnet="0" kind="OUTPUT" mult-k="0.8180664062500002" tail="isLE" tail-magnet="10">
+        <point x="9.0" y="14.0"/>
+      </arc>
+      <arc head="inappropriate" head-magnet="9" kind="INPUT" mult-k="0.87939453125" tail="OpAnswering" tail-magnet="0">
+        <point x="20.0" y="18.5"/>
+      </arc>
+      <arc head="answers" head-magnet="11" kind="INPUT" mult-k="0.8725585937499999" tail="IncomingCalls" tail-magnet="0">
+        <point x="17.0" y="4.0"/>
+      </arc>
+      <arc head="answers" head-magnet="9" kind="INPUT" mult-k="0.77529296875" tail="IdleOp" tail-magnet="0">
+        <point x="19.0" y="4.0"/>
+      </arc>
+      <arc head="OpAnswering" head-magnet="0" kind="OUTPUT" tail="answers" tail-magnet="4"/>
+      <arc head="Clients" kind="OUTPUT" mult-k="0.90009765625" tail="inappropriate" tail-magnet="4">
+        <point x="25.5" y="19.0"/>
+      </arc>
+      <arc head="EndCall" kind="OUTPUT" tail="isHG" tail-magnet="11"/>
+      <arc head="EndCall" kind="OUTPUT" tail="isLG" tail-magnet="10"/>
+      <arc head="EndCall" kind="OUTPUT" mult-k="1.15830078125" tail="inappropriate" tail-magnet="10">
+        <point x="19.5" y="19.0"/>
+      </arc>
+      <arc head="EndCall" kind="OUTPUT" tail="isLE" tail-magnet="4"/>
+      <arc head="EndCall" kind="OUTPUT" tail="isHE" tail-magnet="5"/>
+    </edges>
+  </gspn>
+  <gspn name="PT1" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place marking="1" name="P0" superposition-tags="p1" x="8.0" y="4.0"/>
+      <place name="P1" superposition-tags="p2" x="20.0" y="4.0"/>
+      <transition name="T0" nservers-x="0.5" superposition-tags="ta" type="EXP" x="14.55" y="4.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="T0"/>
+    </edges>
+  </gspn>
+  <gspn name="PT2" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place marking="1" name="P5" superposition-tags="p1" x="8.0" y="4.0"/>
+      <place name="P6" superposition-tags="p3" x="20.0" y="4.0"/>
+      <transition name="T5" nservers-x="0.5" superposition-tags="ta" type="EXP" x="14.55" y="4.0"/>
+    </nodes>
+    <edges>
+      <arc head="T5" kind="INPUT" tail="P5"/>
+      <arc head="P6" kind="OUTPUT" tail="T5"/>
+    </edges>
+  </gspn>
+  <gspn name="basicDSPN" show-color-cmd="false" show-fluid-cmd="false">
+    <nodes>
+      <place label-x="-0.9375" label-y="1.25" marking="1" name="P0" x="5.0" y="3.0"/>
+      <place name="P1" x="13.0" y="3.0"/>
+      <transition delay="3.5" name="T0" nservers-x="0.5" type="EXP" x="9.55" y="3.0"/>
+      <transition name="T1" nservers-x="0.5" type="EXP" x="9.55" y="7.0"/>
+      <place name="P2" x="13.0" y="7.0"/>
+      <transition name="T2" nservers-x="0.5" type="EXP" x="17.55" y="3.0"/>
+      <transition delay="I[1.0]" delay-x="-1.0" delay-y="1.5" name="T3" type="GEN" x="17.55" y="7.0"/>
+      <place label-x="0.6875" label-y="1.625" name="P3" x="21.0" y="3.0"/>
+      <transition delay="Uniform[2,5]" name="T4" type="GEN" x="9.55" y="11.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" tail="P0"/>
+      <arc head="T1" kind="INPUT" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="T0"/>
+      <arc head="T2" kind="INPUT" tail="P1"/>
+      <arc head="P2" kind="OUTPUT" tail="T1"/>
+      <arc head="T3" kind="INPUT" tail="P2"/>
+      <arc head="P3" kind="OUTPUT" tail="T3"/>
+      <arc head="P3" kind="OUTPUT" tail="T2"/>
+      <arc head="T4" kind="INPUT" tail="P3">
+        <point x="22.0" y="12.0"/>
+      </arc>
+      <arc head="P0" kind="OUTPUT" tail="T4">
+        <point x="6.0" y="12.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <measures gspn-name="basicDSPN" log-uuid="a04be869-d304-4da6-bee8-2badd59d64f6" name="Measures" simplified-UI="false">
+    <assignments/>
+    <mc4cslta dot-clusters="true"/>
+    <formulas>
+      <formula language="STAT">
+        <result-table>
+          <stat-result name="STAT">
+            <bindings/>
+            <stat key="build_time" value="[User 0.000s, Sys 0.000s]"/>
+            <stat key="immediate_firings" value="0"/>
+            <stat key="num_tangible_markings" value="4"/>
+            <stat key="num_vanishing_markings" value="0"/>
+            <stat key="rg_class" value="MARKOV REGENERATIVE PROCESS"/>
+            <stat key="steady_state_solution_time" value="[User 0.001s, Sys 0.003s]"/>
+            <stat key="timed_firings" value="5"/>
+            <stat key="visited_vanishing_markings" value="0"/>
+          </stat-result>
+        </result-table>
+      </formula>
+      <formula language="TRG">
+        <result-table>
+          <pdf-result name="TRG">
+            <bindings/>
+          </pdf-result>
+        </result-table>
+      </formula>
+      <formula language="ALL">
+        <result-table>
+          <all-measures name="ALL">
+            <bindings/>
+            <mean place="P0" value="0.0470588"/>
+            <mean place="P1" value="0.164706"/>
+            <mean place="P2" value="0.0470588"/>
+            <mean place="P3" value="0.741176"/>
+            <throughput transition="T0" value="0.164706"/>
+            <throughput transition="T1" value="0.0470588"/>
+            <throughput transition="T2" value="0.164706"/>
+            <throughput transition="T3" value="0.0"/>
+            <throughput transition="T4" value="0.0"/>
+            <distrib place="P0" values="2 = 0.952941 0.0470588 "/>
+            <distrib place="P1" values="2 = 0.835294 0.164706 "/>
+            <distrib place="P2" values="2 = 0.952941 0.0470588 "/>
+            <distrib place="P3" values="2 = 0.258824 0.741176 "/>
+          </all-measures>
+        </result-table>
+      </formula>
+    </formulas>
+  </measures>
+  <gspn name="GenSemantics" show-color-cmd="false" show-fluid-cmd="false">
+    <nodes>
+      <place marking="4" name="P0" x="5.0" y="3.0"/>
+      <transition delay="I[1.0]+I[1.5]" name="D0" type="GEN" x="11.55" y="3.0"/>
+      <place marking="3" name="P1" x="5.0" y="9.0"/>
+      <transition delay="Uniform[0.5,3]" name="D1" type="GEN" x="11.55" y="9.0"/>
+      <place name="P2" x="27.0" y="3.0"/>
+    </nodes>
+    <edges>
+      <arc head="D1" kind="INPUT" tail="P1"/>
+      <arc head="D0" kind="INPUT" tail="P0"/>
+      <arc head="P2" kind="OUTPUT" tail="D0"/>
+    </edges>
+  </gspn>
+  <gspn name="GeneralEventsLanguage" show-color-cmd="false" show-fluid-cmd="false">
+    <nodes>
+      <transition delay="0.3 * I[3] + 0.7 * I[5]" name="D0" type="GEN" x="7.55" y="3.0"/>
+      <transition delay="I[4.5]" name="D1" type="GEN" x="7.55" y="7.0"/>
+      <place marking="1" name="P0" x="3.0" y="3.0"/>
+      <place name="P3" x="3.0" y="11.0"/>
+      <transition delay="Fract[1,4] * R[1,lambda]" name="D2" type="GEN" x="7.55" y="11.0"/>
+      <transition delay="TruncatedExp[0.75, 2]" name="D3" type="GEN" x="7.55" y="15.0"/>
+      <transition delay="Triangular[lambda,2*lambda]" name="D4" type="GEN" x="32.55" y="4.0"/>
+      <place name="P1" x="3.0" y="7.0"/>
+      <place name="P2" x="3.0" y="15.0"/>
+      <place name="P4" x="28.0" y="4.0"/>
+      <place name="P5" x="28.0" y="8.0"/>
+      <transition delay="Pareto[2.25, mu]" name="D5" type="GEN" x="32.55" y="8.0"/>
+      <place name="P6" x="28.0" y="12.0"/>
+      <transition delay="Uniform[3,6]" name="D6" type="GEN" x="32.55" y="12.0"/>
+      <place name="P7" x="28.0" y="16.0"/>
+      <transition delay="Erlang[1.75, 4]" name="D7" type="GEN" x="32.55" y="16.0"/>
+      <place name="P8" x="3.0" y="19.0"/>
+      <transition delay="Fract[27,10]*Exp[-3*x]*x + Fract[2,5]*Exp[-2*x]*Pow[x,2] + Fract[1,10] * Exp[-1 * x] * Pow[x,3]" name="D8" type="GEN" x="7.55" y="19.0"/>
+      <place name="P9" x="7.0" y="23.0"/>
+      <transition delay="3.075146296605449 *Exp[-1.3* x]*Pow[x,2]*R[0,1]+0.016656809328834597*Exp[-0.4*x]*Pow[x,4]*R[1,3]+0.08823381802878069*Exp[-0.9*x]*Pow[x,3]*R[3,5]" name="D9" type="GEN" x="3.55" y="26.0"/>
+      <place name="P10" x="52.0" y="24.0"/>
+      <transition delay="3*lambda+2" name="T0" nservers-x="0.5" type="EXP" x="32.55" y="20.0"/>
+      <constant consttype="REAL" name="lambda" value="2.3" x="47.0625" y="3.0"/>
+      <constant consttype="REAL" name="mu" value="1.4" x="47.0625" y="5.0"/>
+    </nodes>
+    <edges>
+      <arc head="D0" kind="INPUT" tail="P0"/>
+      <arc head="D2" kind="INPUT" tail="P3"/>
+      <arc head="D3" kind="INPUT" tail="P2"/>
+      <arc head="D4" kind="INPUT" tail="P4"/>
+      <arc head="D1" kind="INPUT" tail="P1"/>
+      <arc head="D5" kind="INPUT" tail="P5"/>
+      <arc head="D6" kind="INPUT" tail="P6"/>
+      <arc head="D7" kind="INPUT" tail="P7"/>
+      <arc head="D8" kind="INPUT" tail="P8"/>
+      <arc head="D9" kind="INPUT" tail="P9"/>
+      <arc head="P10" kind="OUTPUT" tail="D9">
+        <point x="10.0" y="27.0"/>
+        <point x="15.0" y="25.0"/>
+      </arc>
+      <arc head="P9" kind="OUTPUT" tail="D8"/>
+      <arc head="P1" kind="OUTPUT" tail="D0"/>
+      <arc head="P3" kind="OUTPUT" tail="D1"/>
+      <arc head="P2" kind="OUTPUT" tail="D2"/>
+      <arc head="P8" kind="OUTPUT" tail="D3"/>
+      <arc head="T0" kind="INPUT" tail="P10"/>
+      <arc head="P7" kind="OUTPUT" tail="T0"/>
+      <arc head="P6" kind="OUTPUT" tail="D7"/>
+      <arc head="P5" kind="OUTPUT" tail="D6"/>
+      <arc head="P4" kind="OUTPUT" tail="D5"/>
+      <arc head="P0" kind="OUTPUT" tail="D4">
+        <point x="29.0" y="1.5"/>
+        <point x="5.5" y="1.5"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="DSPNgen" show-color-cmd="false" show-fluid-cmd="false">
+    <nodes>
+      <place marking="N" name="P0" x="5.0" y="3.0"/>
+      <transition delay="0.6*I[1.0]+0.4*I[1.5]" name="D0" type="GEN" x="11.55" y="3.0"/>
+      <place name="P1" x="5.0" y="14.0"/>
+      <transition delay="Uniform[N/2,N]" name="D1" type="GEN" x="11.55" y="14.0"/>
+      <place label-x="2.0" label-y="0.0" name="P2" x="27.0" y="3.0"/>
+      <transition name="T0" nservers-x="0.5" type="EXP" x="11.55" y="9.0"/>
+      <constant consttype="INTEGER" name="N" value="3" x="41.0625" y="24.0"/>
+      <place label-x="2.0" label-y="0.0" name="P3" x="27.0" y="14.0"/>
+      <transition name="T1" nservers-x="0.5" type="EXP" x="11.55" y="20.0"/>
+      <place name="P4" x="5.0" y="26.0"/>
+      <transition delay="Fract[27,10]*Exp[-3*x]*x + Fract[2,5]*Exp[-2*x]*Pow[x,2] + Fract[1,10] * Exp[-1 * x] * Pow[x,3]" name="D2" type="GEN" x="11.55" y="26.0"/>
+      <place label-x="2.0" label-y="0.0" name="P5" x="33.0" y="26.0"/>
+      <transition name="T2" nservers-x="0.5" type="EXP" x="11.55" y="32.0"/>
+      <place marking="4" name="P6" x="40.0" y="7.0"/>
+      <transition name="T3" nservers-x="0.5" type="EXP" x="37.55" y="12.0"/>
+      <place name="P7" x="41.0" y="16.0"/>
+      <transition name="T4" nservers-x="0.5" type="EXP" x="44.55" y="11.0"/>
+      <transition delay="I[1.0]" name="D3" type="GEN" x="37.55" y="2.0"/>
+    </nodes>
+    <edges>
+      <arc head="D1" kind="INPUT" tail="P1"/>
+      <arc head="D0" kind="INPUT" tail="P0"/>
+      <arc head="P2" kind="OUTPUT" tail="D0"/>
+      <arc head="T0" kind="INHIBITOR" tail="P0"/>
+      <arc head="T0" kind="INPUT" mult="N" mult-k="1.37939453125" tail="P2">
+        <point x="28.0" y="10.0"/>
+      </arc>
+      <arc head="P1" kind="OUTPUT" mult="N" tail="T0"/>
+      <arc head="P3" kind="OUTPUT" tail="D1"/>
+      <arc head="P4" kind="OUTPUT" mult="N" tail="T1"/>
+      <arc head="T1" kind="INPUT" mult="N" mult-k="1.38486328125" tail="P3">
+        <point x="28.0" y="21.0"/>
+      </arc>
+      <arc head="T1" kind="INHIBITOR" tail="P1"/>
+      <arc head="D2" kind="INPUT" tail="P4"/>
+      <arc head="P5" kind="OUTPUT" tail="D2"/>
+      <arc head="T2" kind="INHIBITOR" tail="P4"/>
+      <arc head="T2" kind="INPUT" mult="N" mult-k="1.26962890625" tail="P5">
+        <point x="34.0" y="33.0"/>
+      </arc>
+      <arc head="P0" kind="OUTPUT" mult="N" tail="T2">
+        <point x="2.0" y="33.0"/>
+        <point x="2.0" y="4.0"/>
+      </arc>
+      <arc head="T3" kind="INPUT" tail="P6"/>
+      <arc head="P7" kind="OUTPUT" tail="T3"/>
+      <arc head="T4" kind="INPUT" tail="P7"/>
+      <arc head="P6" kind="OUTPUT" tail="T4"/>
+    </edges>
+  </gspn>
+  <measures gspn-name="DSPNgen" log-uuid="1b03f43b-f44d-4c46-8053-b455ae8516c1" name="DSPNgenMeasures" simplified-UI="false">
+    <assignments/>
+    <mc4cslta/>
+    <formulas>
+      <formula language="STAT">
+        <result-table>
+          <stat-result name="STAT">
+            <bindings/>
+            <stat key="build_time" value="[User 0.001s, Sys 0.000s]"/>
+            <stat key="immediate_firings" value="0"/>
+            <stat key="num_tangible_markings" value="60"/>
+            <stat key="num_vanishing_markings" value="0"/>
+            <stat key="rg_class" value="GENERALIZED SEMI-MARKOV PROCESS"/>
+            <stat key="timed_firings" value="216"/>
+            <stat key="visited_vanishing_markings" value="0"/>
+          </stat-result>
+        </result-table>
+      </formula>
+      <formula language="ALL">
+        <result-table>
+          <all-measures failure_reason="&lt;not computed&gt;" name="ALL" state="FAIL_COMPUTE">
+            <bindings/>
+          </all-measures>
+        </result-table>
+      </formula>
+    </formulas>
+  </measures>
+  <gspn name="INV">
+    <nodes>
+      <place label-x="-1.0" marking="2" name="P0" x="6.0" y="7.0"/>
+      <transition magnets="THREE_PER_SIDE" name="T0" type="EXP" x="11.55" y="3.0"/>
+      <transition name="T1" type="EXP" x="11.55" y="7.0"/>
+      <transition name="T2" type="EXP" x="11.55" y="11.0"/>
+      <place label-x="0.5" name="P1" x="16.0" y="7.0"/>
+      <place label-x="1.0" marking="2" name="P2" x="25.0" y="3.0"/>
+      <transition name="T3" type="EXP" x="30.55" y="3.0"/>
+      <place label-x="1.0" name="P3" x="35.0" y="3.0"/>
+      <transition label-x="-1.0" label-y="-1.0" name="T4" rotation="1.5707963267948966" type="EXP" x="35.55" y="8.0"/>
+      <transition label-x="-1.0" label-y="-1.0" name="T5" rotation="1.5707963267948966" type="EXP" x="25.55" y="8.0"/>
+      <place name="P4" x="35.0" y="12.0"/>
+      <place name="P5" x="25.0" y="12.0"/>
+      <transition name="T6" type="EXP" x="30.55" y="12.0"/>
+      <place marking="1" name="P6" x="7.0" y="21.0"/>
+      <place name="P7" x="17.0" y="21.0"/>
+      <transition delay-x="0.25" delay-y="1.1875" name="T7" type="EXP" x="12.55" y="19.0"/>
+      <transition delay-x="0.1875" delay-y="1.0625" name="T8" type="EXP" x="12.55" y="23.0"/>
+      <text-box bold="true" border-color="#7f5f00" fill-color="#fefff3" height="11.0" locked="true" name="__textBox0" shadow="true" shape="ROUND_RECTANGLE" text-color="#1800bf" text-size="VERY_LARGE" width="17.0" x="4.5" y="15.5">Simple net with a loop</text-box>
+      <text-box bold="true" border-color="#000000" fill-color="none" image-uuid="5af2a638-94c7-489e-b424-4b5ac700d192" name="__textBox1" shadow="true" shape="ROUND_RECTANGLE" text-color="#000000" x="25.0" y="17.0">imageBox</text-box>
+      <text-box bold="true" border-color="#000000" fill-color="none" image-uuid="5af2a638-94c7-489e-b424-4b5ac700d192" name="copy___textBox1" shadow="true" shape="ROUND_RECTANGLE" text-color="#000000" x="27.0" y="19.0">imageBox</text-box>
+      <place marking="5.6" name="P8" type="CONTINUOUS" x="4.0" y="1.0"/>
+      <place name="P9" type="CONTINUOUS" x="20.0" y="1.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" head-magnet="11" kind="INPUT" tail="P0">
+        <point x="7.0" y="4.5"/>
+      </arc>
+      <arc head="P1" kind="OUTPUT" tail="T0">
+        <point x="17.0" y="4.0"/>
+      </arc>
+      <arc head="T2" kind="INPUT" tail="P1">
+        <point x="17.0" y="12.0"/>
+      </arc>
+      <arc broken="true" head="P0" kind="OUTPUT" tail="T2">
+        <point x="7.0" y="12.0"/>
+      </arc>
+      <arc head="T1" kind="INPUT" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="T1"/>
+      <arc head="T3" kind="INPUT" tail="P2"/>
+      <arc head="P3" kind="OUTPUT" tail="T3"/>
+      <arc head="T4" kind="INPUT" tail="P3"/>
+      <arc head="P4" kind="OUTPUT" tail="T4"/>
+      <arc head="T6" kind="INPUT" tail="P4"/>
+      <arc head="P5" kind="OUTPUT" tail="T6"/>
+      <arc head="T5" kind="INPUT" tail="P5"/>
+      <arc head="P2" kind="OUTPUT" tail="T5"/>
+      <arc head="T7" kind="INPUT" tail="P6"/>
+      <arc head="P7" kind="OUTPUT" mult="3" mult-y="-1.0" tail="T7"/>
+      <arc head="T8" kind="INPUT" mult="3" tail="P7"/>
+      <arc head="P6" kind="OUTPUT" tail="T8"/>
+      <arc head="T0" head-magnet="9" kind="INPUT" mult="3.14" mult-k="1.2467773437499998" mult-x="0.9926713001664167" mult-y="-1.6816575145933292" tail="P8">
+        <point x="7.5" y="3.5"/>
+      </arc>
+      <arc head="P9" kind="OUTPUT" mult="2.67" mult-k="1.49990234375" mult-x="-1.4998685916783323" mult-y="-0.7501970870969634" tail="T0" tail-magnet="3">
+        <point x="16.5" y="3.5"/>
+        <point x="17.5" y="2.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="GSPN 1">
+    <nodes>
+      <place label-x="-1.0" marking="2" name="P0" x="6.0" y="5.0"/>
+      <transition delay="1.5" name="T0" type="EXP" x="14.55" y="2.0"/>
+      <transition name="T1" nservers="N" type="EXP" x="14.55" y="8.0"/>
+      <place label-x="1.0" name="P1" x="22.0" y="5.0"/>
+      <place marking="1" name="P2" x="6.0" y="14.0"/>
+      <transition name="end" type="EXP" x="14.55" y="14.0"/>
+      <constant consttype="INTEGER" name="N" value="2" x="1.3125" y="2.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" tail="P0">
+        <point x="7.0" y="3.0"/>
+      </arc>
+      <arc head="P1" kind="OUTPUT" tail="T0">
+        <point x="23.0" y="3.0"/>
+      </arc>
+      <arc head="T1" kind="INPUT" mult="2" mult-k="1.50400390625" tail="P1">
+        <point x="23.0" y="9.0"/>
+      </arc>
+      <arc head="P0" kind="OUTPUT" mult="2" tail="T1">
+        <point x="7.0" y="9.0"/>
+      </arc>
+      <arc head="end" kind="INPUT" tail="P2"/>
+    </edges>
+  </gspn>
+  <dta name="NextOp">
+    <nodes>
+      <clock name="x" x="2.5625" y="2.0"/>
+      <template last-binding="end" name="act" type="ACTION" x="8.0" y="2.0"/>
+      <location init-arrow-x="1.5" init-arrow-y="9.0" initial="true" name="l0" state-proposition="Phi0" x="3.5" y="8.0"/>
+      <location final="ACCEPTING" init-arrow-x="11.5" init-arrow-y="9.0" name="l1" state-proposition="Phi0" x="13.5" y="8.0"/>
+      <template last-binding="4" name="n" type="INTEGER" x="11.0" y="2.0"/>
+      <location init-arrow-x="11.5" init-arrow-y="14.0" name="l2" state-proposition="Phi0" x="13.5" y="13.0"/>
+      <template last-binding="True" name="Phi0" type="STATEPROP" x="14.0" y="2.0"/>
+    </nodes>
+    <edges>
+      <edge actset="Act\{act}" actset-clock-k="1.00009765625" actset-x="1.9627650258691176E-4" actset-y="-1.5000000070811108" clock-guard="x &gt; 0" clock-guard-x="1.9627650258691176E-4" clock-guard-y="-0.5000000070811108" head="l0" kind="INNER" tail="l0">
+        <point x="5.0" y="6.5"/>
+      </edge>
+      <edge actset="{act}" actset-clock-k="0.5" clock-guard="x &gt; 0" head="l1" kind="INNER" tail="l0"/>
+      <edge actset-clock-k="1.31591796875" clock-guard="x = n" head="l2" kind="BOUNDARY" tail="l0">
+        <point x="8.0" y="14.0"/>
+      </edge>
+    </edges>
+  </dta>
+  <gspn name="GSPN 2">
+    <nodes>
+      <place marking="1" name="P0" x="4.0" y="4.0"/>
+      <transition name="T0" type="EXP" x="10.55" y="4.0"/>
+      <place name="P1" x="16.0" y="4.0"/>
+      <transition name="t0" type="IMM" x="22.85" y="4.0"/>
+      <transition name="t1" type="IMM" x="22.85" y="8.0"/>
+      <place label-x="-1.0" marking="1" name="P2" x="30.0" y="2.0"/>
+      <transition label-x="-1.5" label-y="-1.0" name="end" rotation="1.5707963267948966" type="EXP" x="30.55" y="8.0"/>
+      <place name="P3" x="16.0" y="11.0"/>
+      <transition name="T1" type="EXP" x="10.55" y="11.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="T0"/>
+      <arc head="t0" kind="INPUT" tail="P1"/>
+      <arc head="t1" kind="INPUT" mult-k="0.95400390625" tail="P1">
+        <point x="20.0" y="9.0"/>
+      </arc>
+      <arc head="P0" kind="OUTPUT" tail="t0">
+        <point x="26.0" y="5.0"/>
+        <point x="26.0" y="2.0"/>
+        <point x="1.5" y="2.0"/>
+        <point x="1.5" y="4.0"/>
+      </arc>
+      <arc head="end" kind="INPUT" tail="P2"/>
+      <arc head="P3" kind="OUTPUT" tail="t1">
+        <point x="26.0" y="9.0"/>
+        <point x="26.0" y="12.0"/>
+      </arc>
+      <arc head="T1" kind="INPUT" tail="P3"/>
+      <arc head="P0" kind="OUTPUT" tail="T1">
+        <point x="1.5" y="12.0"/>
+        <point x="1.5" y="6.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="GSPN Sample">
+    <nodes>
+      <place magnets="TWO_PER_SIDE" marking="2" name="Packets" x="13.0" y="10.0"/>
+      <transition delay="lambda/2" name="start" nservers="1" type="EXP" x="18.55" y="10.0"/>
+      <constant consttype="REAL" name="lambda" value="2" x="2.3125" y="1.0"/>
+      <constant consttype="INTEGER" name="N" value="3" x="2.3125" y="2.0"/>
+      <constant consttype="INTEGER" name="K" value="3" x="2.25" y="3.0"/>
+      <transition delay="I[2.35]" delay-x="0.1875" delay-y="1.0625" label-x="-0.1875" label-y="-1.0" name="Timeout" rotation="4.71238898038469" type="GEN" x="13.55" y="6.0"/>
+      <transition magnets="THREE_PER_SIDE" name="im_req" priority="2" type="IMM" x="8.85" y="10.0"/>
+      <place name="P0" x="26.0" y="10.0"/>
+      <transition name="T0" type="EXP" x="2.55" y="5.0"/>
+      <place name="P1" x="2.0" y="14.0"/>
+      <place name="P2" x="1.0" y="9.0"/>
+      <place label-x="0.5" name="Blocks" x="19.0" y="5.0"/>
+      <transition name="T1" type="EXP" x="31.55" y="5.0"/>
+      <place label-y="-1.5" marking="4" name="H2" x="9.0" y="19.0"/>
+      <place label-y="-1.5" marking="2" name="O2" x="8.0" y="22.5"/>
+      <transition alt-name-fn="LATEX_TEXT" delay="LH2O" magnets="THREE_PER_SIDE" name="reactH2O" rotation="-0.0" shown-as="2\mathrm{H}_2 + \mathrm{O}_2 \rightarrow 2 \mathrm{H}_2\mathrm{O}" type="EXP" x="16.55" y="22.0"/>
+      <place alt-name-fn="LATEX_TEXT" name="H2O" shown-as="\mathrm{H}_2\mathrm{O}" x="22.0" y="22.0"/>
+      <constant alt-name-fn="LATEX_TEXT" consttype="REAL" name="LH2O" shown-as="\lambda_\mathrm{\,synt}" value="0.7588" x="14.1875" y="18.0"/>
+      <place name="P3" partition="partition1" x="33.0" y="16.0"/>
+      <transition name="T2" nservers-x="0.5" type="EXP" x="39.55" y="16.0"/>
+      <place name="P4" partition="part2" x="45.0" y="16.0"/>
+      <transition delay-x="-2.0" delay-y="0.5" label-x="-1.5" label-y="-0.5" name="T3" nservers-x="0.5" rotation="2.356194490192345" type="EXP" x="42.55" y="19.0"/>
+      <place name="P5" partition="partition1" x="39.0" y="22.0"/>
+      <transition delay-x="1.0" delay-y="0.5" label-x="1.5" label-y="-0.5" name="T4" nservers-x="0.5" rotation="0.7853981633974483" type="EXP" x="36.55" y="19.0"/>
+    </nodes>
+    <edges>
+      <arc head="start" kind="INPUT" mult="N+1" mult-x="-0.5" mult-y="-1.5" tail="Packets"/>
+      <arc head="Timeout" kind="INPUT" mult-k="0.21455078125000002" tail="Packets"/>
+      <arc head="im_req" head-magnet="3" kind="INHIBITOR" tail="Packets">
+        <point x="12.0" y="9.5"/>
+      </arc>
+      <arc head="Packets" kind="OUTPUT" tail="im_req" tail-magnet="4"/>
+      <arc head="Packets" head-magnet="5" kind="OUTPUT" mult-k="0.5760742187500001" tail="T0">
+        <point x="7.0" y="8.0"/>
+        <point x="12.0" y="8.0"/>
+      </arc>
+      <arc head="P0" kind="OUTPUT" mult="N+1" mult-k="0.43759765625" mult-x="-0.5" mult-y="-1.5" tail="start"/>
+      <arc head="P2" kind="OUTPUT" mult-k="1.06005859375" tail="im_req" tail-magnet="9">
+        <point x="4.5" y="10.5"/>
+      </arc>
+      <arc head="P1" kind="OUTPUT" tail="im_req" tail-magnet="11">
+        <point x="4.5" y="11.5"/>
+      </arc>
+      <arc head="Blocks" kind="OUTPUT" mult-k="0.50009765625" tail="T0">
+        <point x="17.0" y="1.5"/>
+        <point x="17.0" y="6.0"/>
+      </arc>
+      <arc head="T1" kind="INPUT" tail="Blocks"/>
+      <arc head="reactH2O" head-magnet="11" kind="INPUT" mult-k="1.0" tail="O2"/>
+      <arc head="reactH2O" head-magnet="9" kind="INPUT" mult="2" mult-k="0.5510742187500001" mult-x="0.8905608693506704" mult-y="-1.1094391306493314" tail="H2">
+        <point x="12.5" y="22.5"/>
+      </arc>
+      <arc head="H2O" kind="OUTPUT" mult="2" mult-k="0.41669921875000004" mult-x="0.9993164062499993" tail="reactH2O"/>
+      <arc head="T2" kind="INPUT" tail="P3"/>
+      <arc head="P4" kind="OUTPUT" tail="T2"/>
+      <arc head="T3" kind="INPUT" tail="P4"/>
+      <arc head="P5" kind="OUTPUT" tail="T3"/>
+      <arc head="T4" kind="INPUT" tail="P5"/>
+      <arc head="P3" kind="OUTPUT" tail="T4"/>
+    </edges>
+  </gspn>
+  <gspn name="GSPN 3">
+    <nodes>
+      <place label-x="-0.5" label-y="-1.5" marking="1" name="P0" x="7.0" y="6.0"/>
+      <transition name="T0" type="EXP" x="12.55" y="4.0"/>
+      <transition name="T1" type="EXP" x="12.55" y="8.0"/>
+      <place name="P1" x="17.0" y="4.0"/>
+      <transition label-x="-1.0" label-y="-1.0" name="t0" rotation="1.5707963267948966" type="IMM" x="7.85" y="10.0"/>
+      <place name="P2" x="17.0" y="8.0"/>
+      <place marking="3" name="P3" x="12.0" y="12.0"/>
+      <transition delay="I[1.0]" name="D0" type="GEN" x="17.55" y="12.0"/>
+      <transition name="t1" type="IMM" x="20.85" y="4.0"/>
+      <constant consttype="INTEGER" name="N" value="3" x="1.3125" y="1.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" tail="P0">
+        <point x="9.5" y="5.0"/>
+      </arc>
+      <arc head="T1" kind="INPUT" tail="P0">
+        <point x="9.5" y="9.0"/>
+      </arc>
+      <arc head="P1" kind="OUTPUT" tail="T0"/>
+      <arc head="T0" kind="INHIBITOR" tail="P1">
+        <point x="15.5" y="3.5"/>
+      </arc>
+      <arc head="P2" kind="OUTPUT" tail="T1"/>
+      <arc head="P0" kind="OUTPUT" tail="t0"/>
+      <arc head="t0" kind="INPUT" tail="P3">
+        <point x="8.0" y="13.0"/>
+      </arc>
+      <arc head="P3" kind="OUTPUT" mult="N" tail="D0"/>
+      <arc head="D0" kind="INPUT" mult="N" mult-k="1.3541992187499998" mult-y="-0.5001562499999999" tail="P2">
+        <point x="23.0" y="9.0"/>
+        <point x="23.0" y="13.0"/>
+      </arc>
+      <arc head="t1" kind="INPUT" tail="P1"/>
+      <arc head="P2" kind="OUTPUT" mult-k="0.50009765625" tail="t1">
+        <point x="23.0" y="5.0"/>
+        <point x="23.0" y="7.5"/>
+        <point x="21.0" y="7.5"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="FastQueue">
+    <nodes>
+      <place magnets="TWO_PER_SIDE" marking="2" name="Packets1" x="14.0" y="12.0"/>
+      <transition delay="lambda/2" name="start" nservers="1" nservers-y="1.6875" type="EXP" x="19.55" y="12.0"/>
+      <constant consttype="REAL" name="lambda" value="2" x="6.1875" y="4.0"/>
+      <constant consttype="INTEGER" name="N" value="3" x="6.0625" y="5.0"/>
+      <constant consttype="INTEGER" name="K" value="3" x="6.0" y="6.0"/>
+      <transition delay="I[2.35]" delay-x="0.0" delay-y="1.5" magnets="THREE_PER_SIDE" name="timeout" rotation="-0.0" type="GEN" x="16.55" y="7.0"/>
+      <transition magnets="THREE_PER_SIDE" name="im_req" priority="2" type="IMM" x="9.85" y="12.0"/>
+      <place label-x="1.5" name="End" x="25.0" y="12.0"/>
+      <transition delay="lambda" label-x="2.0" label-y="-1.0" name="arrivals" rotation="1.5707963267948966" type="EXP" x="3.55" y="8.0"/>
+      <place name="LpQueue" x="5.0" y="16.0"/>
+      <place name="Queue" x="3.0" y="11.5"/>
+      <place label-x="-0.5" marking="1" name="Wait" x="11.0" y="5.0"/>
+      <place label-x="1.5" name="Release" x="21.0" y="5.0"/>
+      <transition delay="mu" name="complete" type="EXP" x="16.55" y="3.0"/>
+      <transition name="norm_req" type="IMM" x="9.85" y="16.0"/>
+      <place marking="K" name="Packets2" x="14.0" y="16.0"/>
+      <transition delay="lambda" name="start2" type="EXP" x="19.55" y="16.0"/>
+      <constant consttype="REAL" name="mu" value="1.5" x="6.1875" y="3.0"/>
+    </nodes>
+    <edges>
+      <arc head="start" kind="INPUT" mult="N+1" mult-x="-0.5" mult-y="-1.5" tail="Packets1"/>
+      <arc head="timeout" head-magnet="11" kind="INPUT" mult-k="0.38212890624999996" tail="Packets1">
+        <point x="15.0" y="8.5"/>
+      </arc>
+      <arc head="im_req" head-magnet="3" kind="INHIBITOR" tail="Packets1">
+        <point x="13.0" y="11.5"/>
+      </arc>
+      <arc head="Packets1" kind="OUTPUT" tail="im_req" tail-magnet="4"/>
+      <arc head="End" kind="OUTPUT" mult="N+1" mult-k="0.5833007812500001" mult-x="-0.5" mult-y="-1.5" tail="start"/>
+      <arc head="LpQueue" kind="OUTPUT" tail="im_req" tail-magnet="11">
+        <point x="6.0" y="13.5"/>
+      </arc>
+      <arc head="timeout" kind="INPUT" mult-k="1.33310546875" tail="Wait">
+        <point x="13.0" y="8.0"/>
+      </arc>
+      <arc head="Release" kind="OUTPUT" mult-k="1.4147460937499998" tail="timeout">
+        <point x="21.0" y="8.0"/>
+      </arc>
+      <arc head="complete" kind="INPUT" tail="Release">
+        <point x="21.0" y="4.0"/>
+      </arc>
+      <arc head="Wait" kind="OUTPUT" tail="complete">
+        <point x="13.0" y="4.0"/>
+      </arc>
+      <arc head="End" kind="OUTPUT" tail="timeout" tail-magnet="5">
+        <point x="26.0" y="8.5"/>
+      </arc>
+      <arc head="im_req" head-magnet="9" kind="INPUT" mult="2" mult-x="-1.0099999999999998" mult-y="-1.0" tail="Queue"/>
+      <arc head="Queue" kind="OUTPUT" tail="arrivals"/>
+      <arc head="norm_req" kind="INPUT" tail="LpQueue">
+        <point x="8.0" y="17.0"/>
+      </arc>
+      <arc head="Packets2" kind="OUTPUT" tail="norm_req"/>
+      <arc head="start2" kind="INPUT" tail="Packets2"/>
+      <arc head="End" kind="OUTPUT" tail="start2">
+        <point x="26.0" y="17.0"/>
+      </arc>
+      <arc broken="true" head="arrivals" kind="INPUT" tail="End">
+        <point x="28.0" y="11.0"/>
+        <point x="28.5" y="6.0"/>
+        <point x="4.0" y="4.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="ExpPInv">
+    <nodes>
+      <place name="P0" x="8.0" y="8.0"/>
+      <place name="P1" x="8.0" y="12.0"/>
+      <transition name="T0" type="EXP" x="5.55" y="10.0"/>
+      <transition name="T1" type="EXP" x="11.55" y="10.0"/>
+      <transition name="T2" type="EXP" x="17.55" y="10.0"/>
+      <transition name="T3" type="EXP" x="23.55" y="10.0"/>
+      <transition name="T4" type="EXP" x="29.55" y="10.0"/>
+      <place name="P2" x="14.0" y="8.0"/>
+      <place name="P3" x="14.0" y="12.0"/>
+      <place name="P4" x="20.0" y="8.0"/>
+      <place name="P5" x="20.0" y="12.0"/>
+      <place name="P6" x="26.0" y="8.0"/>
+      <place name="P7" x="26.0" y="12.0"/>
+      <place marking="3" name="P8" x="33.0" y="10.0"/>
+    </nodes>
+    <edges>
+      <arc head="P0" kind="OUTPUT" tail="T0"/>
+      <arc head="P1" kind="OUTPUT" tail="T0"/>
+      <arc head="T1" kind="INPUT" tail="P1"/>
+      <arc head="P3" kind="OUTPUT" tail="T1"/>
+      <arc head="T2" kind="INPUT" tail="P3"/>
+      <arc head="P5" kind="OUTPUT" tail="T2"/>
+      <arc head="T3" kind="INPUT" tail="P5"/>
+      <arc head="P7" kind="OUTPUT" tail="T3"/>
+      <arc head="T4" kind="INPUT" tail="P7"/>
+      <arc head="P8" kind="OUTPUT" tail="T4"/>
+      <arc head="T1" kind="INPUT" tail="P0"/>
+      <arc head="P2" kind="OUTPUT" tail="T1"/>
+      <arc head="T2" kind="INPUT" tail="P2"/>
+      <arc head="P4" kind="OUTPUT" tail="T2"/>
+      <arc head="T3" kind="INPUT" tail="P4"/>
+      <arc head="P6" kind="OUTPUT" tail="T3"/>
+      <arc head="T4" kind="INPUT" tail="P6"/>
+      <arc head="T0" kind="INPUT" tail="P8">
+        <point x="34.0" y="6.0"/>
+        <point x="3.0" y="6.0"/>
+        <point x="3.0" y="11.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="ExpTInv">
+    <nodes>
+      <place name="P0" x="5.0" y="9.0"/>
+      <place name="P1" x="11.0" y="9.0"/>
+      <place name="P2" x="17.0" y="9.0"/>
+      <place name="P3" x="23.0" y="9.0"/>
+      <transition name="T0" type="EXP" x="8.55" y="7.0"/>
+      <transition name="T1" type="EXP" x="8.55" y="11.0"/>
+      <transition name="T2" type="EXP" x="14.55" y="7.0"/>
+      <transition name="T3" type="EXP" x="14.55" y="11.0"/>
+      <transition name="T4" type="EXP" x="20.55" y="7.0"/>
+      <transition name="T5" type="EXP" x="20.55" y="11.0"/>
+      <transition name="T6" type="EXP" x="29.55" y="9.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" mult-k="0.52216796875" tail="P0"/>
+      <arc head="T1" kind="INPUT" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="T1"/>
+      <arc head="P1" kind="OUTPUT" tail="T0"/>
+      <arc head="T2" kind="INPUT" tail="P1"/>
+      <arc head="P2" kind="OUTPUT" tail="T2"/>
+      <arc head="T4" kind="INPUT" tail="P2"/>
+      <arc head="P3" kind="OUTPUT" tail="T4"/>
+      <arc head="T3" kind="INPUT" tail="P1"/>
+      <arc head="P2" kind="OUTPUT" tail="T3"/>
+      <arc head="T5" kind="INPUT" tail="P2"/>
+      <arc head="P3" kind="OUTPUT" tail="T5"/>
+      <arc head="T6" kind="INPUT" tail="P3"/>
+      <arc head="P0" kind="OUTPUT" mult-k="0.50009765625" tail="T6">
+        <point x="34.0" y="10.0"/>
+        <point x="34.0" y="15.0"/>
+        <point x="3.0" y="15.0"/>
+        <point x="3.0" y="10.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="ExpPTInv">
+    <nodes>
+      <place label-x="-1.5" label-y="1.0" marking="1" name="P7" x="6.0" y="20.0"/>
+      <place label-x="-2.0" label-y="0.0" name="P9" x="3.0" y="13.0"/>
+      <place label-x="2.0" label-y="0.0" name="P8" x="9.0" y="13.0"/>
+      <transition label-x="-1.0" label-y="-1.0" name="t8" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="3.55" y="17.0"/>
+      <transition label-x="1.0" label-y="-1.0" name="t7" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="9.549999999999999" y="17.0"/>
+      <transition label-x="-1.0" label-y="-1.0" name="t9" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="6.55" y="10.0"/>
+      <place label-y="-2.0" name="P1" x="6.0" y="4.0"/>
+      <transition name="t1" nservers-x="0.5" type="EXP" x="10.549999999999999" y="2.0"/>
+      <transition name="t2" nservers-x="0.5" type="EXP" x="10.549999999999999" y="7.0"/>
+      <place name="P2" x="15.0" y="2.0"/>
+      <place name="P3" x="15.0" y="7.0"/>
+      <transition name="t3" nservers-x="0.5" type="EXP" x="19.55" y="5.0"/>
+      <place name="P4" x="22.0" y="10.0"/>
+      <transition label-x="-0.5" name="t5" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="19.55" y="13.0"/>
+      <transition label-x="0.5" name="t4" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="25.55" y="13.0"/>
+      <place name="P6" x="19.0" y="17.0"/>
+      <place name="P5" x="25.0" y="17.0"/>
+      <transition name="t6" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="22.55" y="21.0"/>
+    </nodes>
+    <edges>
+      <arc head="t8" kind="INPUT" tail="P7"/>
+      <arc head="t7" kind="INPUT" tail="P7"/>
+      <arc head="P9" kind="OUTPUT" tail="t8"/>
+      <arc head="P8" kind="OUTPUT" tail="t8"/>
+      <arc head="P8" kind="OUTPUT" tail="t7"/>
+      <arc head="P9" kind="OUTPUT" tail="t7"/>
+      <arc head="t9" kind="INPUT" tail="P9"/>
+      <arc head="t9" kind="INPUT" tail="P8"/>
+      <arc head="P1" kind="OUTPUT" tail="t9"/>
+      <arc head="t1" kind="INPUT" tail="P1"/>
+      <arc head="t2" kind="INPUT" tail="P1"/>
+      <arc head="P2" kind="OUTPUT" tail="t2"/>
+      <arc head="P3" kind="OUTPUT" tail="t2"/>
+      <arc head="P2" kind="OUTPUT" tail="t1"/>
+      <arc head="P3" kind="OUTPUT" tail="t1"/>
+      <arc head="t3" kind="INPUT" tail="P3"/>
+      <arc head="t3" kind="INPUT" tail="P2"/>
+      <arc head="P4" kind="OUTPUT" tail="t3">
+        <point x="23.0" y="6.0"/>
+      </arc>
+      <arc head="t5" kind="INPUT" tail="P4"/>
+      <arc head="P6" kind="OUTPUT" tail="t5"/>
+      <arc head="P5" kind="OUTPUT" tail="t5"/>
+      <arc head="t4" kind="INPUT" tail="P4"/>
+      <arc head="P5" kind="OUTPUT" tail="t4"/>
+      <arc head="P6" kind="OUTPUT" tail="t4"/>
+      <arc head="t6" kind="INPUT" tail="P6"/>
+      <arc head="t6" kind="INPUT" tail="P5"/>
+      <arc head="P7" kind="OUTPUT" tail="t6">
+        <point x="23.0" y="25.0"/>
+        <point x="7.0" y="25.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="ExpPflows">
+    <nodes>
+      <place label-x="-1.7763568394002505E-15" marking="2" name="P0" x="22.0" y="2.0"/>
+      <place name="P1" x="11.0" y="9.0"/>
+      <place label-x="-1.7763568394002505E-15" name="P2" x="34.0" y="9.0"/>
+      <place label-y="1.4999999999999982" name="P3" x="5.0" y="16.0"/>
+      <place label-x="-1.7763568394002505E-15" label-y="1.4999999999999982" name="P4" x="17.0" y="16.0"/>
+      <place label-x="-1.7763568394002505E-15" label-y="1.4999999999999982" name="P5" x="27.0" y="16.0"/>
+      <place label-x="-1.7763568394002505E-15" label-y="1.4999999999999982" name="P6" x="41.0" y="16.0"/>
+      <place label-y="1.4999999999999982" name="P7" x="2.0" y="23.0"/>
+      <place label-y="1.4999999999999982" name="P8" x="8.0" y="23.0"/>
+      <place label-y="1.4999999999999982" name="P9" x="14.0" y="23.0"/>
+      <place label-x="-1.7763568394002505E-15" label-y="1.4999999999999982" name="P10" x="20.0" y="23.0"/>
+      <place label-x="-1.7763568394002505E-15" label-y="1.4999999999999982" name="P11" x="24.0" y="23.0"/>
+      <place label-x="-1.7763568394002505E-15" label-y="1.4999999999999982" name="P12" x="30.0" y="23.0"/>
+      <place label-x="-1.7763568394002505E-15" label-y="1.4999999999999982" name="P13" x="38.0" y="23.0"/>
+      <place label-x="-1.7763568394002505E-15" label-y="1.4999999999999982" name="P14" x="44.0" y="23.0"/>
+      <place label-y="1.4999999999999982" name="P15" x="5.0" y="29.0"/>
+      <place label-x="-1.7763568394002505E-15" label-y="1.4999999999999982" name="P16" x="17.0" y="29.0"/>
+      <place label-x="-1.7763568394002505E-15" label-y="1.4999999999999982" name="P17" x="27.0" y="29.0"/>
+      <place label-x="-1.7763568394002505E-15" label-y="1.4999999999999982" name="P18" x="41.0" y="29.0"/>
+      <place label-x="-1.7763568394002505E-15" label-y="1.4999999999999982" name="P19" x="34.0" y="35.0"/>
+      <place label-y="1.4999999999999982" name="P20" x="11.0" y="35.0"/>
+      <transition name="T0" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="22.55" y="6.0"/>
+      <transition name="T1" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="11.55" y="13.0"/>
+      <transition name="T2" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="34.55" y="13.0"/>
+      <transition name="T3" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="5.55" y="20.0"/>
+      <transition name="T4" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="17.55" y="20.0"/>
+      <transition name="T5" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="27.55" y="20.0"/>
+      <transition name="T6" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="41.55" y="20.0"/>
+      <transition name="T7" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="5.55" y="26.0"/>
+      <transition name="T8" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="17.55" y="26.0"/>
+      <transition name="T9" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="27.55" y="26.0"/>
+      <transition name="T10" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="41.55" y="26.0"/>
+      <transition name="T11" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="11.55" y="32.0"/>
+      <transition name="T12" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="34.55" y="32.0"/>
+      <transition name="T13" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="22.55" y="37.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" head-magnet="0" kind="INPUT" tail="P0" tail-magnet="0"/>
+      <arc head="P1" head-magnet="0" kind="OUTPUT" tail="T0" tail-magnet="0"/>
+      <arc head="P2" head-magnet="0" kind="OUTPUT" tail="T0" tail-magnet="0"/>
+      <arc head="T1" head-magnet="0" kind="INPUT" tail="P1" tail-magnet="0"/>
+      <arc head="P3" head-magnet="0" kind="OUTPUT" tail="T1" tail-magnet="0"/>
+      <arc head="P4" head-magnet="0" kind="OUTPUT" tail="T1" tail-magnet="0"/>
+      <arc head="T2" head-magnet="0" kind="INPUT" tail="P2" tail-magnet="0"/>
+      <arc head="P5" head-magnet="0" kind="OUTPUT" tail="T2" tail-magnet="0"/>
+      <arc head="P6" head-magnet="0" kind="OUTPUT" tail="T2" tail-magnet="0"/>
+      <arc head="T3" head-magnet="0" kind="INPUT" tail="P3" tail-magnet="0"/>
+      <arc head="P7" head-magnet="0" kind="OUTPUT" tail="T3" tail-magnet="0"/>
+      <arc head="P8" head-magnet="0" kind="OUTPUT" tail="T3" tail-magnet="0"/>
+      <arc head="T4" head-magnet="0" kind="INPUT" tail="P4" tail-magnet="0"/>
+      <arc head="P9" head-magnet="0" kind="OUTPUT" tail="T4" tail-magnet="0"/>
+      <arc head="P10" head-magnet="0" kind="OUTPUT" tail="T4" tail-magnet="0"/>
+      <arc head="T5" head-magnet="0" kind="INPUT" tail="P5" tail-magnet="0"/>
+      <arc head="P11" head-magnet="0" kind="OUTPUT" tail="T5" tail-magnet="0"/>
+      <arc head="P12" head-magnet="0" kind="OUTPUT" tail="T5" tail-magnet="0"/>
+      <arc head="T6" head-magnet="0" kind="INPUT" tail="P6" tail-magnet="0"/>
+      <arc head="P13" head-magnet="0" kind="OUTPUT" tail="T6" tail-magnet="0"/>
+      <arc head="P14" head-magnet="0" kind="OUTPUT" tail="T6" tail-magnet="0"/>
+      <arc head="T7" head-magnet="0" kind="INPUT" tail="P7" tail-magnet="0"/>
+      <arc head="T7" head-magnet="0" kind="INPUT" tail="P8" tail-magnet="0"/>
+      <arc head="P15" head-magnet="0" kind="OUTPUT" tail="T7" tail-magnet="0"/>
+      <arc head="T8" head-magnet="0" kind="INPUT" tail="P9" tail-magnet="0"/>
+      <arc head="T8" head-magnet="0" kind="INPUT" tail="P10" tail-magnet="0"/>
+      <arc head="P16" head-magnet="0" kind="OUTPUT" tail="T8" tail-magnet="0"/>
+      <arc head="T9" head-magnet="0" kind="INPUT" tail="P11" tail-magnet="0"/>
+      <arc head="T9" head-magnet="0" kind="INPUT" tail="P12" tail-magnet="0"/>
+      <arc head="P17" head-magnet="0" kind="OUTPUT" tail="T9" tail-magnet="0"/>
+      <arc head="T10" head-magnet="0" kind="INPUT" tail="P13" tail-magnet="0"/>
+      <arc head="T10" head-magnet="0" kind="INPUT" tail="P14" tail-magnet="0"/>
+      <arc head="P18" head-magnet="0" kind="OUTPUT" tail="T10" tail-magnet="0"/>
+      <arc head="T11" head-magnet="0" kind="INPUT" tail="P15" tail-magnet="0"/>
+      <arc head="T11" head-magnet="0" kind="INPUT" tail="P16" tail-magnet="0"/>
+      <arc head="P20" head-magnet="0" kind="OUTPUT" tail="T11" tail-magnet="0"/>
+      <arc head="T12" head-magnet="0" kind="INPUT" tail="P17" tail-magnet="0"/>
+      <arc head="T12" head-magnet="0" kind="INPUT" tail="P18" tail-magnet="0"/>
+      <arc head="P19" head-magnet="0" kind="OUTPUT" tail="T12" tail-magnet="0"/>
+      <arc head="T13" head-magnet="0" kind="INPUT" tail="P20" tail-magnet="0"/>
+      <arc head="T13" head-magnet="0" kind="INPUT" tail="P19" tail-magnet="0"/>
+      <arc head="P0" head-magnet="0" kind="OUTPUT" tail="T13" tail-magnet="0">
+        <point x="16.5" y="4.5"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="Reactions">
+    <nodes>
+      <place marking="4" name="C2" x="7.0" y="18.0"/>
+      <place label-x="-0.5" marking="5" name="O2" x="5.0" y="9.0"/>
+      <transition alt-name-fn="LATEX_TEXT" delay="mu1" delay-x="0.25" label-x="0.3125" label-y="-1.5625" magnets="THREE_PER_SIDE" name="T0" shown-as="\mathrm{C}_2+2\mathrm{O}_2\rightarrow 2 \mathrm{CO}_2" type="EXP" x="10.55" y="14.0"/>
+      <place name="CO2" x="15.0" y="14.0"/>
+      <place label-x="-0.5" marking="2" name="NaOH" x="18.0" y="18.0"/>
+      <transition alt-name-fn="LATEX_TEXT" delay="mu2" magnets="THREE_PER_SIDE" name="T1" shown-as="\mathrm{CO}_2+\mathrm{NaOH}\rightarrow\mathrm{NaHCO}_3" type="EXP" x="21.55" y="14.0"/>
+      <constant consttype="REAL" name="mu1" value="0.6522" x="12.875" y="7.0"/>
+      <constant consttype="REAL" name="mu2" value="0.5534" x="18.875" y="7.0"/>
+      <place name="NaHCO3" x="27.0" y="14.0"/>
+      <place marking="3" name="HCl" x="32.0" y="18.0"/>
+      <transition alt-name-fn="LATEX_TEXT" delay="mu3" delay-y="2.0" height="4.0" label-x="0.375" label-y="-2.5625" magnets="THREE_PER_SIDE" name="T2" shown-as=" \mathrm{NaHCO}_3+\mathrm{HCl} \rightarrow \mathrm{H}_2\mathrm{O}+\mathrm{NaCl}+\mathrm{O}_2" type="EXP" x="35.55" y="13.0"/>
+      <place name="H2O" x="39.0" y="14.0"/>
+      <place name="NaCl" x="38.0" y="18.0"/>
+      <constant consttype="REAL" name="mu3" value="0.0023" x="25.875" y="7.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" head-magnet="11" kind="INPUT" mult-k="0.6368164062500002" tail="C2">
+        <point x="9.0" y="15.5"/>
+      </arc>
+      <arc head="T0" head-magnet="9" kind="INPUT" mult="2" mult-k="1.07314453125" mult-x="-1.0091063841717478" mult-y="1.0125955436666683" tail="O2">
+        <point x="7.0" y="14.5"/>
+      </arc>
+      <arc head="CO2" kind="OUTPUT" mult="2" mult-k="0.44482421875" mult-x="0.77587890625" mult-y="1.5" tail="T0"/>
+      <arc head="T1" kind="INPUT" tail="CO2"/>
+      <arc head="T1" head-magnet="11" kind="INPUT" mult-k="0.9577148437499999" tail="NaOH">
+        <point x="20.0" y="15.5"/>
+      </arc>
+      <arc head="NaHCO3" kind="OUTPUT" mult-k="0.44521484375" tail="T1"/>
+      <arc head="T2" kind="INPUT" mult-k="0.0" tail="NaHCO3"/>
+      <arc head="T2" head-magnet="11" kind="INPUT" mult-k="0.97294921875" tail="HCl">
+        <point x="34.0" y="16.0"/>
+      </arc>
+      <arc head="H2O" kind="OUTPUT" tail="T2"/>
+      <arc head="NaCl" kind="OUTPUT" mult-k="1.0270507812499998" tail="T2" tail-magnet="5">
+        <point x="38.0" y="16.0"/>
+      </arc>
+      <arc head="O2" kind="OUTPUT" tail="T2" tail-magnet="9">
+        <point x="29.5" y="14.0"/>
+        <point x="27.5" y="10.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="small">
+    <nodes>
+      <place name="Complete" x="32.0" y="12.0"/>
+      <transition delay="I[1.0]" label-x="1.3125" label-y="-0.9375" name="load" rotation="1.5707963267948966" type="GEN" x="7.55" y="9.0"/>
+      <transition magnets="THREE_PER_SIDE" name="start" type="EXP" x="12.549999999999999" y="12.0"/>
+      <place name="stage1" x="16.0" y="12.0"/>
+      <place marking="1" name="Mach" x="20.0" y="8.0"/>
+      <transition magnets="THREE_PER_SIDE" name="interm" type="EXP" x="20.55" y="12.0"/>
+      <place name="Work" x="16.0" y="17.0"/>
+      <transition name="fail" rotation="-0.0" type="EXP" x="20.55" y="17.0"/>
+      <place name="stage2" x="24.0" y="12.0"/>
+      <transition magnets="THREE_PER_SIDE" name="end" type="EXP" x="28.55" y="12.0"/>
+      <place name="Broken" x="24.0" y="17.0"/>
+      <transition name="repair" type="EXP" x="28.55" y="17.0"/>
+      <constant consttype="INTEGER" name="N" value="3" x="7.0625" y="18.0"/>
+      <place marking="N" name="Pallets" x="7.0" y="12.0"/>
+    </nodes>
+    <edges>
+      <arc head="load" kind="INPUT" mult-k="1.7088867187499996" tail="Complete">
+        <point x="33.0" y="7.5"/>
+        <point x="8.0" y="7.5"/>
+      </arc>
+      <arc head="stage1" kind="OUTPUT" tail="start"/>
+      <arc head="interm" kind="INPUT" tail="stage1"/>
+      <arc head="stage2" kind="OUTPUT" tail="interm"/>
+      <arc head="start" head-magnet="9" kind="INPUT" mult-k="1.0719726562500003" tail="Mach">
+        <point x="16.5" y="9.0"/>
+        <point x="11.0" y="10.0"/>
+        <point x="11.0" y="12.5"/>
+      </arc>
+      <arc head="Mach" kind="OUTPUT" mult-k="0.50009765625" tail="end" tail-magnet="3">
+        <point x="30.5" y="12.5"/>
+        <point x="30.5" y="10.0"/>
+        <point x="26.0" y="9.0"/>
+      </arc>
+      <arc head="end" kind="INPUT" mult-k="0.98818359375" tail="Work">
+        <point x="21.0" y="15.5"/>
+        <point x="26.5" y="15.5"/>
+      </arc>
+      <arc head="Work" kind="OUTPUT" tail="start" tail-magnet="5">
+        <point x="14.5" y="13.5"/>
+      </arc>
+      <arc head="fail" kind="INPUT" mult-k="0.0" tail="Work"/>
+      <arc head="Broken" kind="OUTPUT" tail="fail"/>
+      <arc head="end" kind="INPUT" tail="stage2"/>
+      <arc head="interm" head-magnet="11" kind="INPUT" mult-k="0.6682617187500001" tail="Work">
+        <point x="19.0" y="13.5"/>
+      </arc>
+      <arc head="Work" kind="OUTPUT" mult-k="1.32763671875" tail="interm" tail-magnet="11">
+        <point x="19.0" y="13.5"/>
+      </arc>
+      <arc head="repair" kind="INPUT" tail="Broken"/>
+      <arc head="Pallets" kind="OUTPUT" tail="load"/>
+      <arc head="start" head-magnet="10" kind="INPUT" tail="Pallets"/>
+      <arc head="Work" kind="OUTPUT" tail="repair">
+        <point x="31.5" y="18.0"/>
+        <point x="31.5" y="20.5"/>
+        <point x="13.0" y="20.5"/>
+        <point x="13.0" y="18.0"/>
+      </arc>
+      <arc head="Complete" kind="OUTPUT" tail="end"/>
+    </edges>
+  </gspn>
+  <gspn name="FMS">
+    <nodes>
+      <place marking="N" name="Pallets" x="20.0" y="4.0"/>
+      <transition delay="0.4" delay-x="0.25" label-x="1.625" label-y="-0.75" name="load" rotation="3.141592653589793" type="EXP" x="14.55" y="4.0"/>
+      <place name="StartM1" x="8.0" y="4.0"/>
+      <transition magnets="THREE_PER_SIDE" name="sw1" type="IMM" x="8.85" y="12.0"/>
+      <place label-y="-1.5" name="M1on" x="11.0" y="12.0"/>
+      <place label-y="-1.5" marking="1" name="M1" x="11.0" y="8.0"/>
+      <transition delay="lambda1" delay-x="0.25" magnets="THREE_PER_SIDE" name="ew1" type="EXP" x="14.55" y="12.0"/>
+      <place label-y="-1.5" name="M2buff" x="18.0" y="12.0"/>
+      <transition magnets="THREE_PER_SIDE" name="sw2" type="IMM" x="22.85" y="12.0"/>
+      <place label-y="-1.5" name="M2on" x="25.0" y="12.0"/>
+      <place label-y="-1.5" marking="1" name="M2" x="25.0" y="8.0"/>
+      <transition delay="lambda2" delay-x="0.3125" delay-y="1.0625" magnets="THREE_PER_SIDE" name="ew2" type="EXP" x="28.55" y="12.0"/>
+      <place label-y="-1.5" name="M3buff" x="32.0" y="12.0"/>
+      <transition magnets="THREE_PER_SIDE" name="sw3" type="IMM" x="36.85" y="12.0"/>
+      <place label-y="-1.5" name="M3on" x="39.0" y="12.0"/>
+      <place label-y="-1.5" marking="1" name="M3" x="39.0" y="8.0"/>
+      <place name="Completed" x="42.0" y="4.0"/>
+      <place label-x="2.0" label-y="-0.9375" name="M2go" x="25.0" y="17.0"/>
+      <transition delay="rho2" delay-x="0.25" delay-y="0.9375" name="failM2" rotation="-0.0" type="EXP" x="22.55" y="20.0"/>
+      <place name="M2ko" x="18.0" y="20.0"/>
+      <transition label-x="-1.4375" label-y="-0.8125" magnets="THREE_PER_SIDE" name="repM2" rotation="4.71238898038469" type="IMM" x="13.85" y="21.625"/>
+      <place label-x="2.5" label-y="0.0" marking="3" name="Spares" x="13.0" y="26.0"/>
+      <place label-x="-3.0" label-y="1.0" name="SpareBroken" x="25.0" y="23.0"/>
+      <transition label-x="-3.0" label-y="-0.25" magnets="THREE_PER_SIDE" name="repSpares" priority="2" priority-x="-2.125" priority-y="0.8125" rotation="1.5707963267948966" type="IMM" x="25.85" y="26.0"/>
+      <place label-x="-4.1875" label-y="0.0" name="SpareRepairing" x="25.0" y="29.0"/>
+      <transition delay="0.1" magnets="THREE_PER_SIDE" name="repSpareE" rotation="3.141592653589793" type="EXP" x="28.55" y="33.0"/>
+      <place label-y="-1.5" name="Ready" x="32.0" y="23.0"/>
+      <transition label-x="-1.4375" label-y="-0.625" name="goIdle" rotation="1.5707963267948966" type="IMM" x="29.475" y="20.0"/>
+      <transition delay="0.6" delay-x="0.0" label-x="-2.0" label-y="-1.0" name="goReady" rotation="1.5707963267948966" type="EXP" x="36.1125" y="20.0"/>
+      <place label-y="-1.5" marking="1" name="Idle" x="32.0" y="17.0"/>
+      <place label-x="-2.75" label-y="0.0" magnets="THREE_PER_SIDE" name="EndRep" x="32.0" y="29.0"/>
+      <transition delay="0.5" label-x="-3.0" label-y="0.0" name="goReady2" rotation="1.5707963267948966" type="EXP" x="32.55" y="26.0"/>
+      <place label-x="1.9375" label-y="-1.0" name="M3go" x="39.0" y="17.0"/>
+      <transition delay="rho3" delay-x="0.75" delay-y="0.5" label-x="1.8125" label-y="-1.0625" name="failM3" rotation="1.5707963267948966" type="EXP" x="39.55" y="20.0"/>
+      <place label-x="2.5" label-y="0.0" name="M3ko" x="39.0" y="23.0"/>
+      <transition label-x="2.5" label-y="-0.3125" magnets="THREE_PER_SIDE" name="repM3" priority="3" priority-x="0.375" priority-y="0.75" rotation="1.5707963267948966" type="IMM" x="39.85" y="26.0"/>
+      <place label-x="3.5" label-y="0.0" name="M3repairing" x="39.0" y="29.0"/>
+      <transition delay="0.15" magnets="THREE_PER_SIDE" name="repM3E" rotation="-0.0" type="EXP" x="36.55" y="33.0"/>
+      <transition delay="lambda3" delay-x="0.1875" magnets="THREE_PER_SIDE" name="ew3" type="EXP" x="42.55" y="12.0"/>
+      <transition delay="0.2" delay-x="0.1875" delay-y="1.0625" label-x="2.0" label-y="-1.0" name="restart" rotation="3.141592653589793" type="EXP" x="36.55" y="4.0"/>
+      <constant consttype="REAL" name="lambda1" value="1.2" x="5.875" y="20.0"/>
+      <constant consttype="REAL" name="lambda2" value="1.8" x="5.875" y="21.0"/>
+      <constant consttype="REAL" name="lambda3" value="1.9" x="5.875" y="22.0"/>
+      <constant consttype="REAL" name="rho2" value="0.02" x="5.9375" y="25.0"/>
+      <constant consttype="REAL" name="rho3" value="0.07" x="5.9375" y="26.0"/>
+      <template last-binding="2.3" name="t" type="REAL" x="3.0" y="24.0"/>
+      <template last-binding="3" name="N" type="INTEGER" x="3.0" y="19.0"/>
+      <text-box bold="true" border-color="#4070ff" fill-color="#f3f6ff" height="12.5" image-uuid="398a2e38-2d92-495f-ba8f-7f0a3a3c5bc8" locked="true" name="__textBox0" shadow="true" shape="ROUND_RECTANGLE" text-color="#10007f" text-size="LARGE" width="44.5" x="4.0" y="2.5">Machines</text-box>
+      <text-box bold="true" border-color="#bf8f00" fill-color="#fffcf3" height="21.5" image-uuid="8eb502eb-e706-4886-b49d-8f86c0735043" locked="true" name="__textBox1" shadow="true" shape="ROUND_RECTANGLE" text-color="#3f1800" text-size="LARGE" vert-pos="3" width="37.5" x="11.0" y="15.5">Repairman</text-box>
+    </nodes>
+    <edges>
+      <arc head="load" kind="INPUT" tail="Pallets"/>
+      <arc head="StartM1" kind="OUTPUT" mult-k="0.79990234375" tail="load"/>
+      <arc head="sw1" kind="INPUT" mult-k="1.49462890625" tail="StartM1">
+        <point x="5.5" y="5.0"/>
+        <point x="5.5" y="13.0"/>
+      </arc>
+      <arc head="M1on" kind="OUTPUT" tail="sw1"/>
+      <arc head="ew1" kind="INPUT" tail="M1on"/>
+      <arc head="M2buff" kind="OUTPUT" tail="ew1"/>
+      <arc head="sw1" head-magnet="9" kind="INPUT" tail="M1">
+        <point x="7.5" y="9.0"/>
+        <point x="7.5" y="12.5"/>
+      </arc>
+      <arc head="M1" kind="OUTPUT" tail="ew1" tail-magnet="3">
+        <point x="16.5" y="12.5"/>
+        <point x="16.5" y="9.0"/>
+      </arc>
+      <arc head="sw2" head-magnet="10" kind="INPUT" tail="M2buff"/>
+      <arc head="M2on" kind="OUTPUT" tail="sw2"/>
+      <arc head="ew2" kind="INPUT" tail="M2on"/>
+      <arc head="M3buff" kind="OUTPUT" tail="ew2"/>
+      <arc head="sw2" head-magnet="9" kind="INPUT" tail="M2">
+        <point x="21.5" y="9.0"/>
+        <point x="21.5" y="12.5"/>
+      </arc>
+      <arc head="M2" kind="OUTPUT" tail="ew2" tail-magnet="3">
+        <point x="30.5" y="12.5"/>
+        <point x="30.5" y="9.0"/>
+      </arc>
+      <arc head="sw3" head-magnet="10" kind="INPUT" tail="M3buff"/>
+      <arc head="M3on" kind="OUTPUT" tail="sw3"/>
+      <arc head="sw3" head-magnet="9" kind="INPUT" tail="M3">
+        <point x="35.5" y="9.0"/>
+        <point x="35.5" y="12.5"/>
+      </arc>
+      <arc head="M3" kind="OUTPUT" tail="ew3" tail-magnet="3">
+        <point x="44.5" y="12.5"/>
+        <point x="44.5" y="9.0"/>
+      </arc>
+      <arc head="Pallets" kind="OUTPUT" mult-k="0.11494140625000002" tail="restart"/>
+      <arc head="M2go" kind="OUTPUT" mult-k="0.49990234375" tail="sw2" tail-magnet="5">
+        <point x="24.0" y="13.5"/>
+      </arc>
+      <arc head="ew2" head-magnet="11" kind="INPUT" mult-k="1.1204101562499997" tail="M2go">
+        <point x="27.5" y="13.5"/>
+      </arc>
+      <arc head="failM2" kind="INPUT" mult-k="1.1588867187499998" tail="M2go">
+        <point x="26.0" y="21.0"/>
+      </arc>
+      <arc head="M2ko" kind="OUTPUT" tail="failM2"/>
+      <arc head="repM2" head-magnet="5" kind="INPUT" mult-k="1.1135742187500002" tail="M2ko">
+        <point x="14.5" y="21.0"/>
+      </arc>
+      <arc head="M2go" kind="OUTPUT" tail="repM2">
+        <point x="14.0" y="18.0"/>
+      </arc>
+      <arc head="repM2" kind="INPUT" tail="Spares"/>
+      <arc head="SpareBroken" kind="OUTPUT" mult-k="1.37490234375" tail="repM2" tail-magnet="11">
+        <point x="14.5" y="24.0"/>
+      </arc>
+      <arc head="repSpares" kind="INPUT" tail="SpareBroken"/>
+      <arc head="SpareRepairing" kind="OUTPUT" tail="repSpares"/>
+      <arc head="repSpareE" head-magnet="5" kind="INPUT" mult-k="1.0534179687500003" tail="SpareRepairing">
+        <point x="26.0" y="33.5"/>
+      </arc>
+      <arc head="Spares" kind="OUTPUT" mult-k="0.07822265625000002" tail="repSpareE">
+        <point x="14.0" y="34.0"/>
+      </arc>
+      <arc head="goIdle" kind="INPUT" mult-k="0.86767578125" tail="Ready">
+        <point x="29.625" y="22.5"/>
+      </arc>
+      <arc head="Idle" kind="OUTPUT" mult-k="1.3415039062499998" tail="goIdle">
+        <point x="29.625" y="19.0"/>
+      </arc>
+      <arc head="goReady" kind="INPUT" tail="Idle">
+        <point x="36.5625" y="19.0"/>
+      </arc>
+      <arc head="Ready" kind="OUTPUT" tail="goReady">
+        <point x="36.5625" y="22.5"/>
+      </arc>
+      <arc head="repSpares" head-magnet="9" kind="INPUT" mult-k="0.50751953125" tail="Ready">
+        <point x="26.5" y="25.5"/>
+      </arc>
+      <arc head="goReady2" kind="INPUT" tail="EndRep"/>
+      <arc head="Ready" kind="OUTPUT" tail="goReady2"/>
+      <arc head="EndRep" head-magnet="4" kind="OUTPUT" tail="repSpareE">
+        <point x="32.5" y="34.0"/>
+      </arc>
+      <arc head="ew3" head-magnet="11" kind="INPUT" mult-k="1.16513671875" tail="M3go">
+        <point x="41.5" y="13.5"/>
+      </arc>
+      <arc head="M3go" kind="OUTPUT" tail="sw3" tail-magnet="5">
+        <point x="38.0" y="13.5"/>
+      </arc>
+      <arc head="failM3" kind="INPUT" tail="M3go"/>
+      <arc head="M3ko" kind="OUTPUT" tail="failM3"/>
+      <arc head="repM3" kind="INPUT" tail="M3ko"/>
+      <arc head="repM3" head-magnet="11" kind="INPUT" mult-k="0.49384765625000004" tail="Ready">
+        <point x="39.5" y="25.5"/>
+      </arc>
+      <arc head="M3repairing" kind="OUTPUT" tail="repM3"/>
+      <arc head="repM3E" head-magnet="3" kind="INPUT" mult-k="0.8583007812500001" tail="M3repairing">
+        <point x="40.0" y="33.5"/>
+      </arc>
+      <arc head="EndRep" head-magnet="2" kind="OUTPUT" mult-k="0.49990234375" tail="repM3E">
+        <point x="33.5" y="34.0"/>
+      </arc>
+      <arc head="M3go" kind="OUTPUT" mult-k="0.14951171875000002" tail="repM3E">
+        <point x="47.0" y="34.0"/>
+        <point x="47.0" y="18.0"/>
+      </arc>
+      <arc head="Completed" kind="OUTPUT" mult-k="0.78466796875" tail="ew3">
+        <point x="47.0" y="13.0"/>
+        <point x="47.0" y="5.0"/>
+      </arc>
+      <arc head="ew3" kind="INPUT" tail="M3on"/>
+      <arc head="restart" kind="INPUT" mult-k="0.0" tail="Completed"/>
+    </edges>
+  </gspn>
+  <gspn name="ReaderWriter">
+    <nodes>
+      <place label-x="1.5" marking="N" name="Think" x="3.0" y="10.0"/>
+      <transition name="arrival" type="EXP" x="8.55" y="10.0"/>
+      <place label-x="2.5" label-y="0.0" name="Choice" x="13.0" y="10.0"/>
+      <constant consttype="INTEGER" name="N" value="5" x="5.0625" y="6.0"/>
+      <place name="R_queue" x="22.0" y="5.0"/>
+      <place name="W_queue" x="22.0" y="15.0"/>
+      <transition name="is_write" type="IMM" x="17.85" y="15.0"/>
+      <transition name="is_read" type="IMM" x="17.85" y="5.0"/>
+      <place magnets="THREE_PER_SIDE" marking="1" name="NumWrite" x="27.0" y="10.0"/>
+      <transition magnets="THREE_PER_SIDE" name="startRead" type="IMM" x="27.85" y="5.0"/>
+      <transition magnets="THREE_PER_SIDE" name="startWrite" type="IMM" x="27.85" y="15.0"/>
+      <place label-y="-1.5" name="Reading" x="32.0" y="5.0"/>
+      <place name="Writing" x="32.0" y="15.0"/>
+      <transition name="endRead" type="EXP" x="37.55" y="5.0"/>
+      <transition magnets="THREE_PER_SIDE" name="endWrite" type="EXP" x="37.55" y="15.0"/>
+      <template last-binding="1" name="K" type="INTEGER" x="5.0" y="4.0"/>
+    </nodes>
+    <edges>
+      <arc head="arrival" kind="INPUT" tail="Think"/>
+      <arc head="Choice" kind="OUTPUT" tail="arrival"/>
+      <arc head="is_read" kind="INPUT" mult="K" mult-x="-0.5467695255326852" mult-y="-0.4064609489346278" tail="Choice">
+        <point x="16.5" y="6.0"/>
+      </arc>
+      <arc head="is_write" kind="INPUT" mult="K" mult-k="0.5055664062499999" mult-x="-0.6126989302504668" mult-y="0.5246021394990663" tail="Choice">
+        <point x="16.5" y="16.0"/>
+      </arc>
+      <arc head="R_queue" kind="OUTPUT" tail="is_read">
+        <point x="18.5" y="6.0"/>
+      </arc>
+      <arc head="W_queue" kind="OUTPUT" tail="is_write"/>
+      <arc head="startRead" kind="INPUT" tail="R_queue"/>
+      <arc head="Reading" kind="OUTPUT" tail="startRead"/>
+      <arc head="startRead" head-magnet="11" kind="INPUT" mult-k="1.09267578125" tail="NumWrite" tail-magnet="7">
+        <point x="25.5" y="9.5"/>
+        <point x="25.5" y="7.5"/>
+      </arc>
+      <arc head="NumWrite" head-magnet="11" kind="OUTPUT" mult-k="0.6616210937500001" tail="startRead" tail-magnet="5">
+        <point x="30.5" y="7.5"/>
+        <point x="30.5" y="9.5"/>
+      </arc>
+      <arc head="startWrite" head-magnet="9" kind="INPUT" tail="NumWrite">
+        <point x="25.0" y="11.0"/>
+        <point x="25.0" y="15.5"/>
+      </arc>
+      <arc head="startWrite" head-magnet="10" kind="INPUT" tail="W_queue"/>
+      <arc head="Writing" kind="OUTPUT" tail="startWrite" tail-magnet="4"/>
+      <arc head="startWrite" head-magnet="3" kind="INHIBITOR" mult-k="0.7799804687499999" tail="Reading">
+        <point x="33.0" y="13.0"/>
+        <point x="31.5" y="15.5"/>
+      </arc>
+      <arc head="endRead" kind="INPUT" tail="Reading"/>
+      <arc head="endWrite" kind="INPUT" tail="Writing"/>
+      <arc head="Think" kind="OUTPUT" tail="endWrite">
+        <point x="40.5" y="16.0"/>
+        <point x="40.5" y="19.0"/>
+        <point x="4.0" y="19.0"/>
+      </arc>
+      <arc head="Think" kind="OUTPUT" tail="endRead">
+        <point x="40.5" y="6.0"/>
+        <point x="40.5" y="3.0"/>
+        <point x="4.0" y="3.0"/>
+      </arc>
+      <arc head="NumWrite" kind="OUTPUT" tail="endWrite" tail-magnet="3">
+        <point x="40.5" y="15.5"/>
+        <point x="40.5" y="11.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <measures gspn-name="ReaderWriter" name="CTL Measures" simplified-UI="false">
+    <assignments>
+      <assignment bind-model="SINGLE_VALUE" single-val="1" type="INTEGER" varname="K"/>
+    </assignments>
+    <rgmedd counter-examples="true" place-bound="13" variable-order="HEURISTIC_PINV"/>
+    <formulas>
+      <formula expr="(E X True) &amp;&amp; A F #Think==0" language="CTL"/>
+      <formula expr="EF (#R_queue == #W_queue)" language="CTL"/>
+      <formula expr="A F (#Think &gt; 7)" language="CTL"/>
+      <formula expr="A [ #Think &gt; 0 U #Writing == 1 ]" language="CTL"/>
+    </formulas>
+  </measures>
+  <gspn name="Fork-JoinParam">
+    <nodes>
+      <place marking="n" name="Queue" x="4.0" y="7.0"/>
+      <transition delay="lambda" delay-y="1.25" name="Fork" rotation="-0.0" type="EXP" x="8.55" y="7.0"/>
+      <place name="Wait1" x="12.0" y="10.0"/>
+      <place name="Wait2" x="12.0" y="4.0"/>
+      <transition delay="mu" name="work1" rotation="6.283185307179586" type="EXP" x="16.55" y="10.0"/>
+      <transition delay="mu" name="work2" rotation="6.283185307179586" type="EXP" x="16.55" y="4.0"/>
+      <place name="Finish1" x="20.0" y="10.0"/>
+      <place name="Finish2" x="20.0" y="4.0"/>
+      <transition name="Join" rotation="6.283185307179586" type="IMM" x="24.85" y="7.0"/>
+      <constant consttype="REAL" name="lambda" value="3.4" x="3.1875" y="12.0"/>
+      <place marking="2" name="Spares" x="8.0" y="15.0"/>
+      <transition delay="mu" delay-x="-1.0" delay-y="1.5" magnets="THREE_PER_SIDE" name="select" nservers-x="0.5" rotation="-0.0" type="EXP" x="16.55" y="15.0"/>
+      <place name="Interm" x="20.0" y="15.0"/>
+      <transition delay="rho" magnets="THREE_PER_SIDE" name="T0" nservers-x="0.5" type="EXP" x="24.55" y="15.0"/>
+      <constant consttype="REAL" name="mu" value="2.0" x="3.1875" y="13.0"/>
+      <constant consttype="REAL" name="rho" value="0.6" x="3.25" y="14.0"/>
+      <template name="n" type="INTEGER" x="3.0" y="16.0"/>
+      <template name="t" type="REAL" x="3.0" y="18.0"/>
+    </nodes>
+    <edges>
+      <arc head="Fork" kind="INPUT" mult-k="1.0" tail="Queue"/>
+      <arc head="Wait1" kind="OUTPUT" mult-k="1.0" tail="Fork"/>
+      <arc head="Wait2" kind="OUTPUT" mult-k="1.0" tail="Fork"/>
+      <arc head="work1" kind="INPUT" mult-k="1.0" tail="Wait1"/>
+      <arc head="Finish1" kind="OUTPUT" mult-k="1.0" tail="work1"/>
+      <arc head="Join" kind="INPUT" mult-k="1.0" tail="Finish1"/>
+      <arc head="work2" kind="INPUT" mult-k="1.0" tail="Wait2"/>
+      <arc head="Finish2" kind="OUTPUT" mult-k="1.0" tail="work2"/>
+      <arc head="Join" kind="INPUT" mult-k="1.0" tail="Finish2"/>
+      <arc head="Queue" kind="OUTPUT" mult-k="1.00009765625" tail="Join">
+        <point x="28.5" y="8.0"/>
+        <point x="28.5" y="2.5"/>
+        <point x="5.0" y="2.5"/>
+      </arc>
+      <arc head="select" head-magnet="9" kind="INPUT" mult="n" mult-k="2.27021484375" mult-x="0.1878076171875005" mult-y="-0.6875" tail="Wait1">
+        <point x="11.0" y="12.0"/>
+        <point x="11.0" y="15.5"/>
+      </arc>
+      <arc head="select" kind="INPUT" tail="Spares"/>
+      <arc head="Interm" kind="OUTPUT" tail="select" tail-magnet="4"/>
+      <arc head="T0" kind="INPUT" tail="Interm"/>
+      <arc head="Finish1" kind="OUTPUT" mult="n" mult-k="1.83779296875" mult-x="-0.7153521960644937" mult-y="0.11969777419540684" tail="T0" tail-magnet="3">
+        <point x="27.0" y="15.5"/>
+        <point x="27.0" y="12.0"/>
+        <point x="26.0" y="11.0"/>
+      </arc>
+      <arc head="Spares" kind="OUTPUT" tail="T0" tail-magnet="4">
+        <point x="28.5" y="16.0"/>
+        <point x="28.5" y="19.0"/>
+        <point x="6.0" y="19.0"/>
+        <point x="6.0" y="16.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <measures gspn-name="Fork-JoinParam" log-uuid="567c3461-f67e-4004-b3b8-bc466de6b17e" name="GreatSPN measures" simplified-UI="false">
+    <assignments>
+      <assignment bind-model="MULTIPLE_VALUES" multiple-vals="1,2" type="INTEGER" varname="n"/>
+      <assignment bind-model="SINGLE_VALUE" single-val="2" type="REAL" varname="t"/>
+    </assignments>
+    <greatspn/>
+    <formulas>
+      <formula language="ALL">
+        <result-table>
+          <all-measures name="ALL">
+            <bindings>
+              <binding name="t" value="2.00"/>
+              <binding name="n" value="1"/>
+            </bindings>
+            <mean place="Finish1" value="0.1296163935255596"/>
+            <mean place="Finish2" value="0.4982130087977155"/>
+            <mean place="Interm" value="0.5265665946642522"/>
+            <mean place="Queue" value="0.1858470334109125"/>
+            <mean place="Spares" value="1.4734334053357476"/>
+            <mean place="Wait1" value="0.1579699783992756"/>
+            <mean place="Wait2" value="0.3159399577913719"/>
+            <throughput transition="Fork" value="0.6318799135971026"/>
+            <throughput transition="Join" value="0.6318799155827438"/>
+            <throughput transition="T0" value="0.3159399567985513"/>
+            <throughput transition="select" value="0.3159399567985512"/>
+            <throughput transition="work1" value="0.3159399567985512"/>
+            <throughput transition="work2" value="0.6318799155827437"/>
+            <distrib place="Finish1" values="2 = 0.8703836064744404 0.1296163935255596 "/>
+            <distrib place="Finish2" values="2 = 0.5017869912022844 0.4982130087977155 "/>
+            <distrib place="Interm" values="2 = 0.4734334053357478 0.5265665946642522 "/>
+            <distrib place="Queue" values="2 = 0.8141529665890874 0.1858470334109125 "/>
+            <distrib place="Spares" values="3 = 0.0 0.5265665946642522 0.4734334053357478 "/>
+            <distrib place="Wait1" values="2 = 0.8420300216007243 0.1579699783992756 "/>
+            <distrib place="Wait2" values="2 = 0.684060042208628 0.3159399577913719 "/>
+          </all-measures>
+          <all-measures failure_reason="&lt;not computed&gt;" name="ALL" state="FAIL_COMPUTE">
+            <bindings>
+              <binding name="t" value="2.00"/>
+              <binding name="n" value="2"/>
+            </bindings>
+          </all-measures>
+        </result-table>
+      </formula>
+      <formula language="RG">
+        <result-table>
+          <pdf-result name="RG">
+            <bindings>
+              <binding name="t" value="2.00"/>
+              <binding name="n" value="1"/>
+            </bindings>
+          </pdf-result>
+          <pdf-result name="RG">
+            <bindings>
+              <binding name="t" value="2.00"/>
+              <binding name="n" value="2"/>
+            </bindings>
+          </pdf-result>
+        </result-table>
+      </formula>
+      <formula expr="E{ #Queue } " language="PERFORMANCE_INDEX">
+        <result-table>
+          <scalar-result name="MEASURE2" value="0.1858470334109125">
+            <bindings>
+              <binding name="t" value="2.00"/>
+              <binding name="n" value="1"/>
+            </bindings>
+          </scalar-result>
+          <scalar-result failure_reason="&lt;not computed&gt;" name="MEASURE2" state="FAIL_COMPUTE">
+            <bindings>
+              <binding name="t" value="2.00"/>
+              <binding name="n" value="2"/>
+            </bindings>
+          </scalar-result>
+        </result-table>
+      </formula>
+      <formula expr="P{ #Finish1==1 }" language="PERFORMANCE_INDEX">
+        <result-table>
+          <scalar-result name="MEASURE3" value="0.1296163935255596">
+            <bindings>
+              <binding name="t" value="2.00"/>
+              <binding name="n" value="1"/>
+            </bindings>
+          </scalar-result>
+          <scalar-result failure_reason="&lt;not computed&gt;" name="MEASURE3" state="FAIL_COMPUTE">
+            <bindings>
+              <binding name="t" value="2.00"/>
+              <binding name="n" value="2"/>
+            </bindings>
+          </scalar-result>
+        </result-table>
+      </formula>
+      <formula language="STAT"/>
+    </formulas>
+  </measures>
+  <measures gspn-name="Fork-JoinParam" name="TRG and RG" simplified-UI="false">
+    <assignments>
+      <assignment bind-model="MULTIPLE_VALUES" multiple-vals="1,2" type="INTEGER" varname="n"/>
+      <assignment bind-model="SINGLE_VALUE" single-val="2" type="REAL" varname="t"/>
+    </assignments>
+    <mc4cslta/>
+    <formulas>
+      <formula language="ALL"/>
+      <formula language="TRG"/>
+      <formula language="RG"/>
+    </formulas>
+  </measures>
+  <gspn name="structPT" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place name="P0" x="5.0" y="7.0"/>
+      <transition name="T0" nservers-x="0.5" type="EXP" x="10.55" y="9.0"/>
+      <place marking="2" name="P1" x="15.0" y="7.0"/>
+      <transition name="T1" nservers-x="0.5" type="EXP" x="10.55" y="5.0"/>
+      <place marking="1" name="P2" x="22.0" y="7.0"/>
+      <place name="P3" x="30.0" y="7.0"/>
+      <transition name="T2" nservers-x="0.5" type="EXP" x="35.55" y="5.0"/>
+      <transition name="T3" nservers-x="0.5" type="EXP" x="35.55" y="9.0"/>
+      <place marking="1" name="P4" x="40.0" y="7.0"/>
+      <transition name="T4" nservers-x="0.5" type="EXP" x="5.55" y="15.0"/>
+      <place name="P5" x="10.0" y="15.0"/>
+      <place marking="5" name="P6" x="21.0" y="15.0"/>
+    </nodes>
+    <edges>
+      <arc head="T1" kind="INPUT" mult="2" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" mult="2" tail="T1"/>
+      <arc head="T0" kind="INPUT" mult="2" tail="P1"/>
+      <arc head="P0" kind="OUTPUT" mult="2" tail="T0"/>
+      <arc head="P2" kind="OUTPUT" tail="T1">
+        <point x="19.0" y="6.0"/>
+      </arc>
+      <arc head="T0" kind="INPUT" tail="P2">
+        <point x="19.0" y="10.0"/>
+      </arc>
+      <arc head="T2" kind="INPUT" mult="3" tail="P3"/>
+      <arc head="P4" kind="OUTPUT" tail="T2"/>
+      <arc head="T3" kind="INPUT" tail="P4"/>
+      <arc head="P3" kind="OUTPUT" mult="3" tail="T3"/>
+      <arc head="P2" kind="OUTPUT" tail="T3">
+        <point x="29.0" y="10.0"/>
+      </arc>
+      <arc head="T2" kind="INPUT" tail="P2">
+        <point x="27.5" y="6.0"/>
+      </arc>
+      <arc head="P5" kind="OUTPUT" tail="T4"/>
+    </edges>
+  </gspn>
+  <gspn name="SymCPN">
+    <nodes>
+      <color-class definition="circular c{1..3} " name="C" x="1.125" y="2.0"/>
+      <color-var domain="C" name="x" x="1.25" y="4.0"/>
+      <color-var domain="C" name="y" x="6.25" y="4.0"/>
+      <place domain="C" marking="&lt;All&gt;" name="P0" x="16.0" y="10.0"/>
+      <transition name="T0" nservers-x="0.5" type="EXP" x="23.55" y="10.0"/>
+      <place domain="C" marking="&lt;All&gt;" name="P1" x="30.0" y="10.0"/>
+      <transition name="T1" nservers-x="0.5" type="EXP" x="23.55" y="16.0"/>
+      <place domain="C" name="P2" x="2.0" y="10.0"/>
+      <transition name="T2" nservers-x="0.5" type="EXP" x="9.55" y="10.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" mult="&lt;x&gt;" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" mult="&lt;x&gt;" tail="T0"/>
+      <arc head="T1" kind="INPUT" mult="&lt;x&gt;" tail="P1">
+        <point x="31.0" y="17.0"/>
+      </arc>
+      <arc head="P0" kind="OUTPUT" mult="&lt;x&gt;" tail="T1">
+        <point x="17.0" y="17.0"/>
+      </arc>
+      <arc head="T2" kind="INPUT" mult="&lt;x&gt;" tail="P2"/>
+      <arc head="P0" kind="OUTPUT" mult="&lt;x&gt;" tail="T2"/>
+    </edges>
+  </gspn>
+  <measures gspn-name="SymCPN" log-uuid="39950fcc-9ad0-4e33-9454-c63af07a9acf" name="SymCPNMeasures" simplified-UI="false">
+    <assignments/>
+    <greatspn mode="SWN_SYM"/>
+    <formulas>
+      <formula language="STAT">
+        <result-table>
+          <stat-result name="STAT">
+            <bindings/>
+            <stat key="build_time" value="0 seconds"/>
+            <stat key="home_state" value="True"/>
+            <stat key="num_dead_markings" value="0"/>
+            <stat key="num_ordinary_dead_markings" value="0"/>
+            <stat key="num_ordinary_tangible_markings" value="27"/>
+            <stat key="num_ordinary_vanishing_markings" value="0"/>
+            <stat key="num_tangible_markings" value="11"/>
+            <stat key="num_vanishing_markings" value="0"/>
+          </stat-result>
+        </result-table>
+      </formula>
+      <formula language="RG">
+        <result-table>
+          <pdf-result name="RG">
+            <bindings/>
+          </pdf-result>
+        </result-table>
+      </formula>
+    </formulas>
+  </measures>
+  <gspn name="SWN" show-fluid-cmd="false" view-rates="false">
+    <nodes>
+      <color-class definition="c{1..3}" name="C" x="1.4375" y="2.0"/>
+      <color-class definition="d{1..3}" name="D" x="1.4375" y="3.0"/>
+      <color-var domain="C" name="c" x="13.9375" y="2.0"/>
+      <color-var domain="D" name="d" x="13.9375" y="3.0"/>
+      <color-class definition="C * D" name="CxD" x="1.125" y="4.0"/>
+      <place domain="C" marking="2&lt;All&gt;" name="P0" x="11.0" y="12.0"/>
+      <place domain="D" label-x="0.5" marking="2&lt;All&gt;" name="P1" x="27.0" y="12.0"/>
+      <transition guard-x="4.5" guard-y="-0.5" name="T0" nservers-x="0.5" type="EXP" x="15.55" y="6.0"/>
+      <transition name="T1" nservers-x="0.5" type="EXP" x="23.55" y="18.0"/>
+      <place domain="CxD" name="P2" x="19.0" y="12.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" mult="&lt;c&gt;" mult-x="0.5999999999999996" mult-y="0.5999999999999996" tail="P0"/>
+      <arc head="P2" kind="OUTPUT" mult="&lt;c,d&gt;" mult-x="1.1999999999999993" mult-y="0.0" tail="T0"/>
+      <arc head="T0" kind="INPUT" mult="&lt;d&gt;" tail="P1"/>
+      <arc head="T1" kind="INPUT" mult="&lt;c,d&gt;" mult-k="0.5735351562500001" mult-x="1.1999999999999993" mult-y="0.0" tail="P2"/>
+      <arc head="P0" kind="OUTPUT" mult="&lt;c&gt;" tail="T1"/>
+      <arc head="P1" kind="OUTPUT" mult="&lt;d&gt;" mult-x="0.6000000000000014" mult-y="0.5999999999999996" tail="T1"/>
+    </edges>
+  </gspn>
+  <measures gspn-name="SWN" name="SWNMeasures" simplified-UI="false">
+    <assignments/>
+    <greatspn mode="SWN_SYM"/>
+    <formulas>
+      <formula language="STAT"/>
+      <formula language="RG"/>
+    </formulas>
+  </measures>
+  <gspn name="TokenRing-5">
+    <nodes>
+      <color-class definition="circular {Process_0,Process_1,Process_2,Process_3,Process_4,Process_5}" name="Process" x="16.125" y="7.0"/>
+      <color-class definition="Process * Process" name="ProcessxProcess" x="20.0" y="3.0"/>
+      <place domain="ProcessxProcess" label-x="8.32625" label-y="0.32625" marking="(&lt;Process_0, Process_0&gt; + &lt;Process_1, Process_1&gt; + &lt;Process_2, Process_2&gt; + &lt;Process_3, Process_3&gt; + &lt;Process_4, Process_4&gt; + &lt;Process_5, Process_5&gt;)" name="State" x="24.0" y="11.0"/>
+      <transition delay="1.000000e+00" delay-x="0.0" delay-y="0.59375" label-x="2.125" label-y="-0.34375" name="MainProcess" nservers="1" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="7.55" y="23.0"/>
+      <color-var domain="Process" name="x" x="20.0" y="4.0"/>
+      <transition delay="1.000000e+00" delay-x="0.0" delay-y="0.59375" guard="((i != Process_0) &amp;&amp; (x != y)) " guard-x="1.0" guard-y="4.0" label-x="15.0" label-y="13.0" name="OtherProcess" nservers="1" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="26.55" y="21.0"/>
+      <color-var domain="Process" name="i" x="20.0" y="5.0"/>
+      <color-var domain="Process" name="y" x="20.0" y="6.0"/>
+    </nodes>
+    <edges>
+      <arc head="MainProcess" head-magnet="0" kind="INPUT" mult="(&lt;Process_0, x&gt; + &lt;Process_5, x&gt;)" tail="State" tail-magnet="0"/>
+      <arc head="State" head-magnet="0" kind="OUTPUT" mult="&lt;Process_0, x++&gt; + &lt;Process_5, x&gt;" mult-k="0.87314453125" tail="MainProcess" tail-magnet="0">
+        <point x="9.0" y="1.5"/>
+      </arc>
+      <arc head="OtherProcess" head-magnet="0" kind="INPUT" mult="&lt;i, x&gt; + &lt;i--, y&gt;" tail="State" tail-magnet="0"/>
+      <arc head="State" head-magnet="0" kind="OUTPUT" mult="&lt;i, y&gt; + &lt;i--, y&gt;" mult-k="0.8481445312500001" tail="OtherProcess" tail-magnet="0">
+        <point x="41.5" y="15.5"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="WorkNet">
+    <nodes>
+      <place label-x="2.5" label-y="0.0" marking="n" name="Work" x="9.0" y="3.0"/>
+      <place label-x="4.0" label-y="0.0" name="Intermediate" x="9.0" y="11.0"/>
+      <place name="Finished" x="13.0" y="19.0"/>
+      <transition delay="2.3" delay-x="0.75" delay-y="0.75" label-x="-0.5" label-y="-1.0" name="w2i" rotation="4.71238898038469" type="EXP" x="5.55" y="7.0"/>
+      <transition label-x="1.6875" label-y="-1.1875" name="complete" rotation="4.71238898038469" type="EXP" x="13.55" y="15.0"/>
+      <transition delay="1.7" label-x="0.4375" label-y="-1.0625" name="i2w" rotation="4.71238898038469" type="EXP" x="13.55" y="7.0"/>
+      <transition label-x="-0.75" label-y="-1.25" name="break" rotation="4.71238898038469" type="EXP" x="5.55" y="15.0"/>
+      <place name="Broken" x="5.0" y="19.0"/>
+      <template last-binding="3" name="n" type="INTEGER" x="3.0" y="3.0"/>
+    </nodes>
+    <edges>
+      <arc head="w2i" kind="INPUT" tail="Work"/>
+      <arc head="Intermediate" kind="OUTPUT" tail="w2i"/>
+      <arc head="complete" kind="INPUT" tail="Intermediate"/>
+      <arc head="Finished" kind="OUTPUT" tail="complete"/>
+      <arc head="i2w" kind="INPUT" tail="Intermediate"/>
+      <arc head="Work" kind="OUTPUT" tail="i2w"/>
+      <arc head="Broken" kind="OUTPUT" tail="break"/>
+      <arc head="break" kind="INPUT" tail="Intermediate"/>
+    </edges>
+  </gspn>
+  <dta name="WorkNetDTA">
+    <nodes>
+      <clock name="x" x="12.5" y="6.25"/>
+      <location init-arrow-x="4.0" init-arrow-y="10.0" initial="true" name="l0" state-proposition="Phi1" state-proposition-x="1.0" x="5.5" y="9.0"/>
+      <location init-arrow-x="8.5" init-arrow-y="15.0" magnets="THREE_PER_SIDE" name="l1" state-proposition="Phi1 &amp;&amp; !Phi2" x="10.5" y="14.0"/>
+      <location alt-name-fn="LATEX_TEXT" final="ACCEPTING" init-arrow-x="14.5" init-arrow-y="10.0" name="lok" shown-as="\mathit{l}_{ok}" state-proposition="Phi2" state-proposition-x="1.0" x="16.5" y="9.0"/>
+      <template last-binding="3" name="alpha" type="REAL" x="12.375" y="5.0625"/>
+      <template last-binding="4" name="beta" type="REAL" x="13.875" y="5.0625"/>
+      <template last-binding="#Broken==0" name="Phi1" type="STATEPROP" x="15.5" y="5.0625"/>
+      <template last-binding="#Finished&gt;0" name="Phi2" type="STATEPROP" x="17.5" y="5.0625"/>
+    </nodes>
+    <edges>
+      <edge actset="Act" actset-clock-k="1.00009765625" actset-x="-1.9627650258691176E-4" actset-y="-1.1875000070811108" clock-guard="x &lt; alpha" clock-guard-x="-1.9627650258691176E-4" clock-guard-y="-0.5000000070811108" head="l0" kind="INNER" tail="l0">
+        <point x="7.0" y="7.5"/>
+      </edge>
+      <edge actset="Act" actset-clock-k="1.00009765625" actset-x="-1.962765025851354E-4" actset-y="-1.1875000070811108" clock-guard="alpha &lt; x &lt; beta" clock-guard-x="-1.962765025851354E-4" clock-guard-y="-0.5000000070811108" head="l1" kind="INNER" tail="l1">
+        <point x="12.0" y="12.5"/>
+      </edge>
+      <edge actset="Act" actset-clock-k="0.7024414062500001" actset-x="1.4648437500142109E-4" actset-y="-0.515385742187501" clock-guard="alpha &lt; x &lt; beta" clock-guard-x="-0.10307617187500284" clock-guard-y="0.48316650390624893" head="lok" kind="INNER" tail="l1">
+        <point x="18.0" y="15.0"/>
+      </edge>
+      <edge actset-clock-k="0.68173828125" actset-x="-0.1875" actset-y="-0.8125" clock-guard="x = alpha" clock-guard-x="-0.125" clock-guard-y="0.4375" head="lok" kind="BOUNDARY" tail="l0"/>
+      <edge actset-clock-k="1.37294921875" actset-y="-0.75" clock-guard="x = alpha" head="l1" kind="BOUNDARY" tail="l0">
+        <point x="7.0" y="15.0"/>
+      </edge>
+    </edges>
+  </dta>
+  <measures gspn-name="WorkNet" log-uuid="a06aea6a-a265-4c62-95f8-129a7e4db1aa" name="CSLTA Measure" simplified-UI="false">
+    <assignments>
+      <assignment bind-model="MULTIPLE_VALUES" multiple-vals="1,2,3,4" type="INTEGER" varname="n"/>
+    </assignments>
+    <mc4cslta mc-sol-type="BACKWARD" on-the-fly="false"/>
+    <formulas>
+      <formula expr="PROB_TA &gt; 0 WorkNetDTA ( alpha=1, beta=2| | Phi1=#Broken==0, Phi2=#Finished&gt;0 )" language="CSLTA">
+        <result-table>
+          <stochastic-mc-result name="MEASURE0" probability="0.400054286259" satisfied="true">
+            <bindings>
+              <binding name="n" value="1"/>
+            </bindings>
+          </stochastic-mc-result>
+          <stochastic-mc-result name="MEASURE0" probability="0.415386659491" satisfied="true">
+            <bindings>
+              <binding name="n" value="2"/>
+            </bindings>
+          </stochastic-mc-result>
+          <stochastic-mc-result name="MEASURE0" probability="0.351398692782" satisfied="true">
+            <bindings>
+              <binding name="n" value="3"/>
+            </bindings>
+          </stochastic-mc-result>
+          <stochastic-mc-result name="MEASURE0" probability="0.27933692712" satisfied="true">
+            <bindings>
+              <binding name="n" value="4"/>
+            </bindings>
+          </stochastic-mc-result>
+        </result-table>
+      </formula>
+    </formulas>
+  </measures>
+  <resource-list>
+    <document-log uuid="250e4cf7-75f3-4e62-9abb-4081187760e5">rO0ABXNyABRqYXZhLnV0aWwuTGlua2VkTGlzdAwpU11KYIgiAwAAeHB3BAAAAFJ0AOwbWzBtRVhFQzogL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvYmluL0RTUE4tVG9vbCAtbG9hZCAiL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvSmF2YUdVSS9hVGVzdDEtTnNvbHZlTWVhc3VyZXMuc29sdXRpb24vS3JvbmVja2VyIiAtZXBzaWxvbiAxLjBFLTcgLW9uLXRoZS1mbHkgLWkgLWdtcmVzIC1ndWktc3RhdCAtcyAtYWxsLW1lYXN1cmVzCnQA9htbMW0bWzRtTE9BRElORyBQRVRSSSBORVQgRklMRVMgL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvSmF2YUdVSS9hVGVzdDEtTnNvbHZlTWVhc3VyZXMuc29sdXRpb24vS3JvbmVja2VyLm5ldCBBTkQgL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvSmF2YUdVSS9hVGVzdDEtTnNvbHZlTWVhc3VyZXMuc29sdXRpb24vS3JvbmVja2VyLmRlZiAuLi4bWzIybRtbMjRtCnQAD01BUktJTkcgUEFSOiAyCnQAD1BMQUNFUzogICAgICA4CnQAD1JBVEUgUEFSOiAgICAyCnQAD1RSQU5TSVRJT05TOiA4CnQAD01FQVNVUkVTOiAgICAwCnQAKExPQURJTkcgVElNRTogW1VzZXIgMC4wMDFzLCBTeXMgMC4wMDFzXQp0AAEKdAABCnQAOU1BWC4gUkVTSURVQUwgRVJST1IgU0VUIFRPIDFlLTA3IEZPUiBOVU1FUklDQUwgQU5BTFlTSVMuCnQARFVTSU5HIE9OLVRIRS1GTFkgU1RBVEUgU1BBQ0UgQ09OU1RSVUNUSU9OIE9GIENTTF5UQSBNT0RFTCBDSEVDS0lORy4KdAAxVVNJTkcgSU1QTElDSVQgU1RFQURZIFNUQVRFIE1SUCBTT0xVVElPTiBNRVRIT0QuCnQANVVTSU5HIEdNUkVTIE1FVEhPRCBGT1IgSU1QTElDSVQgU1RBVElPTkFSWSBBTkFMWVNJUy4KdABLVEFOR0lCTEU6IDQgICAgICAgVkFOSVNISU5HOiAwICAgICAgIElNTUVESUFURTogMCAgICAgICBUSU1FRDogMyAgICAgICAgICAKdABTG1sxQSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAp0AAUbWzFBCnQAAQp0ACdUQU5HSUJMRSBTVEFURVM6ICAgICAgICAgICAgICAgICAgICAzNgp0ACdWQU5JU0hJTkcgU1RBVEVTOiAgICAgICAgICAgICAgICAgICAgMAp0AEdOVU1CRVIgT0YgVElNRUQgRURHRVM6ICAgICAgICAgICAgICA4NCAgKDg0IFQtPlQsIDAgVC0+ViwgMCBULT5WKi0+VCkuCnQAOk5VTUJFUiBPRiBJTU1FRElBVEUgRURHRVM6ICAgICAgICAgICAwICAoMCBWLT5ULCAwIFYtPlYpLgp0ACdUT1RBTCBOVU1CRVIgT0YgRURHRVM6ICAgICAgICAgICAgICA4NAp0ACdJTU1FRElBVEUgVFJOUy4gRklSSU5HUzogICAgICAgICAgICAgMAp0ACdUSU1FRCBUUk5TLiBGSVJJTkdTOiAgICAgICAgICAgICAgICA4NAp0ACdWSVNJVEVEIFZBTklTSElORyBTVEFURVM6ICAgICAgICAgICAgMAp0ACdHRU5FUkFMIFRSQU5TSVRJT05TOiAgICAgICAgICAgICAgICAxOAp0ACdOT04tUFJFRU1QVElWRSBFWFAuIFRSTlMuOiAgICAgICAgICA4NAp0ACdQUkVFTVBUSVZFIEVYUC4gVFJBTlNJVElPTlM6ICAgICAgICAgMAp0AA5NRU1PUlkgVVNBR0U6CnQAJ1RSQU5TSVRJT04tU0VUIEVOVFJJRVM6ICAgICAgICAgICAgICAyCnQAJ1ZBTklTSC1QQVRIIEVOVFJJRVM6ICAgICAgICAgICAgICAgICAwCnQAJ1ZBTklTSC1QQVRILVNFVCBFTlRSSUVTOiAgICAgICAgICAgICAwCnQALVBBQ0tFRCBNQVJLSU5HUzogICAgICAgICAgICAgICAgICAgMTAwIEJZVEVTCnQALVNUQVRFIFNFVCBEQVRBOiAgICAgICAgICAgICAgICAgICAgIDU0IEJZVEVTCnQALUVER0VTIERBVEE6ICAgICAgICAgICAgICAgICAgICAgICAgNDgzIEJZVEVTCnQAAQp0ACBQQUNLRUQgVEFOR0lCTEUgTUFSS0lOR1MgVEFCTEU6CnQAJFNUT1JFRCBTRVFVRU5DRVM6IDM2LCBGUkFHTUVOVFM6IDE5CnQAJiAgU0VRVUVOQ0VTIE1FTU9SWTogICAgICAgICA3NCBCWVRFUy4KdAAmICBGUkFHTUVOVFMgTUVNT1JZOiAgICAgICAgIDI2IEJZVEVTLgp0ACYgICAgICBUT1RBTCBNRU1PUlk6ICAgICAgICAxMDAgQllURVMuCnQALE1FQU4gTUVNT1JZIFBFUiBTRVFVRU5DRSBJUzogMi43Nzc3OCBCWVRFUy4KdAApICBVU0VEIEZPUiBTRVFVRU5DRSBEQVRBOiAyLjA1NTU2IEJZVEVTLgp0ACMgICAgICAgIFVTRUQgRk9SIEhBU0hJTkc6IDAgQllURVMuCnQAKiAgICAgIFVTRUQgRk9SIEZSQUdNRU5UUzogMC43MjIyMjIgQllURVMuCnQAJkJVSUxEIFRJTUU6IFtVc2VyIDAuMDAwcywgU3lzIDAuMDAwc10KdAABCnQAAQp0ADpUSEUgUkcgSVMgQSAbWzRtG1szM21NQVJLT1YgUkVHRU5FUkFUSVZFIFBST0NFU1MbWzI0bRtbMG0KdAABCnQACRtbMW0bWzRtCnQAS0NPTVBVVElORyBTVEVBRFkgU1RBVEUgU09MVVRJT04gT0YgVEhFIE1BUktPViBSRU5FV0FMIFBST0NFU1MuLi4bWzIybRtbMjRtCnQAIlRIRVJFIEFSRSAyNCBSRUdFTkVSQVRJVkUgU1RBVEVTLgp0AAEKdAABCnQALFBSRUNPTkRJVElPTklORyBTVFJBVEVHWTogTk8gUFJFQ09ORElUSU9ORVIKdAAgVVNJTkcgTk8gUFJFQ09ORElUSU9ORVIgTUVUSE9ELgp0ACZTVEVBRFkgU1RBVEUgU09MVVRJT04gT0YgRVJHT0RJQyBNUlAuCnQAOENPTVBVVElORyBTVEVBRFkgU1RBVEUgU09MVVRJT04gT0YgVEhFIEVNQkVEREVEIERUTUMuLi4KdAABCnQAQ0FCU09SQiBJTklUSUFMIFBST0JBQklMSVRZIElOIE5PTi1SRUNVUlJFTlQgUkVHRU5FUkFUSVZFIFNUQVRFUy4uLgp0AAEKdAA6UE9XRVIgTUVUSE9EOiBpdGVyYXRpb249MSwgZXJyPTIuNDc0NTNlLTAxICAgICAgICAgICAgICAgCnQAUxtbMUEgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKdABMG1sxQUdNUkVTKDMwKTogY29udmVyZ2VuY2UgaW4gMTkgaXRlcmF0aW9ucywgZXJyPTkuOTU3MDhlLTA4ICAgICAgICAgICAgICAgCnQAH1RPVEFMIE1BVFJJWC1GUkVFIFBST0RVQ1RTOiAyMQp0AAEKdAA4Q09OVkVSU0lPTiBPRiBUSEUgRU1DIFNPTFVUSU9OIElOVE8gVEhFIE1SUCBTT0xVVElPTi4uLgp0AAEKdAABCnQAAQp0AA4bWzFtG1s0bRtbMzJtCnQAIFNURUFEWSBTVEFURSBTT0xVVElPTiBDT01QVVRFRC4KdAAPG1syMm0bWzI0bRtbMG0KdAApU09MVVRJT04gVElNRTogW1VzZXIgMC4wMTdzLCBTeXMgMC4wMDFzXQp0AAEKdAAkQ09NUFVUSU5HIEJBU0lDIFBFVFJJIE5FVCBNRUFTVVJFUy4KdAABCnQAAQp0ACNCQVNJQyBQRVRSSSBORVQgTUVBU1VSRVMgQ09NUFVURUQuCnQAJxtbMFgbWzMybSBQUk9DRVNTIEVYSVRFRCBOT1JNQUxMWS4bWzBtCnhzcQB+AAB3BAAAAFJzcgARamF2YS5sYW5nLkJvb2xlYW7NIHKA1Zz67gIAAVoABXZhbHVleHABcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWcQB+AFZxAH4AVnEAfgBWeA==</document-log>
+    <document-log uuid="567c3461-f67e-4004-b3b8-bc466de6b17e">rO0ABXNyABRqYXZhLnV0aWwuTGlua2VkTGlzdAwpU11KYIgiAwAAeHB3BAAAAHN0AMkbWzBtRVhFQzogL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvYmluL1dOUkcgIi9Vc2Vycy9lbHZpby9EZXNrdG9wL01ZLVNWTi9HcmVhdFNQTi9TT1VSQ0VTL0phdmFHVUkvYVRlc3QxLUdyZWF0U1BOIG1lYXN1cmVzLnNvbHV0aW9uL0ZvcmstSm9pblBhcmFtIiAtbXBhciBuIDEgLXJwYXIgdCAyLjAgIC1ndWktc3RhdAp0ACtPdmVycmlkaW5nIG1hcmtpbmcgcGFyYW1ldGVyIG4gdG8gdmFsdWUgMS4KdAAvT3ZlcnJpZGluZyByYXRlIHBhcmFtZXRlciB0IHRvIHZhbHVlIDIuMDAwMDAwLgp0AAEKdAABCnQAYy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCnQAHFVTRSA6IFdOUkcgbmV0bmFtZSBbLW9dWy1tXQp0AGMtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQp0AAEKdAAvU2VuZCBmaWxlcyBuZXRuYW1lLm5ldCwgLmRlZiB0byBlLW1haWwgYWRkcmVzcwp0ACpncmVhdHNwbkBkaS51bml0by5pdCBpZiB5b3UgZmluZCBhbnkgYnVnLgp0AGMtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQp0AAEKdAABCnQAISAqKioqKiBSZWFjaGFiaWxpdHkgR3JhcGggKioqKiogCnQAAQp0ABZUQU5HSUJMRSBNQVJLSU5HUyA6IDYKdAAXVkFOSVNISU5HIE1BUktJTkdTIDogMQp0ABJERUFEIE1BUktJTkdTIDogMAp0AAEKdAAqICoqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKiAKdAABCnQAJFRoZSBpbml0aWFsIG1hcmtpbmcgaXMgYSBob21lIHN0YXRlCnQAHFRpbWUgcmVxdWlyZWQgLS0tLS0tLS0tLT4gMAp0AAEKdAAqICoqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKiAKdAA0LS0tLS0tLS0tLS0tLS0tIFJFU1VMVCBTVFJVQ1RVUkUgLS0tLS0tLS0tLS0tLS0tLS0tCnQACU1BTExPQyA4CnQACFBVU0ggMTEKdAAHUE9QIDExCnQAOi0tLS0tLS0tLS0tLS0tLSBNQVJLSU5HIElORk8gU1RSVUNUVVJFIC0tLS0tLS0tLS0tLS0tLS0tLQp0AAlNQUxMT0MgNwp0AAZQT1AgNwp0ADctLS0tLS0tLS0tLS0tLS0gUkFURSBQQVRIIFNUUlVDVFVSRSAtLS0tLS0tLS0tLS0tLS0tLS0KdAAJTUFMTE9DIDAKdAAHUFVTSCAwCnQABlBPUCAwCnQAPi0tLS0tLS0tLS0tLS0tLSBQQVRIIENPTVBVVEFUSU9OIFNUUlVDVFVSRSAtLS0tLS0tLS0tLS0tLS0tLS0KdAAJTUFMTE9DIDAKdAAHUFVTSCAwCnQABlBPUCAwCnQAPS0tLS0tLS0tLS0tLS0tLSBUSFJPVUdIUFVUIFBBVEggU1RSVUNUVVJFIC0tLS0tLS0tLS0tLS0tLS0tLQp0AAlNQUxMT0MgMAp0AAdQVVNIIDAKdAAGUE9QIDAKdAA3LS0tLS0tLS0tLS0tLS0tIFRSRUUgTk9ERSBTVFJVQ1RVUkUgLS0tLS0tLS0tLS0tLS0tLS0tCnQACU1BTExPQyA3CnQABlBPUCA3CnQAMy0tLS0tLS0tLS0tLS0tLSBUT0tFTiBTVFJVQ1RVUkUgLS0tLS0tLS0tLS0tLS0tLS0tCnQACU1BTExPQyAwCnQAB1BVU0ggMAp0AAZQT1AgMAp0ADotLS0tLS0tLS0tLS0tLS0gRVZFTlQgTk9USUNFIFNUUlVDVFVSRSAtLS0tLS0tLS0tLS0tLS0tLS0KdAAKTUFMTE9DIDE5CnQACFBVU0ggNTAKdAAHUE9QIDUwCnQAJxtbMFgbWzMybSBQUk9DRVNTIEVYSVRFRCBOT1JNQUxMWS4bWzBtCnQABRtbMlgKdADJG1swbUVYRUM6IC9Vc2Vycy9lbHZpby9EZXNrdG9wL01ZLVNWTi9HcmVhdFNQTi9TT1VSQ0VTL2Jpbi9XTlJHICIvVXNlcnMvZWx2aW8vRGVza3RvcC9NWS1TVk4vR3JlYXRTUE4vU09VUkNFUy9KYXZhR1VJL2FUZXN0MS1HcmVhdFNQTiBtZWFzdXJlcy5zb2x1dGlvbi9Gb3JrLUpvaW5QYXJhbSIgLW1wYXIgbiAyIC1ycGFyIHQgMi4wICAtZ3VpLXN0YXQKdAArT3ZlcnJpZGluZyBtYXJraW5nIHBhcmFtZXRlciBuIHRvIHZhbHVlIDIuCnQAL092ZXJyaWRpbmcgcmF0ZSBwYXJhbWV0ZXIgdCB0byB2YWx1ZSAyLjAwMDAwMC4KdAABCnQAAQp0AGMtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQp0ABxVU0UgOiBXTlJHIG5ldG5hbWUgWy1vXVstbV0KdABjLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KdAABCnQAL1NlbmQgZmlsZXMgbmV0bmFtZS5uZXQsIC5kZWYgdG8gZS1tYWlsIGFkZHJlc3MKdAAqZ3JlYXRzcG5AZGkudW5pdG8uaXQgaWYgeW91IGZpbmQgYW55IGJ1Zy4KdABjLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KdAABCnQAAQp0ACEgKioqKiogUmVhY2hhYmlsaXR5IEdyYXBoICoqKioqIAp0AAEKdAAXVEFOR0lCTEUgTUFSS0lOR1MgOiAxMgp0ABdWQU5JU0hJTkcgTUFSS0lOR1MgOiA1CnQAEkRFQUQgTUFSS0lOR1MgOiAwCnQAAQp0ACogKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqIAp0AAEKdAAkVGhlIGluaXRpYWwgbWFya2luZyBpcyBhIGhvbWUgc3RhdGUKdAAcVGltZSByZXF1aXJlZCAtLS0tLS0tLS0tPiAwCnQAAQp0ACogKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqIAp0ADQtLS0tLS0tLS0tLS0tLS0gUkVTVUxUIFNUUlVDVFVSRSAtLS0tLS0tLS0tLS0tLS0tLS0KdAAKTUFMTE9DIDExCnQACFBVU0ggMzQKdAAHUE9QIDM0CnQAOi0tLS0tLS0tLS0tLS0tLSBNQVJLSU5HIElORk8gU1RSVUNUVVJFIC0tLS0tLS0tLS0tLS0tLS0tLQp0AApNQUxMT0MgMTcKdAAHUE9QIDE3CnQANy0tLS0tLS0tLS0tLS0tLSBSQVRFIFBBVEggU1RSVUNUVVJFIC0tLS0tLS0tLS0tLS0tLS0tLQp0AAlNQUxMT0MgMAp0AAdQVVNIIDAKdAAGUE9QIDAKdAA+LS0tLS0tLS0tLS0tLS0tIFBBVEggQ09NUFVUQVRJT04gU1RSVUNUVVJFIC0tLS0tLS0tLS0tLS0tLS0tLQp0AAlNQUxMT0MgMAp0AAdQVVNIIDAKdAAGUE9QIDAKdAA9LS0tLS0tLS0tLS0tLS0tIFRIUk9VR0hQVVQgUEFUSCBTVFJVQ1RVUkUgLS0tLS0tLS0tLS0tLS0tLS0tCnQACU1BTExPQyAwCnQAB1BVU0ggMAp0AAZQT1AgMAp0ADctLS0tLS0tLS0tLS0tLS0gVFJFRSBOT0RFIFNUUlVDVFVSRSAtLS0tLS0tLS0tLS0tLS0tLS0KdAAKTUFMTE9DIDE3CnQAB1BPUCAxNwp0ADMtLS0tLS0tLS0tLS0tLS0gVE9LRU4gU1RSVUNUVVJFIC0tLS0tLS0tLS0tLS0tLS0tLQp0AAlNQUxMT0MgMAp0AAdQVVNIIDAKdAAGUE9QIDAKdAA6LS0tLS0tLS0tLS0tLS0tIEVWRU5UIE5PVElDRSBTVFJVQ1RVUkUgLS0tLS0tLS0tLS0tLS0tLS0tCnQACk1BTExPQyAzMAp0AAlQVVNIIDE1NQp0AAhQT1AgMTU1CnEAfgA6eHNxAH4AAHcEAAAAc3NyABFqYXZhLmxhbmcuQm9vbGVhbs0gcoDVnPruAgABWgAFdmFsdWV4cAFxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZxAH4AdnEAfgB2cQB+AHZ4</document-log>
+    <document-log uuid="39950fcc-9ad0-4e33-9454-c63af07a9acf">rO0ABXNyABRqYXZhLnV0aWwuTGlua2VkTGlzdAwpU11KYIgiAwAAeHB3BAAAAEF0AScbWzBtRVhFQzogL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvYmluL1dOU1JHICIvVXNlcnMvZWx2aW8vRGVza3RvcC9NWS1TVk4vR3JlYXRTUE4vU09VUkNFUy9KYXZhR1VJL2FUZXN0MS1TeW1DUE5NZWFzdXJlcy5zb2x1dGlvbi9TeW1DUE4iICAtZ3VpLXN0YXQgLWRvdC1GICIvVXNlcnMvZWx2aW8vRGVza3RvcC9NWS1TVk4vR3JlYXRTUE4vU09VUkNFUy9KYXZhR1VJL2FUZXN0MS1TeW1DUE5NZWFzdXJlcy5zb2x1dGlvbi9TeW1DUE4tUkctMCIgLW1heC1kb3QtbWFya2luZ3MgODAKdAABCnQAAQp0AGMtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQp0AB1VU0UgOiBXTlNSRyBuZXRuYW1lIFstb11bLW1dCnQAYy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCnQAAQp0AC9TZW5kIGZpbGVzIG5ldG5hbWUubmV0LCAuZGVmIHRvIGUtbWFpbCBhZGRyZXNzCnQAKmdyZWF0c3BuQGRpLnVuaXRvLml0IGlmIHlvdSBmaW5kIGFueSBidWcuCnQAYy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCnQAAQp0AExXQVJOSU5HIDogYSBkZWZhdWx0IGR5bmFtaWMgc3ViY2xhc3MgaGFzIGJlZW4gYWRkZWQgZm9yIHN0YXRpYyBzdWJjbGFzcyBDXzAKdAABCnQAKiAqKioqKiBTeW1ib2xpYyBSZWFj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</document-log>
+    <document-log uuid="1b03f43b-f44d-4c46-8053-b455ae8516c1">rO0ABXNyABRqYXZhLnV0aWwuTGlua2VkTGlzdAwpU11KYIgiAwAAeHB3BAAAADh0AOEbWzBtRVhFQzogL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvYmluL0RTUE4tVG9vbCAtbG9hZCAiL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvSmF2YUdVSS9hVGVzdDEtRFNQTmdlbk1lYXN1cmVzLnNvbHV0aW9uL0RTUE5nZW4iIC1lcHNpbG9uIDEuMEUtNyAtb24tdGhlLWZseSAtaSAtZ21yZXMgLXMgLWFsbC1tZWFzdXJlcwp0APQbWzFtG1s0bUxPQURJTkcgUEVUUkkgTkVUIEZJTEVTIC9Vc2Vycy9lbHZpby9EZXNrdG9wL01ZLVNWTi9HcmVhdFNQTi9TT1VSQ0VTL0phdmFHVUkvYVRlc3QxLURTUE5nZW5NZWFzdXJlcy5zb2x1dGlvbi9EU1BOZ2VuLm5ldCBBTkQgL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvSmF2YUdVSS9hVGVzdDEtRFNQTmdlbk1lYXN1cmVzLnNvbHV0aW9uL0RTUE5nZW4uZGVmIC4uLhtbMjJtG1syNG0KdAAPTUFSS0lORyBQQVI6IDEKdAAPUExBQ0VTOiAgICAgIDgKdAAPUkFURSBQQVI6ICAgIDAKdAAPVFJBTlNJVElPTlM6IDkKdAAPTUVBU1VSRVM6ICAgIDAKdAAoTE9BRElORyBUSU1FOiBbVXNlciAwLjAyMnMsIFN5cyAwLjAwMnNdCnQAAQp0AAEKdAA5TUFYLiBSRVNJRFVBTCBFUlJPUiBTRVQgVE8gMWUtMDcgRk9SIE5VTUVSSUNBTCBBTkFMWVNJUy4KdABEVVNJTkcgT04tVEhFLUZMWSBTVEFURSBTUEFDRSBDT05TVFJVQ1RJT04gT0YgQ1NMXlRBIE1PREVMIENIRUNLSU5HLgp0ADFVU0lORyBJTVBMSUNJVCBTVEVBRFkgU1RBVEUgTVJQIFNPTFVUSU9OIE1FVEhPRC4KdAA1VVNJTkcgR01SRVMgTUVUSE9EIEZPUiBJTVBMSUNJVCBTVEFUSU9OQVJZIEFOQUxZU0lTLgp0AEtUQU5HSUJMRTogMyAgICAgICBWQU5JU0hJTkc6IDAgICAgICAgSU1NRURJQVRFOiAwICAgICAgIFRJTUVEOiAzICAgICAgICAgIAp0AFMbWzFBICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnQABRtbMUEKdAABCnQAJ1RBTkdJQkxFIFNUQVRFUzogICAgICAgICAgICAgICAgICAgIDYwCnQAJ1ZBTklTSElORyBTVEFURVM6ICAgICAgICAgICAgICAgICAgICAwCnQASE5VTUJFUiBPRiBUSU1FRCBFREdFUzogICAgICAgICAgICAgMjE2ICAoMjE2IFQtPlQsIDAgVC0+ViwgMCBULT5WKi0+VCkuCnQAOk5VTUJFUiBPRiBJTU1FRElBVEUgRURHRVM6ICAgICAgICAgICAwICAoMCBWLT5ULCAwIFYtPlYpLgp0ACdUT1RBTCBOVU1CRVIgT0YgRURHRVM6ICAgICAgICAgICAgIDIxNgp0ACdJTU1FRElBVEUgVFJOUy4gRklSSU5HUzogICAgICAgICAgICAgMAp0ACdUSU1FRCBUUk5TLiBGSVJJTkdTOiAgICAgICAgICAgICAgIDIxNgp0ACdWSVNJVEVEIFZBTklTSElORyBTVEFURVM6ICAgICAgICAgICAgMAp0ACdHRU5FUkFMIFRSQU5TSVRJT05TOiAgICAgICAgICAgICAgIDEwNQp0ACdOT04tUFJFRU1QVElWRSBFWFAuIFRSTlMuOiAgICAgICAgIDIxNgp0ACdQUkVFTVBUSVZFIEVYUC4gVFJBTlNJVElPTlM6ICAgICAgICAgMAp0AA5NRU1PUlkgVVNBR0U6CnQAJ1RSQU5TSVRJT04tU0VUIEVOVFJJRVM6ICAgICAgICAgICAgICA0CnQAJ1ZBTklTSC1QQVRIIEVOVFJJRVM6ICAgICAgICAgICAgICAgICAwCnQAJ1ZBTklTSC1QQVRILVNFVCBFTlRSSUVTOiAgICAgICAgICAgICAwCnQALVBBQ0tFRCBNQVJLSU5HUzogICAgICAgICAgICAgICAgICAgMTU3IEJZVEVTCnQALVNUQVRFIFNFVCBEQVRBOiAgICAgICAgICAgICAgICAgICAgMTA2IEJZVEVTCnQALUVER0VTIERBVEE6ICAgICAgICAgICAgICAgICAgICAgICAgODc1IEJZVEVTCnQAAQp0ACBQQUNLRUQgVEFOR0lCTEUgTUFSS0lOR1MgVEFCTEU6CnQAJFNUT1JFRCBTRVFVRU5DRVM6IDYwLCBGUkFHTUVOVFM6IDIzCnQAJiAgU0VRVUVOQ0VTIE1FTU9SWTogICAgICAgIDEyMSBCWVRFUy4KdAAmICBGUkFHTUVOVFMgTUVNT1JZOiAgICAgICAgIDM2IEJZVEVTLgp0ACYgICAgICBUT1RBTCBNRU1PUlk6ICAgICAgICAxNTcgQllURVMuCnQALE1FQU4gTUVNT1JZIFBFUiBTRVFVRU5DRSBJUzogMi42MTY2NyBCWVRFUy4KdAApICBVU0VEIEZPUiBTRVFVRU5DRSBEQVRBOiAyLjAxNjY3IEJZVEVTLgp0ACMgICAgICAgIFVTRUQgRk9SIEhBU0hJTkc6IDAgQllURVMuCnQAJSAgICAgIFVTRUQgRk9SIEZSQUdNRU5UUzogMC42IEJZVEVTLgp0ACZCVUlMRCBUSU1FOiBbVXNlciAwLjAwMHMsIFN5cyAwLjAwMHNdCnQAAQp0AAEKdAA+VEhFIFJHIElTIEEgG1s0bRtbMzNtR0VORVJBTElaRUQgU0VNSS1NQVJLT1YgUFJPQ0VTUxtbMjRtG1swbQp0AAEKdAAKG1sxbRtbMzFtCnQASkVSUk9SOiAbWzIybRtbMG1TdGVhZHkgU3RhdGUgc29sdXRpb24gaXMgbm90IHN1cHBvcnRlZCBmb3IgdGhpcyBSRyBjbGFzcy4KdAABCnQALRtbMVgbWzMxbSBQUk9DRVNTIEVYSVRFRCBXSVRIIFZBTFVFIDI1NS4bWzBtCnQALRtbMVgbWzMxbSBESUQgTk9UIENPTVBMRVRFIFRIRSBTT0xVVElPTi4bWzBtCnhzcQB+AAB3BAAAADhzcgARamF2YS5sYW5nLkJvb2xlYW7NIHKA1Zz67gIAAVoABXZhbHVleHABcQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADx4</document-log>
+    <document-log uuid="a06aea6a-a265-4c62-95f8-129a7e4db1aa">rO0ABXNyABRqYXZhLnV0aWwuTGlua2VkTGlzdAwpU11KYIgiAwAAeHB3BAAAAZ90AZAbWzBtRVhFQzogL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvYmluL0RTUE4tVG9vbCAtbG9hZCAiL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvSmF2YUdVSS9hVGVzdDEtQ1NMVEEgTWVhc3VyZS5zb2x1dGlvbi9Xb3JrTmV0IiAtZXBzaWxvbiAxLjBFLTcgLWkgLWdtcmVzIC1tcGFyIG4gMSAtZHRhLXBhdGggIi9Vc2Vycy9lbHZpby9EZXNrdG9wL01ZLVNWTi9HcmVhdFNQTi9TT1VSQ0VTL0phdmFHVUkvYVRlc3QxLUNTTFRBIE1lYXN1cmUuc29sdXRpb24iIC1jc2x0YTAtWCBNRUFTVVJFMCAiUFJPQl9UQSA+IDAgV29ya05ldERUQSAoIGFscGhhPTEsIGJldGE9MnwgfCBQaGkxPSNCcm9rZW49PTAsIFBoaTI9I0ZpbmlzaGVkPjAgKSIKdADwG1sxbRtbNG1MT0FESU5HIFBFVFJJIE5FVCBGSUxFUyAvVXNlcnMvZWx2aW8vRGVza3RvcC9NWS1TVk4vR3JlYXRTUE4vU09VUkNFUy9KYXZhR1VJL2FUZXN0MS1DU0xUQSBNZWFzdXJlLnNvbHV0aW9uL1dvcmtOZXQubmV0IEFORCAvVXNlcnMvZWx2aW8vRGVza3RvcC9NWS1TVk4vR3JlYXRTUE4vU09VUkNFUy9KYXZhR1VJL2FUZXN0MS1DU0xUQSBNZWFzdXJlLnNvbHV0aW9uL1dvcmtOZXQuZGVmIC4uLhtbMjJtG1syNG0KdAAPTUFSS0lORyBQQVI6IDEKdAAPUExBQ0VTOiAgICAgIDQKdAAPUkFURSBQQVI6ICAgIDAKdAAPVFJBTlNJVElPTlM6IDQKdAAPTUVBU1VSRVM6ICAgIDAKdAAoTE9BRElORyBUSU1FOiBbVXNlciAwLjAwMHMsIFN5cyAwLjAwMHNdCnQAAQp0AAEKdAA5TUFYLiBSRVNJRFVBTCBFUlJPUiBTRVQgVE8gMWUtMDcgRk9SIE5VTUVSSUNBTCBBTkFMWVNJUy4KdAAxVVNJTkcgSU1QTElDSVQgU1RFQURZIFNUQVRFIE1SUCBTT0xVVElPTiBNRVRIT0QuCnQANVVTSU5HIEdNUkVTIE1FVEhPRCBGT1IgSU1QTElDSVQgU1RBVElPTkFSWSBBTkFMWVNJUy4KdAAfTUFSS0lORyBQQVJBTUVURVIgIm4iIFNFVCBUTyAxCnQAdUFERElORyAiL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvSmF2YUdVSS9hVGVzdDEtQ1NMVEEgTWVhc3VyZS5zb2x1dGlvbiIgVE8gVEhFIERUQSBTRUFSQ0ggUEFUSHMuCnQAS1RBTkdJQkxFOiAyICAgICAgIFZBTklTSElORzogMCAgICAgICBJTU1FRElBVEU6IDAgICAgICAgVElNRUQ6IDEgICAgICAgICAgCnQAUxtbMUEgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKdAAFG1sxQQp0AAEKdAAnVEFOR0lCTEUgU1RBVEVTOiAgICAgICAgICAgICAgICAgICAgIDQKdAAnVkFOSVNISU5HIFNUQVRFUzogICAgICAgICAgICAgICAgICAgIDAKdABGTlVNQkVSIE9GIFRJTUVEIEVER0VTOiAgICAgICAgICAgICAgIDQgICg0IFQtPlQsIDAgVC0+ViwgMCBULT5WKi0+VCkuCnQAOk5VTUJFUiBPRiBJTU1FRElBVEUgRURHRVM6ICAgICAgICAgICAwICAoMCBWLT5ULCAwIFYtPlYpLgp0ACdUT1RBTCBOVU1CRVIgT0YgRURHRVM6ICAgICAgICAgICAgICAgNAp0ACdJTU1FRElBVEUgVFJOUy4gRklSSU5HUzogICAgICAgICAgICAgMAp0ACdUSU1FRCBUUk5TLiBGSVJJTkdTOiAgICAgICAgICAgICAgICAgNAp0ACdWSVNJVEVEIFZBTklTSElORyBTVEFURVM6ICAgICAgICAgICAgMAp0ACdHRU5FUkFMIFRSQU5TSVRJT05TOiAgICAgICAgICAgICAgICAgMAp0ACdOT04tUFJFRU1QVElWRSBFWFAuIFRSTlMuOiAgICAgICAgICAg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QS4uLhtbMjJtG1syNG0KdAAhVEhFUkUgQVJFIDQgUkVHRU5FUkFUSVZFIFNUQVRFUy4KdAABCnQAAQp0ACxQUkVDT05ESVRJT05JTkcgU1RSQVRFR1k6IE5PIFBSRUNPTkRJVElPTkVSCnQAIFVTSU5HIE5PIFBSRUNPTkRJVElPTkVSIE1FVEhPRC4KdABEU1RFQURZIFNUQVRFIFNPTFVUSU9OIE9GIE5PTi1FUkdPRElDIE1SUCBXSVRIIDIgUkVDVVJSRU5DRSBDTEFTU0VTLgp0ADhDT01QVVRJTkcgU1RFQURZIFNUQVRFIFNPTFVUSU9OIE9GIFRIRSBFTUJFRERFRCBEVE1DLi4uCnQAAQp0AENBQlNPUkIgSU5JVElBTCBQUk9CQUJJTElUWSBJTiBOT04tUkVDVVJSRU5UIFJFR0VORVJBVElWRSBTVEFURVMuLi4KdAABCnQAOlBPV0VSIE1FVEhPRDogaXRlcmF0aW9uPTEsIGVycj0xLjkwMDAwZSswMCAgICAgICAgICAgICAgIAp0AFMbWzFBICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnQAShtbMUFHTVJFUyg2KTogY29udmVyZ2VuY2UgaW4gMiBpdGVyYXRpb25zLCBlcnI9My45OTgwNWUtMTcgICAgICAgICAgICAgICAKdAAeVE9UQUwgTUFUUklYLUZSRUUgUFJPRFVDVFM6IDQKdAABCnQAMVNURUFEWSBTVEFURSBTT0xVVElPTiBPRiAyIFJFQ1VSUkVOQ0UgQ0xBU1NFUy4uLgp0ACtBTEwgMiBSRUNVUlJFTkNFIENMQVNTRVMgSEFWRSBCRUVOIFNPTFZFRC4KdAABCnQAO0ZPUldBUkQgU1RFQURZIFNUQVRFIFNPTFVUSU9OIE9GIFRIRSBNeEEgUFJPQ0VTUyBDT01QVVRFRC4KdAABCnQAUhtbMW0bWzRtG1szMm1SRVNVTFQbWzIybRtbMjRtG1swbTogVFJVRS4gQUNDRVBUQU5DRSBQUk9CQUJJTElUWSBJUyAwLjQwMDA1NDI4NjI1OQp0AAEKdAABCnQAKVNPTFVUSU9OIFRJTUU6IFtVc2VyIDAuMDE1cywgU3lzIDAuMDAxc10KdAAaTU9ERUwgQ0hFQ0tJTkcgQ09NUExFVEVELgp0AAEKdAABCnQAJxtbMFgbWzMybSBQUk9DRVNTIEVYSVRFRCBOT1JNQUxMWS4bWzBtCnQABRtbMlgKdAGQG1swbUVYRUM6IC9Vc2Vycy9lbHZpby9EZXNrdG9wL01ZLVNWTi9HcmVhdFNQTi9TT1VSQ0VTL2Jpbi9EU1BOLVRvb2wgLWxvYWQgIi9Vc2Vycy9lbHZpby9EZXNrdG9wL01ZLVNWTi9HcmVhdFNQTi9TT1VSQ0VTL0phdmFHVUkvYVRlc3QxLUNTTFRBIE1lYXN1cmUuc29sdXRpb24vV29ya05ldCIgLWVwc2lsb24gMS4wRS03IC1pIC1nbXJlcyAtbXBhciBuIDIgLWR0YS1wYXRoICIvVXNlcnMvZWx2aW8vRGVza3RvcC9NWS1TVk4vR3JlYXRTUE4vU09VUkNFUy9KYXZhR1VJL2FUZXN0MS1DU0xUQSBNZWFzdXJlLnNvbHV0aW9uIiAtY3NsdGEwLVggTUVBU1VSRTAgIlBST0JfVEEgPiAwIFdvcmtOZXREVEEgKCBhbHBoYT0xLCBiZXRhPTJ8IHwgUGhpMT0jQnJva2VuPT0wLCBQaGkyPSNGaW5pc2hlZD4wICkiCnQA8BtbMW0bWzRtTE9BRElORyBQRVRSSSBORVQgRklMRVMgL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvSmF2YUdVSS9hVGVzdDEtQ1NMVEEgTWVhc3VyZS5zb2x1dGlvbi9Xb3JrTmV0Lm5ldCBBTkQgL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvSmF2YUdVSS9hVGVzdDEtQ1NMVEEgTWVhc3VyZS5zb2x1dGlvbi9Xb3JrTmV0LmRlZiAuLi4bWzIybRtbMjRtCnQAD01BUktJTkcgUEFSOiAxCnQAD1BMQUNFUzogICAgICA0CnQAD1JBVEUgUEFSOiAgICAwCnQAD1RSQU5TSVRJT05TOiA0CnQAD01FQVNVUkVTOiAgICAwCnQAKExPQURJTkcgVElNRTogW1VzZXIgMC4wMDBzLCBTeXMgMC4wMDBzXQp0AAEKdAABCnQAOU1BWC4gUkVT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VVRJTkcgU1RFQURZIFNUQVRFIFNPTFVUSU9OIE9GIFRIRSBNQVJLT1YgUkVORVdBTCBQUk9DRVNTIE14QS4uLhtbMjJtG1syNG0KdAAhVEhFUkUgQVJFIDUgUkVHRU5FUkFUSVZFIFNUQVRFUy4KdAABCnQAAQp0ACxQUkVDT05ESVRJT05JTkcgU1RSQVRFR1k6IE5PIFBSRUNPTkRJVElPTkVSCnQAIFVTSU5HIE5PIFBSRUNPTkRJVElPTkVSIE1FVEhPRC4KdABEU1RFQURZIFNUQVRFIFNPTFVUSU9OIE9GIE5PTi1FUkdPRElDIE1SUCBXSVRIIDIgUkVDVVJSRU5DRSBDTEFTU0VTLgp0ADhDT01QVVRJTkcgU1RFQURZIFNUQVRFIFNPTFVUSU9OIE9GIFRIRSBFTUJFRERFRCBEVE1DLi4uCnQAAQp0AENBQlNPUkIgSU5JVElBTCBQUk9CQUJJTElUWSBJTiBOT04tUkVDVVJSRU5UIFJFR0VORVJBVElWRSBTVEFURVMuLi4KdAABCnQAOlBPV0VSIE1FVEhPRDogaXRlcmF0aW9uPTEsIGVycj0xLjkwMDAwZSswMCAgICAgICAgICAgICAgIAp0AFMbWzFBICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnQASxtbMUFHTVJFUygxMCk6IGNvbnZlcmdlbmNlIGluIDIgaXRlcmF0aW9ucywgZXJyPTEuMDE0ODBlLTE3ICAgICAgICAgICAgICAgCnQAHlRPVEFMIE1BVFJJWC1GUkVFIFBST0RVQ1RTOiA0CnQAAQp0ADFTVEVBRFkgU1RBVEUgU09MVVRJT04gT0YgMiBSRUNVUlJFTkNFIENMQVNTRVMuLi4KdAArQUxMIDIgUkVDVVJSRU5DRSBDTEFTU0VTIEhBVkUgQkVFTiBTT0xWRUQuCnQAAQp0ADtGT1JXQVJEIFNURUFEWSBTVEFURSBTT0xVVElPTiBPRiBUSEUgTXhBIFBST0NFU1MgQ09NUFVURUQuCnQAAQp0AFIbWzFtG1s0bRtbMzJtUkVTVUxUG1syMm0bWzI0bRtbMG06IFRSVUUuIEFDQ0VQVEFOQ0UgUFJPQkFCSUxJVFkgSVMgMC40MTUzODY2NTk0OTEKdAABCnQAAQp0AClTT0xVVElPTiBUSU1FOiBbVXNlciAwLjAxOXMsIFN5cyAwLjAwMXNdCnQAGk1PREVMIENIRUNLSU5HIENPTVBMRVRFRC4KdAABCnQAAQpxAH4AaHEAfgBpdAGQG1swbUVYRUM6IC9Vc2Vycy9lbHZpby9EZXNrdG9wL01ZLVNWTi9HcmVhdFNQTi9TT1VSQ0VTL2Jpbi9EU1BOLVRvb2wgLWxvYWQgIi9Vc2Vycy9lbHZpby9EZXNrdG9wL01ZLVNWTi9HcmVhdFNQTi9TT1VSQ0VTL0phdmFHVUkvYVRlc3QxLUNTTFRBIE1lYXN1cmUuc29sdXRpb24vV29ya05ldCIgLWVwc2lsb24gMS4wRS03IC1pIC1nbXJlcyAtbXBhciBuIDMgLWR0YS1wYXRoICIvVXNlcnMvZWx2aW8vRGVza3RvcC9NWS1TVk4vR3JlYXRTUE4vU09VUkNFUy9KYXZhR1VJL2FUZXN0MS1DU0xUQSBNZWFzdXJlLnNvbHV0aW9uIiAtY3NsdGEwLVggTUVBU1VSRTAgIlBST0JfVEEgPiAwIFdvcmtOZXREVEEgKCBhbHBoYT0xLCBiZXRhPTJ8IHwgUGhpMT0jQnJva2VuPT0wLCBQaGkyPSNGaW5pc2hlZD4wICkiCnQA8BtbMW0bWzRtTE9BRElORyBQRVRSSSBORVQgRklMRVMgL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvSmF2YUdVSS9hVGVzdDEtQ1NMVEEgTWVhc3VyZS5zb2x1dGlvbi9Xb3JrTmV0Lm5ldCBBTkQgL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvSmF2YUdVSS9hVGVzdDEtQ1NMVEEgTWVhc3VyZS5zb2x1dGlvbi9Xb3JrTmV0LmRlZiAuLi4bWzIybRtbMjRtCnQAD01BUktJTkcgUEFSOiAxCnQAD1BMQUNFUzogICAgICA0CnQAD1JBVEUgUEFSOiAgICAwCnQAD1RSQU5TSVRJT05TOiA0CnQAD01FQVNVUkVTOiAgICAwCnQAKExPQURJTkcgVElNRTogW1VzZXIgMC4wMDBzLCBTeXMgMC4wMDBz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CnQAK01PREVMIENIRUNLSU5HIENTTFRBIEVYUFJFU1NJT046G1syMm0bWzI0bQp0AG0gIFNUQVRFIDAgfD0gUFJPQl9UQSA+IDAgIldvcmtOZXREVEEiIChhbHBoYSA9IDEsIGJldGEgPSAyIHwgfCBQaGkxID0gKCNCcm9rZW4gPSAwKSwgUGhpMiA9ICgjRmluaXNoZWQgPiAwKSkKdAABCnQAAQp0AHlMT0FESU5HIERUQSBGSUxFICIvVXNlcnMvZWx2aW8vRGVza3RvcC9NWS1TVk4vR3JlYXRTUE4vU09VUkNFUy9KYXZhR1VJL2FUZXN0MS1DU0xUQSBNZWFzdXJlLnNvbHV0aW9uL1dvcmtOZXREVEEuZHRhIiAuLi4KdAAyRFRBIFBBUlRJVElPTkVEIElOVE8gWk9ORVMgKHRpbWVkIGxvY2F0aW9ucyA9IDYpLgp0ACggIDxTLEwsQz4gU1RBVEVTIElOIE14QTogMSAgICAgICAgICAgICAKdABTG1sxQSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAp0AAUbWzFBCnQAP05VTUJFUiBPRiBUQU5HSUJMRSA8UypMKkM+IFNUQVRFUzogICAgIDE2IChJTkNMVURJTkcgVE9QLCBCT1QpCnQAKk5VTUJFUiBPRiBDVE1DIFNUQVRFUzogICAgICAgICAgICAgICAgIDIwCnQAKk5VTUJFUiBPRiBEVEEgTE9DQVRJT05TOiAgICAgICAgICAgICAgIDEzCnQAKU5VTUJFUiBPRiBUSU1FRCBDTE9DSyBaT05FUzogICAgICAgICAgIDMKdAApTlVNQkVSIE9GIERFVEVSTUlOSVNUSUMgVFJBTlNJVElPTlM6ICAgMgp0ACpOT05aRVJPIEVOVFJJRVMgSU4gUTogICAgICAgICAgICAgICAgICAzNwp0ACpOT05aRVJPIEVOVFJJRVMgSU4gUWJhcjogICAgICAgICAgICAgICAxMgp0ACpOT05aRVJPIEVOVFJJRVMgSU4gREVMVEE6ICAgICAgICAgICAgICAxNAp0AClOT04tVFJJVklBTCBJTklUSUFMIFNUQVRFUzogICAgICAgICAgICAxCnQAAQp0AAkbWzFtG1s0bQp0AE9DT01QVVRJTkcgU1RFQURZIFNUQVRFIFNPTFVUSU9OIE9GIFRIRSBNQVJLT1YgUkVORVdBTCBQUk9DRVNTIE14QS4uLhtbMjJtG1syNG0KdAAhVEhFUkUgQVJFIDYgUkVHRU5FUkFUSVZFIFNUQVRFUy4KdAABCnQAAQp0ACxQUkVDT05ESVRJT05JTkcgU1RSQVRFR1k6IE5PIFBSRUNPTkRJVElPTkVSCnQAIFVTSU5HIE5PIFBSRUNPTkRJVElPTkVSIE1FVEhPRC4KdABEU1RFQURZIFNUQVRFIFNPTFVUSU9OIE9GIE5PTi1FUkdPRElDIE1SUCBXSVRIIDIgUkVDVVJSRU5DRSBDTEFTU0VTLgp0ADhDT01QVVRJTkcgU1RFQURZIFNUQVRFIFNPTFVUSU9OIE9GIFRIRSBFTUJFRERFRCBEVE1DLi4uCnQAAQp0AENBQlNPUkIgSU5JVElBTCBQUk9CQUJJTElUWSBJTiBOT04tUkVDVVJSRU5UIFJFR0VORVJBVElWRSBTVEFURVMuLi4KdAABCnQAOlBPV0VSIE1FVEhPRDogaXRlcmF0aW9uPTEsIGVycj0xLjkwMDAwZSswMCAgICAgICAgICAgICAgIAp0AFMbWzFBICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnQASxtbMUFHTVJFUygxNSk6IGNvbnZlcmdlbmNlIGluIDIgaXRlcmF0aW9ucywgZXJyPTcuMDM0MzZlLTE4ICAgICAgICAgICAgICAgCnQAHlRPVEFMIE1BVFJJWC1GUkVFIFBST0RVQ1RTOiA0CnQAAQp0ADFTVEVBRFkgU1RBVEUgU09MVVRJT04gT0YgMiBSRUNVUlJFTkNFIENMQVNTRVMuLi4KdAArQUxMIDIgUkVDVVJSRU5DRSBDTEFTU0VTIEhBVkUgQkVFTiBTT0xWRUQuCnQAAQp0ADtGT1JXQVJEIFNURUFEWSBTVEFURSBTT0xVVElPTiBPRiBUSEUgTXhBIFBST0NFU1MgQ09NUFVURUQuCnQAAQp0AFIbWzFtG1s0bRtbMzJtUkVTVUxUG1syMm0bWzI0bRtbMG06IFRSVUUuIEFDQ0VQVEFOQ0UgUFJPQkFCSUxJVFkgSVMgMC4zNTEzOTg2OTI3ODIKdAABCnQAAQp0AClTT0xVVElPTiBUSU1FOiBbVXNlciAwLjAyNHMsIFN5cyAwLjAwMXNdCnQAGk1PREVMIENIRUNLSU5HIENPTVBMRVRFRC4KdAABCnQAAQpxAH4AaHEAfgBpdAGQG1swbUVYRUM6IC9Vc2Vycy9lbHZpby9EZXNrdG9wL01ZLVNWTi9HcmVhdFNQTi9TT1VSQ0VTL2Jpbi9EU1BOLVRvb2wgLWxvYWQgIi9Vc2Vycy9lbHZpby9EZXNrdG9wL01ZLVNWTi9HcmVhdFNQTi9TT1VSQ0VTL0phdmFHVUkvYVRlc3QxLUNTTFRBIE1lYXN1cmUuc29sdXRpb24vV29ya05ldCIgLWVwc2lsb24gMS4wRS03IC1pIC1nbXJlcyAtbXBhciBuIDQgLWR0YS1wYXRoICIvVXNlcnMvZWx2aW8vRGVza3RvcC9NWS1TVk4vR3JlYXRTUE4vU09VUkNFUy9KYXZhR1VJL2FUZXN0MS1DU0xUQSBNZWFzdXJlLnNvbHV0aW9uIiAtY3NsdGEwLVggTUVBU1VSRTAgIlBST0JfVEEgPiAwIFdvcmtOZXREVEEgKCBhbHBoYT0xLCBiZXRhPTJ8IHwgUGhpMT0jQnJva2VuPT0wLCBQaGkyPSNGaW5pc2hlZD4wICkiCnQA8BtbMW0bWzRtTE9BRElORyBQRVRSSSBORVQgRklMRVMgL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvSmF2YUdVSS9hVGVzdDEtQ1NMVEEgTWVhc3VyZS5zb2x1dGlvbi9Xb3JrTmV0Lm5ldCBBTkQgL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvSmF2YUdVSS9hVGVzdDEtQ1NMVEEgTWVhc3VyZS5zb2x1dGlvbi9Xb3JrTmV0LmRlZiAuLi4bWzIybRtbMjRtCnQAD01BUktJTkcgUEFSOiAxCnQAD1BMQUNFUzogICAgICA0CnQAD1JBVEUgUEFSOiAgICAwCnQAD1RSQU5TSVRJT05TOiA0CnQAD01FQVNVUkVTOiAgICAwCnQAKExPQURJTkcgVElN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Ti1UUklWSUFMIElOSVRJQUwgU1RBVEVTOiAgICAgICAgICAgIDEKdAABCnQACRtbMW0bWzRtCnQAT0NPTVBVVElORyBTVEVBRFkgU1RBVEUgU09MVVRJT04gT0YgVEhFIE1BUktPViBSRU5FV0FMIFBST0NFU1MgTXhBLi4uG1syMm0bWzI0bQp0ACFUSEVSRSBBUkUgNyBSRUdFTkVSQVRJVkUgU1RBVEVTLgp0AAEKdAABCnQALFBSRUNPTkRJVElPTklORyBTVFJBVEVHWTogTk8gUFJFQ09ORElUSU9ORVIKdAAgVVNJTkcgTk8gUFJFQ09ORElUSU9ORVIgTUVUSE9ELgp0AERTVEVBRFkgU1RBVEUgU09MVVRJT04gT0YgTk9OLUVSR09ESUMgTVJQIFdJVEggMiBSRUNVUlJFTkNFIENMQVNTRVMuCnQAOENPTVBVVElORyBTVEVBRFkgU1RBVEUgU09MVVRJT04gT0YgVEhFIEVNQkVEREVEIERUTUMuLi4KdAABCnQAQ0FCU09SQiBJTklUSUFMIFBST0JBQklMSVRZIElOIE5PTi1SRUNVUlJFTlQgUkVHRU5FUkFUSVZFIFNUQVRFUy4uLgp0AAEKdAA6UE9XRVIgTUVUSE9EOiBpdGVyYXRpb249MSwgZXJyPTEuOTAwMDBlKzAwICAgICAgICAgICAgICAgCnQAUxtbMUEgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKdABLG1sxQUdNUkVTKDIxKTogY29udmVyZ2VuY2UgaW4gMiBpdGVyYXRpb25zLCBlcnI9My45MTkwNWUtMTggICAgICAgICAgICAgICAKdAAeVE9UQUwgTUFUUklYLUZSRUUgUFJPRFVDVFM6IDQKdAABCnQAMVNURUFEWSBTVEFURSBTT0xVVElPTiBPRiAyIFJFQ1VSUkVOQ0UgQ0xBU1NFUy4uLgp0ACtBTEwgMiBSRUNVUlJFTkNFIENMQVNTRVMgSEFWRSBCRUVOIFNPTFZFRC4KdAABCnQAO0ZPUldBUkQgU1RFQURZIFNUQVRFIFNPTFVUSU9OIE9GIFRIRSBNeEEgUFJPQ0VTUyBDT01QVVRFRC4KdAABCnQAUhtbMW0bWzRtG1szMm1SRVNVTFQbWzIybRtbMjRtG1swbTogVFJVRS4gQUNDRVBUQU5DRSBQUk9CQUJJTElUWSBJUyAwLjI3OTMzNjkyNzEyMAp0AAEKdAABCnQAKVNPTFVUSU9OIFRJTUU6IFtVc2VyIDAuMDI3cywgU3lzIDAuMDAxc10KdAAaTU9ERUwgQ0hFQ0tJTkcgQ09NUExFVEVELgp0AAEKdAABCnEAfgBoeHNxAH4AAHcEAAABn3NyABFqYXZhLmxhbmcuQm9vbGVhbs0gcoDVnPruAgABWgAFdmFsdWV4cAFxAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ5xAH4BnnEAfgGecQB+AZ54</document-log>
+    <image uuid="8eb502eb-e706-4886-b49d-8f86c0735043">iVBORw0KGgoAAAANSUhEUgAAABAAAAAWCAYAAADJqhx8AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAgtJREFUOE+lkd9LWnEYxu0vGMZ+1OUSuthFG0TsPggGBbuL3Yxut7tGc01yZrZa2lYRgUYuMdOj7jQZpGXaT2KmnlZajZUGR6nN5fDEdtfN0/cYHVaeOkkPPDfv+zyfw/c9MgCyy2Qdd1RbbPZ9F/0ZXp8fdtcnjNmpuM3hVOS7lwHMFusjNylu7+yAyx3iIPsHLJtGMDiPUauNVCUAQ8bho42NTSQSu/B8mcS4wwXTyEeYzKMwjpilAR8GBpFKpzHtD2BmJoj+wSE+XH1qSUCPvhdsKoXQSgThCAP9+74zYUlAu7bj34/tBBjmG8LRVUTCUbzt1kPX9Q7dPQZSlQCo29S52HocX0NhxOKbyJIjchyHZDIJtUZ7eCGgVOd3P9SMgcvsgYlEYaecaG5RwkCe0PamHc0vWhgSuy8KuKn1UY10EiHC75xlMTfthfKlcp+shOMRVxIX3oAvP/eyiOaAV8sc6iayqNFYIZfL+VKBzgBudfioJ3QiX346mUE9/RNVw99xQ+UJkHVJPnROAuCOboqutaxhlePLv1E/8QsPTFu43Ur5Sa7iJF4oAXCvbxHxv0CT9wANpMx/ufS1my/fPYmK6z/AEp4FcnjsyaDKGLtSmZcAKFe5Fip7F6EwzKNM5ZwlO8kyLwFApCA+/UUXvvm8BMB1LDosxqLDYiw6LMaiw2IsOry6ITsG9ECdvDK9oQYAAAAASUVORK5CYII=</image>
+    <image uuid="398a2e38-2d92-495f-ba8f-7f0a3a3c5bc8">iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAklJREFUeNqkkltrE1EQx2eTzZru9iEpKG3T3LxgoaBJNy+SIPRFUPMN/AZaUkrRmMTYJ0GtqJSq+Dm0UHxLsFi8oqAJ3pqaRDHpU5ts95ZdZ7ZJsTURwQPDycmc/c9/fnMY0zThfxZ7Y+428DwPKNTAs6CqKsNxHKk2GYbplyRp5zIVEwTB2jEHzWYTWEo0Gg1QVeVVX5/zpGHAd8PQYWtLfs1x+8Bms/3dAVVCxZ/BQNATi0UBqw+hC3i6vHyiUqk+wvwERn9PAUVRaigQFEURCsUifPr8BY4cPgTiuMiurpbiZJfC5XIBCe9lZpvNpuObmxsvWq0WFD4UYDpxIUI7nRVFrl9JJyNutxs6QnsXk8nOFvHy0TNn41Apl6FU+gqBwEHwer2wuPjYgjU87PlmGIavG2BW03SfpmnVlWcr+0Oh49zg4BDouga5XA4hS2sMgH19vf4RJ+UzDPMPwJiHMIY2mZhasttZjyzLL51OZwSrFUdGvCim60G/PxiNRQWsDm3AOgLG+/YJ9nI6+0aSmtTOADpZe/jg3rnzk4klVHfjtz+w79B4D8AWhFTmKkxNz0DbydjFZIp+j2EcwxiduZR8/vbde3Pu1h3qXaSdzqlMtk5nhgTIAcGy5sqylk0aG4IroIvRXoCxhe2X+PtTdTg4FKFeNRLwdwOcz+dVRVFrDodjgO3+vrbnffP6tWgHcLVa3gGMY68vzN89TYZ3tUAOeF7Y9WDagCVspXZ/Yf4UAn6CbR7A/3i6+68r3AbbARzuJH4JMADwfltNwWVMFAAAAABJRU5ErkJggg==</image>
+    <document-log uuid="a04be869-d304-4da6-bee8-2badd59d64f6">rO0ABXNyABRqYXZhLnV0aWwuTGlua2VkTGlzdAwpU11KYIgiAwAAeHB3BAAAAFp0AXEbWzBtRVhFQzogL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvYmluL0RTUE4tVG9vbCAtbG9hZCAiL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvSmF2YUdVSS9hVGVzdDEtTWVhc3VyZXMuc29sdXRpb24vYmFzaWNEU1BOIiAtZXBzaWxvbiAxLjBFLTcgLW9uLXRoZS1mbHkgLWkgLWdtcmVzIC1ndWktc3RhdCAtcyAtYWxsLW1lYXN1cmVzIC13aXRoLWNsdXN0ZXJzIC1tYXgtZG90LW1hcmtpbmdzIDgwIC1kb3QtRiAiL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvSmF2YUdVSS9hVGVzdDEtTWVhc3VyZXMuc29sdXRpb24vYmFzaWNEU1BOLVRSRy0wIgp0AIkbWzFtG1s0bUxPQURJTkcgUEVUUkkgTkVUIC9Vc2Vycy9lbHZpby9EZXNrdG9wL01ZLVNWTi9HcmVhdFNQTi9TT1VSQ0VTL0phdmFHVUkvYVRlc3QxLU1lYXN1cmVzLnNvbHV0aW9uL2Jhc2ljRFNQTiAobmV0L2RlZikuLi4bWzIybRtbMjRtCnQAD01BUktJTkcgUEFSOiAwCnQAD1BMQUNFUzogICAgICA0CnQAD1JBVEUgUEFSOiAgICAwCnQAD1RSQU5TSVRJT05TOiA1CnQAD01FQVNVUkVTOiAgICAwCnQAKExPQURJTkcgVElNRTogW1VzZXIgMC4wMDBzLCBTeXMgMC4wMDBzXQp0AAEKdAABCnQAOU1BWC4gUkVTSURVQUwgRVJST1IgU0VUIFRPIDFlLTA3IEZPUiBOVU1FUklDQUwgQU5BTFlTSVMuCnQARFVTSU5HIE9OLVRIRS1GTFkgU1RBVEUgU1BBQ0UgQ09OU1RSVUNUSU9OIE9GIENTTF5UQSBNT0RFTCBDSEVDS0lORy4KdAAxVVNJTkcgSU1QTElDSVQgU1RFQURZIFNUQVRFIE1SUCBTT0xVVElPTiBNRVRIT0QuCnQANVVTSU5HIEdNUkVTIE1FVEhPRCBGT1IgSU1QTElDSVQgU1RBVElPTkFSWSBBTkFMWVNJUy4KdABLVEFOR0lCTEU6IDMgICAgICAgVkFOSVNISU5HOiAwICAgICAgIElNTUVESUFURTogMCAgICAgICBUSU1FRDogMiAgICAgICAgICAKdABTG1sxQSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAp0AAUbWzFBCnQAAQp0ACdUQU5HSUJMRSBTVEFURVM6ICAgICAgICAgICAgICAgICAgICAgNAp0ACdWQU5JU0hJTkcgU1RBVEVTOiAgICAgICAgICAgICAgICAgICAgMAp0AEZOVU1CRVIgT0YgVElNRUQgRURHRVM6ICAgICAgICAgICAgICAgNSAgKDUgVC0+VCwgMCBULT5WLCAwIFQtPlYqLT5UKS4KdAA6TlVNQkVSIE9GIElNTUVESUFURSBFREdFUzogICAgICAgICAgIDAgICgwIFYtPlQsIDAgVi0+VikuCnQAJ1RPVEFMIE5VTUJFUiBPRiBFREdFUzogICAgICAgICAgICAgICA1CnQAJ0lNTUVESUFURSBUUk5TLiBGSVJJTkdTOiAgICAgICAgICAgICAwCnQAJ1RJTUVEIFRSTlMuIEZJUklOR1M6ICAgICAgICAgICAgICAgICA1CnQAJ1ZJU0lURUQgVkFOSVNISU5HIFNUQVRFUzogICAgICAgICAgICAwCnQAJ0dFTkVSQUwgVFJBTlNJVElPTlM6ICAgICAgICAgICAgICAgICAyCnQAJ05PTi1QUkVFTVBUSVZFIEVYUC4gVFJOUy46ICAgICAgICAgICA1CnQAJ1BSRUVNUFRJVkUgRVhQLiBUUkFOU0lUSU9OUzogICAgICAgICAwCnQADk1FTU9SWSBVU0FHRToKdAAnVFJBTlNJVElPTi1TRVQgRU5UUklFUzogICAgICAgICAgICAgIDIKdAAnVkFOSVNILVBBVEggRU5UUklFUzogICAgICAgICAgICAgICAgIDAKdAAnVkFOSVNILVBBVEgtU0VUIEVOVFJJRVM6ICAgICAgICAgICAgIDAKdAAtUEFDS0VEIE1BUktJTkdTOiAgICAgICAgICAgICAgICAgICAgIDIgQllURVMKdAAtU1RBVEUgU0VUIERBVEE6ICAgICAgICAgICAgICAgICAgICAgIDQgQllURVMKdAAtRURHRVMgREFUQTogICAgICAgICAgICAgICAgICAgICAgICAxMjkgQllURVMKdAABCnQAIFBBQ0tFRCBUQU5HSUJMRSBNQVJLSU5HUyBUQUJMRToKdAAiU1RPUkVEIFNFUVVFTkNFUzogNCwgRlJBR01FTlRTOiAwCnQAJiAgU0VRVUVOQ0VTIE1FTU9SWTogICAgICAgICAgMiBCWVRFUy4KdAAmICBGUkFHTUVOVFMgTUVNT1JZOiAgICAgICAgICAwIEJZVEVTLgp0ACYgICAgICBUT1RBTCBNRU1PUlk6ICAgICAgICAgIDIgQllURVMuCnQAKE1FQU4gTUVNT1JZIFBFUiBTRVFVRU5DRSBJUzogMC41IEJZVEVTLgp0ACUgIFVTRUQgRk9SIFNFUVVFTkNFIERBVEE6IDAuNSBCWVRFUy4KdAAjICAgICAgICBVU0VEIEZPUiBIQVNISU5HOiAwIEJZVEVTLgp0ACMgICAgICBVU0VEIEZPUiBGUkFHTUVOVFM6IDAgQllURVMuCnQAJkJVSUxEIFRJTUU6IFtVc2VyIDAuMDAwcywgU3lzIDAuMDAwc10KdAABCnQAAQp0ADpUSEUgUkcgSVMgQSAbWzRtG1szM21NQVJLT1YgUkVHRU5FUkFUSVZFIFBST0NFU1MbWzI0bRtbMG0KdAABCnQACRtbMW0bWzRtCnQAS0NPTVBVVElORyBTVEVBRFkgU1RBVEUgU09MVVRJT04gT0YgVEhFIE1BUktPViBSRU5FV0FMIFBST0NFU1MuLi4bWzIybRtbMjRtCnQAIVRIRVJFIEFSRSA0IFJFR0VORVJBVElWRSBTVEFURVMuCnQAAQp0AAEKdAAsUFJFQ09ORElUSU9OSU5HIFNUUkFURUdZOiBOTyBQUkVDT05ESVRJT05FUgp0ACBVU0lORyBOTyBQUkVDT05ESVRJT05FUiBNRVRIT0QuCnQAJlNURUFEWSBTVEFURSBTT0xVVElPTiBPRiBFUkdPRElDIE1SUC4KdAA4Q09NUFVUSU5HIFNURUFEWSBTVEFURSBTT0xVVElPTiBPRiBUSEUgRU1CRURERUQgRFRNQy4uLgp0AAEKdABDQUJTT1JCIElOSVRJQUwgUFJPQkFCSUxJVFkgSU4gTk9OLVJFQ1VSUkVOVCBSRUdFTkVSQVRJVkUgU1RBVEVTLi4uCnQAAQp0ADJBbHBoYUZhY3Rvcnk6ICBmX2coeCk9IklbMV0iICByYXRlPTAuMSAgYWNjPTFlLTA4CnQAOkFscGhhRmFjdG9yeTogIGZfZyh4KT0iVW5pZm9ybVsyLDVdIiAgcmF0ZT0wLjEgIGFjYz0xZS0wOAp0ADpQT1dFUiBNRVRIT0Q6IGl0ZXJhdGlvbj0xLCBlcnI9NC43NTAwMGUtMDEgICAgICAgICAgICAgICAKdABTG1sxQSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAp0AEobWzFBR01SRVMoMyk6IGNvbnZlcmdlbmNlIGluIDMgaXRlcmF0aW9ucywgZXJyPTEuNDY2NzNlLTEwICAgICAgICAgICAgICAgCnQAHlRPVEFMIE1BVFJJWC1GUkVFIFBST0RVQ1RTOiA1CnQAAQp0ADhDT05WRVJTSU9OIE9GIFRIRSBFTUMgU09MVVRJT04gSU5UTyBUSEUgTVJQIFNPTFVUSU9OLi4uCnQAAQp0ADJBbHBoYUZhY3Rvcnk6ICBmX2coeCk9IklbMV0iICByYXRlPTAuMSAgYWNjPTFlLTA3CnQAOkFscGhhRmFjdG9yeTogIGZfZyh4KT0iVW5pZm9ybVsyLDVdIiAgcmF0ZT0wLjEgIGFjYz0xZS0wNwp0AAEKdAABCnQADhtbMW0bWzRtG1szMm0KdAAgU1RFQURZIFNUQVRFIFNPTFVUSU9OIENPTVBVVEVELgp0AA8bWzIybRtbMjRtG1swbQp0AClTT0xVVElPTiBUSU1FOiBbVXNlciAwLjAwMXMsIFN5cyAwLjAwM3NdCnQAAQp0ACRDT01QVVRJTkcgQkFTSUMgUEVUUkkgTkVUIE1FQVNVUkVTLgp0AAEKdAABCnQAI0JBU0lDIFBFVFJJIE5FVCBNRUFTVVJFUyBDT01QVVRFRC4KdAASVVNJTkcgRE9UIFRPT0wuLi4KdADiZG90IC1UcGRmICIvVXNlcnMvZWx2aW8vRGVza3RvcC9NWS1TVk4vR3JlYXRTUE4vU09VUkNFUy9KYXZhR1VJL2FUZXN0MS1NZWFzdXJlcy5zb2x1dGlvbi9iYXNpY0RTUE4tVFJHLTAuZG90IiAtbyAiL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvSmF2YUdVSS9hVGVzdDEtTWVhc3VyZXMuc29sdXRpb24vYmFzaWNEU1BOLVRSRy0wLnBkZiIgMj4gL2Rldi9udWxsCnQA20RPVCBGSUxFcyBTQVZFRCBBUyAvVXNlcnMvZWx2aW8vRGVza3RvcC9NWS1TVk4vR3JlYXRTUE4vU09VUkNFUy9KYXZhR1VJL2FUZXN0MS1NZWFzdXJlcy5zb2x1dGlvbi9iYXNpY0RTUE4tVFJHLTAuZG90IEFORCAvVXNlcnMvZWx2aW8vRGVza3RvcC9NWS1TVk4vR3JlYXRTUE4vU09VUkNFUy9KYXZhR1VJL2FUZXN0MS1NZWFzdXJlcy5zb2x1dGlvbi9iYXNpY0RTUE4tVFJHLTAucGRmCnQAAQp0ACcbWzBYG1szMm0gUFJPQ0VTUyBFWElURUQgTk9STUFMTFkuG1swbQp4c3EAfgAAdwQAAABac3IAEWphdmEubGFuZy5Cb29sZWFuzSBygNWc+u4CAAFaAAV2YWx1ZXhwAXEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF5xAH4AXnEAfgBecQB+AF54</document-log>
+    <image uuid="5af2a638-94c7-489e-b424-4b5ac700d192">iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAatJREFUOE+Vkt1rkmEYxv1booMRtMhKKpN6Eaez5cdmpWUL8xXclrlVfi/nNIukD2psGnWwHYxOrD9kMBAKdrT/RLj2XLc8by8Gwy74cd/3817XdfQ6qLnHa2cUw9uLq5gU5f8jYSr4KDdcbe2g2euj9fWn0CS9X2h2x1Hv3T7oV7lRiT+xjI2tHzh70TMxdeVnTgp897Oofd7H1BUDuUIdWrwPDgfWriepfNoHc1LgjWVQer+LafesmDg19tu+Fzt7YE4KjPkneP72G5xGSEycdvSbnmSt/R3MScHN8CKetbpw+WIoNjpipHhTg99H1k5xz232wJwUeO48xFL9C64FkxOTXd8Cc1JwPZhApvIBnlBasIt37c227JzaY5Y+gjkpuBq4h1ThHW5FVyyo8V1PknrZAXNS4JpZQDLfhnfhhQVl37X0WzL/GsxJwWVvBPGVBgIPqhbU+K4nSTzdAHNS4DTCiGXXETFfTcxd5WdOCi54gsf++DKi6TKiZvUvmSrmM5V/iJpl0M+cFCidO++eOZ6+EVB/GfGfgvqufPQzN4qPxOPSf6D8DscJoRUBMIdK96UAAAAASUVORK5CYII=</image>
+  </resource-list>
+</project>

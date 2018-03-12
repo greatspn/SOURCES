@@ -1,0 +1,972 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.3" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+  <NonVisualComponents>
+    <Component class="common.Action" name="actionSelection">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="ESCAPE"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="Selection tool"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolSelect24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(Esc) Selection and movement tool."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionSelectionActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionToggleRuler">
+      <Properties>
+        <Property name="actionName" type="java.lang.String" value="Toggle ruler"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getRuler24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="Toggles the editor ruler"/>
+      </Properties>
+    </Component>
+    <Component class="common.Action" name="actionAddPlace">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="P"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New place"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolPlace24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(P) Add a new (discrete) place  to the GSPN model."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddPlaceActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddExpTransition">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="T"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New exponential transition"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolTrn24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(T) Add a new exponential transition to the GSPN model."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddExpTransitionActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddImmTransition">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="I"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New immediate transition"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolImmTrn24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(I) Add a new immediate transition to the GSPN model."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddImmTransitionActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddGenTransition">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="G"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New general transition"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolDetTrn24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(G) Add a new general transition to the GSPN model."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddGenTransitionActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddGspnArc">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="A"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New input/output arc"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolArrow24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(A) Add a new input or output arc between a place and a transition."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddGspnArcActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddGspnInhibArc">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="H"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New inhibitor arc"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolInhib24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(H) Add a new inhibitor arc."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddGspnInhibArcActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionNewEdgePoint">
+      <Properties>
+        <Property name="actionName" type="java.lang.String" value="New edge point."/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getEdgePointAdd24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="Add a new point in each selected segments."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionNewEdgePointActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionDeleteEdgePoint">
+      <Properties>
+        <Property name="actionName" type="java.lang.String" value="Delete edge points"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getEdgePointDelete24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="Delete the selected edge points."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionDeleteEdgePointActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionClearAllEdgePoints">
+      <Properties>
+        <Property name="actionName" type="java.lang.String" value="Delete all edge points"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getEdgePointClear24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="Delete all the intermediate edge points of the selected edges."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionClearAllEdgePointsActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionSetBrokenEdge">
+      <Properties>
+        <Property name="actionName" type="java.lang.String" value="Broken edge"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getEdgeBroken24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="Set or disable the selected edge as broken."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionSetBrokenEdgeActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddDtaInitLoc">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="O"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New initial location"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolInitLoc24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(O) Add a new initial location to the current DTA."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddDtaInitLocActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddDtaLoc">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="L"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New Location"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolAddLoc24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(L) Add a new location to the current DTA."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddDtaLocActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddDtaAcceptLoc">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="C"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New accepting location"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolLocTop24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(C) Add a new final accepting location to the current DTA."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddDtaAcceptLocActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddDtaRejectLoc">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="R"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New rejecting location"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolLocBot24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(R) Add a new final rejecting location to the current DTA."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddDtaRejectLocActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddDtaInnerEdge">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="E"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New Inner edge"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolArrowTriangle24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(E) Add a new inner edge to the current DTA."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddDtaInnerEdgeActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddDtaBoundaryEdge">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="B"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New boundary edge"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolArrowImmed24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(B) Add a new boundary edge to the current DTA."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddDtaBoundaryEdgeActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddIntConst">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="N"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New integer constant"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getConstantN24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(N) Add a new integer constant to the current page."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddIntConstActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddRealConst">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="R"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New real constant"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getConstantR24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(R) Add a new real constant to the current page."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddRealConstActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddIntTemplate">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="Shift+N"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New template integer Id."/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolTemplateN24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(Shift+N) Add a new integer template Id to the current page."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddIntTemplateActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddRealTemplate">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="Shift+R"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New template real Id."/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolTemplateR24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(Shift+R) Add a new real template Id to the current page."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddRealTemplateActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddStatePropTemplate">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="S"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New state proposition Id."/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolTemplateSP24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(S) Add a new state proposition Id to the page."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddStatePropTemplateActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddActionTemplate">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="Shift+A"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New action Id."/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolTemplateAct24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(Shift+A) Add a new action Id to the current page."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddActionTemplateActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddClockVar">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="Q"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New clock variable."/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolAddClockvar24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(Q) Add a new clock variable to the current page."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddClockVarActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddTextBox">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="X"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New Text box"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getLatexNode24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(X) Add a new Text Box."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddTextBoxActionPerformed"/>
+      </Events>
+    </Component>
+    <Container class="javax.swing.JToolBar" name="jToolBarEmpty">
+      <Properties>
+        <Property name="floatable" type="boolean" value="false"/>
+        <Property name="rollover" type="boolean" value="true"/>
+      </Properties>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
+    </Container>
+    <Container class="javax.swing.JPopupMenu" name="popupMenuViewProfile">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout">
+        <Property name="useNullLayout" type="boolean" value="true"/>
+      </Layout>
+      <SubComponents>
+        <MenuItem class="javax.swing.JCheckBoxMenuItem" name="viewRatesMenuItem">
+          <Properties>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Show rates/delays"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewRatesMenuItemActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JCheckBoxMenuItem" name="viewGuardsMenuItem">
+          <Properties>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Show guards"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewGuardsMenuItemActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JCheckBoxMenuItem" name="viewPrioritiesMenuItem">
+          <Properties>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Show priorities"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewPrioritiesMenuItemActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JCheckBoxMenuItem" name="viewNamesMenuItem">
+          <Properties>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Show name labels"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewNamesMenuItemActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JCheckBoxMenuItem" name="viewSuperPosTagsMenuItem">
+          <Properties>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Show superposition tags"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewSuperPosTagsMenuItemActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <Component class="javax.swing.JPopupMenu$Separator" name="viewProfileSeparator">
+        </Component>
+        <MenuItem class="javax.swing.JCheckBoxMenuItem" name="showTimedCmdMenuItem">
+          <Properties>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Show timed/stochastic elements"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="showTimedCmdMenuItemActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JCheckBoxMenuItem" name="showColorCmdMenuItem">
+          <Properties>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Show color/SWN elements"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="showColorCmdMenuItemActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JCheckBoxMenuItem" name="showFluidCmdMenuItem">
+          <Properties>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Show hybrid/fluid elements"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="showFluidCmdMenuItemActionPerformed"/>
+          </Events>
+        </MenuItem>
+      </SubComponents>
+    </Container>
+    <Component class="common.Action" name="actionAddContPlace">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="K"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New continuous place"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolCplace24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(K) Add a new continuous place  to the GSPN model."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddContPlaceActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddContTransition">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="F"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New continuous transition"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolFlowtrn24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(F) Add a new continuous (flow) transition to the GSPN model."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddContTransitionActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddColorClass">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="D"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New color class/domain"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolColor24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(D) Add a new color class/domain to the model."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddColorClassActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddColorVar">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="V"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New color variable"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolColorvar24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(V) Add a new color variable to the model."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddColorVarActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionAddColorClassTemplate">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="U"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="New template color class/domain Id"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getToolTemplateClr24" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="(U) Add a new template color class/domain Id to the model."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionAddColorClassTemplateActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="editor.gui.ResourceFactory" name="resourceFactory">
+    </Component>
+  </NonVisualComponents>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="2"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,58,0,0,5,110"/>
+  </AuxValues>
+
+  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+  <SubComponents>
+    <Container class="javax.swing.JScrollPane" name="jScrollPane">
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="Center"/>
+        </Constraint>
+      </Constraints>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+    </Container>
+    <Container class="javax.swing.JPanel" name="jPanelToolbars">
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="North"/>
+        </Constraint>
+      </Constraints>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout"/>
+      <SubComponents>
+        <Container class="javax.swing.JToolBar" name="jToolBar">
+          <Properties>
+            <Property name="floatable" type="boolean" value="false"/>
+            <Property name="rollover" type="boolean" value="true"/>
+          </Properties>
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+              <GridBagConstraints gridX="-1" gridY="-1" gridWidth="1" gridHeight="1" fill="1" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="10" weightX="0.0" weightY="0.0"/>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
+          <SubComponents>
+            <Component class="javax.swing.JToggleButton" name="jToggleButtonSelection">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionSelection"/>
+                </Property>
+                <Property name="selected" type="boolean" value="true"/>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="hideActionText" type="boolean" value="true"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddIntConst">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddIntConst"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddRealConst">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddRealConst"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddPlace">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddPlace"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddContPlace">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddContPlace"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddExpTransition">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddExpTransition"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value=""/>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddImmTransition">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddImmTransition"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddGenTransition">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddGenTransition"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddContTransition">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddContTransition"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddDtaInitLoc">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddDtaInitLoc"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddDtaLoc">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddDtaLoc"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddDtaAcceptLoc">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddDtaAcceptLoc"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddDtaRejectLoc">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddDtaRejectLoc"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddClockVar">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddClockVar"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddGspnArc">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddGspnArc"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddGspnInhibArc">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddGspnInhibArc"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddDtaInnerEdge">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddDtaInnerEdge"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddDtaBoundaryEdge">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddDtaBoundaryEdge"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddColorClass">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddColorClass"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddColorVar">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddColorVar"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddIntTemplate">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddIntTemplate"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddRealTemplate">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddRealTemplate"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddStatePropTemplate">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddStatePropTemplate"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddActionTemplate">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddActionTemplate"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddColorClassTemplate">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddColorClassTemplate"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToggleTriState" name="jToggleTriStateAddTextBox">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionAddTextBox"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JToolBar" name="jToolBarEdgeCmd">
+          <Properties>
+            <Property name="floatable" type="boolean" value="false"/>
+            <Property name="rollover" type="boolean" value="true"/>
+          </Properties>
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+              <GridBagConstraints gridX="-1" gridY="-1" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="10" weightX="0.0" weightY="0.0"/>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
+          <SubComponents>
+            <Component class="javax.swing.JToolBar$Separator" name="jSeparator1">
+            </Component>
+            <Component class="common.JToolbarButton" name="jToolbarButtonNewPoint">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionNewEdgePoint"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="common.JToolbarButton" name="jToolbarButtonDeletePoint">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionDeleteEdgePoint"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="common.JToolbarButton" name="jToolbarButtonClearPoints">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionClearAllEdgePoints"/>
+                </Property>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JToggleButton" name="jToggleButtonBrokenEdge">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="actionSetBrokenEdge"/>
+                </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="hideActionText" type="boolean" value="true"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel2">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+              <GridBagConstraints gridX="-1" gridY="-1" gridWidth="1" gridHeight="1" fill="1" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="10" weightX="0.1" weightY="0.0"/>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel1">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+              <GridBagConstraints gridX="-1" gridY="-1" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="10" weightX="0.0" weightY="0.0"/>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+            <Property name="columns" type="int" value="0"/>
+            <Property name="rows" type="int" value="1"/>
+          </Layout>
+          <SubComponents>
+            <Container class="javax.swing.JToolBar" name="jToolBar1">
+              <Properties>
+                <Property name="floatable" type="boolean" value="false"/>
+                <Property name="rollover" type="boolean" value="true"/>
+              </Properties>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
+              <SubComponents>
+                <Component class="common.JToolbarButton" name="jToolbarButtonViewProfiles">
+                  <Properties>
+                    <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                      <Connection component="resourceFactory" name="getThreeTags24" type="method"/>
+                    </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="Change the view options."/>
+                    <Property name="horizontalTextPosition" type="int" value="0"/>
+                    <Property name="verticalTextPosition" type="int" value="3"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jToolbarButtonViewProfilesActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JToggleButton" name="jToggleButtonSnapToGrid">
+                  <Properties>
+                    <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                      <Connection component="resourceFactory" name="getSnapToGrid24" type="method"/>
+                    </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="Enable/disable grid snapping.&#xa;You can also toggle grid snapping dinamically&#xa;while dragging objects by pressing the ALT key."/>
+                    <Property name="focusable" type="boolean" value="false"/>
+                    <Property name="horizontalTextPosition" type="int" value="0"/>
+                    <Property name="verticalTextPosition" type="int" value="3"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jToggleButtonSnapToGridActionPerformed"/>
+                  </Events>
+                </Component>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+  </SubComponents>
+</Form>

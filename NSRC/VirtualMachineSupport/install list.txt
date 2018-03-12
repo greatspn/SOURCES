@@ -1,0 +1,66 @@
+# Questo file contiene la lista dei passaggi per installare GreatSPN su Fedora 26 in ambiente LXDE
+
+# install guest additions
+dnf update kernel
+reboot
+dnf -y install gcc kernel-devel kernel-headers dkms make bzip2 perl
+export KERN_DIR=/usr/src/kernels/xxxxxxxxxxxxx
+install guest additions from the virtualbox menu
+
+# Autologin con LXDM
+vi /etc/lxdm/lxdm.conf   enable autologin=user, enable session=/usr/bin/startlxde, comment timeout=...
+
+# Installazione pacchetti base
+dnf -y install gcc gcc-c++ gmp-devel gmp-c++ gmp boost-devel flex-devel ant glib2-devel patch python libxml-devel glpk-devel lpsolve-devel autoconf automake libtool subversion zip flex patch python ftp://rpmfind.net/linux/fedora/linux/releases/23/Everything/x86_64/os/Packages/b/byacc-1.9.20141128-2.fc23.x86_64.rpm time
+
+dnf -y install cups-pdf terminus-fonts graphviz evince motif-devel libxml++-devel glibmm24-devel lpsolve-devel
+
+# Patch bug in boost library
+sed -i 's/fixed_matrix \&operator = (matrix m) {/fixed_matrix \&operator = (fixed_matrix m) {/g' /usr/include/boost/numeric/ublas/matrix.hpp
+
+# Download GreatSPN sources from the read-only SVN repository, and compile it using -O2
+( mkdir GreatSPN ; cd GreatSPN ; \
+	 svn co --username vboxuser --password vboxuser --non-interactive https://svn.di.unito.it/repository/amparore/amparore-svn/GreatSPN/SOURCES SOURCES )
+RUN=/home/user/GreatSPN/SOURCES/NSRC/VirtualMachineSupport/run_as_root.sh
+# Scrivi version number e file per compilazione di rgmedd2
+dd of=~/.greatspn-on-vbox << '800'
+touch ~/.use-rgmedd2
+${RUN} dd of=/root/.greatspn-on-vbox << '800'
+${RUN} touch /root/.use-rgmedd2
+
+
+# Download and install Meddly from sourceforge. 
+(mkdir meddly ; \
+	 git clone git://git.code.sf.net/p/meddly/code-git meddly ; \
+	 cd meddly ; \
+	 ./autogen.sh ; \
+	 CXXFLAGS=-O2 LDFLAGS=-O2 ./configure --prefix=/usr/local ; \
+	 make ; \
+	 ${RUN} make install )
+${RUN} ln -s /home/user/meddly /home/meddly
+
+# Install GreatSPN
+# Compile and install GreatSPN from sources
+(cd GreatSPN/SOURCES ; \
+	 CFLAGS=-O2 CPPFLAGS=-O2 LDFLAGS=-O2 make -k ; \
+	 ${RUN} make install ; \
+	 echo 'PATH=$PATH:/usr/local/GreatSPN/scripts' >> ~/.bashrc )
+
+# Compile and install MCL
+(tar xzf GreatSPN/mcl-latest.tar.gz ; \
+	 cd mcl-14-137 ; \
+	 ./configure ; make ; 
+	 ${RUN} make install ; \
+	 cd .. ; rm -rf mcl-14-137 )
+
+# Procedura di upgrade di greatspn dai sorgenti
+${RUN} mkdir /media/vbox_Dati
+/home/user/GreatSPN/SOURCES/NSRC/VirtualMachineSupport/upgrade-greatspn-from-svn.sh
+
+# Fedora non sembra avere /usr/local/lib nel library path
+ADD /usr/local/lib  to /etc/ld.so.conf  and re-run ldconfig
+
+# IN LXDE, aggiungere al pannello un Keyboard Layout Switcher
+
+dnf install system-config-printer
+Poi Menu > Administration > Printer e aggiungere una stampante CUPS-pdf di default

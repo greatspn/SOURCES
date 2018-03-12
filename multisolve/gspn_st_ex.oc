@@ -1,0 +1,35 @@
+#!/bin/sh
+. great_package.sh
+############ GreatSPN2.0 ######################
+#
+echo $1
+net=$1
+t=$2
+prec=$3
+iter=$4
+
+#if ( ! $?GSPN2VERSION ) then
+#	set path1 = $0;
+#	set path2 = $path1:h
+#	set path1 = $path2:h
+#        setenv GSPN2VERSION $path1/install/version.csh
+#	unset path1
+#	unset path2
+#endif
+#if ( ! $?GSPN2BINS ) then
+#        setenv GSPN2BINS `$GSPN2VERSION`
+#endif
+#if ( ! $?GSPN2HOME ) then
+#        source ~/.GreatSPN2_$GSPN2BINS
+#endif
+
+${GREATSPN_SCRIPTDIR}/newMT $net 
+${GREATSPN_BINDIR}/ggsc $1 -e0.00001 -i300 -s10
+/bin/cp $1.epd $1.mpd
+${GREATSPN_BINDIR}/gst_prep $1
+${GREATSPN_BINDIR}/gst_stndrd $1 > $1.sta
+${GREATSPN_BINDIR}/throughput $1 >> $1.sta
+
+
+
+

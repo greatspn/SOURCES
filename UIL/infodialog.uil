@@ -1,0 +1,27 @@
+/*******************************************************************************
+        Info Message Box
+
+        Comment: This Section Describes the Info Message Box
+
+        Programmer:                     Alex
+        Creation Date:                  15/3/95
+        Last Modify Date:               15/3/95
+
+********************************************************************************/
+
+object  InfoDialog : XmInformationDialog
+{
+        controls
+        {
+			Xm_Help unmanaged {};
+			Xm_Cancel unmanaged {};
+        };
+        arguments
+        {
+		XmNnoResize = 		true;
+		XmNdialogStyle =  	XmDIALOG_APPLICATION_MODAL;
+		XmNdialogTitle =  	'Info';
+		XmNautoUnmanage = 	true;
+		XmNbackground =				appDialogBackgroundColor;
+        };
+};

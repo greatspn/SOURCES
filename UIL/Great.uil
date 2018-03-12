@@ -1,0 +1,461 @@
+/*******************************************************************************
+        Great.uil
+
+        Comment: This Section is the Main UIL file
+
+        Programmer:                     Alex
+        Creation Date:                  09/3/95
+        Last Modify Date:               13/06/96
+
+********************************************************************************/
+
+module GreatSPN
+	names = case_sensitive
+	
+objects =
+{
+	XmSeparator		=	gadget;
+	XmPushButton	=	gadget;
+	XmToggleButton	=	gadget;
+	XmCascadeButton	=	gadget;
+!	XmOptionButton	=	gadget;
+	XmLabel			=	gadget;
+}
+procedure
+	ButtonsCB(integer);
+	RedrawDrawingAreaCB();
+	
+identifier
+	PLACE_BUTTON;
+ 	IMTRANS_BUTTON;
+ 	EXTRANS_BUTTON;
+ 	DETRANS_BUTTON;
+ 	ARC_BUTTON;
+ 	TOKEN_BUTTON;
+ 	RATES_BUTTON;
+ 	RESULTS_BUTTON;
+ 	TAG_BUTTON;
+ 	COLOR_BUTTON;
+
+list MainWindowColors : arguments
+{
+	XmNforeground	=	appForeColor;
+	XmNbackground 	=	appBackColor;
+};
+
+
+include file 'bitmaps.uil';	
+include file 'colors.uil';
+include file 'fonts.uil';
+include file 'appconfig.uil';
+include file 'menu.uil';
+include file 'arcdialog.uil';
+include file 'layereditdialog.uil';
+include file 'layerviewdialog.uil';
+include file 'overdialog.uil';
+include file 'commentdialog.uil';
+include file 'warningdialog.uil';
+include file 'mdgrammardialog.uil';
+include file 'placechangedialog.uil';
+include file 'markchangedialog.uil';
+include file 'ratechangedialog.uil';
+include file 'colorchangedialog.uil';
+include file 'showdialog.uil';
+include file 'resultdialog.uil';
+include file 'consoledialog.uil';
+include file 'aboutdialog.uil';
+include file 'printdialog.uil';
+include file 'transdialog.uil';
+include file 'filedialog.uil';
+include file 'errordialog.uil';
+include file 'infodialog.uil';
+include file 'inputdialog.uil';
+include file 'optionsdialog.uil';
+include file 'simdialog.uil';
+include file 'unfolddialog.uil';
+include file 'simoptions.uil';
+include file 'swnrgoptions.uil';
+include file 'histodialog.uil';
+include file 'mousehelp.uil';
+	
+
+object	  MainWin : XmMainWindow
+{
+	controls
+	{
+		XmMenuBar  MenuBar;
+		XmScrolledWindow  ScrollArea;
+		XmFrame  StatusFrame;
+		XmRowColumn  ToolArea;
+		XmFormDialog OverDialog;	! Must be managed because It's mapped by the application
+
+		
+		unmanaged XmFormDialog CommentDialog;
+		unmanaged XmWarningDialog WarningDialog;
+		unmanaged XmFormDialog ArcChangeDialog;
+		unmanaged XmFormDialog LayerEditDialog;
+		unmanaged XmFormDialog LayerViewDialog;
+		unmanaged XmFormDialog MDGrammarDialog;
+		unmanaged XmFormDialog ResGrammarDialog;
+		unmanaged XmFormDialog PlaceChangeDialog;
+		unmanaged XmFormDialog MarkChangeDialog;
+		unmanaged XmFormDialog RateChangeDialog;
+		unmanaged XmFormDialog ColorChangeDialog;
+		unmanaged XmFormDialog ShowDialog;
+		unmanaged XmFormDialog ResChangeDialog;
+		unmanaged XmFormDialog ConsoleDialog;
+		unmanaged XmFormDialog AboutDialog;
+	    	unmanaged XmFormDialog PrintDialog;
+		unmanaged XmFormDialog TransChangeDialog;
+	    	unmanaged XmFormDialog OptionsDialog;
+		unmanaged XmFormDialog SimulationDialog;
+		unmanaged XmFormDialog HistoDialog;
+		unmanaged XmFormDialog MouseHelpDialog;
+	};
+	arguments
+	{
+		XmNmenuBar = MenuBar;
+		XmNworkWindow = ScrollArea;
+		XmNcommandWindow = ToolArea;
+		XmNmessageWindow = StatusFrame;
+		arguments MainWindowColors;
+	};
+	callbacks
+	{
+!		XmNpopdownCallback = procedure MainAppQueryUnloadCB();
+	};
+};
+
+object	ScrollArea : XmScrolledWindow
+{
+	controls
+	{
+		XmDrawingArea  DrawWin;
+		Xm_HorScrollBar { arguments{ arguments MainWindowColors; };};		
+		Xm_VertScrollBar { arguments{ arguments MainWindowColors; };};		
+	};
+	arguments
+	{
+
+!		XmNvalue =			100;
+
+		XmNscrollingPolicy 				=	XmAUTOMATIC;
+		XmNscrollBarDisplayPolicy 		=	XmSTATIC;
+		XmNscrolledWindowMarginWidth	=	4;
+		XmNscrolledWindowMarginHeight	=	4;
+		XmNheight 						=	400;
+		XmNwidth 						=	400;
+		arguments MainWindowColors;
+	};
+};
+
+object  DrawWin : XmDrawingArea
+{
+	controls
+	{
+		unmanaged XmPopupMenu Popup;
+	};
+	arguments
+	{
+		XmNheight 		=		1000;
+		XmNwidth 		=		2000;
+		XmNbackground	=		color('white');
+		XmNforeground	=		colorBlack;
+	};
+	callbacks
+	{
+		XmNexposeCallback = procedure RedrawDrawingAreaCB();
+	};
+};
+
+list ToolAreaButtonsArg : arguments
+{
+	XmNbackground 		=	appToolAreaButtBackColor;
+	XmNforeground 		=	appToolAreaButtForeColor;
+	XmNshadowThickness	= 	2;
+	XmNindicatorOn 		=	false;
+	XmNrecomputeSize 	=   true;
+	XmNfillOnSelect 	=   true;
+	XmNmarginWidth 		=	0;
+	XmNmarginHeight 	=	0;
+	XmNlabelType 		=	XmPIXMAP;
+};
+
+object ToolArea : XmRowColumn
+{
+	controls
+	{
+		XmToggleButton  BTN0;
+		XmToggleButton  BTN1;
+		XmToggleButton  BTN2;
+		XmToggleButton  BTN3;
+		XmToggleButton  BTN4;
+		XmToggleButton  BTN5;
+		XmToggleButton  BTN6;
+		XmToggleButton  BTN7;
+		XmToggleButton  BTN8;
+		XmToggleButton  BTN9;
+	};
+	arguments
+	{
+		XmNpacking 			=	XmPACK_TIGHT;
+		XmNorientation		= 	XmHORIZONTAL;
+		XmNradioBehavior	=	true;
+		XmNradioAlwaysOne	=	true;
+		arguments MainWindowColors;
+	};
+};
+
+object BTN0 : XmToggleButton widget
+{
+	arguments
+	{
+		XmNset = true;
+		arguments ToolAreaButtonsArg ;
+		XmNlabelPixmap = bmpPlace;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure ButtonsCB(PLACE_BUTTON);
+	};
+};
+object BTN1 : XmToggleButton  widget
+{
+	arguments
+	{
+		arguments ToolAreaButtonsArg ;
+		XmNlabelPixmap = bmpITrans;
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure ButtonsCB(IMTRANS_BUTTON);
+	};
+};
+object BTN2 : XmToggleButton widget
+{
+	arguments
+	{
+		arguments ToolAreaButtonsArg ;
+		XmNlabelPixmap = bmpETrans;	
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure ButtonsCB(EXTRANS_BUTTON);
+	};
+};
+object BTN3 : XmToggleButton widget
+{
+	arguments
+	{
+		arguments ToolAreaButtonsArg ;
+		XmNlabelPixmap = bmpDTrans;	
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure ButtonsCB(DETRANS_BUTTON);
+	};
+};
+object BTN4 : XmToggleButton widget
+{
+	arguments
+	{
+		arguments ToolAreaButtonsArg ;
+		XmNlabelPixmap = bmpArc;	
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure ButtonsCB(ARC_BUTTON);
+	};
+};
+object BTN5 : XmToggleButton widget
+{
+	arguments
+	{
+		arguments ToolAreaButtonsArg ;
+		XmNlabelPixmap = bmpToken;	
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure ButtonsCB(TOKEN_BUTTON);
+	};
+};
+object BTN6 : XmToggleButton widget
+{
+	arguments
+	{
+		arguments ToolAreaButtonsArg ;
+		XmNlabelPixmap = bmpRate;	
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure ButtonsCB(RATES_BUTTON);
+	};
+};
+object BTN7 : XmToggleButton widget
+{
+	arguments
+	{
+		arguments ToolAreaButtonsArg ;
+		XmNlabelPixmap = bmpResults;	
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure ButtonsCB(RESULTS_BUTTON);
+	};
+};
+object BTN8 : XmToggleButton widget
+{
+	arguments
+	{
+		arguments ToolAreaButtonsArg ;
+		XmNlabelPixmap = bmpTag;	
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure ButtonsCB(TAG_BUTTON);
+	};
+};
+object BTN9 : XmToggleButton widget
+{
+	arguments
+	{
+		arguments ToolAreaButtonsArg ;
+		XmNlabelPixmap = bmpColor;	
+	};
+	callbacks
+	{
+		XmNvalueChangedCallback = procedure ButtonsCB(COLOR_BUTTON);
+	};
+};
+
+object StatusFrame : XmFrame
+{
+	controls
+	{
+		XmFrame  InsetFrame;
+	};
+	arguments
+	{
+		XmNshadowType		=		XmSHADOW_OUT;
+!		XmNresizePolicy =		
+		XmNshadowThickness	=		2;
+		XmNmarginWidth 		=		4;
+		XmNmarginHeight 	=		4;
+		arguments MainWindowColors;
+	};
+};
+
+object InsetFrame : XmFrame
+{
+	controls
+	{
+		XmForm  StatusForm;
+	};
+	arguments
+	{
+		XmNshadowType		=		XmSHADOW_IN;
+		XmNshadowThickness	=		2;
+		XmNmarginWidth		=		0;
+		XmNmarginHeight		=		0;
+		arguments MainWindowColors;
+	};
+};
+
+
+object StatusForm : XmForm
+{
+	controls
+	{
+		XmLabel  StatusArea;
+		XmSeparator Status_Sep1;
+		XmLabel  ModifyArea;
+		XmSeparator Status_Sep2;
+		XmLabel  CurrentAction;
+	};
+	arguments
+	{
+		arguments MainWindowColors;
+	};
+};
+
+object StatusArea : XmLabel widget
+{
+	arguments
+	{
+		XmNfontList 		=	appMessageAreaFont;
+		XmNalignment		=	XmALIGNMENT_BEGINNING;
+		XmNlabelString		=	"Welcome in GreatSPN";
+		XmNrecomputeSize	=	false;
+        XmNtopAttachment =         XmATTACH_FORM;
+        XmNtopOffset =              1;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                1;
+        XmNrightAttachment =            XmATTACH_FORM;
+        XmNrightOffset =                228;
+		arguments MainWindowColors;
+	};
+};
+
+object ModifyArea : XmLabel widget
+{
+	arguments
+	{
+		XmNalignment        =   XmALIGNMENT_CENTER;
+		XmNfontList 		=	appMessageAreaFont;
+		XmNlabelString		=	" ";
+		XmNrecomputeSize	=	false;
+        XmNtopAttachment =         XmATTACH_FORM;
+        XmNtopOffset =              1;
+        XmNrightAttachment =            XmATTACH_FORM;
+        XmNrightOffset =                186;
+		XmNwidth = 38;
+		arguments MainWindowColors;
+
+	};
+};
+
+object CurrentAction : XmLabel widget
+{
+	arguments
+	{
+		XmNalignment		=	XmALIGNMENT_BEGINNING;
+		XmNfontList 		=	appMessageAreaFont;
+		XmNlabelString		=	"Add";
+		XmNrecomputeSize	=	false;
+        XmNtopAttachment =         XmATTACH_FORM;
+        XmNtopOffset =              1;
+        XmNrightAttachment =            XmATTACH_FORM;
+        XmNrightOffset =                1;
+		XmNwidth = 180;
+		arguments MainWindowColors;
+	};
+};
+
+object Status_Sep1 : XmSeparator
+{
+   arguments
+   {
+   		XmNorientation = XmVERTICAL;
+      XmNtopAttachment =            XmATTACH_FORM;
+        XmNtopOffset =              0;
+      XmNbottomAttachment =            XmATTACH_FORM;
+        XmNbottomOffset =              0;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                224;
+   };
+};
+
+object Status_Sep2 : XmSeparator
+{
+   arguments
+   {
+   		XmNorientation = XmVERTICAL;
+      XmNtopAttachment =            XmATTACH_FORM;
+        XmNtopOffset =              0;
+      XmNbottomAttachment =            XmATTACH_FORM;
+        XmNbottomOffset =              0;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                184;
+   };
+};
+end module;

@@ -1,0 +1,27 @@
+/*******************************************************************************
+        Error Message Box
+
+        Comment: This Section Describes the Error Message Box
+
+        Programmer:                     Alex
+        Creation Date:                  10/3/95
+        Last Modify Date:               10/3/95
+
+********************************************************************************/
+
+object  ErrorDialog : XmErrorDialog
+{
+        controls
+        {
+			Xm_Help unmanaged {};
+			Xm_Cancel unmanaged {};
+        };
+        arguments
+        {
+		XmNnoResize = 		true;
+		XmNdialogStyle =  	XmDIALOG_APPLICATION_MODAL;
+		XmNdialogTitle =  	'Error';
+		XmNautoUnmanage = 	true;
+		XmNbackground =				appDialogBackgroundColor;
+        };
+};

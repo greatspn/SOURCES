@@ -1,0 +1,200 @@
+/*******************************************************************************
+        Result Change Dialog
+        
+        Comment:     This Section Describes the Result Change Dialog 
+                                                        
+        Programmer:                             Alex
+        Creation Date:                  27/2/95
+        Last Modify Date:               10/3/95
+
+********************************************************************************/
+procedure
+	CancelResDialogCB();
+	SetResCB();
+	ShowResHelpCB();
+
+object  ResChangeDialog : XmFormDialog
+{
+        controls
+        {
+				XmPushButton  ResChangeDialog_Ok;
+				XmPushButton  ResChangeDialog_Cancel;
+				XmPushButton  ResChangeDialog_Help;
+				XmSeparator  ResChangeDialog_Sep1;
+				XmSeparator  ResChangeDialog_Sep2;
+				XmLabel  ResChangeDialog_Label1;
+				XmLabel  ResChangeDialog_Label2;
+				XmScrolledText ResChangeDialog_Def;
+				XmTextField  ResChangeDialog_Tag;
+         };
+        arguments
+        {
+                XmNdialogTitle                  =       "Change Result Properties";
+!                XmNwidth                                =       310;
+!                XmNheight                               =       280;
+                XmNautoUnmanage                 =       false;
+                XmNdialogStyle                  =       XmDIALOG_FULL_APPLICATION_MODAL;
+                XmNnoResize                             =       true;
+				XmNbackground =				appDialogBackgroundColor;
+        };
+
+};
+
+object ResChangeDialog_Help : XmPushButton widget
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_WIDGET;
+		XmNtopWidget=					ResChangeDialog_Def;
+      XmNtopOffset =              10;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+      XmNlabelString =               'Res Grammar Help ...';
+      XmNrecomputeSize =            false;
+      XmNwidth =                     150;
+      XmNheight =                    30;
+	  XmNbackground 	=	appDialogBackgroundColor;
+   };
+   callbacks
+   {
+   		XmNactivateCallback = procedure ShowResHelpCB();
+   };
+};
+
+
+object ResChangeDialog_Sep1 : XmSeparator
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              87;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                1;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                1;
+   };
+};
+
+object ResChangeDialog_Sep2 : XmSeparator
+{
+   arguments
+   {
+		XmNtopAttachment	=				XmATTACH_WIDGET;
+		XmNtopOffset		=				10;
+		XmNtopWidget		=				ResChangeDialog_Help;
+!!      XmNbottomAttachment =          XmATTACH_FORM;
+!!      XmNbottomOffset =              82;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                1;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                1;
+   };
+};
+
+object ResChangeDialog_Ok : XmPushButton
+{
+   arguments
+   {
+		XmNtopAttachment	=				XmATTACH_WIDGET;
+		XmNtopOffset		=				6;
+		XmNtopWidget		=				ResChangeDialog_Sep2;
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              4;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                20;
+      XmNlabelString =               'Ok';
+      XmNshowAsDefault =             1;
+      XmNrecomputeSize =            false;
+      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+    callbacks
+    {
+   		XmNactivateCallback = procedure	SetResCB();
+	};
+};
+
+object ResChangeDialog_Cancel : XmPushButton
+{
+   arguments
+   {
+		XmNtopAttachment	=				XmATTACH_WIDGET;
+		XmNtopOffset		=				10;
+		XmNtopWidget		=				ResChangeDialog_Sep2;
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              10;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               26;
+      XmNlabelString =               'Cancel';
+      XmNrecomputeSize =            false;
+      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+    callbacks
+    {
+   		XmNactivateCallback = procedure	CancelResDialogCB();
+	};
+};
+
+
+object ResChangeDialog_Label1 : XmLabel
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              97;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+      XmNlabelString =             'Definition :';
+   };
+};
+
+object ResChangeDialog_Label2 : XmLabel
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              10;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+      XmNlabelString =                         'Label :';
+   };
+};
+
+
+object ResChangeDialog_Def : XmScrolledText
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              119;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                10;
+	  XmNbackground =				appDialogBackgroundColor;
+      XmNwidth =                     290;
+      XmNheight =                    99;
+	  XmNeditMode =					XmMULTI_LINE_EDIT;
+   };
+    callbacks
+    {
+   		XmNactivateCallback = procedure	SetResCB();
+	};
+};
+
+object ResChangeDialog_Tag : XmTextField
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              32;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+	  XmNbackground =				appDialogBackgroundColor;
+   };
+    callbacks
+    {
+   		XmNactivateCallback = procedure	SetResCB();
+	};
+};

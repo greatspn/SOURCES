@@ -1,0 +1,69 @@
+GREATSPN2.0.X with Meddly
+
+
+
+GETTING START
+______________________________________________
+
+The GreatSPN  GUI (see GreatSPN manual for a detailed description) can be used to draw the PN submodel 
+
+The GreatSPN GUI starts typing  the command ``greatspn'' in a terminal (``greatspn'' script is in the ``bin'' directory).
+
+In order to produce to generete the state space of the PN model the script ``ord_rgMEDD''  (in the ``bin'' directory) has to be executed by command-line  as follows:
+
+		ord_rgMEDD <net_directory/net>  [-B INTEGER] [-P/-F] [-h INTEGER] 
+
+
+
+where 
+option [-B] is used to specify the places' bound. If it is not specified  the places' bound is set to 255. Observe that this value has an impact on the computation time; 
+option [-P] is used to specify the variable ordering using P-invariant;  
+option [-F] is used to specify the variable ordering through a file <.place>
+option [-h] is used to specify the maximum cache dimension.
+
+
+In order to produce to perform CTL model checking on a PN model  the script ``ord_rgMEDD''  (in the ``bin'' directory) has to be executed by command-line  as follows:
+
+ord_rgMEDD <net_directory/net>  -C
+
+Observe that the CTL formula can be also written in a file <net_directory/net>.ctl according to the following grammar:
+
+                        
+<CTLformula>        ::= <atomicProposition> | <CTLformula> |
+                        <CTLformula> “and” <CTLformula> |
+                        <CTLformula> “or” <CTLformula> |
+                        “not” <CTLformula> | <CTLformula> “->” <CTLformula> |
+                        “E” “X” <CTLformula> | “E” “G” <CTLformula> |
+                        “E” “[” <CTLformula> “U” <CTLformula> “]” |
+                        “A” “X” <CTLformula> | “A” “F” <CTLformula> |
+                        “E” “F” <CTLformula> | “A” “G” <CTLformula> |
+                        “A” “[” <CTLformula> “U” <CTLformula> “]”
+                        
+<atomicProposition> ::= <inequality> | <boolvalue> | “ndeadlock” | “deadlock” | “enk <var>”
+                       
+<boolvalue>         ::=  “true” | “false”
+                       
+<inequality>        ::=  “(” <expression> <comp oper> <number expr> “)”
+                       
+<comp oper>         ::= “<” | “>” | “<=” | “>=” | “=” | “! =”
+                        
+<expression>        ::=“(” <expression> <arit oper> <number expr> “)” | <term> |
+			“(” <number expr> “)”
+                        
+<arit oper>         ::= “+” | “−” | “∗” | “/”
+                        
+<term>              ::= <number expr> “∗” <var> | <number expr> “/” <var> | <var>
+                        
+<number expr>       ::= “(” <number expr> <arit oper> <number expr> “)” | <number>
+                        
+<var>               ::= [(A-Z)(a-z)][(A-Z)(a-z)(0-9)]∗
+                        
+<numbr>             ::= R^+
+
+Moreover the ctl file can also contain comments marked by `%'  
+  
+
+HOWTO GENERATE A GSPN MODEL
+______________________________________________
+
+The GreatSPN manual (that can be downloaded from http://wwww.di.unito.it) is a good starting point. 

@@ -1,0 +1,38 @@
+#!/bin/csh
+if (  $1 == 'cs' ) then
+     rm OBJ/CS*
+     touch INCLUDE/* SOURCE/SHARED/* SOURCE/SIMULAT/* SOURCE/READNET/* TRANSL/*
+     cp INCLUDE/const.cs INCLUDE/const.h
+     make -f EDIT/makefile.cs WNSIM
+else if (  $1 == 'ss' ) then
+     rm OBJ/SS*
+     touch INCLUDE/* SOURCE/SHARED/* SOURCE/SIMULAT/* SOURCE/READNET/* TRANSL/*
+     cp INCLUDE/const.ss INCLUDE/const.h
+     make -f EDIT/makefile.ss WNSYMB
+else if (  $1 == 'rg' ) then
+     rm OBJ/RG*
+     touch INCLUDE/* SOURCE/SHARED/* SOURCE/REACHAB/* SOURCE/READNET/* TRANSL/*
+     cp INCLUDE/const.rg INCLUDE/const.h
+     make -f EDIT/makefile.rg WNRG
+else if (  $1 == 'srg' ) then
+     rm OBJ/SRG*
+     touch INCLUDE/* SOURCE/SHARED/* SOURCE/REACHAB/* SOURCE/READNET/* TRANSL/*
+     cp INCLUDE/const.srg INCLUDE/const.h
+     make -f EDIT/makefile.srg WNSRG
+else if (  $1 == 'gsrg' ) then
+     rm OBJ/GSPN*
+     touch GSPNINCLUDE/* GSPNSOURCE/SHARED/* GSPNSOURCE/REACHAB/* GSPNSOURCE/READNET/* GSPNTRANSL/*
+     cp GSPNINCLUDE/const.gsrg GSPNINCLUDE/const.h
+     make -f EDIT/makefile.gspnrg GSPNRG
+else if (  $1 == 'gssim' ) then
+     rm OBJ/GSPN*
+     touch INCLUDE/* SOURCE/SHARED/* SOURCE/SIMULAT/* SOURCE/READNET/* TRANSL/*
+     cp INCLUDE/const.gssim INCLUDE/const.h
+     make -f EDIT/makefile.gspns GSPNSIM
+endif
+endif
+endif
+endif
+endif
+endif
+exit(0)

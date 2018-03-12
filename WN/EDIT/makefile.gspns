@@ -1,0 +1,208 @@
+#directories
+CSOU = SOURCE/SHARED
+SSOU = SOURCE/SIMULAT
+RSOU = SOURCE/READNET
+EDT = EDIT
+SFK = SUPPORT
+INC = INCLUDE
+BCK = BACKUP
+TRS = TRANSL
+OBJ = ../../$(GSPN2BINS)/2bin
+BINDIR=../../$(GSPN2BINS)
+
+
+#commands
+COMP = $(CC) $(CFLAGS) -o
+LINK = $(CC) $(OFLAGS)
+LFLAGS = -lm -l$(LEX_LIB) $(SOCKET_LIB)
+
+
+
+
+#files groups
+EXECUTABLES  =	GSPNSIM
+T_INCLUDES = ${INC}/const.h \
+	     ${INC}/struct.h \
+	     ${INC}/var_ext.h \
+	     ${INC}/decl.h \
+	     ${INC}/fun_ext.h \
+	     ${INC}/macros.h
+T_OBJECTS = ${OBJ}/ealloc.o \
+	    ${OBJ}/GSPNSIM_grammar.o \
+	    ${OBJ}/GSPNSIM_service.o \
+	    ${OBJ}/GSPNSIM_token.o \
+	    ${OBJ}/GSPNSIM_dimensio.o \
+	    ${OBJ}/GSPNSIM_errors.o \
+	    ${OBJ}/GSPNSIM_common.o \
+	    ${OBJ}/GSPNSIM_report.o \
+	    ${OBJ}/GSPNSIM_enabling.o \
+	    ${OBJ}/GSPNSIM_fire.o\
+	    ${OBJ}/GSPNSIM_shared1.o\
+	    ${OBJ}/GSPNSIM_shared2.o\
+	    ${OBJ}/GSPNSIM_outdom.o\
+	    ${OBJ}/GSPNSIM_precheck.o \
+	    ${OBJ}/GSPNSIM_flush.o \
+	    ${OBJ}/GSPNSIM_degree.o \
+	    ${OBJ}/GSPNSIM_split.o \
+	    ${OBJ}/GSPNSIM_group.o \
+	    ${OBJ}/GSPNSIM_increm.o\
+	    ${OBJ}/GSPNSIM_engine.o \
+	    ${OBJ}/GSPNSIM_random.o \
+	    ${OBJ}/GSPNSIM_stat.o \
+	    ${OBJ}/GSPNSIM_distribu.o \
+	    ${OBJ}/GSPNSIM_eng_wn.o \
+	    ${OBJ}/GSPNSIM_lists.o \
+	    ${OBJ}/GSPNSIM_presel.o\
+	    ${OBJ}/GSPNSIM_after.o\
+	    ${OBJ}/GSPNSIM_read_arc.o \
+	    ${OBJ}/GSPNSIM_read_t_c.o \
+	    ${OBJ}/GSPNSIM_read_DEF.o \
+	    ${OBJ}/GSPNSIM_read_NET.o \
+	    ${OBJ}/GSPNSIM_read_t_s.o \
+	    ${OBJ}/GSPNSIM_wn_yac.o
+T_SOURCES = ${CSOU}/service.c \
+	    ${CSOU}/token.c \
+	    ${CSOU}/dimensio.c \
+	    ${CSOU}/errors.c \
+	    ${CSOU}/common.c \
+	    ${CSOU}/enabling.c	\
+	    ${CSOU}/fire.c\
+	    ${CSOU}/shared1.c\
+	    ${CSOU}/shared2.c\
+	    ${CSOU}/outdom.c\
+	    ${CSOU}/report.c\
+	    ${CSOU}/precheck.c \
+	    ${CSOU}/flush.c \
+	    ${CSOU}/degree.c \
+	    ${CSOU}/split.c \
+	    ${CSOU}/group.c \
+	    ${SSOU}/eng_wn.c \
+	    ${SSOU}/lists.c \
+	    ${SSOU}/engine.c \
+	    ${SSOU}/distribu.c \
+	    ${SSOU}/increm.c\
+	    ${SSOU}/presel.c\
+	    ${SSOU}/random.c\
+	    ${SSOU}/stat.c\
+	    ${SSOU}/after.c\
+	    ${RSOU}/read_arc.c \
+	    ${RSOU}/read_t_c.c \
+	    ${RSOU}/read_DEF.c \
+	    ${RSOU}/read_NET.c \
+	    ${RSOU}/read_t_s.c \
+	    ${RSOU}/wn_yac.c
+T_LEX = ${TRS}/wn.lex
+T_YACC = ${TRS}/wn_2.yac
+
+#general rules
+#${EXECUTABLES} : ${T_INCLUDES} ${T_LEX} ${T_YACC} {T_SOURCES}
+
+$(BINDIR)/GSPNSIM : ${T_INCLUDES} ${T_OBJECTS} ${T_LEX} ${T_YACC} ${CSOU}/main.c
+	${LINK} $(BINDIR)/GSPNSIM ${CSOU}/main.c ${T_OBJECTS} $(LFLAGS)
+
+${OBJ}/GSPNSIM_outdom.o : ${CSOU}/outdom.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_outdom.o ${CSOU}/outdom.c
+
+${OBJ}/GSPNSIM_shared1.o : ${CSOU}/shared1.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_shared1.o ${CSOU}/shared1.c
+
+${OBJ}/GSPNSIM_shared2.o : ${CSOU}/shared2.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_shared2.o ${CSOU}/shared2.c
+
+${OBJ}/GSPNSIM_precheck.o : ${CSOU}/precheck.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_precheck.o ${CSOU}/precheck.c
+
+${OBJ}/GSPNSIM_fire.o : ${CSOU}/fire.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_fire.o ${CSOU}/fire.c
+
+${OBJ}/GSPNSIM_degree.o : ${CSOU}/degree.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_degree.o ${CSOU}/degree.c
+
+${OBJ}/GSPNSIM_report.o : ${CSOU}/report.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_report.o ${CSOU}/report.c
+       
+${OBJ}/GSPNSIM_flush.o : ${CSOU}/flush.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_flush.o ${CSOU}/flush.c
+       
+${OBJ}/GSPNSIM_common.o : ${CSOU}/common.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_common.o ${CSOU}/common.c
+       
+${OBJ}/GSPNSIM_errors.o : ${CSOU}/errors.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_errors.o ${CSOU}/errors.c
+       
+${OBJ}/GSPNSIM_dimensio.o : ${CSOU}/dimensio.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_dimensio.o ${CSOU}/dimensio.c
+       
+${OBJ}/GSPNSIM_enabling.o : ${CSOU}/enabling.c ${T_INCLUDES} ${INC}/shared.h
+	${COMP} ${OBJ}/GSPNSIM_enabling.o ${CSOU}/enabling.c
+       
+${OBJ}/GSPNSIM_token.o : ${CSOU}/token.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_token.o ${CSOU}/token.c
+       
+${OBJ}/GSPNSIM_service.o : ${CSOU}/service.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_service.o ${CSOU}/service.c
+       
+${OBJ}/GSPNSIM_split.o : ${CSOU}/split.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_split.o ${CSOU}/split.c
+       
+${OBJ}/GSPNSIM_group.o : ${CSOU}/group.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_group.o ${CSOU}/group.c
+       
+${OBJ}/GSPNSIM_engine.o : ${SSOU}/engine.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_engine.o ${SSOU}/engine.c
+       
+${OBJ}/GSPNSIM_lists.o : ${SSOU}/lists.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_lists.o ${SSOU}/lists.c
+       
+${OBJ}/GSPNSIM_eng_wn.o : ${SSOU}/eng_wn.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_eng_wn.o ${SSOU}/eng_wn.c
+       
+${OBJ}/GSPNSIM_distribu.o : ${SSOU}/distribu.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_distribu.o ${SSOU}/distribu.c
+       
+${OBJ}/GSPNSIM_stat.o : ${SSOU}/stat.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_stat.o ${SSOU}/stat.c
+       
+${OBJ}/GSPNSIM_random.o : ${SSOU}/random.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_random.o ${SSOU}/random.c
+       
+${OBJ}/GSPNSIM_increm.o : ${SSOU}/increm.c ${T_INCLUDES} ${INC}/shared.h
+	${COMP} ${OBJ}/GSPNSIM_increm.o ${SSOU}/increm.c
+
+${OBJ}/GSPNSIM_presel.o : ${SSOU}/presel.c ${T_INCLUDES} ${INC}/shared.h
+	${COMP} ${OBJ}/GSPNSIM_presel.o ${SSOU}/presel.c
+
+${OBJ}/GSPNSIM_after.o : ${SSOU}/after.c ${T_INCLUDES} ${INC}/shared.h
+	${COMP} ${OBJ}/GSPNSIM_after.o ${SSOU}/after.c
+
+${OBJ}/GSPNSIM_wn_yac.o : ${RSOU}/wn_yac.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_wn_yac.o ${RSOU}/wn_yac.c
+       
+${OBJ}/GSPNSIM_read_arc.o : ${RSOU}/read_arc.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_read_arc.o ${RSOU}/read_arc.c
+       
+${OBJ}/GSPNSIM_read_t_s.o : ${RSOU}/read_t_s.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_read_t_s.o ${RSOU}/read_t_s.c
+       
+${OBJ}/GSPNSIM_read_t_c.o : ${RSOU}/read_t_c.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_read_t_c.o ${RSOU}/read_t_c.c
+       
+${OBJ}/GSPNSIM_read_DEF.o : ${RSOU}/read_DEF.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_read_DEF.o ${RSOU}/read_DEF.c
+       
+${OBJ}/GSPNSIM_read_NET.o : ${RSOU}/read_NET.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_read_NET.o ${RSOU}/read_NET.c
+       
+${OBJ}/GSPNSIM_grammar.o : ${SFK}/gspn_grammar.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GSPNSIM_grammar.o ${SFK}/gspn_grammar.c
+
+${SFK}/gspn_lex.c : ${TRS}/wn.lex
+	$(LEX) ${TRS}/wn.lex
+	mv lex.jj.c ${SFK}/gspn_lex.c
+	ed ${SFK}/gspn_lex.c < ${EDT}/ed_lex
+
+${SFK}/gspn_grammar.c : ${TRS}/wn_2.yac ${SFK}/gspn_lex.c ${T_INCLUDES}
+	$(YACC) -v -t ${TRS}/wn_2.yac
+	mv y.tab.c ${SFK}/gspn_grammar.c
+	ed ${SFK}/gspn_grammar.c < ${EDT}/ed_gram
+

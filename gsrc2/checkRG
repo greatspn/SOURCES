@@ -1,0 +1,42 @@
+#!/bin/sh
+. great_package.sh
+############ GreatSPN2.0 ######################
+#
+#if ( ! $?GSPN2VERSION ) then
+#	set path1 = $0;
+#	set path2 = $path1:h
+#	set path1 = $path2:h
+#        setenv GSPN2VERSION $path1/install/version.csh
+#	unset path1
+#	unset path2
+#endif
+#if ( ! $?GSPN2BINS ) then
+#        setenv GSPN2BINS `$GSPN2VERSION`
+#endif
+#if ( ! $?GSPN2HOME ) then
+#        source ~/.GreatSPN2_$GSPN2BINS
+#endif
+if [ ! -f $1.crgr ]
+then
+	${GREATSPN_SCRIPTDIR}/newRG $1
+	if [ $? -ne 0 ]
+	then
+		exit
+	fi
+fi
+
+${GREATSPN_BINDIR}/strong_con $1
+if [ $? -ne 0 ]
+then
+	rm -f $1.livlck
+	exit 5
+fi
+
+${GREATSPN_BINDIR}/liveness $1
+if [ $? -ne 0 ]
+then
+	rm -f $1.liveness
+	exit 6 
+fi
+
+exit 0

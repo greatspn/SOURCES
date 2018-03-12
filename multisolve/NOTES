@@ -1,0 +1,12 @@
+
+shell-scripts:
+
+ gspn_st_ex:     gspn  steady-state  exact                 gspn_st_ex.oc
+ gspn_tr_ex:     gspn  transient     exact                 gspn_tr_ex.oc
+ swn_st_ex_ord:  swn   steady-state  exact       ordinary  swn_st_ex_ord.oc
+ swn_st_ex_sym:  swn   steady-state  exact       symbolic  swn_st_ex_sym.oc
+ swn_st_sim_ord: swn   steady-state  simulation  ordinary  no .oc
+		 gspn  steady-state  simulation 
+ swn_st_sim_sym: swn   steady-state  simulation  symbolic  no .oc
+ swn_tr_ex_ord:  swn   transient     exact       ordinary  swn_tr_ex_ord.oc
+ swn_tr_ex_sym:  swn   transient     exact       symbolic  swn_tr_ex_sym.oc

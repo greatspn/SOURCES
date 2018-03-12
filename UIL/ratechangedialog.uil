@@ -1,0 +1,168 @@
+/*******************************************************************************
+        Rate Change Dialog
+        
+        Comment:   This Section Describes the Rate Change Dialog
+                                                        
+        Programmer:                             Alex
+        Creation Date:                  27/2/95
+        Last Modify Date:               10/3/95
+
+********************************************************************************/
+procedure
+	CancelRateDialogCB();
+	SetRateCB();
+	
+object  RateChangeDialog : XmFormDialog
+{
+        controls
+        {
+				XmPushButton  RateChangeDialog_Ok;
+				XmPushButton  RateChangeDialog_Cancel;
+				XmSeparator  RateChangeDialog_Sep1;
+				XmSeparator  RateChangeDialog_Sep2;
+				XmLabel  RateChangeDialog_Label1;
+				XmLabel  RateChangeDialog_Label2;
+				XmTextField  RateChangeDialog_Rate;
+				XmTextField  RateChangeDialog_Tag;
+		};
+        arguments
+        {
+                XmNdialogTitle                  =       "Marking Parameter";
+                XmNwidth                        =       260;
+                XmNheight                       =       200;
+                XmNautoUnmanage                 =       false;
+				XmNnoResize						=		true;
+				XmNbackground 					=		appDialogBackgroundColor;
+				XmNdialogStyle					= 		XmDIALOG_FULL_APPLICATION_MODAL;
+        };
+
+};
+
+				
+object RateChangeDialog_Sep1 : XmSeparator
+{
+	arguments
+	{
+		XmNtopAttachment =				XmATTACH_FORM;
+		XmNtopOffset =					70;
+		XmNleftAttachment =				XmATTACH_FORM;
+		XmNleftOffset =					1;
+		XmNrightAttachment =			XmATTACH_FORM;
+		XmNrightOffset =				1;
+	};
+};
+
+
+object RateChangeDialog_Sep2 : XmSeparator
+{
+	arguments
+	{
+		XmNtopAttachment =				XmATTACH_FORM;
+		XmNtopOffset =					140;
+		XmNleftAttachment =				XmATTACH_FORM;
+		XmNleftOffset =					1;
+		XmNrightAttachment =			XmATTACH_FORM;
+		XmNrightOffset =				1;
+	};
+};
+
+object RateChangeDialog_Ok : XmPushButton
+{
+	arguments
+	{
+		XmNbottomAttachment =				XmATTACH_FORM;
+		XmNbottomOffset =					4;
+		XmNleftAttachment =					XmATTACH_FORM;
+		XmNleftOffset =						20;
+		
+		XmNshowAsDefault =				1;
+        XmNwidth                        =       50;
+        XmNheight                       =       30;
+		XmNlabelString =				'Ok';
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure SetRateCB();
+	};
+};
+
+object RateChangeDialog_Cancel : XmPushButton
+{
+	arguments
+	{
+		XmNbottomAttachment =				XmATTACH_FORM;
+		XmNbottomOffset =					10;
+		XmNrightAttachment =				XmATTACH_FORM;
+		XmNrightOffset =					26;
+		
+        XmNwidth                        =       50;
+        XmNheight                       =       30;
+		XmNlabelString =				'Cancel';
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure CancelRateDialogCB();
+	};
+};
+
+object RateChangeDialog_Label1 : XmLabel
+{
+	arguments
+	{
+		XmNtopAttachment =				XmATTACH_FORM;
+		XmNtopOffset =					83;
+		XmNleftAttachment =				XmATTACH_FORM;
+		XmNleftOffset =					10;
+		XmNlabelString =				'Rate :';
+	};
+};
+
+object RateChangeDialog_Label2 : XmLabel
+{
+	arguments
+	{
+		XmNtopAttachment =				XmATTACH_FORM;
+		XmNtopOffset =					10;
+		XmNleftAttachment =				XmATTACH_FORM;
+		XmNleftOffset =					10;
+		XmNlabelString =				'Label :';
+	};
+};
+
+
+object RateChangeDialog_Rate : XmTextField
+{
+	arguments
+	{
+		XmNtopAttachment =				XmATTACH_FORM;
+		XmNtopOffset =					102;
+		XmNleftAttachment =				XmATTACH_FORM;
+		XmNleftOffset =					10;
+		
+        XmNwidth                        =       240;
+		XmNbackground 					=		appDialogBackgroundColor;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure SetRateCB();
+	};
+};
+
+
+object RateChangeDialog_Tag : XmTextField
+{
+	arguments
+	{
+		XmNtopAttachment =				XmATTACH_FORM;
+		XmNtopOffset =					32;
+		XmNleftAttachment =				XmATTACH_FORM;
+		XmNleftOffset =					10;
+		
+        XmNwidth                        =       240;
+		XmNbackground 					=		appDialogBackgroundColor;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure SetRateCB();
+	};
+};

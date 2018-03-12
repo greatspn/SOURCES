@@ -1,0 +1,381 @@
+/***** TABELLA DEI GRUPPI DI PRIORITA' *****/
+struct GROUP
+  {
+   char *name;
+   int priority;
+  } ;
+/***** CODICE DI VALUTAZIONE DEI PREDICATI *****/
+struct PRED
+  {
+   char *fun_name;
+   int occ ;
+   int col_ind ;
+   int type ;
+   struct PRED *next;
+  } ;
+typedef struct PRED * Pred_p;
+/***** BUFFER PER LA LETTURA DEL DOMINIO DI TRANSIZIONE *****/
+struct FUNBUF
+  {
+   char fun_name[MAX_TAG_SIZE];
+   int class;
+   int occ_num;
+  } ;
+/***** COEFFICIENTI DI UN ELEMENTO DELL'ENNUPLA TIPO ,x+y, *****/
+struct COEFF
+  {
+   int *sbc_coef;
+   int *xsucc_coef;
+  } ;
+typedef struct COEFF * Func_p;
+/***** ENNUPLA DI UNA FUNZIONE TIPO 3 [x=y] <x,y+!z> *****/
+struct ENN_COEFF
+  {
+   Pred_p guard ;
+   Func_p coef ;
+   int enn_coef ;
+   int card;
+   struct ENN_COEFF *next ;
+  } ;
+typedef struct ENN_COEFF * Coeff_p;
+/***** NODO CHE CONNETTE UN POSTO AD UNA TRANSIZIONE *****/
+struct NODO
+  {
+   Coeff_p arcfun ;
+   int molt ;
+   int fun_card ;
+   int place_no ;
+   int skip ;
+   int analyzed;
+   int type;
+   int involved_in_CC_SC; 
+   int test_arc;
+   struct NODO * next;
+  } ;
+typedef struct NODO * Node_p;
+/***** DEFINIZIONE SOTTOCLASSI DINAMICHE *****/
+struct DYNSC
+ {
+  char *name;
+  int card;
+  int map;
+  struct DYNSC *next;
+ } ;
+typedef struct DYNSC * Dyn_p;
+/***** NOMI OGGETTI *****/
+struct OBJ
+  {
+   char *nome;
+   struct OBJ * next;
+  } ;
+typedef struct OBJ * Obj_p;
+/***** DEFINIZIONE SOTTOCLASSI STATICHE	*****/
+struct STATICSBC
+  {
+   char *name;
+   char *obj_name;
+   Obj_p obj_list;
+   Dyn_p dynlist;	/* Lista delle sottoclassi dinamiche */
+   int low;
+   int card ;
+   int offset;
+  } ;
+typedef struct STATICSBC * Static_p;
+/***** TABELLA DEI COLORI *****/
+struct COLORS
+  {
+   char *col_name;
+   Static_p sbclist ;
+   int sbc_num ;
+   int card ;	 
+   int type ;	
+  } ;
+/***** BUFFER PER LA LETTURA DELLA RETE *****/
+struct MARKBUF
+ {
+  char name[MAX_TAG_SIZE];
+  char sbc[MAX_TAG_SIZE];
+  int card;
+  struct MARKBUF *next;
+ } ;
+struct SBCBUF
+  {
+   char name[MAX_TAG_SIZE] ;
+   char obj_name[MAX_TAG_SIZE];
+   Obj_p obj_list;
+   int card ;
+   int low;
+   struct SBCBUF *next ;
+  } ;
+/***** TABELLA DEI POSTI *****/
+struct PLACES
+  {
+   char *place_name;
+   int *dominio ;
+   int comp_num ;
+   int card;
+   int position ;
+#ifdef SIMULATION
+   int tagged ;
+#endif
+  } ;
+/***** DEFINIZIONE DI EVENTO *****/
+struct ENABLING	{
+    int trans;
+#ifdef SIMULATION
+    struct ENABLING * e_prev;
+    struct ENABLING * e_next;
+    struct ENABLING * t_prev;
+    struct ENABLING * t_next;
+    double creation_time;
+    double residual_sched_time;
+    double last_sched_desched_time;
+#endif
+#ifdef SYMBOLIC
+    int * split;
+#endif
+    int * npla;
+    int enabling_degree;
+#ifdef SYMBOLIC
+    int ordinary_instances;
+#endif
+    struct ENABLING * next;
+};
+typedef struct ENABLING * Event_p;
+/***** INFORMAZIONI SULLA POSIZIONE IN UNA LISTA DI EVENTI *****/
+struct EVENT_INFO
+ {
+  Event_p pos;
+  Event_p prv;
+ };
+typedef struct EVENT_INFO * EventInfo_p;
+/***** TEMPI DI SPARO PER TRANSIZIONI GENERALI *****/
+#ifdef SIMULATION
+struct TIMES
+  {
+   double time;
+   struct TIMES * next;
+  };
+typedef struct TIMES * Time_p;
+
+struct DISTRIBUTIONS
+  {
+   int *instance;
+   int degree;
+   Time_p times;
+   struct DISTRIBUTIONS * next;
+  };
+typedef struct DISTRIBUTIONS * Rem_time_p;
+/***** INFORMAZIONI SULLA POSIZIONE IN UNA LISTA DI TEMPI *****/
+struct REM_TIME_INFO
+ {
+  Rem_time_p pos;
+  Rem_time_p prv;
+ };
+typedef struct REM_TIME_INFO * Rem_time_info_p;
+#endif
+/***** TABELLA DELLE TRANSIZIONI *****/
+struct TRANS
+  {
+   char *trans_name;
+   char ** names;
+
+   int in_arc ; 	   /* In net.lex */
+   int out_arc ;	   /* In net.lex */
+   int inib_arc ;	   /* In net.lex */
+
+#ifdef SIMULATION
+   int skippable;	   /* In fill_transition_data_structure (parser.c) */
+   int input_preselectable;/* In fill_transition_data_structure (parser.c) */
+   int tagged;
+   int en_deg;		   /* In fill_transition_data_structure (parser.c) */
+   int output_type;	   /* In fill_transition_data_structure (parser.c) */
+#endif
+   int no_serv; 	   /* In net.lex */
+   int pri ;		   /* In net.lex */
+   int timing;		   /* In net.lex */
+   int comp_num ;	   /* In fill_transition_data_structure (parser.c) */
+
+   int * dominio;   /* In fill_transition_data_structure (parser.c) */
+   int * comp_type; /* In other_domain net_lex.c */
+   int * rip;	    /* In fill_transition_data_structure (parser.c) */
+   int * off;	    /* In fill_transition_data_structure (parser.c) */
+#ifdef SYMBOLIC
+#ifdef SIMULATION
+   int * split_type; /* In fill_transition_data_structure (parser.c) */
+   int pre_split;
+#endif
+#endif
+   int * add_l;
+   int * test_l;
+   int * me_l;
+
+   Node_p inptr ;	    /* In net.lex */
+   Node_p outptr ;	    /* In net.lex */
+   Node_p inibptr ;	    /* In net.lex */
+
+   Pred_p guard ;	    /* In net.lex */
+
+   double mean_t ;	    /* In net.lex */
+
+   struct MD_RATE *md_rate_val ;
+
+#ifdef SIMULATION
+   Event_p instances_h;
+   Event_p instances_t;
+   Rem_time_p residual;
+   struct TRANS * enabl_next;
+#endif
+  } ;
+typedef struct TRANS * Trans_p;
+/***** TABELLA DEI RATE PARAMETERS *****/
+struct RATE_PAR
+  {
+   char *rate_name;
+   float rate_val ;
+  } ;
+/***** TABELLA DEI MARKING PARAMETERS *****/
+struct MARK_PAR
+  {
+   char *mark_name;
+   int mark_val ;
+  } ;
+/***** CODICE PER LA VALUTAZIONE DI UN'ESPRESSIONE *****/
+struct RATE_DEF
+  {
+   char *name;
+   int op_type;
+   float val ;
+   struct RATE_DEF * next;
+  } ;
+typedef struct RATE_DEF * Rate_p;
+/***** ELEMENTO DEL CASE RATE DIPENDNTI DAL COLORE *****/
+struct MD_RATE
+  {
+   Pred_p guard;
+   Rate_p code;
+   struct MD_RATE *next ;
+  } ;
+typedef struct MD_RATE * MDrate_p;
+/***** TABELLA DEI RATE DIPENDENTI DAL COLORE *****/
+struct TRANS_MD_RATE
+  {
+   int trans_ind;
+   struct MD_RATE *mdpun;
+  } ;
+/****** TABELLA DELLE DEFINIZIONI DELLE MARCATURE INIZIALI *****/
+struct MARKING
+ {				 
+  int position ;	
+  int file_pos ;
+ } ;			
+struct RESULT
+ {
+  int hold;
+  Event_p list;
+  struct RESULT *next;
+ } ;
+typedef struct RESULT * Result_p;
+
+struct CARTESIAN_PRODUCT
+ {
+  int *low;
+  int *up;
+  int **mark;
+ } ;
+typedef struct CARTESIAN_PRODUCT * Cart_p;
+
+struct COLOURED_TOKEN
+ {
+  int molt;
+  int *id;
+  struct COLOURED_TOKEN *next;
+  struct COLOURED_TOKEN *next_touched;
+  struct COLOURED_TOKEN *next_reset;
+#ifdef SYMBOLIC
+  struct COLOURED_TOKEN *nxt_group;
+  struct COLOURED_TOKEN *prv_group;
+#endif
+ };
+typedef struct COLOURED_TOKEN * Token_p;
+
+struct NET_MARKING
+ {
+  Token_p marking;
+  int total;
+  int different;
+#ifdef SYMBOLIC
+  int ordinary;
+  Token_p group;
+#endif
+#ifdef SIMULATION
+  Token_p touched_h;
+  Token_p touched_t;
+  Token_p reset_h;
+  Token_p reset_t;
+  int num_of_reset;
+  int num_of_touched;
+#endif
+ };
+typedef struct NET_MARKING * Net_Mark_p; 
+
+struct TOKEN_INFO
+ {
+  Token_p pos;
+  Token_p prv;
+ };
+typedef struct TOKEN_INFO * TokInfo_p;
+
+#ifdef REACHABILITY
+
+struct MARC_RAGG	   /* nodo utilizzato per il calcolo dei tassi */
+ {
+  int cont_tang;
+  float mean_t;
+  struct MARC_RAGG *next;
+ };
+typedef struct MARC_RAGG * MRate_p;
+
+struct MARKING_INFO
+ {
+  int cont_tang;  /* num. d'ordine relativo marc. tangibili   */
+  int pri;	      /* priorita' marcatura                      */
+  char * marking_as_string;   /* marcatura sotto forma di stringa	  */
+  int path;
+#ifdef DATOGLIERE
+  MRate_p path_head;	      /* Cammini vanishing			  */
+  MRate_p path_tail;	      /* Cammini vanishing			  */
+#endif
+#ifdef SYMBOLIC
+  int ordinary;	 /* marcature ordinarie corrispondenti	  */
+#endif
+ };
+typedef struct MARKING_INFO * MInfo_p;
+
+struct TREE
+ {
+  MInfo_p marking;     /* Informazioni sulla marcatura */
+
+  Result_p enabled_head;	/* Per lo stack */
+  struct TREE *last;		/* Per lo stack */
+
+  struct TREE *left;   /* Per l'albero di ricerca */
+  struct TREE *right;  /* Per l'albero di ricerca */
+  char balance;	       /* Per l'albero di ricerca */
+ };
+typedef struct TREE * Tree_p;
+ 
+#ifdef SYMBOLIC
+struct MIN_STR              /* nodo per realizzare la lista dei minimi */
+     {                   /* nel calcolo della marcatura canonica    */
+       int **min;
+       int *ord;
+       int *file_pos;
+       int first;
+       int free;
+       int num_of_min;
+       struct MIN_STR *next;
+     };
+typedef struct MIN_STR * Canonic_p;
+#endif
+#endif

@@ -1,0 +1,148 @@
+
+CFLAGS =    -O3 -c 
+OFLAGS =    -O3 
+
+CFLAGS += '-D"const.h"="const.h"' \
+		  '-D"../INCLUDE/const.h"="../../INCLUDE/const.h"' \
+		  '-D"../../INCLUDE/const.h"="../../INCLUDE/const.h"' \
+		  '-D"../../../INCLUDE/const.h"="../../../INCLUDE/const.h"' 
+
+OFLAGS += '-D"const.h"="const.h"' \
+		  '-D"../INCLUDE/const.h"="../../INCLUDE/const.h"' \
+		  '-D"../../INCLUDE/const.h"="../../INCLUDE/const.h"' \
+		  '-D"../../../INCLUDE/const.h"="../../../INCLUDE/const.h"' -o
+		  
+export OFLAGS CFLAGS
+
+LIBDIR = ../../$(GSPN2BINS)/lib
+OBJESRG  = ../../$(GSPN2BINS)/
+COMMANDS		=	$(SHELL_DIR)/swn_ord_rg  \
+				$(SHELL_DIR)/multipleRun \
+				$(SHELL_DIR)/swn_ord_sim \
+				$(SHELL_DIR)/swn_sym_rg  \
+				$(SHELL_DIR)/swn_sym_sim \
+				$(SHELL_DIR)/swn_sym_tr \
+				$(SHELL_DIR)/swn_ord_tr \
+				$(SHELL_DIR)/gspn_sim \
+				$(SHELL_DIR)/gspn_rg \
+				$(SHELL_DIR)/gspn_tr
+
+WNPACKGE:	$(COMMANDS) WN SOLVETARGET LIBS
+
+
+SOLVETARGET:
+	cd SOLVE ; make  ; cd .. 
+
+WN:	
+	cd INCLUDE; /bin/rm -f const.h; ln const.cs const.h;touch ../SOURCE/REACHAB/*
+	UTIL/create cs
+	cd INCLUDE; /bin/rm -f const.h; ln const.ss const.h;touch ../SOURCE/REACHAB/*
+	UTIL/create ss
+	cd INCLUDE; /bin/rm -f const.h; ln const.rg const.h;touch ../SOURCE/REACHAB/*
+	UTIL/create rg
+	cd INCLUDE; /bin/rm -f const.h; ln const.srg const.h;touch ../SOURCE/REACHAB/*
+	UTIL/create srg
+#MDWN
+	cd INCLUDE;  /bin/rm -f const.h; ln const.MDWNrg const.h; touch ../SOURCE/REACHAB/*
+	UTIL/create MDWNrg
+	
+	cd INCLUDE; /bin/rm -f const.h; ln const.MDWNsrg const.h; touch ../SOURCE/REACHAB/*
+	UTIL/create MDWNsrg
+#MDWN
+	
+	cd INCLUDE; /bin/rm -f const.h; ln const.MDDrg const.h; touch ../SOURCE/REACHAB/*
+	UTIL/create rgMEDD
+	cd INCLUDE; /bin/rm -f const.h; ln const.PN2ODE const.h; touch ../SOURCE/REACHAB/*
+	UTIL/create PN2ODE
+	cd INCLUDE; /bin/rm -f const.h; ln const.gsrg const.h;touch ../SOURCE/REACHAB/*	
+	UTIL/create gsrg
+	cd INCLUDE; /bin/rm -f const.h; ln const.gssim const.h;touch ../SOURCE/REACHAB/*
+	UTIL/create gssim
+	cd INCLUDE; /bin/rm -f const.h; ln const.esrg const.h;touch ../SOURCE/REACHAB/*
+	UTIL/create esrg
+	$(MAKE) -f EDIT/makefile.unfolding
+
+	
+
+LIBS :
+	cd INCLUDE; /bin/rm -f const.h; ln const.librg const.h
+	UTIL/create librg
+	cd INCLUDE; /bin/rm -f const.h; ln const.libsrg const.h
+	UTIL/create libsrg
+	cd INCLUDE ; /bin/rm -f const.h; ln const.libssp const.h
+	UTIL/create libssp
+	cd INCLUDE ; /bin/rm -f const.h; ln const.libmcesrg const.h
+	UTIL/create libmcesrg
+	cd INCLUDE ; /bin/rm -f const.h; ln const.libmcdsrg const.h
+	UTIL/create libmcdsrg
+	cd INCLUDE ; /bin/rm -f const.h; ln const.libdmcsrg const.h
+	UTIL/create libdmcsrg
+	cd INCLUDE ; /bin/rm -f const.h; ln const.libdmcrg const.h
+	UTIL/create libdmcrg
+	$(MAKE) -f EDIT/makefile.resrg
+	$(MAKE) -f EDIT/makefile.mdwn
+	$(MAKE) -f EDIT/makefile.dsrg
+	$(MAKE) -f EDIT/makefile.solvexsrg
+
+
+$(SHELL_DIR)/swn_ord_rg:	EDIT/swn_ord_rg.sh
+		@echo "Creating  $@ ..." 
+		@cp EDIT/swn_ord_rg.sh $@
+		@chmod 755 $@
+
+$(SHELL_DIR)/multipleRun:	EDIT/multipleRun.sh
+		@echo "Creating  $@ ..." 
+		@cp EDIT/multipleRun.sh $@
+		@chmod 755 $@		
+		
+$(SHELL_DIR)/swn_ord_sim:	EDIT/swn_ord_sim.sh
+		@echo "Creating  $@ ..." 
+		@cp EDIT/swn_ord_sim.sh $@
+		@chmod 755 $@
+
+$(SHELL_DIR)/swn_sym_rg:	EDIT/swn_sym_rg.sh
+		@echo "Creating  $@ ..." 
+		@cp EDIT/swn_sym_rg.sh $@
+		@chmod 755 $@
+
+$(SHELL_DIR)/swn_sym_sim:	EDIT/swn_sym_sim.sh
+		@echo "Creating  $@ ..." 
+		@cp EDIT/swn_sym_sim.sh $@
+		@chmod 755 $@
+
+$(SHELL_DIR)/swn_sym_tr:	EDIT/swn_sym_tr.sh
+		@echo "Creating  $@ ..." 
+		@cp EDIT/swn_sym_tr.sh $@
+		@chmod 755 $@
+
+$(SHELL_DIR)/swn_ord_tr:	EDIT/swn_ord_tr.sh
+		@echo "Creating  $@ ..." 
+		@cp EDIT/swn_ord_tr.sh $@
+		@chmod 755 $@
+
+$(SHELL_DIR)/gspn_sim:	EDIT/gspn_sim.sh
+		@echo "Creating  $@ ..." 
+		@cp EDIT/gspn_sim.sh $@
+		@chmod 755 $@
+
+$(SHELL_DIR)/gspn_rg:	EDIT/gspn_rg.sh
+		@echo "Creating  $@ ..." 
+		@cp EDIT/gspn_rg.sh $@
+		@chmod 755 $@
+
+$(SHELL_DIR)/gspn_tr:	EDIT/gspn_tr.sh
+		@echo "Creating  $@ ..." 
+		@cp EDIT/gspn_tr.sh $@
+		@chmod 755 $@
+
+CLEAN:
+	\rm SOURCE/def.c
+	\rm SOURCE/net.c
+	\rm SOURCE/grammar.c
+	\rm SOURCE/lex.c
+
+clean:
+	\rm SOURCE/def.c
+	\rm SOURCE/net.c
+	\rm SOURCE/grammar.c
+	\rm SOURCE/lex.c

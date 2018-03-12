@@ -1,0 +1,26 @@
+#!/bin/sh
+. great_package.sh
+#if ( ! $?GSPN2BINS ) then
+#        setenv GSPN2BINS `arch`
+#endif
+#if ( ! $?GSPN2VERSION ) then
+#	set path1 = $0;
+#	set path2 = $path1:h
+#	set path1 = $path2:h
+#        setenv GSPN2VERSION $path1/install/version.csh
+#	unset path1
+#	unset path2
+#endif
+#if ( ! $?GSPN2BINS ) then
+#        setenv GSPN2BINS `$GSPN2VERSION`
+#endif
+if [ ! -f $1.crgr ]
+then
+	${GREATSPN_SCRIPTDIR}/newRG $1
+fi
+# The following options can be given to the display program:
+#    -s  to show the Tangible Reachability Set
+#    -t  to show the Tangible Reachability Graph
+#    -r  to show the Reverse Tangible Reachability Graph
+${GREATSPN_BINDIR}/show_stndrd $1 -t $2 $3 $4 | more
+exit 0

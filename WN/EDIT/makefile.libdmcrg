@@ -1,0 +1,199 @@
+#directories
+SSOU = SOLVE
+CSOU = SOURCE/SHARED
+GSOU = SOURCE/REACHAB
+# SPOTSOU = SOURCE/SPOT
+RSOU = SOURCE/READNET
+EDT = EDIT
+SFK = SUPPORT
+INC = INCLUDE
+BCK = BACKUP
+TRS = TRANSL
+OBJ = ../../$(GSPN2BINS)/2bin/LIBDMC
+BINDIR=../../$(GSPN2BINS)
+LIBDIR=$(OBJ)/lib
+
+
+#commands
+COMP = $(CC) -fpic -pthread $(CFLAGS) -o
+#LINK = ar r
+LINK = $(CC) -pthread -O3 -shared -Wl,--soname=libgspndmcSRG.so.1 -o
+LFLAGS = -lm -l$(LEX_LIB) $(SOCKET_LIB)
+
+#files groups
+T_INCLUDES = ${INC}/const.h \
+	     ${INC}/struct.h \
+	     ${INC}/var_ext.h \
+	     ${INC}/decl.h \
+	     ${INC}/fun_ext.h \
+	     ${INC}/macros.h \
+	     ${INC}/gspndmclib.h
+T_OBJECTS =  ${OBJ}/getline.o \
+	    ${OBJ}/ealloc.o \
+	    ${OBJ}/LIBRGCOLORED_main.o \
+	    ${OBJ}/LIBRGCOLORED_grammar.o \
+	    ${OBJ}/LIBRGCOLORED_service.o \
+	    ${OBJ}/LIBRGCOLORED_token.o \
+	    ${OBJ}/LIBRGCOLORED_dimensio.o \
+	    ${OBJ}/LIBRGCOLORED_errors.o \
+	    ${OBJ}/LIBRGCOLORED_compact.o \
+	    ${OBJ}/LIBRGCOLORED_common.o \
+	    ${OBJ}/LIBRGCOLORED_report.o \
+	    ${OBJ}/LIBRGCOLORED_enabling.o \
+	    ${OBJ}/LIBRGCOLORED_fire.o\
+	    ${OBJ}/LIBRGCOLORED_shared1.o\
+	    ${OBJ}/LIBRGCOLORED_shared2.o\
+	    ${OBJ}/LIBRGCOLORED_outdom.o\
+	    ${OBJ}/LIBRGCOLORED_degree.o \
+	    ${OBJ}/LIBRGCOLORED_precheck.o \
+	    ${OBJ}/LIBRGCOLORED_flush.o \
+	    ${OBJ}/LIBRGCOLORED_graph_se.o \
+	    ${OBJ}/LIBRGCOLORED_libgraph.o \
+	    ${OBJ}/LIBRGCOLORED_stack.o \
+	    ${OBJ}/LIBRGCOLORED_convert.o \
+	    ${OBJ}/LIBRGCOLORED_rg_files.o \
+	    ${OBJ}/LIBRGCOLORED_rgengwn.o \
+	    ${OBJ}/LIBRGCOLORED_read_arc.o \
+            ${OBJ}/LIBRGCOLORED_read_t_c.o \
+            ${OBJ}/LIBRGCOLORED_read_DEF.o \
+            ${OBJ}/LIBRGCOLORED_read_NET.o \
+            ${OBJ}/LIBRGCOLORED_read_t_s.o \
+	    ${OBJ}/LIBRGCOLORED_wn_yac.o
+T_SOURCES = ${CSOU}/main.c \
+	    ${CSOU}/service.c \
+	    ${CSOU}/token.c \
+	    ${CSOU}/dimensio.c \
+	    ${CSOU}/errors.c \
+	    ${SSOU}/compact.c \
+	    ${CSOU}/common.c \
+	    ${CSOU}/enabling.c	\
+	    ${CSOU}/fire.c\
+	    ${CSOU}/shared1.c\
+	    ${CSOU}/shared2.c\
+	    ${CSOU}/outdom.c\
+	    ${CSOU}/report.c\
+	    ${CSOU}/precheck.c \
+	    ${CSOU}/flush.c \
+	    ${CSOU}/degree.c \
+	    ${GSOU}/graph_se.c\
+	    ${GSOU}/graph.c\
+	    ${GSOU}/stack.c\
+	    ${GSOU}/convert.c\
+	    ${GSOU}/rg_files.c\
+	    ${GSOU}/rgengwn.c\
+	    ${RSOU}/read_arc.c \
+	    ${RSOU}/read_t_c.c \
+	    ${RSOU}/read_DEF.c \
+	    ${RSOU}/read_NET.c \
+	    ${RSOU}/read_t_s.c \
+	    ${RSOU}/wn_yac.c
+T_LEX = ${TRS}/wn.lex 
+T_YACC = ${TRS}/wn.yac
+
+$(LIBDIR)/libgspndmcRG.so : ${T_INCLUDES} ${T_OBJECTS} ${T_LEX} ${T_YACC}
+	${LINK} $(LIBDIR)/libgspndmcRG.so ${T_OBJECTS}  ${LFLAGS} 
+
+${OBJ}/LIBRGCOLORED_main.o : ${CSOU}/main.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_main.o ${CSOU}/main.c
+
+${OBJ}/LIBRGCOLORED_outdom.o : ${CSOU}/outdom.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_outdom.o ${CSOU}/outdom.c
+
+${OBJ}/LIBRGCOLORED_shared1.o : ${CSOU}/shared1.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_shared1.o ${CSOU}/shared1.c
+
+${OBJ}/LIBRGCOLORED_shared2.o : ${CSOU}/shared2.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_shared2.o ${CSOU}/shared2.c
+
+${OBJ}/LIBRGCOLORED_precheck.o : ${CSOU}/precheck.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_precheck.o ${CSOU}/precheck.c
+
+${OBJ}/LIBRGCOLORED_fire.o : ${CSOU}/fire.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_fire.o ${CSOU}/fire.c
+
+${OBJ}/LIBRGCOLORED_degree.o : ${CSOU}/degree.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_degree.o ${CSOU}/degree.c
+
+${OBJ}/LIBRGCOLORED_flush.o : ${CSOU}/flush.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_flush.o ${CSOU}/flush.c
+       
+${OBJ}/LIBRGCOLORED_compact.o : ${SSOU}/compact.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_compact.o ${SSOU}/compact.c
+       
+${OBJ}/LIBRGCOLORED_common.o : ${CSOU}/common.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_common.o ${CSOU}/common.c
+       
+${OBJ}/LIBRGCOLORED_errors.o : ${CSOU}/errors.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_errors.o ${CSOU}/errors.c
+       
+${OBJ}/LIBRGCOLORED_dimensio.o : ${CSOU}/dimensio.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_dimensio.o ${CSOU}/dimensio.c
+       
+${OBJ}/LIBRGCOLORED_token.o : ${CSOU}/token.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_token.o ${CSOU}/token.c
+       
+${OBJ}/LIBRGCOLORED_service.o : ${CSOU}/service.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_service.o ${CSOU}/service.c
+       
+${OBJ}/LIBRGCOLORED_enabling.o : ${CSOU}/enabling.c ${T_INCLUDES} ${INC}/shared.h
+	${COMP} ${OBJ}/LIBRGCOLORED_enabling.o ${CSOU}/enabling.c
+
+${OBJ}/LIBRGCOLORED_report.o : ${CSOU}/report.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_report.o ${CSOU}/report.c
+
+${OBJ}/LIBRGCOLORED_libgraph.o : ${GSOU}/graph.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_libgraph.o ${GSOU}/graph.c
+       
+${OBJ}/LIBRGCOLORED_graph_se.o : ${GSOU}/graph_se.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_graph_se.o ${GSOU}/graph_se.c
+
+${OBJ}/LIBRGCOLORED_rgengwn.o : ${GSOU}/rgengwn.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_rgengwn.o ${GSOU}/rgengwn.c
+
+${OBJ}/LIBRGCOLORED_rg_files.o : ${GSOU}/rg_files.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_rg_files.o ${GSOU}/rg_files.c
+       
+${OBJ}/LIBRGCOLORED_stack.o : ${GSOU}/stack.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_stack.o ${GSOU}/stack.c
+       
+${OBJ}/LIBRGCOLORED_convert.o : ${GSOU}/convert.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_convert.o ${GSOU}/convert.c
+
+${OBJ}/LIBRGCOLORED_wn_yac.o : ${RSOU}/wn_yac.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_wn_yac.o ${RSOU}/wn_yac.c
+       
+${OBJ}/LIBRGCOLORED_read_arc.o : ${RSOU}/read_arc.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_read_arc.o ${RSOU}/read_arc.c
+       
+${OBJ}/LIBRGCOLORED_read_t_s.o : ${RSOU}/read_t_s.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_read_t_s.o ${RSOU}/read_t_s.c
+       
+${OBJ}/LIBRGCOLORED_read_t_c.o : ${RSOU}/read_t_c.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_read_t_c.o ${RSOU}/read_t_c.c
+       
+${OBJ}/LIBRGCOLORED_read_DEF.o : ${RSOU}/read_DEF.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_read_DEF.o ${RSOU}/read_DEF.c
+       
+${OBJ}/LIBRGCOLORED_read_NET.o : ${RSOU}/read_NET.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_read_NET.o ${RSOU}/read_NET.c
+       
+${OBJ}/LIBRGCOLORED_grammar.o : ${SFK}/grammar.c ${T_INCLUDES}
+	${COMP} ${OBJ}/LIBRGCOLORED_grammar.o ${SFK}/grammar.c
+
+${OBJ}/ealloc.o : ${CSOU}/ealloc.c ${T_INCLUDES}
+	${COMP}  ${OBJ}/ealloc.o ${CSOU}/ealloc.c
+
+${OBJ}/getline.o : ${CSOU}/getline.c ${T_INCLUDES}
+	${COMP}  ${OBJ}/getline.o ${CSOU}/getline.c
+
+
+
+${SFK}/lex.c : ${TRS}/wn.lex
+	$(LEX) ${TRS}/wn.lex
+	mv lex.jj.c ${SFK}/lex.c
+	#ed ${SFK}/lex.c < ${EDT}/ed_lex
+
+${SFK}/grammar.c : ${TRS}/wn.yac ${SFK}/lex.c ${T_INCLUDES}
+	$(YACC) -v -t ${TRS}/wn.yac
+	mv y.tab.c ${SFK}/grammar.c
+	ed ${SFK}/grammar.c < ${EDT}/ed_gram

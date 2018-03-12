@@ -1,0 +1,8 @@
+#
+if ( ! $?GSPNBINS ) then
+        setenv GSPNBINS `arch`
+endif
+if ( ! $?GSPNHOME ) then
+        source ~/.GreatSPN_$GSPNBINS
+endif
+$GSPNHOME/2bin/ggsc nets/$1

@@ -1,0 +1,87 @@
+/*******************************************************************************
+        Show Dialog
+        
+        Comment:  This Section Describes the Show Dialog 
+                                                        
+        Programmer:                     Alex
+        Creation Date:                  27/2/95
+        Last Modify Date:               10/3/95
+
+********************************************************************************/
+procedure
+	HideShowDialogCB();
+	
+object  ShowDialog : XmFormDialog
+{
+        controls
+        {
+				XmScrolledText  ShowDialog_Text;
+				XmSeparator  ShowDialog_Sep1;
+				XmPushButton  ShowDialog_Done;
+        };
+        arguments
+        {
+                XmNdialogTitle       =       "Show";
+                XmNwidth             =       281;
+                XmNheight            =       204;
+                XmNautoUnmanage      =       true;
+                XmNnoResize          =       false;
+				XmNbackground =				appDialogBackgroundColor;
+        };
+
+};
+
+object ShowDialog_Sep1 : XmSeparator
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              56;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                1;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                1;
+   };
+};
+
+
+object ShowDialog_Done : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              4;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               10;
+      XmNlabelString =               'Done';
+      XmNshowAsDefault =             1;
+      XmNrecomputeSize =            false;
+      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+    callbacks
+    {
+   		XmNactivateCallback =	procedure HideShowDialogCB();
+	};
+};
+
+object ShowDialog_Text : XmScrolledText
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              10;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              66;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               10;
+	  XmNbackground =				appDialogBackgroundColor;
+      XmNwidth =                     430;
+      XmNheight =                    110;
+	  XmNeditMode =					XmMULTI_LINE_EDIT;
+	  XmNeditable =					false;
+	  XmNcursorPositionVisible = false;
+   };
+};

@@ -1,0 +1,79 @@
+CC ?= gcc
+
+OFLAGS = -O3 -D$(GREAT_PLATFORM) -o
+
+CFLAGS = -O3 -D$(GREAT_PLATFORM) -c
+
+FFLAGS ?=	
+
+
+BINDIR =	../../$(GSPN2BINS)/simbin2
+
+Shells =	../../bin/engine
+
+PACKBINS =	$(BINDIR)/engine $(BINDIR)/cntrl $(BINDIR)/measure
+
+Great2_PACKAGE : $(BINDIR) $(Shells) $(PACKBINS)
+
+
+# Directories
+
+$(BINDIR) :
+	mkdir $(BINDIR)
+
+
+# Objects
+
+engine_decl.h : ../gsrc2/trans_def.h
+	touch engine_decl.h
+
+$(BINDIR)/engine : $(BINDIR)/engine_control.o $(BINDIR)/engine_event.o \
+			$(BINDIR)/engine_pn.o ../../$(GSPN2BINS)/2bin/compact.o
+	$(CC) $(OFLAGS) $(BINDIR)/engine $(BINDIR)/engine_control.o \
+		$(BINDIR)/engine_event.o $(BINDIR)/engine_pn.o \
+		../../$(GSPN2BINS)/2bin/compact.o -lm $(SOCKET_LIB)
+
+$(BINDIR)/engine_control.o : engine_control.c engine_decl.h simul_decl.h
+	$(CC) $(CFLAGS) engine_control.c ; \
+	mv engine_control.o $(BINDIR)
+
+$(BINDIR)/engine_event.o : engine_event.c engine_decl.h simul_decl.h
+	$(CC) $(CFLAGS) $(FFLAGS) engine_event.c ; \
+	mv engine_event.o $(BINDIR)
+
+$(BINDIR)/engine_pn.o : engine_pn.c engine_decl.h simul_decl.h
+	$(CC) $(CFLAGS) engine_pn.c ; \
+	mv engine_pn.o $(BINDIR)
+
+$(BINDIR)/cntrl : cntrl.c simul_decl.h
+	$(CC)  $(OFLAGS) $(BINDIR)/cntrl cntrl.c $(SOCKET_LIB)
+
+$(BINDIR)/measure : $(BINDIR)/measure_checkpoint.o \
+			$(BINDIR)/measure_pn.o  ../../$(GSPN2BINS)/2bin/compact.o
+	$(CC) $(OFLAGS) $(BINDIR)/measure $(BINDIR)/measure_checkpoint.o \
+	$(BINDIR)/measure_pn.o ../../$(GSPN2BINS)/2bin/compact.o -lm $(SOCKET_LIB)
+
+$(BINDIR)/measure_checkpoint.o : measure_checkpoint.c measure_decl.h \
+				simul_decl.h
+	$(CC) $(CFLAGS) measure_checkpoint.c ; \
+	mv measure_checkpoint.o $(BINDIR)
+
+$(BINDIR)/measure_pn.o : measure_pn.c measure_decl.h simul_decl.h
+	$(CC) $(CFLAGS) measure_pn.c ; \
+	mv measure_pn.o $(BINDIR)
+
+
+# Shells
+
+../../bin/engine : engine.sh
+	cp engine.sh ../../bin/engine; chmod +x ../../bin/engine
+
+
+# Utilities
+
+clean:
+	/bin/rm -f core ../core a.out *.o
+
+remove :
+	/bin/rm -r -f $(SHELLSCRIPTS) $(BINDIR)
+

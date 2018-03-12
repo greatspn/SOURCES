@@ -1,0 +1,129 @@
+# =============================
+# Script to create gnuplot file  
+# =============================
+
+# inputs:
+# 1: name of datafile with extension
+# 2: name of output files without extensions
+# 3: xmin ("auto" or a number) 
+# 4: xmax ("auto" or a number)
+# 5: ymin ("auto" or a number)
+# 6: ymax ("auto" or a number)
+# 7: linesstyle ("l": lines, "p": points, "lp": linespoints)
+# 8: placement of legend ("left":  left, "right":  right)
+# 9: placement of legend ("top": top , "bottom": bottom)
+
+# 10: name of xaxis (not necessary) '' for no label on axis
+
+set data = $1.results
+set output = $2
+
+# number of coloumns in datafile > nofcols
+set awk_command = ("END" "{" "print(NF)" "}" )
+echo $awk_command > $output.trash
+@ nofcols = `$MULTISOLVE_AWK -f $output.trash $data`
+
+# name of x-axis
+set awk_command = ("BEGIN" "{" "i=0" "}" "{" "if(i==0) print(substr("'$'"1,2,length("'$'"1)-1)); i=i+1;" "}")
+echo $awk_command > $output.trash
+set xaxis = `$MULTISOLVE_AWK -f $output.trash $data`
+
+# name of perf. measures (max 32)
+set perf_array = ("" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "")
+@ cnt = 2
+while( $cnt <= $nofcols )
+    set awk_command = ("BEGIN" "{" "i=0" "}" "{" "if(i==0) print("'$'$cnt"); i=i+1;" "}")
+    echo $awk_command > $output.trash
+    @ cnt --
+    set perf_array[$cnt] = `$MULTISOLVE_AWK -f $output.trash $data`
+    @ cnt ++
+    @ cnt ++
+end
+
+# building the gnuplot file
+echo 'set term pos por monochrome dashed "Helvetia" 14' > $output.gnu
+echo 'set size 1,0.5' >> $output.gnu
+echo 'set autoscale x' >> $output.gnu 
+echo 'set autoscale y' >> $output.gnu 
+if( $3 != "auto" ) then
+    echo 'set xrange ['$3':]' >> $output.gnu 
+endif
+if( $4 != "auto" ) then
+    echo 'set xrange [:'$4']' >> $output.gnu 
+endif
+if( $5 != "auto" ) then
+    echo 'set yrange ['$5':]' >> $output.gnu 
+endif
+if( $6 != "auto" ) then
+    echo 'set yrange [:'$6']' >> $output.gnu 
+endif
+switch($7)
+    case "l": 
+	echo 'set data st lines' >> $output.gnu
+	breaksw
+    case "p": 
+	echo 'set data st points' >> $output.gnu
+	breaksw
+    case "lp": 
+	echo 'set data st linespoints' >> $output.gnu
+	breaksw
+endsw
+switch($8)
+    case "left":
+	echo 'set key left Left reverse' >> $output.gnu
+	breaksw
+    case "right":
+	echo 'set key right Right noreverse' >> $output.gnu
+	breaksw
+endsw
+switch($9)
+    case "top":
+	echo 'set key top' >> $output.gnu
+	breaksw
+    case "bottom":
+	echo 'set key bottom' >> $output.gnu
+	breaksw
+endsw
+#if( -z "$10" ) then
+    echo 'set xlabel '"'"$xaxis"'" >> $output.gnu
+#else
+#    echo 'set xlabel '"'"$10"'" >> $output.gnu
+#endif
+echo "" >> $output.gnu
+echo "!"'rm '$2'.ps' >> $output.gnu
+echo 'set output '"'"$2'.ps'"'" >> $output.gnu
+echo "" >> $output.gnu
+
+echo -n 'plot ' >> $output.gnu
+@ cnt = 2
+@ first = 1
+while( $cnt <= $nofcols )
+    @ cnt --
+    set awkc = ("{" "if("'$'"1=="'"'$perf_array[$cnt]'"'") print "'$'"1""}" )
+    echo $awkc > $2.trash
+    set grepres = `$MULTISOLVE_AWK -f $2.trash $1.net.curves`
+    echo $grepres
+    if( $grepres == $perf_array[$cnt] ) then
+	@ cnt ++
+	if( $first != 1 ) then
+	    echo -n "," >> $output.gnu
+	endif
+	@ first ++
+	echo "\" >> $output.gnu
+	echo -n "'"$data"'" >> $output.gnu
+	echo -n ' using 1:' >> $output.gnu
+	echo -n $cnt >> $output.gnu
+	echo -n ' title '"'" >> $output.gnu
+	@ cnt --
+	echo -n $perf_array[$cnt] >> $output.gnu
+	echo -n "'" >> $output.gnu
+    endif
+    @ cnt ++
+    @ cnt ++
+end
+/bin/rm $1.net.curves
+/bin/rm $2.trash
+
+
+
+

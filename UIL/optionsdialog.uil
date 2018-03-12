@@ -1,0 +1,152 @@
+/*******************************************************************************
+        Options Dialog
+        
+        Comment:  This Section Describes the Options Dialog 
+                                                        
+        Programmer:                     Alex
+        Creation Date:                  21/4/95
+        Last Modify Date:               21/4/95
+
+********************************************************************************/
+procedure
+	OkOptionsDialogCB();
+	CancelOptionsDialogCB();
+	OptionsDialogDefalutHostnameCB();
+	
+object  OptionsDialog : XmFormDialog
+{
+        controls
+        {
+				XmLabel OptionsDialog_Label1;
+				XmTextField  OptionsDialog_HNameText;
+				XmSeparator  OptionsDialog_Sep1;
+				XmPushButton  OptionsDialog_Ok;
+				XmPushButton  OptionsDialog_Cancel;
+				XmPushButton  OptionsDialog_DefHost;
+				XmToggleButton OptionsDialog_VerboseShow;
+        };
+        arguments
+        {
+                XmNdialogTitle       =       "Options";
+                XmNwidth             =       281;
+                XmNheight            =       204;
+                XmNautoUnmanage      =       false;
+                XmNnoResize          =       false;
+				XmNbackground =				appDialogBackgroundColor;
+				XmNdefaultButton =			OptionsDialog_Ok;
+        };
+
+};
+
+object OptionsDialog_Sep1 : XmSeparator
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              56;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                1;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                1;
+   };
+};
+
+
+object OptionsDialog_Ok : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              10;
+      XmNleftAttachment =           XmATTACH_FORM;
+      XmNleftOffset =               10;
+      XmNlabelString =               'Ok';
+      XmNshowAsDefault =             1;
+      XmNrecomputeSize =            false;
+      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+    callbacks
+    {
+   		XmNactivateCallback =	procedure OkOptionsDialogCB();
+	};
+};
+
+object OptionsDialog_Cancel : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              10;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               10;
+      XmNlabelString =               'Cancel';
+      XmNrecomputeSize =            false;
+      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+    callbacks
+    {
+   		XmNactivateCallback =	procedure CancelOptionsDialogCB();
+	};
+};
+
+object OptionsDialog_DefHost : XmPushButton
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              27;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                155;
+      XmNlabelString =               '';
+      XmNrecomputeSize =            true;
+      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+    callbacks
+    {
+   		XmNactivateCallback =	procedure OptionsDialogDefalutHostnameCB();
+	};
+};
+
+object OptionsDialog_VerboseShow : XmToggleButton
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              67;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+      XmNrecomputeSize=                        true;
+      XmNfillOnSelect=                       true;
+      XmNselectColor=                          colorBlack;
+      XmNmarginWidth=                          0;
+      XmNmarginHeight=                         0;
+      XmNlabelString =             			'Verbose Show';
+   };
+};
+
+object OptionsDialog_Label1 : XmLabel
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              10;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+      XmNlabelString =             'Hostname :';
+   };
+};
+
+object OptionsDialog_HNameText : XmTextField
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              32;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+	  XmNbackground =				appDialogBackgroundColor;
+   };
+};

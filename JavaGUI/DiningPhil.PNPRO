@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- This project file has been saved by 'New Editor' version 100 --><project name="Dining Philosophers" version="100">
+  <gspn name="DP Model 4">
+    <nodes>
+      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="1" name="fork1" x="21.0" y="4.0"/>
+      <transition delay="lambda" delay-x="-0.5" delay-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T0" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.7853981633974483" type="EXP" x="26.55" y="9.0"/>
+      <transition delay="lambda" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T1" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="2.356194490192345" type="EXP" x="16.55" y="9.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="1" name="fork4" x="11.0" y="14.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="1" name="fork2" x="31.0" y="14.0"/>
+      <transition delay="lambda" delay-x="0.0" delay-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T2" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.7853981633974483" type="EXP" x="16.55" y="19.0"/>
+      <transition delay="lambda" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T3" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="2.356194490192345" type="EXP" x="26.55" y="19.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="1" name="fork3" x="21.0" y="24.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="eating1" x="11.0" y="9.0"/>
+      <place label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" marking="1" name="thinking1" x="16.0" y="4.0"/>
+      <place label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" marking="0" name="wait1" x="6.0" y="4.0"/>
+      <place label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" marking="0" name="eating2" x="26.0" y="4.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="1" name="thinking2" x="31.0" y="9.0"/>
+      <place label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" marking="0" name="wait2" x="36.0" y="4.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="eating3" x="31.0" y="19.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="1" name="thinking4" x="11.0" y="19.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="eating4" x="16.0" y="24.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="1" name="thinking3" x="26.0" y="24.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="wait3" x="36.0" y="24.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="wait4" x="6.0" y="24.0"/>
+      <transition delay="rho" delay-x="0.0" delay-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T4" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="2.356194490192345" type="EXP" x="6.55" y="9.0"/>
+      <transition delay="rho" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T5" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="2.356194490192345" type="EXP" x="36.55" y="19.0"/>
+      <transition delay="mu" delay-x="-0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T6" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.7853981633974483" type="EXP" x="36.55" y="9.0"/>
+      <transition delay="mu" delay-x="0.0" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T7" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.7853981633974483" type="EXP" x="6.55" y="19.0"/>
+      <transition delay="mu" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T8" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="11.55" y="4.0"/>
+      <transition delay="rho" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T9" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="31.55" y="4.0"/>
+      <transition delay="mu" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T10" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="31.55" y="24.0"/>
+      <transition delay="rho" delay-x="0.0" delay-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T11" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="11.55" y="24.0"/>
+      <constant consttype="REAL" name="lambda" value="1" x="1.4375" y="2.0"/>
+      <constant consttype="REAL" name="mu" value="1" x="1.4375" y="3.0"/>
+      <constant consttype="REAL" name="rho" value="1" x="1.5" y="4.0"/>
+    </nodes>
+    <edges>
+      <arc broken="false" head="fork4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T1" type="OUTPUT"/>
+      <arc broken="false" head="fork2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T0" type="OUTPUT"/>
+      <arc broken="false" head="fork3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T2" type="OUTPUT"/>
+      <arc broken="false" head="fork4" multiplicity="1" multiplicity-k="0.18173828125000002" multiplicity-x="1.0" multiplicity-y="1.0" tail="T2" type="OUTPUT"/>
+      <arc broken="false" head="fork1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T1" type="OUTPUT"/>
+      <arc broken="false" head="fork1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T0" type="OUTPUT"/>
+      <arc broken="false" head="fork2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T3" type="OUTPUT"/>
+      <arc broken="false" head="fork3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T3" type="OUTPUT"/>
+      <arc broken="false" head="thinking1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T1" type="OUTPUT"/>
+      <arc broken="false" head="T8" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="thinking1" type="INPUT"/>
+      <arc broken="false" head="wait1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T8" type="OUTPUT"/>
+      <arc broken="false" head="T4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="wait1" type="INPUT"/>
+      <arc broken="false" head="eating1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T4" type="OUTPUT"/>
+      <arc broken="false" head="T1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="eating1" type="INPUT"/>
+      <arc broken="false" head="T4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="fork4" type="INPUT"/>
+      <arc broken="false" head="T7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="fork4" type="INPUT"/>
+      <arc broken="false" head="T5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="fork2" type="INPUT"/>
+      <arc broken="false" head="T6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="fork2" type="INPUT"/>
+      <arc broken="false" head="T0" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="eating2" type="INPUT"/>
+      <arc broken="false" head="thinking2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T0" type="OUTPUT"/>
+      <arc broken="false" head="T6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="thinking2" type="INPUT"/>
+      <arc broken="false" head="wait2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T6" type="OUTPUT"/>
+      <arc broken="false" head="T9" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="wait2" type="INPUT"/>
+      <arc broken="false" head="eating2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T9" type="OUTPUT"/>
+      <arc broken="false" head="thinking3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T3" type="OUTPUT"/>
+      <arc broken="false" head="T10" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="thinking3" type="INPUT"/>
+      <arc broken="false" head="wait3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T10" type="OUTPUT"/>
+      <arc broken="false" head="T5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="wait3" type="INPUT"/>
+      <arc broken="false" head="eating3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T5" type="OUTPUT"/>
+      <arc broken="false" head="T3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="eating3" type="INPUT"/>
+      <arc broken="false" head="T2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="eating4" type="INPUT"/>
+      <arc broken="false" head="thinking4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T2" type="OUTPUT"/>
+      <arc broken="false" head="T7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="thinking4" type="INPUT"/>
+      <arc broken="false" head="wait4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T7" type="OUTPUT"/>
+      <arc broken="false" head="T11" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="wait4" type="INPUT"/>
+      <arc broken="false" head="eating4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T11" type="OUTPUT"/>
+      <arc broken="false" head="T8" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="fork1" type="INPUT">
+        <point x="19.5" y="2.5"/>
+        <point x="14.0" y="2.5"/>
+      </arc>
+      <arc broken="false" head="T9" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="fork1" type="INPUT">
+        <point x="24.5" y="2.5"/>
+        <point x="30.0" y="2.5"/>
+      </arc>
+      <arc broken="false" head="T11" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="fork3" type="INPUT">
+        <point x="19.5" y="27.5"/>
+        <point x="14.5" y="27.5"/>
+      </arc>
+      <arc broken="false" head="T10" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="fork3" type="INPUT">
+        <point x="24.5" y="27.5"/>
+        <point x="30.0" y="27.5"/>
+      </arc>
+    </edges>
+  </gspn>
+</project>

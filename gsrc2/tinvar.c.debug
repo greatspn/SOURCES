@@ -1,0 +1,766 @@
+/*
+ *  Paris, February 22, 1990
+ *  program: tinvar.c
+ *  purpose: Compute T-invariants of a Petri net using Martinez-Silva Algorithm
+ *  programmer: Giovanni Chiola
+ *  notes:
+ *    1) the net description must be in GreatSPN format
+ *    2) self loops (impure nets) and inhibitor arcs are just ignored
+ */
+
+/*
+ * dumps core on IRIX mpis3 n32
+ * spd@daphne.cps.unizar.es
+ */
+
+/*
+#define DEBUG to print debug informations
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "const.h"
+
+#define TOB_SIZE (unsigned)(sizeof(struct trans_obj))
+#define MAT_SIZE (unsigned)(sizeof(struct matrix))
+#define ITM_SIZE (unsigned)(sizeof(short))
+
+
+typedef short * ROWP;
+
+struct trans_obj
+{
+	char tag[TAG_SIZE];
+	int covered;
+};
+
+struct matrix
+{
+	ROWP rowp;
+	struct matrix * next;
+};
+
+FILE *nfp;
+
+struct trans_obj *t_list=NULL;
+
+struct matrix	*mat=NULL,
+				*newm=NULL,
+				*oldmp=NULL,
+				*oldmm=NULL;
+
+ROWP	newrow;
+int		place_num,
+		trans_num;
+unsigned	row_size;
+int			*elim_place;	/* already eliminated places */
+int			*n_pos;			/* number of positive entries in each column */
+unsigned	n_size;
+int			*n_neg;			/* number of negative entries in each column */
+
+char *emalloc ( unsigned nbytes );
+short gcd( short n1, short n2 );
+void load_file (void);
+void getname ( char *name_pr );
+void getarcs ( char kind, ROWP trans, int noar );
+int test_min( ROWP newr );
+void destroy_mat ( struct matrix * point);
+void trans_invar (void);
+void show_res (void );
+void elim ( short place );
+
+
+char * emalloc ( unsigned nbytes )
+{
+    char *		mallptr;
+
+    if ( NULL == (mallptr = malloc((size_t)nbytes)))
+	{
+        perror("emalloc");
+        fprintf(stderr,"emalloc: couldn't fill request for %d bytes\n",nbytes);
+        exit(2);
+    }
+    return(mallptr);
+}
+
+short gcd( short n1, short n2 )
+{
+	short r;
+
+	if ( n2 > n1 )
+	{
+		r = n1; n1 = n2; n2 = r;
+	}
+	while ( n2 > 0 )
+	{
+		r = n1 % n2;
+		n1 = n2;
+		n2 = r;
+	}
+	return( n1 );
+}
+
+void load_file (void)
+{
+	struct trans_obj *		trans=NULL;
+	struct matrix *			m_p=NULL;
+	struct matrix *			prev_m_p=NULL;
+	char					linebuf[LINEMAX];
+	float					ftemp;
+	int						group_num, i, knd, noar, mark, nomp, norp;
+	int						row_l;
+
+#define VBAR '|'
+
+	/* skip first line containing '|0|' */
+	fgets(linebuf, LINEMAX, nfp);
+
+	/* skip comment */
+	for ( ; ; )
+	{
+		fgets(linebuf, LINEMAX, nfp);
+		if ( linebuf[0] == VBAR ) break;
+	}
+
+	/* read number of objects in the net */
+
+	fscanf(nfp,"f %d %d %d",&nomp,&place_num,&norp);
+	fscanf(nfp,"%d %d",&trans_num,&group_num);
+	while ( (getc(nfp)) != '\n' );
+	t_list = (struct trans_obj *)emalloc((unsigned)(trans_num*TOB_SIZE));
+	row_size = (unsigned)( 2 * (place_num + trans_num + 1) * ITM_SIZE );
+	newrow = (ROWP)emalloc( row_size );
+	elim_place = (int *)emalloc((unsigned)(sizeof(int)*(1+place_num)));
+	n_pos = (int *)emalloc((unsigned)(sizeof(int)*(1+place_num)));
+	n_neg = (int *)emalloc((unsigned)(sizeof(int)*(1+place_num)));
+	n_size = (unsigned)(1+place_num);
+
+	{
+		register int *ii, *ip, *in;
+		for (
+			i=0, ii=elim_place, ip=n_pos, in=n_neg;
+			i < n_size ;
+			i++
+			)
+			{
+				*(++ii) = FALSE;
+				*(++ip) = 0;
+				*(++in) = 0;
+			}
+	}
+
+	/* skip marking parameters */
+	i = 1;
+	while ( i++ <= nomp )
+	{
+		getname( linebuf );
+		fscanf(nfp,"%d",&mark);
+		while ( (getc(nfp)) != '\n' );
+	}
+
+	/* skip places */
+	i = 1;
+	while ( i++ <= place_num )
+	{
+		getname( linebuf );
+		fscanf(nfp,"%d",&mark);
+		while ( (getc(nfp)) != '\n' );
+	}
+
+	/* skip rate parameters */
+	i = 1;
+	while ( i++ <= norp )
+	{
+		getname( linebuf );
+		fscanf(nfp,"%f",&ftemp);
+		while ( (getc(nfp)) != '\n' );
+	}
+
+	/* skip groups */
+	i = 1;
+	while ( i++ <= group_num )
+	{
+		getname( linebuf );
+		while ( (getc(nfp)) != '\n' );
+	}
+
+
+#define printm { \
+	register short *m; \
+ \
+	fprintf(stderr,"\n%d 0x%p\n",__LINE__, newrow); \
+	for( m=newrow; m<(newrow+2*n_size); m++) \
+		fprintf(stderr,"%d ",(short)(*m)); \
+	fprintf(stderr,"\n"); \
+} 
+
+#define printe { \
+	register int *m; \
+ \
+	fprintf(stderr,"%d\n",__LINE__); \
+	for( m=(elim_place); m<(elim_place+n_size); m++) \
+		fprintf(stderr,"%d:%d ",(m-elim_place),(int)(*m)); \
+	fprintf(stderr,"\n"); \
+} 
+
+
+#define printp { \
+	int *m; \
+ \
+	fprintf(stderr,"n_pos %d %d\n",__LINE__, n_size); \
+	for( m=(n_pos); m<(n_pos+n_size); m++) \
+		fprintf(stderr,"%d ",(int)(*m)); \
+	fprintf(stderr,"\n"); \
+} 
+
+
+#define printn { \
+	int *m; \
+ \
+	fprintf(stderr,"n_neg %d %d\n",__LINE__, n_size); \
+	for( m=(n_neg); m<(n_neg+n_size); m++) \
+		fprintf(stderr,"%d ",(int)(*m)); \
+	fprintf(stderr,"\n"); \
+} 
+
+printe;
+
+	/* read transitions */
+	for ( i = 0, trans = t_list ; i++ < trans_num ; trans++ )
+	{
+		trans -> covered = FALSE;
+		getname( trans -> tag );
+		fscanf(nfp,"%f %d %d %d", &ftemp,&mark,&knd,&noar);
+/*		fprintf(stderr,"%d: %f %d %d %d\n", i,ftemp,mark,knd,noar);*/
+		while ( (getc(nfp)) != '\n' )
+			;
+		if ( mark < 0 )
+		{
+			int ii;
+			ii = mark = -mark;
+			while ( --ii )
+			{
+				while ( getc(nfp) != '\n' )
+					;
+			}
+		}
+		{
+			register short *p;
+			for (	p = (short *)newrow;
+					p < ((short *)newrow + (2*row_size));
+					*(p++) = 0 )
+				;
+		}
+		m_p = (struct matrix *) emalloc(MAT_SIZE);
+		if ( i == 1 ) mat = m_p;
+		else
+		{
+			if ( NULL == prev_m_p )
+			{
+				prev_m_p=(struct matrix *) emalloc(MAT_SIZE);
+				fprintf(stderr,
+				"BUG: file %s:line %d (work-arounded 0x%p)\n",
+				__FILE__,__LINE__,prev_m_p);
+				fflush(stderr);
+			}
+			prev_m_p -> next = m_p;
+		}
+		prev_m_p = m_p;
+		if ( i == trans_num ) m_p->next = NULL;
+
+		getarcs(TO_TRANS,newrow,noar);
+		fscanf(nfp,"%d\n",&noar);
+		getarcs(TO_PLACE,newrow,noar);
+		fscanf(nfp,"%d\n",&noar);
+		getarcs(INHIBITOR,newrow,noar);
+		{
+			register int j; register short *p; int maxj = 2*place_num;
+
+printm;
+			for ( j = 0, p = (short *)newrow, row_l = 0; j++ < maxj ; p++ )
+			{
+fprintf(stderr,"J: %d %d %d\n", j, *p, *(p+1));
+				if ( (*(p++)) != 0 )
+				{
+					if ( (*p) == 0 )
+						*(p-1) = 0;
+					else
+						row_l++;
+				}
+/*fprintf(stderr,"%d,%d,%d,%d (%d %d) (%p %p)\n",j,(short)(*p),(short)*(p-1),row_l,(p-newrow)/2, newrow[(p-newrow)/2], p,&newrow[(p-newrow)]);*/
+			}
+/*fprintf(stderr,"\n%d %d %d\n",__LINE__,row_l,maxj);*/
+		}
+		row_size = ITM_SIZE*2*(2+row_l);;
+		m_p->rowp = (ROWP) emalloc( row_size );
+		{
+			register int j; register short *p, *p1;
+
+			p = (short *)m_p->rowp;
+			*p++ = 1;
+			*p++ = i;
+			*p++ = 1;
+printm;
+			for ( j = 0, p1 = (short *)newrow ; j++ < row_l ; )
+			{
+				while ( 0 == (*p1))
+				{
+					fprintf(stderr,"0(%d,%d:%d %d %d 0x%p 0x%p)\n",j,row_l,*p1,n_neg[*p1],*(p1+1),p1,p1+1);fflush(stderr);
+					p1 += 2;
+				}
+
+if ((*p1<0? -*p1:*p1)>=(int)n_size)
+fprintf(stderr,"BUG: %s:%d %d>=%d\n",__FILE__,__LINE__,*p1,n_size);fflush(stderr);
+
+				if ( *(p1+1) > 0 )
+				{
+					fprintf(stderr,"+(%d,%d:%d %d %d 0x%p 0x%p)\n",j,row_l,*p1,n_pos[*p1],*(p1+1),p1,p1+1);fflush(stderr);
+					++(n_pos[*p1]);
+				}
+				else
+				{
+					fprintf(stderr,"-(%d,%d:%d %d %d 0x%p 0x%p)\n",j,row_l,*p1,n_neg[*p1],*(p1+1),p1,p1+1);fflush(stderr);
+					++(n_neg[*p1]);
+				}
+
+				*(p++) = *(p1++);
+				*(p++) = *(p1++);
+			}
+			*(p) = 0;
+printm;
+printn;
+printp;
+
+		}
+	}
+	oldmp = oldmm = NULL;
+
+}
+
+
+void getname ( char *name_pr )
+{
+#define	BLANK ' '
+#define	EOLN  '\0'
+    short		i;
+
+    for ( (*name_pr) = fgetc(nfp) , i = 1 ;
+	  (*name_pr) != BLANK &&
+	  (*name_pr) != '\n' &&
+	  (*name_pr) != (char)0 &&
+	  i++ <= TAG_SIZE ;
+	  (*(++name_pr)) = fgetc(nfp) );
+    (*name_pr) = EOLN;
+}
+
+
+void getarcs ( char kind, ROWP trans, int noar )
+{
+    int			i, j, pl, mlt, ip;
+    ROWP		rp;
+
+    for ( i = 1 ; i++ <= noar ; ) {
+	fscanf(nfp, "%d %d %d", &mlt, &pl, &ip );
+	while ( (getc(nfp)) != '\n' );
+	rp = trans + 2 * ( pl - 1 );
+	if ( kind == TO_PLACE ) {
+	    *(rp++) = (short)pl;
+	    *rp += (short)(ABS(mlt));
+	  }
+	else if ( kind == TO_TRANS ) {
+	    *(rp++) = (short)pl;
+	    *rp -= (short)(ABS(mlt));
+	  }
+	for ( j = 1; j++ <= ip; )
+	    while ( (getc(nfp)) != '\n' );
+      }
+}
+
+
+/* THE FOLLOWING FUNCTION TESTS FOR MINIMAL SUPPORT */
+int test_min( ROWP newr )
+{
+    struct matrix * rp;
+    register int i, j;
+    register ROWP cp, val;
+
+    for ( rp = mat; rp != NULL ; rp = rp->next ) {
+	if ( (i = *(cp = rp->rowp)) > (j = *(val = newr)) )
+	    goto notincluded;
+	for ( cp++ , val++ ; i-- > 0 ; cp += 2 ) {
+	    while ( ( j > 0 ) && ( *val < *cp ) ) {
+		j--; val += 2;
+	      }
+	    if ( ( j <= 0 ) || ( *val != *cp ) )
+		goto notincluded;
+	  }
+	return( FALSE );
+      notincluded:
+	continue;
+      }
+    return( TRUE );
+}
+
+
+void elim ( short place )
+{
+    struct matrix * rp;
+    ROWP pp, ppp;
+    short val1, val2, div, gcd1;
+#define myABS(A) ( ( (short)(A) >= (short)0 ) ? (A) : -(A) )
+
+    pp = oldmp->rowp;
+    for ( ppp = pp+(2*(*pp)+1) ; (short)(*(ppp++)) != (short)place ; ppp++ );
+    val1 = *ppp;
+    for ( rp = oldmm; rp != NULL; rp = rp->next ) {
+	pp = rp->rowp;
+	for ( ppp = pp+(2*(*pp)+1) ;
+	      (short)(*(ppp++)) != (short)place ; ppp++ );
+	val2 = - *ppp;
+	div = gcd( val1, val2 );
+	{ int j, j1, j2; short val; register ROWP point, point1, point2;
+	  for ( j = 0, gcd1 = 0, point = newrow + 1,
+		j1 = *(point1 = oldmp->rowp), point1++,
+		j2 = *(point2 = rp->rowp), point2++;
+		j1 > 0 && j2 > 0 ; ) {
+	      if ( *point1 == *point2 ) {
+		  j1--; j2--;
+		  *(point++) = *(point1++); point2++;
+		  if ( (short)( val =
+			  (val2 * *(point1++) + val1 * *(point2++)) / div
+			     ) == (short)0 )
+		    *(--point) = 0;
+		  else{
+		      *(point++) = val; j++;
+		      if ( gcd1 != (short)1 ) {
+			  if ( gcd1 == (short)0 )  gcd1 = myABS(val);
+			  else  gcd1 = gcd( myABS(val), gcd1 );
+			}
+		    }
+		}
+	      else if ( *point1 > *point2 ) {
+		  j++; j2--;
+		  *(point++) = *(point2++);
+		  val = *(point++) = (short)( (val1 * *(point2++)) / div );
+		  if ( gcd1 != (short)1 ) {
+		      if ( gcd1 == (short)0 )  gcd1 = myABS(val);
+		      else  gcd1 = gcd( myABS(val), gcd1 );
+		    }
+		}
+	      else {
+		  j++; j1--;
+		  *(point++) = *(point1++);
+		  val = *(point++) = (short)( (val2 * *(point1++)) / div );
+		  if ( gcd1 != (short)1 ) {
+		      if ( gcd1 == (short)0 )  gcd1 = myABS(val);
+		      else  gcd1 = gcd( myABS(val), gcd1 );
+		    }
+		}
+	    }
+	  while ( j1-- > 0 ) {
+	      j++;
+	      *(point++) = *(point1++);
+	      val = *(point++) = (short)( (val2 * *(point1++)) / div );
+	      if ( gcd1 != (short)1 ) {
+		  if ( gcd1 == (short)0 )  gcd1 = myABS(val);
+		  else  gcd1 = gcd( myABS(val), gcd1 );
+		}
+	    }
+	  while ( j2-- > 0 ) {
+	      j++;
+	      *(point++) = *(point2++);
+	      val = *(point++) = (short)( (val1 * *(point2++)) / div );
+	      if ( gcd1 != (short)1 ) {
+		  if ( gcd1 == (short)0 )  gcd1 = myABS(val);
+		  else  gcd1 = gcd( myABS(val), gcd1 );
+		}
+	    }
+	  *newrow = j;
+	  while ( ( (short)(*point1) != (short)0 ) &&
+		  ( (short)(*point2) != (short)0 ) )  {
+	      if ( *point1 == *point2 ) {
+		  *(point++) = *(point1++); point2++;
+		  if ( (short)( val =
+			  (val2 * *(point1++) + val1 * *(point2++)) / div
+			     ) == (short)0 )
+		    *(--point) = 0;
+		  else {
+		      *(point++) = val; j++;
+		      if ( gcd1 != (short)1 ) {
+			  if ( gcd1 == (short)0 )  gcd1 = myABS(val);
+			  else  gcd1 = gcd( myABS(val), gcd1 );
+			}
+		    }
+		}
+	      else if ( *point1 > *point2 ) {
+		  *(point++) = *(point2++); j++;
+		  val = *(point++) = (short)( (val1 * *(point2++)) / div );
+		  if ( gcd1 != (short)1 ) {
+		      if ( gcd1 == (short)0 )  gcd1 = myABS(val);
+		      else  gcd1 = gcd( myABS(val), gcd1 );
+		    }
+		}
+	      else {
+		  *(point++) = *(point1++); j++;
+		  val = *(point++) = (short)( (val2 * *(point1++)) / div );
+		  if ( gcd1 != (short)1 ) {
+		      if ( gcd1 == (short)0 )  gcd1 = myABS(val);
+		      else  gcd1 = gcd( myABS(val), gcd1 );
+		    }
+		}
+	    }
+	  while ( (short)(*point1) != (short)0 ) {
+	      j++; *(point++) = *(point1++);
+	      val = *(point++) = (short)( (val2 * *(point1++)) / div );
+	      if ( gcd1 != (short)1 ) {
+		  if ( gcd1 == (short)0 )  gcd1 = myABS(val);
+		  else  gcd1 = gcd( myABS(val), gcd1 );
+		}
+	    }
+	  while ( (short)(*point2) != (short)0 ) {
+	      j++; *(point++) = *(point2++);
+	      val = *(point++) = (short)( (val1 * *(point2++)) / div );
+	      if ( gcd1 != (short)1 ) {
+		  if ( gcd1 == (short)0 )  gcd1 = myABS(val);
+		  else  gcd1 = gcd( myABS(val), gcd1 );
+		}
+	    }
+	  *point = 0;
+	  if ( test_min( newrow ) ) {
+	      newm = (struct matrix *)emalloc(MAT_SIZE);
+	      newm->next = mat; mat = newm;
+	      newm->rowp = point = (ROWP)emalloc((unsigned)(2*(j+1)*ITM_SIZE));
+	      for ( j = *(point1 = newrow), *(point++) = j, point1++;
+		    j-- > 0 ;
+		    *(point++) = *(point1++), *(point++) = *(point1++)/gcd1 );
+	      while ( (short)(*point1) != (short)0 ) {
+		  *(point++) = *(point1++);
+		  if ( (*(point++) = *(point1++)/gcd1) > 0 )
+		      ++(n_pos[(int)*(point-2)]);
+		  else
+		      ++(n_neg[(int)*(point-2)]);
+		}
+	      *(point) = 0;
+#ifdef DEBUG
+printf("new row ");
+for ( j = *(point = newm->rowp), printf(" %d :\n",(int)j), point++; j-- > 0 ;
+printf("  %d",(int)(*(point++)) ), printf(" %d,",(int)(*(point++)) ) );
+while ( (short)(*point) != (short)0 ) {
+printf(";  %d",(int)(*(point++)) );
+printf(" %d",(int)(*(point++)) );
+}
+printf("\n");
+#endif
+	    }
+	}
+      }
+}
+
+void destroy_mat ( struct matrix * point)
+{
+	if ( point )
+	{
+		if ( point->rowp )
+		{
+			free( point->rowp );
+		}
+		else
+		{
+			fprintf(stderr,"BUG: %s:%d\n",__FILE__,__LINE__);
+		}
+		free( point );
+	}
+	else
+	{
+		fprintf(stderr,"BUG: %s:%d\n",__FILE__,__LINE__);
+	}
+}
+
+void trans_invar (void)
+{
+    int i, j;
+    int from_place = 1;
+    ROWP cp, cp2;
+    struct matrix * rp, * nrp, * prp;
+
+    for ( j = 0 ; j++ < place_num ; ) {
+#ifdef DEBUG
+{ ROWP cp; struct matrix * rp; int i, j;
+printf("\nMATRIX\n");
+for ( rp = mat; rp != NULL ; rp = rp->next ) {
+for ( i = 0, j = *(cp = rp->rowp), cp++ ; i++ < trans_num ; )
+if ( (j>0) && (i == (int)(*cp)) ) {
+j--; cp++;
+printf(" %2d",(int)*(cp++) );
+}
+else printf("  0");
+for ( i = 0 ; i++ < place_num ; )
+if ( (i == (int)(*cp)) ) {
+cp++;
+printf(" %2d",(int)*(cp++) );
+}
+else printf("  0");
+printf("\n");
+}
+}
+#endif
+{
+	int first, minval, mm, ii;
+	int * ip, * pp, * np;
+static int call=0;
+
+call++;
+printe;
+
+	for (
+		first=TRUE, ii=from_place, ip=(elim_place+from_place),
+		pp=(n_pos+from_place), np=(n_neg+from_place);
+		ii <= place_num;
+		ip++, pp++, np++, ii++)
+	{
+		fprintf(stderr,"%d %d %d\n", call,ip - elim_place - from_place, *ip);
+		while ( *ip == 1 )
+		{
+			ip++; pp++; np++;
+			if ( ++ii > place_num ) goto end_test;
+		}
+		mm = (*pp)*(*np) - (*pp) - (*np);
+		if ( first )
+		{
+			i = ii; minval = mm; first = FALSE;
+		}
+		else if ( mm < minval )
+		{
+			i = ii; minval = mm;
+		}
+	}
+}
+end_test:
+	elim_place[i] = TRUE;
+	if ( i == from_place )
+	    while ( elim_place[from_place] )
+		++from_place;
+#ifdef DEBUG
+printf("\neliminating place #%d\n",i);
+#endif
+	for ( prp = NULL, rp = mat ; rp != NULL ; rp = nrp ) {
+	    nrp = rp->next;
+	    cp2 = cp = (rp->rowp) + ( 2 * *(rp->rowp) + 1 );
+	    while ( ((int)(*cp)<i) && ((int)(*cp)>0) )
+		cp += 2;
+	    if ( (int)(*cp) == i ) { /* TAKE THE ROW OUT FROM MATRIX LIST */
+		while ( (short)(*cp2) != (short)0 ) {
+		    if ( (short)(*(cp2+1)) > (short)0 )
+			--(n_pos[(int)(*cp2)]);
+		    else
+			--(n_neg[(int)(*cp2)]);
+		    cp2 += 2;
+		  }
+		if ( rp == mat )
+		    mat = nrp;
+		else
+		    prp->next = nrp;
+		if ( (short)(*(++cp)) > (short)0 ) {
+		    rp->next = oldmp;
+		    oldmp = rp;
+		  }
+		else {
+		    rp->next = oldmm;
+		    oldmm = rp;
+		  }
+	      }
+	    else
+		prp = rp;
+	  }
+	if ( oldmp != NULL && oldmm != NULL ) {
+	    while ( (rp = oldmp) != NULL ) {
+		elim( (short)i );
+		oldmp = oldmp->next;
+		destroy_mat( rp );
+	      }
+	  }
+	else
+	    while ( (rp = oldmp) != NULL ) {
+		oldmp = oldmp->next;
+		destroy_mat( rp );
+	      }
+	while ( (rp = oldmm) != NULL ) {
+	    oldmm = oldmm->next;
+	    destroy_mat( rp );
+	  }
+      }
+}
+
+void show_res (void )
+{
+    struct matrix * rp;
+    ROWP cp;
+    struct trans_obj * tp;
+    int nocov = 0;
+    int i, num, mult, nt;
+
+    for ( num = 0, rp = mat; rp != NULL ; num++, rp = rp->next );
+    fprintf(nfp, "%d\n", num);
+    for ( rp = mat; rp != NULL ; rp = rp->next ) {
+	num = i = *(cp = rp->rowp); fprintf(nfp, "%d", num);
+	for ( cp++ ; i-- > 0 ; cp++ ) {
+	    nt = (int)(*cp);
+	    tp = &(t_list[ nt-1 ]);
+	    if ( (short)(*(++cp)) != (short)1 ) printf(" %d*",(int)*cp);
+	      else printf(" ");
+	    mult = (int)*cp;
+	    fprintf(nfp, " %d %d", mult, nt);
+	    if ( ! tp->covered ) {
+		tp->covered = TRUE; nocov++;
+	      }
+	    printf("%s",tp->tag);
+	  }
+	fprintf(nfp, "\n"); printf("\n");
+      }
+    fprintf(nfp, "0\n");
+    if ( nocov == trans_num )
+	printf("\nALL transitions are covered by some T-invariant\n\n");
+    else {
+	printf("\nOnly %d transitions out of %d", nocov, trans_num);
+	printf(" are covered by some T-invariant.\n\n");
+	printf("The following transitions are not covered by any T-invariant:\n\n");
+	for ( tp = t_list, i = trans_num ; i-- > 0 ; tp++ )
+	    if ( ! tp->covered ) printf(" %s",tp->tag);
+	printf("\n\n");
+      }
+}
+
+int main ( int argc, char **argv )
+{
+    char  filename[LINEMAX];
+
+
+    if ( argc < 2 )
+	{
+		printf("ERROR: no net name !\n");
+		exit(1);
+	}
+    sprintf(filename,"%s.net",argv[1]);
+    if ( (nfp = fopen( filename, "r")) == NULL )
+	{
+		perror(filename);
+		fprintf(stderr,"Can't open file %s\n",filename);
+		exit(1);
+	}
+    load_file ();
+    (void) fclose(nfp);
+    trans_invar();
+    printf("\nTransition invariants for net %s:\n\n",argv[1]);
+    sprintf(filename,"%s.tin",argv[1]);
+    if ( (nfp = fopen( filename, "w")) == NULL )
+	{
+		perror(filename);
+		printf("Can't open file %s\n",filename);
+		exit(1);
+	}
+    show_res();
+    (void) fclose(nfp);
+	return 0;
+}
+

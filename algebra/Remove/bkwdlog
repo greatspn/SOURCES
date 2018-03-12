@@ -1,0 +1,1153 @@
+
+Reading .....
+Numero Layers Caricati 0
+
+File bk.net read in.
+
+Reading .....
+Numero Layers Caricati 0
+
+File wd.net read in.
+Max: 6.169447e+00, 3.701668e+02
+Max: 4.991667e+00, 2.995000e+02
+ Superposition over Places & Transitions Started
+    The joined comment is:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  Marking Parameters in Result:
+
+  Rate Parameters in Result:
+
+  Lisps in Result:
+
+    Ntr1: 7, Ntr2: 31
+ Transitions of 1st Operand
+ Full Tag: 'recov_bk|recov'
+  Tag: 'recov_bk'
+  NofLabels: 1, Labels: 'recov', 
+  End: 
+ Full Tag: 'termko_bk|termko'
+  Tag: 'termko_bk'
+  NofLabels: 1, Labels: 'termko', 
+  End: 
+ Full Tag: 'delay_bk|delay'
+  Tag: 'delay_bk'
+  NofLabels: 1, Labels: 'delay', 
+  End: 
+ Full Tag: 'sendack'
+  Tag: 'sendack'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'nodect_bk|nodect'
+  Tag: 'nodect_bk'
+  NofLabels: 1, Labels: 'nodect', 
+  End: 
+ Full Tag: 'reinfromdet_bk|reinfromdet'
+  Tag: 'reinfromdet_bk'
+  NofLabels: 1, Labels: 'reinfromdet', 
+  End: 
+ Full Tag: 'detect'
+  Tag: 'detect'
+  NofLabels: 0, Labels: 
+  End: 
+ Transitions of 2nd Operand
+ Full Tag: 'term'
+  Tag: 'term'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'kick'
+  Tag: 'kick'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'cont'
+  Tag: 'cont'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'setup'
+  Tag: 'setup'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'rec1'
+  Tag: 'rec1'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'kick'
+  Tag: 'kick'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'all1'
+  Tag: 'all1'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'pause'
+  Tag: 'pause'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'rec'
+  Tag: 'rec'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'Econt_wd|Econt'
+  Tag: 'Econt_wd'
+  NofLabels: 1, Labels: 'Econt', 
+  End: 
+ Full Tag: 'Scont_wd|Scont'
+  Tag: 'Scont_wd'
+  NofLabels: 1, Labels: 'Scont', 
+  End: 
+ Full Tag: 'nodect_wd|nodect'
+  Tag: 'nodect_wd'
+  NofLabels: 1, Labels: 'nodect', 
+  End: 
+ Full Tag: 'Ssetup_wd|Ssetup'
+  Tag: 'Ssetup_wd'
+  NofLabels: 1, Labels: 'Ssetup', 
+  End: 
+ Full Tag: 'Esetup_wd|Esetup'
+  Tag: 'Esetup_wd'
+  NofLabels: 1, Labels: 'Esetup', 
+  End: 
+ Full Tag: 'notify'
+  Tag: 'notify'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'recvack'
+  Tag: 'recvack'
+  NofLabels: 0, Labels: 
+  End: 
+ Full Tag: 'delay_wd|delay'
+  Tag: 'delay_wd'
+  NofLabels: 1, Labels: 'delay', 
+  End: 
+ Full Tag: 'Epau_wd|Epau'
+  Tag: 'Epau_wd'
+  NofLabels: 1, Labels: 'Epau', 
+  End: 
+ Full Tag: 'Spau_wd|Spau'
+  Tag: 'Spau_wd'
+  NofLabels: 1, Labels: 'Spau', 
+  End: 
+ Full Tag: 'Etermp_wd|Etermp'
+  Tag: 'Etermp_wd'
+  NofLabels: 1, Labels: 'Etermp', 
+  End: 
+ Full Tag: 'Stermp_wd|Stermp'
+  Tag: 'Stermp_wd'
+  NofLabels: 1, Labels: 'Stermp', 
+  End: 
+ Full Tag: 'Stermc_wd|Stermc'
+  Tag: 'Stermc_wd'
+  NofLabels: 1, Labels: 'Stermc', 
+  End: 
+ Full Tag: 'Srecp_wd|Srecp'
+  Tag: 'Srecp_wd'
+  NofLabels: 1, Labels: 'Srecp', 
+  End: 
+ Full Tag: 'Skickp_wd|Skickp'
+  Tag: 'Skickp_wd'
+  NofLabels: 1, Labels: 'Skickp', 
+  End: 
+ Full Tag: 'Erecp_wd|Erecp'
+  Tag: 'Erecp_wd'
+  NofLabels: 1, Labels: 'Erecp', 
+  End: 
+ Full Tag: 'Ekickp_wd|Ekickp'
+  Tag: 'Ekickp_wd'
+  NofLabels: 1, Labels: 'Ekickp', 
+  End: 
+ Full Tag: 'Skickc_wd|Skickc'
+  Tag: 'Skickc_wd'
+  NofLabels: 1, Labels: 'Skickc', 
+  End: 
+ Full Tag: 'Ekickc_wd|Ekickc'
+  Tag: 'Ekickc_wd'
+  NofLabels: 1, Labels: 'Ekickc', 
+  End: 
+ Full Tag: 'Erecc_wd|Erecc'
+  Tag: 'Erecc_wd'
+  NofLabels: 1, Labels: 'Erecc', 
+  End: 
+ Full Tag: 'Srecc_wd|Srecc'
+  Tag: 'Srecc_wd'
+  NofLabels: 1, Labels: 'Srecc', 
+  End: 
+ Full Tag: 'termko_wd|termko'
+  Tag: 'termko_wd'
+  NofLabels: 1, Labels: 'termko', 
+  End: 
+ Join Matrice:
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      
+    Npl1: 9, Npl2: 23
+ Places of 1st Operand
+  Tag: 'idleBK'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'mboxclean_bk'
+  NofLabels: 1, Labels: 'mboxclean', 
+  End: 
+  Tag: 'P32'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'failure'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P29'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'detected'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'mboxerr_bk'
+  NofLabels: 1, Labels: 'mboxerr', 
+  End: 
+  Tag: 'mboxr_bk'
+  NofLabels: 1, Labels: 'mboxr', 
+  End: 
+  Tag: 'mboxs_bk'
+  NofLabels: 1, Labels: 'mboxs', 
+  End: 
+ Places of 2nd Operand
+  Tag: 'P66'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P65'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P64'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P57'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P51'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P52'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P42'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P41'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'unused'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'pause'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'count'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P43'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P44'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P46'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P45'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'mboxr_wd'
+  NofLabels: 1, Labels: 'mboxr', 
+  End: 
+  Tag: 'exp_notified'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'mboxs_wd'
+  NofLabels: 1, Labels: 'mboxs', 
+  End: 
+  Tag: 'expired'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P47'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P48'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P49'
+  NofLabels: 0, Labels: 
+  End: 
+  Tag: 'P50'
+  NofLabels: 0, Labels: 
+  End: 
+ Join Matrice:
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 
+      
+  Exp Transitions in Result:
+    recov_bk|recov:  Layers: 
+    term:  Layers: 
+    kick:  Layers: 
+    cont:  Layers: 
+    setup:  Layers: 
+    rec1:  Layers: 
+    kick:  Layers: 
+    all1:  Layers: 
+    pause:  Layers: 
+    rec:  Layers: 
+
+  Imm Transitions in Result:
+    G2: 1
+    termko_bk|termko:  Layers: 
+    delay_bk|delay:  Layers: 
+    sendack:  Layers: 
+    nodect_bk|nodect:  Layers: 
+    reinfromdet_bk|reinfromdet:  Layers: 
+    detect:  Layers: 
+    Econt_wd|Econt:  Layers: 
+    Scont_wd|Scont:  Layers: 
+    Ssetup_wd|Ssetup:  Layers: 
+    Esetup_wd|Esetup:  Layers: 
+    notify:  Layers: 
+    recvack:  Layers: 
+    Epau_wd|Epau:  Layers: 
+    Spau_wd|Spau:  Layers: 
+    Etermp_wd|Etermp:  Layers: 
+    Stermp_wd|Stermp:  Layers: 
+    Stermc_wd|Stermc:  Layers: 
+    Srecp_wd|Srecp:  Layers: 
+    Skickp_wd|Skickp:  Layers: 
+    Erecp_wd|Erecp:  Layers: 
+    Ekickp_wd|Ekickp:  Layers: 
+    Skickc_wd|Skickc:  Layers: 
+    Ekickc_wd|Ekickc:  Layers: 
+    Erecc_wd|Erecc:  Layers: 
+    Srecc_wd|Srecc:  Layers: 
+
+ Number of tr.s: 35
+  Mapping of transitions s:
+     0 0
+     1 10
+     2 11
+     3 12
+     4 13
+     5 14
+     6 15
+
+     0 1
+     1 2
+     2 3
+     3 4
+     4 5
+     5 6
+     6 7
+     7 8
+     8 9
+     9 16
+     10 17
+     11 18
+     12 18
+     13 19
+     14 20
+     15 21
+     16 22
+     17 22
+     18 23
+     19 24
+     20 25
+     21 26
+     22 27
+     23 28
+     24 29
+     25 30
+     26 31
+     27 32
+     28 33
+     29 34
+     30 35
+Npl1: 9, Npl2: 23, NplR: 30
+  Places in Result:
+    idleBK:  Layers: 
+    mboxclean_bk|mboxclean:  Layers: 
+    P32:  Layers: 
+    failure:  Layers: 
+    P29:  Layers: 
+    detected:  Layers: 
+    mboxerr_bk|mboxerr:  Layers: 
+    mboxr_bk|mboxr:  Layers: 
+    mboxs_bk|mboxs:  Layers: 
+    P66:  Layers: 
+    P65:  Layers: 
+    P64:  Layers: 
+    P57:  Layers: 
+    P51:  Layers: 
+    P52:  Layers: 
+    P42:  Layers: 
+    P41:  Layers: 
+    unused:  Layers: 
+    pause:  Layers: 
+    count:  Layers: 
+    P43:  Layers: 
+    P44:  Layers: 
+    P46:  Layers: 
+    P45:  Layers: 
+    exp_notified:  Layers: 
+    expired:  Layers: 
+    P47:  Layers: 
+    P48:  Layers: 
+    P49:  Layers: 
+    P50:  Layers: 
+
+  Mapping of places s:
+     0 0
+     1 1
+     2 2
+     3 3
+     4 4
+     5 5
+     6 6
+     7 7
+     8 8
+
+     0 9
+     1 10
+     2 11
+     3 12
+     4 13
+     5 14
+     6 15
+     7 16
+     8 17
+     9 18
+     10 19
+     11 20
+     12 21
+     13 22
+     14 23
+     15 0
+     16 24
+     17 0
+     18 25
+     19 26
+     20 27
+     21 28
+     22 29
+
+Pl: unused, Tr: termko_wd|termko, tr: 30, pl: 8
+multr: 1, simpletr:0, mulpl: 1, simplepl: 1, 
+  PlIndex: 17, Its place: unused
+Ide szalad: 10
+  TrIndex: 10, Its trans: termko_bk|termko
+
+Pl: pause, Tr: termko_wd|termko, tr: 30, pl: 9
+multr: 1, simpletr:0, mulpl: 1, simplepl: 1, 
+  PlIndex: 18, Its place: pause
+Ide szalad: 10
+  TrIndex: 10, Its trans: termko_bk|termko
+
+Pl: P47, Tr: Srecc_wd|Srecc, tr: 29, pl: 19
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 26, Its place: P47
+  TrIndex: 34, Its trans: Srecc_wd|Srecc
+
+Pl: count, Tr: Srecc_wd|Srecc, tr: 29, pl: 10
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 19, Its place: count
+  TrIndex: 34, Its trans: Srecc_wd|Srecc
+
+Pl: pause, Tr: Erecc_wd|Erecc, tr: 28, pl: 9
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 18, Its place: pause
+  TrIndex: 33, Its trans: Erecc_wd|Erecc
+
+Pl: P48, Tr: Erecc_wd|Erecc, tr: 28, pl: 20
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 27, Its place: P48
+  TrIndex: 33, Its trans: Erecc_wd|Erecc
+
+Pl: count, Tr: Ekickc_wd|Ekickc, tr: 27, pl: 10
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 19, Its place: count
+  TrIndex: 32, Its trans: Ekickc_wd|Ekickc
+
+Pl: P46, Tr: Ekickc_wd|Ekickc, tr: 27, pl: 13
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 22, Its place: P46
+  TrIndex: 32, Its trans: Ekickc_wd|Ekickc
+
+Pl: P45, Tr: Skickc_wd|Skickc, tr: 26, pl: 14
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 23, Its place: P45
+  TrIndex: 31, Its trans: Skickc_wd|Skickc
+
+Pl: count, Tr: Skickc_wd|Skickc, tr: 26, pl: 10
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 19, Its place: count
+  TrIndex: 31, Its trans: Skickc_wd|Skickc
+
+Pl: pause, Tr: Ekickp_wd|Ekickp, tr: 25, pl: 9
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 18, Its place: pause
+  TrIndex: 30, Its trans: Ekickp_wd|Ekickp
+
+Pl: P42, Tr: Ekickp_wd|Ekickp, tr: 25, pl: 6
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 15, Its place: P42
+  TrIndex: 30, Its trans: Ekickp_wd|Ekickp
+
+Pl: pause, Tr: Erecp_wd|Erecp, tr: 24, pl: 9
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 18, Its place: pause
+  TrIndex: 29, Its trans: Erecp_wd|Erecp
+
+Pl: P66, Tr: Erecp_wd|Erecp, tr: 24, pl: 0
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 9, Its place: P66
+  TrIndex: 29, Its trans: Erecp_wd|Erecp
+
+Pl: P41, Tr: Skickp_wd|Skickp, tr: 23, pl: 7
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 16, Its place: P41
+  TrIndex: 28, Its trans: Skickp_wd|Skickp
+
+Pl: pause, Tr: Skickp_wd|Skickp, tr: 23, pl: 9
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 18, Its place: pause
+  TrIndex: 28, Its trans: Skickp_wd|Skickp
+
+Pl: P65, Tr: Srecp_wd|Srecp, tr: 22, pl: 1
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 10, Its place: P65
+  TrIndex: 27, Its trans: Srecp_wd|Srecp
+
+Pl: pause, Tr: Srecp_wd|Srecp, tr: 22, pl: 9
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 18, Its place: pause
+  TrIndex: 27, Its trans: Srecp_wd|Srecp
+
+Pl: P51, Tr: Stermc_wd|Stermc, tr: 21, pl: 4
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 13, Its place: P51
+  TrIndex: 26, Its trans: Stermc_wd|Stermc
+
+Pl: count, Tr: Stermc_wd|Stermc, tr: 21, pl: 10
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 19, Its place: count
+  TrIndex: 26, Its trans: Stermc_wd|Stermc
+
+Pl: P51, Tr: Stermp_wd|Stermp, tr: 20, pl: 4
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 13, Its place: P51
+  TrIndex: 25, Its trans: Stermp_wd|Stermp
+
+Pl: pause, Tr: Stermp_wd|Stermp, tr: 20, pl: 9
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 18, Its place: pause
+  TrIndex: 25, Its trans: Stermp_wd|Stermp
+
+Pl: unused, Tr: Etermp_wd|Etermp, tr: 19, pl: 8
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 17, Its place: unused
+  TrIndex: 24, Its trans: Etermp_wd|Etermp
+
+Pl: P52, Tr: Etermp_wd|Etermp, tr: 19, pl: 5
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 14, Its place: P52
+  TrIndex: 24, Its trans: Etermp_wd|Etermp
+
+Pl: P49, Tr: Spau_wd|Spau, tr: 18, pl: 21
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 28, Its place: P49
+  TrIndex: 23, Its trans: Spau_wd|Spau
+
+Pl: count, Tr: Spau_wd|Spau, tr: 18, pl: 10
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 19, Its place: count
+  TrIndex: 23, Its trans: Spau_wd|Spau
+
+Pl: pause, Tr: Epau_wd|Epau, tr: 17, pl: 9
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 18, Its place: pause
+  TrIndex: 22, Its trans: Epau_wd|Epau
+
+Pl: P50, Tr: Epau_wd|Epau, tr: 17, pl: 22
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 29, Its place: P50
+  TrIndex: 22, Its trans: Epau_wd|Epau
+
+Pl: count, Tr: delay_wd|delay, tr: 16, pl: 10
+multr: 1, simpletr:0, mulpl: 1, simplepl: 1, 
+  PlIndex: 19, Its place: count
+Ide szalad: 11
+  TrIndex: 11, Its trans: delay_bk|delay
+
+Pl: exp_notified, Tr: delay_wd|delay, tr: 16, pl: 16
+multr: 1, simpletr:0, mulpl: 1, simplepl: 1, 
+  PlIndex: 24, Its place: exp_notified
+Ide szalad: 11
+  TrIndex: 11, Its trans: delay_bk|delay
+
+Pl: unused, Tr: recvack, tr: 15, pl: 8
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 17, Its place: unused
+  TrIndex: 21, Its trans: recvack
+
+Pl: exp_notified, Tr: recvack, tr: 15, pl: 16
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 24, Its place: exp_notified
+  TrIndex: 21, Its trans: recvack
+
+Pl: mboxr_wd|mboxr, Tr: recvack, tr: 15, pl: 15
+multr: 1, simpletr:1, mulpl: 1, simplepl: 0, 
+Ide szalad: 7
+  PlIndex: 7, Its place: mboxr_bk|mboxr
+  TrIndex: 21, Its trans: recvack
+
+Pl: mboxs_wd|mboxs, Tr: notify, tr: 14, pl: 17
+multr: 1, simpletr:1, mulpl: 1, simplepl: 0, 
+Ide szalad: 8
+  PlIndex: 8, Its place: mboxs_bk|mboxs
+  TrIndex: 20, Its trans: notify
+
+Pl: exp_notified, Tr: notify, tr: 14, pl: 16
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 24, Its place: exp_notified
+  TrIndex: 20, Its trans: notify
+
+Pl: expired, Tr: notify, tr: 14, pl: 18
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 25, Its place: expired
+  TrIndex: 20, Its trans: notify
+
+Pl: pause, Tr: Esetup_wd|Esetup, tr: 13, pl: 9
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 18, Its place: pause
+  TrIndex: 19, Its trans: Esetup_wd|Esetup
+
+Pl: P64, Tr: Esetup_wd|Esetup, tr: 13, pl: 2
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 11, Its place: P64
+  TrIndex: 19, Its trans: Esetup_wd|Esetup
+
+Pl: P57, Tr: Ssetup_wd|Ssetup, tr: 12, pl: 3
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 12, Its place: P57
+  TrIndex: 18, Its trans: Ssetup_wd|Ssetup
+
+Pl: unused, Tr: Ssetup_wd|Ssetup, tr: 12, pl: 8
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 17, Its place: unused
+  TrIndex: 18, Its trans: Ssetup_wd|Ssetup
+
+Pl: pause, Tr: nodect_wd|nodect, tr: 11, pl: 9
+multr: 1, simpletr:0, mulpl: 1, simplepl: 1, 
+  PlIndex: 18, Its place: pause
+Ide szalad: 13
+  TrIndex: 13, Its trans: nodect_bk|nodect
+
+Pl: pause, Tr: nodect_wd|nodect, tr: 11, pl: 9
+multr: 1, simpletr:0, mulpl: 1, simplepl: 1, 
+  PlIndex: 18, Its place: pause
+Ide szalad: 13
+  TrIndex: 13, Its trans: nodect_bk|nodect
+
+Pl: P43, Tr: Scont_wd|Scont, tr: 10, pl: 11
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 20, Its place: P43
+  TrIndex: 17, Its trans: Scont_wd|Scont
+
+Pl: pause, Tr: Scont_wd|Scont, tr: 10, pl: 9
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 18, Its place: pause
+  TrIndex: 17, Its trans: Scont_wd|Scont
+
+Pl: count, Tr: Econt_wd|Econt, tr: 9, pl: 10
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 19, Its place: count
+  TrIndex: 16, Its trans: Econt_wd|Econt
+
+Pl: P44, Tr: Econt_wd|Econt, tr: 9, pl: 12
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 21, Its place: P44
+  TrIndex: 16, Its trans: Econt_wd|Econt
+
+Pl: P48, Tr: rec, tr: 8, pl: 20
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 27, Its place: P48
+  TrIndex: 9, Its trans: rec
+
+Pl: P47, Tr: rec, tr: 8, pl: 19
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 26, Its place: P47
+  TrIndex: 9, Its trans: rec
+
+Pl: P50, Tr: pause, tr: 7, pl: 22
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 29, Its place: P50
+  TrIndex: 8, Its trans: pause
+
+Pl: P49, Tr: pause, tr: 7, pl: 21
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 28, Its place: P49
+  TrIndex: 8, Its trans: pause
+
+Pl: expired, Tr: all1, tr: 6, pl: 18
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 25, Its place: expired
+  TrIndex: 7, Its trans: all1
+
+Pl: count, Tr: all1, tr: 6, pl: 10
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 19, Its place: count
+  TrIndex: 7, Its trans: all1
+
+Pl: P46, Tr: kick, tr: 5, pl: 13
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 22, Its place: P46
+  TrIndex: 6, Its trans: kick
+
+Pl: P45, Tr: kick, tr: 5, pl: 14
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 23, Its place: P45
+  TrIndex: 6, Its trans: kick
+
+Pl: P66, Tr: rec1, tr: 4, pl: 0
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 9, Its place: P66
+  TrIndex: 5, Its trans: rec1
+
+Pl: P65, Tr: rec1, tr: 4, pl: 1
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 10, Its place: P65
+  TrIndex: 5, Its trans: rec1
+
+Pl: P64, Tr: setup, tr: 3, pl: 2
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 11, Its place: P64
+  TrIndex: 4, Its trans: setup
+
+Pl: P57, Tr: setup, tr: 3, pl: 3
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 12, Its place: P57
+  TrIndex: 4, Its trans: setup
+
+Pl: P44, Tr: cont, tr: 2, pl: 12
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 21, Its place: P44
+  TrIndex: 3, Its trans: cont
+
+Pl: P43, Tr: cont, tr: 2, pl: 11
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 20, Its place: P43
+  TrIndex: 3, Its trans: cont
+
+Pl: P42, Tr: kick, tr: 1, pl: 6
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 15, Its place: P42
+  TrIndex: 2, Its trans: kick
+
+Pl: P41, Tr: kick, tr: 1, pl: 7
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 16, Its place: P41
+  TrIndex: 2, Its trans: kick
+
+Pl: P52, Tr: term, tr: 0, pl: 5
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 14, Its place: P52
+  TrIndex: 1, Its trans: term
+
+Pl: P51, Tr: term, tr: 0, pl: 4
+multr: 1, simpletr:1, mulpl: 1, simplepl: 1, 
+  PlIndex: 13, Its place: P51
+  TrIndex: 1, Its trans: term
+Place: detected, Transition: detect, type: o
+Place: idleBK, Transition: detect, type: i
+Place: mboxerr_bk|mboxerr, Transition: detect, type: i
+Place: mboxs_bk|mboxs, Transition: detect, type: i
+Place: idleBK, Transition: reinfromdet_bk|reinfromdet, type: o
+Place: mboxclean_bk|mboxclean, Transition: reinfromdet_bk|reinfromdet, type: o
+Place: P29, Transition: reinfromdet_bk|reinfromdet, type: i
+Place: failure, Transition: nodect_bk|nodect, type: o
+Place: idleBK, Transition: nodect_bk|nodect, type: i
+Place: mboxerr_bk|mboxerr, Transition: nodect_bk|nodect, type: i
+Place: P29, Transition: sendack, type: o
+Place: mboxr_bk|mboxr, Transition: sendack, type: o
+Place: detected, Transition: sendack, type: i
+Place: mboxerr_bk|mboxerr, Transition: delay_bk|delay, type: h
+Place: idleBK, Transition: delay_bk|delay, type: o
+Place: idleBK, Transition: delay_bk|delay, type: i
+Place: mboxs_bk|mboxs, Transition: delay_bk|delay, type: i
+Place: P32, Transition: termko_bk|termko, type: o
+Place: failure, Transition: termko_bk|termko, type: i
+Place: idleBK, Transition: recov_bk|recov, type: o
+Place: mboxclean_bk|mboxclean, Transition: recov_bk|recov, type: o
+Place: P32, Transition: recov_bk|recov, type: i
+Place: unused, Transition: termko_bk|termko, type: o
+Place: pause, Transition: termko_bk|termko, type: i
+Place: P47, Transition: Srecc_wd|Srecc, type: o
+Place: count, Transition: Srecc_wd|Srecc, type: i
+Place: pause, Transition: Erecc_wd|Erecc, type: o
+Place: P48, Transition: Erecc_wd|Erecc, type: i
+Place: count, Transition: Ekickc_wd|Ekickc, type: o
+Place: P46, Transition: Ekickc_wd|Ekickc, type: i
+Place: P45, Transition: Skickc_wd|Skickc, type: o
+Place: count, Transition: Skickc_wd|Skickc, type: i
+Place: pause, Transition: Ekickp_wd|Ekickp, type: o
+Place: P42, Transition: Ekickp_wd|Ekickp, type: i
+Place: pause, Transition: Erecp_wd|Erecp, type: o
+Place: P66, Transition: Erecp_wd|Erecp, type: i
+Place: P41, Transition: Skickp_wd|Skickp, type: o
+Place: pause, Transition: Skickp_wd|Skickp, type: i
+Place: P65, Transition: Srecp_wd|Srecp, type: o
+Place: pause, Transition: Srecp_wd|Srecp, type: i
+Place: P51, Transition: Stermc_wd|Stermc, type: o
+Place: count, Transition: Stermc_wd|Stermc, type: i
+Place: P51, Transition: Stermp_wd|Stermp, type: o
+Place: pause, Transition: Stermp_wd|Stermp, type: i
+Place: unused, Transition: Etermp_wd|Etermp, type: o
+Place: P52, Transition: Etermp_wd|Etermp, type: i
+Place: P49, Transition: Spau_wd|Spau, type: o
+Place: count, Transition: Spau_wd|Spau, type: i
+Place: pause, Transition: Epau_wd|Epau, type: o
+Place: P50, Transition: Epau_wd|Epau, type: i
+Place: count, Transition: delay_bk|delay, type: o
+Place: exp_notified, Transition: delay_bk|delay, type: i
+Place: unused, Transition: recvack, type: o
+Place: exp_notified, Transition: recvack, type: i
+Place: mboxr_bk|mboxr, Transition: recvack, type: i
+Place: mboxs_bk|mboxs, Transition: notify, type: o
+Place: exp_notified, Transition: notify, type: o
+Place: expired, Transition: notify, type: i
+Place: pause, Transition: Esetup_wd|Esetup, type: o
+Place: P64, Transition: Esetup_wd|Esetup, type: i
+Place: P57, Transition: Ssetup_wd|Ssetup, type: o
+Place: unused, Transition: Ssetup_wd|Ssetup, type: i
+Place: pause, Transition: nodect_bk|nodect, type: o
+Place: pause, Transition: nodect_bk|nodect, type: i
+Place: P43, Transition: Scont_wd|Scont, type: o
+Place: pause, Transition: Scont_wd|Scont, type: i
+Place: count, Transition: Econt_wd|Econt, type: o
+Place: P44, Transition: Econt_wd|Econt, type: i
+Place: P48, Transition: rec, type: o
+Place: P47, Transition: rec, type: i
+Place: P50, Transition: pause, type: o
+Place: P49, Transition: pause, type: i
+Place: expired, Transition: all1, type: o
+Place: count, Transition: all1, type: i
+Place: P46, Transition: kick, type: o
+Place: P45, Transition: kick, type: i
+Place: P66, Transition: rec1, type: o
+Place: P65, Transition: rec1, type: i
+Place: P64, Transition: setup, type: o
+Place: P57, Transition: setup, type: i
+Place: P44, Transition: cont, type: o
+Place: P43, Transition: cont, type: i
+Place: P42, Transition: kick, type: o
+Place: P41, Transition: kick, type: i
+Place: P52, Transition: term, type: o
+Place: P51, Transition: term, type: i
+ Superposition over Transitions & Places Finished
+  In save: Num. of objects counted
+  In save: Marking Parameters written
+  In save: Places written
+  In save: Rate Parameters written
+  In save: Groups written
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. recov_bk|recov: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. term: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. kick: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. cont: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. setup: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. rec1: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. kick: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. all1: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. pause: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. rec: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save: Timed transitions written
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. termko_bk|termko: 2
+  In save in put_trans: first line is written for tr
+itt tart
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. delay_bk|delay: 3
+  In save in put_trans: first line is written for tr
+itt tart
+itt tart
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+itt tart
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. sendack: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. nodect_bk|nodect: 3
+  In save in put_trans: first line is written for tr
+itt tart
+itt tart
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. reinfromdet_bk|reinfromdet: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. detect: 3
+  In save in put_trans: first line is written for tr
+itt tart
+itt tart
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Econt_wd|Econt: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Scont_wd|Scont: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Ssetup_wd|Ssetup: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Esetup_wd|Esetup: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. notify: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. recvack: 2
+  In save in put_trans: first line is written for tr
+itt tart
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Epau_wd|Epau: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Spau_wd|Spau: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Etermp_wd|Etermp: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Stermp_wd|Stermp: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Stermc_wd|Stermc: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Srecp_wd|Srecp: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Skickp_wd|Skickp: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Erecp_wd|Erecp: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Ekickp_wd|Ekickp: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Skickc_wd|Skickc: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Ekickc_wd|Ekickc: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Erecc_wd|Erecc: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save in put_trans: name of tr written
+  In save in put_trans: rate of tr written
+  In save in put_trans: number of input arcs of tr. Srecc_wd|Srecc: 1
+  In save in put_trans: first line is written for tr
+itt tart
+  In save in put_trans: input arcs tr written
+itt tart
+  In save: Immediate transitions written

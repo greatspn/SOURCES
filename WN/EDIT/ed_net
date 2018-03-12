@@ -1,0 +1,5 @@
+g/yylex/s//read_NET_file/g
+g/yy/s//kk/g
+g/kkwrap/s//yywrap/g
+w
+q

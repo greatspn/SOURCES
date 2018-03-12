@@ -1,0 +1,114 @@
+/*******************************************************************************
+	Application Settings
+	
+	Comment:				This Section describes the mainWindow configurable
+							parameters
+							
+	Programmer:				Alex
+	Creation Date:			22/2/95
+	Last Modify Date:		23/2/95
+
+********************************************************************************/
+
+
+value
+
+/*******************************************************************************
+		Color definitions for Main Window
+		use:
+			to change Colors, look for  colorXxxxxx definitions in the 
+			color.uil file  
+********************************************************************************/
+
+	appBackColor				:	colorDark;
+	appForeColor				:	colorWhite;
+	appToolAreaButtBackColor	:	colorLight;
+	appToolAreaButtForeColor	:	colorBlack;
+
+	appDialogBackgroundColor	: 	colorLight;	
+	
+/*******************************************************************************
+		Font definitions for  Main Window
+		use:
+			to change Fonts, look for  fontXxxxxx definitions in the 
+			fonts.uil file  
+
+********************************************************************************/
+
+	appMessageAreaFont		:	fontBig;
+	
+	
+	
+	
+/*******************************************************************************
+		Color definitions for Menus
+		use:
+			to change Colors, look for  colorXxxxxx definitions in the 
+			color.uil file  
+********************************************************************************/
+	
+	maMenuBarBackground 	:	colorDark;
+	maMenuBarForeground		:	colorWhite;
+	
+	maPullDownBackground 	:	colorDark;
+	maPullDownForeground	:	colorWhite;
+	
+	
+	
+/*******************************************************************************
+		Font definitions for Menus
+		use:
+			to change Fonts, look for  fontXxxxxx definitions in the 
+			fonts.uil file  
+
+********************************************************************************/
+
+	maMenuBarFont			:	fontBig;
+	maMenuFont				:	fontBig;
+
+/*******************************************************************************
+	Maximum Net Comment Text Length
+********************************************************************************/
+	
+	appMaxCommentLength	:	1000;
+
+/*******************************************************************************
+	Marking Dependent Grammar in MD Grammar Help Dialog
+********************************************************************************/
+
+appMDgrammarHelpString		:	'<assign>     ::= { "when" <logic_cond> ":" <value> ";" }\n\
+                 "ever" <value> ";"\n\
+<logic_cond> ::= <compare>  |\n\
+                 "~" <logic_cond>  |\n\
+                 "(" <logic_cond> ")"  |\n\
+                 <logic_cond> "&" <logic_cond>  |\n\
+                 <logic_cond> "o" <logic_cond>\n\
+<compare>    ::= <marking> <comp_oper> <integ_const>\n\
+<marking>    ::= "#" <place_name>\n\
+<comp_oper>  ::= "="  |  "/="  |  ">"  |  "<"  |  ">="  |  "<="\n\
+<integ_const>::= <integer>  |  <mark_par>  |  <marking>\n\
+<value>      ::= <real_val>  |  "(" <value> ")"  |\n\
+                 <value> <arithm_op> <value>\n\
+<real_val>   ::= <real_number>  |  <marking>  |  <parameter>\n\
+<arithm_op>  ::= "+" | "-" | "*" | "/"';
+
+
+
+appResGrammarHelpString	: '<result>        ::=     <sum> ";"\n\
+<sum>           ::=     <item>  |  <item> "+" <sum>  |  <item> "-" <sum>\n\
+<item>          ::=     [ <real_val> ] "p{" <logic_cond> "}"   |\n\
+                        [ <real_val> ] "P{" <logic_cond> "}"   |\n\
+                        [ <real_val> ] "e{" <marking>    "}"   |\n\
+                        [ <real_val> ] "E{" <marking>    "}"   |\n\
+                        [ <real_val> ] "e{" <marking> "/" <logic_cond> "}"  |\n\
+                        [ <real_val> ] "E{" <marking> "/" <logic_cond> "}"\n\
+<real_val>      ::=     <real_number>  |  <parameter>\n\
+<logic_cond>    ::=     <compare>  |\n\
+                        "~" <logic_cond>  |\n\
+                        "(" <logic_cond> ")"  |\n\
+                        <logic_cond> "&" <logic_cond>  |\n\
+                        <logic_cond> "o" <logic_cond>\n\
+<compare>       ::=     <marking> <comp_oper> <integ_const>\n\
+<marking>       ::=     "#" <place_name>\n\
+<comp_oper>     ::=     "=" | "/=" | ">" | "<" | ">=" | "<="\n\
+<integ_const>   ::=     <integer>  |  <marking_param>  |  <marking>';

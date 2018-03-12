@@ -1,0 +1,9 @@
+#
+source ~/.GreatSPN
+/bin/cp nets/$1_cmark.c nets/2-1conv_cmark.c
+/bin/cp nets/$1_ctran.c nets/2-1conv_ctran.c
+cc -o nets/$1.2-1RG $GSPNHOME/2bin/convertc.o $GSPNHOME/2bin/compact.o \
+	nets/2-1conv_cmark.c nets/2-1conv_ctran.c
+/bin/rm -f nets/2-1conv_cmark.c nets/2-1conv_ctran.c *.o
+nets/$1.2-1RG nets/$1 | $GSPNHOME/2bin/convertp nets/$1
+/bin/rm -f nets/$1.2-1RG

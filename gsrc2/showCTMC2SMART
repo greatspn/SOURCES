@@ -1,0 +1,22 @@
+#!/bin/sh
+. great_package.sh
+
+if [ ! -f $1.epd ]
+then
+	${GREATSPN_SCRIPTDIR}/newMT $1 
+	GSPN2STATUS=$?
+	if [ $GSPN2STATUS -ne 0 ]
+	then
+		exit $GSPN2STATUS
+	fi
+fi
+
+echo ""
+echo "Encoding CTMC on SMART format"
+
+time ${GREATSPN_BINDIR}/ggsc $1 -S $2 $3 $4 $5 $6
+
+echo "# Generation ctmc file"
+echo ""
+
+exit 0

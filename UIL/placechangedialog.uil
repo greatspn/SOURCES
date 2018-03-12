@@ -1,0 +1,195 @@
+/*******************************************************************************
+        Place Change Dialog
+        
+        Comment:   This Section Describes the Place Change Dialog
+                                                        
+        Programmer:                             Alex
+        Creation Date:                  27/2/95
+        Last Modify Date:               10/3/95
+
+********************************************************************************/
+procedure
+	CancelPlaceDialogCB();
+	SetPlaceTypeCB();
+	
+object  PlaceChangeDialog : XmFormDialog
+{
+        controls
+        {
+				XmPushButton  PlaceChangeDialog_Ok;
+				XmPushButton  PlaceChangeDialog_Cancel;
+				XmSeparator  PlaceChangeDialog_Sep1;
+				XmSeparator  PlaceChangeDialog_Sep2;
+				XmLabel  PlaceChangeDialog_Label1;
+				XmLabel  PlaceChangeDialog_Label2;
+				XmLabel  PlaceChangeDialog_Label3;
+				XmTextField  PlaceChangeDialog_Marking;
+				XmTextField  PlaceChangeDialog_Color;
+				XmTextField  PlaceChangeDialog_Tag;
+		};
+        arguments
+        {
+                XmNdialogTitle                  =       "Change Place Properties";
+                XmNwidth                        =       310;
+                XmNheight                       =       200;
+                XmNautoUnmanage                 =       false;
+				XmNnoResize						=		true;
+				XmNbackground 					=		appDialogBackgroundColor;
+				XmNdialogStyle					= 		XmDIALOG_FULL_APPLICATION_MODAL;
+        };
+
+};
+
+
+object PlaceChangeDialog_Sep1 : XmSeparator
+{
+	arguments
+	{
+		XmNtopAttachment =				XmATTACH_FORM;
+		XmNtopOffset =					70;
+		XmNleftAttachment =				XmATTACH_FORM;
+		XmNleftOffset =					1;
+		XmNrightAttachment =			XmATTACH_FORM;
+		XmNrightOffset =				1;
+	};
+};
+
+
+object PlaceChangeDialog_Sep2 : XmSeparator
+{
+	arguments
+	{
+		XmNtopAttachment =				XmATTACH_FORM;
+		XmNtopOffset =					140;
+		XmNleftAttachment =				XmATTACH_FORM;
+		XmNleftOffset =					1;
+		XmNrightAttachment =			XmATTACH_FORM;
+		XmNrightOffset =				1;
+	};
+};
+
+object PlaceChangeDialog_Ok : XmPushButton
+{
+	arguments
+	{
+		XmNbottomAttachment =				XmATTACH_FORM;
+		XmNbottomOffset =					4;
+		XmNleftAttachment =					XmATTACH_FORM;
+		XmNleftOffset =						20;
+		
+		XmNshowAsDefault =				1;
+        XmNwidth                        =       50;
+        XmNheight                       =       30;
+		XmNlabelString =				'Ok';
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure SetPlaceTypeCB();
+	};
+};
+
+object PlaceChangeDialog_Cancel : XmPushButton
+{
+	arguments
+	{
+		XmNbottomAttachment =				XmATTACH_FORM;
+		XmNbottomOffset =					10;
+		XmNrightAttachment =				XmATTACH_FORM;
+		XmNrightOffset =					26;
+		
+        XmNwidth                        =       50;
+        XmNheight                       =       30;
+		XmNlabelString =				'Cancel';
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure CancelPlaceDialogCB();
+	};
+};
+
+object PlaceChangeDialog_Label1 : XmLabel
+{
+	arguments
+	{
+		XmNtopAttachment =				XmATTACH_FORM;
+		XmNtopOffset =					83;
+		XmNleftAttachment =				XmATTACH_FORM;
+		XmNleftOffset =					10;
+		XmNlabelString =				'Marking :';
+	};
+};
+
+object PlaceChangeDialog_Label2 : XmLabel
+{
+	arguments
+	{
+		XmNtopAttachment =				XmATTACH_FORM;
+		XmNtopOffset =					10;
+		XmNleftAttachment =				XmATTACH_FORM;
+		XmNleftOffset =					10;
+		XmNlabelString =				'Tag :';
+	};
+};
+
+object PlaceChangeDialog_Label3 : XmLabel
+{
+	arguments
+	{
+		XmNtopAttachment =				XmATTACH_FORM;
+		XmNtopOffset =					10;
+		XmNleftAttachment =				XmATTACH_FORM;
+		XmNleftOffset =					161;
+		XmNlabelString =				'Color Label :';
+	};
+};
+
+object PlaceChangeDialog_Marking : XmTextField
+{
+	arguments
+	{
+		XmNtopAttachment =				XmATTACH_FORM;
+		XmNtopOffset =					102;
+		XmNleftAttachment =				XmATTACH_FORM;
+		XmNleftOffset =					10;
+		
+		XmNbackground 					=		appDialogBackgroundColor;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure SetPlaceTypeCB();
+	};
+};
+
+object PlaceChangeDialog_Color : XmTextField
+{
+	arguments
+	{
+		XmNtopAttachment =				XmATTACH_FORM;
+		XmNtopOffset =					32;
+		XmNrightAttachment =				XmATTACH_FORM;
+		XmNrightOffset =					10;
+		
+		XmNbackground 					=		appDialogBackgroundColor;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure SetPlaceTypeCB();
+	};
+};
+
+object PlaceChangeDialog_Tag : XmTextField
+{
+	arguments
+	{
+		XmNtopAttachment =				XmATTACH_FORM;
+		XmNtopOffset =					32;
+		XmNleftAttachment =				XmATTACH_FORM;
+		XmNleftOffset =					10;
+		
+		XmNbackground 					=		appDialogBackgroundColor;
+	};
+	callbacks
+	{
+		XmNactivateCallback = procedure SetPlaceTypeCB();
+	};
+};

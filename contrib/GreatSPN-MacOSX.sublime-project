@@ -1,0 +1,63 @@
+{
+	"settings":
+    {
+        "sublimeclang_enabled": true,
+        "sublimeclang_options":
+	    [
+	    	// "-nostdinc++",
+	    	//"-D__GXX_EXPERIMENTAL_CXX0X__",
+	    	// "-U__STRICT_ANSI__",
+	        // "-isystem", "/opt/local/include/gcc47/",
+	        // "-isystem", "/opt/local/include/gcc47/c++/",
+	        // "-isystem", "/opt/local/include/gcc47/c++/x86_64-apple-darwin10/",
+	        "-isystem", "/usr/local/include/",
+	        //"-isystem", "/opt/local/libexec/llvm-3.3/lib/c++/v1/",
+	        // "-isystem", "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/c++/v1/",
+	        // "-isystem", "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
+	        // "-isystem", "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/include/",
+	        "-isystem", "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/",
+	    	"-isysroot", "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/",
+	    	//"-isystem", "/opt/local/libexec/llvm-3.3/lib/c++/v1/",
+	        //"-isystem", "/opt/local/libexec/llvm-3.3/lib/clang/3.3/include/",
+	    	// "-isystem", "/Developer/SDKs/MacOSX10.6.sdk/usr/include/",
+	     //    "-isystem", "/Developer/SDKs/MacOSX10.6.sdk/usr/include/c++/4.2.1",
+	        //"-isystem", "/Developer/SDKs/MacOSX10.6.sdk/usr/include/c++/4.2.1/x86_64-apple-darwin10",
+	        // "-isystem", "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk/usr/include/",
+	        // "-isystem", "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk/usr/include/c++/4.2.1",
+	        //"-F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/",
+	        // "-isystem", "C:\\MinGW\\lib\\gcc\\mingw32\\4.7.0\\include",
+	        // "-isystem", "C:\\MinGW\\lib\\gcc\\mingw32\\4.7.0\\include\\c++",
+	        // "-isystem", "C:\\MinGW\\lib\\gcc\\mingw32\\4.7.0\\include\\c++\\mingw32",
+	        // "-isystem", "C:\\MinGW\\include",
+	        // "-isystem", "/usr/include",
+	        // "-isystem", "/usr/include/c++/*",
+	        "-Wall",
+	        //"-std=c++11",
+	        // "-nostdinc++",
+	        //"-DNDEBUG",
+	        "-DMDWN",
+	        // "-DCONST_H=\"const.MDDrg\"",
+	        // "-DCONST1_H=\"../INCLUDE/const.MDDrg\"",
+	        // "-DCONST2_H=\"../../INCLUDE/const.MDDrg\"",
+	        // "-DCONST3_H=\"../../../INCLUDE/const.MDDrg\"",
+	        // "-DCONST4_H=\"../../../../INCLUDE/const.MDDrg\"",
+	        //"-stdlib=libc++",
+	    	//"-U__STRICT_ANSI__",
+	    	//"-I/opt/local/include/**",
+	        // "-I/Users/elvio/Desktop/SVN-Unito/SOLVER/Sources/DSPN-Tool",
+	        // "-I/Users/elvio/Desktop/SVN-Unito/SOLVER/Sources/numeric",
+	        // "-I/Users/elvio/Desktop/SVN-Unito/SOLVER/Sources/CSLTA-Tool",
+	        // "-I/Developer/SDKs/MacOSX10.6.sdk/usr/include/**",
+	        // "-I/Developer/SDKs/MacOSX10.6.sdk/usr/include/c++/4.2.1/**",
+	        "-ferror-limit=0",
+	        // "-include", "/Users/elvio/Desktop/SOURCES/",
+	        "-include", "/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/contrib/sublime-const.h", 
+	        "-I/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/**",
+	        "-I/Users/elvio/Desktop/MY-SVN/GreatSPN/SOURCES/objects/**",
+	        "-I/usr/X11R6/include/",
+	        "-I/usr/OpenMotif/include/"
+	    ]
+    }
+
+    // To open .yll ad .ll files as "D" files, use View->Syntax->Open all with...
+}

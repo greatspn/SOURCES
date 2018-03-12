@@ -1,0 +1,12 @@
+ho cambiato da Writed a Written
+
+per non avere le scritte di debug basta commentare 
+la definizione della variabile DEBUG_UNFOLD in util-transl.h
+e ricompilare
+
+nello script unfolding.sh bisogna aggiungere tutti gli altri 
+parametri $1 $2 $3 ...
+
+bisogna testare se le reti di TEST vengono tradotte correttamente
+
+si deve modificare in modo che funzioni da interfaccia grafica

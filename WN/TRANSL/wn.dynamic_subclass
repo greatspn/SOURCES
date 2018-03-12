@@ -1,0 +1,56 @@
+dynamic_subclass :
+	{
+#ifdef COLOURED
+	 fprintf(stdout,"Dynamic subclass definition is skipped \n");
+         exit(1);
+#endif
+#ifdef SYMBOLIC
+	 parsing_flag = DYNAMIC_SUBCLASS;
+#endif
+	}
+	     OPAR STRING
+	{
+#ifdef COLOURED
+	 fprintf(stdout,"Dynamic subclass definition is skipped \n");
+         exit(1);
+#endif
+#ifdef SYMBOLIC
+	 strcpy(class_read,str_in);
+#endif
+	}
+	     COLON coefficient_type CPAR
+	{
+#ifdef COLOURED
+	 fprintf(stdout,"Dynamic subclass definition is skipped \n");
+         exit(1);
+#endif
+#ifdef SYMBOLIC
+	 for(i=0,stop=FALSE;!stop && i<ncl;i++)
+	  if((ind=already_exist(class_read,i,STAT))!=0)
+	   stop=TRUE;
+	 if(!stop)
+	  {/* Bufferizzare */
+	   mpt=(struct MARKBUF *)emalloc(sizeof(struct MARKBUF));
+	   mpt->card=card_val;
+	   strcpy(mpt->name,bufname);
+	   strcpy(mpt->sbc,class_read);
+	   mpt->next=mbuf;
+	   mbuf=mpt;
+	  }/* Bufferizzare */
+	 else
+	  {/* Inserimento */
+	   if(!already_exist(bufname,i-1,ind-1))
+	    {
+	     dpt=(Dyn_p)emalloc(sizeof(struct DYNSC));
+	     dpt->next=tabc[i-1].sbclist[ind-1].dynlist;
+	     dpt->card=card_val;
+	     dpt->name=(char  *)ecalloc(strlen(bufname)+1,sizeof(char));
+	     strcpy(dpt->name,bufname);
+	     tabc[i-1].sbclist[ind-1].dynlist=dpt;
+	    }
+	   else
+	    out_error(ERROR_DYNAMIC_REDECLARATION,0,0,0,0,bufname,NULL);
+	  }/* Inserimento */
+#endif
+	}
+	   ;

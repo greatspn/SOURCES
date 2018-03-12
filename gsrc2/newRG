@@ -1,0 +1,48 @@
+#!/bin/sh
+. great_package.sh
+
+${GREATSPN_BINDIR}/pinvar $1 
+if  [ $? -ne 0 ]
+then
+	rm -f $1.pin
+	exit 1
+fi
+
+${GREATSPN_BINDIR}/struct $1 
+if  [ $? -ne 0 ]
+then
+        echo "Solution failed in module struct"
+        rm -f $1.cc $1.me $1.sc $1.sub $1.ecs $1.bnd
+        exit 7
+fi
+
+
+${GREATSPN_BINDIR}/grg_prep $1 
+if  [ $? -ne 0 ]
+then
+        echo "Solution failed in module grg_prep"
+	rm -f $1.grg
+	exit 8
+fi
+
+/bin/rm -f $1.emc $1.epd $1.sta
+if  [ $? -ne 0 ]
+then
+	exit 30
+fi
+
+
+echo ""
+echo "Start Reachability Graph construction"
+time ${GREATSPN_BINDIR}/grg_stndrd $1 $2 $3 > .gspn_out 2>&1
+if  [ $? -ne 0 ]
+then
+	rm -f $1.crgr $1.ctrs $1.aecs $1.rgr_aux
+	exit 9 
+fi
+cat .gspn_out
+rm -f .gspn_out > /dev/null 2>&1
+
+exit 0
+
+

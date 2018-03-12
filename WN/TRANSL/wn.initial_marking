@@ -1,0 +1,112 @@
+marking    : objmark
+	   | shortmark
+	   ;
+objmark	   :  coefficient LT oblist GT
+	{
+	 if(count!=tabp[pl_ind].comp_num-1)
+	  out_error(ERROR_LESSER_MARKING_COMPONENTS,pl_ind,0,0,0,NULL,NULL);
+	 do
+	  {
+	   optimized_set_token_marking(cart_place_ptr,coef_val*sign,pl_ind,NULL,TOTAL);
+	  }
+	 while(optimized_nextvec(cart_place_ptr,tabp[pl_ind].comp_num,base));
+	 sign=1;
+	}
+	   | objmark plusop coefficient LT oblist GT
+	{
+	 if(count!=tabp[pl_ind].comp_num-1)
+	  out_error(ERROR_LESSER_MARKING_COMPONENTS,pl_ind,0,0,0,NULL,NULL);
+	 do
+	  {
+	   optimized_set_token_marking(cart_place_ptr,coef_val*sign,pl_ind,NULL,TOTAL);
+	  }
+	 while(optimized_nextvec(cart_place_ptr,tabp[pl_ind].comp_num,base));
+	 sign=1;
+	}
+	   ;
+oblist	   : oblist COMMA
+	{
+	 if(count==tabp[pl_ind].comp_num-1)
+	   out_error(ERROR_GREATER_MARKING_COMPONENTS,pl_ind,0,0,0,NULL,NULL);
+	 count++;
+	}
+	     obj
+	|
+	{
+	 count=0;
+	}
+	     obj
+	   ;
+obj	   : STRING
+	{
+	 cl=tabp[pl_ind].dominio[count];
+	 objid = get_obj_id(str_in,cl);
+	 if(objid == UNKNOWN)
+	  {/* Errore */
+	   out_error(ERROR_UNKNOWN_ELEMENT_IN_MARKING,pl_ind,0,cl,0,str_in,NULL);
+	  }/* Errore */
+	 cart_place_ptr->up[count] = cart_place_ptr->low[count] = base[count] = objid;
+        }
+	   | S
+	{
+	 cl = tabp[pl_ind].dominio[count];
+	 cart_place_ptr->low[count]=base[count]=0;
+	 cart_place_ptr->up[count]=fill_with_elements(count,cl);
+	}
+	   | S NUM
+	{
+	 cl = tabp[pl_ind].dominio[count];
+	 if(str_val <1 || str_val >tabc[cl].sbc_num)
+	  {/* Errore */
+	   out_error(ERROR_WRONG_STATIC_INDEX_IN_MARKING,pl_ind,0,cl,0,NULL,NULL);
+	  }/* Errore */
+	 str_val--;
+	 cart_place_ptr->low[count] = base[count] = GET_STATIC_OFFSET(cl,str_val);
+	 cart_place_ptr->up[count] = set_number_of_elements(count,cl,str_val);
+	}
+	   | S STRING 
+	{
+	 cl = tabp[pl_ind].dominio[count];
+	 if((sbc_ind=already_exist(str_in,cl,STAT))==0)
+	  {/* Errore */
+	   out_error(ERROR_WRONG_STATIC_NAME_IN_MARKING,pl_ind,0,cl,0,str_in,NULL);
+	  }/* Errore */
+	 sbc_ind--;
+	 cart_place_ptr->low[count] = base[count] = GET_STATIC_OFFSET(cl,sbc_ind);
+	 cart_place_ptr->up[count] = set_number_of_elements(count,cl,sbc_ind);
+	}
+           ;
+shortmark  :  coefficient S
+	{
+	 for(i=0,tag=1;i<tabp[pl_ind].comp_num;i++)
+	  {
+	   cl = tabp[pl_ind].dominio[i];
+	   cart_place_ptr->low[i] = base[i] = 0;
+	   cart_place_ptr->up[i] = fill_with_elements(i,cl);
+           for(j=0;j<=cart_place_ptr->up[i];j++)
+#ifdef SYMBOLIC
+#ifdef SIMULATION
+            if(IS_UNORDERED(cl))
+	     cart_place_ptr->mark[i][j] =  get_dynamic_from_total(cl,j);
+	    else
+	     cart_place_ptr->mark[i][j] =  j;
+#endif
+#ifdef REACHABILITY
+            if(IS_UNORDERED(cl) || (IS_ORDERED(cl) && GET_STATIC_SUBCLASS(cl)==1))
+	     cart_place_ptr->mark[i][j] =  get_dynamic_from_total(cl,j);
+	    else
+	     cart_place_ptr->mark[i][j] =  j;
+#endif
+#endif
+#ifdef COLOURED
+	    cart_place_ptr->mark[i][j] =  j;
+#endif
+	  }
+	 do
+          {
+	  set_token_marking(cart_place_ptr,coef_val*sign,pl_ind,NULL,TOTAL,UNKNOWN);
+          }
+	 while(nextvec(cart_place_ptr,tabp[pl_ind].comp_num));
+	 sign=1;
+	}
+	   ;

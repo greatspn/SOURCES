@@ -1,0 +1,13 @@
+Dear Andy,
+following our suggestions I have integrated in GreatSPN a new solver (WNRGMDD) based on meddly.
+This new tool uses saturation and Jacobi method (based on the MatrixVector operator) to solve SPN model computing
+the probability vector  and the transitions'  throughput.
+Now I'm finishing to prepare a virtualbox image to test it. 
+Concerning this I have the following question: the iteration step seem very slow  due to MatrixVector operator (see the kcachegrind).
+Is this a my fault or this slow  is normal?
+Soon using  virtualbox image you could test it directly.
+
+Ciao
+Marco
+
+

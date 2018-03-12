@@ -1,0 +1,45 @@
+BIN 		= ../../$(GSPN2BINS)
+BINDIR		= $(BIN)/
+UIL             = $(UIL_BIN_DIR)/uil
+
+UIL_SRC	=	aboutdialog.uil\
+			appconfig.uil\
+			arcdialog.uil\
+			bitmaps.uil\
+			colorchangedialog.uil\
+			colors.uil\
+			commentdialog.uil\
+			consoledialog.uil\
+			errordialog.uil\
+			filedialog.uil\
+			fonts.uil\
+			histodialog.uil\
+			infodialog.uil\
+			inputdialog.uil\
+			layereditdialog.uil\
+			layerviewdialog.uil\
+			markchangedialog.uil\
+			mdgrammardialog.uil\
+			menu.uil\
+			menuAttributes.uil\
+			mousehelp.uil\
+			optionsdialog.uil\
+			overdialog.uil\
+			placechangedialog.uil\
+			printdialog.uil\
+			ratechangedialog.uil\
+			resultdialog.uil\
+			showdialog.uil\
+			simdialog.uil\
+			simoptions.uil\
+			solvedialog.uil\
+			swnrgoptions.uil\
+			transdialog.uil\
+			warningdialog.uil
+
+$(BINDIR)GreatSPN.uid : Great.uil $(UIL_SRC)
+			echo Building UID
+			@$(UIL) -o $(BINDIR)GreatSPN.uid Great.uil
+			echo Done
+			
+			

@@ -1,0 +1,1161 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- This project file has been saved by 'New Editor' version 100 --><project name="New project" version="100">
+  <gspn name="GSPN 1">
+    <nodes>
+      <place label-x="-2.5" label-y="0.0" magnets="THREE_PER_SIDE" marking="1" name="LDH" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="14.0" y="6.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN1" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="9.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN2" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="15.0"/>
+      <place label-x="0.0" label-y="4.5" magnets="CENTER_ONLY" marking="0" name="LDHLac" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="22.0" y="12.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="-2.0" magnets="THREE_PER_SIDE" marking="3" name="NAD" shown-as="\mathrm{NAD}^{+}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="22.0" y="2.0"/>
+      <transition alt-name-fn="latex" delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN3" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" shown-as="\mathit{kN}_{3}" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="9.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN4" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="15.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="4.5" magnets="CENTER_ONLY" marking="0" name="LDHLacNAD" shown-as="\mathrm{LDHLacNAD^+}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="31.0" y="12.0"/>
+      <place label-x="0.0" label-y="-2.0" magnets="FOUR_PER_SIDE" marking="3" name="NADH" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="41.0" y="2.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN5" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="9.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="kN6" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="15.0"/>
+      <place alt-name-fn="latex" label-x="0.5" label-y="4.5" magnets="CENTER_ONLY" marking="0" name="LDHPyrNADH" shown-as="\mathrm{LDHPyrNADH}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="43.0" y="12.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN7" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="48.55" y="9.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN8" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="48.55" y="15.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="Pyr" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="54.0" y="12.0"/>
+      <place label-x="-2.0" label-y="1.5" magnets="THREE_PER_SIDE" marking="1" name="Lac" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="12.0" y="11.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="1.5" magnets="THREE_PER_SIDE" marking="1" name="ATP" shown-as="\mathrm{ATP}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="2.0" y="20.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="THREE_PER_SIDE" marking="1" name="ADP" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="2.0" y="28.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="1" name="PC" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="14.0" y="21.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="kN9" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="25.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="THREE_PER_SIDE" marking="0" name="PCATP" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="22.0" y="25.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="ONE_PER_SIDE" name="kN10" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="25.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="ONE_PER_SIDE" marking="0" name="PCADP" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="31.0" y="25.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN11" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="25.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="PCPyr" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="43.0" y="25.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN12" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="48.55" y="25.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="TWO_PER_SIDE" marking="0" name="PCOxal" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="54.0" y="25.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN13" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="59.55" y="25.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="THREE_PER_SIDE" marking="0" name="OxalM" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="65.0" y="25.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="THREE_PER_SIDE" marking="1" name="MDHM" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="14.0" y="33.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN14" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="38.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN16" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="38.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN15" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="44.0"/>
+      <transition alt-name-fn="latex" delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN17" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" shown-as="\mathit{kN}_{17}" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="44.0"/>
+      <transition alt-name-fn="latex" delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN18" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" shown-as="\mathit{kN}_{18}" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="38.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN19" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="44.0"/>
+      <place label-x="0.0" label-y="6.5" magnets="THREE_PER_SIDE" marking="0" name="MDHNADH" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="22.0" y="41.0"/>
+      <place label-x="0.0" label-y="6.5" magnets="THREE_PER_SIDE" marking="0" name="MDHNADHOxal" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="31.0" y="41.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="6.5" magnets="THREE_PER_SIDE" marking="0" name="MDHNADMal" shown-as="\mathrm{MDHNAD^+Mal}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="43.0" y="41.0"/>
+      <transition alt-name-fn="latex" delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN20" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" shown-as="\mathit{kN}_{20}" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="48.55" y="38.0"/>
+      <transition alt-name-fn="latex" delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN21" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" shown-as="\mathit{kN}_{21}" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="48.55" y="44.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="1.5" magnets="THREE_PER_SIDE" marking="0" name="MDHNAD" shown-as="\mathrm{MDHNAD^+}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="54.0" y="41.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="THREE_PER_SIDE" marking="0" name="MalateMit" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="59.0" y="36.0"/>
+      <transition alt-name-fn="latex" delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN22" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" shown-as="\mathit{kN}_{22}" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="64.55" y="38.0"/>
+      <transition alt-name-fn="latex" delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN23" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" shown-as="\mathit{kN}_{23}" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="64.55" y="44.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="THREE_PER_SIDE" marking="0" name="MKA" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="14.0" y="54.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN24" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="59.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN25" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="65.0"/>
+      <place label-x="0.0" label-y="5.5" magnets="THREE_PER_SIDE" marking="0" name="MKAMalMit" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="22.0" y="62.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="1.5" magnets="TWO_PER_SIDE" marking="0" name="AKETCit" shown-as="\mathrm{{\alpha}KETCit}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="26.0" y="52.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="5.5" magnets="TWO_PER_SIDE" marking="0" name="MKAAKetCit" shown-as="\mathrm{MKA{\alpha}KETCit}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="34.0" y="62.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN26" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="59.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN27" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="65.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="TWO_PER_SIDE" marking="0" name="MalateCit" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="41.0" y="52.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="5.5" magnets="TWO_PER_SIDE" marking="0" name="AKETMit" shown-as="\mathrm{{\alpha}KETMit}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="41.0" y="62.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN30" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="36.55" y="59.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN31" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="36.55" y="65.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN28" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="31.55" y="59.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="k29" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="31.55" y="65.0"/>
+      <place label-x="0.0" label-y="2.5" magnets="THREE_PER_SIDE" marking="0" name="MDHC" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="14.0" y="76.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN32" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="80.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="8.5" magnets="NSEW_SQUARE_POINTS" marking="0" name="MDHCNAD" shown-as="\mathrm{MDHCNAD^+}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="22.0" y="84.0"/>
+      <place label-x="0.0" label-y="8.5" magnets="TWO_PER_SIDE" marking="0" name="MDHCNADMal" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="31.0" y="84.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN34" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="80.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN35" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="89.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN33" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="89.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN36" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="80.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN37" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="89.0"/>
+      <place label-x="0.0" label-y="8.5" magnets="TWO_PER_SIDE" marking="0" name="MDHCNADH" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="42.0" y="84.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN38" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="47.55" y="80.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN39" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="47.55" y="89.0"/>
+      <place label-x="0.0" label-y="2.0" magnets="TWO_PER_SIDE" marking="0" name="OxalC" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="47.0" y="73.0"/>
+      <place label-x="0.0" label-y="2.5" magnets="TWO_PER_SIDE" marking="0" name="PEPCK" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="14.0" y="99.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="kN40" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="105.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="kN41" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="113.0"/>
+      <place label-x="0.0" label-y="2.5" magnets="TWO_PER_SIDE" marking="0" name="GTP" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="2.0" y="103.0"/>
+      <place label-x="0.0" label-y="3.0" magnets="TWO_PER_SIDE" marking="0" name="GDP" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="2.0" y="113.0"/>
+      <place label-x="0.0" label-y="7.0" magnets="TWO_PER_SIDE" marking="0" name="PEPKOxalGTP" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="22.0" y="109.0"/>
+      <place label-x="0.0" label-y="7.0" magnets="TWO_PER_SIDE" marking="0" name="PEPCKPEP" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="31.0" y="109.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN42" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="105.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN43" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="113.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN44" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="105.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN45" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="113.0"/>
+      <place label-x="0.0" label-y="7.0" magnets="THREE_PER_SIDE" marking="0" name="PEP" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="44.0" y="109.0"/>
+      <place label-x="0.0" label-y="3.0" magnets="THREE_PER_SIDE" marking="0" name="ENO" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="14.0" y="123.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN46" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="129.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN47" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="135.0"/>
+      <place label-x="0.0" label-y="6.5" magnets="TWO_PER_SIDE" marking="0" name="ENOPEP" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="22.0" y="132.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN48" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="129.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN50" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="129.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN49" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="135.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN51" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="135.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="6.5" magnets="TWO_PER_SIDE" marking="0" name="ENO2PG" shown-as="\mathrm{ENO 2}\mathrm{PG}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="31.0" y="132.0"/>
+      <place alt-name-fn="latex" label-x="0.5" label-y="6.5" magnets="TWO_PER_SIDE" marking="0" name="PG2" shown-as="\mathrm{PG}{2}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="44.0" y="132.0"/>
+      <place label-x="0.0" label-y="3.0" magnets="TWO_PER_SIDE" marking="0" name="PGM" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="14.0" y="144.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN52" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="149.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN53" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="155.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN54" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="149.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN55" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="155.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN56" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="149.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN57" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="155.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="6.5" magnets="TWO_PER_SIDE" marking="0" name="EP3PG" shown-as="\mathrm{EP}{3}\mathrm{PG}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="22.0" y="152.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="6.5" magnets="TWO_PER_SIDE" marking="0" name="EP3PG2PG" shown-as="\mathrm{EP{3}\mathrm{PG}{2}\mathrm{PG}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="31.0" y="152.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="6.5" magnets="TWO_PER_SIDE" marking="0" name="E3PG23BPG" shown-as="\mathrm{E}{3}\mathrm{PG}{23}\mathrm{BPG}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="44.0" y="152.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="3.0" magnets="THREE_PER_SIDE" marking="0" name="BPG23" shown-as="\mathrm{BPG}{23}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="3.0" y="152.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="6.5" magnets="TWO_PER_SIDE" marking="0" name="PG3" shown-as="\mathrm{PG}{3}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="55.0" y="152.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="kN58" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="50.55" y="149.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="kN59" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="50.55" y="155.0"/>
+      <place label-x="0.0" label-y="2.5" magnets="TWO_PER_SIDE" marking="0" name="PGK" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="14.0" y="169.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="6.5" magnets="TWO_PER_SIDE" marking="0" name="PGKPG3" shown-as="\mathrm{PGKPG}{3}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="22.0" y="175.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN60" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="172.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN61" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="179.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN62" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="172.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN63" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="179.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN64" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="172.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN65" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="179.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN66" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="50.55" y="172.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN67" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="50.55" y="179.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="6.5" magnets="TWO_PER_SIDE" marking="0" name="PGKBPG13ADP" shown-as="\mathrm{PGKBPG}{13}\mathrm{ADP}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="31.0" y="175.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="6.5" magnets="TWO_PER_SIDE" marking="0" name="PGKBPG13" shown-as="\mathrm{PGKBPG}{13}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="44.0" y="175.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="6.5" magnets="TWO_PER_SIDE" marking="0" name="BPG13" shown-as="\mathrm{BPG}{13}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="55.0" y="175.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="2.5" magnets="TWO_PER_SIDE" marking="0" name="GAPDHNAD" shown-as="\mathrm{GAPDHNAD}^+" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="12.0" y="190.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN68" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="194.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN69" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="201.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN70" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="194.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN71" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="201.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN72" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="194.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN73" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="201.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN74" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="50.55" y="194.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN75" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="50.55" y="201.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN76" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="61.55" y="194.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN77" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="61.55" y="201.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN78" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="72.55" y="194.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN79" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="72.55" y="201.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="7.5" magnets="THREE_PER_SIDE" marking="0" name="GAPDHNADBPG13" shown-as="\mathrm{GAPDHNAD{^+}BPG}{13}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="22.0" y="197.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="7.5" magnets="THREE_PER_SIDE" marking="0" name="GAPDHNADIAP" shown-as="\mathrm{GAPDHNAD{^+}IAP}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="31.0" y="197.0"/>
+      <place label-x="0.0" label-y="7.5" magnets="THREE_PER_SIDE" marking="0" name="GAPDHIAP" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="44.0" y="197.0"/>
+      <place label-x="0.0" label-y="7.5" magnets="TWO_PER_SIDE" marking="0" name="GAPDHNADHIAP" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="55.0" y="197.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="7.5" magnets="TWO_PER_SIDE" marking="0" name="GAPDHNADGA3P" shown-as="\mathrm{GAPDHNAD{^+}GA}{3}\mathrm{P}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="67.0" y="197.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="7.5" magnets="NSEW_SQUARE_POINTS" marking="0" name="GA3P" shown-as="\mathrm{GA}{3}\mathrm{P}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="80.0" y="197.0"/>
+      <place label-x="0.0" label-y="2.5" magnets="TWO_PER_SIDE" marking="0" name="TPI" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="12.0" y="216.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN80" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="221.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN82" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="221.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN81" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="229.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN83" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="229.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN84" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="221.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN85" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="229.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN86" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="50.55" y="221.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN87" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="50.55" y="229.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="6.5" magnets="TWO_PER_SIDE" marking="0" name="TPIGA3P" shown-as="\mathrm{TPIGA}{3}\mathrm{P}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="22.0" y="225.0"/>
+      <place label-x="0.0" label-y="6.5" magnets="TWO_PER_SIDE" marking="0" name="TPIIE" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="31.0" y="225.0"/>
+      <place label-x="0.0" label-y="6.5" magnets="TWO_PER_SIDE" marking="0" name="TPIDHP" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="44.0" y="225.0"/>
+      <place label-x="0.0" label-y="6.5" magnets="TWO_PER_SIDE" marking="0" name="DHP" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="55.0" y="225.0"/>
+      <place label-x="0.0" label-y="2.5" magnets="TWO_PER_SIDE" marking="0" name="FBA" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="12.0" y="241.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN88" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="246.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN89" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="253.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN90" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="246.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN91" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="253.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN92" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="246.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN93" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="253.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN94" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="50.55" y="246.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN95" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="50.55" y="253.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN96" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="61.55" y="246.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN97" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="61.55" y="253.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN98" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="72.55" y="246.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN99" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="72.55" y="253.0"/>
+      <place label-x="0.0" label-y="7.0" magnets="TWO_PER_SIDE" marking="0" name="FBADHP" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="22.0" y="249.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="7.0" magnets="TWO_PER_SIDE" marking="0" name="FBASB1" shown-as="\mathrm{FBASB}{1}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="31.0" y="249.0"/>
+      <place label-x="0.0" label-y="7.0" magnets="TWO_PER_SIDE" marking="0" name="FBAEna" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="44.0" y="249.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="7.0" magnets="TWO_PER_SIDE" marking="0" name="FBASB2" shown-as="\mathrm{FBASB}{2}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="56.0" y="249.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="7.0" magnets="TWO_PER_SIDE" marking="0" name="FBAF16P" shown-as="\mathrm{FBAF}{16}\mathrm{P}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="67.0" y="249.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="7.0" magnets="TWO_PER_SIDE" marking="0" name="Fruc16P" shown-as="\mathrm{Fruc}{16}\mathrm{P}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="80.0" y="249.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="3.0" magnets="TWO_PER_SIDE" marking="0" name="F16BP" shown-as="\mathrm{F}{16}\mathrm{BP}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="11.0" y="267.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN100" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="17.55" y="267.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="ONE_PER_SIDE" name="kN101" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="28.55" y="267.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN102" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="42.55" y="267.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="3.0" magnets="TWO_PER_SIDE" marking="0" name="F16BPFruc16P" shown-as="\mathrm{F}{16}\mathrm{BPFruc}{16}\hspace{1pt}\mathrm{p}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="22.0" y="267.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="3.0" magnets="TWO_PER_SIDE" marking="0" name="F16BPFruc6P" shown-as="\mathrm{F}{16}\mathrm{BPFruc}{6}\mathrm{P}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="35.0" y="267.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="3.0" magnets="TWO_PER_SIDE" marking="0" name="Fruct6P" shown-as="\mathrm{Fruct}{6}\mathrm{P}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="49.0" y="267.0"/>
+      <place label-x="0.0" label-y="1.5" magnets="TWO_PER_SIDE" marking="0" name="PGI" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="11.0" y="278.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN103" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="282.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN104" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="18.55" y="289.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN105" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="282.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN106" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="289.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN107" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="282.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN108" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="289.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN109" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="50.55" y="282.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN110" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="50.55" y="289.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="7.0" magnets="THREE_PER_SIDE" marking="0" name="PGIFruc6P" shown-as="\mathrm{PGIFruc}{6}\mathrm{P}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="22.0" y="285.0"/>
+      <place label-x="0.0" label-y="7.0" magnets="THREE_PER_SIDE" marking="0" name="PGIcEN" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="31.0" y="285.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="7.0" magnets="TWO_PER_SIDE" marking="0" name="PGIGluc6P" shown-as="\mathrm{PGIGluc}{6}\mathrm{P}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="44.0" y="285.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="7.0" magnets="TWO_PER_SIDE" marking="0" name="Gluc6P" shown-as="\mathrm{Gluc}{6}\mathrm{P}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="59.0" y="285.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="1.5" magnets="TWO_PER_SIDE" marking="0" name="G6P" shown-as="\mathrm{G}{6}\mathrm{P}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="11.0" y="302.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN111" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="17.55" y="306.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="ONE_PER_SIDE" name="kN112" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="26.55" y="306.0"/>
+      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="TWO_PER_SIDE" name="kN113" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="306.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="3.5" magnets="TWO_PER_SIDE" marking="0" name="G6PGluc6P" shown-as="\mathrm{G}{6}\mathrm{PGluc}{6}\mathrm{P}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="22.0" y="306.0"/>
+      <place alt-name-fn="latex" label-x="0.0" label-y="3.5" magnets="CENTER_ONLY" marking="0" name="G6PGluc" shown-as="\mathrm{G}{6}\mathrm{PGluc}" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="31.0" y="306.0"/>
+      <place label-x="0.0" label-y="3.5" magnets="TWO_PER_SIDE" marking="0" name="Glucose" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="44.0" y="306.0"/>
+    </nodes>
+    <edges>
+      <arc broken="false" head="LDHLac" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN1" type="OUTPUT">
+        <point x="22.0" y="10.0"/>
+      </arc>
+      <arc broken="false" head="LDHLacNAD" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN3" type="OUTPUT">
+        <point x="30.5" y="10.0"/>
+      </arc>
+      <arc broken="false" head="kN3" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="LDHLac" type="INPUT">
+        <point x="24.5" y="11.0"/>
+      </arc>
+      <arc broken="false" head="kN5" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="LDHLacNAD" type="INPUT">
+        <point x="34.0" y="10.5"/>
+      </arc>
+      <arc broken="false" head="kN7" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="LDHPyrNADH" type="INPUT">
+        <point x="45.5" y="10.5"/>
+      </arc>
+      <arc broken="false" head="NADH" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN7" tail-magnet="6" type="OUTPUT">
+        <point x="45.0" y="8.0"/>
+      </arc>
+      <arc broken="false" head="LDHPyrNADH" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN5" tail-magnet="3" type="OUTPUT">
+        <point x="41.5" y="10.5"/>
+      </arc>
+      <arc broken="false" head="Pyr" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN7" tail-magnet="3" type="OUTPUT">
+        <point x="52.0" y="10.5"/>
+      </arc>
+      <arc broken="false" head="kN8" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="NADH" type="INPUT">
+        <point x="55.0" y="4.5"/>
+        <point x="57.5" y="10.0"/>
+        <point x="56.5" y="16.5"/>
+      </arc>
+      <arc broken="false" head="kN8" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="Pyr" type="INPUT">
+        <point x="52.0" y="15.0"/>
+      </arc>
+      <arc broken="false" head="LDHPyrNADH" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN8" tail-magnet="6" type="OUTPUT">
+        <point x="45.5" y="16.0"/>
+      </arc>
+      <arc broken="false" head="kN6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="LDHPyrNADH" type="INPUT">
+        <point x="41.0" y="16.0"/>
+      </arc>
+      <arc broken="false" head="LDHLacNAD" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN6" type="OUTPUT">
+        <point x="33.5" y="16.0"/>
+      </arc>
+      <arc broken="false" head="kN4" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="LDHLacNAD" type="INPUT">
+        <point x="30.0" y="15.5"/>
+      </arc>
+      <arc broken="false" head="LDHLac" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN4" tail-magnet="7" type="OUTPUT">
+        <point x="24.0" y="16.5"/>
+      </arc>
+      <arc broken="false" head="kN3" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="NAD" tail-magnet="1" type="INPUT">
+        <point x="24.0" y="6.0"/>
+        <point x="24.5" y="9.0"/>
+      </arc>
+      <arc broken="false" head="NAD" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN4" tail-magnet="6" type="OUTPUT">
+        <point x="25.0" y="15.5"/>
+      </arc>
+      <arc broken="false" head="kN2" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="LDHLac" type="INPUT">
+        <point x="21.5" y="15.5"/>
+      </arc>
+      <arc broken="false" head="kN1" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="LDH" tail-magnet="11" type="INPUT">
+        <point x="17.5" y="6.5"/>
+      </arc>
+      <arc broken="false" head="kN1" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="Lac" tail-magnet="0" type="INPUT">
+        <point x="15.0" y="11.0"/>
+      </arc>
+      <arc broken="false" head="LDH" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN2" tail-magnet="6" type="OUTPUT">
+        <point x="16.0" y="14.5"/>
+      </arc>
+      <arc broken="false" head="Lac" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN2" tail-magnet="7" type="OUTPUT">
+        <point x="15.0" y="16.5"/>
+      </arc>
+      <arc broken="false" head="kN9" head-magnet="9" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PC" type="INPUT">
+        <point x="16.5" y="25.0"/>
+      </arc>
+      <arc broken="false" head="kN9" head-magnet="11" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ATP" type="INPUT">
+        <point x="7.0" y="26.5"/>
+      </arc>
+      <arc broken="false" head="PCATP" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN9" tail-magnet="4" type="OUTPUT"/>
+      <arc broken="false" head="kN10" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PCATP" tail-magnet="0" type="INPUT"/>
+      <arc broken="false" head="PCADP" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN10" tail-magnet="1" type="OUTPUT"/>
+      <arc broken="false" head="kN11" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PCADP" tail-magnet="0" type="INPUT"/>
+      <arc broken="false" head="ADP" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN11" tail-magnet="3" type="OUTPUT">
+        <point x="41.0" y="26.5"/>
+        <point x="41.0" y="30.0"/>
+      </arc>
+      <arc broken="false" head="kN11" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="Pyr" type="INPUT">
+        <point x="55.0" y="19.5"/>
+        <point x="36.0" y="19.5"/>
+        <point x="36.0" y="22.5"/>
+      </arc>
+      <arc broken="false" head="PCPyr" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN11" tail-magnet="2" type="OUTPUT"/>
+      <arc broken="false" head="kN12" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PCPyr" type="INPUT"/>
+      <arc broken="false" head="PCOxal" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN12" tail-magnet="3" type="OUTPUT"/>
+      <arc broken="false" head="kN13" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PCOxal" tail-magnet="0" type="INPUT"/>
+      <arc broken="false" head="OxalM" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN13" tail-magnet="3" type="OUTPUT"/>
+      <arc broken="false" head="PC" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN13" tail-magnet="6" type="OUTPUT">
+        <point x="57.5" y="24.0"/>
+        <point x="44.0" y="22.5"/>
+      </arc>
+      <arc broken="false" head="LDH" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN7" tail-magnet="0" type="OUTPUT">
+        <point x="49.0" y="8.0"/>
+      </arc>
+      <arc broken="false" head="kN8" head-magnet="4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="LDH" tail-magnet="5" type="INPUT">
+        <point x="8.5" y="7.5"/>
+        <point x="8.5" y="18.5"/>
+        <point x="49.0" y="19.0"/>
+      </arc>
+      <arc broken="false" head="kN14" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="NADH" tail-magnet="14" type="INPUT">
+        <point x="68.0" y="2.0"/>
+        <point x="69.0" y="32.0"/>
+        <point x="11.5" y="31.5"/>
+        <point x="11.5" y="38.5"/>
+      </arc>
+      <arc broken="false" head="kN14" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MDHM" tail-magnet="0" type="INPUT">
+        <point x="17.5" y="35.0"/>
+        <point x="17.0" y="38.0"/>
+      </arc>
+      <arc broken="false" head="MDHNADH" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN14" tail-magnet="3" type="OUTPUT"/>
+      <arc broken="false" head="kN16" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MDHNADH" tail-magnet="11" type="INPUT"/>
+      <arc broken="false" head="kN16" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="OxalM" tail-magnet="0" type="INPUT">
+        <point x="67.5" y="27.0"/>
+        <point x="67.0" y="31.5"/>
+        <point x="23.5" y="31.5"/>
+        <point x="23.0" y="38.5"/>
+      </arc>
+      <arc broken="false" head="MDHNADHOxal" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN16" tail-magnet="3" type="OUTPUT"/>
+      <arc broken="false" head="kN18" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MDHNADHOxal" tail-magnet="11" type="INPUT"/>
+      <arc broken="false" head="MDHNADMal" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN18" tail-magnet="3" type="OUTPUT"/>
+      <arc broken="false" head="kN20" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MDHNADMal" tail-magnet="11" type="INPUT"/>
+      <arc broken="false" head="MDHNAD" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN20" tail-magnet="3" type="OUTPUT"/>
+      <arc broken="false" head="MalateMit" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN20" tail-magnet="2" type="OUTPUT">
+        <point x="53.0" y="38.5"/>
+        <point x="54.0" y="36.5"/>
+      </arc>
+      <arc broken="false" head="kN22" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MDHNAD" tail-magnet="0" type="INPUT"/>
+      <arc broken="false" head="MDHM" head-magnet="11" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN22" tail-magnet="6" type="OUTPUT">
+        <point x="62.5" y="36.0"/>
+        <point x="56.0" y="33.5"/>
+      </arc>
+      <arc broken="false" head="NAD" head-magnet="11" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN22" tail-magnet="2" type="OUTPUT">
+        <point x="68.0" y="38.0"/>
+        <point x="68.0" y="34.0"/>
+        <point x="72.0" y="34.0"/>
+        <point x="71.0" y="0.5"/>
+        <point x="26.0" y="0.5"/>
+      </arc>
+      <arc broken="false" head="kN23" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MDHM" tail-magnet="7" type="INPUT">
+        <point x="12.5" y="33.5"/>
+        <point x="12.5" y="47.5"/>
+        <point x="58.5" y="47.5"/>
+        <point x="60.5" y="45.5"/>
+      </arc>
+      <arc broken="false" head="MDHNAD" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN23" tail-magnet="6" type="OUTPUT"/>
+      <arc broken="false" head="kN21" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MDHNAD" tail-magnet="6" type="INPUT"/>
+      <arc broken="false" head="kN21" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MalateMit" tail-magnet="0" type="INPUT">
+        <point x="63.5" y="37.5"/>
+        <point x="59.0" y="45.0"/>
+      </arc>
+      <arc broken="false" head="kN23" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="NAD" tail-magnet="6" type="INPUT">
+        <point x="0.5" y="3.0"/>
+        <point x="0.5" y="50.0"/>
+        <point x="53.5" y="50.0"/>
+        <point x="70.5" y="47.5"/>
+        <point x="70.5" y="45.5"/>
+      </arc>
+      <arc broken="false" head="MDHNADMal" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN21" tail-magnet="6" type="OUTPUT"/>
+      <arc broken="false" head="kN19" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MDHNADMal" tail-magnet="5" type="INPUT"/>
+      <arc broken="false" head="MDHNADHOxal" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN19" tail-magnet="6" type="OUTPUT"/>
+      <arc broken="false" head="kN17" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MDHNADHOxal" tail-magnet="5" type="INPUT"/>
+      <arc broken="false" head="OxalM" head-magnet="11" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN17" tail-magnet="6" type="OUTPUT">
+        <point x="25.0" y="42.5"/>
+        <point x="36.0" y="35.5"/>
+        <point x="53.0" y="33.0"/>
+        <point x="70.0" y="33.0"/>
+        <point x="70.0" y="25.0"/>
+      </arc>
+      <arc broken="false" head="MDHNADH" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN17" tail-magnet="7" type="OUTPUT"/>
+      <arc broken="false" head="kN15" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MDHNADH" tail-magnet="5" type="INPUT"/>
+      <arc broken="false" head="MDHM" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN15" tail-magnet="6" type="OUTPUT">
+        <point x="14.5" y="43.0"/>
+        <point x="13.0" y="36.0"/>
+      </arc>
+      <arc broken="false" head="NADH" head-magnet="13" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN15" tail-magnet="3" type="OUTPUT">
+        <point x="20.5" y="45.5"/>
+        <point x="20.5" y="51.0"/>
+        <point x="73.0" y="50.5"/>
+        <point x="73.0" y="0.5"/>
+      </arc>
+      <arc broken="false" head="kN24" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MKA" type="INPUT">
+        <point x="17.0" y="57.5"/>
+        <point x="17.0" y="60.0"/>
+      </arc>
+      <arc broken="false" head="kN24" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MalateMit" tail-magnet="5" type="INPUT">
+        <point x="57.0" y="38.0"/>
+        <point x="58.0" y="41.0"/>
+        <point x="58.0" y="55.0"/>
+        <point x="23.5" y="57.5"/>
+      </arc>
+      <arc broken="false" head="MKAMalMit" head-magnet="8" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN24" tail-magnet="3" type="OUTPUT">
+        <point x="21.5" y="61.0"/>
+      </arc>
+      <arc broken="false" head="MalateCit" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN26" tail-magnet="2" type="OUTPUT">
+        <point x="31.0" y="58.0"/>
+        <point x="31.0" y="53.0"/>
+      </arc>
+      <arc broken="false" head="kN26" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MKAMalMit" tail-magnet="11" type="INPUT">
+        <point x="24.0" y="61.0"/>
+      </arc>
+      <arc broken="false" head="AKETMit" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN30" tail-magnet="3" type="OUTPUT">
+        <point x="41.0" y="60.0"/>
+      </arc>
+      <arc broken="false" head="MKA" head-magnet="0" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN30" tail-magnet="2" type="OUTPUT">
+        <point x="41.5" y="59.5"/>
+        <point x="41.0" y="56.5"/>
+      </arc>
+      <arc broken="false" head="kN31" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="AKETMit" tail-magnet="0" type="INPUT">
+        <point x="45.0" y="63.0"/>
+        <point x="45.0" y="66.5"/>
+      </arc>
+      <arc broken="false" head="kN27" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MalateCit" tail-magnet="0" type="INPUT">
+        <point x="46.5" y="54.5"/>
+        <point x="46.0" y="70.0"/>
+      </arc>
+      <arc broken="false" head="MKAMalMit" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN27" tail-magnet="7" type="OUTPUT">
+        <point x="23.5" y="66.0"/>
+      </arc>
+      <arc broken="false" head="kN25" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MKAMalMit" tail-magnet="5" type="INPUT">
+        <point x="21.5" y="65.5"/>
+      </arc>
+      <arc broken="false" head="MKA" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN25" tail-magnet="6" type="OUTPUT">
+        <point x="12.5" y="65.5"/>
+        <point x="12.5" y="55.5"/>
+      </arc>
+      <arc broken="false" head="MalateMit" head-magnet="10" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN25" tail-magnet="7" type="OUTPUT">
+        <point x="15.5" y="66.5"/>
+        <point x="15.5" y="69.5"/>
+        <point x="62.0" y="70.0"/>
+        <point x="62.5" y="34.5"/>
+      </arc>
+      <arc broken="false" head="MKA" head-magnet="9" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN26" tail-magnet="6" type="OUTPUT">
+        <point x="23.5" y="59.5"/>
+        <point x="23.0" y="52.5"/>
+        <point x="15.5" y="52.5"/>
+      </arc>
+      <arc broken="false" head="kN28" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MKA" tail-magnet="11" type="INPUT">
+        <point x="24.0" y="54.5"/>
+        <point x="24.0" y="57.0"/>
+        <point x="29.5" y="57.0"/>
+        <point x="29.5" y="60.0"/>
+      </arc>
+      <arc broken="false" head="kN28" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="AKETCit" tail-magnet="1" type="INPUT">
+        <point x="29.5" y="54.0"/>
+        <point x="29.5" y="61.0"/>
+      </arc>
+      <arc broken="false" head="MKAAKetCit" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN28" tail-magnet="2" type="OUTPUT">
+        <point x="34.5" y="59.5"/>
+      </arc>
+      <arc broken="false" head="kN30" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MKAAKetCit" tail-magnet="6" type="INPUT">
+        <point x="35.5" y="60.5"/>
+      </arc>
+      <arc broken="false" head="MKAAKetCit" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN31" tail-magnet="6" type="OUTPUT">
+        <point x="35.5" y="65.5"/>
+      </arc>
+      <arc broken="false" head="kN31" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MKA" tail-magnet="7" type="INPUT">
+        <point x="10.0" y="54.5"/>
+        <point x="10.0" y="71.0"/>
+        <point x="32.5" y="71.0"/>
+        <point x="31.5" y="69.0"/>
+        <point x="32.0" y="67.5"/>
+        <point x="35.5" y="67.5"/>
+        <point x="35.5" y="66.5"/>
+      </arc>
+      <arc broken="false" head="k29" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MKAAKetCit" tail-magnet="2" type="INPUT">
+        <point x="34.5" y="66.0"/>
+      </arc>
+      <arc broken="false" head="AKETCit" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="k29" tail-magnet="6" type="OUTPUT">
+        <point x="29.0" y="65.0"/>
+        <point x="29.0" y="55.5"/>
+        <point x="24.5" y="55.0"/>
+        <point x="24.0" y="53.5"/>
+      </arc>
+      <arc broken="false" head="MKA" head-magnet="8" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="k29" tail-magnet="7" type="OUTPUT">
+        <point x="29.5" y="66.5"/>
+        <point x="29.5" y="73.0"/>
+        <point x="9.5" y="73.0"/>
+        <point x="9.5" y="53.5"/>
+      </arc>
+      <arc broken="false" head="kN27" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MKA" tail-magnet="6" type="INPUT">
+        <point x="11.5" y="55.0"/>
+        <point x="11.5" y="69.5"/>
+        <point x="14.5" y="70.0"/>
+        <point x="29.0" y="70.0"/>
+        <point x="29.5" y="66.0"/>
+      </arc>
+      <arc broken="false" head="kN32" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MDHC" type="INPUT">
+        <point x="18.0" y="77.0"/>
+        <point x="18.0" y="80.5"/>
+      </arc>
+      <arc broken="false" head="kN32" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="NAD" tail-magnet="7" type="INPUT">
+        <point x="0.0" y="2.5"/>
+        <point x="1.5" y="81.5"/>
+      </arc>
+      <arc broken="false" head="MDHCNAD" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN32" tail-magnet="3" type="OUTPUT">
+        <point x="22.0" y="81.5"/>
+      </arc>
+      <arc broken="false" head="kN34" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MDHCNAD" tail-magnet="7" type="INPUT">
+        <point x="24.0" y="81.5"/>
+      </arc>
+      <arc broken="false" head="kN34" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MalateCit" tail-magnet="7" type="INPUT">
+        <point x="51.0" y="52.5"/>
+        <point x="46.0" y="71.5"/>
+        <point x="24.0" y="75.5"/>
+        <point x="24.0" y="80.5"/>
+      </arc>
+      <arc broken="false" head="MDHCNADMal" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN34" tail-magnet="3" type="OUTPUT">
+        <point x="30.5" y="81.5"/>
+      </arc>
+      <arc broken="false" head="kN36" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MDHCNADMal" type="INPUT">
+        <point x="32.5" y="82.0"/>
+      </arc>
+      <arc broken="false" head="OxalC" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN36" tail-magnet="2" type="OUTPUT">
+        <point x="41.5" y="80.5"/>
+        <point x="41.5" y="75.5"/>
+        <point x="42.5" y="74.5"/>
+      </arc>
+      <arc broken="false" head="MDHCNADH" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN36" tail-magnet="3" type="OUTPUT">
+        <point x="41.5" y="81.0"/>
+      </arc>
+      <arc broken="false" head="kN38" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MDHCNADH" tail-magnet="6" type="INPUT">
+        <point x="43.5" y="81.5"/>
+      </arc>
+      <arc broken="false" head="MDHC" head-magnet="9" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN38" tail-magnet="2" type="OUTPUT">
+        <point x="50.5" y="80.5"/>
+        <point x="50.0" y="77.0"/>
+        <point x="15.5" y="75.5"/>
+      </arc>
+      <arc broken="false" head="NADH" head-magnet="12" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN38" tail-magnet="3" type="OUTPUT">
+        <point x="79.0" y="81.5"/>
+        <point x="76.5" y="1.0"/>
+      </arc>
+      <arc broken="false" head="kN39" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MDHC" tail-magnet="6" type="INPUT">
+        <point x="9.5" y="77.0"/>
+        <point x="16.5" y="94.5"/>
+        <point x="52.5" y="95.0"/>
+        <point x="52.5" y="90.0"/>
+      </arc>
+      <arc broken="false" head="MDHCNADH" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN39" tail-magnet="7" type="OUTPUT">
+        <point x="43.5" y="90.5"/>
+      </arc>
+      <arc broken="false" head="kN39" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="NADH" tail-magnet="15" type="INPUT">
+        <point x="74.0" y="3.5"/>
+        <point x="74.0" y="85.5"/>
+      </arc>
+      <arc broken="false" head="kN37" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="OxalC" tail-magnet="2" type="INPUT">
+        <point x="43.5" y="76.0"/>
+        <point x="40.5" y="86.5"/>
+        <point x="40.5" y="90.5"/>
+      </arc>
+      <arc broken="false" head="kN37" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MDHCNADH" tail-magnet="2" type="INPUT">
+        <point x="42.0" y="89.5"/>
+      </arc>
+      <arc broken="false" head="MDHCNADMal" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN37" tail-magnet="6" type="OUTPUT">
+        <point x="33.0" y="89.5"/>
+      </arc>
+      <arc broken="false" head="kN35" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MDHCNADMal" tail-magnet="2" type="INPUT">
+        <point x="31.5" y="89.5"/>
+      </arc>
+      <arc broken="false" head="kN33" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="MDHCNAD" tail-magnet="3" type="INPUT">
+        <point x="22.0" y="90.0"/>
+      </arc>
+      <arc broken="false" head="MDHC" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN33" tail-magnet="6" type="OUTPUT">
+        <point x="15.0" y="88.0"/>
+        <point x="11.0" y="78.5"/>
+      </arc>
+      <arc broken="false" head="NAD" head-magnet="8" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN33" tail-magnet="7" type="OUTPUT">
+        <point x="1.0" y="90.0"/>
+        <point x="0.0" y="85.5"/>
+        <point x="0.0" y="30.0"/>
+        <point x="0.0" y="1.0"/>
+      </arc>
+      <arc broken="false" head="kN40" head-magnet="9" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="OxalC" tail-magnet="0" type="INPUT">
+        <point x="56.5" y="74.5"/>
+        <point x="56.0" y="97.0"/>
+        <point x="19.0" y="98.0"/>
+        <point x="16.5" y="104.0"/>
+      </arc>
+      <arc broken="false" head="kN40" head-magnet="10" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PEPCK" tail-magnet="3" type="INPUT">
+        <point x="11.0" y="100.0"/>
+        <point x="11.5" y="105.0"/>
+      </arc>
+      <arc broken="false" head="kN40" head-magnet="11" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="GTP" tail-magnet="0" type="INPUT">
+        <point x="7.0" y="105.5"/>
+      </arc>
+      <arc broken="false" head="PEPKOxalGTP" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN40" tail-magnet="4" type="OUTPUT">
+        <point x="23.0" y="106.0"/>
+      </arc>
+      <arc broken="false" head="kN42" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PEPKOxalGTP" tail-magnet="6" type="INPUT">
+        <point x="23.5" y="106.0"/>
+      </arc>
+      <arc broken="false" head="GDP" head-magnet="4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN42" tail-magnet="2" type="OUTPUT">
+        <point x="31.0" y="106.0"/>
+        <point x="29.5" y="96.5"/>
+        <point x="0.5" y="98.0"/>
+        <point x="0.5" y="112.0"/>
+      </arc>
+      <arc broken="false" head="PEPCKPEP" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN42" tail-magnet="3" type="OUTPUT">
+        <point x="30.0" y="106.5"/>
+      </arc>
+      <arc broken="false" head="kN44" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PEPCKPEP" tail-magnet="6" type="INPUT">
+        <point x="32.5" y="106.5"/>
+      </arc>
+      <arc broken="false" head="PEPCK" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN44" tail-magnet="2" type="OUTPUT">
+        <point x="45.0" y="105.5"/>
+        <point x="42.5" y="96.0"/>
+        <point x="16.0" y="96.5"/>
+      </arc>
+      <arc broken="false" head="PEP" head-magnet="9" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN44" tail-magnet="3" type="OUTPUT">
+        <point x="44.5" y="106.5"/>
+      </arc>
+      <arc broken="false" head="kN45" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PEP" tail-magnet="5" type="INPUT">
+        <point x="42.5" y="112.0"/>
+      </arc>
+      <arc broken="false" head="kN45" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PEPCK" tail-magnet="4" type="INPUT">
+        <point x="12.0" y="99.0"/>
+        <point x="11.5" y="96.5"/>
+        <point x="18.0" y="95.5"/>
+        <point x="47.5" y="95.5"/>
+        <point x="47.5" y="113.0"/>
+      </arc>
+      <arc broken="false" head="PEPCKPEP" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN45" tail-magnet="6" type="OUTPUT">
+        <point x="34.0" y="113.5"/>
+      </arc>
+      <arc broken="false" head="kN43" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PEPCKPEP" tail-magnet="2" type="INPUT">
+        <point x="31.0" y="113.0"/>
+      </arc>
+      <arc broken="false" head="PEPKOxalGTP" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN43" tail-magnet="6" type="OUTPUT">
+        <point x="24.0" y="113.5"/>
+      </arc>
+      <arc broken="false" head="kN41" head-magnet="4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PEPKOxalGTP" tail-magnet="2" type="INPUT">
+        <point x="22.5" y="113.5"/>
+      </arc>
+      <arc broken="false" head="GTP" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN41" tail-magnet="11" type="OUTPUT">
+        <point x="7.5" y="114.5"/>
+        <point x="2.0" y="109.5"/>
+        <point x="1.5" y="105.0"/>
+      </arc>
+      <arc broken="false" head="PEPCK" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN41" tail-magnet="10" type="OUTPUT">
+        <point x="8.5" y="114.0"/>
+        <point x="6.5" y="103.0"/>
+      </arc>
+      <arc broken="false" head="OxalC" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN41" tail-magnet="9" type="OUTPUT">
+        <point x="10.5" y="113.0"/>
+        <point x="14.0" y="119.0"/>
+        <point x="55.0" y="118.5"/>
+        <point x="60.0" y="87.5"/>
+        <point x="59.0" y="71.0"/>
+      </arc>
+      <arc broken="false" head="MDHCNAD" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN35" tail-magnet="6" type="OUTPUT">
+        <point x="24.0" y="89.0"/>
+      </arc>
+      <arc broken="false" head="MalateCit" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN35" tail-magnet="7" type="OUTPUT">
+        <point x="22.0" y="92.0"/>
+        <point x="9.0" y="91.5"/>
+        <point x="6.5" y="78.0"/>
+        <point x="13.0" y="74.0"/>
+        <point x="50.0" y="72.5"/>
+        <point x="52.5" y="51.0"/>
+      </arc>
+      <arc broken="false" head="kN46" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ENO" tail-magnet="0" type="INPUT">
+        <point x="17.5" y="124.0"/>
+        <point x="17.0" y="130.0"/>
+      </arc>
+      <arc broken="false" head="kN46" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PEP" tail-magnet="0" type="INPUT">
+        <point x="50.5" y="110.0"/>
+        <point x="50.5" y="121.5"/>
+        <point x="22.0" y="121.5"/>
+        <point x="22.0" y="129.0"/>
+      </arc>
+      <arc broken="false" head="ENOPEP" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN46" tail-magnet="3" type="OUTPUT">
+        <point x="22.5" y="130.0"/>
+      </arc>
+      <arc broken="false" head="kN48" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ENOPEP" tail-magnet="7" type="INPUT"/>
+      <arc broken="false" head="ENO2PG" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN48" tail-magnet="2" type="OUTPUT"/>
+      <arc broken="false" head="kN50" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ENO2PG" tail-magnet="7" type="INPUT"/>
+      <arc broken="false" head="PG2" head-magnet="4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN50" tail-magnet="3" type="OUTPUT"/>
+      <arc broken="false" head="ENO" head-magnet="11" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN50" tail-magnet="2" type="OUTPUT">
+        <point x="41.5" y="129.5"/>
+        <point x="41.5" y="125.0"/>
+      </arc>
+      <arc broken="false" head="kN51" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PG2" tail-magnet="3" type="INPUT"/>
+      <arc broken="false" head="ENO2PG" head-magnet="0" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN51" tail-magnet="6" type="OUTPUT"/>
+      <arc broken="false" head="kN49" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ENO2PG" tail-magnet="3" type="INPUT"/>
+      <arc broken="false" head="ENOPEP" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN49" tail-magnet="6" type="OUTPUT"/>
+      <arc broken="false" head="kN47" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ENOPEP" tail-magnet="3" type="INPUT"/>
+      <arc broken="false" head="ENO" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN47" tail-magnet="6" type="OUTPUT">
+        <point x="12.5" y="135.5"/>
+      </arc>
+      <arc broken="false" head="kN51" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ENO" tail-magnet="9" type="INPUT">
+        <point x="15.0" y="121.0"/>
+        <point x="47.0" y="122.5"/>
+        <point x="47.0" y="139.0"/>
+      </arc>
+      <arc broken="false" head="kN52" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PGM" tail-magnet="0" type="INPUT">
+        <point x="17.5" y="145.5"/>
+        <point x="17.0" y="150.0"/>
+      </arc>
+      <arc broken="false" head="kN52" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="BPG23" tail-magnet="0" type="INPUT"/>
+      <arc broken="false" head="EP3PG" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN52" tail-magnet="2" type="OUTPUT">
+        <point x="22.5" y="149.5"/>
+      </arc>
+      <arc broken="false" head="kN54" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="EP3PG" tail-magnet="7" type="INPUT"/>
+      <arc broken="false" head="kN54" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PG2" tail-magnet="1" type="INPUT">
+        <point x="48.0" y="134.5"/>
+        <point x="48.0" y="143.5"/>
+        <point x="25.5" y="143.5"/>
+        <point x="23.0" y="148.0"/>
+      </arc>
+      <arc broken="false" head="EP3PG2PG" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN54" tail-magnet="3" type="OUTPUT">
+        <point x="31.0" y="150.5"/>
+      </arc>
+      <arc broken="false" head="kN56" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="EP3PG2PG" tail-magnet="7" type="INPUT"/>
+      <arc broken="false" head="E3PG23BPG" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN56" tail-magnet="3" type="OUTPUT"/>
+      <arc broken="false" head="kN58" head-magnet="11" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="E3PG23BPG" tail-magnet="7" type="INPUT"/>
+      <arc broken="false" head="PG3" head-magnet="4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN58" tail-magnet="5" type="OUTPUT"/>
+      <arc broken="false" head="PGM" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN58" tail-magnet="4" type="OUTPUT">
+        <point x="57.0" y="150.0"/>
+        <point x="57.0" y="144.5"/>
+      </arc>
+      <arc broken="false" head="BPG23" head-magnet="10" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN58" tail-magnet="3" type="OUTPUT">
+        <point x="55.0" y="149.5"/>
+        <point x="55.0" y="142.5"/>
+        <point x="6.5" y="142.5"/>
+      </arc>
+      <arc broken="false" head="kN59" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="BPG23" tail-magnet="1" type="INPUT">
+        <point x="9.5" y="153.5"/>
+        <point x="9.5" y="161.5"/>
+        <point x="53.0" y="161.5"/>
+        <point x="56.0" y="157.0"/>
+      </arc>
+      <arc broken="false" head="kN59" head-magnet="4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PGM" tail-magnet="4" type="INPUT">
+        <point x="10.0" y="144.5"/>
+        <point x="10.0" y="163.0"/>
+        <point x="59.5" y="162.5"/>
+        <point x="59.5" y="155.5"/>
+      </arc>
+      <arc broken="false" head="kN59" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PG3" tail-magnet="2" type="INPUT"/>
+      <arc broken="false" head="E3PG23BPG" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN59" tail-magnet="10" type="OUTPUT"/>
+      <arc broken="false" head="kN57" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="E3PG23BPG" tail-magnet="2" type="INPUT"/>
+      <arc broken="false" head="EP3PG2PG" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN57" tail-magnet="7" type="OUTPUT"/>
+      <arc broken="false" head="kN55" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="EP3PG2PG" tail-magnet="2" type="INPUT"/>
+      <arc broken="false" head="PG2" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN55" tail-magnet="7" type="OUTPUT">
+        <point x="24.5" y="156.5"/>
+        <point x="27.0" y="164.0"/>
+        <point x="62.5" y="164.0"/>
+        <point x="61.5" y="132.5"/>
+      </arc>
+      <arc broken="false" head="PEP" head-magnet="11" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN47" tail-magnet="7" type="OUTPUT">
+        <point x="8.5" y="136.5"/>
+        <point x="8.5" y="120.0"/>
+        <point x="52.5" y="119.5"/>
+        <point x="52.5" y="106.5"/>
+      </arc>
+      <arc broken="false" head="EP3PG" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN55" tail-magnet="6" type="OUTPUT"/>
+      <arc broken="false" head="kN53" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="EP3PG" tail-magnet="2" type="INPUT"/>
+      <arc broken="false" head="PGM" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN53" tail-magnet="6" type="OUTPUT">
+        <point x="12.5" y="155.5"/>
+        <point x="12.5" y="145.5"/>
+      </arc>
+      <arc broken="false" head="BPG23" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN53" tail-magnet="7" type="OUTPUT">
+        <point x="8.0" y="156.5"/>
+      </arc>
+      <arc broken="false" head="kN60" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PGK" tail-magnet="1" type="INPUT"/>
+      <arc broken="false" head="kN60" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PG3" tail-magnet="0" type="INPUT">
+        <point x="61.5" y="153.5"/>
+        <point x="61.0" y="167.0"/>
+        <point x="17.5" y="166.5"/>
+        <point x="17.0" y="171.0"/>
+      </arc>
+      <arc broken="false" head="PGKPG3" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN60" tail-magnet="2" type="OUTPUT">
+        <point x="21.5" y="172.5"/>
+      </arc>
+      <arc broken="false" head="kN62" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PGKPG3" tail-magnet="6" type="INPUT"/>
+      <arc broken="false" head="PGKBPG13ADP" head-magnet="4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN62" tail-magnet="3" type="OUTPUT"/>
+      <arc broken="false" head="kN62" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ATP" tail-magnet="6" type="INPUT">
+        <point x="0.0" y="21.0"/>
+        <point x="0.0" y="167.0"/>
+        <point x="22.0" y="168.0"/>
+        <point x="22.5" y="171.5"/>
+      </arc>
+      <arc broken="false" head="kN64" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PGKBPG13ADP" tail-magnet="7" type="INPUT"/>
+      <arc broken="false" head="ADP" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN64" tail-magnet="2" type="OUTPUT">
+        <point x="42.0" y="172.5"/>
+        <point x="40.5" y="165.5"/>
+        <point x="0.5" y="165.5"/>
+        <point x="1.0" y="29.0"/>
+      </arc>
+      <arc broken="false" head="PGKBPG13" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN64" tail-magnet="3" type="OUTPUT"/>
+      <arc broken="false" head="kN66" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PGKBPG13" tail-magnet="7" type="INPUT"/>
+      <arc broken="false" head="BPG13" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN66" tail-magnet="3" type="OUTPUT">
+        <point x="55.5" y="173.5"/>
+      </arc>
+      <arc broken="false" head="PGK" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN66" tail-magnet="2" type="OUTPUT">
+        <point x="54.5" y="172.0"/>
+        <point x="54.5" y="165.0"/>
+        <point x="15.0" y="165.0"/>
+      </arc>
+      <arc broken="false" head="kN67" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="BPG13" tail-magnet="2" type="INPUT"/>
+      <arc broken="false" head="kN67" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PGK" tail-magnet="3" type="INPUT">
+        <point x="10.0" y="170.5"/>
+        <point x="10.0" y="184.0"/>
+        <point x="60.5" y="184.5"/>
+        <point x="60.5" y="180.0"/>
+      </arc>
+      <arc broken="false" head="PGKBPG13" head-magnet="0" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN67" tail-magnet="7" type="OUTPUT"/>
+      <arc broken="false" head="kN65" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PGKBPG13" tail-magnet="2" type="INPUT"/>
+      <arc broken="false" head="kN65" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ADP" tail-magnet="5" type="INPUT">
+        <point x="1.5" y="31.5"/>
+        <point x="0.5" y="72.5"/>
+        <point x="0.5" y="186.0"/>
+        <point x="40.0" y="186.0"/>
+        <point x="42.0" y="180.5"/>
+      </arc>
+      <arc broken="false" head="PGKBPG13ADP" head-magnet="0" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN65" tail-magnet="6" type="OUTPUT"/>
+      <arc broken="false" head="kN63" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PGKBPG13ADP" tail-magnet="2" type="INPUT"/>
+      <arc broken="false" head="ATP" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN63" tail-magnet="7" type="OUTPUT">
+        <point x="20.5" y="182.0"/>
+        <point x="1.0" y="182.5"/>
+        <point x="0.0" y="19.5"/>
+      </arc>
+      <arc broken="false" head="PGKPG3" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN63" tail-magnet="6" type="OUTPUT"/>
+      <arc broken="false" head="kN61" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PGKPG3" tail-magnet="2" type="INPUT"/>
+      <arc broken="false" head="PGK" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN61" tail-magnet="6" type="OUTPUT">
+        <point x="12.5" y="179.5"/>
+        <point x="13.0" y="171.0"/>
+      </arc>
+      <arc broken="false" head="PG3" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN61" tail-magnet="7" type="OUTPUT">
+        <point x="4.0" y="180.5"/>
+        <point x="4.5" y="164.0"/>
+        <point x="60.0" y="164.5"/>
+        <point x="60.0" y="151.5"/>
+      </arc>
+      <arc broken="false" head="kN68" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="GAPDHNAD" tail-magnet="0" type="INPUT">
+        <point x="15.5" y="191.5"/>
+        <point x="16.5" y="194.0"/>
+        <point x="16.5" y="195.5"/>
+      </arc>
+      <arc broken="false" head="GAPDHNADBPG13" head-magnet="8" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN68" tail-magnet="3" type="OUTPUT">
+        <point x="22.0" y="195.5"/>
+      </arc>
+      <arc broken="false" head="kN70" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="GAPDHNADBPG13" tail-magnet="11" type="INPUT"/>
+      <arc broken="false" head="GAPDHNADIAP" head-magnet="8" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN70" tail-magnet="3" type="OUTPUT">
+        <point x="30.0" y="195.5"/>
+      </arc>
+      <arc broken="false" head="kN68" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="BPG13" tail-magnet="0" type="INPUT">
+        <point x="62.5" y="176.5"/>
+        <point x="62.5" y="188.0"/>
+        <point x="15.5" y="188.0"/>
+      </arc>
+      <arc broken="false" head="kN72" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="GAPDHNADIAP" tail-magnet="0" type="INPUT"/>
+      <arc broken="false" head="NAD" head-magnet="10" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN72" tail-magnet="2" type="OUTPUT">
+        <point x="40.0" y="194.5"/>
+        <point x="40.0" y="189.5"/>
+        <point x="78.5" y="189.5"/>
+        <point x="81.0" y="0.5"/>
+        <point x="25.5" y="0.0"/>
+      </arc>
+      <arc broken="false" head="GAPDHIAP" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN72" tail-magnet="3" type="OUTPUT">
+        <point x="41.5" y="195.5"/>
+      </arc>
+      <arc broken="false" head="kN74" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="GAPDHIAP" tail-magnet="0" type="INPUT"/>
+      <arc broken="false" head="GAPDHNADHIAP" head-magnet="4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN74" tail-magnet="3" type="OUTPUT">
+        <point x="53.5" y="195.5"/>
+      </arc>
+      <arc broken="false" head="kN74" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="NADH" tail-magnet="0" type="INPUT">
+        <point x="53.5" y="5.0"/>
+        <point x="81.5" y="6.5"/>
+        <point x="80.5" y="191.0"/>
+        <point x="47.0" y="190.5"/>
+      </arc>
+      <arc broken="false" head="kN76" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="GAPDHNADHIAP" tail-magnet="7" type="INPUT"/>
+      <arc broken="false" head="GAPDHNADGA3P" head-magnet="4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN76" tail-magnet="2" type="OUTPUT"/>
+      <arc broken="false" head="kN78" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="GAPDHNADGA3P" tail-magnet="7" type="INPUT"/>
+      <arc broken="false" head="GA3P" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN78" tail-magnet="3" type="OUTPUT"/>
+      <arc broken="false" head="GAPDHNAD" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN78" tail-magnet="2" type="OUTPUT">
+        <point x="79.5" y="194.5"/>
+        <point x="77.0" y="190.0"/>
+      </arc>
+      <arc broken="false" head="kN79" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="GAPDHNAD" tail-magnet="4" type="INPUT">
+        <point x="6.0" y="190.5"/>
+        <point x="6.0" y="208.5"/>
+        <point x="77.0" y="208.0"/>
+        <point x="77.0" y="202.5"/>
+      </arc>
+      <arc broken="false" head="kN79" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="GA3P" tail-magnet="3" type="INPUT"/>
+      <arc broken="false" head="GAPDHNADGA3P" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN79" tail-magnet="6" type="OUTPUT"/>
+      <arc broken="false" head="kN77" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="GAPDHNADGA3P" tail-magnet="2" type="INPUT"/>
+      <arc broken="false" head="GAPDHNADHIAP" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN77" tail-magnet="6" type="OUTPUT"/>
+      <arc broken="false" head="kN75" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="GAPDHNADHIAP" tail-magnet="2" type="INPUT"/>
+      <arc broken="false" head="GAPDHIAP" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN75" tail-magnet="6" type="OUTPUT"/>
+      <arc broken="false" head="NADH" head-magnet="0" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN75" tail-magnet="7" type="OUTPUT">
+        <point x="48.5" y="202.5"/>
+        <point x="48.5" y="209.5"/>
+        <point x="84.0" y="209.5"/>
+        <point x="83.5" y="1.0"/>
+      </arc>
+      <arc broken="false" head="kN73" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="GAPDHIAP" tail-magnet="5" type="INPUT"/>
+      <arc broken="false" head="kN73" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="NAD" tail-magnet="5" type="INPUT">
+        <point x="0.0" y="4.0"/>
+        <point x="0.5" y="212.0"/>
+        <point x="41.5" y="211.5"/>
+        <point x="41.5" y="202.0"/>
+      </arc>
+      <arc broken="false" head="GAPDHNADIAP" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN73" tail-magnet="6" type="OUTPUT"/>
+      <arc broken="false" head="kN71" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="GAPDHNADIAP" tail-magnet="4" type="INPUT"/>
+      <arc broken="false" head="GAPDHNADBPG13" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN71" tail-magnet="6" type="OUTPUT"/>
+      <arc broken="false" head="kN69" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="GAPDHNADBPG13" tail-magnet="4" type="INPUT"/>
+      <arc broken="false" head="GAPDHNAD" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN69" tail-magnet="6" type="OUTPUT">
+        <point x="9.0" y="199.0"/>
+        <point x="9.0" y="192.5"/>
+      </arc>
+      <arc broken="false" head="BPG13" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN69" tail-magnet="7" type="OUTPUT">
+        <point x="2.5" y="202.0"/>
+        <point x="3.5" y="187.0"/>
+        <point x="66.0" y="186.5"/>
+        <point x="66.0" y="172.0"/>
+      </arc>
+      <arc broken="false" head="kN80" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="TPI" tail-magnet="0" type="INPUT">
+        <point x="14.5" y="220.0"/>
+        <point x="14.5" y="223.0"/>
+      </arc>
+      <arc broken="false" head="kN80" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="GA3P" tail-magnet="0" type="INPUT">
+        <point x="85.5" y="198.0"/>
+        <point x="85.5" y="214.0"/>
+        <point x="16.0" y="214.0"/>
+        <point x="16.0" y="220.5"/>
+      </arc>
+      <arc broken="false" head="TPIGA3P" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN80" tail-magnet="2" type="OUTPUT">
+        <point x="22.0" y="222.0"/>
+      </arc>
+      <arc broken="false" head="kN82" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="TPIGA3P" tail-magnet="7" type="INPUT"/>
+      <arc broken="false" head="TPIIE" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN82" tail-magnet="2" type="OUTPUT">
+        <point x="30.0" y="221.5"/>
+      </arc>
+      <arc broken="false" head="kN84" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="TPIIE" tail-magnet="7" type="INPUT"/>
+      <arc broken="false" head="TPIDHP" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN84" tail-magnet="3" type="OUTPUT">
+        <point x="41.0" y="222.5"/>
+      </arc>
+      <arc broken="false" head="kN86" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="TPIDHP" tail-magnet="6" type="INPUT"/>
+      <arc broken="false" head="DHP" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN86" tail-magnet="3" type="OUTPUT">
+        <point x="54.0" y="222.0"/>
+      </arc>
+      <arc broken="false" head="kN87" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="DHP" tail-magnet="1" type="INPUT">
+        <point x="56.5" y="230.0"/>
+      </arc>
+      <arc broken="false" head="TPIDHP" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN87" tail-magnet="6" type="OUTPUT"/>
+      <arc broken="false" head="kN85" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="TPIDHP" tail-magnet="2" type="INPUT"/>
+      <arc broken="false" head="TPIIE" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN85" tail-magnet="6" type="OUTPUT"/>
+      <arc broken="false" head="kN83" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="TPIIE" tail-magnet="2" type="INPUT"/>
+      <arc broken="false" head="TPIGA3P" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN83" tail-magnet="6" type="OUTPUT"/>
+      <arc broken="false" head="kN81" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="TPIGA3P" tail-magnet="2" type="INPUT"/>
+      <arc broken="false" head="TPI" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN81" tail-magnet="6" type="OUTPUT">
+        <point x="10.0" y="229.5"/>
+        <point x="10.0" y="217.5"/>
+      </arc>
+      <arc broken="false" head="GA3P" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN81" tail-magnet="7" type="OUTPUT">
+        <point x="5.5" y="230.5"/>
+        <point x="6.0" y="213.0"/>
+        <point x="87.5" y="212.0"/>
+        <point x="87.0" y="196.0"/>
+      </arc>
+      <arc broken="false" head="TPI" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN86" tail-magnet="2" type="OUTPUT">
+        <point x="54.0" y="221.0"/>
+        <point x="52.5" y="215.5"/>
+      </arc>
+      <arc broken="false" head="kN87" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="TPI" tail-magnet="5" type="INPUT">
+        <point x="7.0" y="216.5"/>
+        <point x="8.5" y="235.5"/>
+        <point x="59.0" y="234.0"/>
+        <point x="59.0" y="230.5"/>
+      </arc>
+      <arc broken="false" head="kN88" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="FBA" tail-magnet="1" type="INPUT">
+        <point x="14.5" y="244.5"/>
+      </arc>
+      <arc broken="false" head="kN88" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="DHP" tail-magnet="7" type="INPUT">
+        <point x="63.5" y="225.5"/>
+        <point x="62.5" y="238.0"/>
+        <point x="17.0" y="239.0"/>
+        <point x="17.0" y="245.5"/>
+      </arc>
+      <arc broken="false" head="FBADHP" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN88" tail-magnet="2" type="OUTPUT">
+        <point x="21.5" y="246.5"/>
+      </arc>
+      <arc broken="false" head="kN90" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="FBADHP" tail-magnet="6" type="INPUT"/>
+      <arc broken="false" head="FBASB1" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN90" tail-magnet="3" type="OUTPUT">
+        <point x="30.0" y="247.5"/>
+      </arc>
+      <arc broken="false" head="kN92" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="FBASB1" tail-magnet="6" type="INPUT"/>
+      <arc broken="false" head="FBAEna" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN92" tail-magnet="3" type="OUTPUT">
+        <point x="41.5" y="247.5"/>
+      </arc>
+      <arc broken="false" head="kN94" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="FBAEna" tail-magnet="7" type="INPUT"/>
+      <arc broken="false" head="kN94" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="GA3P" tail-magnet="1" type="INPUT">
+        <point x="83.5" y="201.5"/>
+        <point x="84.0" y="231.0"/>
+        <point x="65.5" y="240.0"/>
+        <point x="47.5" y="240.5"/>
+        <point x="48.0" y="246.5"/>
+      </arc>
+      <arc broken="false" head="FBASB2" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN94" tail-magnet="2" type="OUTPUT"/>
+      <arc broken="false" head="kN96" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="FBASB2" tail-magnet="6" type="INPUT"/>
+      <arc broken="false" head="FBAF16P" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN96" tail-magnet="2" type="OUTPUT"/>
+      <arc broken="false" head="kN98" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="FBAF16P" tail-magnet="7" type="INPUT"/>
+      <arc broken="false" head="Fruc16P" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN98" tail-magnet="3" type="OUTPUT"/>
+      <arc broken="false" head="FBA" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN98" tail-magnet="2" type="OUTPUT">
+        <point x="76.5" y="246.5"/>
+        <point x="76.5" y="240.5"/>
+      </arc>
+      <arc broken="false" head="kN99" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="Fruc16P" tail-magnet="2" type="INPUT"/>
+      <arc broken="false" head="FBAF16P" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN99" tail-magnet="6" type="OUTPUT"/>
+      <arc broken="false" head="kN97" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="FBAF16P" tail-magnet="2" type="INPUT"/>
+      <arc broken="false" head="FBASB2" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN97" tail-magnet="6" type="OUTPUT"/>
+      <arc broken="false" head="kN95" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="FBASB2" tail-magnet="2" type="INPUT"/>
+      <arc broken="false" head="kN99" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="FBA" tail-magnet="3" type="INPUT">
+        <point x="9.5" y="242.5"/>
+        <point x="9.5" y="258.5"/>
+        <point x="84.0" y="258.5"/>
+        <point x="84.0" y="254.0"/>
+      </arc>
+      <arc broken="false" head="FBAEna" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN95" tail-magnet="6" type="OUTPUT"/>
+      <arc broken="false" head="GA3P" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN95" tail-magnet="7" type="OUTPUT">
+        <point x="48.0" y="254.5"/>
+        <point x="48.5" y="260.5"/>
+        <point x="88.0" y="260.5"/>
+        <point x="88.0" y="194.0"/>
+        <point x="81.5" y="194.5"/>
+      </arc>
+      <arc broken="false" head="kN93" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="FBAEna" tail-magnet="2" type="INPUT"/>
+      <arc broken="false" head="FBASB1" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN93" tail-magnet="6" type="OUTPUT"/>
+      <arc broken="false" head="kN91" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="FBASB1" tail-magnet="2" type="INPUT"/>
+      <arc broken="false" head="FBADHP" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN91" tail-magnet="6" type="OUTPUT"/>
+      <arc broken="false" head="kN89" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="FBADHP" tail-magnet="2" type="INPUT"/>
+      <arc broken="false" head="FBA" head-magnet="4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN89" tail-magnet="6" type="OUTPUT">
+        <point x="10.5" y="253.5"/>
+        <point x="10.0" y="240.5"/>
+      </arc>
+      <arc broken="false" head="DHP" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN89" tail-magnet="7" type="OUTPUT">
+        <point x="6.0" y="254.5"/>
+        <point x="6.5" y="238.0"/>
+        <point x="66.5" y="236.0"/>
+        <point x="64.5" y="224.0"/>
+      </arc>
+      <arc broken="false" head="kN100" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="F16BP" tail-magnet="0" type="INPUT"/>
+      <arc broken="false" head="F16BPFruc16P" head-magnet="4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN100" tail-magnet="2" type="OUTPUT"/>
+      <arc broken="false" head="kN101" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="F16BPFruc16P" tail-magnet="7" type="INPUT"/>
+      <arc broken="false" head="F16BPFruc6P" head-magnet="4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN101" tail-magnet="1" type="OUTPUT"/>
+      <arc broken="false" head="kN102" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="F16BPFruc6P" tail-magnet="7" type="INPUT"/>
+      <arc broken="false" head="Fruct6P" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN102" tail-magnet="3" type="OUTPUT"/>
+      <arc broken="false" head="kN100" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="Fruc16P" tail-magnet="7" type="INPUT">
+        <point x="86.5" y="249.5"/>
+        <point x="86.0" y="262.5"/>
+        <point x="14.5" y="263.0"/>
+        <point x="14.0" y="267.0"/>
+      </arc>
+      <arc broken="false" head="kN103" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PGI" tail-magnet="0" type="INPUT">
+        <point x="14.5" y="282.0"/>
+      </arc>
+      <arc broken="false" head="kN103" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="Fruct6P" tail-magnet="0" type="INPUT">
+        <point x="55.0" y="268.5"/>
+        <point x="54.5" y="275.0"/>
+        <point x="16.5" y="276.0"/>
+        <point x="16.5" y="281.0"/>
+      </arc>
+      <arc broken="false" head="PGIFruc6P" head-magnet="8" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN103" tail-magnet="2" type="OUTPUT">
+        <point x="22.0" y="283.0"/>
+      </arc>
+      <arc broken="false" head="kN105" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PGIFruc6P" tail-magnet="10" type="INPUT">
+        <point x="23.5" y="283.5"/>
+      </arc>
+      <arc broken="false" head="PGIcEN" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN105" tail-magnet="3" type="OUTPUT">
+        <point x="29.5" y="283.5"/>
+      </arc>
+      <arc broken="false" head="kN107" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PGIcEN" tail-magnet="11" type="INPUT">
+        <point x="33.0" y="284.0"/>
+      </arc>
+      <arc broken="false" head="PGIGluc6P" head-magnet="4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN107" tail-magnet="3" type="OUTPUT">
+        <point x="42.0" y="283.5"/>
+      </arc>
+      <arc broken="false" head="kN109" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PGIGluc6P" tail-magnet="7" type="INPUT">
+        <point x="46.0" y="284.0"/>
+      </arc>
+      <arc broken="false" head="Gluc6P" head-magnet="4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN109" tail-magnet="3" type="OUTPUT">
+        <point x="54.5" y="283.5"/>
+      </arc>
+      <arc broken="false" head="PGI" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN109" tail-magnet="2" type="OUTPUT">
+        <point x="53.5" y="282.5"/>
+        <point x="53.5" y="279.5"/>
+      </arc>
+      <arc broken="false" head="kN110" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="Gluc6P" tail-magnet="2" type="INPUT">
+        <point x="56.0" y="290.5"/>
+      </arc>
+      <arc broken="false" head="kN110" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PGI" tail-magnet="3" type="INPUT">
+        <point x="8.5" y="279.0"/>
+        <point x="8.5" y="295.5"/>
+        <point x="53.5" y="295.0"/>
+        <point x="54.0" y="289.5"/>
+      </arc>
+      <arc broken="false" head="PGIGluc6P" head-magnet="1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN110" tail-magnet="7" type="OUTPUT">
+        <point x="47.0" y="290.5"/>
+      </arc>
+      <arc broken="false" head="kN108" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PGIGluc6P" tail-magnet="2" type="INPUT"/>
+      <arc broken="false" head="PGIcEN" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN108" tail-magnet="7" type="OUTPUT">
+        <point x="34.5" y="290.5"/>
+      </arc>
+      <arc broken="false" head="kN106" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PGIcEN" tail-magnet="4" type="INPUT">
+        <point x="31.0" y="290.5"/>
+      </arc>
+      <arc broken="false" head="PGIFruc6P" head-magnet="2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN106" tail-magnet="7" type="OUTPUT">
+        <point x="24.0" y="290.5"/>
+      </arc>
+      <arc broken="false" head="kN104" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="PGIFruc6P" tail-magnet="4" type="INPUT"/>
+      <arc broken="false" head="Fruct6P" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN104" tail-magnet="7" type="OUTPUT">
+        <point x="3.5" y="290.5"/>
+        <point x="3.5" y="274.5"/>
+        <point x="58.5" y="274.5"/>
+        <point x="58.5" y="266.0"/>
+      </arc>
+      <arc broken="false" head="PGI" head-magnet="4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN104" tail-magnet="6" type="OUTPUT">
+        <point x="6.5" y="289.0"/>
+        <point x="6.5" y="278.0"/>
+      </arc>
+      <arc broken="false" head="kN111" head-magnet="6" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="G6P" tail-magnet="0" type="INPUT">
+        <point x="14.0" y="304.0"/>
+        <point x="14.0" y="307.0"/>
+      </arc>
+      <arc broken="false" head="kN111" head-magnet="7" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="Gluc6P" tail-magnet="0" type="INPUT">
+        <point x="64.5" y="286.5"/>
+        <point x="64.0" y="297.0"/>
+        <point x="9.0" y="297.5"/>
+        <point x="9.5" y="308.0"/>
+      </arc>
+      <arc broken="false" head="G6PGluc6P" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN111" tail-magnet="3" type="OUTPUT"/>
+      <arc broken="false" head="kN112" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="G6PGluc6P" tail-magnet="7" type="INPUT"/>
+      <arc broken="false" head="G6PGluc" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN112" tail-magnet="1" type="OUTPUT"/>
+      <arc broken="false" head="kN113" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="G6PGluc" type="INPUT"/>
+      <arc broken="false" head="Glucose" head-magnet="3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN113" tail-magnet="3" type="OUTPUT"/>
+      <arc broken="false" head="F16BP" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN102" tail-magnet="2" type="OUTPUT">
+        <point x="45.5" y="267.0"/>
+        <point x="45.0" y="261.5"/>
+        <point x="11.0" y="261.0"/>
+      </arc>
+      <arc broken="false" head="G6P" head-magnet="5" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="kN113" tail-magnet="2" type="OUTPUT">
+        <point x="41.5" y="306.5"/>
+        <point x="40.0" y="300.0"/>
+        <point x="12.0" y="299.5"/>
+      </arc>
+    </edges>
+  </gspn>
+</project>

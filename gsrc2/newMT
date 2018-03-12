@@ -1,0 +1,43 @@
+#!/bin/sh
+. great_package.sh
+
+if [ ! -f $1.crgr ]
+then
+	${GREATSPN_SCRIPTDIR}/newRG $1 
+	GSPN2STATUS=$?
+	if [ $GSPN2STATUS -ne 0 ]
+	then
+		 exit $GSPN2STATUS
+	fi
+fi
+
+/bin/rm -f $1.sta
+if [ $? -ne 0 ]
+then
+	exit 30
+fi
+
+${GREATSPN_BINDIR}/gmt_prep $1 
+if [ $? -ne 0 ]
+then
+	exit 10 
+fi
+
+echo ""
+echo "Start EMC construction"
+time ${GREATSPN_BINDIR}/gmt_stndrd $1 -e0.0000001 $2 $3 > .gspn_out #2 > &1
+if [ $? -ne 0 ]
+then
+	exit 11 
+fi
+cat .gspn_out
+rm -f .gspn_out > /dev/null 2>&1
+
+
+/bin/cp $1.epd $1.mpd
+if [ $? -ne 0 ]
+then
+	exit 31 
+fi
+
+exit 0

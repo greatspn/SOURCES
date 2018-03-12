@@ -1,0 +1,230 @@
+colors	   : 
+	{
+	 if(parse_DEF == COLOR_CLASS)
+          {
+	   /* controllo ripetizione nome classi di colori */
+	   for(ind=0;ind<ncl;ind++)
+            {
+             if(strcmp(tabc[ind].col_name,bufname)==0)
+	      {/* Errore */
+	       out_error(ERROR_CLASS_REDECLARATION,0,0,0,0,bufname,NULL);
+	      }/* Errore */
+	    }
+	   tabc[ncl].col_name = (char *)ecalloc(strlen(bufname)+1,sizeof(char));
+	   strcpy(tabc[ncl].col_name,bufname);
+	 }
+	}
+       prefix
+	{
+	 if(parse_DEF == COLOR_CLASS)
+	  tabc[ncl].type=str_val;
+	}
+       namelist
+	{
+	 if(parse_DEF == COLOR_CLASS)
+	  {
+	   tot_sbc_num+=n_sbcl;
+	   tabc[ncl].sbc_num=n_sbcl;
+	   tabc[ncl].sbclist=(Static_p)ecalloc(n_sbcl,sizeof(struct STATICSBC));
+	   for(ind=0;ind<tabc[ncl].sbc_num;ind++)
+	    {
+	     tabc[ncl].sbclist[ind].name =
+	       (char *)ecalloc(strlen(temp[ind])+1,sizeof(char));
+	     strcpy(tabc[ncl].sbclist[ind].name,temp[ind]);
+	     tabc[ncl].sbclist[ind].card = 0;
+	     tabc[ncl].sbclist[ind].dynlist=NULL;
+	    }
+	  }
+         if(parse_DEF == FALSE || parse_DEF == COLOR_CLASS)
+	  ncl++ ;
+	}
+	   | 
+        {
+	 parsing_flag = STATIC_SUBCLASS;
+        }
+	     static
+	   ;
+namelist   : namelist COMMA STRING
+	{
+	 if(parse_DEF == COLOR_CLASS)
+	  {
+	  /* controllo ripetizione nome sottoclassi */
+	   for(ind=0;ind<n_sbcl;ind++)
+            {
+             if(strcmp(temp[ind],str_in)==0)
+	      {/* Errore */
+	       out_error(ERROR_TWICE_THE_SAME_STATIC,0,0,0,0,str_in,NULL);
+	      }/* Errore */
+            }
+	   strcpy(temp[n_sbcl],str_in);
+	   n_sbcl++;
+	  }
+	}
+	   | STRING
+	{
+	 if(parse_DEF == COLOR_CLASS)
+	  {
+	   strcpy(temp[0],str_in);
+	   n_sbcl=1;
+	  }
+	}
+	   ;
+static	   : 
+	{
+	 if(parse_DEF == COLOR_CLASS)
+	  {
+	   for(i=0,stop=FALSE;!stop && i<ncl;i++)
+	    if((ind=already_exist(bufname,i,STAT))!=0) stop=TRUE;
+	   if(stop==FALSE)
+	    {
+	     not_decl=TRUE;
+	     sbc_pun=(struct SBCBUF*)emalloc(sizeof(struct SBCBUF));
+	     strcpy(sbc_pun->name,bufname);
+	    }
+	   else
+	    {
+	     tabc[i-1].sbclist[ind-1].name =
+	      (char *)ecalloc(strlen(bufname)+1,sizeof(char));
+	     strcpy(tabc[i-1].sbclist[ind-1].name,bufname);
+	    }
+	  }
+	}
+	   OBRCS objects CBRCS
+	{
+	 if(parse_DEF == COLOR_CLASS)
+	  {
+	   if(not_decl)
+	    {
+	     sbc_pun->card=numobj;
+	     sbc_pun->obj_list=start_list;
+	     insert_buf(sbc_pun);
+	    }
+	   else
+	    {
+	     if(tabc[i-1].sbclist[ind-1].card==0)
+	      {
+	       sbc_def_num++;
+	       tabc[i-1].sbclist[ind-1].obj_list=start_list;
+	       if((disj=intersection(tabc[i-1].sbclist,ind-1,tabc[i-1].sbc_num))<0)
+	        {/* Errore */
+                 disj++;disj=-disj;
+	         out_error(ERROR_INTERSECTION,0,0,i-1,0,GET_STATIC_NAME(i-1,ind-1),GET_STATIC_NAME(i-1,disj));
+	        }/* Errore */
+	       tabc[i-1].sbclist[ind-1].card=numobj;
+	      }
+	     else
+	      {/* Errore */
+	       out_error(ERROR_REDEFINITION,0,0,i-1,ind-1,NULL,NULL);
+	      }/* Errore */
+	    }
+	   start_list=NULL;
+	   not_decl=FALSE;
+	  }
+	}
+	  | STRING
+	{
+	 if(parse_DEF == COLOR_CLASS)
+	  {
+	   for(i=0,stop=FALSE;!stop && i<ncl;i++)
+	    if((ind=already_exist(bufname,i,STAT))!=0) stop=TRUE;
+	   if(stop==FALSE)
+	    {
+	     not_decl=TRUE;
+	     sbc_pun=(struct SBCBUF *)emalloc(sizeof(struct SBCBUF));
+	     strcpy(sbc_pun->name,bufname);
+	     strcpy(sbc_pun->obj_name,str_in);
+	     sbc_pun->obj_list=NULL;
+	    }
+	   else
+	    {
+	     tabc[i-1].sbclist[ind-1].name =
+	         (char *)ecalloc(strlen(bufname)+1,sizeof(char));
+	     tabc[i-1].sbclist[ind-1].obj_name =
+	         (char *)ecalloc(strlen(str_in)+1,sizeof(char));
+	     strcpy(tabc[i-1].sbclist[ind-1].name,bufname);
+	     strcpy(tabc[i-1].sbclist[ind-1].obj_name,str_in);
+	     tabc[i-1].sbclist[ind-1].obj_list=NULL;
+	    }
+	  }
+	}
+	   OBRCS NUM 
+        { 
+	 if(parse_DEF == COLOR_CLASS)
+	  low_val=str_val; 
+	}
+	   MINUS NUM CBRCS
+	{
+	 if(parse_DEF == COLOR_CLASS)
+	  {
+	   if(str_val<low_val)
+	    {/* Errore */
+	     out_error(ERROR_OBJECT_DESCRIPTION,0,0,0,0,bufname,NULL);
+	    }/* Errore */
+	   if(not_decl)
+	    {
+	     sbc_pun->card=str_val-low_val+1;
+	     sbc_pun->low=low_val;
+	     insert_buf(sbc_pun);
+	    }
+	   else
+	    {
+	     if(tabc[i-1].sbclist[ind-1].card==0)
+	      {
+	       sbc_def_num++;
+	       tabc[i-1].sbclist[ind-1].card=str_val-low_val+1;
+	       tabc[i-1].sbclist[ind-1].low=low_val;
+	       if((disj=intersection(tabc[i-1].sbclist,ind-1,tabc[i-1].sbc_num))<0)
+	        {/* Errore */
+                 disj++;disj=-disj;
+	         out_error(ERROR_INTERSECTION,0,0,i-1,0,GET_STATIC_NAME(i-1,ind-1),GET_STATIC_NAME(i-1,disj));
+	        }/* Errore */
+	      }
+	     else
+	      {/* Errore */
+	       out_error(ERROR_REDEFINITION,0,0,i-1,ind-1,NULL,NULL);
+	      }/* Errore */
+	    }
+	   not_decl=FALSE;
+	  }
+	}
+	   ;
+objects    : objects COMMA STRING
+	{
+	 if(parse_DEF == COLOR_CLASS)
+	  {
+	   if(check_obj_name(str_in,start_list)==-1)
+	    {/* Errore */
+	     out_error(ERROR_OBJECT_REDECLARATION,0,0,0,0,str_in,NULL);
+	    }/* Errore */
+	   ob_ptr=(Obj_p)emalloc(sizeof(struct OBJ));
+	   ob_ptr->nome = (char *)ecalloc(strlen(str_in)+1,sizeof(char));
+	   ob_ptr->next=start_list;
+	   start_list=ob_ptr;
+	   strcpy(ob_ptr->nome,str_in);
+	   numobj++;
+	  }
+	}
+	   | STRING
+	{
+	 if(parse_DEF == COLOR_CLASS)
+	  {
+	   ob_ptr=(Obj_p)emalloc(sizeof(struct OBJ));
+	   ob_ptr->nome = (char *)ecalloc(strlen(str_in)+1,sizeof(char));
+	   ob_ptr->next=start_list;
+	   start_list=ob_ptr;
+	   strcpy(ob_ptr->nome,str_in);
+	   numobj=1;
+	  }
+	}
+	   ;
+prefix	   : O
+	{ 
+	 if(parse_DEF == COLOR_CLASS)
+	  n_ord++; 
+	} 
+	   | US 
+	{ 
+	 if(parse_DEF == COLOR_CLASS)
+	  n_unord++;
+        }
+	   ;

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="New project" version="121">
+  <dta name="LHA grammar sample" zoom="150">
+    <nodes>
+      <clock name="x" x="1.25" y="1.0"/>
+      <location height="5.0" init-arrow-x="7.0" init-arrow-y="8.0" initial="true" magnets="ORTHOGONAL" name="l0" state-proposition="Phi0" state-proposition-x="-0.5" state-proposition-y="3.0" variable-flow="y=1, z=2/3" width="4.0" x="9.0" y="5.5"/>
+      <location height="5.0" init-arrow-x="15.0" init-arrow-y="8.0" magnets="ORTHOGONAL" name="l1" state-proposition="Phi0 &amp;&amp; ! Phi1" state-proposition-x="1.0" state-proposition-y="3.5" variable-flow="y=2*mu, z=1" width="8.0" x="17.0" y="5.5"/>
+      <clock name="y" x="1.25" y="2.0"/>
+      <clock name="z" x="1.3125" y="3.0"/>
+      <constant consttype="REAL" name="mu" value="0.25" x="1.1875" y="5.0"/>
+      <template name="alpha" type="REAL" x="1.0" y="7.0"/>
+      <template name="t1" type="ACTION" x="1.0" y="9.0"/>
+      <template name="t2" type="ACTION" x="1.0" y="10.0"/>
+      <location final="ACCEPTING" init-arrow-x="28.5" init-arrow-y="8.0" name="l2" x="30.5" y="7.0"/>
+      <template name="Phi0" type="STATEPROP" x="1.0" y="12.0"/>
+      <template name="Phi1" type="STATEPROP" x="1.0" y="13.0"/>
+    </nodes>
+    <edges>
+      <edge actset="Act" actset-clock-k="1.00009765625" actset-x="-2.8310382799290323E-4" actset-y="-2.5000000448238353" clock-guard="x &gt; 0 &amp;&amp; y &gt; 5; y=0,z=mu" clock-guard-x="-2.8310382799290323E-4" clock-guard-y="-1.0000000448238353" head="l0" kind="INNER" tail="l0">
+        <point x="11.0" y="4.0"/>
+      </edge>
+      <edge actset="Act" actset-clock-k="1.4547851562499998" actset-y="-0.8024048891712408" clock-guard="x &gt; alpha &amp;&amp; y &gt; 3; y=3*z" clock-guard-x="0.05727060709334708" clock-guard-y="1.28125" head="l1" kind="INNER" tail="l0">
+        <point x="12.0" y="13.0"/>
+        <point x="19.0" y="13.0"/>
+      </edge>
+      <edge actset="Act\{t1, t2}" actset-clock-k="0.5" actset-x="0.8748779296875" actset-y="-2.3748779296875" clock-guard="0 &lt; x &lt; alpha" clock-guard-x="0.8748779296875" clock-guard-y="-1.3748779296875" head="l1" kind="INNER" tail="l1">
+        <point x="18.5" y="4.0"/>
+      </edge>
+      <edge actset="{t1, t2}" actset-clock-k="0.5" actset-x="0.8748779296875" actset-y="-3.3748779296875" clock-guard="y&gt;alpha; z=0" clock-guard-x="0.8748779296875" clock-guard-y="-1.8748779296875" head="l1" kind="INNER" tail="l1">
+        <point x="23.5" y="4.0"/>
+      </edge>
+      <edge actset="Act" actset-clock-k="0.39990234375" clock-guard="y = alpha" clock-guard-x="0.188720703125" clock-guard-y="0.37924804687500036" head="l2" kind="BOUNDARY" tail="l1"/>
+    </edges>
+  </dta>
+  <dta name="first LHA of HASL paper">
+    <nodes>
+      <clock name="x" x="2.25" y="2.0"/>
+      <clock name="x0" x="1.9375" y="3.0"/>
+      <clock name="x1" x="1.9375" y="4.0"/>
+      <location height="5.0" init-arrow-x="18.5" init-arrow-y="13.0" initial="true" name="Init" state-proposition="noacc" state-proposition-x="-2.5" state-proposition-y="3.0" variable-flow="x0=1,x1=0" width="5.0" x="20.5" y="10.5"/>
+      <template name="noacc" type="STATEPROP" x="2.0" y="7.0"/>
+      <template name="acc1" type="STATEPROP" x="2.0" y="8.0"/>
+      <template name="acc2" type="STATEPROP" x="2.0" y="9.0"/>
+      <location height="5.0" init-arrow-x="5.0" init-arrow-y="13.0" name="l1" state-proposition="acc1" state-proposition-y="3.5" variable-flow="x0=0,x1=1" width="4.0" x="7.0" y="10.5"/>
+      <location height="5.0" init-arrow-x="33.0" init-arrow-y="13.0" name="l2" state-proposition="acc2" state-proposition-y="3.5" variable-flow="x0=0,x1=-1" width="4.0" x="35.0" y="10.5"/>
+      <location final="ACCEPTING" init-arrow-x="19.5" init-arrow-y="22.0" name="l3" x="21.5" y="21.0"/>
+      <template name="k" type="REAL" x="2.0" y="12.0"/>
+      <location final="ACCEPTING" init-arrow-x="19.5" init-arrow-y="4.0" name="l4" state-proposition-x="1.125" state-proposition-y="1.8125" x="21.5" y="3.0"/>
+    </nodes>
+    <edges>
+      <edge actset="Act" actset-clock-k="1.00595703125" clock-guard="x &gt; 0; x0=x0+1" clock-guard-x="-0.0077369135882712214" clock-guard-y="0.6028326637768409" head="l1" kind="INNER" tail="Init">
+        <point x="15.5" y="15.0"/>
+      </edge>
+      <edge actset="Act" actset-clock-k="0.9928710937499999" clock-guard="x &gt; 0" head="Init" kind="INNER" tail="l1">
+        <point x="15.5" y="11.0"/>
+      </edge>
+      <edge actset="Act" actset-clock-k="1.00595703125" clock-guard="x &gt; 0;x0=x0+1" clock-guard-x="0.007736913588274774" clock-guard-y="0.8971673362231591" head="l2" kind="INNER" tail="Init">
+        <point x="30.5" y="11.0"/>
+      </edge>
+      <edge actset="Act" actset-clock-k="0.9928710937499999" clock-guard="x &gt; 0" head="Init" kind="INNER" tail="l2">
+        <point x="30.5" y="15.0"/>
+      </edge>
+      <edge actset="Act" actset-clock-k="1.1633789062499997" actset-x="0.10791301457422264" actset-y="-1.2722035350176277" clock-guard="x &gt; 0" clock-guard-x="0.1875" clock-guard-y="-0.5" head="Init" kind="INNER" tail="Init">
+        <point x="19.5" y="9.5"/>
+      </edge>
+      <edge actset="Act" actset-clock-k="0.44443359375" actset-x="0.4375" clock-guard="x0=k &amp;&amp; x1&gt;0" clock-guard-x="2.8125" clock-guard-y="0.3125" head="l3" kind="BOUNDARY" tail="Init"/>
+      <edge actset="Act" actset-clock-k="0.6385742187500002" actset-x="0.05996093749999787" actset-y="0.7528320312499979" clock-guard="x0=k &amp;&amp; x1&gt;0" clock-guard-x="-2.315039062500002" clock-guard-y="1.7528320312499979" head="l3" kind="BOUNDARY" tail="l1"/>
+      <edge actset="Act" actset-clock-k="0.6385742187500002" actset-y="0.6875" clock-guard="x0=k &amp;&amp; x1&gt;0" clock-guard-x="2.3150390625000057" clock-guard-y="1.6767578124999964" head="l3" kind="BOUNDARY" tail="l2"/>
+      <edge actset="Act" actset-clock-k="0.5" actset-x="0.5" actset-y="-1.0625" clock-guard="x0=k &amp;&amp; x1&gt;0" clock-guard-x="2.875" clock-guard-y="0.0" head="l4" kind="BOUNDARY" tail="Init"/>
+      <edge actset="Act" actset-clock-k="0.6750976562500001" actset-x="-0.4513671875000007" actset-y="-1.4241210937499993" clock-guard="x0=k &amp;&amp; x1&gt;0" clock-guard-x="-2.8263671875000007" clock-guard-y="-0.3616210937499993" head="l4" kind="BOUNDARY" tail="l1"/>
+      <edge actset="Act" actset-clock-k="0.6499023437500001" actset-x="0.25" actset-y="-1.4375" clock-guard="x0=k &amp;&amp; x1&gt;0" clock-guard-x="2.4375" clock-guard-y="-0.5625" head="l4" kind="BOUNDARY" tail="l2"/>
+    </edges>
+  </dta>
+  <dta name="second HASL LHA">
+    <nodes>
+      <clock name="x" x="2.25" y="2.0"/>
+      <clock name="x1" x="1.9375" y="3.0"/>
+      <clock name="x2" x="1.9375" y="4.0"/>
+      <template name="nbreq1" type="INTEGER" x="2.0" y="6.0"/>
+      <template name="k" type="REAL" x="2.0" y="7.0"/>
+      <template name="serv1" type="ACTION" x="2.0" y="8.0"/>
+      <location height="5.0" init-arrow-x="8.0" init-arrow-y="10.0" initial="true" name="l0" state-proposition-x="3.0" state-proposition-y="3.0" variable-flow="x1=nbreq1,x2=0" width="6.0" x="10.0" y="7.5"/>
+      <location final="ACCEPTING" init-arrow-x="21.5" init-arrow-y="10.0" name="l1" x="23.5" y="9.0"/>
+    </nodes>
+    <edges>
+      <edge actset="Act" actset-clock-k="0.5833007812500001" actset-y="-0.8125" clock-guard="x2=k" head="l1" kind="BOUNDARY" tail="l0"/>
+      <edge actset="{serv1}" actset-clock-k="1.00009765625" actset-x="-4.449592675346281E-4" actset-y="-2.50000007045041" clock-guard="x &gt; 0; x2=x2+1" clock-guard-x="-4.4495926753285175E-4" clock-guard-y="-1.00000007045041" head="l0" kind="INNER" tail="l0">
+        <point x="13.0" y="5.5"/>
+      </edge>
+      <edge actset="Act\{serv1}" actset-clock-k="0.99990234375" actset-x="-4.4495926753640447E-4" actset-y="1.00000007045041" clock-guard="x &gt; 0" clock-guard-x="-4.4495926753640447E-4" clock-guard-y="2.00000007045041" head="l0" kind="INNER" tail="l0">
+        <point x="13.0" y="14.5"/>
+      </edge>
+    </edges>
+  </dta>
+  <dta name="third HASL LHA">
+    <nodes>
+      <clock name="x" x="1.25" y="1.0"/>
+      <clock name="x1" x="0.9375" y="2.0"/>
+      <clock name="x2" x="0.9375" y="3.0"/>
+      <location height="5.0" init-arrow-x="7.0" init-arrow-y="8.0" initial="true" magnets="TWO_PER_SIDE" name="l0" state-proposition="noacc" state-proposition-x="-2.5" state-proposition-y="3.0" variable-flow="x1=0,x2=0" width="4.0" x="9.0" y="5.5"/>
+      <template name="noacc" type="STATEPROP" x="1.0" y="5.0"/>
+      <template name="acc1" type="STATEPROP" x="1.0" y="6.0"/>
+      <template name="acc2" type="STATEPROP" x="1.0" y="7.0"/>
+      <template name="alpha" type="REAL" x="1.0" y="9.0"/>
+      <location height="5.0" init-arrow-x="7.0" init-arrow-y="20.0" magnets="TWO_PER_SIDE" name="l1" state-proposition="acc1" state-proposition-y="3.1875" variable-flow="x1=1,x2=0" width="4.0" x="9.0" y="17.5"/>
+      <location height="5.0" init-arrow-x="21.0" init-arrow-y="8.0" magnets="TWO_PER_SIDE" name="l2" state-proposition="acc2" state-proposition-x="2.5" state-proposition-y="3.0" variable-flow="x1=0,x2=1" width="4.0" x="23.0" y="5.5"/>
+      <location final="ACCEPTING" init-arrow-x="21.5" init-arrow-y="20.0" name="l3" x="23.5" y="19.0"/>
+    </nodes>
+    <edges>
+      <edge actset="Act" actset-clock-k="0.99990234375" actset-x="3.640117972540935E-4" actset-y="-1.500000057633995" clock-guard="x &lt; alpha" clock-guard-x="3.640117972540935E-4" clock-guard-y="-0.5000000576339949" head="l0" kind="INNER" tail="l0">
+        <point x="11.0" y="4.0"/>
+      </edge>
+      <edge actset="Act" actset-clock-k="0.99990234375" actset-x="3.6401179725231714E-4" actset-y="-1.500000057633995" clock-guard="x &lt; alpha" clock-guard-x="3.6401179725231714E-4" clock-guard-y="-0.5000000576339949" head="l2" kind="INNER" tail="l2">
+        <point x="25.0" y="4.0"/>
+      </edge>
+      <edge actset="Act" actset-clock-k="1.09267578125" actset-x="-1.0494498088247344" actset-y="-0.16912176347728902" clock-guard="x &lt; alpha" clock-guard-x="-1.0494498088247344" clock-guard-y="0.830878236522711" head="l1" kind="INNER" tail="l1">
+        <point x="7.5" y="20.0"/>
+      </edge>
+      <edge actset="Act" actset-clock-k="0.7083007812500001" clock-guard="x &lt; alpha" head="l2" head-magnet="6" kind="INNER" tail="l0" tail-magnet="2"/>
+      <edge actset="Act" actset-clock-k="0.7083007812500001" clock-guard="x &lt; alpha" head="l0" head-magnet="3" kind="INNER" tail="l2" tail-magnet="7"/>
+      <edge actset="Act" actset-clock-k="0.66669921875" actset-x="-0.9166666666666661" actset-y="-2.9296874999928946E-4" clock-guard="x &lt; alpha" clock-guard-x="-0.9166666666666661" clock-guard-y="0.9997070312500007" head="l1" head-magnet="0" kind="INNER" tail="l0" tail-magnet="4"/>
+      <edge actset="Act" actset-clock-k="0.61103515625" actset-x="0.7291666666666679" actset-y="-0.4374023437500014" clock-guard="x &lt; alpha" clock-guard-x="1.1041666666666679" clock-guard-y="0.5625976562499986" head="l0" head-magnet="5" kind="INNER" tail="l1" tail-magnet="1"/>
+      <edge actset="Act" actset-clock-k="0.53818359375" actset-x="0.5" actset-y="-1.0" clock-guard="x = alpha &amp;&amp; x1=x2" clock-guard-x="3.0" clock-guard-y="-0.1875" head="l3" kind="BOUNDARY" tail="l0"/>
+      <edge actset="Act" actset-clock-k="0.49990234375" actset-x="0.5" clock-guard="x = alpha &amp;&amp; x1=x2" clock-guard-x="3.0" head="l3" kind="BOUNDARY" tail="l2"/>
+      <edge actset="Act" actset-clock-k="0.5713867187500001" clock-guard="x = alpha &amp;&amp; x1=x2" head="l3" kind="BOUNDARY" tail="l1"/>
+    </edges>
+  </dta>
+</project>

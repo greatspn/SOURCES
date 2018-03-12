@@ -1,0 +1,284 @@
+#directories
+SSOU = SOLVE
+CSOU = SOURCE/SHARED
+GSOU = SOURCE/REACHAB
+RSOU = SOURCE/READNET
+ESOU = SOURCE/REACHAB/E_SRG
+EDT = EDIT
+SFK = SUPPORT
+INC = INCLUDE
+BCK = BACKUP
+TRS = TRANSL
+OBJ = ../../$(GSPN2BINS)/2bin/ESRGO
+BINDIR=../../$(GSPN2BINS)
+
+
+#commands
+COMP = $(CC) $(CFLAGS) -o
+LINK = $(CC) $(OFLAGS)
+LFLAGS = -lm -l$(LEX_LIB) $(SOCKET_LIB)
+
+
+#files groups
+EXECUTABLES  =  WNESRG
+T_INCLUDES = ${INC}/const.h \
+	     ${INC}/struct.h \
+	     ${INC}/var_ext.h \
+	     ${INC}/decl.h \
+	     ${INC}/fun_ext.h \
+	     ${INC}/ealloc.h \
+	     ${INC}/macros.h
+T_OBJECTS = ${OBJ}/getline.o \
+	    ${OBJ}/ealloc.o \
+	    ${OBJ}/SRGSYMBOLIC_grammar.o \
+	    ${OBJ}/SRGSYMBOLIC_service.o \
+	    ${OBJ}/SRGSYMBOLIC_token.o \
+	    ${OBJ}/SRGSYMBOLIC_dimensio.o \
+	    ${OBJ}/SRGSYMBOLIC_errors.o \
+	    ${OBJ}/SRGSYMBOLIC_compact.o \
+	    ${OBJ}/SRGSYMBOLIC_common.o \
+	    ${OBJ}/SRGSYMBOLIC_report.o \
+	    ${OBJ}/SRGSYMBOLIC_enabling.o \
+	    ${OBJ}/SRGSYMBOLIC_fire.o\
+	    ${OBJ}/SRGSYMBOLIC_split.o\
+	    ${OBJ}/SRGSYMBOLIC_group.o\
+	    ${OBJ}/SRGSYMBOLIC_shared1.o\
+	    ${OBJ}/SRGSYMBOLIC_shared2.o\
+	    ${OBJ}/SRGSYMBOLIC_outdom.o\
+	    ${OBJ}/SRGSYMBOLIC_degree.o \
+	    ${OBJ}/SRGSYMBOLIC_precheck.o \
+	    ${OBJ}/SRGSYMBOLIC_flush.o \
+	    ${OBJ}/SRGSYMBOLIC_graph_se.o \
+	    ${OBJ}/SRGSYMBOLIC_canonic.o \
+	    ${OBJ}/SRGSYMBOLIC_schemes.o \
+	    ${OBJ}/SRGSYMBOLIC_graph.o \
+	    ${OBJ}/SRGSYMBOLIC_stack.o \
+	    ${OBJ}/SRGSYMBOLIC_convert.o \
+	    ${OBJ}/SRGSYMBOLIC_rg_files.o \
+	    ${OBJ}/SRGSYMBOLIC_rgengwn.o \
+	    ${OBJ}/SRGSYMBOLIC_read_arc.o \
+            ${OBJ}/SRGSYMBOLIC_read_t_c.o \
+            ${OBJ}/SRGSYMBOLIC_read_NET.o \
+            ${OBJ}/SRGSYMBOLIC_read_DEF.o \
+            ${OBJ}/SRGSYMBOLIC_read_t_s.o \
+	    ${OBJ}/SRGSYMBOLIC_wn_yac.o \
+            ${OBJ}/AFTER_FIRING_CASES.o\
+            ${OBJ}/GET_SYM.o \
+            ${OBJ}/MAPP_FOR_GROUPING.o \
+            ${OBJ}/MAPP_FOR_DECOMPOSING.o \
+            ${OBJ}/GROUP_STATICS.o \
+            ${OBJ}/STATIC_LIST.o \
+            ${OBJ}/MY_ALLOCATION.o \
+            ${OBJ}/GET_FIRST_EVENT.o \
+            ${OBJ}/INST_SYM_EVENT.o \
+            ${OBJ}/EVENTUALITIES.o \
+            ${OBJ}/READ_WRITE.o \
+            ${OBJ}/SAVE.o 
+            
+T_SOURCES = ${CSOU}/service.c \
+	    ${CSOU}/ealloc.c \
+	    ${CSOU}/token.c \
+	    ${CSOU}/dimensio.c \
+	    ${CSOU}/errors.c \
+	    ${SSOU}/compact.c \
+	    ${CSOU}/common.c \
+	    ${CSOU}/enabling.c	\
+	    ${CSOU}/fire.c\
+	    ${CSOU}/split.c\
+	    ${CSOU}/group.c\
+	    ${CSOU}/shared1.c\
+	    ${CSOU}/shared2.c\
+	    ${CSOU}/outdom.c\
+	    ${CSOU}/report.c\
+	    ${CSOU}/precheck.c \
+	    ${CSOU}/flush.c \
+	    ${CSOU}/degree.c \
+	    ${GSOU}/graph_se.c\
+	    ${GSOU}/canonic.c\
+	    ${GSOU}/schemes.c\
+	    ${GSOU}/esrg_graph.c\
+	    ${GSOU}/stack.c\
+	    ${GSOU}/convert.c\
+	    ${GSOU}/rg_files.c\
+	    ${GSOU}/rgengwn.c\
+	    ${RSOU}/read_arc.c \
+	    ${RSOU}/read_t_c.c \
+	    ${RSOU}/read_NET.c \
+	    ${RSOU}/read_DEF.c \
+	    ${RSOU}/read_t_s.c \
+	    ${RSOU}/wn_yac.c \
+	    ${ESOU}/AFTER_FIRING_CASES.c \
+            ${ESOU}/GET_SYM.c \
+            ${ESOU}/MAPP_FOR_GROUPING.c \
+            ${ESOU}/MAPP_FOR_DECOMPOSING.c \
+            ${ESOU}/GROUP_STATICS.c \
+            ${ESOU}/STATIC_LIST.c \
+            ${ESOU}/MY_ALLOCATION.c\
+            ${ESOU}/GET_FIRST_EVENT.c \
+            ${ESOU}/INST_SYM_EVENT.c \
+            ${ESOU}/EVENTUALITIES.c \
+            ${ESOU}/READ_WRITE.c \
+            ${ESOU}/SAVE.c \
+	
+	
+T_LEX = ${TRS}/wn.lex 
+T_YACC = ${TRS}/wn.yac
+
+#general rules
+#${EXECUTABLES} : ${T_INCLUDES} ${T_LEX} ${T_YACC} {T_SOURCES}
+	
+		   
+             
+$(BINDIR)/WNESRG : ${T_INCLUDES} ${T_OBJECTS} ${T_LEX} ${T_YACC} ${CSOU}/main.c
+	${LINK} $(BINDIR)/WNESRG ${CSOU}/main.c  ${T_OBJECTS} $(LFLAGS)
+
+${OBJ}/SRGSYMBOLIC_outdom.o : ${CSOU}/outdom.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_outdom.o ${CSOU}/outdom.c
+
+${OBJ}/SRGSYMBOLIC_shared1.o : ${CSOU}/shared1.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_shared1.o ${CSOU}/shared1.c
+
+${OBJ}/SRGSYMBOLIC_shared2.o : ${CSOU}/shared2.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_shared2.o ${CSOU}/shared2.c
+
+${OBJ}/SRGSYMBOLIC_precheck.o : ${CSOU}/precheck.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_precheck.o ${CSOU}/precheck.c
+
+${OBJ}/SRGSYMBOLIC_split.o : ${CSOU}/split.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_split.o ${CSOU}/split.c
+
+${OBJ}/SRGSYMBOLIC_group.o : ${CSOU}/group.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_group.o ${CSOU}/group.c
+
+${OBJ}/SRGSYMBOLIC_fire.o : ${CSOU}/fire.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_fire.o ${CSOU}/fire.c
+
+${OBJ}/SRGSYMBOLIC_degree.o : ${CSOU}/degree.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_degree.o ${CSOU}/degree.c
+
+${OBJ}/SRGSYMBOLIC_flush.o : ${CSOU}/flush.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_flush.o ${CSOU}/flush.c
+
+${OBJ}/SRGSYMBOLIC_compact.o : ${SSOU}/compact.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_compact.o ${SSOU}/compact.c
+
+${OBJ}/SRGSYMBOLIC_common.o : ${CSOU}/common.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_common.o ${CSOU}/common.c
+
+${OBJ}/SRGSYMBOLIC_errors.o : ${CSOU}/errors.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_errors.o ${CSOU}/errors.c
+
+${OBJ}/SRGSYMBOLIC_dimensio.o : ${CSOU}/dimensio.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_dimensio.o ${CSOU}/dimensio.c
+
+${OBJ}/SRGSYMBOLIC_token.o : ${CSOU}/token.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_token.o ${CSOU}/token.c
+
+${OBJ}/SRGSYMBOLIC_service.o : ${CSOU}/service.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_service.o ${CSOU}/service.c
+
+${OBJ}/SRGSYMBOLIC_enabling.o : ${CSOU}/enabling.c ${T_INCLUDES} ${INC}/shared.h
+	${COMP} ${OBJ}/SRGSYMBOLIC_enabling.o ${CSOU}/enabling.c
+
+${OBJ}/SRGSYMBOLIC_report.o : ${CSOU}/report.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_report.o ${CSOU}/report.c
+
+${OBJ}/SRGSYMBOLIC_canonic.o : ${GSOU}/canonic.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_canonic.o ${GSOU}/canonic.c
+
+${OBJ}/SRGSYMBOLIC_schemes.o : ${GSOU}/schemes.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_schemes.o ${GSOU}/schemes.c
+
+${OBJ}/SRGSYMBOLIC_graph.o : ${GSOU}/esrg_graph.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_graph.o ${GSOU}/esrg_graph.c
+
+${OBJ}/SRGSYMBOLIC_graph_se.o : ${GSOU}/graph_se.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_graph_se.o ${GSOU}/graph_se.c
+
+${OBJ}/SRGSYMBOLIC_rgengwn.o : ${GSOU}/rgengwn.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_rgengwn.o ${GSOU}/rgengwn.c
+
+${OBJ}/SRGSYMBOLIC_rg_files.o : ${GSOU}/rg_files.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_rg_files.o ${GSOU}/rg_files.c
+
+${OBJ}/SRGSYMBOLIC_stack.o : ${GSOU}/stack.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_stack.o ${GSOU}/stack.c
+
+${OBJ}/SRGSYMBOLIC_convert.o : ${GSOU}/convert.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_convert.o ${GSOU}/convert.c
+
+${OBJ}/SRGSYMBOLIC_wn_yac.o : ${RSOU}/wn_yac.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_wn_yac.o ${RSOU}/wn_yac.c
+
+${OBJ}/SRGSYMBOLIC_read_arc.o : ${RSOU}/read_arc.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_read_arc.o ${RSOU}/read_arc.c
+
+${OBJ}/SRGSYMBOLIC_read_t_s.o : ${RSOU}/read_t_s.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_read_t_s.o ${RSOU}/read_t_s.c
+
+${OBJ}/SRGSYMBOLIC_read_t_c.o : ${RSOU}/read_t_c.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_read_t_c.o ${RSOU}/read_t_c.c
+
+${OBJ}/SRGSYMBOLIC_read_DEF.o : ${RSOU}/read_DEF.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_read_DEF.o ${RSOU}/read_DEF.c
+
+${OBJ}/SRGSYMBOLIC_read_NET.o : ${RSOU}/read_NET.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_read_NET.o ${RSOU}/read_NET.c
+
+${OBJ}/SRGSYMBOLIC_grammar.o : ${SFK}/grammar.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SRGSYMBOLIC_grammar.o ${SFK}/grammar.c
+
+${OBJ}/AFTER_FIRING_CASES.o : ${ESOU}/AFTER_FIRING_CASES.c ${T_INCLUDES}
+	${COMP} ${OBJ}/AFTER_FIRING_CASES.o ${ESOU}/AFTER_FIRING_CASES.c
+
+${OBJ}/GET_SYM.o : ${ESOU}/GET_SYM.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GET_SYM.o ${ESOU}/GET_SYM.c
+
+${OBJ}/MAPP_FOR_GROUPING.o : ${ESOU}/MAPP_FOR_GROUPING.c ${T_INCLUDES}
+	${COMP} ${OBJ}/MAPP_FOR_GROUPING.o ${ESOU}/MAPP_FOR_GROUPING.c
+
+${OBJ}/MAPP_FOR_DECOMPOSING.o : ${ESOU}/MAPP_FOR_DECOMPOSING.c ${T_INCLUDES}
+	${COMP} ${OBJ}/MAPP_FOR_DECOMPOSING.o ${ESOU}/MAPP_FOR_DECOMPOSING.c
+
+${OBJ}/GROUP_STATICS.o : ${ESOU}/GROUP_STATICS.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GROUP_STATICS.o ${ESOU}/GROUP_STATICS.c
+
+${OBJ}/STATIC_LIST.o : ${ESOU}/STATIC_LIST.c ${T_INCLUDES}
+	${COMP} ${OBJ}/STATIC_LIST.o ${ESOU}/STATIC_LIST.c
+
+${OBJ}/MY_ALLOCATION.o : ${ESOU}/MY_ALLOCATION.c ${T_INCLUDES}
+	${COMP} ${OBJ}/MY_ALLOCATION.o ${ESOU}/MY_ALLOCATION.c
+
+${OBJ}/GET_FIRST_EVENT.o : ${ESOU}/GET_FIRST_EVENT.c ${T_INCLUDES}
+	${COMP} ${OBJ}/GET_FIRST_EVENT.o ${ESOU}/GET_FIRST_EVENT.c
+
+${OBJ}/INST_SYM_EVENT.o : ${ESOU}/INST_SYM_EVENT.c ${T_INCLUDES}
+	${COMP} ${OBJ}/INST_SYM_EVENT.o ${ESOU}/INST_SYM_EVENT.c
+
+${OBJ}/EVENTUALITIES.o : ${ESOU}/EVENTUALITIES.c ${T_INCLUDES}
+	${COMP} ${OBJ}/EVENTUALITIES.o ${ESOU}/EVENTUALITIES.c
+
+${OBJ}/READ_WRITE.o : ${ESOU}/READ_WRITE.c ${T_INCLUDES}
+	${COMP} ${OBJ}/READ_WRITE.o ${ESOU}/READ_WRITE.c
+
+${OBJ}/SAVE.o : ${ESOU}/SAVE.c ${T_INCLUDES}
+	${COMP} ${OBJ}/SAVE.o ${ESOU}/SAVE.c
+
+${OBJ}/ealloc.o : ${CSOU}/ealloc.c ${T_INCLUDES}
+	${COMP}  ${OBJ}/ealloc.o ${CSOU}/ealloc.c
+
+${OBJ}/getline.o : ${CSOU}/getline.c ${T_INCLUDES}
+	${COMP}  ${OBJ}/getline.o ${CSOU}/getline.c
+
+
+#############################################
+${SFK}/lex.c : ${TRS}/wn.lex
+	$(LEX) ${TRS}/wn.lex
+	mv lex.jj.c ${SFK}/lex.c
+	#ed ${SFK}/lex.c < ${EDT}/ed_lex
+
+${SFK}/grammar.c : ${TRS}/wn.yac ${SFK}/lex.c ${T_INCLUDES}
+	$(YACC) ${TRS}/wn.yac
+	mv y.tab.c ${SFK}/grammar.c
+	ed ${SFK}/grammar.c < ${EDT}/ed_gram
+

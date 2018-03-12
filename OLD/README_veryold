@@ -1,0 +1,76 @@
+GREATSPN2.0.X ALGEBRA MULTISOLVE
+
+COMPILING INSTRUCTIONS
+______________________
+
+
+System requirements
+
+ In order to compile the package you need:
+
+ - Motif libraries and headers files installed:
+   you need both the runtime and development packages,
+   if you are running Linux you could find both packages at the openMotif
+   distribution site www.openmotif.org;
+ - uil compiler: it comes with Motif's development package;
+
+ - the X development package;
+
+ - the GNU make utility;
+
+ - lex/flex & yacc (bison does not work).
+
+ - tcsh
+
+Compiling and installing
+
+ To compile and install the package go through the following steps:
+
+ - get the zipped archive greatspn-2.0.XXX-src.tar.gz
+ - create a new directory where you want the tool will reside,
+   for example  
+     /usr/local/GreatSPN/
+ - extract the archive into the installation directory
+     gunzip greatspn-2.0.2-src.tar.gz 
+     cd /usr/local/GreatSPN/
+     tar -xvf greatspn-2.0.2-src.tar
+ - move to the directory where source code reside
+     cd  /usr/local/GreatSPN/SOURCES/
+ - two makefile are provided, one for SunOS platforms
+   and the other for Linux platforms; edit the appropriate makefile;
+ - only the first lines of the makefile have to be changed,
+   they are enclosed between two #-filled lines;
+   placed as commented lines you will find some examples of common settings;
+   check your system and make the right modifications;
+ - return to the shell prompt and type
+      make -f Makefile.<platform> <target>
+   example for Linux platform
+      make -f Makefile.Linux_OpenMotif
+   replace <target> according to the installation type you desire
+   if you want to install the overall package omit <target>
+   otherwise type any combination of "greatspn", "swn", "algebra" and "multisolve";
+ - if everything goes right you will find in the installation directory
+   two new subfolders 
+     /usr/local/GreatSPN/bin, /usr/local/GreatSPN/<platform-dependent-name>
+ - set the environment (see next section);
+ - to execute greatspn digit
+      greatspn
+   to execute multisolve digit
+      multisolve
+   
+   
+setting the environment
+_______________________
+
+In order to run the tool you have to set some environment variables:
+PATH:
+   add the /usr/local/GreatSPN/bin directory to your PATH environment variable;
+
+LD_LIBRARY_PATH:
+   be sure that this variable contains the paths to the motif and X11 libraries
+   if it is not correctly set you will get an ld error at startup time;
+MULTISOVE_AWK:
+   the multisolve needs the MULTISOLVE_AWK environment variable to be set, it indicates
+   where the awk utility has been installed on your system. A common place is
+   /usr/xpg4/bin/awk.
+

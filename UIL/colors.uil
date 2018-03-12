@@ -1,0 +1,27 @@
+/*******************************************************************************
+	Color values
+	
+	Comment:				This Section translates color strings to color 
+							values
+							
+	Programmer:				Alex
+	Creation Date:			23/2/95
+	Last Modify Date:		23/2/95
+
+********************************************************************************/
+
+value
+/*******************************************************************************
+	To change colors look for color definitions in the 
+	/usr/local/X11R?/lib/X11/rgb.txt file
+	
+	WARNING colors definitions are machine dependent so color names may be 
+	different or missing. Remember that colour with the same name may have a
+	different visual according to vendor's taste
+********************************************************************************/
+
+	colorLight 	: color('gray65');
+	colorDark 	: color('gray50');
+
+	colorWhite  : color('White');
+	colorBlack  : color('Black');

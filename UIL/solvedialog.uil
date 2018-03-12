@@ -1,0 +1,31 @@
+/*******************************************************************************
+        Solve Dialog
+        
+        Comment:  This Section Describes the Solve Dialog 
+                                                        
+        Programmer:                     Alex
+        Creation Date:                  27/2/95
+        Last Modify Date:               27/2/95
+
+********************************************************************************/
+
+object  SolveDialog : XmWarningDialog
+{
+        controls
+        {
+			Xm_Help unmanaged {};
+			Xm_Cancel unmanaged {};
+        };
+        arguments
+        {
+                XmNdialogTitle       =       "Prompt";
+                XmNautoUnmanage      =       true;
+                XmNnoResize          =       true;
+!				XmNhighlightOnEnter  =		 XmPOINTER;
+                XmNdialogStyle       =       XmDIALOG_APPLICATION_MODAL;
+				XmNbackground =				appDialogBackgroundColor;
+				XmNokLabelString =			'Interrupt';
+				XmNdefaultButtonType =		XmDIALOG_OK_BUTTON;
+        };
+
+};

@@ -1,0 +1,6 @@
+ 
+g++ -L../lib_header/ rg2rrg.cpp function.cpp -o RG2RRG -g -lgspnESRG -lm -lfl
+
+
+X cluster
+g++  -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -m32  -L../lib_header/  rg2rrg.cpp function.cpp -o RG2RRG -O3  -lgspnESRG -lfl

@@ -1,0 +1,334 @@
+/*******************************************************************************
+        Arc Dialog
+        
+        Comment:	This Section Describes the Arc Dialog 
+                                                        
+        Programmer:                     Alex
+        Creation Date:                  26/2/95
+        Last Modify Date:               09/3/95
+
+********************************************************************************/
+identifier
+	ARCIN;
+	ARCOUT;
+	ARCINHIB;
+	
+procedure
+	SetArcKindCB(any);
+	CancelArcDialogCB();
+	SetArcTypeCB();
+	SetColorCB();
+	
+object  ArcChangeDialog : XmFormDialog
+{
+	controls
+	{
+		XmRowColumn  	ArcChangeDialog_RC;
+		XmPushButton  	ArcChangeDialog_Ok;
+		XmPushButton  	ArcChangeDialog_Cancel;
+		XmSeparator  	ArcChangeDialog_Sep1;
+		XmSeparator  	ArcChangeDialog_Sep2;
+		XmSeparator  	ArcChangeDialog_Sep3;
+		XmToggleButton	ArcChangeDialog_Broken;
+		XmToggleButton  ArcChangeDialog_IsColor;
+		XmLabel  		ArcChangeDialog_Label3;
+		XmLabel  		ArcChangeDialog_Place;
+		XmLabel  		ArcChangeDialog_Trans;
+		XmTextField  	ArcChangeDialog_Color;
+	};
+	arguments
+	{
+		XmNdialogTitle	=	"Change Arc Properties";
+!		XmNwidth		=	270;
+!		XmNheight		=	266;
+		XmNautoUnmanage	=	false;
+		XmNdialogStyle	=	XmDIALOG_FULL_APPLICATION_MODAL;
+		XmNnoResize		=	true;
+		XmNresizePolicy	=   XmRESIZE_NONE;
+		XmNbackground	=	appDialogBackgroundColor;
+	};
+};
+
+object ArcChangeDialog_RC : XmRowColumn
+{
+   controls
+   {
+       XmToggleButton  ArcChangeDialog_Input;
+       XmToggleButton  ArcChangeDialog_Output;
+       XmToggleButton  ArcChangeDialog_Inhibitor;
+   };
+   arguments
+   {
+      XmNtopAttachment	=	XmATTACH_FORM;
+      XmNtopOffset 		=	10;
+      XmNleftAttachment =	XmATTACH_FORM;
+      XmNleftOffset 	=	24;
+      XmNrightAttachment =	XmATTACH_FORM;
+      XmNrightOffset 	=	24;
+ 
+      XmNpacking		=	XmPACK_TIGHT;
+      XmNorientation	=	XmHORIZONTAL;
+      XmNradioBehavior	=	true;
+      XmNradioAlwaysOne	=	true;
+	  XmNbackground 	=	colorLight;
+   };
+};
+
+list ArcChangeDialogToggles : arguments
+{
+      XmNrecomputeSize		=	true;
+      XmNfillOnSelect		=	true;
+      XmNselectColor		=	colorBlack;
+      XmNmarginWidth		=	0;
+      XmNmarginHeight		=	0;
+      XmNlabelType			=	XmPIXMAP;
+      XmNindicatorOn		=	false;
+      XmNshadowThickness	=	2;
+};
+
+object ArcChangeDialog_Input : XmToggleButton
+{
+	arguments
+	{
+		arguments ArcChangeDialogToggles;
+		XmNlabelPixmap		= bmpInput;	
+	};
+	callbacks
+	{
+   		XmNvalueChangedCallback = procedure SetArcKindCB(ARCIN);
+	};
+};
+
+object ArcChangeDialog_Output : XmToggleButton
+{
+   arguments
+   {
+		arguments ArcChangeDialogToggles;
+	   XmNlabelPixmap		= bmpOutput;	
+   };
+	callbacks
+	{
+   		XmNvalueChangedCallback = procedure SetArcKindCB(ARCOUT);
+	};
+};
+
+object ArcChangeDialog_Inhibitor : XmToggleButton
+{
+   arguments
+   {
+		arguments ArcChangeDialogToggles;
+	   XmNlabelPixmap		= bmpInhibitor;	
+   };
+	callbacks
+	{
+   		XmNvalueChangedCallback = procedure SetArcKindCB(ARCINHIB);
+	};
+};
+
+object ArcChangeDialog_Sep1 : XmSeparator
+{
+   arguments
+   {
+!      XmNtopAttachment =          XmATTACH_FORM;
+!      XmNtopOffset =              70;
+	XmNtopAttachment = XmATTACH_WIDGET;
+	XmNtopWidget = ArcChangeDialog_RC;
+	XmNtopOffset = 10;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                1;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                1;
+   };
+};
+
+object ArcChangeDialog_Sep2 : XmSeparator
+{
+   arguments
+   {
+ 	XmNtopAttachment = XmATTACH_WIDGET;
+	XmNtopWidget = ArcChangeDialog_Color;
+	XmNtopOffset = 10;
+  !      XmNtopAttachment =          XmATTACH_FORM;
+!      XmNtopOffset =              140;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                1;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                1;
+   };
+};
+
+object ArcChangeDialog_Sep3 : XmSeparator
+{
+   arguments
+   {
+ 	XmNtopAttachment = XmATTACH_WIDGET;
+	XmNtopWidget = ArcChangeDialog_Trans;
+	XmNtopOffset = 10;
+!      XmNtopAttachment =          XmATTACH_FORM;
+!      XmNtopOffset =              210;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                1;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                1;
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              60;
+
+   };
+};
+object ArcChangeDialog_Ok : XmPushButton
+{
+   arguments
+   {
+    	XmNtopAttachment = XmATTACH_WIDGET;
+	XmNtopWidget = ArcChangeDialog_Sep3;
+	XmNtopOffset = 10;
+
+!      XmNbottomAttachment =          XmATTACH_FORM;
+!      XmNbottomOffset =              4;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                20;
+      XmNlabelString =               'Ok';
+      XmNshowAsDefault =             1;
+      XmNrecomputeSize =            false;
+      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+	callbacks
+	{
+   		XmNactivateCallback = procedure SetArcTypeCB();
+	};
+};
+object ArcChangeDialog_Cancel : XmPushButton
+{
+   arguments
+   {
+    	XmNtopAttachment = XmATTACH_WIDGET;
+	XmNtopWidget = ArcChangeDialog_Sep3;
+	XmNtopOffset = 14;
+!      XmNbottomAttachment =          XmATTACH_FORM;
+!      XmNbottomOffset =              10;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               26;
+      XmNlabelString =               'Cancel';
+      XmNrecomputeSize =            false;
+      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+	callbacks
+	{
+   		XmNactivateCallback = procedure CancelArcDialogCB();
+	};
+};
+object ArcChangeDialog_Broken : XmToggleButton
+{
+   arguments
+   {
+      XmNrecomputeSize=                        true;
+      XmNfillOnSelect=                       true;
+      XmNselectColor=                          colorBlack;
+      XmNmarginWidth=                          0;
+      XmNmarginHeight=                         0;
+      XmNlabelString =				'Broken Arc';
+ 	XmNbottomAttachment = XmATTACH_WIDGET;
+	XmNbottomWidget = ArcChangeDialog_IsColor;
+	XmNbottomOffset = 10;
+
+!  !    XmNtopAttachment =          XmATTACH_FORM;
+ !     XmNtopOffset =              175;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                20;
+   };
+};
+object ArcChangeDialog_IsColor : XmToggleButton
+{
+   arguments
+   {
+      XmNrecomputeSize=                        true;
+      XmNfillOnSelect=                       true;
+      XmNselectColor=                          colorBlack;
+      XmNmarginWidth=                          0;
+      XmNmarginHeight=                         0;
+      XmNlabelString =                         'Color';
+	XmNbottomAttachment = XmATTACH_WIDGET;
+	XmNbottomWidget = ArcChangeDialog_Sep2;
+	XmNbottomOffset = 10;
+
+!      XmNtopAttachment =          XmATTACH_FORM;
+!      XmNtopOffset =              104;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                20;
+   };
+	callbacks
+	{
+   		XmNvalueChangedCallback = procedure SetColorCB();
+	};
+};
+
+object ArcChangeDialog_Label3 : XmLabel
+{
+   arguments
+   {
+	XmNtopAttachment = XmATTACH_WIDGET;
+	XmNtopWidget = ArcChangeDialog_Sep1;
+	XmNtopOffset = 10;
+   
+!      XmNtopAttachment =          XmATTACH_FORM;
+!      XmNtopOffset =              78;
+      XmNleftAttachment =            XmATTACH_FORM;
+!      XmNleftWidget	=	ArcChangeDialog_Broken;
+      XmNleftOffset =                120;
+      XmNlabelString =                         'Color Label:';
+   };
+};
+
+object ArcChangeDialog_Color : XmTextField
+{
+   arguments
+   {
+ 	XmNtopAttachment = XmATTACH_WIDGET;
+	XmNtopWidget = ArcChangeDialog_Label3;
+	XmNtopOffset = 10;
+   
+!      XmNtopAttachment =          XmATTACH_FORM;
+!      XmNtopOffset =              100;
+      XmNleftAttachment =            XmATTACH_FORM;
+!      XmNleftWidget	=	ArcChangeDialog_Broken;
+      XmNleftOffset =                120;
+	  XmNbackground =				appDialogBackgroundColor;
+   };
+	callbacks
+	{
+   		XmNactivateCallback = procedure SetArcTypeCB();
+	};
+};
+
+
+object ArcChangeDialog_Place : XmLabel
+{
+   arguments
+   {
+	XmNtopAttachment = XmATTACH_WIDGET;
+	XmNtopWidget = ArcChangeDialog_Sep2;
+	XmNtopOffset = 10;
+   
+     XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                20;
+      XmNlabelString =                         'Place';
+   };
+};
+
+object ArcChangeDialog_Trans : XmLabel
+{
+   arguments
+   {
+	XmNtopAttachment = XmATTACH_WIDGET;
+	XmNtopWidget = ArcChangeDialog_Place;
+	XmNtopOffset = 10;
+   
+!      XmNtopAttachment =          XmATTACH_FORM;
+!      XmNtopOffset =              78;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                20;
+      XmNlabelString =               'Trans';
+   };
+};

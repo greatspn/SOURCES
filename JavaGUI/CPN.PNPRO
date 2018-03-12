@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="Fluid and Colored PN" version="121">
+  <gspn name="Database">
+    <nodes>
+      <color-class definition="circular s{1 .. 4} " name="S" x="23.5625" y="2.0"/>
+      <color-class definition="enum r{1 .. 3}" name="R" x="23.5" y="3.0"/>
+      <color-class alt-name-fn="LATEX_TEXT" definition="S * R" name="SxR" shown-as="\mathit{S}\!\times\hspace{-5pt}\mathit{R}" x="23.5625" y="4.875"/>
+      <place domain="S" label-x="5.5" label-y="0.0" marking="&lt;All&gt;" name="all_active" x="2.0" y="9.0"/>
+      <transition label-x="2.375" label-y="0.0" name="Start" rotation="1.5707963267948966" type="EXP" x="2.55" y="5.0"/>
+      <place domain="SxR" label-x="1.5" label-y="-1.5" name="wait_mutex" x="6.0" y="3.0"/>
+      <color-var domain="S" name="s" x="35.9375" y="2.0"/>
+      <color-var domain="R" name="r" x="35.9375" y="3.0"/>
+      <transition label-x="2.5" label-y="0.0" magnets="THREE_PER_SIDE" name="Acquire" rotation="1.5707963267948966" type="IMM" x="10.85" y="5.0"/>
+      <place domain="SxR" label-x="3.9375" label-y="-0.9375" name="modify" x="10.0" y="9.0"/>
+      <transition label-x="2.625" label-y="0.0" magnets="THREE_PER_SIDE" name="Change" rotation="1.5707963267948966" type="EXP" x="10.55" y="13.0"/>
+      <place domain="SxR" label-x="5.1875" label-y="-0.125" name="wait_ack" x="10.0" y="17.0"/>
+      <transition label-x="-2.8125" label-y="-0.0625" magnets="THREE_PER_SIDE" name="Release" rotation="1.5707963267948966" type="IMM" x="10.85" y="21.0"/>
+      <place domain="SxR" label-x="-0.6875" label-y="-1.5" name="message" x="16.6875" y="11.0"/>
+      <place domain="SxR" label-x="0.5" label-y="-1.5" name="rec_buf" x="27.0" y="11.0"/>
+      <transition label-y="1.75" name="SendMessage" type="EXP" x="22.55" y="11.0"/>
+      <transition label-x="2.5" label-y="0.0" magnets="THREE_PER_SIDE" name="Update" rotation="1.5707963267948966" type="IMM" x="31.85" y="13.0"/>
+      <place domain="S" label-x="6.0" label-y="0.0" marking="&lt;All&gt;" name="all_passive" x="31.0" y="9.0"/>
+      <place domain="SxR" label-x="5.0" label-y="0.0" name="updating" x="31.0" y="17.0"/>
+      <transition label-x="3.5" label-y="0.0" magnets="THREE_PER_SIDE" name="EndUpdate" rotation="1.5707963267948966" type="EXP" x="31.55" y="21.0"/>
+      <place domain="SxR" label-x="0.5" label-y="-1.5" name="reply_buf" x="27.0" y="23.0"/>
+      <place domain="SxR" label-x="1.3125" label-y="-1.5" name="acknowledge" x="16.6875" y="23.0"/>
+      <transition label-x="0.0625" label-y="1.6875" name="SendReply" type="EXP" x="22.55" y="23.0"/>
+      <place domain="R" label-x="1.0" label-y="-1.5" marking="&lt;All&gt;" name="mutex" x="15.0" y="3.0"/>
+    </nodes>
+    <edges>
+      <arc head="Start" kind="INPUT" mult="&lt;s&gt;" mult-k="0.50009765625" mult-x="0.6875" mult-y="6.835937500007105E-4" tail="all_active"/>
+      <arc head="wait_mutex" kind="OUTPUT" mult="&lt;s,r&gt;" mult-k="0.42509765625000007" mult-y="1.471041044549537E-4" tail="Start">
+        <point x="3.0" y="4.0"/>
+      </arc>
+      <arc head="Acquire" head-magnet="11" kind="INPUT" mult="&lt;s,r&gt;" mult-k="1.0081054687500002" mult-x="0.13798762881259918" mult-y="-0.6800233185912363" tail="wait_mutex">
+        <point x="10.0" y="4.0"/>
+      </arc>
+      <arc head="modify" kind="OUTPUT" mult="&lt;s,r&gt;" mult-k="0.41669921875000004" mult-y="-0.2542919921875004" tail="Acquire" tail-magnet="4"/>
+      <arc head="Change" kind="INPUT" mult="&lt;s,r&gt;" mult-k="0.50009765625" mult-x="-1.0" mult-y="-3.906250000014211E-4" tail="modify"/>
+      <arc head="wait_ack" kind="OUTPUT" mult="&lt;s,r&gt;" mult-k="0.50009765625" mult-y="-3.906250000014211E-4" tail="Change"/>
+      <arc head="Release" kind="INPUT" mult="&lt;s,r&gt;" mult-k="0.56259765625" mult-x="-1.0" mult-y="-3.906250000014211E-4" tail="wait_ack"/>
+      <arc head="all_active" kind="OUTPUT" mult="&lt;s&gt;" mult-k="2.8219726562500003" mult-x="0.75" mult-y="0.0626231650004172" tail="Release" tail-magnet="4">
+        <point x="11.0" y="24.0"/>
+        <point x="3.0" y="24.0"/>
+      </arc>
+      <arc head="message" kind="OUTPUT" mult="&lt;All-s,r&gt;" mult-k="1.24990234375" mult-x="0.6847715006851729" mult-y="-0.5" tail="Change" tail-magnet="9">
+        <point x="12.0" y="12.0"/>
+      </arc>
+      <arc head="SendMessage" kind="INPUT" mult="&lt;s,r&gt;" mult-k="0.6059570312500001" mult-x="-4.8828125E-4" mult-y="-0.5" tail="message"/>
+      <arc head="rec_buf" kind="OUTPUT" mult="&lt;s,r&gt;" mult-k="0.39990234375" mult-x="4.8828125E-4" mult-y="-0.5" tail="SendMessage"/>
+      <arc head="Update" head-magnet="11" kind="INPUT" mult="&lt;s,r&gt;" mult-k="0.50009765625" mult-x="0.019913081521757192" mult-y="-0.5649233062925738" tail="rec_buf">
+        <point x="31.0" y="12.0"/>
+      </arc>
+      <arc head="Update" head-magnet="10" kind="INPUT" mult="&lt;s&gt;" mult-k="0.5844726562500001" mult-x="0.75" mult-y="-2.1972656250213163E-4" tail="all_passive"/>
+      <arc head="updating" kind="OUTPUT" mult="&lt;s,r&gt;" mult-k="0.35068359375" mult-y="-1.318359374984368E-4" tail="Update" tail-magnet="4"/>
+      <arc head="EndUpdate" kind="INPUT" mult="&lt;s,r&gt;" mult-k="0.50009765625" mult-y="-3.906250000014211E-4" tail="updating"/>
+      <arc head="all_passive" kind="OUTPUT" mult="&lt;s&gt;" mult-k="3.613183593750001" mult-x="0.06322408536586721" mult-y="0.75" tail="EndUpdate" tail-magnet="4">
+        <point x="32.0" y="24.0"/>
+        <point x="40.0" y="24.0"/>
+        <point x="40.0" y="7.0"/>
+        <point x="32.0" y="7.0"/>
+      </arc>
+      <arc head="reply_buf" kind="OUTPUT" mult="&lt;s,r&gt;" mult-k="0.74599609375" mult-x="-0.9375" mult-y="-0.3125" tail="EndUpdate" tail-magnet="5">
+        <point x="31.0" y="24.0"/>
+      </arc>
+      <arc head="SendReply" kind="INPUT" mult="&lt;s,r&gt;" mult-k="0.50009765625" mult-x="4.8828125E-4" mult-y="-0.5" tail="reply_buf"/>
+      <arc head="acknowledge" kind="OUTPUT" mult="&lt;s,r&gt;" mult-k="0.39990234375" mult-x="-4.8828125E-4" mult-y="-0.5" tail="SendReply"/>
+      <arc head="Release" head-magnet="3" kind="INPUT" mult="&lt;All-s,r&gt;" mult-x="0.2368039638520436" mult-y="-0.5" tail="acknowledge">
+        <point x="12.0" y="24.0"/>
+      </arc>
+      <arc head="mutex" kind="OUTPUT" mult="&lt;r&gt;" mult-k="2.95009765625" mult-x="-0.8126023815524199" mult-y="0.0625" tail="Release" tail-magnet="9">
+        <point x="12.0" y="20.5"/>
+        <point x="19.5" y="20.5"/>
+        <point x="19.5" y="4.0"/>
+      </arc>
+      <arc head="Acquire" head-magnet="9" kind="INPUT" mult="&lt;r&gt;" mult-k="0.7000976562500001" mult-x="-0.06344441089473385" mult-y="-0.5121589918863645" tail="mutex">
+        <point x="12.0" y="4.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="Philosophers">
+    <nodes>
+      <color-class definition="circular p{1..N}" name="Philo" x="3.5" y="2.875"/>
+      <color-var domain="Philo" name="x" x="3.5625" y="4.0625"/>
+      <place domain="Philo" label-x="2.875" label-y="1.3125" magnets="THREE_PER_SIDE" marking="&lt;All&gt;" name="Fork" x="6.0" y="15.0"/>
+      <transition label-x="2.5" label-y="0.0" name="FF1a" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="14.55" y="11.0"/>
+      <transition label-x="2.5" label-y="0.0" name="FF1b" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="22.55" y="11.0"/>
+      <place domain="Philo" label-y="-1.5" marking="&lt;All&gt;" name="Think" x="18.0" y="6.0"/>
+      <place domain="Philo" label-x="3.375" label-y="1.3125" name="Catch1" x="14.0" y="15.0"/>
+      <place domain="Philo" label-x="3.5" name="Catch2" x="22.0" y="15.0"/>
+      <transition label-x="2.5" label-y="0.0" name="FF2a" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="14.55" y="19.0"/>
+      <transition label-x="2.5" label-y="0.0" name="FF2b" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="22.55" y="19.0"/>
+      <place domain="Philo" name="Eat" x="18.0" y="25.0"/>
+      <transition magnets="THREE_PER_SIDE" name="end" nservers-x="0.5" rotation="3.141592653589793" type="EXP" x="11.55" y="25.0"/>
+      <template last-binding="2" name="N" type="INTEGER" x="3.5" y="1.6875"/>
+    </nodes>
+    <edges>
+      <arc head="FF1a" kind="INPUT" mult="&lt;x&gt;" mult-k="0.56103515625" mult-x="0.744140625" mult-y="0.69482421875" tail="Think"/>
+      <arc head="FF1b" kind="INPUT" mult="&lt;x&gt;" mult-k="0.56103515625" mult-x="-0.744140625" mult-y="0.69482421875" tail="Think"/>
+      <arc head="Catch1" kind="OUTPUT" mult="&lt;x&gt;" mult-k="0.37509765625" mult-x="-0.8125" mult-y="0.062109375000000355" tail="FF1a"/>
+      <arc head="FF2a" kind="INPUT" mult="&lt;x&gt;" mult-k="0.50009765625" mult-x="-0.75" mult-y="0.0" tail="Catch1"/>
+      <arc head="FF2b" kind="INPUT" mult="&lt;x&gt;" mult-k="0.50009765625" mult-x="-0.75" mult-y="0.125" tail="Catch2"/>
+      <arc head="Catch2" kind="OUTPUT" mult="&lt;x&gt;" mult-k="0.37509765625" mult-x="-0.8125" mult-y="-3.9062499999964473E-4" tail="FF1b"/>
+      <arc head="Eat" kind="OUTPUT" mult="&lt;x&gt;" mult-k="0.44228515625" mult-x="0.5625" mult-y="-0.4375" tail="FF2a"/>
+      <arc head="Eat" kind="OUTPUT" mult="&lt;x&gt;" mult-k="0.44228515625" mult-x="-0.6625000000000014" mult-y="-0.3500000000000014" tail="FF2b"/>
+      <arc head="end" kind="INPUT" mult="&lt;x&gt;" mult-k="0.50009765625" mult-x="0.0" mult-y="-0.6875" tail="Eat"/>
+      <arc head="Think" kind="OUTPUT" mult="&lt;x&gt;" mult-k="2.6465820312500004" mult-x="0.0" mult-y="-0.4375" tail="end" tail-magnet="3">
+        <point x="3.5" y="26.5"/>
+        <point x="3.5" y="7.0"/>
+      </arc>
+      <arc head="FF1b" kind="INPUT" mult="&lt;x&gt;" mult-k="2.39228515625" mult-x="0.6875" mult-y="0.125" tail="Fork" tail-magnet="8">
+        <point x="6.5" y="9.0"/>
+        <point x="23.0" y="9.0"/>
+      </arc>
+      <arc head="FF1a" kind="INPUT" mult="&lt;x++&gt;" mult-k="1.6516601562499997" mult-x="0.125" mult-y="0.625" tail="Fork" tail-magnet="10">
+        <point x="7.5" y="10.0"/>
+        <point x="15.0" y="10.0"/>
+      </arc>
+      <arc head="FF2a" kind="INPUT" mult="&lt;x&gt;" mult-k="1.7165039062499998" mult-x="-0.1875" mult-y="-0.5" tail="Fork" tail-magnet="2">
+        <point x="7.5" y="22.5"/>
+        <point x="15.0" y="22.5"/>
+      </arc>
+      <arc head="FF2b" kind="INPUT" mult="&lt;x++&gt;" mult-k="2.32822265625" mult-x="1.25" mult-y="0.0625" tail="Fork" tail-magnet="4">
+        <point x="6.5" y="23.5"/>
+        <point x="23.0" y="23.5"/>
+      </arc>
+      <arc head="Fork" kind="OUTPUT" mult="&lt;x&gt;+&lt;x++&gt;" mult-k="0.5999023437500001" mult-x="0.6249999999999991" mult-y="-0.5" tail="end" tail-magnet="5">
+        <point x="4.5" y="25.5"/>
+        <point x="4.5" y="16.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="FluidHSPN">
+    <nodes>
+      <place label-x="1.0" marking="4.5" name="P0" type="CONTINUOUS" x="8.0" y="11.0"/>
+      <transition name="T0" type="CONT" x="17.55" y="16.0"/>
+      <place label-x="1.0" marking="4.0" name="P1" type="CONTINUOUS" x="27.0" y="11.0"/>
+      <transition name="T1" type="CONT" x="17.55" y="6.0"/>
+      <place marking="1" name="P2" x="27.0" y="3.0"/>
+      <place name="P3" x="8.0" y="19.0"/>
+      <transition label-x="-1.0" name="T2" rotation="1.5707963267948966" type="EXP" x="4.55" y="11.0"/>
+      <transition label-x="-1.0" label-y="-1.0" name="T3" rotation="1.5707963267948966" type="EXP" x="31.55" y="11.0"/>
+      <transition magnets="THREE_PER_SIDE" name="T4" type="EXP" x="20.55" y="9.0"/>
+      <transition label-x="0.5" magnets="THREE_PER_SIDE" name="T5" type="EXP" x="14.55" y="13.0"/>
+      <place name="P4" x="8.0" y="23.0"/>
+      <transition name="D0" type="GEN" x="13.55" y="23.0"/>
+      <place marking="1" name="P5" x="18.0" y="23.0"/>
+      <transition name="T6" type="EXP" x="23.55" y="23.0"/>
+    </nodes>
+    <edges>
+      <arc head="T1" kind="INPUT" mult="1.5" mult-k="1.34384765625" mult-x="1.0001341381870752" mult-y="1.5" tail="P0">
+        <point x="9.0" y="7.0"/>
+      </arc>
+      <arc head="P1" kind="OUTPUT" mult="2.0" mult-k="0.49755859375" mult-x="0.999700496984989" mult-y="1.5" tail="T1">
+        <point x="28.0" y="7.0"/>
+      </arc>
+      <arc head="T0" kind="INPUT" mult="2.0" mult-k="1.34384765625" mult-x="-0.7821222996731727" mult-y="-1.5" tail="P1">
+        <point x="28.0" y="17.0"/>
+      </arc>
+      <arc head="P0" kind="OUTPUT" mult="1.5" mult-k="0.44169921874999996" mult-x="-0.999700496984989" mult-y="-1.5" tail="T0">
+        <point x="9.0" y="17.0"/>
+      </arc>
+      <arc head="P3" kind="OUTPUT" tail="T0"/>
+      <arc head="T0" kind="INPUT" tail="P3"/>
+      <arc head="T1" kind="INPUT" tail="P2"/>
+      <arc head="P2" kind="OUTPUT" tail="T1"/>
+      <arc head="T3" kind="INPUT" tail="P3">
+        <point x="32.0" y="20.0"/>
+      </arc>
+      <arc head="P2" kind="OUTPUT" tail="T3">
+        <point x="32.0" y="4.0"/>
+      </arc>
+      <arc head="T2" kind="INPUT" tail="P2">
+        <point x="5.0" y="4.0"/>
+      </arc>
+      <arc head="P3" kind="OUTPUT" tail="T2">
+        <point x="5.0" y="20.0"/>
+      </arc>
+      <arc head="T5" kind="INPUT" mult="1.25" mult-k="0.5930664062500001" mult-x="1.3959456257781078" mult-y="-0.9027029161479287" tail="P0">
+        <point x="12.0" y="14.0"/>
+      </arc>
+      <arc head="P1" kind="OUTPUT" mult="0.75" mult-k="1.35400390625" mult-x="-1.468963118438559" mult-y="-0.9463067894636801" tail="T5">
+        <point x="24.5" y="14.0"/>
+      </arc>
+      <arc head="T4" kind="INPUT" mult="1.25" mult-k="0.6500976562500002" mult-x="-1.4518243065611145" mult-y="0.9561003962507915" tail="P1">
+        <point x="24.5" y="10.0"/>
+      </arc>
+      <arc head="P0" kind="OUTPUT" mult="0.75" mult-k="1.4069335937499998" tail="T4">
+        <point x="12.0" y="10.0"/>
+      </arc>
+      <arc head="T4" head-magnet="3" kind="INPUT" mult-k="1.3518554687500002" tail="P2">
+        <point x="24.5" y="9.5"/>
+      </arc>
+      <arc head="P3" kind="OUTPUT" mult-k="1.4006835937499997" tail="T4">
+        <point x="21.0" y="18.5"/>
+      </arc>
+      <arc head="T5" head-magnet="11" kind="INPUT" mult-k="1.4733398437500003" tail="P3">
+        <point x="12.0" y="14.5"/>
+      </arc>
+      <arc head="P2" kind="OUTPUT" mult-k="1.47939453125" tail="T5">
+        <point x="15.0" y="5.0"/>
+      </arc>
+      <arc head="D0" kind="INPUT" tail="P4"/>
+      <arc head="P5" kind="OUTPUT" tail="D0"/>
+      <arc head="T6" kind="INPUT" tail="P5"/>
+      <arc head="P4" kind="OUTPUT" tail="T6">
+        <point x="28.0" y="24.0"/>
+        <point x="28.0" y="26.5"/>
+        <point x="5.0" y="26.5"/>
+        <point x="5.0" y="24.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="Fluid Line">
+    <nodes>
+      <place marking="2.2" name="P0" type="CONTINUOUS" x="5.0" y="6.0"/>
+      <transition name="T0" type="CONT" x="11.55" y="6.0"/>
+      <place marking="4" name="P1" type="CONTINUOUS" x="17.0" y="6.0"/>
+      <transition name="T1" type="EXP" x="23.55" y="6.0"/>
+      <place name="P2" x="29.0" y="6.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="T0"/>
+      <arc head="T1" kind="INPUT" mult="1.5" mult-k="0.50009765625" mult-x="0.9994140625000014" mult-y="1.5" tail="P1"/>
+      <arc head="P2" kind="OUTPUT" tail="T1"/>
+    </edges>
+  </gspn>
+  <gspn name="FluidImmediate">
+    <nodes>
+      <place marking="1" name="P0" x="7.0" y="7.0"/>
+      <transition name="t0" type="IMM" x="14.85" y="7.0"/>
+      <place name="P1" x="21.0" y="7.0"/>
+      <place name="P2" type="CONTINUOUS" x="7.0" y="13.0"/>
+      <transition name="T0" type="CONT" x="14.55" y="13.0"/>
+      <place name="P3" type="CONTINUOUS" x="21.0" y="13.0"/>
+      <transition name="T1" type="EXP" x="14.55" y="3.0"/>
+      <transition name="F0" type="CONT" x="14.55" y="18.0"/>
+    </nodes>
+    <edges>
+      <arc head="t0" kind="INPUT" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="t0"/>
+      <arc head="T0" kind="INPUT" tail="P2"/>
+      <arc head="P3" kind="OUTPUT" tail="T0"/>
+      <arc head="T1" kind="INPUT" tail="P1">
+        <point x="22.0" y="4.0"/>
+      </arc>
+      <arc head="P0" kind="OUTPUT" tail="T1">
+        <point x="8.0" y="4.0"/>
+      </arc>
+      <arc head="P2" kind="OUTPUT" mult="3" mult-x="-0.3000000000000007" mult-y="1.5" tail="F0"/>
+    </edges>
+  </gspn>
+  <gspn name="ColorSemanticTest">
+    <nodes>
+      <color-class definition="c{1..3}" name="C0" x="4.125" y="7.0"/>
+      <color-class definition="{a,b,c,d,e}" name="C1" x="4.125" y="9.0"/>
+      <color-class definition="C0 * C1*C2" name="CxCxC" x="1.0625" y="13.0"/>
+      <color-class definition="k{1 .. 3} is Sub1 + h{1 .. 10} is Sub2" name="C2" x="4.125" y="11.0"/>
+      <color-var domain="C0" name="x" x="20.9375" y="7.0"/>
+      <color-var domain="C1" name="y" x="20.9375" y="8.0"/>
+      <color-var domain="C0" name="z" x="20.9375" y="9.0"/>
+      <place domain="CxC" marking="m0" name="place" x="3.0" y="2.0"/>
+      <transition guard="x!=z++" guard-y="1.75" name="T0" type="EXP" x="9.55" y="2.0"/>
+      <place domain="C0" name="P1" x="19.0" y="2.0"/>
+      <color-class definition="C0 * C1" name="CxC" x="2.125" y="15.0"/>
+      <transition guard="Card[&lt;x&gt;] &gt;= 0" guard-x="-0.0625" guard-y="1.875" name="T1" nservers-x="0.5" type="EXP" x="29.55" y="2.0"/>
+      <place domain="C0" label-x="2.0" name="P2" x="34.0" y="9.0"/>
+      <constant consttype="INTEGER" domain="CxC" name="m0" value="&lt;All, All&gt;" x="2.0625" y="19.0"/>
+      <constant consttype="INTEGER" domain="C1" name="R" value="3&lt;d&gt;+4&lt;e&gt;" x="20.0625" y="17.0"/>
+      <place domain="C2" marking="&lt;All&gt;" name="P0" x="6.0" y="23.0"/>
+      <transition name="T2" nservers-x="0.5" type="EXP" x="13.55" y="23.0"/>
+      <place domain="C2" name="P3" x="24.0" y="23.0"/>
+      <color-var domain="C2" name="s" x="20.9375" y="13.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" mult="&lt;x,y&gt;" mult-k="0.49990234375" mult-x="1.9531249999982236E-4" mult-y="-0.5" tail="place"/>
+      <arc head="P1" kind="OUTPUT" mult="#P1 + &lt;z&gt; + &lt;c1&gt;" mult-k="0.41669921875000004" mult-x="-1.9531250000071054E-4" mult-y="-0.5" tail="T0"/>
+      <arc head="T1" kind="INPUT" mult="Card[&lt;Sub1&gt;]&lt;x&gt;" mult-k="0.50009765625" mult-x="-0.1999999999999993" mult-y="-0.5" tail="P1"/>
+      <arc head="P2" kind="OUTPUT" mult="&lt;x&gt;" mult-x="-0.0625" mult-y="-0.5625" tail="T1">
+        <point x="35.0" y="3.0"/>
+      </arc>
+      <arc head="T2" kind="INPUT" mult="&lt;s&gt;" tail="P0"/>
+      <arc head="P3" kind="OUTPUT" mult="&lt;Subclass[s++]&gt;" mult-k="0.4286132812500001" tail="T2"/>
+    </edges>
+  </gspn>
+  <gspn name="ConcurrentGen">
+    <nodes>
+      <place marking="1" name="P0" x="5.0" y="4.0"/>
+      <place marking="1" name="P1" x="5.0" y="11.0"/>
+      <transition delay="4" name="D0" type="GEN" x="10.55" y="11.0"/>
+      <transition delay="2" name="D1" type="GEN" x="10.55" y="4.0"/>
+      <place name="P2" x="15.0" y="4.0"/>
+      <transition delay="2" name="D2" type="GEN" x="20.55" y="4.0"/>
+      <place name="P3" x="15.0" y="11.0"/>
+      <transition name="T0" type="EXP" x="20.55" y="11.0"/>
+    </nodes>
+    <edges>
+      <arc head="D0" kind="INPUT" tail="P1"/>
+      <arc head="D1" kind="INPUT" tail="P0"/>
+      <arc head="P2" kind="OUTPUT" tail="D1"/>
+      <arc head="D2" kind="INPUT" tail="P2"/>
+      <arc head="P0" kind="OUTPUT" tail="D2">
+        <point x="25.5" y="5.0"/>
+        <point x="25.5" y="7.5"/>
+        <point x="2.5" y="7.5"/>
+        <point x="2.5" y="5.0"/>
+      </arc>
+      <arc head="P3" kind="OUTPUT" tail="D0"/>
+      <arc head="T0" kind="INPUT" tail="P3"/>
+      <arc head="P1" kind="OUTPUT" tail="T0">
+        <point x="25.5" y="12.0"/>
+        <point x="25.5" y="14.5"/>
+        <point x="2.5" y="14.5"/>
+        <point x="2.5" y="12.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <dta name="NextOp">
+    <nodes>
+      <clock name="x" x="2.5625" y="2.0"/>
+      <template last-binding="end" name="act" type="ACTION" x="8.0" y="2.0"/>
+      <location init-arrow-x="1.5" init-arrow-y="9.0" initial="true" name="l0" state-proposition="Phi0" x="3.5" y="8.0"/>
+      <location final="ACCEPTING" init-arrow-x="11.5" init-arrow-y="9.0" name="l1" state-proposition="Phi0" x="13.5" y="8.0"/>
+      <template last-binding="4" name="n" type="INTEGER" x="11.0" y="2.0"/>
+      <location init-arrow-x="11.5" init-arrow-y="14.0" name="l2" state-proposition="Phi0" x="13.5" y="13.0"/>
+      <template last-binding="True" name="Phi0" type="STATEPROP" x="14.0" y="2.0"/>
+    </nodes>
+    <edges>
+      <edge actset="Act\{act}" actset-clock-k="1.49990234375" actset-x="1.9627650258691176E-4" actset-y="-1.5000000070811108" clock-guard="x &gt; 0" clock-guard-x="1.9627650258691176E-4" clock-guard-y="-0.5000000070811108" head="l0" kind="INNER" tail="l0">
+        <point x="4.0" y="6.5"/>
+        <point x="6.0" y="6.5"/>
+      </edge>
+      <edge actset="{act}" actset-clock-k="0.5" clock-guard="x &gt; 0" head="l1" kind="INNER" tail="l0"/>
+      <edge actset-clock-k="1.31591796875" clock-guard="x = n" head="l2" kind="BOUNDARY" tail="l0">
+        <point x="8.0" y="14.0"/>
+      </edge>
+    </edges>
+  </dta>
+  <gspn name="NextOp PN">
+    <nodes>
+      <place name="Complete" x="32.0" y="12.0"/>
+      <transition label-x="1.3125" label-y="-0.9375" name="load" rotation="1.5707963267948966" type="GEN" x="7.55" y="9.0"/>
+      <transition delay="4" magnets="THREE_PER_SIDE" name="start" type="GEN" x="12.549999999999999" y="12.0"/>
+      <place name="stage1" x="16.0" y="12.0"/>
+      <place marking="1" name="Mach" x="20.0" y="8.0"/>
+      <transition magnets="THREE_PER_SIDE" name="interm" type="EXP" x="20.55" y="12.0"/>
+      <place name="Work" x="16.0" y="17.0"/>
+      <transition name="fail" rotation="-0.0" type="EXP" x="20.55" y="17.0"/>
+      <place name="stage2" x="24.0" y="12.0"/>
+      <transition magnets="THREE_PER_SIDE" name="end" type="EXP" x="28.55" y="12.0"/>
+      <place name="Broken" x="24.0" y="17.0"/>
+      <transition name="repair" type="EXP" x="28.55" y="17.0"/>
+      <constant consttype="INTEGER" name="N" value="3" x="7.0625" y="18.0"/>
+      <place marking="N" name="Pallets" x="7.0" y="12.0"/>
+    </nodes>
+    <edges>
+      <arc head="load" kind="INPUT" mult-k="1.7088867187499996" tail="Complete">
+        <point x="33.0" y="7.5"/>
+        <point x="8.0" y="7.5"/>
+      </arc>
+      <arc head="stage1" kind="OUTPUT" mult-k="0.5" tail="start"/>
+      <arc head="interm" kind="INPUT" mult-k="0.5" tail="stage1"/>
+      <arc head="stage2" kind="OUTPUT" mult-k="0.5" tail="interm"/>
+      <arc head="start" head-magnet="9" kind="INPUT" mult-k="1.0719726562500003" tail="Mach">
+        <point x="16.5" y="9.0"/>
+        <point x="11.0" y="10.0"/>
+        <point x="11.0" y="12.5"/>
+      </arc>
+      <arc head="Mach" kind="OUTPUT" mult-k="0.50009765625" tail="end" tail-magnet="3">
+        <point x="30.5" y="12.5"/>
+        <point x="30.5" y="10.0"/>
+        <point x="26.0" y="9.0"/>
+      </arc>
+      <arc head="end" kind="INPUT" mult-k="0.98818359375" tail="Work">
+        <point x="21.0" y="15.5"/>
+        <point x="26.5" y="15.5"/>
+      </arc>
+      <arc head="Work" kind="OUTPUT" mult-k="0.5" tail="start" tail-magnet="5">
+        <point x="14.5" y="13.5"/>
+      </arc>
+      <arc head="fail" kind="INPUT" mult-k="0.0" tail="Work"/>
+      <arc head="Broken" kind="OUTPUT" mult-k="0.5" tail="fail"/>
+      <arc head="end" kind="INPUT" mult-k="0.5" tail="stage2"/>
+      <arc head="interm" head-magnet="11" kind="INPUT" mult-k="0.6682617187500001" tail="Work">
+        <point x="19.0" y="13.5"/>
+      </arc>
+      <arc head="Work" kind="OUTPUT" mult-k="1.32763671875" tail="interm" tail-magnet="11">
+        <point x="19.0" y="13.5"/>
+      </arc>
+      <arc head="repair" kind="INPUT" tail="Broken"/>
+      <arc head="Pallets" kind="OUTPUT" tail="load"/>
+      <arc head="start" head-magnet="10" kind="INPUT" tail="Pallets"/>
+      <arc head="Work" kind="OUTPUT" tail="repair">
+        <point x="31.5" y="18.0"/>
+        <point x="31.5" y="20.5"/>
+        <point x="13.0" y="20.5"/>
+        <point x="13.0" y="18.0"/>
+      </arc>
+      <arc head="Complete" kind="OUTPUT" tail="end"/>
+    </edges>
+  </gspn>
+  <gspn name="CPN with static subclasses">
+    <nodes>
+      <color-class definition="s{1 .. 4} is S1 + s{5..8}  is S2" name="CS" x="1.5625" y="13.0"/>
+      <place domain="CS" label-x="1.5" label-y="-1.5" marking="&lt;All&gt;" name="all_active" x="5.0" y="5.0"/>
+      <transition delay-x="0.375" delay-y="0.75" guard="s in S1" guard-y="1.75" name="T0" nservers-x="0.5" type="EXP" x="13.55" y="8.0"/>
+      <color-var domain="CS" name="s" x="2.25" y="15.0"/>
+      <transition name="T1" nservers-x="0.5" type="EXP" x="13.55" y="3.0"/>
+      <place domain="CS" marking="&lt;S2&gt;" name="P0" x="22.0" y="3.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" mult="&lt;s&gt;" mult-x="0.0625" mult-y="0.75" tail="all_active"/>
+      <arc head="T1" kind="INPUT" mult="&lt;S2&gt;" mult-x="0.625" mult-y="0.6875" tail="all_active"/>
+      <arc head="P0" kind="OUTPUT" mult="&lt;s&gt;" mult-k="0.49990234375" mult-x="8.789062500014211E-4" mult-y="-0.5" tail="T1"/>
+    </edges>
+  </gspn>
+  <gspn name="CHPN1">
+    <nodes>
+      <place domain="C" label-y="-1.5" marking="4&lt;All&gt;" name="C0" type="CONTINUOUS" x="13.0" y="2.0"/>
+      <color-class definition="c{1..2}" name="C" x="1.125" y="3.0"/>
+      <transition label-x="-1.0" label-y="-1.0" name="F0" rotation="1.5707963267948966" type="CONT" x="13.55" y="6.0"/>
+      <color-var domain="C" name="x" x="0.9375" y="5.0"/>
+      <place domain="C" name="C1" type="CONTINUOUS" x="13.0" y="10.0"/>
+    </nodes>
+    <edges>
+      <arc head="F0" kind="INPUT" mult="1.5&lt;x&gt;" mult-k="0.49990234375" mult-x="1.5" mult-y="5.859375000003553E-4" tail="C0"/>
+      <arc head="C1" kind="OUTPUT" mult="3&lt;x&gt;" mult-k="0.41669921875000004" mult-x="1.5" mult-y="-1.9531250000071054E-4" tail="F0"/>
+    </edges>
+  </gspn>
+  <gspn name="Colored Guard">
+    <nodes>
+      <color-class definition="c{1..3}" name="C" x="6.4375" y="2.0"/>
+      <place domain="C" marking="2&lt;All&gt;" name="P0" x="6.0" y="8.0"/>
+      <place domain="C" marking="&lt;All&gt;" name="P1" x="6.0" y="13.0"/>
+      <color-var domain="C" name="x" x="16.9375" y="2.0"/>
+      <color-var domain="C" name="y" x="16.9375" y="3.6875"/>
+      <transition guard="x==y" name="T0" nservers-x="0.5" type="EXP" x="13.55" y="11.0"/>
+      <place domain="CxC" name="P2" x="20.0" y="11.0"/>
+      <color-class definition="C*C" name="CxC" x="4.125" y="3.6875"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" mult="2&lt;x&gt;" mult-k="0.5602539062499999" mult-x="-0.1999999999999993" mult-y="0.6999999999999993" tail="P0"/>
+      <arc head="T0" kind="INPUT" mult="&lt;y&gt;" mult-k="0.49990234375" mult-x="0.3000000000000007" mult-y="0.6999999999999993" tail="P1"/>
+      <arc head="P2" kind="OUTPUT" mult="&lt;x,y&gt;" mult-k="0.4286132812500001" mult-x="0.09345703124999893" mult-y="-0.5" tail="T0"/>
+    </edges>
+  </gspn>
+  <gspn name="SimpleCPN">
+    <nodes>
+      <color-class definition="c{1..3} is C1 + {c4,c5} is C2" name="Col" x="2.6875" y="2.0"/>
+      <place domain="Col" label-x="-3.0" label-y="0.0" marking="&lt;All&gt;" name="P0" x="7.0" y="11.0"/>
+      <transition delay-x="0.375" delay-y="0.8125" guard="x in C1" name="T0" nservers-x="0.5" type="EXP" x="12.55" y="8.0"/>
+      <transition delay-x="0.4375" delay-y="0.8125" guard="x !in C2" name="T1" nservers-x="0.5" type="EXP" x="12.55" y="14.0"/>
+      <place domain="CxC" label-x="2.5" label-y="0.0" marking="m0" name="P1" x="17.0" y="11.0"/>
+      <color-var domain="Col" name="x" x="4.3125" y="5.5"/>
+      <color-class definition="Col*Col" name="CxC" x="1.125" y="3.0"/>
+      <constant consttype="INTEGER" domain="CxC" name="m0" value="&lt;All,C2&gt;" x="5.625" y="4.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" mult="&lt;x&gt;" mult-k="1.41416015625" mult-x="0.0" mult-y="-0.5" tail="P0">
+        <point x="8.0" y="9.0"/>
+      </arc>
+      <arc head="P1" kind="OUTPUT" mult="&lt;x,x++&gt;" mult-x="-0.0625" mult-y="-0.5" tail="T0">
+        <point x="18.0" y="9.0"/>
+      </arc>
+      <arc head="T1" kind="INPUT" mult="&lt;x--,x&gt;" mult-k="1.41416015625" mult-x="-0.0625" mult-y="-0.5" tail="P1">
+        <point x="18.0" y="15.0"/>
+      </arc>
+      <arc head="P0" kind="OUTPUT" mult="&lt;x&gt;" mult-x="-0.0625" mult-y="-0.5625" tail="T1">
+        <point x="8.0" y="15.0"/>
+      </arc>
+    </edges>
+  </gspn>
+</project>

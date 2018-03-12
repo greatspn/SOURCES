@@ -1,0 +1,66 @@
+#directories
+OBJ = ../../../$(GSPN2BINS)/algebra_obj
+BIN = ../../../$(GSPN2BINS)
+
+#commands
+COMP = gcc -O3 -w
+LINK = gcc -O3 -w
+
+LFLAG = -lm -l$(LEX_LIB) 
+#-l$(YACC_LIB)
+
+#files groups
+EXECUTABLE = algebra
+INCLUDES = global.h \
+	   alloc.h \
+	   layer.h \
+	   rescale.h \
+	   save.h
+OBJECTS = ${OBJ}/y.tab.o \
+	  ${OBJ}/lex.yy.o \
+	  ${OBJ}/global.o \
+	  ${OBJ}/alloc.o \
+	  ${OBJ}/layer.o \
+	  ${OBJ}/save.o \
+	  ${OBJ}/load.o \
+	  ${OBJ}/rescale.o \
+	  ${OBJ}/algebra.o
+SOURCES = y.tab.c \
+	  lex.yy.c \
+	  global.c \
+	  alloc.c \
+	  layer.c \
+	  save.c \
+	  load.c \
+	  rescale.c \
+	  algebra.c
+LEX_FILE = lex.l
+YACC_FILE = yacc.y
+
+#general rules
+$(BIN)/$(EXECUTABLE) : $(OBJECTS) $(SOURCES) $(INCLUDES)
+	$(LINK) $(OBJECTS) -o $@ $(LFLAG)
+
+$(OBJ)/%.o : %.c
+	$(COMP) -c $<  -o $@
+
+y.tab.c: yacc.y
+	$(YACC) -d yacc.y
+
+lex.yy.c: lex.l
+	$(LEX) lex.l
+
+clean:
+	rm y.tab.c
+	rm lex.yy.c
+	rm $(OBJ)/*.o
+	rm $(BIN)/$(EXECUTABLE)
+
+
+
+
+
+
+
+
+

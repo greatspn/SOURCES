@@ -1,0 +1,181 @@
+/*******************************************************************************
+        View Layer Dialog
+        
+        Comment:   This Section Describes the View Layer Dialog 
+                                                        
+        Programmer:                             Alex
+        Creation Date:                  27/2/95
+        Last Modify Date:               27/2/95
+
+********************************************************************************/
+procedure
+	ViewLayerDoneCB();
+	ViewLayerEditCB();
+	ViewLayerSelectAllCB();
+	ViewLayerDeselectAllCB();
+	
+object  LayerViewDialog : XmFormDialog
+{
+        controls
+        {
+			XmScrolledWindow  LayerViewDialog_Scroller;
+			XmPushButton  LayerViewDialog_Done;
+			XmPushButton  LayerViewDialog_Edit;
+			XmPushButton  LayerViewDialog_SelectAll;
+			XmPushButton  LayerViewDialog_DeselectAll;
+		};
+        arguments
+        {
+                XmNdialogTitle                  =       "View Layers";
+                XmNwidth                        =       300;
+                XmNheight                       =       300;
+                XmNminWidth                     =       300;
+                XmNminHeight                    =       300;
+                XmNautoUnmanage                 =       false;
+				XmNbackground 					=		appDialogBackgroundColor;
+				XmNdefaultButton				=		LayerViewDialog_Done;	
+        };
+
+};
+
+
+object LayerViewDialog_Done : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_OPPOSITE_FORM;
+      XmNbottomOffset =              -50;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                10;
+      XmNlabelString =               'Done';
+      XmNrecomputeSize =            false;
+      XmNshowAsDefault =             1;
+      XmNwidth =                     60;
+      XmNheight =                    30;
+   };
+   callbacks
+   {
+   	XmNactivateCallback = procedure ViewLayerDoneCB();
+	};
+};
+
+object LayerViewDialog_Edit : XmPushButton
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_OPPOSITE_FORM;
+      XmNtopOffset =              -45;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               16;
+      XmNlabelString =               'Edit';
+      XmNrecomputeSize =            false;
+      XmNwidth =                     60;
+      XmNheight =                    30;
+   };
+   callbacks
+   {
+   	XmNactivateCallback = procedure ViewLayerEditCB();
+	};
+};
+
+object LayerViewDialog_SelectAll : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_OPPOSITE_FORM;
+      XmNbottomOffset =              -110;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               16;
+      XmNlabelString =               'Select All';
+!      XmNrecomputeSize =            false;
+!      XmNwidth =                     80;
+      XmNheight =                    30;
+   };
+   callbacks
+   {
+   	XmNactivateCallback = procedure ViewLayerSelectAllCB();
+	};
+};
+
+object LayerViewDialog_DeselectAll : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_OPPOSITE_FORM;
+      XmNbottomOffset =              -150;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               16;
+      XmNlabelString =               'Unselect All';
+!      XmNrecomputeSize =            false;
+!      XmNwidth =                     80;
+      XmNheight =                    30;
+   };
+   callbacks
+   {
+   	XmNactivateCallback = procedure ViewLayerDeselectAllCB();
+	};
+};
+
+
+
+object LayerViewDialog_Scroller : XmScrolledWindow
+{
+	controls
+	{
+		 XmRowColumn LayerViewDialog_RC;
+	};
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              10;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                110;
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              10;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+		XmNbackground =				appDialogBackgroundColor;
+		
+		XmNscrollingPolicy =				XmAUTOMATIC;
+		XmNscrollBarDisplayPolicy =			XmAS_NEEDED;
+      XmNwidth =                     180;
+      XmNheight =                    100;
+   };
+};
+
+
+object LayerViewDialog_RC : XmRowColumn
+{
+	controls
+	{
+!		XmToggleButton LayerViewDialog_Layer0;
+	};
+   arguments
+   {
+/*      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              10;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                10;
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              10;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+		*/
+		XmNpacking	=						XmPACK_TIGHT;
+		XmNorientation =								XmVERTICAL;
+		XmNradioBehavior =								false;
+		XmNradioAlwaysOne =								false;
+		XmNbackground =				appDialogBackgroundColor;
+   };
+};
+
+object LayerViewDialog_Layer0 : XmToggleButton
+{
+   arguments
+   {
+      XmNlabelString =               'The Whole Net';
+      XmNrecomputeSize =            false;
+      XmNmarginWidth =                     0;
+      XmNmarginHeight =                    0;
+   };
+};

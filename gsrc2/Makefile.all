@@ -1,0 +1,384 @@
+CC     ?= /opt/gnu/bin/gcc
+OFLAGS = -g -D$(GREAT_PLATFORM) -o
+CFLAGS = -g -D$(GREAT_PLATFORM) -c
+#OFLAGS ?= -O3 -fsigned-char -D$(GREAT_PLATFORM) -o
+#CFLAGS ?= -O3 -fsigned-char -D$(GREAT_PLATFORM) -c
+DFLAGS ?= -UDEBUG
+FFLAGS ?=
+LFLAGS ?= -lm
+PFLAGS ?=
+
+LEX     ?= lex
+YACC    ?= yacc
+LEX_LIB ?= fl
+
+BIN =		$(GSPN2BINS)/2bin
+BINDIR =	../../$(BIN)/
+BINESRG =       ESRGO
+BINCESRG=       CESRGO
+BINMCDSRG=      MCDSRGO
+BINDMC= LIBDMC
+LIBDIR =        lib
+GSPN_SCRIPTS = bin
+
+
+
+
+PACKBINS =	$(BINDIR)compact.o \
+		$(BINDIR)transpose $(BINDIR)ggsc \
+		$(BINDIR)ntrs $(BINDIR)ntrex2 \
+		$(BINDIR)struct \
+		$(BINDIR)tinvar $(BINDIR)pinvar $(BINDIR)deadlock \
+		$(BINDIR)implp $(BINDIR)gre \
+		$(BINDIR)unbound \
+		$(BINDIR)grg_prep $(BINDIR)grg_stndrd \
+		$(BINDIR)throughput $(BINDIR)show_stndrd \
+		$(BINDIR)gmt_prep $(BINDIR)gmt_stndrd \
+		$(BINDIR)gst_prep $(BINDIR)gst_stndrd \
+		$(BINDIR)strong_con $(BINDIR)liveness \
+		$(BINDIR)mark_lp \
+		$(BINDIR)flow_lp $(BINDIR)disab_lp \
+		$(BINDIR)showprob \
+		$(BINDIR)showmtx\
+		$(BINDIR)showtpd		
+#		../../$(GSPN_SCRIPTS)showprob \
+#		../../$(GSPN_SCRIPTS)showmtx \
+#		../../$(GSPN_SCRIPTS)showtpd \
+#		$(BINDIR)gtrc \
+#		$(BINDIR)grg.o $(BINDIR)gmtc.o $(BINDIR)gst.o \
+#		$(BINDIR)comp \
+#		$(BINDIR)dortmund_sortmark \
+
+
+COMMANDS =	../../$(GSPN_SCRIPTS)/newRG \
+		../../$(GSPN_SCRIPTS)/showRG \
+		../../$(GSPN_SCRIPTS)/checkRG \
+		../../$(GSPN_SCRIPTS)/newMT \
+		../../$(GSPN_SCRIPTS)/newSO \
+		../../$(GSPN_SCRIPTS)/randomTR \
+		../../$(GSPN_SCRIPTS)/rande2TR \
+		../../$(GSPN_SCRIPTS)/RMNET \
+		../../$(GSPN_SCRIPTS)/showprob \
+		../../$(GSPN_SCRIPTS)/showmtx \
+		../../$(GSPN_SCRIPTS)/showtpd \
+		../../$(GSPN_SCRIPTS)/showCTMC \
+		../../$(GSPN_SCRIPTS)/showCTMCdot \
+		../../$(GSPN_SCRIPTS)/showCTMC2SMART 
+#		../../$(GSPN_SCRIPTS)/newTR \
+#		../../$(GSPN_SCRIPTS)/2RG ../../$(GSPN_SCRIPTS)/2SO ../../$(GSPN_SCRIPTS)/2MT \
+#		../../$(GSPN_SCRIPTS)/2TR ../../$(GSPN_SCRIPTS)/2GS \
+#		../../$(GSPN_SCRIPTS)/DortmundMT \
+
+SHSCRIPT =	../../$(GSPN_SCRIPTS)/struct ../../$(GSPN_SCRIPTS)/sbound \
+		../../$(GSPN_SCRIPTS)/pinv ../../$(GSPN_SCRIPTS)/tinv \
+		../../$(GSPN_SCRIPTS)/deadl ../../$(GSPN_SCRIPTS)/traps ../../$(GSPN_SCRIPTS)/implp \
+		../../$(GSPN_SCRIPTS)/lpbound ../../$(GSPN_SCRIPTS)/glp_solve \
+		../../$(GSPN_SCRIPTS)/lpmark
+#		../../$(GSPN_SCRIPTS)/grg.h ../../$(GSPN_SCRIPTS)/gst2 \
+
+Great2_PACKAGE : ../../$(GSPN_SCRIPTS) ../../$(BIN) ../../$(BIN)/$(BINESRG) ../../$(BIN)/$(BINCESRG) ../../$(BIN)/$(BINDMC) ../../$(BIN)/$(BINMCDSRG) ../../$(BIN)/$(LIBDIR) $(SHSCRIPT) $(PACKBINS) $(COMMANDS)
+
+
+# Directories
+
+../../$(GSPN_SCRIPTS) :
+	cd ../.. ; mkdir $(GSPN_SCRIPTS)
+
+../../$(GSPN2BINS) :
+	cd ../.. ; mkdir $(GSPN2BINS)
+
+../../$(BIN) : ../../$(GSPN2BINS)
+	cd ../.. ; mkdir $(BIN); cd $(BIN); touch .
+
+../../$(BIN)/$(BINESRG) :
+	cd ../.. ; cd  $(BIN); mkdir $(BINESRG) ; cd  $(BINESRG) ; touch .
+
+../../$(BIN)/$(BINCESRG) :
+	cd ../.. ; cd  $(BIN); mkdir $(BINCESRG) ; cd  $(BINCESRG) ; touch .
+
+../../$(BIN)/$(BINMCDSRG) :
+	cd ../.. ; cd  $(BIN); mkdir $(BINMCDSRG) ; cd  $(BINMCDSRG) ; touch .
+
+../../$(BIN)/$(BINDMC) :
+	cd ../.. ; cd  $(BIN); mkdir $(BINDMC) ; cd  $(BINDMC) ; touch . ; mkdir lib; cd lib ; touch .;
+
+../../$(BIN)/$(LIBDIR) :
+	cd ../.. ; cd  $(BIN); mkdir $(LIBDIR) ; cd  $(LIBDIR) ; touch .
+
+
+# Structural Analysis Programs
+
+$(BINDIR)pinvar : pinvar.c const.h
+	$(CC) $(DFLAGS) $(OFLAGS) $(BINDIR)pinvar pinvar.c
+
+$(BINDIR)tinvar : tinvar.c const.h
+	$(CC) $(DFLAGS) $(OFLAGS) $(BINDIR)tinvar tinvar.c
+
+$(BINDIR)unbound : unbound.c const.h
+	$(CC) $(DFLAGS) $(OFLAGS) $(BINDIR)unbound unbound.c
+
+$(BINDIR)deadlock : deadlock.c const.h
+	$(CC) $(DFLAGS) $(OFLAGS) $(BINDIR)deadlock deadlock.c
+
+$(BINDIR)implp : implp.c const.h
+	$(CC) $(DFLAGS) $(OFLAGS) $(BINDIR)implp implp.c
+
+
+
+# Solution Package
+
+$(BINDIR)compact.o : compact.c
+	$(CC) $(DFLAGS) $(CFLAGS)  compact.c ; mv compact.o $(BINDIR)
+
+$(BINDIR)grg.o : grg.c grg.h const.h
+	cd .. ; $(CC) $(DFLAGS) $(CFLAGS) gsrc2/grg.c ; mv grg.o $(BINDIR)
+
+$(BINDIR)gmtc.o : gmtc.c grg.h const.h
+	cd ..; $(CC) $(DFLAGS) $(FFLAGS) $(CFLAGS)  gsrc2/gmtc.c ; mv gmtc.o $(BINDIR)
+
+$(BINDIR)transpose : transpose.c grg.h const.h $(BINDIR)compact.o
+	$(CC) $(DFLAGS) $(OFLAGS) $(BINDIR)transpose transpose.c $(BINDIR)compact.o
+
+$(BINDIR)ggsc : ggsc.c grg.h const.h $(BINDIR)compact.o
+	$(CC) $(DFLAGS) $(FFLAGS) $(OFLAGS) $(BINDIR)ggsc ggsc.c $(BINDIR)compact.o
+
+$(BINDIR)gtrc : gtrc.c grg.h const.h $(BINDIR)compact.o
+	$(CC) $(DFLAGS) $(FFLAGS) $(OFLAGS) $(BINDIR)gtrc gtrc.c $(BINDIR)compact.o
+
+$(BINDIR)ntrs : ntrs.c grg.h const.h $(BINDIR)compact.o
+	$(CC) $(DFLAGS) $(FFLAGS) $(OFLAGS) $(BINDIR)ntrs ntrs.c $(BINDIR)compact.o
+
+$(BINDIR)ntrex2 : ntrex2.c grg.h const.h $(BINDIR)compact.o
+	$(CC) $(DFLAGS) $(FFLAGS) $(OFLAGS) $(BINDIR)ntrex2 ntrex2.c $(BINDIR)compact.o
+
+$(BINDIR)gst.o : gst.c const.h grg.h
+	$(CC) $(DFLAGS) $(FFLAGS) $(CFLAGS)  gst.c ; mv gst.o $(BINDIR)
+
+$(BINDIR)gre : gre.c res_gram.lex res_gram.yacc
+	$(LEX) res_gram.lex
+	$(YACC) res_gram.yacc
+	$(CC) $(DFLAGS) $(OFLAGS)  $(BINDIR)gre y.tab.c -l$(LEX_LIB)
+	/bin/rm -f lex.yy.c y.tab.c *.o
+
+$(BINDIR)comp : $(BINDIR)comp_main.o $(BINDIR)comp_menc.o $(BINDIR)comp_mark.o \
+		$(BINDIR)comp_tran.o $(BINDIR)comp_rate.o
+	cd .. ; $(CC) $(DFLAGS) $(OFLAGS) $(BIN)/comp \
+		$(BIN)/comp_main.o $(BIN)/comp_menc.o $(BIN)/comp_mark.o \
+		$(BIN)/comp_tran.o $(BIN)/comp_rate.o -l$(LEX_LIB)
+
+$(BINDIR)comp_main.o : comp_main.c const.h comp.h
+	cd .. ; $(CC) $(DFLAGS) $(CFLAGS) gsrc2/comp_main.c ; \
+	mv comp_main.o $(BIN)/comp_main.o
+
+$(BINDIR)comp_menc.o : comp_menc.c const.h comp.h
+	cd .. ; $(CC) $(DFLAGS) $(CFLAGS) gsrc2/comp_menc.c ; \
+	mv comp_menc.o $(BIN)/comp_menc.o
+
+$(BINDIR)comp_mark.o : comp_mark.c const.h comp.h
+	cd .. ; $(CC) $(DFLAGS) $(CFLAGS) gsrc2/comp_mark.c ; \
+	mv comp_mark.o $(BIN)/comp_mark.o
+
+$(BINDIR)comp_tran.o : comp_tran.c const.h comp.h
+	cd .. ; $(CC) $(DFLAGS) $(CFLAGS) gsrc2/comp_tran.c ; \
+	mv comp_tran.o $(BIN)/comp_tran.o
+
+$(BINDIR)comp_rate.o : comp_rate.c const.h comp.h \
+			mdr_gram.lex mdr_gram.yacc
+	$(LEX) mdr_gram.lex
+	$(YACC) mdr_gram.yacc
+	$(CC) $(DFLAGS) $(CFLAGS) y.tab.c
+	mv y.tab.o $(BINDIR)comp_rate.o
+	/bin/rm -f lex.yy.c y.tab.c *.o
+
+$(BINDIR)struct : struct.c const.h
+	$(CC) $(DFLAGS) $(OFLAGS) $(BINDIR)struct struct.c
+
+$(BINDIR)grg_prep : grg_prep.c
+	$(CC) $(DFLAGS) $(OFLAGS) $(BINDIR)grg_prep grg_prep.c
+
+$(BINDIR)gmt_prep : gmt_prep.c mdr_stndrd.lex mdr_stndrd.yacc
+	$(LEX) mdr_stndrd.lex
+	$(YACC) mdr_stndrd.yacc
+	$(CC) $(DFLAGS) $(OFLAGS) $(BINDIR)gmt_prep y.tab.c -l$(LEX_LIB)
+	/bin/rm -f lex.yy.c y.tab.c *.o
+
+$(BINDIR)gst_prep : gre_stndrd.c res_stndrd.lex res_stndrd.yacc
+	$(LEX) res_stndrd.lex
+	$(YACC) res_stndrd.yacc
+	$(CC)  $(OFLAGS) $(BINDIR)gst_prep y.tab.c -l$(LEX_LIB)
+	/bin/rm -f lex.yy.c y.tab.c *.o
+
+$(BINDIR)grg_stndrd : grg_stndrd.c grg.h const.h $(BINDIR)compact.o
+	$(CC) $(DFLAGS) $(OFLAGS) $(BINDIR)grg_stndrd grg_stndrd.c $(BINDIR)compact.o
+
+$(BINDIR)show_stndrd : show_stndrd.c grg.h const.h $(BINDIR)compact.o
+	$(CC) $(DFLAGS) $(OFLAGS) $(BINDIR)show_stndrd show_stndrd.c $(BINDIR)compact.o
+
+$(BINDIR)strong_con : strong_con.c const.h $(BINDIR)compact.o
+	$(CC) $(DFLAGS) $(OFLAGS) $(BINDIR)strong_con strong_con.c $(BINDIR)compact.o
+
+$(BINDIR)liveness : liveness.c const.h $(BINDIR)compact.o
+	$(CC) $(DFLAGS) $(OFLAGS) $(BINDIR)liveness liveness.c $(BINDIR)compact.o
+
+$(BINDIR)gmt_stndrd : gmt_stndrd.c grg.h const.h $(BINDIR)compact.o
+	$(CC) $(DFLAGS) $(FFLAGS) $(OFLAGS) $(BINDIR)gmt_stndrd gmt_stndrd.c $(BINDIR)compact.o
+
+$(BINDIR)gst_stndrd : gst_stndrd.c grg.h const.h $(BINDIR)compact.o
+	$(CC) $(DFLAGS) $(OFLAGS) $(BINDIR)gst_stndrd gst_stndrd.c $(BINDIR)compact.o
+
+$(BINDIR)throughput : throughput.c grg.h const.h $(BINDIR)compact.o
+	$(CC) $(DFLAGS) $(OFLAGS) $(BINDIR)throughput throughput.c $(BINDIR)compact.o
+
+
+$(BINDIR)convertc.o : convertc.c const.h grg.h
+	$(CC) $(DFLAGS) $(CFLAGS) convertc.c ; mv convertc.o $(BINDIR)
+
+$(BINDIR)dortmund_sortmark : dortmund_sortmark.c grg.h const.h $(BINDIR)compact.o
+	$(CC) $(DFLAGS) $(OFLAGS) $(BINDIR)dortmund_sortmark dortmund_sortmark.c $(BINDIR)compact.o
+
+$(BINDIR)showprob : show_prob.c $(BINDIR)compact.o
+	$(CC) $(DFLAGS) $(OFLAGS) $(BINDIR)showprob show_prob.c $(BINDIR)compact.o
+
+$(BINDIR)showmtx : seemtx.c $(BINDIR)compact.o
+	$(CC) $(DFLAGS) $(OFLAGS) $(BINDIR)showmtx seemtx.c $(BINDIR)compact.o
+
+$(BINDIR)showtpd :  readtpd.c $(BINDIR)compact.o
+	$(CC) $(DFLAGS) $(OFLAGS) $(BINDIR)showtpd readtpd.c $(BINDIR)compact.o
+
+# Linear Programming Analysis
+
+$(BINDIR)mark_lp : mark_lp.c const.h
+	$(CC) $(DFLAGS) $(OFLAGS) $(BINDIR)mark_lp mark_lp.c
+
+$(BINDIR)flow_lp : flow_lp.c const.h
+	$(CC) $(DFLAGS) $(OFLAGS) $(BINDIR)flow_lp flow_lp.c
+
+$(BINDIR)disab_lp : disab_lp.c const.h
+	$(CC) $(DFLAGS) $(OFLAGS) $(BINDIR)disab_lp disab_lp.c
+
+
+# Package commands outside graphics tool
+
+../../$(GSPN_SCRIPTS)/RMNET : RMNET
+	cp RMNET ../../$(GSPN_SCRIPTS)/RMNET ; chmod +x ../../$(GSPN_SCRIPTS)/RMNET
+
+../../$(GSPN_SCRIPTS)/newRG : newRG
+	cp newRG ../../$(GSPN_SCRIPTS)/newRG ; chmod +x ../../$(GSPN_SCRIPTS)/newRG
+
+../../$(GSPN_SCRIPTS)/showRG : showRG
+	cp showRG ../../$(GSPN_SCRIPTS)/showRG ; chmod +x ../../$(GSPN_SCRIPTS)/showRG
+
+../../$(GSPN_SCRIPTS)/checkRG : checkRG
+	cp checkRG ../../$(GSPN_SCRIPTS)/checkRG ; chmod +x ../../$(GSPN_SCRIPTS)/checkRG
+
+../../$(GSPN_SCRIPTS)/newMT : newMT
+	cp newMT ../../$(GSPN_SCRIPTS)/newMT ; chmod +x ../../$(GSPN_SCRIPTS)/newMT
+
+../../$(GSPN_SCRIPTS)/newSO : newSO
+	cp newSO ../../$(GSPN_SCRIPTS)/newSO ; chmod +x ../../$(GSPN_SCRIPTS)/newSO
+
+../../$(GSPN_SCRIPTS)/newTR : newTR
+	cp newTR ../../$(GSPN_SCRIPTS)/newTR ; chmod +x ../../$(GSPN_SCRIPTS)/newTR
+
+../../$(GSPN_SCRIPTS)/randomTR : randomTR
+	cp randomTR ../../$(GSPN_SCRIPTS)/randomTR ; chmod +x ../../$(GSPN_SCRIPTS)/randomTR
+
+../../$(GSPN_SCRIPTS)/rande2TR : rande2TR
+	cp rande2TR ../../$(GSPN_SCRIPTS)/rande2TR ; chmod +x ../../$(GSPN_SCRIPTS)/rande2TR
+
+../../$(GSPN_SCRIPTS)/2RG : 2RG
+	cp 2RG ../../$(GSPN_SCRIPTS)/2RG ; chmod +x ../../$(GSPN_SCRIPTS)/2RG
+
+../../$(GSPN_SCRIPTS)/2GS : 2GS
+	cp 2GS ../../$(GSPN_SCRIPTS)/2GS ; chmod +x ../../$(GSPN_SCRIPTS)/2GS
+
+../../$(GSPN_SCRIPTS)/2SO : 2SO
+	cp 2SO ../../$(GSPN_SCRIPTS)/2SO ; chmod +x ../../$(GSPN_SCRIPTS)/2SO
+
+../../$(GSPN_SCRIPTS)/2MT : 2MT
+	cp 2MT ../../$(GSPN_SCRIPTS)/2MT ; chmod +x ../../$(GSPN_SCRIPTS)/2MT
+
+../../$(GSPN_SCRIPTS)/2TR : 2TR
+	cp 2TR ../../$(GSPN_SCRIPTS)/2TR ; chmod +x ../../$(GSPN_SCRIPTS)/2TR
+
+../../$(GSPN_SCRIPTS)/DortmundMT : DortmundMT
+	cp DortmundMT ../../$(GSPN_SCRIPTS)/DortmundMT
+	chmod +x ../../$(GSPN_SCRIPTS)/DortmundMT
+
+../../$(GSPN_SCRIPTS)/showprob : showprob
+	cp showprob ../../$(GSPN_SCRIPTS)/showprob ; chmod +x ../../$(GSPN_SCRIPTS)/showprob
+
+../../$(GSPN_SCRIPTS)/showmtx : showmtx
+	cp showmtx ../../$(GSPN_SCRIPTS)/showmtx ; chmod +x ../../$(GSPN_SCRIPTS)/showmtx
+
+../../$(GSPN_SCRIPTS)/showtpd : showtpd.sh
+	cp showtpd.sh ../../$(GSPN_SCRIPTS)/showtpd ; chmod +x ../../$(GSPN_SCRIPTS)/showtpd
+	
+../../$(GSPN_SCRIPTS)/showCTMCdot : showCTMCdot
+	cp showCTMCdot ../../$(GSPN_SCRIPTS)/showCTMCdot ; chmod +x ../../$(GSPN_SCRIPTS)/showCTMCdot
+	
+../../$(GSPN_SCRIPTS)/showCTMC : showCTMC
+	cp showCTMC ../../$(GSPN_SCRIPTS)/showCTMC ; chmod +x ../../$(GSPN_SCRIPTS)/showCTMC	
+	
+../../$(GSPN_SCRIPTS)/showCTMC2SMART : showCTMC2SMART
+	cp showCTMC2SMART ../../$(GSPN_SCRIPTS)/showCTMC2SMART ; chmod +x ../../$(GSPN_SCRIPTS)/showCTMC2SMART
+	
+#../../$(GSPN_SCRIPTS)showprob: compact.c show_prob.c
+#	$(CC) $(DFLAGS) $(OFLAGS) ../../$(GSPN_SCRIPTS)/showprob compact.c show_prob.c
+#
+#../../$(GSPN_SCRIPTS)shownmtx: compact.c seemtx.c
+#	$(CC) $(DFLAGS) $(OFLAGS) ../../$(GSPN_SCRIPTS)/shownmtx compact.c seemtx.c
+#
+#../../$(GSPN_SCRIPTS)showtpd: compact.c readtpd.c
+#	$(CC) $(DFLAGS) $(OFLAGS) ../../$(GSPN_SCRIPTS)/showtpd compact.c readtpd.c
+
+	
+# Shell Scripts
+
+../../$(GSPN_SCRIPTS)/struct : struct.sh
+	cp struct.sh ../../$(GSPN_SCRIPTS)/struct; chmod +x ../../$(GSPN_SCRIPTS)/struct
+
+../../$(GSPN_SCRIPTS)/pinv : pinv.sh
+	cp pinv.sh ../../$(GSPN_SCRIPTS)/pinv; chmod +x ../../$(GSPN_SCRIPTS)/pinv
+
+../../$(GSPN_SCRIPTS)/deadl : deadl.sh
+	cp deadl.sh ../../$(GSPN_SCRIPTS)/deadl; chmod +x ../../$(GSPN_SCRIPTS)/deadl
+
+../../$(GSPN_SCRIPTS)/traps : traps.sh
+	cp traps.sh ../../$(GSPN_SCRIPTS)/traps; chmod +x ../../$(GSPN_SCRIPTS)/traps
+
+../../$(GSPN_SCRIPTS)/implp : implp.sh
+	cp implp.sh ../../$(GSPN_SCRIPTS)/implp; chmod +x ../../$(GSPN_SCRIPTS)/implp
+
+../../$(GSPN_SCRIPTS)/tinv : tinv.sh
+	cp tinv.sh ../../$(GSPN_SCRIPTS)/tinv; chmod +x ../../$(GSPN_SCRIPTS)/tinv
+
+../../$(GSPN_SCRIPTS)/sbound : sbound.sh
+	cp sbound.sh ../../$(GSPN_SCRIPTS)/sbound; chmod +x ../../$(GSPN_SCRIPTS)/sbound
+
+../../$(GSPN_SCRIPTS)/lpbound : lpbound.sh
+	cp lpbound.sh ../../$(GSPN_SCRIPTS)/lpbound; chmod +x ../../$(GSPN_SCRIPTS)/lpbound
+
+../../$(GSPN_SCRIPTS)/lpmark : lpmark.sh
+	cp lpmark.sh ../../$(GSPN_SCRIPTS)/lpmark; chmod +x ../../$(GSPN_SCRIPTS)/lpmark
+
+../../$(GSPN_SCRIPTS)/glp_solve : glp_solve.sh
+	cp glp_solve.sh ../../$(GSPN_SCRIPTS)/glp_solve; chmod +x ../../$(GSPN_SCRIPTS)/glp_solve
+
+../../$(GSPN_SCRIPTS)/gst2 : gst.sh
+	cp gst.sh ../../$(GSPN_SCRIPTS)/gst2; chmod +x ../../$(GSPN_SCRIPTS)/gst2
+
+../../$(GSPN_SCRIPTS)/grg.h : grg.h
+	cp grg.h ../../$(GSPN_SCRIPTS)/grg.h
+
+
+# Utilities
+
+clean:
+	/bin/rm -f core ../core a.out *.o
+
+remove :
+	/bin/rm -f $(SHELLSCRIPTS) $(COMMANDS)
+	/bin/rm -r -f ../$(BIN)
+#	/bin/rm -f $(CONVERSIONS)
+

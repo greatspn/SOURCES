@@ -1,0 +1,48 @@
+#!/bin/sh
+. great_package.sh
+
+if [ ! -f $1.epd ]
+then
+	${GREATSPN_SCRIPTDIR}/newMT $1 $3
+	GSPN2STATUS=$?
+	if [ $GSPN2STATUS -ne 0 ]
+	then
+		exit $GSPN2STATUS
+	fi
+fi
+
+echo ""
+echo "Start Transient solution"
+time ${GREATSPN_BINDIR}/ntrex2 $net $2 -e0.000001 -M16 > .gspn_out 2>&1
+if [ $? -ne 0 ]
+then
+	exit 16 
+fi
+cat .gspn_out
+rm -f .gspn_out > /dev/null 2>&1
+
+/bin/cp $net.epd $net.mpd
+	if [ $? -ne 0 ]
+	then
+		exit 31 
+	fi
+
+${GREATSPN_BINDIR}/gst_prep $net
+	if [ $? -ne 0 ]
+	then
+		exit 13
+	fi
+
+${GREATSPN_BINDIR}/gst_stndrd $net > $net.sta
+	if [ $? -ne 0 ]
+	then
+		exit 14
+	fi
+
+${GREATSPN_BINDIR}/throughput $net >> $net.sta
+	if [ $? -ne 0 ]
+	then
+		exit 15 
+	fi
+
+exit 0

@@ -1,0 +1,18 @@
+#directories
+SSOU = SOLVE
+CSOU = SOURCE/SHARED
+GSOU = SOURCE/REACHAB
+RSOU = SOURCE/READNET
+EDT = EDIT
+SFK = SUPPORT
+INC = INCLUDE
+BCK = BACKUP
+TRS = TRANSL
+OBJ = ../../$(GSPN2BINS)/2bin
+BINDIR=../../$(GSPN2BINS)
+
+
+
+RESRG:
+	cd ./SOURCE/RESRG; ./configure; make; cp ./src/ESRG_CTMC ../../$(BINDIR)/; make clean
+

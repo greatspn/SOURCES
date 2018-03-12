@@ -1,0 +1,31 @@
+#
+if ( $2 != "" ) then
+	set net=$2/nets/$1
+else
+	set net=nets/$1
+endif
+if ( ! $?GSPNVERSION ) then
+	set path1 = $0;
+	set path2 = $path1:h
+	set path1 = $path2:h
+        setenv GSPNVERSION $path1/install/version.csh
+	unset path1
+	unset path2
+endif
+if ( ! $?GSPNBINS ) then
+        setenv GSPNBINS `$GSPNVERSION`
+endif
+if ( ! $?GSPNHOME ) then
+        source ~/.GreatSPN_$GSPNBINS
+endif
+if ( ! -e nets/$1.crgr ) then
+	$GSPNHOME/newRG $1 $2
+endif
+/bin/rm -f $net.sta
+$GSPNHOME/2bin/gmt_prep $net >> newMT.list
+echo ""
+echo "Start EMC construction"
+time $GSPNHOME/2bin/gmt_stndrd $net -e0.0000001 $3 $4
+/bin/cp $net.epd $net.mpd
+time $GSPNHOME/2bin/dortmund_sortmark $net
+exit(0)

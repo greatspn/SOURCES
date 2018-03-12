@@ -1,0 +1,379 @@
+function   : funlist
+           | STRING
+        {
+	 if(!IS_NEUTRAL(pl_ind))
+	  out_error(ERROR_AMBIGUOUS_ID,pl_ind,ntr,0,0,NULL,NULL);
+         pl = pl_ind;
+	 if((pl_ind = get_marking_parameter_offset(str_in)) == UNKNOWN)
+	  out_error(ERROR_UNKNOWN_MARKING_PARAMETER,pl,ntr,0,0,str_in,NULL);
+	 fun_ptr = NULL;
+	}
+           | expression  ID
+	{
+	 if(IS_NEUTRAL(pl_ind))
+	  out_error(ERROR_NEUTRAL_PLACE_AND_FUNCTION,pl_ind,ntr,0,0,NULL,NULL);
+	 for(i=0;i<tabp[pl_ind].comp_num;i++)
+	  if(get_proj_num("?",tabp[pl_ind].dominio[i])!=1)
+	   {/* Uso ambiguo di ID */
+	    out_error(ERROR_AMBIGUOUS_ID,pl_ind,ntr,0,0,NULL,NULL);
+	   }/* Uso ambiguo di ID */
+         if(exp_on)
+          {
+	   emit(TYPEEND,"",0.0,0);
+           coef_val = (int)evaluate_expression(pcode_h,NULL);
+           push_expression(pcode_h,pcode_t);
+           pcode_h = pcode_t = NULL;
+          }
+	 ptr=(Coeff_p)emalloc(sizeof(struct ENN_COEFF));
+	 ptr->enn_coef=coef_val;
+	 ptr->guard=NULL;
+	 ptr->next=NULL;
+	 ptr->coef=(Func_p)ecalloc(tabp[pl_ind].comp_num,sizeof(struct COEFF));
+	 for(i=0;i<tabp[pl_ind].comp_num;i++)
+	  {
+	   ptr->coef[i].xsucc_coef=(int *)ecalloc(3,sizeof(int));
+	   ptr->coef[i].sbc_coef=(int *)ecalloc(tabc[tabp[pl_ind].dominio[i]].sbc_num,sizeof(int));
+	   ptr->coef[i].xsucc_coef[0]=1;
+	   ptr->coef[i].xsucc_coef[1]=0;
+	   ptr->coef[i].xsucc_coef[2]=0;
+	  }
+         fun_ptr=ptr;
+	}
+	|  expression  S 
+	{
+	 if(IS_NEUTRAL(pl_ind))
+	  out_error(ERROR_NEUTRAL_PLACE_AND_FUNCTION,pl_ind,ntr,0,0,NULL,NULL);
+         if(exp_on)
+          {
+	   emit(TYPEEND,"",0.0,0);
+           coef_val = (int)evaluate_expression(pcode_h,NULL);
+           push_expression(pcode_h,pcode_t);
+           pcode_h = pcode_t = NULL;
+          }
+	 ptr=(Coeff_p)emalloc(sizeof(struct ENN_COEFF));
+	 ptr->enn_coef=coef_val;
+	 ptr->guard=NULL;
+	 ptr->next=NULL;
+	 ptr->coef=(Func_p)ecalloc(tabp[pl_ind].comp_num,sizeof(struct COEFF));
+	 for(i=0;i<tabp[pl_ind].comp_num;i++)
+	  {
+	   ptr->coef[i].xsucc_coef=(int *)ecalloc(3,sizeof(int));
+	   cl=tabp[pl_ind].dominio[i];
+	   ptr->coef[i].sbc_coef=(int *)ecalloc(tabc[cl].sbc_num,sizeof(int));
+	   for(sbc_ind=0;sbc_ind<tabc[cl].sbc_num;sbc_ind++)
+	    ptr->coef[i].sbc_coef[sbc_ind]=1;
+	   ptr->coef[i].xsucc_coef[0]=0;
+	   ptr->coef[i].xsucc_coef[1]=0;
+	   ptr->coef[i].xsucc_coef[2]=0;
+	  }
+         fun_ptr=ptr;
+	}
+	   ;
+funlist    : expression 
+	{
+	 if(IS_NEUTRAL(pl_ind))
+	  out_error(ERROR_NEUTRAL_PLACE_AND_FUNCTION,pl_ind,ntr,0,0,NULL,NULL);
+         if(exp_on)
+          {
+	   emit(TYPEEND,"",0.0,0);
+           coef_val = (int)evaluate_expression(pcode_h,NULL);
+           push_expression(pcode_h,pcode_t);
+           pcode_h = pcode_t = NULL;
+          }
+	 ptr=(Coeff_p)emalloc(sizeof(struct ENN_COEFF));
+	 ptr->enn_coef=coef_val * enn_sign;
+	 enn_sign=1;
+	 ptr->coef=(Func_p)ecalloc(tabp[pl_ind].comp_num ,sizeof(struct COEFF));
+	 for(ind=0;ind<tabp[pl_ind].comp_num;ind++)
+	  {
+	   ptr->coef[ind].xsucc_coef=(int *)ecalloc(3*MAX_COL_RIP,sizeof(int));
+	   ptr->coef[ind].sbc_coef=(int *)ecalloc(tabc[tabp[pl_ind].dominio[ind]].sbc_num,sizeof(int));
+	  }
+	 ptr->next=fun_ptr;/* Settare fun_ptr a NULL prima di parse */
+	 fun_ptr=ptr;
+	 ptr->guard = NULL;
+	}
+         opzguard LT funzseq GT
+	{
+	 if(count!=tabp[pl_ind].comp_num-1)
+	  out_error(ERROR_LESSER_FUNCTION_COMPONENTS,pl_ind,ntr,0,0,NULL,NULL);
+	}
+	   | funlist plusop
+	{
+	 enn_sign=sign;
+	 sign=1;
+         pcode_h = pcode_t = NULL;
+	}
+	      expression 
+	{
+	 if(IS_NEUTRAL(pl_ind))
+	  out_error(ERROR_NEUTRAL_PLACE_AND_FUNCTION,pl_ind,ntr,0,0,NULL,NULL);
+         if(exp_on)
+          {
+	   emit(TYPEEND,"",0.0,0);
+           coef_val = (int)evaluate_expression(pcode_h,NULL);
+           push_expression(pcode_h,pcode_t);
+           pcode_h = pcode_t = NULL;
+          }
+	 ptr=(Coeff_p)emalloc(sizeof(struct ENN_COEFF));
+	 ptr->enn_coef=coef_val * enn_sign;
+	 enn_sign=1;
+	 ptr->coef=(Func_p)ecalloc(tabp[pl_ind].comp_num ,sizeof(struct COEFF));
+	 for(ind=0;ind<tabp[pl_ind].comp_num;ind++)
+	  {
+	   ptr->coef[ind].xsucc_coef=(int *)ecalloc(3*MAX_COL_RIP,sizeof(int));
+	   ptr->coef[ind].sbc_coef=(int *)ecalloc(tabc[tabp[pl_ind].dominio[ind]].sbc_num,sizeof(int));
+	  }
+	 ptr->next=fun_ptr;
+	 fun_ptr=ptr;
+	 ptr->guard = NULL;
+	}
+	   opzguard LT funzseq GT
+	{
+	 if(count!=tabp[pl_ind].comp_num-1)
+	  out_error(ERROR_LESSER_FUNCTION_COMPONENTS,pl_ind,ntr,0,0,NULL,NULL);
+	}
+	   ;
+opzguard   : OBRCK 
+	{
+	 ptr->guard = NULL;
+	 prd_h = prd_t = NULL;
+	}
+	     pred
+	{
+	 gen(TYPEEND,"");
+	 ptr->guard = prd_h;
+	}
+	     CBRCK
+           |
+	   ;
+funzseq    :
+	{
+	 count=0;
+	}
+	     kernel
+	   | funzseq COMMA 
+        {
+	 if(count==tabp[pl_ind].comp_num-1)
+	  out_error(ERROR_GREATER_FUNCTION_COMPONENTS,pl_ind,ntr,0,0,NULL,NULL);
+	 count++;
+        }
+	     kernel
+	   ;
+kernel	   : term
+	   | kernel plusop term
+	   ;
+term	   : 
+	    sterm
+	   | 
+	    nterm
+	   | 
+	    CARET expression STRING
+	{
+	 cl = tabp[pl_ind].dominio[count];
+	 if(tabc[cl].type != ORDERED)
+	  out_error(ERROR_ILLEGAL_PREDECESSOR,pl_ind,ntr,cl,0,NULL,NULL);
+         if(exp_on)
+          {
+	   emit(TYPEEND,"",0.0,0);
+           coef_val = (int)evaluate_expression(pcode_h,NULL);
+           push_expression(pcode_h,pcode_t);
+           pcode_h = pcode_t = NULL;
+          }
+	 proj_num = get_proj_num(str_in,cl);
+	 switch(proj_num)
+	  {
+	   case ERROR_SHARED_NAME :
+		out_error(ERROR_SHARED_NAME,pl_ind,ntr,cl,0,str_in,NULL);
+	   case ERROR_AMBIGUITY_IN_ARC :
+		out_error(ERROR_AMBIGUITY_IN_ARC,pl_ind,ntr,0,0,NULL,NULL);
+	   default :
+		ptr->coef[count].xsucc_coef[3*(proj_num-1)+2]+=coef_val* sign;
+		sign=1;
+		break;
+	  }
+	}
+	   | 
+	   xterm
+	   ;
+sterm	   :  expression  S NUM
+	{
+	 cl = tabp[pl_ind].dominio[count];
+	 if(str_val<1 || str_val>tabc[cl].sbc_num)
+	  out_error(ERROR_WRONG_STATIC_INDEX_IN_FUNCTION,pl_ind,ntr,cl,0,NULL,NULL);
+         if(exp_on)
+          {
+	   emit(TYPEEND,"",0.0,0);
+           coef_val = (int)evaluate_expression(pcode_h,NULL);
+           push_expression(pcode_h,pcode_t);
+           pcode_h = pcode_t = NULL;
+          }
+	 if(input_flag && tabc[cl].sbclist[str_val-1].card==1)
+	  {/* Trasformazione possibile da sincronizzazione a proiezione */
+	   sprintf(sbc_name,"%ds!c%d",tabp[pl_ind].dominio[count],str_val-1);
+	   strcpy(str_in,sbc_name);
+	   if(!already_transformed(sbc_name,tabp[pl_ind].dominio[count]))
+	    {/* Produzione del predicato */
+	     if(tabt[ntr].guard == NULL)
+	      {/* Creare struttura dati per il predicato */
+	       tabt[ntr].guard = NULL;
+	       prd_h = prd_t = NULL;
+	       gen(TYPED,sbc_name);
+	       sprintf(sbc_name,"%d",str_val-1);
+	       gen(TYPENUM,sbc_name);
+	       gen(TYPEEQ,"");
+	       gen(TYPEEND,"");
+	       tabt[ntr].guard = prd_h;
+	      }/* Creare struttura dati per il predicato */
+             else
+	      {/* Struttura dati esistente */
+	       prd_h = prd_t;
+	       prd_t = tabt[ntr].guard;
+	       for(;prd_t->next->type !=TYPEEND ;prd_t = prd_t->next);
+	       gen(TYPED,sbc_name);
+	       sprintf(sbc_name,"%d",str_val-1);
+	       gen(TYPENUM,sbc_name);
+	       gen(TYPEEQ,"");
+	       gen(TYPEAND,"");
+	       gen(TYPEEND,"");
+	       prd_t->next = prd_h;
+	      }/* Struttura dati esistente */
+	    }/* Produzione del predicato */
+	   proj_num=get_proj_num(str_in,tabp[pl_ind].dominio[count]);
+           switch(proj_num)
+	    {
+	     case ERROR_SHARED_NAME :
+		  out_error(ERROR_SHARED_NAME,pl_ind,ntr,cl,0,str_in,NULL);
+	     case ERROR_AMBIGUITY_IN_ARC :
+		  out_error(ERROR_AMBIGUITY_IN_ARC,pl_ind,ntr,0,0,NULL,NULL);
+	     default :
+		  ptr->coef[count].xsucc_coef[3*(proj_num-1)]+=coef_val* sign;
+		  break;
+            } 
+	  }/* Trasformazione possibile da sincronizzazione a proiezione */
+         else
+	 ptr->coef[count].sbc_coef[str_val-1]+=coef_val * sign;
+	 sign=1;
+	}
+	   | expression  S STRING
+	{
+	 cl = tabp[pl_ind].dominio[count];
+	 if((sbc_ind=already_exist(str_in,cl,STAT))==0)
+	  out_error(ERROR_WRONG_STATIC_NAME_IN_FUNCTION,pl_ind,ntr,cl,0,str_in,NULL);
+         if(exp_on)
+          {
+	   emit(TYPEEND,"",0.0,0);
+           coef_val = (int)evaluate_expression(pcode_h,NULL);
+           push_expression(pcode_h,pcode_t);
+           pcode_h = pcode_t = NULL;
+          }
+	 if(input_flag && tabc[tabp[pl_ind].dominio[count]].sbclist[sbc_ind-1].card==1)
+	  {/* Trasformazione possibile da sincronizzazione a proiezione */
+	   sprintf(sbc_name,"%ds!c%d",tabp[pl_ind].dominio[count],sbc_ind-1);
+	   strcpy(str_in,sbc_name);
+	   if(!already_transformed(sbc_name,tabp[pl_ind].dominio[count]))
+	    {/* Produzione del predicato */
+	     if(tabt[ntr].guard==NULL)
+	      {/* Creare struttura dati per il predicato */
+	       tabt[ntr].guard = NULL;
+	       prd_h = prd_t = NULL;
+	       gen(TYPED,sbc_name);
+	       sprintf(sbc_name,"%d",sbc_ind-1);
+	       gen(TYPENUM,sbc_name);
+	       gen(TYPEEQ,"");
+	       gen(TYPEEND,"");
+	       tabt[ntr].guard = prd_h;
+	      }/* Creare struttura dati per il predicato */
+             else
+	      {/* Struttura dati esistente */
+	       prd_h = prd_t;
+	       prd_t = tabt[ntr].guard;
+	       for(;prd_t->next->type != TYPEEND ; prd_t = prd_t->next);
+	       gen(TYPED,sbc_name);
+	       sprintf(sbc_name,"%d",sbc_ind-1);
+	       gen(TYPENUM,sbc_name);
+	       gen(TYPEEQ,"");
+	       gen(TYPEAND,"");
+	       gen(TYPEEND,"");
+	       prd_t->next = prd_h;
+	      }/* Struttura dati esistente */
+	    }/* Produzione del predicato */
+	   proj_num=get_proj_num(str_in,tabp[pl_ind].dominio[count]);
+           switch(proj_num)
+	    {
+	     case ERROR_SHARED_NAME :
+		  out_error(ERROR_SHARED_NAME,pl_ind,ntr,cl,0,str_in,NULL);
+	     case ERROR_AMBIGUITY_IN_ARC :
+		  out_error(ERROR_AMBIGUITY_IN_ARC,pl_ind,ntr,0,0,NULL,NULL);
+	     default :
+		  ptr->coef[count].xsucc_coef[3*(proj_num-1)]+=coef_val* sign;
+		  break;
+            } 
+	  }/* Trasformazione possibile da sincronizzazione a proiezione */
+         else
+	  ptr->coef[count].sbc_coef[sbc_ind-1]+=coef_val * sign;
+	 sign=1;
+	}
+	   | expression  S
+	{
+         if(exp_on)
+          {
+	   emit(TYPEEND,"",0.0,0);
+           coef_val = (int)evaluate_expression(pcode_h,NULL);
+           push_expression(pcode_h,pcode_t);
+           pcode_h = pcode_t = NULL;
+          }
+	 for(i=0;i<tabc[tabp[pl_ind].dominio[count]].sbc_num;i++)
+	  ptr->coef[count].sbc_coef[i]+=coef_val * sign;
+	 sign=1;
+	}
+	   ;
+nterm	   : expression  ESCL STRING
+	{
+	 cl = tabp[pl_ind].dominio[count];
+	 if(tabc[cl].type != ORDERED)
+	  out_error(ERROR_ILLEGAL_SUCCESSOR,pl_ind,ntr,cl,0,NULL,NULL);
+         if(exp_on)
+          {
+	   emit(TYPEEND,"",0.0,0);
+           coef_val = (int)evaluate_expression(pcode_h,NULL);
+           push_expression(pcode_h,pcode_t);
+           pcode_h = pcode_t = NULL;
+          }
+	 proj_num=get_proj_num(str_in,tabp[pl_ind].dominio[count]);
+	 switch(proj_num)
+	  {
+	   case ERROR_SHARED_NAME :
+		out_error(ERROR_SHARED_NAME,pl_ind,ntr,cl,0,str_in,NULL);
+	   case ERROR_AMBIGUITY_IN_ARC :
+		out_error(ERROR_AMBIGUITY_IN_ARC,pl_ind,ntr,0,0,NULL,NULL);
+	   default :
+		ptr->coef[count].xsucc_coef[3*(proj_num-1)+1]+=coef_val* sign;
+		sign=1;
+		break;
+	  }
+	}
+	   ;
+xterm	   :  expression  STRING
+	{
+         if(exp_on)
+          {
+	   emit(TYPEEND,"",0.0,0);
+           coef_val = (int)evaluate_expression(pcode_h,NULL);
+           push_expression(pcode_h,pcode_t);
+           pcode_h = pcode_t = NULL;
+          }
+	 proj_num=get_proj_num(str_in,tabp[pl_ind].dominio[count]);
+         switch(proj_num)
+	  {
+	   case ERROR_SHARED_NAME :
+		out_error(ERROR_SHARED_NAME,pl_ind,ntr,cl,0,str_in,NULL);
+	   case ERROR_AMBIGUITY_IN_ARC :
+		out_error(ERROR_AMBIGUITY_IN_ARC,pl_ind,ntr,0,0,NULL,NULL);
+	   default :
+		ptr->coef[count].xsucc_coef[3*(proj_num-1)]+=coef_val* sign;
+		sign=1;
+		break;
+          } 
+	}
+	   ;

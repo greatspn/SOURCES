@@ -1,0 +1,24 @@
+transguard   : OBRCK
+	{
+	 tabt[ntr].guard = NULL;
+	 prd_h = prd_t = NULL;
+	}
+	     pred
+	{
+	 gen(TYPEEND,"");
+	 tabt[ntr].guard = prd_h;
+	}
+	     CBRCK opzRESET
+           |
+             DIESIS
+	{
+	 tabt[ntr].reset = TRUE;
+	}
+           |
+	   ;
+opzRESET   : DIESIS
+	{
+	 tabt[ntr].reset = TRUE;
+	}
+           |
+           ;

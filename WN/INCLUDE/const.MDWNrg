@@ -1,0 +1,305 @@
+
+#ifndef  __GSPN_CONST_H__
+#define  __GSPN_CONST_H__
+
+#define MDWN 1
+
+/******* Kind of prototype *******/
+
+/*** Formalism choice ***/
+#define SWN 0 
+/*#define GSPN 1 */
+/*** Formalism choice ***/
+
+/*** Graphical interface choice ***/
+#define GREATSPN 0 
+/*** Graphical interface choice ***/
+
+/*** Solution technique choice ***/
+/* #define SIMULATION 1 */
+#define REACHABILITY 2 
+/*** Solution technique choice ***/
+
+/*** SWN marking representation choice ***/
+#ifdef SWN
+/* #define SYMBOLIC 1 */
+#define COLOURED 2 
+#endif
+/*** SWN marking representation choice ***/
+
+/* #define LINUX 1 */
+
+/******* Kind of prototype *******/
+
+/******* malloc counting *******/
+#define DEBUG_malloc 1 
+/*#define DEBUG_simulation 1 */
+/******* malloc counting *******/
+/******* throughput debugging *******/
+/*#define DEBUG_THROUGHPUT 1 */
+/******* throughput debugging *******/
+
+#define OLD_GT_NEW_EQ 3
+#define OLD_GT_NEW_GT 2
+#define OLD_EQ_NEW_EQ 1
+#define OLD_EQ_NEW_GT 0
+
+#define CC 0
+#define SC 1
+#define BOTH_CC_SC 2
+#define NONE 3
+#define SELF 4
+
+#define IN 0
+#define OUT 1
+
+#define INCREMENTAL 1
+#define TOTAL 2
+
+#define GREATER_THAN 1
+#define EQUAL_TO 0
+#define LESSER_THAN -1
+
+#define NEW 1
+#define OLD 0
+
+#define MINUS_OP 1
+#define PLUS_OP 0
+
+#define TRUE 1
+#define FALSE 0
+
+#define UNKNOWN -2
+#define STAT -3
+#define DYN -5
+
+#define PROJECTION 20
+#define COMPLEX 21
+#define GUARDED 22
+#define ONLY_S 23
+
+#define SUCCESSOR 100
+#define PREDECESSOR 101
+#define SYNCHRONIZATION 102
+#define MIXED 103
+
+#define SOURCE_TRANSITION 0
+#define PRESELECTION_TRANSITION 1
+#define COMPLEX_OUTPUT 2
+#define NO_OUTPUT_COMPONENTS 3
+
+#define INPUT 0
+#define INHIBITOR 1
+#define OUTPUT 2
+
+#define ORDERED 0
+#define UNORDERED 1
+
+#define TRANSITION 4
+#define PLACE 5
+#define MDRATE 6
+#define FUNCTION 7
+#define COLOR_CLASS 8
+#define STATIC_SUBCLASS 9
+#define INITIAL_MARKING 10
+#define DYNAMIC_SUBCLASS 11
+
+#define EPSILON 0.000000000001
+
+#define INFINITE_SERVER 0
+
+            /* Costanti che si possono tenere alte */
+
+#define MAXSTRING 1024
+#define MAX_DOMAIN 20	    /* Molteplicita' massima del dominio 1 trans. */
+#define MAX_PLACE_DOMAIN 20  /* Molteplicita' massima del dominio di 1 posto */
+#define MAX_PRODUCT 20	   /* Cardinalita' massima di un prodotto cartesiano */
+#define MAX_TRANS 2000       /* Numero massimo di transizioni di una rete */
+#define MAX_OBJ 6	    /* Numero di elementi da leggere dal .net */
+
+
+#define MAX_TAG_SIZE 1024	    /* Lunghezza massima del nome di posti, trans ..*/
+#ifdef REACHABILITY
+#define MAX_CACHE 4096    /* Lunghezza della marcatura come stringa */
+#endif
+            /* Costanti che si possono tenere alte */
+	    /*	MAX DIMENSION CONSTANTS (da minimizzare) */
+
+#define MAX_COL_RIP 10	    /* Numero max. di ripetizioni in un dominio  */
+
+#define MAX_BUFFER 20	    /* Buffer di lettura dei nomi delle classi */
+
+	    /*	MAX DIMENSION CONSTANTS (da minimizzare) */
+
+#define MAX_INT 10000000
+
+	    /*		      CODICI			 */
+
+#define SEEK_SET 0	    /* Costante definita per la funzione fseek */
+#define TYPENULL -1	    /* Codici per la valutazione dei predicati */
+#define TYPEEND -1000	    /*					       */
+#define TYPEOP -100	    /*					       */
+#define TYPEOR -101	    /*					       */
+#define TYPEAND -102	    /*					       */
+#define TYPENOT -103	    /*					       */
+#define TYPEPLUS -101	    /*					       */
+#define TYPEMINUS -102	    /*					       */
+#define TYPEMOLT -103	    /*					       */
+#define TYPEDIV -104	    /*					       */
+#define TYPED -99	    /*					       */
+#define TYPESTRING -98	    /*					       */
+#define TYPESUCCESSOR -97	    /*					       */
+#define TYPEPREDECESSOR -96	    /*					       */
+#define TYPENUM -95	    /*					       */
+#define TYPEDISTANCE -94	    /*					       */
+#define TYPESTATICNAME -93	    /*					       */
+#define TYPELT -89	    /*					       */
+#define TYPEGT -88	    /*					       */
+#define TYPELE -87	    /*					       */
+#define TYPEEQ -86
+#define TYPENE  -85	    /*					       */
+#define TYPEGE -84	    /*					       */
+#define TYPEPLACEMARKING -83	    /*					       */
+
+
+#define TYPEREALNUM -99     /*					       */
+#define TYPEMARK -98	    /*					       */
+#define TYPEPAR -60	    /*					       */
+#define TYPEMAX -96	    /*					       */
+#define TYPEMIN -89	    /*					       */
+#define TYPEINV -94	    /*					       */
+#define TYPEPOW -93	    /*					       */
+#define TYPESQRT -92	    /*					       */
+#define TYPECOMB -91	    /*					       */
+#define TYPEFACT -90	    /*					       */
+
+	    /*		      CODICI			 */
+	    /*	      TIPI DI EVENTI		  */
+
+#define EVENT_BACKUP		-2
+
+#define EVENT_ASYNCHR_BRKP	-3
+#define EVENT_SIMTIME_BRKP	-4
+
+#define EVENT_END_SIM		-6
+
+	    /*	      TIPI DI EVENTI		  */
+	    /*	      TIPI DI DISTRIBUZIONI	  */
+
+#define TIMING_NOSTAGES 31
+#define TIMING_IMMEDIATE 0 
+#define TIMING_EXPONENTIAL 1 
+#define TIMING_ERLANG 12 
+#define TIMING_DISCRETE 32 
+#define TIMING_LINEAR 64
+#define TIMING_UNIFORM 88
+#define TIMING_COX_normalized 96
+#define TIMING_IPEREXP 128
+#define TIMING_IPOEXP 130
+#define TIMING_DETERMINISTIC 127
+
+#define TIMING_DISTRIBUTION 128
+#define DISTR_CODE 31
+
+	    /*	      TIPI DI DISTRIBUZIONI	  */
+
+	    /*	      TIPI DI POLICIES	          */
+#define REUSE 0
+#define DESCHEDULE 1
+
+#define POLICY_DIS_RANDOM 0
+#define POLICY_DIS_FIRST_DRAWN 1
+#define POLICY_DIS_LAST_DRAWN 2
+#define POLICY_DIS_FIRST_SCHED 3
+#define POLICY_DIS_LAST_SCHED 4
+
+#define ENABLING_M 0
+#define RESAMPLING_M 1
+#define AGE_M 2
+	    /*	      TIPI DI POLICIES	          */
+	    /*		Codici di errori	  */
+#define ERROR_UNKNOWN_FUNCTION_TYPE 1
+#define ERROR_DEAD_MARKING 2
+#define ERROR_LOW_MAX_COLOR 4
+#define ERROR_LOW_MAX_TRANS 5
+#define ERROR_LOW_MAX_PLACE 7
+#define ERROR_LOW_MAX_DOMAIN 8
+#define ERROR_LOW_MAX_COL_RIP 9
+#define ERROR_FIRING_TIMES_MANAGEMENT 10
+#define ERROR_INITIAL_DEAD_MARKING 11
+#define ERROR_INITIAL_VANISHING_MARKING 55
+#define ERROR_NEGATIVE_MARKING 12
+#define ERROR_UNKNOWN_PLACE_NAME 13
+#define ERROR_UNKNOWN_TRANSITION_NAME 14
+#define ERROR_UNKNOWN_STATIC_SUBCLASS_NAME 15
+#define ERROR_REDECLARATION 16
+#define ERROR_INTERSECTION 17
+#define ERROR_INCOMPLETE_DEFINITION 18
+#define ERROR_UNEXISTING_SUBCLASS_IN_DYNAMIC 19
+#define ERROR_REDECLARATION_DYNAMIC 20
+#define ERROR_INCONSISTENT_CARDINALITIES 21
+#define ERROR_REPETITIONS_AND_NO_FUNCTION 22
+#define ERROR_AMBIGUOUS_DEFINITION 23
+#define ERROR_NEUTRAL_PLACE_AND_FUNCTION 24
+#define ERROR_UNEXISTING_CLASS 25
+#define ERROR_CLASS_REDECLARATION 26
+#define ERROR_TWICE_THE_SAME_STATIC 27
+#define ERROR_REDEFINITION 28
+#define ERROR_OBJECT_DESCRIPTION 29
+#define ERROR_OBJECT_REDECLARATION 30
+#define ERROR_DYNAMIC_REDECLARATION 31
+#define ERROR_MISSING_CLASS 32
+#define ERROR_MISSING_STATIC 33
+#define ERROR_LESSER_MARKING_COMPONENTS 34
+#define ERROR_GREATER_MARKING_COMPONENTS 35
+#define ERROR_UNKNOWN_ELEMENT_IN_MARKING 36
+#define ERROR_LESSER_FUNCTION_COMPONENTS 37
+#define ERROR_GREATER_FUNCTION_COMPONENTS 38
+#define ERROR_WRONG_STATIC_INDEX_IN_MARKING 39
+#define ERROR_WRONG_STATIC_NAME_IN_MARKING 40
+#define ERROR_WRONG_STATIC_INDEX_IN_FUNCTION 41
+#define ERROR_WRONG_STATIC_NAME_IN_FUNCTION 42
+#define ERROR_AMBIGUOUS_ID 43
+#define ERROR_ILLEGAL_PREDECESSOR 44
+#define ERROR_ILLEGAL_SUCCESSOR 45
+#define ERROR_UNKNOWN_STATIC_IN_PREDICATE 46
+#define ERROR_NEGATIVE_INITIAL_MARKING 47
+#define ERROR_MISSING_MDRATE_DEFINITION 48
+#define ERROR_SHARED_NAME 49
+#define ERROR_AMBIGUITY_IN_ARC 50
+#define ERROR_MARKING_CODING 51
+#define ERROR_UNKNOWN_PLACE_IN_FUNCTION 52
+#define ERROR_UNKNOWN_MARKING_PARAMETER 53
+#define ERROR_UNKNOWN_PLACE_IN_PREDICATE 54
+
+	    /*		Codici di errori	  */
+
+/* #define FLUSH_FUNCTION 3  */
+#ifdef FLUSH_FUNCTION
+#define FLUSH_VALUE -MAX_INT
+#define FLUSH_TYPE 24
+#endif
+
+#ifdef REACHABILITY
+
+#define NORMAL 0
+#define DEAD 1
+#define TANGIBLE_OR_VANISHING 2
+
+#define VANISHING_OLD 1
+#define TANGIBLE_OLD 2
+#define DEAD_OLD 3
+#define VANISHING_LOOP 4
+#define NEW_MARKING 0
+
+#endif
+
+
+#ifdef SIMULATION
+#define AT_ENABLING_TIME 0
+#define AT_FIRING_TIME 1
+#endif
+
+
+#endif   /* __GSPN_CONST_H__ */
+

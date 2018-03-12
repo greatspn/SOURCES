@@ -1,0 +1,488 @@
+/*******************************************************************************
+        Print Dialog
+        
+        Comment:  This Section Describes the Print Dialog 
+                                                        
+        Programmer:                     Alex
+        Creation Date:                  28/2/95
+        Last Modify Date:               10/3/95
+
+********************************************************************************/
+identifier
+	CENTER_H;
+	CENTER_V;
+	CENTER_HV;
+	OVERDS_ADDRESS;
+	PAPERDS_ADDRESS;
+	PAPERRDS_ADDRESS;
+	
+procedure
+	RotateCB();
+	TexCB();
+	FileCB();
+	RedrawPrintOverviewCB(integer);
+	PrintPrintDialogCB();
+	RedrawPrintPaperCB(integer);
+	PrintDialogCenterCB(integer);
+	CancelPrintDialogCB();
+	PrintDialogPopDownCB();
+	
+object  PrintDialog : XmFormDialog
+{
+	controls
+	{
+				XmPushButton  PrintDialog_Print;
+				XmPushButton  PrintDialog_Cancel;
+				XmPushButton  PrintDialog_HC;
+				XmPushButton  PrintDialog_VC;
+				XmPushButton  PrintDialog_C;
+				XmFrame  PrintDialog_Frame1;
+				XmFrame  PrintDialog_Frame2;
+				XmLabel  PrintDialog_Resolution;
+				XmLabel  PrintDialog_Label1;
+				XmLabel  PrintDialog_Label2;
+				XmTextField  PrintDialog_Printer;
+				XmRowColumn  PrintDialog_RC1;
+				XmRowColumn  PrintDialog_RC2;
+				XmRowColumn  PrintDialog_RC3;
+	};
+	arguments
+	{
+		XmNdialogTitle		=	"Print";
+		XmNwidth				=	844;
+		XmNheight         =	366;
+		XmNautoUnmanage	=	false;
+		XmNdialogStyle		=	XmDIALOG_FULL_APPLICATION_MODAL;
+		XmNnoResize 	   =	true;
+		XmNmappedWhenManaged   =	true;
+		XmNbackground 		=	appDialogBackgroundColor;
+	};
+	callbacks
+	{
+		   		XmNpopdownCallback = procedure PrintDialogPopDownCB();
+	};
+};
+					
+object PrintDialog_Frame1 : XmFrame
+{
+	controls
+	{
+		XmDrawingArea PrintDialog_Over;
+	};
+   arguments
+   {
+      XmNtopAttachment	=	XmATTACH_FORM;
+      XmNtopOffset		=	10;
+      XmNleftAttachment =	XmATTACH_FORM;
+      XmNleftOffset		=	10;
+		XmNbackground		=	appDialogBackgroundColor;
+   };
+};
+
+object PrintDialog_Over : XmDrawingArea
+{
+   arguments
+   {
+		XmNwidth		=	400;
+		XmNheight         =	240;
+		XmNbackground		= colorWhite;
+   };
+   callbacks
+   {
+   		XmNexposeCallback = procedure RedrawPrintPaperCB(OVERDS_ADDRESS);
+   };
+};
+
+object PrintDialog_Frame2 : XmFrame
+{
+	controls
+	{
+		XmForm PrintDialog_Form;
+	};
+   arguments
+   {
+      XmNtopAttachment	=	XmATTACH_FORM;
+      XmNtopOffset		=	10;
+      XmNleftAttachment =	XmATTACH_FORM;
+      XmNleftOffset		=	424;
+		XmNbackground		=	appDialogBackgroundColor;
+   };
+};
+
+
+object PrintDialog_Form : XmForm
+{
+	controls
+	{
+		XmFrame PrintDialog_Frame3;
+		XmLabel  PrintDialog_Label3;
+		XmFrame  PrintDialog_Frame4;
+	};
+   arguments
+   {
+		XmNbackground		=	appDialogBackgroundColor;
+		XmNwidth			=	321;
+		XmNheight        	=	321;
+   };
+};
+
+object PrintDialog_Frame3 : XmFrame
+{
+	controls
+	{
+		XmDrawingArea PrintDialog_Paper;
+	};
+   arguments
+   {
+      XmNtopAttachment	=	XmATTACH_FORM;
+      XmNtopOffset		=	10;
+      XmNleftAttachment =	XmATTACH_FORM;
+      XmNleftOffset		=	55;
+		XmNbackground		=	appDialogBackgroundColor;
+   };
+};
+
+object PrintDialog_Paper : XmDrawingArea
+{
+   arguments
+   {
+		XmNwidth				=	210;
+		XmNheight         =	297;
+		XmNbackground		= colorWhite;
+   };
+   callbacks
+   {
+   		XmNexposeCallback = procedure RedrawPrintPaperCB(PAPERDS_ADDRESS);
+   };
+};
+
+object PrintDialog_Label3 : XmLabel
+{
+   arguments
+   {
+		XmNtopAttachment		=	XmATTACH_FORM;
+		XmNtopOffset			=	5;
+      XmNleftAttachment =	XmATTACH_FORM;
+      XmNleftOffset		=	5;
+		XmNlabelString			=	'A4';
+   };
+};
+
+object PrintDialog_Frame4 : XmFrame
+{
+	controls
+	{
+		XmDrawingArea PrintDialog_PaperR;
+	};
+   arguments
+   {
+      XmNtopAttachment	=	XmATTACH_FORM;
+      XmNtopOffset		=	55;
+      XmNleftAttachment =	XmATTACH_FORM;
+      XmNleftOffset		=	10;
+		XmNbackground		=	appDialogBackgroundColor;
+		XmNmappedWhenManaged	=	false;
+   };
+};
+
+object PrintDialog_PaperR : XmDrawingArea
+{
+   arguments
+   {
+		XmNwidth				=	297;
+		XmNheight         =	210;
+		XmNbackground		= colorWhite;
+   };
+   callbacks
+   {
+   		XmNexposeCallback = procedure RedrawPrintPaperCB(PAPERRDS_ADDRESS);
+   };
+};
+
+
+
+object PrintDialog_Resolution : XmLabel
+{
+   arguments
+   {
+		XmNtopAttachment		=	XmATTACH_FORM;
+		XmNtopOffset			=	160;
+      XmNleftAttachment		=	XmATTACH_FORM;
+      XmNleftOffset			=	424;
+		XmNlabelString			=	'Resolution';
+   };
+};
+
+object PrintDialog_Label1 : XmLabel
+{
+   arguments
+   {
+      XmNleftAttachment		=	XmATTACH_FORM;
+      XmNleftOffset			=	220;
+      XmNbottomAttachment	=	XmATTACH_FORM;
+      XmNbottomOffset		=	50;		
+	  XmNlabelString			=	'Printer :';
+   };
+};
+
+object PrintDialog_Label2 : XmLabel
+{
+   arguments
+   {
+		XmNtopAttachment		=	XmATTACH_FORM;
+		XmNtopOffset			=	340;
+      XmNleftAttachment		=	XmATTACH_FORM;
+      XmNleftOffset			=	424;
+      XmNbottomAttachment	=	XmATTACH_FORM;
+      XmNbottomOffset		=	10;
+   };
+};
+
+object PrintDialog_Print : XmPushButton
+{
+   arguments
+   {
+		XmNtopAttachment		=	XmATTACH_FORM;
+		XmNtopOffset			=	14;
+      XmNleftAttachment		=	XmATTACH_FORM;
+      XmNleftOffset			=	763;
+      XmNlabelString			=	'Print';
+      XmNshowAsDefault		=	1;
+      XmNrecomputeSize		=	false;
+      XmNwidth					=	50;
+      XmNheight				=	30;
+   };
+   callbacks
+   {
+   		XmNactivateCallback = procedure PrintPrintDialogCB();
+   };
+};
+
+object PrintDialog_Cancel : XmPushButton
+{
+   arguments
+   {
+		XmNtopAttachment		=	XmATTACH_FORM;
+		XmNtopOffset			=	65;
+		XmNrightAttachment		=	XmATTACH_FORM;
+		XmNrightOffset			=	23;
+      XmNleftAttachment		=	XmATTACH_FORM;
+      XmNleftOffset			=	770;
+      XmNlabelString			=	'Cancel';
+      XmNrecomputeSize		=	false;
+      XmNwidth					=	50;
+      XmNheight				=	30;
+   };
+   callbacks
+   {
+   		XmNactivateCallback = procedure CancelPrintDialogCB();
+   };
+};
+
+object PrintDialog_HC : XmPushButton
+{
+   arguments
+   {
+		XmNtopAttachment		=	XmATTACH_FORM;
+		XmNtopOffset			=	180;
+      XmNleftAttachment		=	XmATTACH_FORM;
+      XmNleftOffset			=	770;
+	  XmNlabelType			=	XmPIXMAP;
+	  XmNlabelPixmap		=	bmpHorizCenter;
+   };
+   callbacks
+   {
+   		XmNactivateCallback = procedure PrintDialogCenterCB(CENTER_H);
+   };
+};
+object PrintDialog_VC : XmPushButton
+{
+   arguments
+   {
+		XmNtopAttachment		=	XmATTACH_FORM;
+		XmNtopOffset			=	225;
+      XmNleftAttachment		=	XmATTACH_FORM;
+      XmNleftOffset			=	770;
+	  XmNlabelType			=	XmPIXMAP;
+	  XmNlabelPixmap		=	bmpVertCenter;
+   };
+   callbacks
+   {
+   		XmNactivateCallback = procedure PrintDialogCenterCB(CENTER_V);
+   };
+};
+
+object PrintDialog_C : XmPushButton
+{
+   arguments
+   {
+		XmNtopAttachment		=	XmATTACH_FORM;
+		XmNtopOffset			=	270;
+      XmNleftAttachment		=	XmATTACH_FORM;
+      XmNleftOffset			=	770;
+	  XmNlabelType			=	XmPIXMAP;
+	  XmNlabelPixmap		=	bmpCenter;
+   };
+   callbacks
+   {
+   		XmNactivateCallback = procedure PrintDialogCenterCB(CENTER_HV);
+   };
+};
+
+object PrintDialog_Printer : XmTextField
+{
+   arguments
+   {
+      XmNbottomAttachment	=	XmATTACH_FORM;
+      XmNbottomOffset		=	15;
+      XmNleftAttachment		=	XmATTACH_FORM;
+      XmNleftOffset			=	220;
+	  XmNbackground =				appDialogBackgroundColor;
+   };
+};
+
+list PrintDialogToggles : arguments
+{
+      XmNrecomputeSize		=	true;
+      XmNfillOnSelect		=	true;
+      XmNselectColor		=	colorBlack;
+      XmNmarginWidth		=	0;
+      XmNmarginHeight		=	0;
+      XmNlabelType			=	XmPIXMAP;
+!      XmNshadowThickness	=	2;
+};
+
+object PrintDialog_RC1 : XmRowColumn
+{
+   controls
+   {
+       XmToggleButton  PrintDialog_TeX;
+       XmToggleButton  PrintDialog_PS;
+   };
+   arguments
+   {
+      XmNbottomAttachment	=	XmATTACH_FORM;
+      XmNbottomOffset		=	10;
+      XmNleftAttachment =	XmATTACH_FORM;
+      XmNleftOffset 	=	10;
+      XmNpacking		=	XmPACK_TIGHT;
+!      XmNorientation	=	XmHORIZONTAL;
+      XmNradioBehavior	=	true;
+      XmNradioAlwaysOne	=	true;
+	  XmNbackground 	=	colorLight;
+   };
+};
+
+
+object PrintDialog_TeX : XmToggleButton
+{
+   arguments
+   {
+		arguments PrintDialogToggles;
+	   XmNlabelPixmap		= bmpEps;	
+   };
+   callbacks
+   {
+   		XmNvalueChangedCallback = procedure TexCB();
+   };
+};
+
+object PrintDialog_PS : XmToggleButton
+{
+   arguments
+   {
+		arguments PrintDialogToggles;
+	   XmNlabelPixmap		= bmpPostscript;
+	   XmNset			= true;
+   };
+};
+object PrintDialog_RC2 : XmRowColumn
+{
+   controls
+   {
+       XmToggleButton  PrintDialog_File;
+       XmToggleButton  PrintDialog_Pri;
+   };
+   arguments
+   {
+      XmNbottomAttachment	=	XmATTACH_FORM;
+      XmNbottomOffset		=	10;
+      XmNleftAttachment =	XmATTACH_FORM;
+      XmNleftOffset 	=	70;
+      XmNpacking		=	XmPACK_TIGHT;
+!      XmNorientation	=	XmHORIZONTAL;
+      XmNradioBehavior	=	true;
+      XmNradioAlwaysOne	=	true;
+	  XmNbackground 	=	colorLight;
+   };
+};
+
+
+object PrintDialog_File : XmToggleButton
+{
+   arguments
+   {
+		arguments PrintDialogToggles;
+	   XmNlabelPixmap		= bmpFloppy;	
+   };
+   callbacks
+   {
+   		XmNvalueChangedCallback = procedure FileCB();
+   };
+};
+
+object PrintDialog_Pri : XmToggleButton
+{
+   arguments
+   {
+		arguments PrintDialogToggles;
+	   XmNlabelPixmap		= bmpPrinter;	
+	   XmNlabelInsensitivePixmap		= bmpPrinterDisabled;	
+	   XmNset			= true;
+   };
+};
+
+object PrintDialog_RC3 : XmRowColumn
+{
+   controls
+   {
+       XmToggleButton  PrintDialog_Landscape;
+       XmToggleButton  PrintDialog_Portrait;
+   };
+   arguments
+   {
+      XmNbottomAttachment	=	XmATTACH_FORM;
+      XmNbottomOffset		=	10;
+      XmNleftAttachment =	XmATTACH_FORM;
+      XmNleftOffset 	=	130;
+      XmNpacking		=	XmPACK_TIGHT;
+!      XmNorientation	=	XmHORIZONTAL;
+      XmNradioBehavior	=	true;
+      XmNradioAlwaysOne	=	true;
+	  XmNbackground 	=	colorLight;
+   };
+};
+
+object PrintDialog_Landscape : XmToggleButton
+{
+   arguments
+   {
+		arguments PrintDialogToggles;
+	   XmNlabelPixmap		= bmpLandscape;	
+   };
+   callbacks
+   {
+   		XmNvalueChangedCallback = procedure RotateCB();
+   };
+};
+
+object PrintDialog_Portrait : XmToggleButton
+{
+   arguments
+   {
+		arguments PrintDialogToggles;
+		XmNlabelPixmap		= bmpPortrait;	
+	   XmNset			= true;
+   };
+};
+

@@ -1,0 +1,199 @@
+/*******************************************************************************
+        Unfold Dialog
+        
+        Comment:     This Section Describes the SwnUnfold Dialog 
+                                                        
+        Programmer:                             Davide Cerotti
+        Creation Date:                  19/12/05
+        Last Modify Date:               19/12/05
+
+********************************************************************************/
+
+procedure
+	OkSwnUnfoldDialogCB();
+	CancelSwnUnfoldDialogCB();	
+
+
+object  SwnUnfoldOptionsDialog : XmFormDialog
+{
+        controls
+        {
+				XmLabel SwnUnfoldOptionsDialog_Label1;
+				XmLabel SwnUnfoldOptionsDialog_Label2;
+				XmLabel SwnUnfoldOptionsDialog_Label3;
+				XmLabel SwnUnfoldOptionsDialog_Label4;
+				XmTextField  SwnUnfoldOptionsDialog_PX;
+				XmTextField  SwnUnfoldOptionsDialog_PY;
+				XmTextField  SwnUnfoldOptionsDialog_TX;
+				XmTextField  SwnUnfoldOptionsDialog_TY;
+				XmSeparator  SwnUnfoldOptionsDialog_Sep1;
+				XmPushButton  SwnUnfoldOptionsDialog_Ok;
+				XmPushButton  SwnUnfoldOptionsDialog_Cancel;
+        };
+        arguments
+        {
+                 XmNdialogStyle                  =       XmDIALOG_FULL_APPLICATION_MODAL;
+               XmNdialogTitle       =       "SWN Unfolding Options";
+                XmNwidth             =       300;
+                XmNheight            =       300;
+                XmNautoUnmanage      =       false;
+                XmNnoResize          =       true;
+		XmNbackground =				appDialogBackgroundColor;
+		XmNdefaultButton =			SwnUnfoldOptionsDialog_Ok;
+        };
+
+};
+
+
+
+object SwnUnfoldOptionsDialog_Sep1 : XmSeparator
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              56;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                1;
+      XmNrightAttachment =            XmATTACH_FORM;
+      XmNrightOffset =                1;
+   };
+};
+
+
+object SwnUnfoldOptionsDialog_Ok : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              10;
+      XmNleftAttachment =           XmATTACH_FORM;
+      XmNleftOffset =               10;
+      XmNlabelString =               'Ok';
+      XmNshowAsDefault =             1;
+      XmNrecomputeSize =            false;
+      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+    callbacks
+    {
+   		XmNactivateCallback =	procedure OkSwnUnfoldDialogCB();
+	};
+};
+
+object SwnUnfoldOptionsDialog_Cancel : XmPushButton
+{
+   arguments
+   {
+      XmNbottomAttachment =          XmATTACH_FORM;
+      XmNbottomOffset =              10;
+      XmNrightAttachment =           XmATTACH_FORM;
+      XmNrightOffset =               10;
+      XmNlabelString =               'Cancel';
+      XmNrecomputeSize =            false;
+      XmNwidth =                     50;
+      XmNheight =                    30;
+   };
+    callbacks
+    {
+   		XmNactivateCallback =	procedure CancelSwnUnfoldDialogCB();
+	};
+};
+
+
+object SwnUnfoldOptionsDialog_Label1 : XmLabel
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              10;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+      XmNlabelString =             'Place X';
+   };
+};
+
+object SwnUnfoldOptionsDialog_Label2 : XmLabel
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              10;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                150;
+      XmNlabelString =             'Place Y';
+   };
+};
+
+object SwnUnfoldOptionsDialog_Label3 : XmLabel
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              70;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+      XmNlabelString =             'Transition X';
+   };
+};
+
+object SwnUnfoldOptionsDialog_Label4 : XmLabel
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              70;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                150;
+      XmNlabelString =             'Transition Y';
+   };
+};
+
+
+object SwnUnfoldOptionsDialog_PX : XmTextField
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              30;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+	  XmNbackground =				appDialogBackgroundColor;
+   };
+};
+
+object SwnUnfoldOptionsDialog_PY : XmTextField
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              30;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                150;
+	  XmNbackground =				appDialogBackgroundColor;
+   };
+};
+
+object SwnUnfoldOptionsDialog_TX : XmTextField
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              90;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                10;
+	  XmNbackground =				appDialogBackgroundColor;
+   };
+};
+
+object SwnUnfoldOptionsDialog_TY : XmTextField
+{
+   arguments
+   {
+      XmNtopAttachment =          XmATTACH_FORM;
+      XmNtopOffset =              90;
+      XmNleftAttachment =            XmATTACH_FORM;
+      XmNleftOffset =                150;
+	  XmNbackground =				appDialogBackgroundColor;
+   };
+};
+

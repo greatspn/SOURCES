@@ -1,0 +1,22 @@
+0)COPIARE DEFINIZIONE AUTOMA
+(NET/FSM)
+ES.
+mv PXX.automaton FMSpalletsNoImmLAYERSmod01Experimenti.automaton
+
+1)GENERAZIONE TRG E TRG+AUTOMA
+ES.
+/usr/local/greatspn/i686_R2.6.32.26-175.fc12.i686/WNRGMEDD ~/nets/FSM/FMSpalletsNoImmLAYERSmod01Experimenti -B 9 -A
+
+2)CALCOLO DISTRIBUZIONE INIZIALE
+ES.
+/usr/local/greatspn/bin/compute-passage-times.sh ~/nets/FSM/FMSpalletsNoImmLAYERSmod01Experimenti 1 10
+
+3)GENERAZIONE INPUT HYDRA
+ES.
+TGSPNtoHydra ~/nets/FSM/FMSpalletsNoImmLAYERSmod01Experimenti  0 5 0.1 0 -D -A
+
+4)CALCOLO PRIMO PASSAGGIO CON HYDRA (COMULATIVA O NON )
+hydra-uniform  ~/nets/FSM/FMSpalletsNoImmLAYERSmod01Experimenti  -cfd
+or 
+hydra-uniform  ~/nets/FSM/FMSpalletsNoImmLAYERSmod01Experimenti 
+

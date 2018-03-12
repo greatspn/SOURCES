@@ -1,0 +1,31 @@
+#!/bin/bash
+
+all_del=1
+
+if [ "$1" = "" ]
+then
+	echo "Use RMNET [-n] netdirectory/netname"
+	exit 1
+fi
+
+
+if [ "$2" != "" ]
+then
+	if [ "$1" = "-n" ]
+		then 
+		all_del=0
+		fi
+fi
+
+
+if [ "$all_del" = 1 ]
+	then 
+	# Old implementation that does not work properly.
+	# ls $1.* > _Temp_; cat _Temp_ | gawk '!/\.net$/ && !/\.def$/ && !/\.gd$/ && !/\.ind$/ && !/\.ctl$/ && !/\.dis$/ && !/\.reward$/ && !/\.tgspn$/ && !/\.uncertainty$/ && !/\.automaton && !/\.pnml && !/\.PNPRO && !/\.apnn$/{print "/bin/rm -f " $0}'> _Temp_Command; /bin/bash -f _Temp_Command	
+	# rm -f _Temp_Command _Temp_
+
+	# Elvio 24/02/2017 - use egrep instead of gawk, and avoid intermediate command files by using xargs.
+	ls $1.* | egrep -v "$1.net|$1.def|$1.ctl|$1.dis|$1.gd|$1.ind|$1.reward|$1.tgspn|$1.uncertainty|$1.automaton|$1.pnml|$1.PNPRO|$1.id2name" | xargs -I FILE    rm -f FILE
+else
+	rm -f $2.* 	
+fi
