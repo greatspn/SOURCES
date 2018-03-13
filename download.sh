@@ -6,7 +6,7 @@
 # the required packages on some supported platforms.
 
 
-if [[ -v $TERM ]] ; then
+if [[ ! -z ${TERM} ]] ; then
     B1=$(tput bold)
     B0=$(tput sgr0)
     C1=$(tput setaf 1)
