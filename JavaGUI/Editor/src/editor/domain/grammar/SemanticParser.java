@@ -226,7 +226,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     };
     
     static final UnaryFunct grmlUnaryFunctions[] = {
-        new UnaryFunct(true, ExprLangParser.OP_PAREN, "", ""),
+        new UnaryFunct(true, ExprLangParser.OP_PAREN, "<attribute name=\"expr\">", "</attribute>"),
         new UnaryFunct(false, ExprLangParser.SUB, "<attribute name=\"-\"><attribute name=\"numValue\">0</attribute>", "</attribute>"),
 //        new UnaryFunct(false, ExprLangParser.POSTINCR, "!", OperatorPos.PREFIX_SIMPLETERM),
 //        new UnaryFunct(false, ExprLangParser.POSTDECR, "^", OperatorPos.PREFIX_SIMPLETERM),
@@ -439,17 +439,17 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         
         new BinaryFunct(true, ExprLangParser.MAX_FN, "<attribute name=\"max\">"," ","</attribute>", OperatorPos.FUNCTION),
         new BinaryFunct(true, ExprLangParser.MIN_FN, "<attribute name=\"min\">"," ","</attribute>", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.MOD_FN, "Mod[", ", ", "]", OperatorPos.FUNCTION),
-        new BinaryFunct(true, ExprLangParser.BINOMIAL_FN, "Binom[ ", ", ", "]", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.POW_FN, "Pow[", ", ", "]", OperatorPos.FUNCTION_FIRST_SIMPLETERM),
-        new BinaryFunct(true, ExprLangParser.FRACT_FN, " / ", OperatorPos.FUNCTION),
+//        new BinaryFunct(false, ExprLangParser.MOD_FN, "Mod[", ", ", "]", OperatorPos.FUNCTION),
+//        new BinaryFunct(true, ExprLangParser.BINOMIAL_FN, "Binom[ ", ", ", "]", OperatorPos.FUNCTION),
+//        new BinaryFunct(false, ExprLangParser.POW_FN, "Pow[", ", ", "]", OperatorPos.FUNCTION_FIRST_SIMPLETERM),
+        new BinaryFunct(true, ExprLangParser.FRACT_FN, "<attribute name=\"/\">"," ","</attribute>", OperatorPos.FUNCTION),
         
-        new BinaryFunct(false, ExprLangParser.AND, " && ", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.OR, " || ", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.IMPLY, " -> ", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.BIIMPLY, " <-> ", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.EQUAL, " = ", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.NOT_EQUAL, " != ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.AND, "<attribute name=\"and\">"," ","</attribute>", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.OR, "<attribute name=\"or\">"," ","</attribute>", OperatorPos.FUNCTION),
+//        new BinaryFunct(false, ExprLangParser.IMPLY, " -> ", OperatorPos.FUNCTION),
+//        new BinaryFunct(false, ExprLangParser.BIIMPLY, " <-> ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.EQUAL, "<attribute name=\"equal\">"," ","</attribute>", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.NOT_EQUAL, "<attribute name=\"notEqual\">"," ","</attribute>", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.LESS, " < ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.LESS_EQ, " <= ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.GREATER, " > ", OperatorPos.FUNCTION),
@@ -1576,6 +1576,11 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                         else {
                             clrId = "<useroperator declaration=\""+id+"\"/>";
                         }
+                        break;
+                    case GRML:
+                        clrId = "<attribute name=\"expr\"><attribute name=\"enumConst\"><attribute name=\"type\">"+
+                                cc.getUniqueName()+"</attribute><attribute name=\"enumValue\">"+id+
+                                "</attribute></attribute></attribute>";
                         break;
                     default:
                         throw new UnsupportedOperationException();
