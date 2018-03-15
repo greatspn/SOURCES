@@ -1535,7 +1535,20 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     @Override
     public FormattedFormula visitColorSetClass(ExprLangParser.ColorSetClassContext ctx) {
         ColorClass cc = (ColorClass)context.getNodeByUniqueName(ctx.SIMPLECOLORCLASS_ID().getText());
-        return formatPayload(true, new MultiSetElemType(cc)/*payload*/, cc);
+        switch (lang) {
+            case GREATSPN:
+            case LATEX:
+                return formatPayload(true, new MultiSetElemType(cc)/*payload*/, cc);
+            case PNML:
+                return formatPayload(true, new MultiSetElemType(cc)/*payload*/,
+                        "<all><usersort declaration=\""+cc.getUniqueName()+"\"/></all>");
+            case GRML:
+                return formatPayload(true, new MultiSetElemType(cc)/*payload*/,
+                        "<attribute name=\"function\"><attribute name=\"all\"><attribute name=\"type\">"+
+                                cc.getUniqueName()+"</attribute></attribute></attribute>");
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 
     @Override

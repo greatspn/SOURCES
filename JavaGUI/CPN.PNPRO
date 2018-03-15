@@ -25,7 +25,7 @@
       <place domain="SxR" label-x="0.5" label-y="-1.5" name="reply_buf" x="27.0" y="23.0"/>
       <place domain="SxR" label-x="1.3125" label-y="-1.5" name="acknowledge" x="16.6875" y="23.0"/>
       <transition label-x="0.0625" label-y="1.6875" name="SendReply" type="EXP" x="22.55" y="23.0"/>
-      <place domain="R" label-x="1.0" label-y="-1.5" marking="&lt;All&gt;" name="mutex" x="15.0" y="3.0"/>
+      <place domain="R" label-x="1.0" label-y="-1.5" marking="&lt;R&gt;" name="mutex" x="15.0" y="3.0"/>
     </nodes>
     <edges>
       <arc head="Start" kind="INPUT" mult="&lt;s&gt;" mult-k="0.50009765625" mult-x="0.6875" mult-y="6.835937500007105E-4" tail="all_active"/>
