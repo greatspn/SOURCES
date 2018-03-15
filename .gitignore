@@ -2,10 +2,11 @@
 ./scripts
 ./objects
 ./lib
-./PRIV
+PRIV
 ./rv
-./GreatSPN-Editor-v*
-./perm_test
-./JavaGUI/Editor/build/classes
-./JavaGUI/Editor/dist/Editor.jar
-./JavaGUI/Editor/dist/GreatSPN Editor.app
+GreatSPN-Editor-v*
+perm_test
+JavaGUI/Editor/build
+JavaGUI/Editor/MANIFEST.MF
+JavaGUI/Editor/dist/Editor.jar
+JavaGUI/Editor/dist/GreatSPN Editor.app

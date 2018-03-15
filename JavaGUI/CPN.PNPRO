@@ -43,6 +43,85 @@
         <point x="11.0" y="24.0"/>
         <point x="3.0" y="24.0"/>
       </arc>
+      <arc head="message" kind="OUTPUT" mult="&lt;All,r&gt;" mult-k="1.24990234375" mult-x="0.6847715006851729" mult-y="-0.5" tail="Change" tail-magnet="9">
+        <point x="12.0" y="12.0"/>
+      </arc>
+      <arc head="SendMessage" kind="INPUT" mult="&lt;s,r&gt;" mult-k="0.6059570312500001" mult-x="-4.8828125E-4" mult-y="-0.5" tail="message"/>
+      <arc head="rec_buf" kind="OUTPUT" mult="&lt;s,r&gt;" mult-k="0.39990234375" mult-x="4.8828125E-4" mult-y="-0.5" tail="SendMessage"/>
+      <arc head="Update" head-magnet="11" kind="INPUT" mult="&lt;s,r&gt;" mult-k="0.50009765625" mult-x="0.019913081521757192" mult-y="-0.5649233062925738" tail="rec_buf">
+        <point x="31.0" y="12.0"/>
+      </arc>
+      <arc head="Update" head-magnet="10" kind="INPUT" mult="&lt;s&gt;" mult-k="0.5844726562500001" mult-x="0.75" mult-y="-2.1972656250213163E-4" tail="all_passive"/>
+      <arc head="updating" kind="OUTPUT" mult="&lt;s,r&gt;" mult-k="0.35068359375" mult-y="-1.318359374984368E-4" tail="Update" tail-magnet="4"/>
+      <arc head="EndUpdate" kind="INPUT" mult="&lt;s,r&gt;" mult-k="0.50009765625" mult-y="-3.906250000014211E-4" tail="updating"/>
+      <arc head="all_passive" kind="OUTPUT" mult="&lt;s&gt;" mult-k="3.613183593750001" mult-x="0.06322408536586721" mult-y="0.75" tail="EndUpdate" tail-magnet="4">
+        <point x="32.0" y="24.0"/>
+        <point x="40.0" y="24.0"/>
+        <point x="40.0" y="7.0"/>
+        <point x="32.0" y="7.0"/>
+      </arc>
+      <arc head="reply_buf" kind="OUTPUT" mult="&lt;s,r&gt;" mult-k="0.74599609375" mult-x="-0.9375" mult-y="-0.3125" tail="EndUpdate" tail-magnet="5">
+        <point x="31.0" y="24.0"/>
+      </arc>
+      <arc head="SendReply" kind="INPUT" mult="&lt;s,r&gt;" mult-k="0.50009765625" mult-x="4.8828125E-4" mult-y="-0.5" tail="reply_buf"/>
+      <arc head="acknowledge" kind="OUTPUT" mult="&lt;s,r&gt;" mult-k="0.39990234375" mult-x="-4.8828125E-4" mult-y="-0.5" tail="SendReply"/>
+      <arc head="Release" head-magnet="3" kind="INPUT" mult="&lt;All,r&gt;" mult-k="0.50009765625" mult-x="0.2368039638520436" mult-y="-0.5" tail="acknowledge">
+        <point x="12.0" y="24.0"/>
+        <point x="11.0" y="22.0"/>
+      </arc>
+      <arc head="mutex" kind="OUTPUT" mult="&lt;r&gt;" mult-k="2.95009765625" mult-x="-0.8126023815524199" mult-y="0.0625" tail="Release" tail-magnet="9">
+        <point x="12.0" y="20.5"/>
+        <point x="19.5" y="20.5"/>
+        <point x="19.5" y="4.0"/>
+      </arc>
+      <arc head="Acquire" head-magnet="9" kind="INPUT" mult="&lt;r&gt;" mult-k="0.7000976562500001" mult-x="-0.06344441089473385" mult-y="-0.5121589918863645" tail="mutex">
+        <point x="12.0" y="4.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="DatabaseORIG">
+    <nodes>
+      <color-class definition="circular s{1 .. 4} " name="S" x="23.5625" y="2.0"/>
+      <color-class definition="enum r{1 .. 3}" name="R" x="23.5" y="3.0"/>
+      <color-class alt-name-fn="LATEX_TEXT" definition="S * R" name="SxR" shown-as="\mathit{S}\!\times\hspace{-5pt}\mathit{R}" x="23.5625" y="4.875"/>
+      <place domain="S" label-x="5.5" label-y="0.0" marking="&lt;All&gt;" name="all_active" x="2.0" y="9.0"/>
+      <transition label-x="2.375" label-y="0.0" name="Start" rotation="1.5707963267948966" type="EXP" x="2.55" y="5.0"/>
+      <place domain="SxR" label-x="1.5" label-y="-1.5" name="wait_mutex" x="6.0" y="3.0"/>
+      <color-var domain="S" name="s" x="35.9375" y="2.0"/>
+      <color-var domain="R" name="r" x="35.9375" y="3.0"/>
+      <transition label-x="2.5" label-y="0.0" magnets="THREE_PER_SIDE" name="Acquire" rotation="1.5707963267948966" type="IMM" x="10.85" y="5.0"/>
+      <place domain="SxR" label-x="3.9375" label-y="-0.9375" name="modify" x="10.0" y="9.0"/>
+      <transition label-x="2.625" label-y="0.0" magnets="THREE_PER_SIDE" name="Change" rotation="1.5707963267948966" type="EXP" x="10.55" y="13.0"/>
+      <place domain="SxR" label-x="5.1875" label-y="-0.125" name="wait_ack" x="10.0" y="17.0"/>
+      <transition label-x="-2.8125" label-y="-0.0625" magnets="THREE_PER_SIDE" name="Release" rotation="1.5707963267948966" type="IMM" x="10.85" y="21.0"/>
+      <place domain="SxR" label-x="-0.6875" label-y="-1.5" name="message" x="16.6875" y="11.0"/>
+      <place domain="SxR" label-x="0.5" label-y="-1.5" name="rec_buf" x="27.0" y="11.0"/>
+      <transition label-y="1.75" name="SendMessage" type="EXP" x="22.55" y="11.0"/>
+      <transition label-x="2.5" label-y="0.0" magnets="THREE_PER_SIDE" name="Update" rotation="1.5707963267948966" type="IMM" x="31.85" y="13.0"/>
+      <place domain="S" label-x="6.0" label-y="0.0" marking="&lt;All&gt;" name="all_passive" x="31.0" y="9.0"/>
+      <place domain="SxR" label-x="5.0" label-y="0.0" name="updating" x="31.0" y="17.0"/>
+      <transition label-x="3.5" label-y="0.0" magnets="THREE_PER_SIDE" name="EndUpdate" rotation="1.5707963267948966" type="EXP" x="31.55" y="21.0"/>
+      <place domain="SxR" label-x="0.5" label-y="-1.5" name="reply_buf" x="27.0" y="23.0"/>
+      <place domain="SxR" label-x="1.3125" label-y="-1.5" name="acknowledge" x="16.6875" y="23.0"/>
+      <transition label-x="0.0625" label-y="1.6875" name="SendReply" type="EXP" x="22.55" y="23.0"/>
+      <place domain="R" label-x="1.0" label-y="-1.5" marking="&lt;All&gt;" name="mutex" x="15.0" y="3.0"/>
+    </nodes>
+    <edges>
+      <arc head="Start" kind="INPUT" mult="&lt;s&gt;" mult-k="0.50009765625" mult-x="0.6875" mult-y="6.835937500007105E-4" tail="all_active"/>
+      <arc head="wait_mutex" kind="OUTPUT" mult="&lt;s,r&gt;" mult-k="0.42509765625000007" mult-y="1.471041044549537E-4" tail="Start">
+        <point x="3.0" y="4.0"/>
+      </arc>
+      <arc head="Acquire" head-magnet="11" kind="INPUT" mult="&lt;s,r&gt;" mult-k="1.0081054687500002" mult-x="0.13798762881259918" mult-y="-0.6800233185912363" tail="wait_mutex">
+        <point x="10.0" y="4.0"/>
+      </arc>
+      <arc head="modify" kind="OUTPUT" mult="&lt;s,r&gt;" mult-k="0.41669921875000004" mult-y="-0.2542919921875004" tail="Acquire" tail-magnet="4"/>
+      <arc head="Change" kind="INPUT" mult="&lt;s,r&gt;" mult-k="0.50009765625" mult-x="-1.0" mult-y="-3.906250000014211E-4" tail="modify"/>
+      <arc head="wait_ack" kind="OUTPUT" mult="&lt;s,r&gt;" mult-k="0.50009765625" mult-y="-3.906250000014211E-4" tail="Change"/>
+      <arc head="Release" kind="INPUT" mult="&lt;s,r&gt;" mult-k="0.56259765625" mult-x="-1.0" mult-y="-3.906250000014211E-4" tail="wait_ack"/>
+      <arc head="all_active" kind="OUTPUT" mult="&lt;s&gt;" mult-k="2.8219726562500003" mult-x="0.75" mult-y="0.0626231650004172" tail="Release" tail-magnet="4">
+        <point x="11.0" y="24.0"/>
+        <point x="3.0" y="24.0"/>
+      </arc>
       <arc head="message" kind="OUTPUT" mult="&lt;All-s,r&gt;" mult-k="1.24990234375" mult-x="0.6847715006851729" mult-y="-0.5" tail="Change" tail-magnet="9">
         <point x="12.0" y="12.0"/>
       </arc>
@@ -359,9 +438,9 @@
         <point x="33.0" y="7.5"/>
         <point x="8.0" y="7.5"/>
       </arc>
-      <arc head="stage1" kind="OUTPUT" mult-k="0.5" tail="start"/>
-      <arc head="interm" kind="INPUT" mult-k="0.5" tail="stage1"/>
-      <arc head="stage2" kind="OUTPUT" mult-k="0.5" tail="interm"/>
+      <arc head="stage1" kind="OUTPUT" tail="start"/>
+      <arc head="interm" kind="INPUT" tail="stage1"/>
+      <arc head="stage2" kind="OUTPUT" tail="interm"/>
       <arc head="start" head-magnet="9" kind="INPUT" mult-k="1.0719726562500003" tail="Mach">
         <point x="16.5" y="9.0"/>
         <point x="11.0" y="10.0"/>
@@ -376,12 +455,12 @@
         <point x="21.0" y="15.5"/>
         <point x="26.5" y="15.5"/>
       </arc>
-      <arc head="Work" kind="OUTPUT" mult-k="0.5" tail="start" tail-magnet="5">
+      <arc head="Work" kind="OUTPUT" tail="start" tail-magnet="5">
         <point x="14.5" y="13.5"/>
       </arc>
       <arc head="fail" kind="INPUT" mult-k="0.0" tail="Work"/>
-      <arc head="Broken" kind="OUTPUT" mult-k="0.5" tail="fail"/>
-      <arc head="end" kind="INPUT" mult-k="0.5" tail="stage2"/>
+      <arc head="Broken" kind="OUTPUT" tail="fail"/>
+      <arc head="end" kind="INPUT" tail="stage2"/>
       <arc head="interm" head-magnet="11" kind="INPUT" mult-k="0.6682617187500001" tail="Work">
         <point x="19.0" y="13.5"/>
       </arc>
