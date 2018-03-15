@@ -1,9 +1,8 @@
-./bin
-./scripts
-./objects
-./lib
+bin/
+scripts/
+objects/
+lib/
 PRIV
-./rv
 GreatSPN-Editor-v*
 perm_test
 JavaGUI/Editor/build
