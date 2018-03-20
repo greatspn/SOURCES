@@ -84,6 +84,10 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 case GREATSPN:
                 case APNN:
                     return ((Node)obj).getUniqueName();
+                case GRML:
+                    if (obj instanceof ColorVar)
+                        return "<attribute name=\"name\">"+((ColorVar) obj).getUniqueName()+"</attribute>";
+                    throw new UnsupportedOperationException("Cannot convert entity in GRML format.");
                 case PNML:
                     if (obj instanceof ColorVar)
                         return "<variable refvariable=\""+((ColorVar) obj).getUniqueName()+"\"/>";
@@ -222,7 +226,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     };
     
     static final UnaryFunct grmlUnaryFunctions[] = {
-        new UnaryFunct(true, ExprLangParser.OP_PAREN, "", ""),
+        new UnaryFunct(true, ExprLangParser.OP_PAREN, "<attribute name=\"expr\">", "</attribute>"),
         new UnaryFunct(false, ExprLangParser.SUB, "<attribute name=\"-\"><attribute name=\"numValue\">0</attribute>", "</attribute>"),
 //        new UnaryFunct(false, ExprLangParser.POSTINCR, "!", OperatorPos.PREFIX_SIMPLETERM),
 //        new UnaryFunct(false, ExprLangParser.POSTDECR, "^", OperatorPos.PREFIX_SIMPLETERM),
@@ -234,6 +238,8 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new UnaryFunct(false, ExprLangParser.EXP_FN, "Math.exp(", ")"),
         new UnaryFunct(true, ExprLangParser.SQRT_FN, "Math.sqrt(", ")"),
         new UnaryFunct(false, ExprLangParser.NOT, "<attribute name=\"not\">", "</attribute>"),
+        new UnaryFunct(true, ExprLangParser.POSTINCR, "<attribute name=\"function\"><attribute name=\"++\">", "</attribute></attribute>"),
+        new UnaryFunct(true, ExprLangParser.POSTDECR, "<attribute name=\"function\"><attribute name=\"--\">", "</attribute></attribute>"),
 //        new UnaryFunct(true, ExprLangParser.MULTISET_CARD, "Card[", "]"),
 //        new UnaryFunct(true, ExprLangParser.MULTISET_SUBCLASS, "d(", ")"),
         new UnaryFunct(true, ExprLangParser.DIRAC_DELTA_FN, 
@@ -433,17 +439,17 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         
         new BinaryFunct(true, ExprLangParser.MAX_FN, "<attribute name=\"max\">"," ","</attribute>", OperatorPos.FUNCTION),
         new BinaryFunct(true, ExprLangParser.MIN_FN, "<attribute name=\"min\">"," ","</attribute>", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.MOD_FN, "Mod[", ", ", "]", OperatorPos.FUNCTION),
-        new BinaryFunct(true, ExprLangParser.BINOMIAL_FN, "Binom[ ", ", ", "]", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.POW_FN, "Pow[", ", ", "]", OperatorPos.FUNCTION_FIRST_SIMPLETERM),
-        new BinaryFunct(true, ExprLangParser.FRACT_FN, " / ", OperatorPos.FUNCTION),
+//        new BinaryFunct(false, ExprLangParser.MOD_FN, "Mod[", ", ", "]", OperatorPos.FUNCTION),
+//        new BinaryFunct(true, ExprLangParser.BINOMIAL_FN, "Binom[ ", ", ", "]", OperatorPos.FUNCTION),
+//        new BinaryFunct(false, ExprLangParser.POW_FN, "Pow[", ", ", "]", OperatorPos.FUNCTION_FIRST_SIMPLETERM),
+        new BinaryFunct(true, ExprLangParser.FRACT_FN, "<attribute name=\"/\">"," ","</attribute>", OperatorPos.FUNCTION),
         
-        new BinaryFunct(false, ExprLangParser.AND, " && ", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.OR, " || ", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.IMPLY, " -> ", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.BIIMPLY, " <-> ", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.EQUAL, " = ", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.NOT_EQUAL, " != ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.AND, "<attribute name=\"and\">"," ","</attribute>", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.OR, "<attribute name=\"or\">"," ","</attribute>", OperatorPos.FUNCTION),
+//        new BinaryFunct(false, ExprLangParser.IMPLY, " -> ", OperatorPos.FUNCTION),
+//        new BinaryFunct(false, ExprLangParser.BIIMPLY, " <-> ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.EQUAL, "<attribute name=\"equal\">"," ","</attribute>", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.NOT_EQUAL, "<attribute name=\"notEqual\">"," ","</attribute>", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.LESS, " < ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.LESS_EQ, " <= ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.GREATER, " > ", OperatorPos.FUNCTION),
@@ -712,6 +718,8 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                     return new FormattedFormula(lang, true, "\\infty");
                 case PNPRO:
                     return new FormattedFormula(lang, true, "Infinite");
+                case GRML:
+                    return new FormattedFormula(lang, true, "inf");
                 default:
                     throw new UnsupportedOperationException();
             }
@@ -1465,6 +1473,12 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         MultiSetElemType payload0 = (MultiSetElemType)e0.getPayload();
         MultiSetElemType payload1 = (MultiSetElemType)e1.getPayload();
         MultiSetElemType outPayload = payload0.join(payload1, context);
+        if (lang == GRML) {
+            if (ctx.op.getType() == ExprLangParser.SUB) {
+                throw new UnsupportedOperationException("Subtraction of multiset elements is not supported in GRML format.");
+            }
+            return formatPayload(true, payload1, e0, e1); // concatenate e0 with e1, with no '+' operator
+        }
         return formatBinaryFn(ctx.op.getType(), e0, e1).addPayload(outPayload);
     }
 
@@ -1488,6 +1502,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case LATEX:
                 return formatPayload(true, ALL_ELEM_TYPE, "\\text{All}");                
             case PNML:
+            case GRML:
                 return formatPayload(true, ALL_ELEM_TYPE, "ALL_TERM"/* will be changed in visitMultiSetDef */);
             default:
                 throw new UnsupportedOperationException("visitColorSetAll");
@@ -1520,7 +1535,20 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     @Override
     public FormattedFormula visitColorSetClass(ExprLangParser.ColorSetClassContext ctx) {
         ColorClass cc = (ColorClass)context.getNodeByUniqueName(ctx.SIMPLECOLORCLASS_ID().getText());
-        return formatPayload(true, new MultiSetElemType(cc)/*payload*/, cc);
+        switch (lang) {
+            case GREATSPN:
+            case LATEX:
+                return formatPayload(true, new MultiSetElemType(cc)/*payload*/, cc);
+            case PNML:
+                return formatPayload(true, new MultiSetElemType(cc)/*payload*/,
+                        "<all><usersort declaration=\""+cc.getUniqueName()+"\"/></all>");
+            case GRML:
+                return formatPayload(true, new MultiSetElemType(cc)/*payload*/,
+                        "<attribute name=\"function\"><attribute name=\"all\"><attribute name=\"type\">"+
+                                cc.getUniqueName()+"</attribute></attribute></attribute>");
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 
     @Override
@@ -1561,6 +1589,11 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                         else {
                             clrId = "<useroperator declaration=\""+id+"\"/>";
                         }
+                        break;
+                    case GRML:
+                        clrId = "<attribute name=\"expr\"><attribute name=\"enumConst\"><attribute name=\"type\">"+
+                                cc.getUniqueName()+"</attribute><attribute name=\"enumValue\">"+id+
+                                "</attribute></attribute></attribute>";
                         break;
                     default:
                         throw new UnsupportedOperationException();
@@ -1691,6 +1724,15 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 }
                 buffer.append("<tuple>");
                 break;
+            case GRML:
+                buffer.append("<attribute name=\"token\">");
+                buffer.append("<attribute name=\"occurs\">");
+                if (mult != null) 
+                    buffer.append(visit(mult).getFormula());
+                else
+                    buffer.append("<attribute name=\"intValue\">1</attribute>");
+                buffer.append("</attribute><attribute name=\"tokenProfile\">");
+                break;
             default:
                 throw new UnsupportedOperationException("visitMultiSetDef");
         }
@@ -1755,6 +1797,14 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 //                        }
                     }
                     break;
+                case GRML: {
+                    String subterm = msetElem.getFormula();
+                    subterm = subterm.replaceAll("ALL_TERM", 
+                                "<attribute name=\"function\"><attribute name=\"all\"><attribute name=\"type\">"+
+                                expectedClass.getUniqueName()+"</attribute></attribute></attribute>");
+                    buffer.append("<attribute name=\"expr\">").append(subterm).append("</attribute>");
+                    }
+                    break;
                 default:
                     throw new UnsupportedOperationException();
             }
@@ -1769,6 +1819,9 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 buffer.append("</tuple>");
                 if (mult != null)
                     buffer.append("</subterm></numberof>");
+                break;
+            case GRML:
+                buffer.append("</attribute></attribute>"); // tokenProfile, token
                 break;
             default:
                 throw new UnsupportedOperationException();
@@ -1816,6 +1869,12 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     public FormattedFormula visitIntMSetExprAddSub(ExprLangParser.IntMSetExprAddSubContext ctx) {
         FormattedFormula e0 = visit(ctx.intMSetExpr(0)), e1 = visit(ctx.intMSetExpr(1));
         ensureSameDomain(e0, e1);
+        if (lang == GRML) {
+            if (ctx.op.getType() == ExprLangParser.SUB) {
+                throw new UnsupportedOperationException("Subtraction of multisets is not supported in GRML format.");
+            }
+            return format(true, e0, e1); // concatenate e0 with e1, with no '+' operator
+        }
         return formatBinaryFn(ctx.op.getType(), e0, e1);
     }
     

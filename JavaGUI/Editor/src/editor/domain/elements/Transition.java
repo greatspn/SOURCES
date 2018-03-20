@@ -508,6 +508,11 @@ public class Transition extends Node implements Serializable, Firable {
         return priorityExpr.convertLang(context, new EvaluationArguments(marking), lang);
     }
     
+    public String convertNumServersLang(ParserContext context, AbstractMarking marking, ExpressionLanguage lang) {
+        assert hasNumServers();
+        return numServersExpr.convertLang(context, new EvaluationArguments(marking), lang);
+    }
+    
     public String convertGuardLang(ParserContext context, AbstractMarking marking, ExpressionLanguage lang) {
         assert hasGuard();
         return guardExpr.convertLang(context, new EvaluationArguments(marking), lang);

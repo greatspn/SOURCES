@@ -9,31 +9,26 @@ package editor.domain.io;
 import editor.domain.Edge;
 import editor.domain.Node;
 import editor.domain.elements.ColorClass;
+import editor.domain.elements.ColorVar;
 import editor.domain.elements.ConstantID;
 import editor.domain.elements.GspnEdge;
 import editor.domain.elements.GspnPage;
-import editor.domain.elements.ParsedColorSubclass;
 import editor.domain.elements.Place;
 import editor.domain.elements.TemplateVariable;
 import editor.domain.elements.Transition;
 import editor.domain.elements.Transition.Type;
-import editor.domain.grammar.ColorVarsBinding;
 import editor.domain.grammar.EvaluationArguments;
+import editor.domain.grammar.EvaluationException;
 import static editor.domain.grammar.ExpressionLanguage.GRML;
 import editor.domain.grammar.ParserContext;
-import static editor.domain.io.GreatSpnFormat.ensureInt;
-import static editor.domain.io.GreatSpnFormat.ensureReal;
-import static editor.domain.io.GreatSpnFormat.intOrMpar;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -56,6 +51,13 @@ public class GRMLFormat {
         Object oldLineSep = null;
         try {
             ParserContext context = new ParserContext(gspn);
+            try {
+                gspn.compileParsedInfo(context);
+            }
+            catch (EvaluationException e) {
+                throw new UnsupportedOperationException("GRML exporter does not support "
+                        + "parametric color classes. All color classes bounds must be defined.");
+            }
             oldLineSep = sysProps.setProperty("line.separator", "\n");
             
             ArrayList<String> log = new ArrayList<>();
@@ -64,8 +66,64 @@ public class GRMLFormat {
             
             int idCounter =2;
             grml.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-            grml.println("<model id=\"1\" formalismUrl=\"http://formalisms.cosyverif.org/sptgd-net.fml\" xmlns=\"http://cosyverif.org/ns/model\">");
+            String formalUrl = "http://formalisms.cosyverif.org/sptgd-net.fml";
+            if (gspn.gspnHasColors())
+                formalUrl = "http://formalisms.cosyverif.org/swn.fml";
+            grml.println("<model id=\"1\" formalismUrl=\""+formalUrl+"\" xmlns=\"http://cosyverif.org/ns/model\">");
             grml.println("<attribute name=\"declaration\">");
+            // Declared color classes
+            for (Node node : gspn.nodes) {
+                if (node instanceof ColorClass) {
+                    ColorClass cc = (ColorClass)node;
+                    if (cc.isSimpleClass()) {
+                        grml.println("<attribute name=\"classDeclaration\">");
+                        grml.println("\t<attribute name=\"name\">"+cc.getUniqueName()+"</attribute>");
+                        // Write the enumerated colors
+                        grml.println("\t<attribute name=\"classType\">");
+                        grml.println("\t<attribute name=\"classEnum\">");
+                        int numColors = cc.numColors();
+                        for (int i=0; i<numColors; i++) {
+                            String clrName = cc.getColorName(i);
+                            grml.println("\t\t<attribute name=\"enumValue\">"+clrName+"</attribute>");
+                        }
+                        grml.println("\t</attribute>"); // classEnum
+                        grml.println("\t</attribute>"); // classType
+                        // Write circular property
+                        if (cc.isSimpleClass()) 
+                            grml.println("\t<attribute name=\"circular\">"+(cc.isCircular() ? "true" : "false")+"</attribute>");
+                        grml.println("</attribute>"); // classDeclaration
+                    }
+                    else { // domain class
+                        grml.println("<attribute name=\"domainDeclaration\">");
+                        grml.println("\t<attribute name=\"name\">"+cc.getUniqueName()+"</attribute>");
+                        // Write the enumerated colors
+                        grml.println("\t<attribute name=\"domainType\">");
+                        grml.println("\t<attribute name=\"cartesianProduct\">");
+                        for (int i=0; i<cc.getNumClassesInDomain(); i++) {
+                            String clsName = cc.getColorClassName(i);
+                            grml.println("\t\t<attribute name=\"type\">"+clsName+"</attribute>");
+                        }
+                        grml.println("\t</attribute>"); // cartesianProduct
+                        grml.println("\t</attribute>"); // domainType
+                        // Write circular property
+                        if (cc.isSimpleClass()) 
+                            grml.println("\t<attribute name=\"circular\">"+(cc.isCircular() ? "true" : "false")+"</attribute>");
+                        grml.println("</attribute>"); // domainDeclaration
+                        
+                    }
+                }
+            }
+            // Declared Color variables
+            for (Node node : gspn.nodes) {
+                if (node instanceof ColorVar) {
+                    ColorVar cvar = (ColorVar)node;
+                    grml.println("<attribute name=\"variableDeclaration\">");
+                    grml.println("\t<attribute name=\"name\">"+cvar.getUniqueName()+"</attribute>");
+                    grml.println("\t<attribute name=\"type\">"+cvar.getDomainExpr().getExpr()+"</attribute>");
+                    grml.println("</attribute>"); // variableDeclaration
+                }
+            }
+            // Declared constants
             grml.println("<attribute name=\"constants\">");
             grml.println("\t<attribute name=\"intConsts\">");
             for (Node node : gspn.nodes) {
@@ -100,7 +158,7 @@ public class GRMLFormat {
                    
                 }
             }
-            grml.println("\t</attribute>");
+            grml.println("\t</attribute>"); // end of int constants
             
             grml.println("\t<attribute name=\"realConsts\">");
             for (Node node : gspn.nodes) {
@@ -135,54 +193,8 @@ public class GRMLFormat {
                    
                 }
             }
-            grml.println("\t</attribute>"); 
-            grml.println("</attribute>");
-
-            for (Node node : gspn.nodes) {
-                if (node instanceof ColorClass) {
-                    ColorClass cc = (ColorClass)node;
-                    if (!cc.isSimpleClass())
-                        continue;
-                    
-                    grml.println("<attribute name=\"classDeclaration\">");
-                    grml.println("\t<attribute name=\"name\">" + cc.getUniqueName() +"</attribute>");
-                    grml.println("\t<attribute name=\"circular\">" + cc.isCircular() + "</attribute>");
-                    
-                    /*String[] subclassNames = new String[cc.numSubClasses()];
-                    String allSubclasses = "";
-                    for (int i=0; i<cc.numSubClasses(); i++) {
-                        subclassNames[i] = (cc.getSubclass(i).isNamed() ? 
-                                            cc.getSubclass(i).name : cc.getUniqueName()+"_"+i);
-                        allSubclasses += (i==0 ? "" : ",") + subclassNames[i];
-                    }
-                    String colorDef = "("+cc.getUniqueName()+" c " +
-                                      scaleCoord(cc.getX()) + " " +
-                                      scaleCoord(cc.getY()) + " " +                            
-                                      " (@c\n" + (cc.isCircular() ? "o " : "u ") +
-                                      allSubclasses + "\n))";
-                    defs.add(colorDef);
-                    for (int i=0; i<cc.numSubClasses(); i++) {
-                        ParsedColorSubclass pcs = cc.getSubclass(i);
-                        String subClassDef;
-                        if (pcs.isInterval())
-                            subClassDef = (pcs.getIntervalPrefix() == null ? "" : pcs.getIntervalPrefix())+
-                                          "{"+pcs.getStartRangeExpr()+"-"+pcs.getEndRangeExpr()+"}";
-                        else {
-                            subClassDef = "{";
-                            for (int j=0; j<pcs.getNumColors(); j++)
-                                subClassDef += (j==0 ? "" : ",") + pcs.getColorName(j);
-                            subClassDef += "}";
-                        }
-                        colorDef = "("+subclassNames[i]+" c " +
-                                      scaleCoord(cc.getX() + 4*(i+1)) + " " +
-                                      scaleCoord(cc.getY()) + " " +                                
-                                   " (@c\n"+subClassDef+"\n))";
-                        defs.add(colorDef);
-                    }*/
-                    grml.println("</attribute>");
-                }
-            }
-            
+            grml.println("\t</attribute>"); // end of real constants
+            grml.println("</attribute>"); // end of all declarations
             
             grml.println("</attribute>");
             
@@ -201,18 +213,30 @@ public class GRMLFormat {
                     node2id.put(node, idCounter);
                     idCounter= 1+ idCounter;
                     grml.println("\t<attribute name=\"name\">" + plc.getUniqueName() + "</attribute>");
-                    if(!initMarkExpr.isEmpty()){
-                        grml.print("\t<attribute name=\"marking\"><attribute name=\"expr\">");
-                        grml.print(plc.convertInitMarkingLang(context, GRML));
-                        grml.println("</attribute></attribute>");
-                    }else{
-                        grml.print("\t<attribute name=\"marking\"><attribute name=\"expr\">");
-                        grml.print("<attribute name=\"intValue\">0</attribute>");
-                        grml.println("</attribute></attribute>");
+                    grml.print("\t<attribute name=\"marking\">\n");
+                    if (plc.isInColorDomain()) {
+                        if(!initMarkExpr.isEmpty()) {
+                            grml.print("\t\t");
+                            grml.print(plc.convertInitMarkingLang(context, GRML));
+                        }
+                    }
+                    else { // Neutral color
+                        grml.print("\t<attribute name=\"expr\">\n\t\t");
+                        if(!initMarkExpr.isEmpty())
+                            grml.print(plc.convertInitMarkingLang(context, GRML));
+                        else
+                            grml.print("<attribute name=\"intValue\">0</attribute>");
+                        grml.println("\n\t</attribute>\n");
+                    }
+                    grml.println("\n\t</attribute>"); // marking
+                    
+                    // Color domain
+                    if (plc.isInColorDomain()) {
+                        grml.println("\t<attribute name=\"domain\"><attribute name=\"type\">"+plc.getColorDomainName()+"</attribute></attribute>");
                     }
                     grml.println("</node>");
-   
                 }
+                
                 if (node instanceof Transition) {
                     Transition tr = (Transition) node;
                     if (tr.isContinuous())
@@ -241,32 +265,43 @@ public class GRMLFormat {
                         grml.println("</attribute>");
                         if (tr.hasDelay()) {
                             grml.print("\t\t<attribute name=\"param\"><attribute name=\"expr\">");
-                            grml.print(tr.convertDelayLang(context, null /* you dont need this param, it as a different usage*/, GRML));
+                            grml.print(tr.convertDelayLang(context, null, GRML));
                             grml.println("</attribute></attribute>");
                         }
                     } else {
-                        grml.println(tr.convertDelayLang(context, null /* you dont need this param, it as a different usage*/, GRML));
+                        grml.println(tr.convertDelayLang(context, null, GRML));
                     }
                     grml.println("\t</attribute>");
                     
                     if(tr.hasWeight()){
                         grml.print("\t<attribute name=\"weight\"><attribute name=\"expr\">");
-                        grml.print(tr.convertWeightLang(context, null /* you dont need this param, it as a different usage*/, GRML));
+                        grml.print(tr.convertWeightLang(context, null, GRML));
                         grml.println("</attribute></attribute>");
                     }
                     
-                    if(tr.hasPriority()){
+                    if (tr.hasNumServers()) {
+                        grml.print("\t<attribute name=\"service\"><attribute name=\"expr\">");
+                        grml.print(tr.convertNumServersLang(context, null, GRML));
+                        grml.println("</attribute></attribute>");
+                    }
+                    
+                    if(tr.hasPriority()) {
                         grml.print("\t<attribute name=\"priority\"><attribute name=\"expr\">");
-                        grml.print(tr.convertPriorityLang(context, null /* you dont need this param, it as a different usage*/, GRML));
+                        grml.print(tr.convertPriorityLang(context, null, GRML));
                         grml.println("</attribute></attribute>");
                     }
                     
+                    if (tr.hasGuard() && gspn.gspnHasColors()) {
+                        grml.print("\t<attribute name=\"guard\"><attribute name=\"boolExpr\">");
+                        grml.print(tr.convertGuardLang(context, null, GRML));
+                        grml.println("</attribute></attribute>");
+                    }
                     
-                                               
                     grml.println("</node>");
-                }
-                
+                }                
             }
+            
+            // Print arcs
             for(Edge edge : gspn.edges){
                 if (edge instanceof GspnEdge) {
                     GspnEdge arc = (GspnEdge) edge;
@@ -274,13 +309,23 @@ public class GRMLFormat {
                     target = node2id.get(arc.getHeadNode());
                     source = node2id.get(arc.getTailNode());
                     String kind = "arc";
-                    if(arc.getEdgeKind()== GspnEdge.Kind.INHIBITOR)kind="inhibitorarc";
+                    if(arc.getEdgeKind()== GspnEdge.Kind.INHIBITOR)
+                        kind="inhibitorarc";
                     
                     grml.println("<arc id=\"" + idCounter +"\" arcType=\""+kind+"\" source=\""+source+"\" target=\""+target+"\">");
                     idCounter= 1+ idCounter;
-                    grml.print("\t<attribute name=\"valuation\"><attribute name=\"expr\">");
-                    grml.print(arc.convertMultiplicityLang(context, GRML));
-                    grml.println("</attribute></attribute>");
+                    grml.print("\t<attribute name=\"valuation\">");
+                    if (arc.getConnectedPlace().isInColorDomain()) {
+                        grml.print("\n\t\t");
+                        grml.print(arc.convertMultiplicityLang(context, GRML));
+                        grml.print("\n");
+                    }
+                    else {
+                        grml.print("<attribute name=\"expr\">");
+                        grml.print(arc.convertMultiplicityLang(context, GRML));
+                        grml.println("</attribute>");
+                    }
+                    grml.println("</attribute>"); // valuation
                     grml.println("</arc>");
                 }
             }
