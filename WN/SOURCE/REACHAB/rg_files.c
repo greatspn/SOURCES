@@ -250,6 +250,7 @@ void write_dot(int id, int pri, int mark_type, int tr, double rate) {
                 }
                 else *q++ = *p++;
             }
+            *q = '\0';
 
             fprintf(f_dot, "  %c%d -> %c%d [%s label=<%s%s%s>];\n",
                     s_mark_type_ch, s_id, mark_type_ch, id, edge_style, 
