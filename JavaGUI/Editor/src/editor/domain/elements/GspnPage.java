@@ -236,7 +236,7 @@ public class GspnPage extends NetPage implements Serializable {
             case RG:
                 return true;
             case CTMC:
-                return !isCPN && isTimed();
+                return isTimed();
         }
         throw new IllegalStateException();
     }

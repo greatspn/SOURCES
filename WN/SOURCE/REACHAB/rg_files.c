@@ -238,8 +238,22 @@ void write_dot(int id, int pri, int mark_type, int tr, double rate) {
             if (rate != INV_RATE) {
                 snprintf(rate_buf, RATE_BUF_SIZE, " <font color=\"#3070E0\">(%lg)</font>", rate);
             }
+            // Convert bname in html format
+            char bname_html[2*MAX_TAG_SIZE], *p = bname, *q = bname_html;
+            while (*p) {
+                if (*p == '<' || *p == '>') {
+                    *q++ = '&'; 
+                    *q++ = (*p == '<') ? 'l' : 'g'; 
+                    *q++ = 't'; 
+                    *q++ = ';'; 
+                    p++;
+                }
+                else *q++ = *p++;
+            }
+
             fprintf(f_dot, "  %c%d -> %c%d [%s label=<%s%s%s>];\n",
-                    s_mark_type_ch, s_id, mark_type_ch, id, edge_style, TRANS_NAME(s_tr), bname, rate_buf);
+                    s_mark_type_ch, s_id, mark_type_ch, id, edge_style, 
+                    TRANS_NAME(s_tr), bname_html, rate_buf);
             break;
 
         case TANGIBLE_OR_VANISHING:
