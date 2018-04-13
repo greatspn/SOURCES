@@ -1376,6 +1376,8 @@ ComputeFlows(const PN& pn, InvariantKind inv_kind, FlowMatrixKind mat_kind,
         virtual void advance(const char* algo, size_t step, size_t totalSteps, 
                              size_t size_K, ssize_t num_prods) {
             bool veryVerb = (verboseLvl >= VL_VERY_VERBOSE);
+            if (verboseLvl == VL_NONE)
+                return; // silent
             if (step == totalSteps) { // final message
                 if (!veryVerb) 
                     msgTimer.clear_any();

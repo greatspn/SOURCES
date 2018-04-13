@@ -36,9 +36,9 @@ public abstract class LabelDecor extends Decor implements Serializable, Editable
     //private double width, height;
     //private String lastText;
     
-//    public static final float DEFAULT_TEXT_SIZE = 0.9f * 1.25f;
-//    public static final float DEFAULT_SMALL_TEXT_SIZE = 0.78f  * 1.25f;
-//    public static final float DEFAULT_VERY_SMALL_TEXT_SIZE = 0.70f * 1.25f;
+//    public static final float DEFAULT_TEXT_SIZE = 0.9f * 1.5f;
+//    public static final float DEFAULT_SMALL_TEXT_SIZE = 0.78f  * 1.5f;
+//    public static final float DEFAULT_VERY_SMALL_TEXT_SIZE = 0.70f * 1.5f;
     public static final float DEFAULT_TEXT_SIZE = 0.9f;
     public static final float DEFAULT_SMALL_TEXT_SIZE = 0.78f;
     public static final float DEFAULT_VERY_SMALL_TEXT_SIZE = 0.70f;
