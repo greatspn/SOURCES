@@ -5,49 +5,19 @@
 is a software package for the modeling, validation, and performance evaluation of distributed systems 
 using Generalized Stochastic Petri Nets and their colored extension, Stochastic Well-formed Nets. 
 The tool provides a friendly framework to experiment with timed Petri net based modeling techniques. 
-It implements efficient analysis algorithms to allow its use on rather complex applications, not only toy examples.
-
-
-
-
-
-
+It implements efficient analysis algorithms to allow its use on rather complex applications.
 
 
 
 ### How to compile and install GreatSPN on your PC.
 
-GreatSPN can be compiled and installed on several POSIX-compliant systems.
-The framework requires several dependencies. We provide an installation script that should simplify 
-the installation. As of now, the only supported platform is Fedora. We will add other platforms later on.
+GreatSPN can be compiled and installed on POSIX-compliant systems.
+The framework requires several dependencies. 
 
 #### Linux installation instructions:
 
-On Fedora (version 18 or greater), type the following command at the prompt:
-```
-	curl https://raw.githubusercontent.com/greatspn/SOURCES/master/download.sh | bash -s -- -Fedora
-```
-This will create a GreatSPN/ directory, which will contain these subdirectories:
- * SOURCES: the main source tree of the GreatSPN framework
- * meddly: the meddly library, a required dependency for tools using Decision Diagrams.
-
-Enter in each directory, compile and install. To install meddly, type:
-```
-	cd GreatSPN/meddly
-	./autogen.sh
-	./configure --prefix=/usr/local
-	make
-	sudo make install
-```
-To install the GreatSPN framework, type:
-```
-	cd GreatSPN/SOURCES
-	make
-	sudo make install
-```
-
-On other Linux distributions, you will first need to install the following dependencies 
-(using the developer packages with the header files):
+In order to compile and install GreatSPN from sources, you need to do the following steps.
+First, install the following dependencies (using the developer packages with the header files):
  * gcc and g++ (with support for C++14)
  * autotools (autoconf, automake, libtool, ...)
  * libgmp (GNU multiprecision library) (devel)
@@ -58,24 +28,45 @@ On other Linux distributions, you will first need to install the following depen
  * libxml++ (devel), glibmm24 (devel) and glib2 (devel)
  * glpk (devel) and lpsolve (devel)
 
-After that, type the command:
+Once all dependencies are installed, create a `GreatSPN` directory.
+Inside this directory you will need to setup two different repositories: 
+one for the Meddly library, and another for the GreatSPN framework.
+To download the Meddly library, type:
 ```
-	curl https://raw.githubusercontent.com/greatspn/SOURCES/master/download.sh | bash
+	cd GreatSPN
+	git clone git://git.code.sf.net/p/meddly/code-git meddly
+	cd meddly
+	./autogen.sh
+	./configure --prefix=/usr/local
+	make
+	sudo make install
 ```
-and follow the above instruction to compile meddly and GreatSPN.
+Please, refer to the [Meddly site](https://meddly.sourceforge.io) for all the
+informations on how to download, compile and install it.
+
+Once Meddly is downloaded, compiled and installed, go back to the `GreatSPN`
+directory, and type:
+```
+	git clone git@github.com:greatspn/SOURCES.git SOURCES
+```
+to download the sources. The `SOURCES` directory *must* bu at the same level of the `meddly` directory.
+To compile the sources, type:
+```
+	cd SOURCES
+	make
+	sudo make install
+```
 
 
 #### MacOSX installation instructions:
 
-GreatSPN is known to be working on macOS X after having installed all the required dependencies 
-using Homebrew.
-
-TBD.
+GreatSPN is known to be working on macOS X.
+Install all the required dependencies using a software like [Homebrew](https://brew.sh/).
 
 
 #### Windows installation instructions:
 
-GreatSPN compiles and runs successfully using the WSL (Windows 10 64bit minimum).
+GreatSPN is known to compile and run successfully using the WSL (Windows 10 64bit minimum).
 
 TBD.
 
@@ -83,9 +74,9 @@ TBD.
 
 We offer a pre-installed VirtualBox machine image, based on Fedora Core, that ships with
 the GreatSPN framework already installed, with all the rewuired dependencies.
-This is the easiest way of getting GreatSPN, since you just have to download the image.
+This is the easiest way to get GreatSPN, since you just have to download the image.
 The VirtualBox image can be downloaded from this [repository](www.di.unito.it/~greatspn/VBox/).
-In case you need it, the root password of the VirtualBox image is: fedora
+In case you need it, the root password of the VirtualBox image is: `fedora`
 
 Sometimes the virtual box machine will require the re-installation of
 the so-called "Guest Additions", which allows to share directories with the host pc.
@@ -99,17 +90,16 @@ TBD. Instructions on how to update the shared directory.
 
 
 
-
-
-
 ### How to run the Graphical User Interface.
 
-TBD.
-
-
-
-
-
+If the installation of GreatSPN is successful, the GreatSPN Editor should appear
+in the Linux application menu. Sometimes, a logout is required.
+In case the Editor does not appear in the system menu, you can launch it from the command line
+with this command:
+```
+	java -jar /usr/local/GreatSPN/bin/Editor.jar
+```
+For macOS users, a compiled app is generated in the `SOURCES/JavaGUI/Editor/dist` directory.
 
 
 
@@ -122,12 +112,6 @@ in the: /usr/local/GreatSPN directory. The following sub-directory will be creat
  * ${GREATSPN_HOME}/scripts:  the scripts that invoke the solver pipelines.
  * ${GREATSPN_HOME}/bin:  the individual solver binaries.
  * ${GREATSPN_HOME}/models:  the default model library available from the GUI.
-
-
-
-
-
-
 
 
 
