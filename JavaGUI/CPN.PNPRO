@@ -15,7 +15,7 @@
       <transition label-x="2.625" label-y="0.0" magnets="THREE_PER_SIDE" name="Change" rotation="1.5707963267948966" type="EXP" x="10.55" y="13.0"/>
       <place domain="SxR" label-x="5.1875" label-y="-0.125" name="wait_ack" x="10.0" y="17.0"/>
       <transition label-x="-2.8125" label-y="-0.0625" magnets="THREE_PER_SIDE" name="Release" rotation="1.5707963267948966" type="IMM" x="10.85" y="21.0"/>
-      <place domain="SxR" label-x="-0.6875" label-y="-1.5" name="message" x="16.6875" y="11.0"/>
+      <place domain="SxR" label-x="-0.6875" label-y="-1.5" marking="&lt;s1+s2,r1+r2&gt;" name="message" x="16.6875" y="11.0"/>
       <place domain="SxR" label-x="0.5" label-y="-1.5" name="rec_buf" x="27.0" y="11.0"/>
       <transition label-y="1.75" name="SendMessage" type="EXP" x="22.55" y="11.0"/>
       <transition guard="s==s2" guard-x="1.5" guard-y="0.5" label-x="2.5" label-y="-0.5" magnets="THREE_PER_SIDE" name="Update" rotation="1.5707963267948966" type="IMM" x="31.85" y="13.0"/>
