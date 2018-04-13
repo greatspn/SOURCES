@@ -12,7 +12,8 @@ It implements efficient analysis algorithms to allow its use on rather complex a
 ### How to compile and install GreatSPN on your PC.
 
 GreatSPN can be compiled and installed on POSIX-compliant systems.
-The framework requires several dependencies. 
+The framework requires several dependencies to be installed on your computer
+in order to compile it. 
 
 #### Linux installation instructions:
 
@@ -58,9 +59,9 @@ To compile the sources, type:
 ```
 
 
-#### MacOSX installation instructions:
+#### macOS installation instructions:
 
-GreatSPN is known to be working on macOS X.
+GreatSPN is known to be working on macOS.
 Install all the required dependencies using a software like [Homebrew](https://brew.sh/).
 
 
@@ -113,6 +114,9 @@ in the: /usr/local/GreatSPN directory. The following sub-directory will be creat
  * ${GREATSPN_HOME}/bin:  the individual solver binaries.
  * ${GREATSPN_HOME}/models:  the default model library available from the GUI.
 
+Typically, most tools are accessed through a script in the first directory.
+
+TBD: description of the core tools.
 
 
 
