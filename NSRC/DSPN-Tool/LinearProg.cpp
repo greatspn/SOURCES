@@ -180,9 +180,13 @@ ssize_t SilvaColom88::solve_for(const size_t *places, size_t num_pl)
 	}
    	set_obj_fnex(lp, num_pl, row.data(), col.data());
 
-   	// Solve the LP
+   	// Reset the basis. This step is very important to improve the numerical stability.
+   	default_basis(lp); 
+   	// Solve the ILP
    	set_verbose(lp, IMPORTANT);
    	int result = solve(lp);
+
+	// cout << "exitcode=" << result << "  solution=" << get_objective(lp) << " - " << ((ssize_t)get_objective(lp)) << endl;
    	if (result == OPTIMAL || result == SUBOPTIMAL) {
 #ifdef DEBUG
    		ssize_t sum = 0;
@@ -194,7 +198,7 @@ ssize_t SilvaColom88::solve_for(const size_t *places, size_t num_pl)
 	   	assert((ssize_t)get_objective(lp) == sum);
 #endif
 	   	// return sum;
-   		return (ssize_t)get_objective(lp);
+   		return (ssize_t)ceil(get_objective(lp)); // Use ceil, otherwise sometimes it will truncate the values!!
    	}
    	else if (result == UNBOUNDED) 
    		return ILPBND_UNBOUNDED;
@@ -217,89 +221,6 @@ void ComputeILPBounds(const PN& pn,
 	SilvaColom88 sc88(pn, verboseLvl);
 	sc88.initialize();
 	
-
-	// bool warnForMarkDepArcMult = false;
-	// bool warnForInhibitorArcs = false;
-
-	// // Derive the incidence matrix C: N * M
-	// map<pair<place_t, transition_t>, int> mC;
-	// for (const Transition& trn : pn.trns) {
-	// 	for (int kind = 0; kind < 3; kind++) {
-	// 		if (kind == HA) {
-	// 			if (!trn.arcs[kind].empty())
-	// 				warnForInhibitorArcs = true;
-	// 			continue; // Ignore inhibitor arcs
-	// 		}
-	// 		int sign { (kind == IA) ? -1 : +1 };
-	// 		for (const Arc& arc : trn.arcs[kind]) {
-	// 			int mult(1);
-	// 			if (arc.isMultMarkingDep())
-	// 				warnForMarkDepArcMult = true;
-	// 			else
-	// 				mult = int(arc.getConstantMult());
-
-	// 			// cout << pn.plcs[arc.plc].name << " | " << trn.name << " = " << sign * mult << endl;
-	// 			mC[make_pair(arc.plc, trn.index)] += sign * mult;
-	// 		}
-	// 	}
-	// }
-
-	// // Initialize lp_solve
-	// lprec *lp;
- //  	lp = make_lp(0, N + M);
- //  	set_add_rowmode(lp, true);
-
- //  	// Initialize the integer variables
- //  	for (size_t n=0; n<M+N; n++) {
- //  		set_int(lp, n+1, true);
- //  		char* name;
- //  		if (n < N)
- //  			name = const_cast<char*>(pn.plcs[n].name.c_str());
- //  		else
- //  			name = const_cast<char*>(pn.trns[n-N].name.c_str());
-	// 	set_col_name(lp, n+1, name);
- //   	}
-
- //   	// Add the m = m0 + C * sigma rows  ==>  m - C * sigma = m0
- //   	std::vector<REAL> row(M + N);
- //   	std::vector<int> col(M + N);
-	// std::fill(row.begin(), row.end(), 0.0);
-	// std::fill(col.begin(), col.end(), 0);
- //   	for (const Place& plc : pn.plcs) {
- //   		int m0 = plc.initMarkFn->Evaluate();
- //   		int j = 0;
-
- //   		// Add:  m
- //   		col[j] = int(plc.index) + 1;
- //   		row[j] = 1;
- //   		j++;
-
- //   		// Add:  -C * sigma
- //   		auto it = mC.lower_bound(make_pair(plc.index, transition_t(0)));
- //   		for (; it != mC.end(); ++it) {
- //   			if (it->first.first != plc.index)
- //   				break;
- //   			transition_t t = it->first.second;
- //   			int mult { it->second };
-
- //   			col[j] = int(t) + N + 1;
- //   			row[j] = -mult;
- //   			j++;
- //   		}
-
- //   		add_constraintex(lp, j, row.data(), col.data(), ROWTYPE_EQ, m0);
-	// 	std::fill(row.begin(), row.begin() + j, 0.0);
-	// 	std::fill(col.begin(), col.begin() + j, 0);
- //   	}
-
- //   	if (warnForInhibitorArcs)
- //   		cout << "Inhibitor arcs have been ignored." << endl;
- //   	if (warnForMarkDepArcMult)
- //   		cout << "Marking-dependent arcs cannot be evaluated. Using multiplicity of 1." << endl;
-
- //   	// Set objective function
- //   	set_add_rowmode(lp, false);
- //   	set_maxim(lp);
    	size_t num_unbounded = 0;
    	size_t num_unknown = 0;
    	// write_LP(lp, stdout);
@@ -331,36 +252,8 @@ void ComputeILPBounds(const PN& pn,
 				if (verboseLvl > VL_BASIC)
 	   				cout << "Bound of "<<pn.plcs[targetP].name << " is " << bounds[targetP] << endl;
    		}
-
-	   	// col[0] = targetP + 1;
-	   	// row[0] = 1;
-	   	// set_obj_fnex(lp, 1, row.data(), col.data());
-
-	   	// // Solve the LP
-	   	// set_verbose(lp, IMPORTANT);
-	   	// int result = solve(lp);
-	   	// if (result == OPTIMAL || result == SUBOPTIMAL) {
-	   	// 	REAL* pVars;
-	   	// 	get_ptr_variables(lp, &pVars);
-	   	// 	bounds[targetP] = (ssize_t)pVars[targetP];
-	   	// 	if (verboseLvl > VL_BASIC)
-	   	// 		cout << "Bound of "<<pn.plcs[targetP].name << " is " << pVars[targetP] << endl;
-
-	   	// 	// set_bounds(lp, targetP + 1, 0, pVars[targetP]);
-	   	// }
-	   	// else if (result == UNBOUNDED) {
-	   	// 	bounds[targetP] = ILPBND_UNBOUNDED;
-	   	// 	if (verboseLvl > VL_BASIC)
-	   	// 		cout << "Place "<<pn.plcs[targetP].name << " is unbounded." << endl;
-	   	// 	num_unbounded++;;
-	   	// }
-	   	// else {
-	   	// 	bounds[targetP] = ILPBND_UNKNOWN;
-	   	// 	if (verboseLvl > VL_BASIC)
-		   // 		cout << "Could not compute bound of place "<<pn.plcs[targetP].name << ". error code=" << result << endl;   		   		
-		   // 	num_unknown++;
-	   	// }
 	}
+
 	if (verboseLvl >= VL_BASIC) {
 		if (num_unbounded > 0)
 			cout << "There are " << num_unbounded << " unbounded places." << endl;
@@ -369,8 +262,6 @@ void ComputeILPBounds(const PN& pn,
 		if (num_unknown==0 && num_unbounded==0)
 			cout << "All places are bounded." << endl;
 	}
-
-  	// delete_lp(lp);
 }
 
 //-----------------------------------------------------------------------------
