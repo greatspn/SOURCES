@@ -2,6 +2,13 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+<<<<<<< HEAD
+        <group>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/common/JToggleTriState.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/net/NetEditorPanel.java</file>
+        </group>
+=======
         <group/>
+>>>>>>> a382ad673c73afc3cca6ef6d318e2a77687bfcc3
     </open-files>
 </project-private>
