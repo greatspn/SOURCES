@@ -37,6 +37,7 @@ void write_on_srg(FILE *srg, int dir);
 static int is_MCC = -1;
 
 int running_for_MCC() {
+    // return 1;
     if (is_MCC == -1) { // Not yet determined
         const char *env = getenv("MCC");
         is_MCC = (env != NULL && 0 != strcmp(env, "0"));

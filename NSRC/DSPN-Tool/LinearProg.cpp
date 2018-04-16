@@ -186,7 +186,7 @@ ssize_t SilvaColom88::solve_for(const size_t *places, size_t num_pl)
    	set_verbose(lp, IMPORTANT);
    	int result = solve(lp);
 
-	// cout << "exitcode=" << result << "  solution=" << get_objective(lp) << " - " << ((ssize_t)get_objective(lp)) << endl;
+	// cout << "exitcode=" << result << "  solution=" << ((ssize_t)ceil(get_objective(lp))) << endl;
    	if (result == OPTIMAL || result == SUBOPTIMAL) {
 #ifdef DEBUG
    		ssize_t sum = 0;
