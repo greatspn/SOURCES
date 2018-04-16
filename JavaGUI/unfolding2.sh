@@ -16,6 +16,6 @@ if [[ $# == 0 ]] ; then
 	exit
 fi
 
-java -mx16000m -cp /usr/local/GreatSPN/bin/Editor.jar:/usr/local/GreatSPN/bin/lib/antlr-runtime-4.2.1.jar \
+java -mx16000m -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar \
 	editor.UnfoldPNML2NetDefCommandLineTool "$@"
 

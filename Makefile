@@ -1699,9 +1699,10 @@ endif
 
 JavaGUI: java-jars $(JAVA_GUI_ARCHIVES)
 
-SCRIPTS += unfolding2
+SCRIPTS += unfolding2 greatspn_editor
 
 unfolding2_SOURCEFILE := JavaGUI/unfolding2.sh
+greatspn_editor_SOURCEFILE := JavaGUI/greatspn_editor.sh
 
 
 upload_JavaGUI: JavaGUI
