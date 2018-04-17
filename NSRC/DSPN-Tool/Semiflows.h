@@ -24,11 +24,11 @@ enum class FlowMatrixKind {
     SEMIFLOWS, 
     BASIS,
     INTEGER_FLOWS,
-    NESTED_FLOW_SPAN
+    // NESTED_FLOW_SPAN
 };
 
 // Returns the GreatSPN file extension for the given type of flow (like .pin, .tin, etc...)
-const char* GetGreatSPN_FileExt(InvariantKind fk, FlowMatrixKind matk);
+const char* GetGreatSPN_FileExt(InvariantKind fk, FlowMatrixKind matk, int inc_dec);
 // Return the name of the type of flows (like "PLACE SEMIFLOWS" or "TRANSITIONS FLOW BASIS")
 const char* GetFlowName(InvariantKind fk, FlowMatrixKind matk);
 
@@ -74,7 +74,7 @@ public:
     typedef sparsevector<spvec_int_tag>    spintvector;
     // typedef sparsevector<size_t, bool>   spboolvector;
 
-    flow_matrix_t(size_t N, size_t M, InvariantKind k);
+    flow_matrix_t(size_t N, size_t N0, size_t M, InvariantKind k, int inc_dec);
     flow_matrix_t(const flow_matrix_t&) = delete;
     flow_matrix_t(flow_matrix_t&&) = default;
     flow_matrix_t& operator=(const flow_matrix_t&) = delete;
@@ -145,15 +145,19 @@ public:
     };
 
     // For P-semiflows: N=|P|, M=|T| (for T-semiflows: N=|T|, M=|P|)
-    const size_t N, M;
+    // N0 is the same as N when no inc/dec invariants are considered, otherwise N has the additional entries
+    const size_t N, N0, M;
 
     // Stores P or T flows?
     const InvariantKind inv_kind;
 
+    // We are also considering increasing/decereasing invariants
+    const int inc_dec; // 0 means normal P/T flows, otherwise +1/-1 for increasing/decreasing inv.
+
     // The content of this flow matrix
     FlowMatrixKind mat_kind;
 
-    // Flow matrix mK=[D|A], kept as a list for ease of adding/emoving rows
+    // Flow matrix mK=[D|A], kept as a list for ease of adding/removing rows
     std::list<row_t> mK;
 
     // Drop all the vectors in the A part of the [D|A] matrix.
@@ -211,6 +215,9 @@ public:
 
     // Initialize the flow matrix from the inserted entries
     void generate_matrix();
+
+    // Add increasing/decreasing flows (for I/D invariants)
+    void add_increase_decrease_flows();
 };
 
 //-----------------------------------------------------------------------------
@@ -233,7 +240,7 @@ public:
     // Compute a span of flows which maximizes the nested property
     // Nesting: if we have A+B, A+C and B=C, then drop the 1st (or the 2nd), because it is
     // easily derived from a single sum (A+B)-(B+C), and B subset {A,B}  (nesting property).
-    void compute_nested_flow_span();
+    // void compute_nested_flow_span();
 
 protected:
     // What to report
@@ -281,7 +288,7 @@ typedef std::vector<PlaceBounds> place_bounds_t;
 
 shared_ptr<flow_matrix_t>
 ComputeFlows(const PN& pn, InvariantKind kind, FlowMatrixKind mat_kind, 
-             bool detect_exp_growth, VerboseLevel verboseLvl);
+             bool detect_exp_growth, int inc_dec, VerboseLevel verboseLvl);
 
 void SaveFlows(const flow_matrix_t& msa, ofstream& file);
 

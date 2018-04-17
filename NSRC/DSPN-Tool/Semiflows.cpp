@@ -134,19 +134,26 @@ inline ssize_t traverse_both(typename Container1::const_iterator& it1,
 
 //-----------------------------------------------------------------------------
 
-const char* GetGreatSPN_FileExt(InvariantKind ik, FlowMatrixKind matk) {
+const char* GetGreatSPN_FileExt(InvariantKind ik, FlowMatrixKind matk, int inc_dec) {
+    typedef const char*  T[3];
+    size_t i = (inc_dec == 0 ? 0 : (inc_dec > 0 ? 1 : 2));
+    const char *ext;
     switch (matk) {
         case FlowMatrixKind::SEMIFLOWS:
-            return (ik==InvariantKind::PLACE) ? ".pin" : ".tin";
+            ext = (ik==InvariantKind::PLACE) ? T{ ".pin", ".pin+", ".pin-" }[i] : T{ ".tin", ".tin+", ".tin-" }[i];
+            break;
         case FlowMatrixKind::BASIS:
-            return (ik==InvariantKind::PLACE) ? ".pba" : ".tba";
+            ext = (ik==InvariantKind::PLACE) ? T{ ".pba", ".pba+", ".pba-" }[i] : T{ ".tba", ".tba+", ".tba-" }[i];
+            break;
         case FlowMatrixKind::INTEGER_FLOWS:
-            return (ik==InvariantKind::PLACE) ? ".pfl" : ".tfl";
-        case FlowMatrixKind::NESTED_FLOW_SPAN:
-            return (ik==InvariantKind::PLACE) ? ".pspan" : ".tspan";
+            ext = (ik==InvariantKind::PLACE) ? T{ ".pfl", ".pfl+", ".pfl-" }[i] : T{ ".tfl", ".tfl+", ".tfl-" }[i];
+            break;
+        // case FlowMatrixKind::NESTED_FLOW_SPAN:
+        //     return (ik==InvariantKind::PLACE) ? ".pspan" : ".tspan";
         default:
             throw program_exception("Internal error in GetGreatSPN_FileExt");
     }
+    return ext;
 }
 //-----------------------------------------------------------------------------
 
@@ -163,8 +170,8 @@ const char* GetFlowName(InvariantKind ik, FlowMatrixKind matk) {
             return p ? "PLACE FLOW BASIS" : "TRANSITION FLOW BASIS";
         case FlowMatrixKind::INTEGER_FLOWS: 
             return p ? "PLACE FLOWS" : "TRANSITION FLOWS";
-        case FlowMatrixKind::NESTED_FLOW_SPAN: 
-            return p ? "NESTED PLACE FLOW SPAN" : "NESTED TRANSITION FLOW SPAN";
+        // case FlowMatrixKind::NESTED_FLOW_SPAN: 
+        //     return p ? "NESTED PLACE FLOW SPAN" : "NESTED TRANSITION FLOW SPAN";
         default:
             throw program_exception("Internal error in GetFlowMatrixName");
     }    
@@ -241,8 +248,9 @@ ostream& flow_matrix_t::print(ostream& os, bool highlight_annulled) const {
 
 //-----------------------------------------------------------------------------
 
-flow_matrix_t::flow_matrix_t(size_t _N, size_t _M, InvariantKind _ik) 
-: N(_N), M(_M), inv_kind(_ik), mat_kind(FlowMatrixKind::EMPTY) { /*cout << "M="<<M<<", N="<<N<<endl;*/ }
+flow_matrix_t::flow_matrix_t(size_t _N, size_t _N0, size_t _M, InvariantKind _ik, int _inc_dec) 
+: N(_N), N0(_N0), M(_M), inv_kind(_ik), inc_dec(_inc_dec), mat_kind(FlowMatrixKind::EMPTY) 
+{ /*cout << "M="<<M<<", N="<<N<<endl;*/ }
 
 //-----------------------------------------------------------------------------
 
@@ -655,6 +663,17 @@ void incidence_matrix_generator_t::generate_matrix() {
 
 //-----------------------------------------------------------------------------
 
+void incidence_matrix_generator_t::add_increase_decrease_flows() {
+    assert(f.M == f.N - f.N0);
+    assert(f.inc_dec == 1 || f.inc_dec == -1);
+
+    // add an arc for each place N0+i from transition i
+    for (size_t i=0; f.N0 + i < f.N; i++)
+        add_flow_entry(f.N0 + i, i, f.inc_dec);
+}
+
+//-----------------------------------------------------------------------------
+
 flows_generator_t::flows_generator_t(flow_matrix_t& _f, flow_algorithm_printer_t& _p, 
                                              VerboseLevel _verboseLvl) 
 : verboseLvl(_verboseLvl), printer(_p), f(_f) { }
@@ -939,7 +958,7 @@ void flows_generator_t::compute_integer_flows()
 
 //-----------------------------------------------------------------------------
 
-void flows_generator_t::compute_nested_flow_span() 
+/*void flows_generator_t::compute_nested_flow_span() 
 {
     const char* ALGO = "Generation of Nested Flows Span";
     verify(f.mat_kind == FlowMatrixKind::INCIDENCE);
@@ -1075,7 +1094,7 @@ void flows_generator_t::compute_nested_flow_span()
                     for (auto row = f.mK.begin(); row != f.mK.end() && !dropNewRow; ) {
                         if (row->is_negative() 
                             //&& row->A.nonzeros() == 0 
-                            /*&& row->test_minimal_positive_support_D(newRow.D, +1)*/)
+                            / *&& row->test_minimal_positive_support_D(newRow.D, +1)* /)
                         {
                             int m1, m2;
                             if (newRow.test_subst(row->D, m1, m2)) {
@@ -1119,7 +1138,7 @@ void flows_generator_t::compute_nested_flow_span()
                             dropNewRow = true;
                             break;
                         }
-                        // else if (row->is_negative() /*&& row->A.nonzeros() == 0*/) {
+                        // else if (row->is_negative() / *&& row->A.nonzeros() == 0* /) {
                         //     // Test if newRow +/- row already exists in K
                         //     for (auto&& row2 : f.mK) {
                         //         if (newRow.test_minimal_support_linear_comb_D(row2.D, row->D)) {
@@ -1159,7 +1178,7 @@ void flows_generator_t::compute_nested_flow_span()
                         newRow.print(cout, true) << endl;
                     }
 
-                    if (newRow.is_negative() /*&& newRow.A.nonzeros() == 0*/) {
+                    if (newRow.is_negative() / *&& newRow.A.nonzeros() == 0* /) {
                         // We discovered a new integer flow invariant!
                         for (auto ex_row = f.mK.begin(); ex_row != f.mK.end(); ) {
                             int m1, m2;
@@ -1227,7 +1246,7 @@ void flows_generator_t::compute_nested_flow_span()
         cout << f << endl;
     f.clear_A_vectors();
     A_cols_count.clear();
-}
+}*/
 
 //-----------------------------------------------------------------------------
 
@@ -1349,21 +1368,32 @@ void flows_generator_t::compute_basis()
 
 shared_ptr<flow_matrix_t>
 ComputeFlows(const PN& pn, InvariantKind inv_kind, FlowMatrixKind mat_kind, 
-             bool detect_exp_growth, VerboseLevel verboseLvl) 
+             bool detect_exp_growth, int inc_dec, VerboseLevel verboseLvl) 
 {
     if (verboseLvl >= VL_BASIC) {
         cout << "COMPUTING " << GetFlowName(inv_kind, mat_kind) << "..." << endl;
     }
+    bool is_id = (inc_dec != 0);
 
     shared_ptr<flow_matrix_t> pfm;
-    if (inv_kind == InvariantKind::PLACE)
-        pfm = make_shared<flow_matrix_t>(pn.plcs.size(), pn.trns.size(), inv_kind);
-    else
-        pfm = make_shared<flow_matrix_t>(pn.trns.size(), pn.plcs.size(), inv_kind);
+    size_t N, M, N0;
+    if (inv_kind == InvariantKind::PLACE) { // P-invariants
+        N0 = pn.plcs.size();
+        N  = N0 + (is_id ? pn.trns.size() : 0);
+        M  = pn.trns.size();
+    }
+    else { // T-invariants
+        N0 = pn.trns.size();
+        N  = N0 + (is_id ? pn.plcs.size() : 0);
+        M  = pn.plcs.size();
+    }
+    pfm = make_shared<flow_matrix_t>(N, N0, M, inv_kind, inc_dec);
 
     // Initialize the flow matrix with the incidence matrix
     incidence_matrix_generator_t inc_gen(*pfm);
     inc_gen.add_flows_from(pn, verboseLvl >= VL_BASIC);
+    if (is_id)
+        inc_gen.add_increase_decrease_flows();
     inc_gen.generate_matrix();
 
     // Message printer
@@ -1415,9 +1445,9 @@ ComputeFlows(const PN& pn, InvariantKind inv_kind, FlowMatrixKind mat_kind,
         case FlowMatrixKind::INTEGER_FLOWS:
             sf_gen.compute_integer_flows();
             break;
-         case FlowMatrixKind::NESTED_FLOW_SPAN:
-            sf_gen.compute_nested_flow_span();
-            break;
+         // case FlowMatrixKind::NESTED_FLOW_SPAN:
+         //    sf_gen.compute_nested_flow_span();
+         //    break;
         default:
             throw program_exception("Unknown kind of flows!");
     }
@@ -1472,24 +1502,56 @@ void PrintFlows(const PN& pn, const flow_matrix_t& psfm,
         for (flow_matrix_t::const_iterator flow = psfm.begin(); flow != psfm.end(); ++flow) {
             cout << (semi ? "INV " : "FLOW ") << setw(space) << num++ << ": ";
 
-            for (const auto& elem : *flow) { // positive entries
-                if (elem.value < 0)
-                    continue;
-                if (elem.value != 1)
-                    cout << elem.value << "*";
-                cout << (pinv ? pn.plcs[elem.index].name : pn.trns[elem.index].name) << " ";
+            for (int i=0; i<2; i++) { // first positive, then negative entries
+                for (const auto& elem : *flow) {
+                    if ((i == 0 && elem.value < 0) || (i == 1 && elem.value > 0))
+                        continue;
+
+                    if (i == 1 && elem.index < psfm.N0)
+                        cout << console::yellow_fgnd();
+                    if (elem.index >= psfm.N0)
+                        cout << console::cyan_fgnd();
+
+                    if (elem.value == -1)
+                        cout << "-";
+                    else if (elem.value != 1)
+                        cout << elem.value << "*";
+                    if (pinv) {
+                        if (elem.index < pn.plcs.size())
+                            cout << pn.plcs[elem.index].name;
+                        else
+                            cout << "[T" << (elem.index - pn.plcs.size()) << "]";
+                    }
+                    else {
+                        if (elem.index < pn.trns.size())
+                            cout << pn.trns[elem.index].name;
+                        else
+                            cout << "[P" << (elem.index - pn.trns.size()) << "]";
+                    }
+                    cout << " ";
+                    if (i == 1 || elem.index >= psfm.N0)
+                        cout << console::default_disp();
+                }
             }
-            for (const auto& elem : *flow) { // negative entries
-                if (elem.value > 0)
-                    continue;
-                cout << console::yellow_fgnd();
-                if (elem.value == -1)
-                    cout << "-";
-                else if (elem.value != 1)
-                    cout << elem.value << "*";
-                cout << (pinv ? pn.plcs[elem.index].name : pn.trns[elem.index].name) << " ";
-                cout << console::default_disp();
-            }
+
+            // for (const auto& elem : *flow) { // positive entries
+            //     if (elem.value < 0)
+            //         continue;
+            //     if (elem.value != 1)
+            //         cout << elem.value << "*";
+            //     cout << (pinv ? pn.plcs[elem.index].name : pn.trns[elem.index].name) << " ";
+            // }
+            // for (const auto& elem : *flow) { // negative entries
+            //     if (elem.value > 0)
+            //         continue;
+            //     cout << console::yellow_fgnd();
+            //     if (elem.value == -1)
+            //         cout << "-";
+            //     else if (elem.value != 1)
+            //         cout << elem.value << "*";
+            //     cout << (pinv ? pn.plcs[elem.index].name : pn.trns[elem.index].name) << " ";
+            //     cout << console::default_disp();
+            // }
             cout << endl;
         }
     }
@@ -1503,7 +1565,8 @@ void PrintFlows(const PN& pn, const flow_matrix_t& psfm,
         std::vector<bool> covered(pinv ? pn.plcs.size() : pn.trns.size(), false);
         for (auto&& flow : psfm)
             for (auto&& elem : flow)
-                covered[elem.index] = true;
+                if (elem.index < psfm.N0)
+                    covered[elem.index] = true;
 
         if (exists(covered.begin(), covered.end(), false)) {
             size_t num_uncovered = 0;

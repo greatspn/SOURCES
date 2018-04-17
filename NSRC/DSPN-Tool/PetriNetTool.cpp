@@ -1041,23 +1041,32 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
                 cout << "AVOID EXPONENTIAL GROWTH OF SEMIFLOWS." << endl;
                 detectExpFlows = true;
             }
-            else if (cmdArg == "-pinv"   || cmdArg == "-tinv"   || 
-                     cmdArg == "-psfl"   || cmdArg == "-tsfl"   || 
-                     cmdArg == "-pbasis" || cmdArg == "-tbasis" || 
-                     cmdArg == "-pfl"    || cmdArg == "-tfl"    || 
-                     cmdArg == "-pspan"  || cmdArg == "-tspan"  ) 
+            else if (cmdArg == "-pinv"   || cmdArg == "-pinv+"   || cmdArg == "-pinv-"   ||
+                     cmdArg == "-tinv"   || cmdArg == "-tinv+"   || cmdArg == "-tinv-"   ||
+                     cmdArg == "-psfl"   || cmdArg == "-psfl+"   || cmdArg == "-psfl-"   ||
+                     cmdArg == "-tsfl"   || cmdArg == "-tsfl+"   || cmdArg == "-tsfl-"   ||
+                     cmdArg == "-pbasis" || cmdArg == "-pbasis+" || cmdArg == "-pbasis-" ||
+                     cmdArg == "-tbasis" || cmdArg == "-tbasis+" || cmdArg == "-tbasis-" ||
+                     cmdArg == "-pfl"    || cmdArg == "-pfl+"    || cmdArg == "-pfl-"    ||
+                     cmdArg == "-tfl"    || cmdArg == "-tfl+"    || cmdArg == "-tfl-") 
             {
                 RequirePetriNet();
+                int inc_dec;
                 InvariantKind invknd = (cmdArg[1]=='p' ? InvariantKind::PLACE : InvariantKind::TRANSITION);
                 FlowMatrixKind matk = FlowMatrixKind::SEMIFLOWS;
                 if (cmdArg[2] == 'b') // [b]asis
                     matk = FlowMatrixKind::BASIS;
                 if (cmdArg[2] == 'f') // [f]l
                     matk = FlowMatrixKind::INTEGER_FLOWS;
-                if (cmdArg[3] == 'p') // s[p]an
-                    matk = FlowMatrixKind::NESTED_FLOW_SPAN;
+                switch (cmdArg[strlen(cmdArg.c_str()) - 1]) {
+                    case '+': inc_dec = +1; break;
+                    case '-': inc_dec = -1; break;
+                    default:  inc_dec = 0;  break;
+                }
+                // if (cmdArg[3] == 'p') // s[p]an
+                //     matk = FlowMatrixKind::NESTED_FLOW_SPAN;
                 performance_timer timer;
-                shared_ptr<flow_matrix_t> psf = ComputeFlows(*pn, invknd, matk, detectExpFlows, verboseLvl);
+                shared_ptr<flow_matrix_t> psf = ComputeFlows(*pn, invknd, matk, detectExpFlows, inc_dec, verboseLvl);
                 shared_ptr<flow_matrix_t> *dst;
                 switch (matk) {
                     case FlowMatrixKind::SEMIFLOWS:
@@ -1069,14 +1078,14 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
                     case FlowMatrixKind::INTEGER_FLOWS:
                         dst = (invknd == InvariantKind::PLACE ? &pminflows : &tminflows);
                         break;
-                    case FlowMatrixKind::NESTED_FLOW_SPAN:
-                        dst = (invknd == InvariantKind::PLACE ? &pnestflspan : &tnestflspan);
-                        break;
+                    // case FlowMatrixKind::NESTED_FLOW_SPAN:
+                    //     dst = (invknd == InvariantKind::PLACE ? &pnestflspan : &tnestflspan);
+                    //     break;
                     default: throw program_exception("Missing case.");
                 }
                 *dst = psf;
                 // Save the flows to the disk in GreatSPN format
-                string FlowFile(*netName + GetGreatSPN_FileExt(invknd, psf->mat_kind));
+                string FlowFile(*netName + GetGreatSPN_FileExt(invknd, psf->mat_kind, inc_dec));
                 ofstream flow_os(FlowFile.c_str());
                 SaveFlows(*psf, flow_os);
                 PrintFlows(*pn, *psf, cmdArg.c_str(), verboseLvl);
@@ -2513,7 +2522,7 @@ void Experiment1()
 
 
     size_t MT = 16, NP= 12;
-    flow_matrix_t psfm(NP, MT, InvariantKind::PLACE);
+    flow_matrix_t psfm(NP, NP, MT, InvariantKind::PLACE, 0);
     incidence_matrix_generator_t inc_gen(psfm);
     inc_gen.add_flow_entry(0, 0, 1);
     inc_gen.add_flow_entry(0, 2, 1);

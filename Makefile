@@ -20,8 +20,10 @@ AR := ar rcs
 
 ### The following variables can be overridden 
 ### by defining them as environment variables.
-CFLAGS ?=  -g
+CFLAGS ?= -g
+# CFLAGS ?= -O2 -DMCC_BUILD
 CPPFLAGS ?= $(CFLAGS)
+# LDFLAGS ?= -O2
 LDFLAGS ?= -g
 INCLUDES ?= 
 LEXFLAGS ?=
