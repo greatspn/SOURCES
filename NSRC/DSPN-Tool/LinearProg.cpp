@@ -175,8 +175,9 @@ void SilvaColom88::initialize() {
 ssize_t SilvaColom88::solve_for(const size_t *places, size_t num_pl)
 {	
 	for (size_t p=0; p<num_pl; p++) {
-		col[0] = places[p] + 1;
-	   	row[0] = 1;
+		assert(places[p] < N);
+		col[p] = places[p] + 1;
+	   	row[p] = 1;
 	}
    	set_obj_fnex(lp, num_pl, row.data(), col.data());
 
@@ -184,6 +185,7 @@ ssize_t SilvaColom88::solve_for(const size_t *places, size_t num_pl)
    	default_basis(lp); 
    	// Solve the ILP
    	set_verbose(lp, IMPORTANT);
+   	// write_LP(lp, stdout);
    	int result = solve(lp);
 
 	// cout << "exitcode=" << result << "  solution=" << ((ssize_t)ceil(get_objective(lp))) << endl;
@@ -193,9 +195,9 @@ ssize_t SilvaColom88::solve_for(const size_t *places, size_t num_pl)
    		REAL* pVars;
 	   	get_ptr_variables(lp, &pVars);
 	   	for (size_t p=0; p<num_pl; p++) 
-	   		sum += pVars[places[p]];
-	   	ssize_t object = (ssize_t)get_objective(lp);
-	   	assert((ssize_t)get_objective(lp) == sum);
+	   		sum += (ssize_t)round(pVars[places[p]]);
+	   	ssize_t object = (ssize_t)ceil(get_objective(lp));
+	   	assert(object == sum);
 #endif
 	   	// return sum;
    		return (ssize_t)ceil(get_objective(lp)); // Use ceil, otherwise sometimes it will truncate the values!!
@@ -261,6 +263,42 @@ void ComputeILPBounds(const PN& pn,
 			cout << "There are " << num_unknown << " places with an unknown bound." << endl;
 		if (num_unknown==0 && num_unbounded==0)
 			cout << "All places are bounded." << endl;
+	}
+}
+
+//-----------------------------------------------------------------------------
+
+void ComputeILPTotalBound(const PN& pn, ofstream& TB, VerboseLevel verboseLvl)
+{
+	const size_t N = pn.plcs.size();
+	std::vector<size_t> allPlcs(N);
+	std::iota(allPlcs.begin(), allPlcs.end(), 0);
+
+	SilvaColom88 sc88(pn, verboseLvl);
+	sc88.initialize();
+	ssize_t totBnd = sc88.solve_for(allPlcs.data(), allPlcs.size());
+
+	switch (totBnd) {
+		case ILPBND_UNBOUNDED:
+			if (verboseLvl > VL_BASIC)
+	   			cout << "Maximum token count is unbounded." << endl;
+	   		if (TB)
+	   			TB << "inf" << endl;
+			break;
+
+		case ILPBND_UNKNOWN:
+			if (verboseLvl > VL_BASIC)
+		   		cout << "Could not compute the maximum token count." << endl;
+		   	if (TB)
+	   			TB << "?" << endl;
+			break;
+
+		default:
+			if (verboseLvl > VL_BASIC)
+   				cout << "Maximum token count bound is " << totBnd << endl;
+   			if (TB)
+	   			TB << totBnd << endl;
+   			break;
 	}
 }
 

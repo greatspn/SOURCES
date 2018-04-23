@@ -25,6 +25,8 @@ void ComputeILPBounds(const PN& pn, const place_bounds_t* opt_bnds,
 
 void SaveILPBounds(const place_ilp_bounds_t& bounds, ofstream& file);
 
+void ComputeILPTotalBound(const PN& pn, ofstream& TB, VerboseLevel verboseLvl);
+
 void UpperBoundsMCC(const PN& pn, VerboseLevel verboseLvl, ifstream& UB);
 
 //=============================================================================

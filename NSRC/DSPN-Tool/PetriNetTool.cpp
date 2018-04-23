@@ -1120,6 +1120,13 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
                 ofstream ilpbnd_os(IlpBndFile.c_str());
                 SaveILPBounds(*pIlpBounds, ilpbnd_os);
             }
+            else if (cmdArg == "-ilp-max-bnd") {
+                cout << "COMPUTING TOKEN COUNT BOUND USING ILP ..." << endl;
+                RequirePetriNet();
+                string MaxBndFile = *netName + ".maxbnd";
+                ofstream maxbnd_os(MaxBndFile.c_str());
+                ComputeILPTotalBound(*pn, maxbnd_os, verboseLvl);
+            }
             else if (cmdArg == "-upper-bounds-mcc" && remainedArgs >= 1) {
                 RequirePetriNet();
                 ifstream UB(argv[argNum++]);
