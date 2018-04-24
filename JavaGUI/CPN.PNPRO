@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="Fluid and Colored PN" version="121">
+  <gspn name="3queens" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <color-class definition="c{1..3}" name="N" x="2.125" y="2.0"/>
+      <color-class definition="N*N" name="NxN" x="11.0625" y="2.0"/>
+      <color-var domain="N" name="x1" x="2.25" y="4.0"/>
+      <color-var domain="N" name="y1" x="2.25" y="5.0"/>
+      <place domain="NxN" marking="&lt;All,All&gt;" name="P" x="4.0" y="16.0"/>
+      <transition guard="(x1==x2 &amp;&amp; y1!=y2) || (x1!=x2 &amp;&amp; y1==y2)" guard-x="5.5" name="T" nservers-x="0.5" type="EXP" x="21.55" y="16.0"/>
+      <color-var domain="N" name="x2" x="10.9375" y="4.0"/>
+      <color-var domain="N" name="y2" x="10.9375" y="5.0"/>
+      <place domain="N" label-y="-1.5" marking="3&lt;All&gt;" name="cX" x="15.0" y="9.0"/>
+      <place domain="N" label-y="-1.5" marking="3&lt;All&gt;" name="cY" x="27.0" y="9.0"/>
+    </nodes>
+    <edges>
+      <arc head="T" kind="INPUT" mult="&lt;x1,y1&gt;+&lt;x2,y2&gt;" mult-k="0.5926757812500001" mult-x="-0.574518254548904" mult-y="-0.6568991066876855" tail="P"/>
+      <arc head="P" kind="OUTPUT" mult="&lt;x1,y1&gt;" mult-k="0.44111328125000004" mult-x="-0.001074218749998579" mult-y="0.5" tail="T"/>
+      <arc head="T" kind="INPUT" mult="2&lt;x2&gt;" mult-y="-0.5" tail="cX"/>
+      <arc head="T" kind="INPUT" mult="2&lt;y2&gt;" mult-x="-1.0" mult-y="-0.5" tail="cY"/>
+      <arc head="cX" kind="OUTPUT" mult="&lt;x2&gt;" mult-k="1.3637695312499996" mult-x="0.8353251055191109" mult-y="0.4820740503279879" tail="T">
+        <point x="16.0" y="14.0"/>
+      </arc>
+      <arc head="cY" kind="OUTPUT" mult="&lt;y2&gt;" mult-k="1.30556640625" mult-x="0.9660860843704704" mult-y="0.5203483493777181" tail="T">
+        <point x="28.0" y="14.5"/>
+      </arc>
+    </edges>
+  </gspn>
   <gspn name="ErathostenesParametric" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
     <nodes>
       <color-class definition="{c1}+c{2..n}" name="Nat" x="3.125" y="2.0"/>
@@ -499,6 +525,23 @@
       </arc>
       <arc head="P0" kind="OUTPUT" mult="&lt;x&gt;" mult-x="-0.0625" mult-y="-0.5625" tail="T1">
         <point x="8.0" y="15.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="Erathostenes" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <color-class definition="c{1..10}" name="Nat" x="3.125" y="2.0"/>
+      <place domain="Nat" marking="&lt;All&gt; - &lt;c1&gt;" name="P" x="4.0" y="9.0"/>
+      <transition guard="Mod[CN[x],CN[y]] == 0 &amp;&amp; CN[x]!=1 &amp;&amp; CN[y]!=1 &amp;&amp; x!=y" guard-x="6.0" name="T" nservers-x="0.5" type="EXP" x="15.55" y="9.0"/>
+      <color-var domain="Nat" name="x" x="2.9375" y="4.0"/>
+      <color-var domain="Nat" name="y" x="2.9375" y="5.0"/>
+    </nodes>
+    <edges>
+      <arc head="T" kind="INPUT" mult="&lt;y&gt;+&lt;x&gt;" mult-k="0.80986328125" mult-x="0.004309516115956313" mult-y="-0.6673849193526582" tail="P">
+        <point x="11.0" y="9.0"/>
+      </arc>
+      <arc head="P" kind="OUTPUT" mult="&lt;y&gt;" mult-k="0.81259765625" mult-x="0.5314988696468639" mult-y="0.6760911146096618" tail="T">
+        <point x="10.5" y="11.0"/>
       </arc>
     </edges>
   </gspn>
