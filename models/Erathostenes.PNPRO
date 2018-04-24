@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="Erathostenes" version="121">
+  <gspn name="Erathostenes" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <color-class definition="c{1..10}" name="Nat" x="3.125" y="2.0"/>
+      <place domain="Nat" marking="&lt;All&gt; - &lt;c1&gt;" name="P" x="4.0" y="9.0"/>
+      <transition guard="Mod[CN[x],CN[y]] == 0 &amp;&amp; CN[x]!=1 &amp;&amp; CN[y]!=1" guard-x="6.0" name="T" nservers-x="0.5" type="EXP" x="15.55" y="9.0"/>
+      <color-var domain="Nat" name="x" x="2.9375" y="4.0"/>
+      <color-var domain="Nat" name="y" x="2.9375" y="5.0"/>
+    </nodes>
+    <edges>
+      <arc head="T" kind="INPUT" mult="&lt;y&gt;+&lt;x&gt;" mult-k="0.80986328125" mult-x="0.004309516115956313" mult-y="-0.6673849193526582" tail="P">
+        <point x="11.0" y="9.0"/>
+      </arc>
+      <arc head="P" kind="OUTPUT" mult="&lt;y&gt;" mult-k="0.81259765625" mult-x="0.5314988696468639" mult-y="0.6760911146096618" tail="T">
+        <point x="10.5" y="11.0"/>
+      </arc>
+    </edges>
+  </gspn>
+</project>
