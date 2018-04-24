@@ -414,15 +414,17 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
                 // A single edge is selected
                 Edge selEdge = (Edge)currPage.getSingleSelectedObject();
                 boolean hasSelectedPoints = false, hasSuccessiveSelectedPoints = false;
-                for (int i=0; i<selEdge.numPoints(); i++) {
-                    if (selEdge.isSubObjectSelected(i))
-                        hasSelectedPoints = true;
-                    if (i>=1 && selEdge.isSubObjectSelected(i) && selEdge.isSubObjectSelected(i-1))
-                        hasSuccessiveSelectedPoints = true;
+                if (selEdge != null) {
+                    for (int i=0; i<selEdge.numPoints(); i++) {
+                        if (selEdge.isSubObjectSelected(i))
+                            hasSelectedPoints = true;
+                        if (i>=1 && selEdge.isSubObjectSelected(i) && selEdge.isSubObjectSelected(i-1))
+                            hasSuccessiveSelectedPoints = true;
+                    }
                 }
                 actionNewEdgePoint.setEnabled(hasSuccessiveSelectedPoints);
                 actionDeleteEdgePoint.setEnabled(hasSelectedPoints);
-                actionClearAllEdgePoints.setEnabled(selEdge.mayClearEdgePoints());
+                actionClearAllEdgePoints.setEnabled(selEdge!=null && selEdge.mayClearEdgePoints());
                 jToolbarButtonNewPoint.setVisible(true);
                 jToolbarButtonDeletePoint.setVisible(true);
             }

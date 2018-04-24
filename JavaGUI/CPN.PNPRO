@@ -545,4 +545,68 @@
       </arc>
     </edges>
   </gspn>
+  <gspn name="Goose" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <color-class definition="c{1..M}" name="C" x="2.4375" y="3.0"/>
+      <color-class definition="circular p{1..2}" name="P" x="2.5" y="2.0"/>
+      <color-class definition="d{2..12}" name="Dice" x="2.4375" y="4.0"/>
+      <color-var domain="Dice" name="d1" x="17.9375" y="2.0"/>
+      <color-var domain="P" name="p" x="18.1875" y="4.0"/>
+      <color-var domain="C" name="x1" x="23.9375" y="2.0"/>
+      <color-var domain="C" name="x2" x="23.9375" y="3.0"/>
+      <place domain="PxC" label-x="0.5" marking="&lt;All,c1&gt;" name="board" x="4.0" y="23.0"/>
+      <color-class definition="P*C" name="PxC" x="2.125" y="6.0"/>
+      <place domain="P" label-x="0.5" marking="&lt;p1&gt;" name="turn" x="2.0" y="18.0"/>
+      <transition guard="(CN[x1]+CN[d1]+1&lt;=M) &amp;&amp; (CN[x2]==CN[x1]+CN[d1]+1) ||  (CN[x1]+CN[d1]+1&gt;M) &amp;&amp; (2*M-CN[x2]==CN[x1]+CN[d1]+1)" guard-x="22.5" guard-y="2.0" name="step" nservers-x="0.5" type="EXP" x="25.55" y="18.0"/>
+      <place domain="Dice" label-x="-0.5" label-y="-1.5" name="D1" x="25.0" y="9.0"/>
+      <transition name="roll" nservers-x="0.5" type="EXP" x="8.55" y="9.0"/>
+      <place marking="1" name="start" x="3.0" y="9.0"/>
+      <constant consttype="INTEGER" name="M" value="20" x="27.0625" y="6.0"/>
+    </nodes>
+    <edges>
+      <arc head="step" kind="INPUT" mult="&lt;p,x1&gt;" mult-x="0.0" mult-y="0.5" tail="board"/>
+      <arc head="turn" kind="OUTPUT" mult="[Mod[CN[x2]-5,9]==0]&lt;p&gt; + [Mod[CN[x2]-5,9]!=0]&lt;p++&gt;" mult-x="0.0" mult-y="0.5" tail="step"/>
+      <arc head="step" kind="INPUT" mult="&lt;p&gt;" mult-k="1.1838867187500002" mult-x="0.45030009541083516" mult-y="0.6501000318036123" tail="turn">
+        <point x="11.0" y="17.0"/>
+      </arc>
+      <arc head="board" kind="OUTPUT" mult="&lt;p,x2&gt;" mult-k="1.30283203125" mult-x="0.5000204974337112" mult-y="0.5" tail="step">
+        <point x="13.5" y="24.0"/>
+      </arc>
+      <arc head="step" kind="INPUT" mult="&lt;d1&gt;" tail="D1"/>
+      <arc head="D1" kind="OUTPUT" mult="&lt;d1&gt;" mult-x="0.0" mult-y="0.5" tail="roll"/>
+      <arc head="roll" kind="INPUT" tail="start"/>
+      <arc head="start" kind="OUTPUT" mult="If[CN[x2]==M || Mod[CN[x2]-5,9]==0,0,1]" tail="step"/>
+      <arc head="D1" kind="OUTPUT" mult="[Mod[CN[x2]-5,9]==0]&lt;d1&gt;" mult-k="1.45107421875" mult-x="4.256005502688055" mult-y="-0.30499312163993153" tail="step">
+        <point x="30.0" y="15.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="Domino" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <constant consttype="INTEGER" name="N" value="3" x="2.0625" y="2.0"/>
+      <constant consttype="INTEGER" name="T" value="9" x="2.0625" y="3.0"/>
+      <place domain="NL" marking="&lt;n1,L1&gt;" name="board" x="3.0" y="22.0"/>
+      <place domain="Pcs" marking="&lt;All,All&gt;" name="pieces" x="3.0" y="8.0"/>
+      <color-class definition="n{1..N}" name="cN" x="8.125" y="1.0"/>
+      <color-class definition="cN*cN" name="Pcs" x="8.375" y="2.0"/>
+      <color-var domain="cN" name="x" x="8.25" y="3.0"/>
+      <color-var domain="cN" name="y" x="8.25" y="4.0"/>
+      <color-class definition="circular L{1..T}" name="Ln" x="21.125" y="1.0"/>
+      <color-class definition="cN*Ln" name="NL" x="20.625" y="2.0"/>
+      <transition label-x="-1.0" name="T0" nservers-x="0.5" type="EXP" x="11.55" y="15.0"/>
+      <color-var domain="Ln" name="l" x="20.9375" y="4.0"/>
+      <place domain="Ln" marking="&lt;L1&gt;" name="Last" x="17.0" y="8.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" mult="&lt;x,y&gt;" mult-y="-0.5" tail="pieces"/>
+      <arc head="T0" kind="INPUT" mult="&lt;x,l&gt;" tail="board"/>
+      <arc head="board" kind="OUTPUT" mult="&lt;x,l&gt;+&lt;y,l++&gt;" mult-k="0.7368164062500001" mult-x="-0.529956032686802" mult-y="-0.617510991828297" tail="T0">
+        <point x="6.0" y="17.5"/>
+      </arc>
+      <arc head="T0" kind="INPUT" mult="&lt;l&gt;" tail="Last"/>
+      <arc head="Last" kind="OUTPUT" mult="&lt;l++&gt;" mult-k="0.7180664062500001" tail="T0">
+        <point x="12.5" y="8.5"/>
+      </arc>
+    </edges>
+  </gspn>
 </project>
