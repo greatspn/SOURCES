@@ -1166,6 +1166,14 @@ public class ExprLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitIntExprColorNum(@NotNull ExprLangParser.IntExprColorNumContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitBoolExprColorTermIn(@NotNull ExprLangParser.BoolExprColorTermInContext ctx) { return visitChildren(ctx); }
 
 	/**

@@ -319,7 +319,8 @@ public class NetObject implements Serializable {
     }
     private static Set<String> keywords = null;
     private static final String[] extraKeyWords = {
-        "E", "A", "X", "G", "F", "U", "EX", "EF", "EG", "AX", "AF", "AG",
+        "E", "A", "X", "G", "F", "U", "EX", "EF", "EG", "AX", "AF", "AG", 
+        "CN", "If", "when", "ever", "Card", "All", "Subclass",
         "en", "bounds", "deadlock", "ndeadlock", "possibly", "impossibly",
         "invariantly", "I", "Uniform", "Triangular", "Erlang", "TruncatedExp", "Pareto", 
 //        "S", /* SWN for <All> */

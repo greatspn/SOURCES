@@ -285,6 +285,10 @@ public abstract class EvaluatedFormula {
                 case ExprLangParser.NOT:          
                     result = !value;
                     break;
+                    
+                case ExprLangParser.COLOR_ORDINAL:
+                    result = value;
+                    break;
                 
                 default:
                     throw new UnsupportedOperationException("Unsupported unary operator "+unaryFn);
@@ -295,7 +299,7 @@ public abstract class EvaluatedFormula {
     }
     
     private static Type getUnaryResultType(Type computeType, int unaryFn) {
-        if (unaryFn == ExprLangParser.MULTISET_CARD)
+        if (unaryFn == ExprLangParser.MULTISET_CARD || unaryFn == ExprLangParser.COLOR_ORDINAL)
             return Type.INT;
         if (computeType == Type.INT) {
             if (unaryFn == ExprLangParser.INT_TO_REAL)
@@ -361,6 +365,7 @@ public abstract class EvaluatedFormula {
             case ExprLangParser.SAFE_DIV:
             case ExprLangParser.CONTAINS:
             case ExprLangParser.MULTISET_CARD:
+            case ExprLangParser.COLOR_ORDINAL:
                 // Return the zero term
                 return outInt ? IntScalarValue.ZERO :
                        outReal ? RealScalarValue.ZERO :
@@ -542,7 +547,7 @@ public abstract class EvaluatedFormula {
                 return result;
             }
                 
-            case ExprLangParser.MULTISET_FILTER_NEGATIVES:
+            case ExprLangParser.MULTISET_FILTER_NEGATIVES: {
                 Iterator<Map.Entry<DomainElement, EvaluatedFormula>> it;
                 it = newSet.entrySet().iterator();
                 while (it.hasNext()) {
@@ -550,6 +555,22 @@ public abstract class EvaluatedFormula {
                         it.remove();
                 }
                 break;
+            }
+                
+            case ExprLangParser.COLOR_ORDINAL: {
+                EvaluatedFormula result = neutralTerm;
+                Iterator<Map.Entry<DomainElement, EvaluatedFormula>> it;
+                it = newSet.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry<DomainElement, EvaluatedFormula> e = it.next();
+                    if (e.getValue().getScalarBoolean()) {
+//                        System.out.println("value = "+e.getKey().getColor(0));
+                        result = result.add(IntScalarValue.makeNew(e.getKey().getColor(0) + 1));
+                    }
+                }
+                assert result.isScalar() && result.getType() == resultType;
+                return result;
+            }
         }
         // Remove zero values
         Iterator<Map.Entry<DomainElement, EvaluatedFormula>> it = newSet.entrySet().iterator();

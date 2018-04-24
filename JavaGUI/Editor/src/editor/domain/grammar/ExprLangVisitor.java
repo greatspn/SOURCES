@@ -1017,6 +1017,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	T visitRealExprCond2(@NotNull ExprLangParser.RealExprCond2Context ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#IntExprColorNum}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIntExprColorNum(@NotNull ExprLangParser.IntExprColorNumContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#BoolExprColorTermIn}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

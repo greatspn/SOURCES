@@ -1520,7 +1520,8 @@ void PrintFlows(const PN& pn, const flow_matrix_t& psfm,
                         if (elem.index < pn.plcs.size())
                             cout << pn.plcs[elem.index].name;
                         else
-                            cout << "[T" << (elem.index - pn.plcs.size()) << "]";
+                            cout << "[" << pn.trns[elem.index - pn.plcs.size()].name << "]";
+                            // cout << "[T" << (elem.index - pn.plcs.size()) << "]";
                     }
                     else {
                         if (elem.index < pn.trns.size())

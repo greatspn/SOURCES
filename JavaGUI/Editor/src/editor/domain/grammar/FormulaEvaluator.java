@@ -281,6 +281,11 @@ public class FormulaEvaluator extends ExprLangBaseVisitor<EvaluatedFormula> {
     }
 
     @Override
+    public EvaluatedFormula visitIntExprColorNum(ExprLangParser.IntExprColorNumContext ctx) {
+        return visit(ctx.colorTerm()).evalUnaryFn(ExprLangParser.COLOR_ORDINAL);
+    }    
+
+    @Override
     public EvaluatedFormula visitIntExprUnknownId(ExprLangParser.IntExprUnknownIdContext ctx) {
         throw new IllegalStateException("Should not evaluate a formula with an unknown ID.");
     }

@@ -165,6 +165,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new UnaryFunct(false, ExprLangParser.NOT, "\\neg ", OperatorPos.PREFIX_SIMPLETERM),
         new UnaryFunct(true, ExprLangParser.MULTISET_CARD, "\\mathrm{Card}[", " ]"),
         new UnaryFunct(true, ExprLangParser.MULTISET_SUBCLASS, "\\mathrm{Subclass}[", " ]"),
+        new UnaryFunct(true, ExprLangParser.COLOR_ORDINAL, "\\mathrm{CN}[", "]"),
         // General event PDF operator
         new UnaryFunct(true, ExprLangParser.DIRAC_DELTA_FN, "\\mathrm{\\mathbf{I}}[", "]"),
     };
@@ -198,6 +199,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new UnaryFunct(false, ExprLangParser.NOT, "!", OperatorPos.PREFIX_SIMPLETERM),
         new UnaryFunct(true, ExprLangParser.MULTISET_CARD, "Card[", "]"),
         new UnaryFunct(true, ExprLangParser.MULTISET_SUBCLASS, "Subclass[", "]"),
+        new UnaryFunct(true, ExprLangParser.COLOR_ORDINAL, "CN[", "]"),
         // General event PDF operator
         new UnaryFunct(true, ExprLangParser.DIRAC_DELTA_FN, "I[", "]"),
     };
@@ -319,7 +321,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         
         new BinaryFunct(true, ExprLangParser.MAX_FN, "\\max\\left( ", ", ", "\\right)", OperatorPos.FUNCTION),
         new BinaryFunct(true, ExprLangParser.MIN_FN, "\\min\\left( ", ", ", "\\right)", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.MOD_FN, " \\mod ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.MOD_FN, " \\hspace{3pt}\\mathrm{mod}\\hspace{3pt} ", OperatorPos.FUNCTION),
         new BinaryFunct(true, ExprLangParser.BINOMIAL_FN, "\\binom{ ", "}{", "}", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.POW_FN, "{", "}^{", "}", OperatorPos.FUNCTION_FIRST_SIMPLETERM),
         new BinaryFunct(true, ExprLangParser.FRACT_FN, "\\frac{ ", "}{", "}", OperatorPos.FUNCTION),
@@ -947,6 +949,18 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         try {
             context.colorDomainOfExpr = null;
             return formatUnaryFn(ExprLangParser.MULTISET_CARD, visit(ctx.intMSetExpr()));
+        }
+        finally {
+            context.colorDomainOfExpr = fixedDomain;
+        }
+    }
+
+    @Override
+    public FormattedFormula visitIntExprColorNum(ExprLangParser.IntExprColorNumContext ctx) {
+        ColorClass fixedDomain = context.colorDomainOfExpr;
+        try {
+            context.colorDomainOfExpr = null;
+            return formatUnaryFn(ExprLangParser.COLOR_ORDINAL, visit(ctx.colorTerm()));
         }
         finally {
             context.colorDomainOfExpr = fixedDomain;

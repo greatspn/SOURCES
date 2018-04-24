@@ -66,6 +66,7 @@ intExpr : intExpr op=(<span style="color:#d80800">'*'</span>|<span style="color:
         | <span style="color:#d80800">'If'</span> <span style="color:#d80800">'['</span> boolExpr <span style="color:#d80800">','</span> intExpr <span style="color:#d80800">','</span> intExpr <span style="color:#d80800">']'</span>       # IntExprCond
         | <span style="color:#d80800">'when'</span> boolExpr <span style="color:#d80800">':'</span> intExpr <span style="color:#d80800">';'</span> <span style="color:#d80800">'ever'</span> intExpr <span style="color:#d80800">';'</span>  # IntExprCond2
         | <span style="color:#d80800">'Card'</span> <span style="color:#d80800">'['</span> intMSetExpr <span style="color:#d80800">']'</span>                          # IntExprCardMSet
+        | <span style="color:#d80800">'CN'</span> <span style="color:#d80800">'['</span> colorTerm <span style="color:#d80800">']'</span>                              # IntExprColorNum
         | <span style="color:#c5060b;font-style:italic">BOUNDS</span> <span style="color:#d80800">'('</span> <span style="color:#c5060b;font-style:italic">INT_PLACE_ID</span> (<span style="color:#d80800">','</span> <span style="color:#c5060b;font-style:italic">INT_PLACE_ID</span>)<span style="color:#0100b6;font-weight:700">*</span> <span style="color:#d80800">')'</span>     # IntExprCTLBound <span style="color:#00b418">/* only CTL */</span>
         | <span style="color:#c5060b;font-style:italic">ID</span> <span style="color:#00b418">/* Generate a parse error */</span>                     # IntExprUnknownId
         | <span style="color:#d80800">'#'</span> <span style="color:#c5060b;font-style:italic">ID</span> <span style="color:#00b418">/* Generate a parse error */</span>                 # IntExprUnknownPlaceId
@@ -305,6 +306,7 @@ temporal_op : (<span style="color:#c5060b;font-style:italic">EXISTS</span> | <sp
 <span style="color:#c5060b;font-style:italic">PROB_TA</span>    : <span style="color:#d80800">'PROB_TA'</span> ;
 <span style="color:#c5060b;font-style:italic">CONTAINS</span>   : <span style="color:#d80800">'in'</span> ;
 <span style="color:#c5060b;font-style:italic">DONT_CONTAINS</span>   : <span style="color:#d80800">'!in'</span> ;
+<span style="color:#c5060b;font-style:italic">COLOR_ORDINAL</span> : <span style="color:#d80800">'CN'</span> ;
 <span style="color:#c5060b;font-style:italic">MULTISET_CARD</span> : <span style="color:#d80800">'Card'</span> ;
 <span style="color:#c5060b;font-style:italic">MULTISET_SUBCLASS</span> : <span style="color:#d80800">'Subclass'</span> ;
 

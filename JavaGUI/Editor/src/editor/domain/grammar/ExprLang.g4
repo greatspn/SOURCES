@@ -105,6 +105,7 @@ intExpr : intExpr op=('*'|'/') intExpr                        # IntExprMulDiv
         | 'If' '[' boolExpr ',' intExpr ',' intExpr ']'       # IntExprCond
         | 'when' boolExpr ':' intExpr ';' 'ever' intExpr ';'  # IntExprCond2
         | 'Card' '[' intMSetExpr ']'                          # IntExprCardMSet
+        | 'CN' '[' colorTerm ']'                              # IntExprColorNum
         | BOUNDS '(' INT_PLACE_ID (',' INT_PLACE_ID)* ')'     # IntExprCTLBound /* only CTL */
         | ID /* Generate a parse error */                     # IntExprUnknownId
         | '#' ID /* Generate a parse error */                 # IntExprUnknownPlaceId
@@ -360,6 +361,7 @@ ACT        : 'Act' ;
 PROB_TA    : 'PROB_TA' ;
 CONTAINS   : 'in' ;
 DONT_CONTAINS   : '!in' ;
+COLOR_ORDINAL : 'CN' ;
 MULTISET_CARD : 'Card' ;
 MULTISET_SUBCLASS : 'Subclass' ;
 
