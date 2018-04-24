@@ -4,7 +4,7 @@
     <nodes>
       <color-class definition="c{1..10}" name="Nat" x="3.125" y="2.0"/>
       <place domain="Nat" marking="&lt;All&gt; - &lt;c1&gt;" name="P" x="4.0" y="9.0"/>
-      <transition guard="Mod[CN[x],CN[y]] == 0 &amp;&amp; CN[x]!=1 &amp;&amp; CN[y]!=1" guard-x="6.0" name="T" nservers-x="0.5" type="EXP" x="15.55" y="9.0"/>
+      <transition guard="Mod[CN[x],CN[y]] == 0 &amp;&amp; CN[x]!=1 &amp;&amp; CN[y]!=1 &amp;&amp; x!=y" guard-x="6.0" name="T" nservers-x="0.5" type="EXP" x="15.55" y="9.0"/>
       <color-var domain="Nat" name="x" x="2.9375" y="4.0"/>
       <color-var domain="Nat" name="y" x="2.9375" y="5.0"/>
     </nodes>
