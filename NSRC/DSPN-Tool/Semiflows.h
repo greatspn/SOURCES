@@ -74,7 +74,7 @@ public:
     typedef sparsevector<spvec_int_tag>    spintvector;
     // typedef sparsevector<size_t, bool>   spboolvector;
 
-    flow_matrix_t(size_t N, size_t N0, size_t M, InvariantKind k, int inc_dec);
+    flow_matrix_t(size_t N, size_t N0, size_t M, InvariantKind k, int inc_dec, bool add_extra_vars);
     flow_matrix_t(const flow_matrix_t&) = delete;
     flow_matrix_t(flow_matrix_t&&) = default;
     flow_matrix_t& operator=(const flow_matrix_t&) = delete;
@@ -135,7 +135,7 @@ public:
         void canonicalize();
 
         // Create a new row from the linear combination of:  r1*mult1 + r2*mult2
-        // Returns false without completeing if the sum of D is annulled.
+        // Returns false without completing if the sum of D is annulled.
         bool linear_comb_nnD(const row_t& row1, int mult1, const row_t& row2, int mult2);
 
         // count the # of negative entries in D
@@ -153,6 +153,8 @@ public:
 
     // We are also considering increasing/decereasing invariants
     const int inc_dec; // 0 means normal P/T flows, otherwise +1/-1 for increasing/decreasing inv.
+    // Extra variables should be added dynamically during flow generation?
+    const bool add_extra_vars;
 
     // The content of this flow matrix
     FlowMatrixKind mat_kind;

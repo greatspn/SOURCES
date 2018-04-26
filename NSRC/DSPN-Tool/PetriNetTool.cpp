@@ -1041,14 +1041,14 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
                 cout << "AVOID EXPONENTIAL GROWTH OF SEMIFLOWS." << endl;
                 detectExpFlows = true;
             }
-            else if (cmdArg == "-pinv"   || cmdArg == "-pinv+"   || cmdArg == "-pinv-"   ||
-                     cmdArg == "-tinv"   || cmdArg == "-tinv+"   || cmdArg == "-tinv-"   ||
-                     cmdArg == "-psfl"   || cmdArg == "-psfl+"   || cmdArg == "-psfl-"   ||
-                     cmdArg == "-tsfl"   || cmdArg == "-tsfl+"   || cmdArg == "-tsfl-"   ||
-                     cmdArg == "-pbasis" || cmdArg == "-pbasis+" || cmdArg == "-pbasis-" ||
-                     cmdArg == "-tbasis" || cmdArg == "-tbasis+" || cmdArg == "-tbasis-" ||
-                     cmdArg == "-pfl"    || cmdArg == "-pfl+"    || cmdArg == "-pfl-"    ||
-                     cmdArg == "-tfl"    || cmdArg == "-tfl+"    || cmdArg == "-tfl-") 
+            else if (cmdArg == "-pinv"   || cmdArg == "-pinv+"   || cmdArg == "-pinv-"   || cmdArg == "-pinv*"   ||
+                     cmdArg == "-tinv"   || cmdArg == "-tinv+"   || cmdArg == "-tinv-"   || cmdArg == "-tinv*"   ||
+                     cmdArg == "-psfl"   || cmdArg == "-psfl+"   || cmdArg == "-psfl-"   || cmdArg == "-psfl*"   ||
+                     cmdArg == "-tsfl"   || cmdArg == "-tsfl+"   || cmdArg == "-tsfl-"   || cmdArg == "-tsfl*"   ||
+                     cmdArg == "-pbasis" || cmdArg == "-pbasis+" || cmdArg == "-pbasis-" || cmdArg == "-pbasis*" ||
+                     cmdArg == "-tbasis" || cmdArg == "-tbasis+" || cmdArg == "-tbasis-" || cmdArg == "-tbasis*" ||
+                     cmdArg == "-pfl"    || cmdArg == "-pfl+"    || cmdArg == "-pfl-"    || cmdArg == "-pfl*"    ||
+                     cmdArg == "-tfl"    || cmdArg == "-tfl+"    || cmdArg == "-tfl-"    || cmdArg == "-tfl*") 
             {
                 RequirePetriNet();
                 int inc_dec;
@@ -1061,6 +1061,7 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
                 switch (cmdArg[strlen(cmdArg.c_str()) - 1]) {
                     case '+': inc_dec = +1; break;
                     case '-': inc_dec = -1; break;
+                    case '*': inc_dec = 2; break;
                     default:  inc_dec = 0;  break;
                 }
                 // if (cmdArg[3] == 'p') // s[p]an
@@ -2529,7 +2530,7 @@ void Experiment1()
 
 
     size_t MT = 16, NP= 12;
-    flow_matrix_t psfm(NP, NP, MT, InvariantKind::PLACE, 0);
+    flow_matrix_t psfm(NP, NP, MT, InvariantKind::PLACE, 0, false);
     incidence_matrix_generator_t inc_gen(psfm);
     inc_gen.add_flow_entry(0, 0, 1);
     inc_gen.add_flow_entry(0, 2, 1);

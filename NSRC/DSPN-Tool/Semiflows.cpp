@@ -248,8 +248,8 @@ ostream& flow_matrix_t::print(ostream& os, bool highlight_annulled) const {
 
 //-----------------------------------------------------------------------------
 
-flow_matrix_t::flow_matrix_t(size_t _N, size_t _N0, size_t _M, InvariantKind _ik, int _inc_dec) 
-: N(_N), N0(_N0), M(_M), inv_kind(_ik), inc_dec(_inc_dec), mat_kind(FlowMatrixKind::EMPTY) 
+flow_matrix_t::flow_matrix_t(size_t _N, size_t _N0, size_t _M, InvariantKind _ik, int _inc_dec, bool _add_extra_vars) 
+: N(_N), N0(_N0), M(_M), inv_kind(_ik), inc_dec(_inc_dec), add_extra_vars(_add_extra_vars), mat_kind(FlowMatrixKind::EMPTY) 
 { /*cout << "M="<<M<<", N="<<N<<endl;*/ }
 
 //-----------------------------------------------------------------------------
@@ -650,6 +650,8 @@ void incidence_matrix_generator_t::generate_matrix() {
         // Insert the flows in the A matrix, which starts as the incidence matrix
         auto it1 = initEntries.lower_bound(flow_entry_t(i, 0, numeric_limits<int>::min()));
         auto it2 = initEntries.lower_bound(flow_entry_t(i, numeric_limits<size_t>::max(), 0));
+        if (it1 == it2 && i >= f.N0 && f.add_extra_vars)
+            continue;
         for (; it1 != it2; ++it1) {
             assert(it1->i == i && it1->j < f.M);
             row.A.add_element(it1->j, it1->card);
@@ -1301,8 +1303,23 @@ void flows_generator_t::compute_basis()
         printer.advance(ALGO, step, f.M, f.mK.size(), num_sums);
 
         if (AiNonnullRows.size() <= 1) { // This row cannot be annulled, will never form a flow
-            // cout << "NON-ANNULLABLE ROW." << endl; // Can we detect syphons/traps from this?
-            continue; // Nothing to do.
+            if (verboseLvl >= VL_VERY_VERBOSE) { // Can we detect syphons/traps from this?
+                cout << console::red_fgnd() << "NON-ANNULLABLE ROW i=" << i << console::default_disp() << endl; 
+                cout << "DEL ";
+                AiNonnullRows.begin()->print(cout, true) << endl << endl;
+            }
+            if (f.add_extra_vars) {
+                // Add a new row that will annull column i, using an extra variable T_i
+                flow_matrix_t::row_t newRow(f);
+                auto Ai = AiNonnullRows.begin()->A[i];
+                newRow.D.insert_element(f.N0 + i, -sign(Ai));
+                newRow.A.insert_element(i, -Ai);
+                cout << "+++ ";
+                newRow.print(cout, true) << endl << endl;
+                AiNonnullRows.emplace_back(std::move(newRow));
+            }
+            else
+                continue; // Nothing to do.
         }
 
 
@@ -1335,7 +1352,7 @@ void flows_generator_t::compute_basis()
             // Create newRow = row1 * mult1 + row2 * mult2
             flow_matrix_t::row_t newRow(f);
             if (!newRow.linear_comb_nnD(*row1, mult1, *row2, mult2))
-                    continue; // dropped because newRow.D is empty
+                continue; // dropped because newRow.D is empty
             newRow.neg_D = newRow.count_negatives_D();
             newRow.gen_step = step;
             assert(newRow.A[i] == 0);
@@ -1374,6 +1391,7 @@ ComputeFlows(const PN& pn, InvariantKind inv_kind, FlowMatrixKind mat_kind,
         cout << "COMPUTING " << GetFlowName(inv_kind, mat_kind) << "..." << endl;
     }
     bool is_id = (inc_dec != 0);
+    bool dynamic_extra_var_gen = (inc_dec == 2);
 
     shared_ptr<flow_matrix_t> pfm;
     size_t N, M, N0;
@@ -1387,12 +1405,12 @@ ComputeFlows(const PN& pn, InvariantKind inv_kind, FlowMatrixKind mat_kind,
         N  = N0 + (is_id ? pn.plcs.size() : 0);
         M  = pn.plcs.size();
     }
-    pfm = make_shared<flow_matrix_t>(N, N0, M, inv_kind, inc_dec);
+    pfm = make_shared<flow_matrix_t>(N, N0, M, inv_kind, inc_dec, dynamic_extra_var_gen);
 
     // Initialize the flow matrix with the incidence matrix
     incidence_matrix_generator_t inc_gen(*pfm);
     inc_gen.add_flows_from(pn, verboseLvl >= VL_BASIC);
-    if (is_id)
+    if (is_id && !dynamic_extra_var_gen)
         inc_gen.add_increase_decrease_flows();
     inc_gen.generate_matrix();
 

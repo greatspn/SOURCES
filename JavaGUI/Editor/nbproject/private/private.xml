@@ -4,7 +4,8 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/home/user/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/UnfoldPNML2NetDefCommandLineTool.java</file>
-            <file>file:/home/user/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/io/PNMLFormat.java</file>
+            <file>file:/home/user/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/net/NetEditorPanel.java</file>
+            <file>file:/home/user/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/values/EvaluatedFormula.java</file>
         </group>
     </open-files>
 </project-private>
