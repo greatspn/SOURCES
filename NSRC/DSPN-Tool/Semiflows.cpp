@@ -721,6 +721,7 @@ void flows_generator_t::compute_semiflows()
     const char* ALGO = "Generation of Semiflows";
     verify(f.mat_kind == FlowMatrixKind::INCIDENCE);
     init_A_columns_sum();
+    bool update_neg_D_count = false;
 
     // Fourier-Motzkin Elimination procedure.
     // Matrix A starts with the incidence matrix, D starts as the identity.
@@ -764,8 +765,31 @@ void flows_generator_t::compute_semiflows()
 
         printer.advance(ALGO, step, f.M, f.mK.size(), num_prod);
 
-        if (AiPositiveRows.size() == 0 || AiNegativeRows.size() == 0)
-            continue; // Nothing to combine, simply throw away all the selected rows.
+        if (AiPositiveRows.size() == 0 || AiNegativeRows.size() == 0) {
+            if (verboseLvl >= VL_VERY_VERBOSE) { // Can we detect syphons/traps from this?
+                cout << console::red_fgnd() << "NON-ANNULLABLE COLUMN i=" << i << console::default_disp() << endl; 
+                // cout << "DEL ";
+                // AiNonnullRows.begin()->print(cout, true) << endl << endl;
+            }
+            if (f.add_extra_vars) {
+                // Add a new row that will annull column i, using an extra variable T_i
+                int sgn = (AiPositiveRows.size() == 0) ? -1 : +1;
+                flow_matrix_t::row_t newRow(f);
+                newRow.D.insert_element(f.N0 + i, sgn);
+                newRow.A.insert_element(i, -sgn);
+                newRow.neg_D = newRow.count_negatives_D();
+                update_neg_D_count = true;
+                newRow.gen_step = step;
+                cout << "+++ ";
+                newRow.print(cout, true) << endl << endl;
+                if (AiPositiveRows.size() == 0)
+                    AiPositiveRows.emplace_back(std::move(newRow));
+                else
+                    AiNegativeRows.emplace_back(std::move(newRow));
+            }
+            else
+                continue; // Nothing to combine, simply throw away all the selected rows.
+        }
 
         // Append to the matrix [D|A] every rows resulting as a non-negative
         // linear combination of row pairs from the rows with A[i] != 0
@@ -785,6 +809,8 @@ void flows_generator_t::compute_semiflows()
 
                 // Make newRow canonical, i.e. gcd of its non-zero elements is 1
                 newRow.canonicalize();
+                if (update_neg_D_count)
+                    newRow.neg_D = newRow.count_negatives_D();
 
                 // Test if newRow is not minimal.
                 // A row is not minimal if another row in K shares the same support,
@@ -874,8 +900,25 @@ void flows_generator_t::compute_integer_flows()
 
         printer.advance(ALGO, step, f.M, f.mK.size(), num_prod);
 
-        if (AiNonnullRows.size() <= 1)
-            continue; // Nothing to combine, simply throw away all the selected rows.
+        if (AiNonnullRows.size() <= 1) { // Nothing to combine, simply throw away all the selected rows.
+            if (verboseLvl >= VL_VERY_VERBOSE) { // Can we detect syphons/traps from this?
+                cout << console::red_fgnd() << "NON-ANNULLABLE COLUMN i=" << i << console::default_disp() << endl; 
+                cout << "DEL ";
+                AiNonnullRows.begin()->print(cout, true) << endl << endl;
+            }
+            if (f.add_extra_vars) {
+                // Add a new row that will annull column i, using an extra variable T_i
+                flow_matrix_t::row_t newRow(f);
+                int sgn = sign(AiNonnullRows.begin()->A[i]);
+                newRow.D.insert_element(f.N0 + i, sgn);
+                newRow.A.insert_element(i, -sgn);
+                cout << "+++ ";
+                newRow.print(cout, true) << endl << endl;
+                AiNonnullRows.emplace_back(std::move(newRow));
+            }
+            else
+                continue; // Nothing to do.
+        }
 
         // Append to the matrix [D|A] every rows resulting as a
         // linear combination of row pairs from the rows with A[i] != 0
@@ -1304,16 +1347,16 @@ void flows_generator_t::compute_basis()
 
         if (AiNonnullRows.size() <= 1) { // This row cannot be annulled, will never form a flow
             if (verboseLvl >= VL_VERY_VERBOSE) { // Can we detect syphons/traps from this?
-                cout << console::red_fgnd() << "NON-ANNULLABLE ROW i=" << i << console::default_disp() << endl; 
+                cout << console::red_fgnd() << "NON-ANNULLABLE COLUMN i=" << i << console::default_disp() << endl; 
                 cout << "DEL ";
                 AiNonnullRows.begin()->print(cout, true) << endl << endl;
             }
             if (f.add_extra_vars) {
                 // Add a new row that will annull column i, using an extra variable T_i
                 flow_matrix_t::row_t newRow(f);
-                auto Ai = AiNonnullRows.begin()->A[i];
-                newRow.D.insert_element(f.N0 + i, -sign(Ai));
-                newRow.A.insert_element(i, -Ai);
+                int sgn = sign(AiNonnullRows.begin()->A[i]);
+                newRow.D.insert_element(f.N0 + i, sgn);
+                newRow.A.insert_element(i, -sgn);
                 cout << "+++ ";
                 newRow.print(cout, true) << endl << endl;
                 AiNonnullRows.emplace_back(std::move(newRow));
