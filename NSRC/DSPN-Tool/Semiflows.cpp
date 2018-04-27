@@ -767,7 +767,10 @@ void flows_generator_t::compute_semiflows()
 
         if (AiPositiveRows.size() == 0 || AiNegativeRows.size() == 0) {
             if (verboseLvl >= VL_VERY_VERBOSE) { // Can we detect syphons/traps from this?
-                cout << console::red_fgnd() << "NON-ANNULLABLE COLUMN i=" << i << console::default_disp() << endl; 
+                 cout << console::red_fgnd() << "ALL ROWS HAVE UNIFORM SIGN AT COLUMN i=" << i 
+                     << ", N+=" << AiPositiveRows.size() << ", N-=" << AiNegativeRows.size()
+                     << console::default_disp() << endl; 
+                // cout << console::red_fgnd() << "NON-ANNULLABLE COLUMN i=" << i << console::default_disp() << endl; 
                 // cout << "DEL ";
                 // AiNonnullRows.begin()->print(cout, true) << endl << endl;
             }
@@ -908,7 +911,9 @@ void flows_generator_t::compute_integer_flows()
 
         if (num_posi == 0 || num_posi == AiNonnullRows.size()) {
             if (verboseLvl >= VL_VERY_VERBOSE) {
-                cout << console::red_fgnd() << "ALL ROWS HAVE UNIFORM SIGN AT COLUMN i=" << i << console::default_disp() << endl; 
+                cout << console::red_fgnd() << "ALL ROWS HAVE UNIFORM SIGN AT COLUMN i=" << i 
+                     << ", N+=" << num_posi << ", N-=" << (AiNonnullRows.size() - num_posi) 
+                     << console::default_disp() << endl; 
             }
             if (f.add_extra_vars) {
                 // Add a new row that will annull column i, using an extra variable T_i
@@ -1001,7 +1006,7 @@ void flows_generator_t::compute_integer_flows()
                 }
 
                 // // Unlike P-semiflows, whose support cannot decrease (monotonic property),
-                // // for integer P-flow the support may be smaller. Therefore, entries in mK
+                // // for integer P-flows the support may be smaller. Therefore, entries in mK
                 // // could now have a support smaller than newRow
                 // for (auto row = f.mK.begin(); row != f.mK.end(); /**/) {
                 //     if (row->test_minimal_support_D(newRow.D)) {
@@ -1380,7 +1385,9 @@ void flows_generator_t::compute_basis()
 
         if (num_posi == 0 || num_posi == AiNonnullRows.size()) {
             if (verboseLvl >= VL_VERY_VERBOSE) {
-                cout << console::red_fgnd() << "ALL ROWS HAVE UNIFORM SIGN AT COLUMN i=" << i << console::default_disp() << endl; 
+                cout << console::red_fgnd() << "ALL ROWS HAVE UNIFORM SIGN AT COLUMN i=" << i 
+                     << ", N+=" << num_posi << ", N-=" << (AiNonnullRows.size() - num_posi) 
+                     << console::default_disp() << endl; 
             }
             if (f.add_extra_vars) {
                 // Add a new row that will annull column i, using an extra variable T_i
