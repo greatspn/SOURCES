@@ -2,10 +2,14 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+<<<<<<< HEAD
         <group>
             <file>file:/home/user/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/UnfoldPNML2NetDefCommandLineTool.java</file>
             <file>file:/home/user/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/net/NetEditorPanel.java</file>
             <file>file:/home/user/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/values/EvaluatedFormula.java</file>
         </group>
+=======
+        <group/>
+>>>>>>> f420ed27b02b018b53f7364de0d30ce1be3740e1
     </open-files>
 </project-private>

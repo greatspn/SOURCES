@@ -22,6 +22,7 @@
 #include <set>
 #include <exception>
 #include <algorithm>
+#include <numeric>
 #include <ctime>
 #include <climits>
 #include <memory>
