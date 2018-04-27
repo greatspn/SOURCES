@@ -775,13 +775,15 @@ void flows_generator_t::compute_semiflows()
                 // Add a new row that will annull column i, using an extra variable T_i
                 int sgn = (AiPositiveRows.size() == 0) ? -1 : +1;
                 flow_matrix_t::row_t newRow(f);
-                newRow.D.insert_element(f.N0 + i, sgn);
+                newRow.D.insert_element(f.N0 + i, -sgn);
                 newRow.A.insert_element(i, -sgn);
                 newRow.neg_D = newRow.count_negatives_D();
                 update_neg_D_count = true;
                 newRow.gen_step = step;
-                cout << "+++ ";
-                newRow.print(cout, true) << endl << endl;
+                if (verboseLvl >= VL_VERY_VERBOSE) {
+                    cout << "+++ ";
+                    newRow.print(cout, true) << endl << endl;
+                }
                 if (AiPositiveRows.size() == 0)
                     AiPositiveRows.emplace_back(std::move(newRow));
                 else
@@ -886,10 +888,14 @@ void flows_generator_t::compute_integer_flows()
         // Extract from the K=[D|A] matrix all the rows with A[i] != 0
         // These rows are removed from K, and are combined to generate the new rows
         std::list<flow_matrix_t::row_t> AiNonnullRows;
+        size_t num_posi = 0;
         for (auto row = f.mK.begin(); row != f.mK.end(); ) {
-            if (row->A[i] != 0) {
+            auto Ai = row->A[i];
+            if (Ai != 0) {
                 update_A_columns_sum(row->A, -1);
                 AiNonnullRows.splice(AiNonnullRows.begin(), f.mK, row++);
+                if (Ai > 0)
+                    num_posi++;
             }
             else 
                 ++row;
@@ -900,7 +906,28 @@ void flows_generator_t::compute_integer_flows()
 
         printer.advance(ALGO, step, f.M, f.mK.size(), num_prod);
 
-        if (AiNonnullRows.size() <= 1) { // Nothing to combine, simply throw away all the selected rows.
+        if (num_posi == 0 || num_posi == AiNonnullRows.size()) {
+            if (verboseLvl >= VL_VERY_VERBOSE) {
+                cout << console::red_fgnd() << "ALL ROWS HAVE UNIFORM SIGN AT COLUMN i=" << i << console::default_disp() << endl; 
+            }
+            if (f.add_extra_vars) {
+                // Add a new row that will annull column i, using an extra variable T_i
+                int sgn = (num_posi == 0) ? -1 : +1;
+                flow_matrix_t::row_t newRow(f);
+                newRow.D.insert_element(f.N0 + i, -sgn);
+                newRow.A.insert_element(i, -sgn);
+                newRow.neg_D = newRow.count_negatives_D();
+                newRow.gen_step = step;
+                if (verboseLvl >= VL_VERY_VERBOSE) {
+                    cout << "+++ ";
+                    newRow.print(cout, true) << endl << endl;
+                }
+                AiNonnullRows.emplace_back(std::move(newRow));
+            }
+            else
+                continue; // Nothing to combine, simply throw away all the selected rows.
+        }
+        /*if (AiNonnullRows.size() <= 1) { // Nothing to combine, simply throw away all the selected rows.
             if (verboseLvl >= VL_VERY_VERBOSE) { // Can we detect syphons/traps from this?
                 cout << console::red_fgnd() << "NON-ANNULLABLE COLUMN i=" << i << console::default_disp() << endl; 
                 cout << "DEL ";
@@ -910,15 +937,17 @@ void flows_generator_t::compute_integer_flows()
                 // Add a new row that will annull column i, using an extra variable T_i
                 flow_matrix_t::row_t newRow(f);
                 int sgn = sign(AiNonnullRows.begin()->A[i]);
-                newRow.D.insert_element(f.N0 + i, sgn);
+                newRow.D.insert_element(f.N0 + i, -sgn);
                 newRow.A.insert_element(i, -sgn);
-                cout << "+++ ";
-                newRow.print(cout, true) << endl << endl;
+                if (verboseLvl >= VL_VERY_VERBOSE) {
+                    cout << "+++ ";
+                    newRow.print(cout, true) << endl << endl;
+                }
                 AiNonnullRows.emplace_back(std::move(newRow));
             }
             else
                 continue; // Nothing to do.
-        }
+        }*/
 
         // Append to the matrix [D|A] every rows resulting as a
         // linear combination of row pairs from the rows with A[i] != 0
@@ -1331,10 +1360,14 @@ void flows_generator_t::compute_basis()
 
         // Extract from the K=[D|A] matrix all the rows with A[i] != 0
         std::list<flow_matrix_t::row_t> AiNonnullRows;
+        size_t num_posi = 0;
         for (auto row = f.mK.begin(); row != f.mK.end(); ) {
-            if (row->A[i] != 0) {
+            auto Ai = row->A[i];
+            if (Ai != 0) {
                 update_A_columns_sum(row->A, -1);
                 AiNonnullRows.splice(AiNonnullRows.begin(), f.mK, row++);
+                if (Ai > 0)
+                    num_posi++;
             }
             else 
                 ++row;
@@ -1345,7 +1378,28 @@ void flows_generator_t::compute_basis()
 
         printer.advance(ALGO, step, f.M, f.mK.size(), num_sums);
 
-        if (AiNonnullRows.size() <= 1) { // This row cannot be annulled, will never form a flow
+        if (num_posi == 0 || num_posi == AiNonnullRows.size()) {
+            if (verboseLvl >= VL_VERY_VERBOSE) {
+                cout << console::red_fgnd() << "ALL ROWS HAVE UNIFORM SIGN AT COLUMN i=" << i << console::default_disp() << endl; 
+            }
+            if (f.add_extra_vars) {
+                // Add a new row that will annull column i, using an extra variable T_i
+                int sgn = (num_posi == 0) ? -1 : +1;
+                flow_matrix_t::row_t newRow(f);
+                newRow.D.insert_element(f.N0 + i, -sgn);
+                newRow.A.insert_element(i, -sgn);
+                newRow.neg_D = newRow.count_negatives_D();
+                newRow.gen_step = step;
+                if (verboseLvl >= VL_VERY_VERBOSE) {
+                    cout << "+++ ";
+                    newRow.print(cout, true) << endl << endl;
+                }
+                AiNonnullRows.emplace_back(std::move(newRow));
+            }
+            else
+                continue; // Nothing to combine, simply throw away all the selected rows.
+        }
+        /*if (AiNonnullRows.size() <= 1) { // This row cannot be annulled, will never form a flow
             if (verboseLvl >= VL_VERY_VERBOSE) { // Can we detect syphons/traps from this?
                 cout << console::red_fgnd() << "NON-ANNULLABLE COLUMN i=" << i << console::default_disp() << endl; 
                 cout << "DEL ";
@@ -1355,15 +1409,17 @@ void flows_generator_t::compute_basis()
                 // Add a new row that will annull column i, using an extra variable T_i
                 flow_matrix_t::row_t newRow(f);
                 int sgn = sign(AiNonnullRows.begin()->A[i]);
-                newRow.D.insert_element(f.N0 + i, sgn);
+                newRow.D.insert_element(f.N0 + i, -sgn);
                 newRow.A.insert_element(i, -sgn);
-                cout << "+++ ";
-                newRow.print(cout, true) << endl << endl;
+                if (verboseLvl >= VL_VERY_VERBOSE) {
+                    cout << "+++ ";
+                    newRow.print(cout, true) << endl << endl;
+                }
                 AiNonnullRows.emplace_back(std::move(newRow));
             }
             else
                 continue; // Nothing to do.
-        }
+        }*/
 
 
         // Select the row that will be added to all the others
@@ -1649,7 +1705,7 @@ void PrintFlows(const PN& pn, const flow_matrix_t& psfm,
         else {
             const char* cov_p = "\nAll places are covered by some P-";
             const char* cov_t = "\nAll transitions are covered by some T-";
-            cout << (pinv ? cov_p : cov_t) << (semi ? "semiflows." : "flows.") << endl;
+            cout << (pinv ? cov_p : cov_t) << (semi ? "semiflow." : "flow.") << endl;
         }
     }
 }
