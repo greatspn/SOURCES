@@ -88,7 +88,7 @@ TBD.
 #### Pre-installed VirtualBox machine:
 
 We offer a pre-installed VirtualBox machine image, based on Fedora Core, that ships with
-the GreatSPN framework already installed, with all the rewuired dependencies.
+the GreatSPN framework already installed, with all the required dependencies.
 This is the easiest way to get GreatSPN, since you just have to download the image.
 The VirtualBox image can be downloaded from this [repository](www.di.unito.it/~greatspn/VBox/).
 In case you need it, the root password of the VirtualBox image is: `fedora`

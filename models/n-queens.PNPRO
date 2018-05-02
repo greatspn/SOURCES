@@ -10,7 +10,7 @@
       <color-var domain="N" name="y" x="2.25" y="8.0"/>
       <place domain="N" label-y="-1.5" marking="&lt;All&gt;" name="cX" x="17.0" y="5.0"/>
       <place domain="N" label-y="-1.5" marking="&lt;All&gt;" name="cY" x="33.0" y="5.0"/>
-      <constant consttype="INTEGER" name="n" value="25" x="2.25" y="2.0"/>
+      <constant consttype="INTEGER" name="n" value="5" x="2.25" y="2.0"/>
       <color-class definition="L{1..n}+U{1..n}" name="D" x="2.125" y="4.0"/>
       <place domain="D" label-y="-1.5" marking="&lt;All&gt;" name="L" x="22.0" y="3.0"/>
       <color-var domain="D" name="l" x="2.1875" y="9.0"/>
