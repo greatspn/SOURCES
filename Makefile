@@ -172,7 +172,7 @@ ifeq ($(wildcard $(LP_SOLVE_LIB_1)),)
     else
       HAS_LP_SOLVE_LIB := 1
       LINK_LP_SOLVE_LIB := -L/usr/local/lib -llpsolve55
-      INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1
+      INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I/usr/local/include/lpsolve/
     endif
   else
     HAS_LP_SOLVE_LIB := 1
