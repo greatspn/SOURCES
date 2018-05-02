@@ -61,9 +61,13 @@ To compile the sources, type:
 
 #### macOS installation instructions:
 
-GreatSPN is known to be working on macOS.
+GreatSPN is known to be working on macOS. 
+You will first need to install the Developer Tools (Xcode) to compile GreatSPN.
 Install all the required dependencies using a software like [Homebrew](https://brew.sh/).
-
+```
+brew install gmp boost flex byacc ant graphviz libxml++ lp_solve
+```
+The lp_solve package could require to be built from sources.
 
 #### Windows installation instructions:
 
