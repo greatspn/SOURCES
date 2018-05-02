@@ -11,11 +11,11 @@ It implements efficient analysis algorithms to allow its use on rather complex a
 
 ### How to compile and install GreatSPN on your PC.
 
-GreatSPN can be compiled and installed on POSIX-compliant systems.
+GreatSPN can be compiled and installed on most POSIX-compliant systems.
 The framework requires several dependencies to be installed on your computer
 in order to compile it. 
 
-#### Linux installation instructions:
+#### Linux/Unix installation instructions:
 
 In order to compile and install GreatSPN from sources, you need to do the following steps.
 First, install the following dependencies (using the developer packages with the header files):
@@ -65,8 +65,8 @@ sudo make install
 
 #### macOS installation instructions:
 
-GreatSPN is known to be working on macOS. 
-You will first need to install the Developer Tools (Xcode) to compile GreatSPN.
+GreatSPN compiles and runs successfully on macOS. 
+Before running the Linux/Unix installation steps, you will first need to install the Developer Tools (Xcode).
 Install all the required dependencies using a software like [Homebrew](https://brew.sh/), e.g. 
 by running the command:
 ```
@@ -75,8 +75,8 @@ brew install gmp boost flex byacc ant graphviz libxml++ lp_solve
 In the last Homebrew version, the lp_solve package could require to be built from sources.
 In that case, download the lp_solve sources from Sourceforge and follow the instructions
 to compile the package.
-After yu have installed Xcode, brew, and the required dependecies, follow
- the above instructions to compile Meddly and GreatSPN.
+After you have installed Xcode, brew, and the required dependecies, follow
+the Linux/Unix instructions to compile Meddly and GreatSPN.
 
 
 #### Windows installation instructions:
@@ -123,7 +123,7 @@ For macOS users, a compiled app is generated in the `SOURCES/JavaGUI/Editor/dist
 ### How to run the command-line solvers.
 
 When GreatSPN is installed on your PC, it will (by default) place itself 
-in the: /usr/local/GreatSPN directory. The following sub-directory will be created:
+in the: `/usr/local/GreatSPN` directory. The following sub-directory will be created:
  * ${GREATSPN_HOME}/scripts:  the scripts that invoke the solver pipelines.
  * ${GREATSPN_HOME}/bin:  the individual solver binaries.
  * ${GREATSPN_HOME}/models:  the default model library available from the GUI.
