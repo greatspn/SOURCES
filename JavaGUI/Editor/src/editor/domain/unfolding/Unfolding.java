@@ -210,9 +210,14 @@ public class Unfolding {
             }
             else { // All color variables are bound
                 try {
-                    // Evaluate transition guard
+                    // Evaluate transition guard. In that case, partial evaluation is disabled since we need to
+                    // arrive to a true/false value.
+                    context.partialEvaluation = false;
+                    boolean guardResult = trn.evaluateGuard(context, null, colorVarsBinding).getScalarBoolean();
+                    context.partialEvaluation = true;
+                    
 //                    System.out.println("\n"+trn.getUniqueName()+"_"+mode.toString());
-                    if (!trn.evaluateGuard(context, null, colorVarsBinding).getScalarBoolean()) {
+                    if (!guardResult) {
 //                        System.out.println("  Evaluating guard: "+trn.getGuard()+"  ==>  False");
                         return;
                     }

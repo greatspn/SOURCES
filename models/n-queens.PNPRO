@@ -2,192 +2,750 @@
 <!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="n-queens" version="121">
   <gspn name="nqueens" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
     <nodes>
-      <color-class definition="c{1..n}" name="N" x="2.125" y="2.0"/>
-      <color-class definition="N*N" name="NxN" x="11.0625" y="2.0"/>
-      <color-var domain="N" name="x1" x="2.25" y="4.0"/>
-      <color-var domain="N" name="y1" x="2.25" y="5.0"/>
-      <place domain="NxN" name="P" x="4.0" y="16.0"/>
-      <transition guard-x="2.5" guard-y="1.0" name="T" nservers-x="0.5" type="EXP" x="21.55" y="16.0"/>
-      <color-var domain="N" name="x2" x="10.9375" y="4.0"/>
-      <color-var domain="N" name="y2" x="10.9375" y="5.0"/>
-      <place domain="N" label-y="-1.5" marking="&lt;All&gt;" name="cX" x="15.0" y="9.0"/>
-      <place domain="N" label-y="-1.5" marking="&lt;All&gt;" name="cY" x="27.0" y="9.0"/>
-      <constant consttype="INTEGER" name="n" value="5" x="26.75" y="2.0"/>
+      <color-class definition="c{1..n}" name="N" x="2.125" y="3.0"/>
+      <color-class alt-name-fn="LATEX_TEXT" definition="N*N" name="N2" shown-as="\mathit{N}\,^2" x="2.125" y="5.1875"/>
+      <place domain="N2" name="P" x="4.0" y="12.0"/>
+      <transition guard="(CN[l]==(CN[x]-CN[y]+n)) &amp;&amp; (CN[r]==CN[x]+CN[y])" guard-x="10.5" guard-y="1.0" label-x="-1.0" label-y="1.0" name="T" nservers-x="0.5" type="EXP" x="25.55" y="12.0"/>
+      <color-var domain="N" name="x" x="2.25" y="7.0"/>
+      <color-var domain="N" name="y" x="2.25" y="8.0"/>
+      <place domain="N" label-y="-1.5" marking="&lt;All&gt;" name="cX" x="17.0" y="5.0"/>
+      <place domain="N" label-y="-1.5" marking="&lt;All&gt;" name="cY" x="33.0" y="5.0"/>
+      <constant consttype="INTEGER" name="n" value="5" x="2.25" y="2.0"/>
+      <color-class definition="dL{1..n}+dU{1..n}" name="D" x="2.125" y="4.0"/>
+      <place domain="D" label-x="0.5" label-y="-1.5" marking="&lt;All&gt;" name="leftDiag" x="22.0" y="3.0"/>
+      <color-var domain="D" name="l" x="2.1875" y="9.0"/>
+      <place domain="D" label-x="1.5" label-y="-1.5" marking="&lt;All&gt;" name="rightDiag" x="28.0" y="3.0"/>
+      <color-var domain="D" name="r" x="2.25" y="10.0"/>
     </nodes>
     <edges>
-      <arc head="P" kind="OUTPUT" mult="&lt;x2,y2&gt;" mult-k="0.42197265625" mult-x="0.1735351562500007" mult-y="0.5" tail="T"/>
-      <arc head="T" kind="INPUT" mult="&lt;x2&gt;" mult-y="-0.5" tail="cX"/>
-      <arc head="T" kind="INPUT" mult="&lt;y2&gt;" mult-x="-1.0" mult-y="-0.5" tail="cY"/>
+      <arc head="P" kind="OUTPUT" mult="&lt;x,y&gt;" mult-k="0.49990234375" mult-x="-0.13857421875000142" mult-y="-0.5" tail="T"/>
+      <arc head="T" kind="INPUT" mult="&lt;x&gt;" mult-x="0.5" mult-y="-0.5" tail="cX"/>
+      <arc head="T" kind="INPUT" mult="&lt;y&gt;" mult-x="-0.5" mult-y="-0.5" tail="cY"/>
+      <arc head="T" kind="INPUT" mult="&lt;l&gt;" mult-k="0.38896484374999996" mult-x="0.875" mult-y="0.0625" tail="leftDiag"/>
+      <arc head="T" kind="INPUT" mult="&lt;r&gt;" mult-k="0.39990234375" mult-x="-0.6497070312499993" mult-y="-0.050878906250000355" tail="rightDiag"/>
     </edges>
   </gspn>
-  <gspn name="Unfolding of nqueens">
+  <gspn name="nqueens-5-unfolded">
     <nodes>
-      <place name="P_c1_c1" x="4.0" y="16.0"/>
-      <place name="P_c1_c2" x="7.0" y="16.0"/>
-      <place name="P_c1_c3" x="10.0" y="16.0"/>
-      <place name="P_c1_c4" x="13.0" y="16.0"/>
-      <place name="P_c1_c5" x="16.0" y="16.0"/>
-      <place name="P_c2_c1" x="4.0" y="19.0"/>
-      <place name="P_c2_c2" x="7.0" y="19.0"/>
-      <place name="P_c2_c3" x="10.0" y="19.0"/>
-      <place name="P_c2_c4" x="13.0" y="19.0"/>
-      <place name="P_c2_c5" x="16.0" y="19.0"/>
-      <place name="P_c3_c1" x="4.0" y="22.0"/>
-      <place name="P_c3_c2" x="7.0" y="22.0"/>
-      <place name="P_c3_c3" x="10.0" y="22.0"/>
-      <place name="P_c3_c4" x="13.0" y="22.0"/>
-      <place name="P_c3_c5" x="16.0" y="22.0"/>
-      <place name="P_c4_c1" x="4.0" y="25.0"/>
-      <place name="P_c4_c2" x="7.0" y="25.0"/>
-      <place name="P_c4_c3" x="10.0" y="25.0"/>
-      <place name="P_c4_c4" x="13.0" y="25.0"/>
-      <place name="P_c4_c5" x="16.0" y="25.0"/>
-      <place name="P_c5_c1" x="4.0" y="28.0"/>
-      <place name="P_c5_c2" x="7.0" y="28.0"/>
-      <place name="P_c5_c3" x="10.0" y="28.0"/>
-      <place name="P_c5_c4" x="13.0" y="28.0"/>
-      <place name="P_c5_c5" x="16.0" y="28.0"/>
-      <place marking="1" name="cX_c1" x="15.0" y="9.0"/>
-      <place marking="1" name="cX_c2" x="15.0" y="12.0"/>
-      <place marking="1" name="cX_c3" x="15.0" y="15.0"/>
-      <place marking="1" name="cX_c4" x="15.0" y="18.0"/>
-      <place marking="1" name="cX_c5" x="15.0" y="21.0"/>
-      <place marking="1" name="cY_c1" x="27.0" y="9.0"/>
-      <place marking="1" name="cY_c2" x="27.0" y="12.0"/>
-      <place marking="1" name="cY_c3" x="27.0" y="15.0"/>
-      <place marking="1" name="cY_c4" x="27.0" y="18.0"/>
-      <place marking="1" name="cY_c5" x="27.0" y="21.0"/>
-      <transition name="T_x2_c1_y2_c1" nservers-x="0.5" type="EXP" x="21.55" y="16.0"/>
-      <transition name="T_x2_c1_y2_c2" nservers-x="0.5" type="EXP" x="24.55" y="16.0"/>
-      <transition name="T_x2_c1_y2_c3" nservers-x="0.5" type="EXP" x="27.55" y="16.0"/>
-      <transition name="T_x2_c1_y2_c4" nservers-x="0.5" type="EXP" x="30.55" y="16.0"/>
-      <transition name="T_x2_c1_y2_c5" nservers-x="0.5" type="EXP" x="33.55" y="16.0"/>
-      <transition name="T_x2_c2_y2_c1" nservers-x="0.5" type="EXP" x="21.55" y="19.0"/>
-      <transition name="T_x2_c2_y2_c2" nservers-x="0.5" type="EXP" x="24.55" y="19.0"/>
-      <transition name="T_x2_c2_y2_c3" nservers-x="0.5" type="EXP" x="27.55" y="19.0"/>
-      <transition name="T_x2_c2_y2_c4" nservers-x="0.5" type="EXP" x="30.55" y="19.0"/>
-      <transition name="T_x2_c2_y2_c5" nservers-x="0.5" type="EXP" x="33.55" y="19.0"/>
-      <transition name="T_x2_c3_y2_c1" nservers-x="0.5" type="EXP" x="21.55" y="22.0"/>
-      <transition name="T_x2_c3_y2_c2" nservers-x="0.5" type="EXP" x="24.55" y="22.0"/>
-      <transition name="T_x2_c3_y2_c3" nservers-x="0.5" type="EXP" x="27.55" y="22.0"/>
-      <transition name="T_x2_c3_y2_c4" nservers-x="0.5" type="EXP" x="30.55" y="22.0"/>
-      <transition name="T_x2_c3_y2_c5" nservers-x="0.5" type="EXP" x="33.55" y="22.0"/>
-      <transition name="T_x2_c4_y2_c1" nservers-x="0.5" type="EXP" x="21.55" y="25.0"/>
-      <transition name="T_x2_c4_y2_c2" nservers-x="0.5" type="EXP" x="24.55" y="25.0"/>
-      <transition name="T_x2_c4_y2_c3" nservers-x="0.5" type="EXP" x="27.55" y="25.0"/>
-      <transition name="T_x2_c4_y2_c4" nservers-x="0.5" type="EXP" x="30.55" y="25.0"/>
-      <transition name="T_x2_c4_y2_c5" nservers-x="0.5" type="EXP" x="33.55" y="25.0"/>
-      <transition name="T_x2_c5_y2_c1" nservers-x="0.5" type="EXP" x="21.55" y="28.0"/>
-      <transition name="T_x2_c5_y2_c2" nservers-x="0.5" type="EXP" x="24.55" y="28.0"/>
-      <transition name="T_x2_c5_y2_c3" nservers-x="0.5" type="EXP" x="27.55" y="28.0"/>
-      <transition name="T_x2_c5_y2_c4" nservers-x="0.5" type="EXP" x="30.55" y="28.0"/>
-      <transition name="T_x2_c5_y2_c5" nservers-x="0.5" type="EXP" x="33.55" y="28.0"/>
-      <constant consttype="INTEGER" name="n" value="5" x="26.75" y="2.0"/>
+      <place name="P_c1_c1" x="4.0" y="12.0"/>
+      <place name="P_c1_c2" x="7.0" y="12.0"/>
+      <place name="P_c1_c3" x="10.0" y="12.0"/>
+      <place name="P_c1_c4" x="13.0" y="12.0"/>
+      <place name="P_c1_c5" x="16.0" y="12.0"/>
+      <place name="P_c2_c1" x="4.0" y="15.0"/>
+      <place name="P_c2_c2" x="7.0" y="15.0"/>
+      <place name="P_c2_c3" x="10.0" y="15.0"/>
+      <place name="P_c2_c4" x="13.0" y="15.0"/>
+      <place name="P_c2_c5" x="16.0" y="15.0"/>
+      <place name="P_c3_c1" x="4.0" y="18.0"/>
+      <place name="P_c3_c2" x="7.0" y="18.0"/>
+      <place name="P_c3_c3" x="10.0" y="18.0"/>
+      <place name="P_c3_c4" x="13.0" y="18.0"/>
+      <place name="P_c3_c5" x="16.0" y="18.0"/>
+      <place name="P_c4_c1" x="4.0" y="21.0"/>
+      <place name="P_c4_c2" x="7.0" y="21.0"/>
+      <place name="P_c4_c3" x="10.0" y="21.0"/>
+      <place name="P_c4_c4" x="13.0" y="21.0"/>
+      <place name="P_c4_c5" x="16.0" y="21.0"/>
+      <place name="P_c5_c1" x="4.0" y="24.0"/>
+      <place name="P_c5_c2" x="7.0" y="24.0"/>
+      <place name="P_c5_c3" x="10.0" y="24.0"/>
+      <place name="P_c5_c4" x="13.0" y="24.0"/>
+      <place name="P_c5_c5" x="16.0" y="24.0"/>
+      <place marking="1" name="cX_c1" x="17.0" y="5.0"/>
+      <place marking="1" name="cX_c2" x="17.0" y="8.0"/>
+      <place marking="1" name="cX_c3" x="17.0" y="11.0"/>
+      <place marking="1" name="cX_c4" x="17.0" y="14.0"/>
+      <place marking="1" name="cX_c5" x="17.0" y="17.0"/>
+      <place marking="1" name="cY_c1" x="33.0" y="5.0"/>
+      <place marking="1" name="cY_c2" x="33.0" y="8.0"/>
+      <place marking="1" name="cY_c3" x="33.0" y="11.0"/>
+      <place marking="1" name="cY_c4" x="33.0" y="14.0"/>
+      <place marking="1" name="cY_c5" x="33.0" y="17.0"/>
+      <place marking="1" name="leftDiag_dL1" x="22.0" y="3.0"/>
+      <place marking="1" name="leftDiag_dL2" x="22.0" y="6.0"/>
+      <place marking="1" name="leftDiag_dL3" x="22.0" y="9.0"/>
+      <place marking="1" name="leftDiag_dL4" x="22.0" y="12.0"/>
+      <place marking="1" name="leftDiag_dL5" x="22.0" y="15.0"/>
+      <place marking="1" name="leftDiag_dU1" x="22.0" y="18.0"/>
+      <place marking="1" name="leftDiag_dU2" x="22.0" y="21.0"/>
+      <place marking="1" name="leftDiag_dU3" x="22.0" y="24.0"/>
+      <place marking="1" name="leftDiag_dU4" x="22.0" y="27.0"/>
+      <place marking="1" name="leftDiag_dU5" x="22.0" y="30.0"/>
+      <place marking="1" name="rightDiag_dL1" x="28.0" y="3.0"/>
+      <place marking="1" name="rightDiag_dL2" x="28.0" y="6.0"/>
+      <place marking="1" name="rightDiag_dL3" x="28.0" y="9.0"/>
+      <place marking="1" name="rightDiag_dL4" x="28.0" y="12.0"/>
+      <place marking="1" name="rightDiag_dL5" x="28.0" y="15.0"/>
+      <place marking="1" name="rightDiag_dU1" x="28.0" y="18.0"/>
+      <place marking="1" name="rightDiag_dU2" x="28.0" y="21.0"/>
+      <place marking="1" name="rightDiag_dU3" x="28.0" y="24.0"/>
+      <place marking="1" name="rightDiag_dU4" x="28.0" y="27.0"/>
+      <place marking="1" name="rightDiag_dU5" x="28.0" y="30.0"/>
+      <transition name="T_l_dL1_r_dU1_x_c1_y_c5" nservers-x="0.5" type="EXP" x="52.55" y="12.0"/>
+      <transition name="T_l_dL2_r_dL5_x_c1_y_c4" nservers-x="0.5" type="EXP" x="46.55" y="15.0"/>
+      <transition name="T_l_dL2_r_dU2_x_c2_y_c5" nservers-x="0.5" type="EXP" x="55.55" y="18.0"/>
+      <transition name="T_l_dL3_r_dL4_x_c1_y_c3" nservers-x="0.5" type="EXP" x="40.55" y="18.0"/>
+      <transition name="T_l_dL3_r_dU1_x_c2_y_c4" nservers-x="0.5" type="EXP" x="49.55" y="21.0"/>
+      <transition name="T_l_dL3_r_dU3_x_c3_y_c5" nservers-x="0.5" type="EXP" x="58.55" y="24.0"/>
+      <transition name="T_l_dL4_r_dL3_x_c1_y_c2" nservers-x="0.5" type="EXP" x="34.55" y="21.0"/>
+      <transition name="T_l_dL4_r_dL5_x_c2_y_c3" nservers-x="0.5" type="EXP" x="43.55" y="24.0"/>
+      <transition name="T_l_dL4_r_dU2_x_c3_y_c4" nservers-x="0.5" type="EXP" x="52.55" y="27.0"/>
+      <transition name="T_l_dL4_r_dU4_x_c4_y_c5" nservers-x="0.5" type="EXP" x="61.55" y="30.0"/>
+      <transition name="T_l_dL5_r_dL2_x_c1_y_c1" nservers-x="0.5" type="EXP" x="28.55" y="24.0"/>
+      <transition name="T_l_dL5_r_dL4_x_c2_y_c2" nservers-x="0.5" type="EXP" x="37.55" y="27.0"/>
+      <transition name="T_l_dL5_r_dU1_x_c3_y_c3" nservers-x="0.5" type="EXP" x="46.55" y="30.0"/>
+      <transition name="T_l_dL5_r_dU3_x_c4_y_c4" nservers-x="0.5" type="EXP" x="55.55" y="33.0"/>
+      <transition name="T_l_dL5_r_dU5_x_c5_y_c5" nservers-x="0.5" type="EXP" x="64.55" y="36.0"/>
+      <transition name="T_l_dU1_r_dL3_x_c2_y_c1" nservers-x="0.5" type="EXP" x="31.55" y="30.0"/>
+      <transition name="T_l_dU1_r_dL5_x_c3_y_c2" nservers-x="0.5" type="EXP" x="40.55" y="33.0"/>
+      <transition name="T_l_dU1_r_dU2_x_c4_y_c3" nservers-x="0.5" type="EXP" x="49.55" y="36.0"/>
+      <transition name="T_l_dU1_r_dU4_x_c5_y_c4" nservers-x="0.5" type="EXP" x="58.55" y="39.0"/>
+      <transition name="T_l_dU2_r_dL4_x_c3_y_c1" nservers-x="0.5" type="EXP" x="34.55" y="36.0"/>
+      <transition name="T_l_dU2_r_dU1_x_c4_y_c2" nservers-x="0.5" type="EXP" x="43.55" y="39.0"/>
+      <transition name="T_l_dU2_r_dU3_x_c5_y_c3" nservers-x="0.5" type="EXP" x="52.55" y="42.0"/>
+      <transition name="T_l_dU3_r_dL5_x_c4_y_c1" nservers-x="0.5" type="EXP" x="37.55" y="42.0"/>
+      <transition name="T_l_dU3_r_dU2_x_c5_y_c2" nservers-x="0.5" type="EXP" x="46.55" y="45.0"/>
+      <transition name="T_l_dU4_r_dU1_x_c5_y_c1" nservers-x="0.5" type="EXP" x="40.55" y="48.0"/>
+      <constant consttype="INTEGER" name="n" value="5" x="2.25" y="2.0"/>
     </nodes>
     <edges>
-      <arc head="T_x2_c1_y2_c1" kind="INPUT" tail="cX_c1"/>
-      <arc head="P_c1_c1" kind="OUTPUT" tail="T_x2_c1_y2_c1"/>
-      <arc head="T_x2_c1_y2_c1" kind="INPUT" tail="cY_c1"/>
-      <arc head="T_x2_c1_y2_c2" kind="INPUT" tail="cX_c1"/>
-      <arc head="P_c1_c2" kind="OUTPUT" tail="T_x2_c1_y2_c2"/>
-      <arc head="T_x2_c1_y2_c2" kind="INPUT" tail="cY_c2"/>
-      <arc head="T_x2_c1_y2_c3" kind="INPUT" tail="cX_c1"/>
-      <arc head="P_c1_c3" kind="OUTPUT" tail="T_x2_c1_y2_c3"/>
-      <arc head="T_x2_c1_y2_c3" kind="INPUT" tail="cY_c3"/>
-      <arc head="T_x2_c1_y2_c4" kind="INPUT" tail="cX_c1"/>
-      <arc head="P_c1_c4" kind="OUTPUT" tail="T_x2_c1_y2_c4"/>
-      <arc head="T_x2_c1_y2_c4" kind="INPUT" tail="cY_c4"/>
-      <arc head="T_x2_c1_y2_c5" kind="INPUT" tail="cX_c1"/>
-      <arc head="P_c1_c5" kind="OUTPUT" tail="T_x2_c1_y2_c5"/>
-      <arc head="T_x2_c1_y2_c5" kind="INPUT" tail="cY_c5"/>
-      <arc head="T_x2_c2_y2_c1" kind="INPUT" tail="cX_c2"/>
-      <arc head="P_c2_c1" kind="OUTPUT" tail="T_x2_c2_y2_c1"/>
-      <arc head="T_x2_c2_y2_c1" kind="INPUT" tail="cY_c1"/>
-      <arc head="T_x2_c2_y2_c2" kind="INPUT" tail="cX_c2"/>
-      <arc head="P_c2_c2" kind="OUTPUT" tail="T_x2_c2_y2_c2"/>
-      <arc head="T_x2_c2_y2_c2" kind="INPUT" tail="cY_c2"/>
-      <arc head="T_x2_c2_y2_c3" kind="INPUT" tail="cX_c2"/>
-      <arc head="P_c2_c3" kind="OUTPUT" tail="T_x2_c2_y2_c3"/>
-      <arc head="T_x2_c2_y2_c3" kind="INPUT" tail="cY_c3"/>
-      <arc head="T_x2_c2_y2_c4" kind="INPUT" tail="cX_c2"/>
-      <arc head="P_c2_c4" kind="OUTPUT" tail="T_x2_c2_y2_c4"/>
-      <arc head="T_x2_c2_y2_c4" kind="INPUT" tail="cY_c4"/>
-      <arc head="T_x2_c2_y2_c5" kind="INPUT" tail="cX_c2"/>
-      <arc head="P_c2_c5" kind="OUTPUT" tail="T_x2_c2_y2_c5"/>
-      <arc head="T_x2_c2_y2_c5" kind="INPUT" tail="cY_c5"/>
-      <arc head="T_x2_c3_y2_c1" kind="INPUT" tail="cX_c3"/>
-      <arc head="P_c3_c1" kind="OUTPUT" tail="T_x2_c3_y2_c1"/>
-      <arc head="T_x2_c3_y2_c1" kind="INPUT" tail="cY_c1"/>
-      <arc head="T_x2_c3_y2_c2" kind="INPUT" tail="cX_c3"/>
-      <arc head="P_c3_c2" kind="OUTPUT" tail="T_x2_c3_y2_c2"/>
-      <arc head="T_x2_c3_y2_c2" kind="INPUT" tail="cY_c2"/>
-      <arc head="T_x2_c3_y2_c3" kind="INPUT" tail="cX_c3"/>
-      <arc head="P_c3_c3" kind="OUTPUT" tail="T_x2_c3_y2_c3"/>
-      <arc head="T_x2_c3_y2_c3" kind="INPUT" tail="cY_c3"/>
-      <arc head="T_x2_c3_y2_c4" kind="INPUT" tail="cX_c3"/>
-      <arc head="P_c3_c4" kind="OUTPUT" tail="T_x2_c3_y2_c4"/>
-      <arc head="T_x2_c3_y2_c4" kind="INPUT" tail="cY_c4"/>
-      <arc head="T_x2_c3_y2_c5" kind="INPUT" tail="cX_c3"/>
-      <arc head="P_c3_c5" kind="OUTPUT" tail="T_x2_c3_y2_c5"/>
-      <arc head="T_x2_c3_y2_c5" kind="INPUT" tail="cY_c5"/>
-      <arc head="T_x2_c4_y2_c1" kind="INPUT" tail="cX_c4"/>
-      <arc head="P_c4_c1" kind="OUTPUT" tail="T_x2_c4_y2_c1"/>
-      <arc head="T_x2_c4_y2_c1" kind="INPUT" tail="cY_c1"/>
-      <arc head="T_x2_c4_y2_c2" kind="INPUT" tail="cX_c4"/>
-      <arc head="P_c4_c2" kind="OUTPUT" tail="T_x2_c4_y2_c2"/>
-      <arc head="T_x2_c4_y2_c2" kind="INPUT" tail="cY_c2"/>
-      <arc head="T_x2_c4_y2_c3" kind="INPUT" tail="cX_c4"/>
-      <arc head="P_c4_c3" kind="OUTPUT" tail="T_x2_c4_y2_c3"/>
-      <arc head="T_x2_c4_y2_c3" kind="INPUT" tail="cY_c3"/>
-      <arc head="T_x2_c4_y2_c4" kind="INPUT" tail="cX_c4"/>
-      <arc head="P_c4_c4" kind="OUTPUT" tail="T_x2_c4_y2_c4"/>
-      <arc head="T_x2_c4_y2_c4" kind="INPUT" tail="cY_c4"/>
-      <arc head="T_x2_c4_y2_c5" kind="INPUT" tail="cX_c4"/>
-      <arc head="P_c4_c5" kind="OUTPUT" tail="T_x2_c4_y2_c5"/>
-      <arc head="T_x2_c4_y2_c5" kind="INPUT" tail="cY_c5"/>
-      <arc head="T_x2_c5_y2_c1" kind="INPUT" tail="cX_c5"/>
-      <arc head="P_c5_c1" kind="OUTPUT" tail="T_x2_c5_y2_c1"/>
-      <arc head="T_x2_c5_y2_c1" kind="INPUT" tail="cY_c1"/>
-      <arc head="T_x2_c5_y2_c2" kind="INPUT" tail="cX_c5"/>
-      <arc head="P_c5_c2" kind="OUTPUT" tail="T_x2_c5_y2_c2"/>
-      <arc head="T_x2_c5_y2_c2" kind="INPUT" tail="cY_c2"/>
-      <arc head="T_x2_c5_y2_c3" kind="INPUT" tail="cX_c5"/>
-      <arc head="P_c5_c3" kind="OUTPUT" tail="T_x2_c5_y2_c3"/>
-      <arc head="T_x2_c5_y2_c3" kind="INPUT" tail="cY_c3"/>
-      <arc head="T_x2_c5_y2_c4" kind="INPUT" tail="cX_c5"/>
-      <arc head="P_c5_c4" kind="OUTPUT" tail="T_x2_c5_y2_c4"/>
-      <arc head="T_x2_c5_y2_c4" kind="INPUT" tail="cY_c4"/>
-      <arc head="T_x2_c5_y2_c5" kind="INPUT" tail="cX_c5"/>
-      <arc head="P_c5_c5" kind="OUTPUT" tail="T_x2_c5_y2_c5"/>
-      <arc head="T_x2_c5_y2_c5" kind="INPUT" tail="cY_c5"/>
+      <arc head="T_l_dL1_r_dU1_x_c1_y_c5" kind="INPUT" tail="cY_c5"/>
+      <arc head="P_c1_c5" kind="OUTPUT" tail="T_l_dL1_r_dU1_x_c1_y_c5"/>
+      <arc head="T_l_dL1_r_dU1_x_c1_y_c5" kind="INPUT" tail="rightDiag_dU1"/>
+      <arc head="T_l_dL1_r_dU1_x_c1_y_c5" kind="INPUT" tail="leftDiag_dL1"/>
+      <arc head="T_l_dL1_r_dU1_x_c1_y_c5" kind="INPUT" tail="cX_c1"/>
+      <arc head="T_l_dL2_r_dL5_x_c1_y_c4" kind="INPUT" tail="cY_c4"/>
+      <arc head="P_c1_c4" kind="OUTPUT" tail="T_l_dL2_r_dL5_x_c1_y_c4"/>
+      <arc head="T_l_dL2_r_dL5_x_c1_y_c4" kind="INPUT" tail="rightDiag_dL5"/>
+      <arc head="T_l_dL2_r_dL5_x_c1_y_c4" kind="INPUT" tail="leftDiag_dL2"/>
+      <arc head="T_l_dL2_r_dL5_x_c1_y_c4" kind="INPUT" tail="cX_c1"/>
+      <arc head="T_l_dL2_r_dU2_x_c2_y_c5" kind="INPUT" tail="cY_c5"/>
+      <arc head="P_c2_c5" kind="OUTPUT" tail="T_l_dL2_r_dU2_x_c2_y_c5"/>
+      <arc head="T_l_dL2_r_dU2_x_c2_y_c5" kind="INPUT" tail="rightDiag_dU2"/>
+      <arc head="T_l_dL2_r_dU2_x_c2_y_c5" kind="INPUT" tail="leftDiag_dL2"/>
+      <arc head="T_l_dL2_r_dU2_x_c2_y_c5" kind="INPUT" tail="cX_c2"/>
+      <arc head="T_l_dL3_r_dL4_x_c1_y_c3" kind="INPUT" tail="cY_c3"/>
+      <arc head="P_c1_c3" kind="OUTPUT" tail="T_l_dL3_r_dL4_x_c1_y_c3"/>
+      <arc head="T_l_dL3_r_dL4_x_c1_y_c3" kind="INPUT" tail="rightDiag_dL4"/>
+      <arc head="T_l_dL3_r_dL4_x_c1_y_c3" kind="INPUT" tail="leftDiag_dL3"/>
+      <arc head="T_l_dL3_r_dL4_x_c1_y_c3" kind="INPUT" tail="cX_c1"/>
+      <arc head="T_l_dL3_r_dU1_x_c2_y_c4" kind="INPUT" tail="cY_c4"/>
+      <arc head="P_c2_c4" kind="OUTPUT" tail="T_l_dL3_r_dU1_x_c2_y_c4"/>
+      <arc head="T_l_dL3_r_dU1_x_c2_y_c4" kind="INPUT" tail="rightDiag_dU1"/>
+      <arc head="T_l_dL3_r_dU1_x_c2_y_c4" kind="INPUT" tail="leftDiag_dL3"/>
+      <arc head="T_l_dL3_r_dU1_x_c2_y_c4" kind="INPUT" tail="cX_c2"/>
+      <arc head="T_l_dL3_r_dU3_x_c3_y_c5" kind="INPUT" tail="cY_c5"/>
+      <arc head="P_c3_c5" kind="OUTPUT" tail="T_l_dL3_r_dU3_x_c3_y_c5"/>
+      <arc head="T_l_dL3_r_dU3_x_c3_y_c5" kind="INPUT" tail="rightDiag_dU3"/>
+      <arc head="T_l_dL3_r_dU3_x_c3_y_c5" kind="INPUT" tail="leftDiag_dL3"/>
+      <arc head="T_l_dL3_r_dU3_x_c3_y_c5" kind="INPUT" tail="cX_c3"/>
+      <arc head="T_l_dL4_r_dL3_x_c1_y_c2" kind="INPUT" tail="cY_c2"/>
+      <arc head="P_c1_c2" kind="OUTPUT" tail="T_l_dL4_r_dL3_x_c1_y_c2"/>
+      <arc head="T_l_dL4_r_dL3_x_c1_y_c2" kind="INPUT" tail="rightDiag_dL3"/>
+      <arc head="T_l_dL4_r_dL3_x_c1_y_c2" kind="INPUT" tail="leftDiag_dL4"/>
+      <arc head="T_l_dL4_r_dL3_x_c1_y_c2" kind="INPUT" tail="cX_c1"/>
+      <arc head="T_l_dL4_r_dL5_x_c2_y_c3" kind="INPUT" tail="cY_c3"/>
+      <arc head="P_c2_c3" kind="OUTPUT" tail="T_l_dL4_r_dL5_x_c2_y_c3"/>
+      <arc head="T_l_dL4_r_dL5_x_c2_y_c3" kind="INPUT" tail="rightDiag_dL5"/>
+      <arc head="T_l_dL4_r_dL5_x_c2_y_c3" kind="INPUT" tail="leftDiag_dL4"/>
+      <arc head="T_l_dL4_r_dL5_x_c2_y_c3" kind="INPUT" tail="cX_c2"/>
+      <arc head="T_l_dL4_r_dU2_x_c3_y_c4" kind="INPUT" tail="cY_c4"/>
+      <arc head="P_c3_c4" kind="OUTPUT" tail="T_l_dL4_r_dU2_x_c3_y_c4"/>
+      <arc head="T_l_dL4_r_dU2_x_c3_y_c4" kind="INPUT" tail="rightDiag_dU2"/>
+      <arc head="T_l_dL4_r_dU2_x_c3_y_c4" kind="INPUT" tail="leftDiag_dL4"/>
+      <arc head="T_l_dL4_r_dU2_x_c3_y_c4" kind="INPUT" tail="cX_c3"/>
+      <arc head="T_l_dL4_r_dU4_x_c4_y_c5" kind="INPUT" tail="cY_c5"/>
+      <arc head="P_c4_c5" kind="OUTPUT" tail="T_l_dL4_r_dU4_x_c4_y_c5"/>
+      <arc head="T_l_dL4_r_dU4_x_c4_y_c5" kind="INPUT" tail="rightDiag_dU4"/>
+      <arc head="T_l_dL4_r_dU4_x_c4_y_c5" kind="INPUT" tail="leftDiag_dL4"/>
+      <arc head="T_l_dL4_r_dU4_x_c4_y_c5" kind="INPUT" tail="cX_c4"/>
+      <arc head="T_l_dL5_r_dL2_x_c1_y_c1" kind="INPUT" tail="cY_c1"/>
+      <arc head="P_c1_c1" kind="OUTPUT" tail="T_l_dL5_r_dL2_x_c1_y_c1"/>
+      <arc head="T_l_dL5_r_dL2_x_c1_y_c1" kind="INPUT" tail="rightDiag_dL2"/>
+      <arc head="T_l_dL5_r_dL2_x_c1_y_c1" kind="INPUT" tail="leftDiag_dL5"/>
+      <arc head="T_l_dL5_r_dL2_x_c1_y_c1" kind="INPUT" tail="cX_c1"/>
+      <arc head="T_l_dL5_r_dL4_x_c2_y_c2" kind="INPUT" tail="cY_c2"/>
+      <arc head="P_c2_c2" kind="OUTPUT" tail="T_l_dL5_r_dL4_x_c2_y_c2"/>
+      <arc head="T_l_dL5_r_dL4_x_c2_y_c2" kind="INPUT" tail="rightDiag_dL4"/>
+      <arc head="T_l_dL5_r_dL4_x_c2_y_c2" kind="INPUT" tail="leftDiag_dL5"/>
+      <arc head="T_l_dL5_r_dL4_x_c2_y_c2" kind="INPUT" tail="cX_c2"/>
+      <arc head="T_l_dL5_r_dU1_x_c3_y_c3" kind="INPUT" tail="cY_c3"/>
+      <arc head="P_c3_c3" kind="OUTPUT" tail="T_l_dL5_r_dU1_x_c3_y_c3"/>
+      <arc head="T_l_dL5_r_dU1_x_c3_y_c3" kind="INPUT" tail="rightDiag_dU1"/>
+      <arc head="T_l_dL5_r_dU1_x_c3_y_c3" kind="INPUT" tail="leftDiag_dL5"/>
+      <arc head="T_l_dL5_r_dU1_x_c3_y_c3" kind="INPUT" tail="cX_c3"/>
+      <arc head="T_l_dL5_r_dU3_x_c4_y_c4" kind="INPUT" tail="cY_c4"/>
+      <arc head="P_c4_c4" kind="OUTPUT" tail="T_l_dL5_r_dU3_x_c4_y_c4"/>
+      <arc head="T_l_dL5_r_dU3_x_c4_y_c4" kind="INPUT" tail="rightDiag_dU3"/>
+      <arc head="T_l_dL5_r_dU3_x_c4_y_c4" kind="INPUT" tail="leftDiag_dL5"/>
+      <arc head="T_l_dL5_r_dU3_x_c4_y_c4" kind="INPUT" tail="cX_c4"/>
+      <arc head="T_l_dL5_r_dU5_x_c5_y_c5" kind="INPUT" tail="cY_c5"/>
+      <arc head="P_c5_c5" kind="OUTPUT" tail="T_l_dL5_r_dU5_x_c5_y_c5"/>
+      <arc head="T_l_dL5_r_dU5_x_c5_y_c5" kind="INPUT" tail="rightDiag_dU5"/>
+      <arc head="T_l_dL5_r_dU5_x_c5_y_c5" kind="INPUT" tail="leftDiag_dL5"/>
+      <arc head="T_l_dL5_r_dU5_x_c5_y_c5" kind="INPUT" tail="cX_c5"/>
+      <arc head="T_l_dU1_r_dL3_x_c2_y_c1" kind="INPUT" tail="cY_c1"/>
+      <arc head="P_c2_c1" kind="OUTPUT" tail="T_l_dU1_r_dL3_x_c2_y_c1"/>
+      <arc head="T_l_dU1_r_dL3_x_c2_y_c1" kind="INPUT" tail="rightDiag_dL3"/>
+      <arc head="T_l_dU1_r_dL3_x_c2_y_c1" kind="INPUT" tail="leftDiag_dU1"/>
+      <arc head="T_l_dU1_r_dL3_x_c2_y_c1" kind="INPUT" tail="cX_c2"/>
+      <arc head="T_l_dU1_r_dL5_x_c3_y_c2" kind="INPUT" tail="cY_c2"/>
+      <arc head="P_c3_c2" kind="OUTPUT" tail="T_l_dU1_r_dL5_x_c3_y_c2"/>
+      <arc head="T_l_dU1_r_dL5_x_c3_y_c2" kind="INPUT" tail="rightDiag_dL5"/>
+      <arc head="T_l_dU1_r_dL5_x_c3_y_c2" kind="INPUT" tail="leftDiag_dU1"/>
+      <arc head="T_l_dU1_r_dL5_x_c3_y_c2" kind="INPUT" tail="cX_c3"/>
+      <arc head="T_l_dU1_r_dU2_x_c4_y_c3" kind="INPUT" tail="cY_c3"/>
+      <arc head="P_c4_c3" kind="OUTPUT" tail="T_l_dU1_r_dU2_x_c4_y_c3"/>
+      <arc head="T_l_dU1_r_dU2_x_c4_y_c3" kind="INPUT" tail="rightDiag_dU2"/>
+      <arc head="T_l_dU1_r_dU2_x_c4_y_c3" kind="INPUT" tail="leftDiag_dU1"/>
+      <arc head="T_l_dU1_r_dU2_x_c4_y_c3" kind="INPUT" tail="cX_c4"/>
+      <arc head="T_l_dU1_r_dU4_x_c5_y_c4" kind="INPUT" tail="cY_c4"/>
+      <arc head="P_c5_c4" kind="OUTPUT" tail="T_l_dU1_r_dU4_x_c5_y_c4"/>
+      <arc head="T_l_dU1_r_dU4_x_c5_y_c4" kind="INPUT" tail="rightDiag_dU4"/>
+      <arc head="T_l_dU1_r_dU4_x_c5_y_c4" kind="INPUT" tail="leftDiag_dU1"/>
+      <arc head="T_l_dU1_r_dU4_x_c5_y_c4" kind="INPUT" tail="cX_c5"/>
+      <arc head="T_l_dU2_r_dL4_x_c3_y_c1" kind="INPUT" tail="cY_c1"/>
+      <arc head="P_c3_c1" kind="OUTPUT" tail="T_l_dU2_r_dL4_x_c3_y_c1"/>
+      <arc head="T_l_dU2_r_dL4_x_c3_y_c1" kind="INPUT" tail="rightDiag_dL4"/>
+      <arc head="T_l_dU2_r_dL4_x_c3_y_c1" kind="INPUT" tail="leftDiag_dU2"/>
+      <arc head="T_l_dU2_r_dL4_x_c3_y_c1" kind="INPUT" tail="cX_c3"/>
+      <arc head="T_l_dU2_r_dU1_x_c4_y_c2" kind="INPUT" tail="cY_c2"/>
+      <arc head="P_c4_c2" kind="OUTPUT" tail="T_l_dU2_r_dU1_x_c4_y_c2"/>
+      <arc head="T_l_dU2_r_dU1_x_c4_y_c2" kind="INPUT" tail="rightDiag_dU1"/>
+      <arc head="T_l_dU2_r_dU1_x_c4_y_c2" kind="INPUT" tail="leftDiag_dU2"/>
+      <arc head="T_l_dU2_r_dU1_x_c4_y_c2" kind="INPUT" tail="cX_c4"/>
+      <arc head="T_l_dU2_r_dU3_x_c5_y_c3" kind="INPUT" tail="cY_c3"/>
+      <arc head="P_c5_c3" kind="OUTPUT" tail="T_l_dU2_r_dU3_x_c5_y_c3"/>
+      <arc head="T_l_dU2_r_dU3_x_c5_y_c3" kind="INPUT" tail="rightDiag_dU3"/>
+      <arc head="T_l_dU2_r_dU3_x_c5_y_c3" kind="INPUT" tail="leftDiag_dU2"/>
+      <arc head="T_l_dU2_r_dU3_x_c5_y_c3" kind="INPUT" tail="cX_c5"/>
+      <arc head="T_l_dU3_r_dL5_x_c4_y_c1" kind="INPUT" tail="cY_c1"/>
+      <arc head="P_c4_c1" kind="OUTPUT" tail="T_l_dU3_r_dL5_x_c4_y_c1"/>
+      <arc head="T_l_dU3_r_dL5_x_c4_y_c1" kind="INPUT" tail="rightDiag_dL5"/>
+      <arc head="T_l_dU3_r_dL5_x_c4_y_c1" kind="INPUT" tail="leftDiag_dU3"/>
+      <arc head="T_l_dU3_r_dL5_x_c4_y_c1" kind="INPUT" tail="cX_c4"/>
+      <arc head="T_l_dU3_r_dU2_x_c5_y_c2" kind="INPUT" tail="cY_c2"/>
+      <arc head="P_c5_c2" kind="OUTPUT" tail="T_l_dU3_r_dU2_x_c5_y_c2"/>
+      <arc head="T_l_dU3_r_dU2_x_c5_y_c2" kind="INPUT" tail="rightDiag_dU2"/>
+      <arc head="T_l_dU3_r_dU2_x_c5_y_c2" kind="INPUT" tail="leftDiag_dU3"/>
+      <arc head="T_l_dU3_r_dU2_x_c5_y_c2" kind="INPUT" tail="cX_c5"/>
+      <arc head="T_l_dU4_r_dU1_x_c5_y_c1" kind="INPUT" tail="cY_c1"/>
+      <arc head="P_c5_c1" kind="OUTPUT" tail="T_l_dU4_r_dU1_x_c5_y_c1"/>
+      <arc head="T_l_dU4_r_dU1_x_c5_y_c1" kind="INPUT" tail="rightDiag_dU1"/>
+      <arc head="T_l_dU4_r_dU1_x_c5_y_c1" kind="INPUT" tail="leftDiag_dU4"/>
+      <arc head="T_l_dU4_r_dU1_x_c5_y_c1" kind="INPUT" tail="cX_c5"/>
     </edges>
   </gspn>
-  <measures gspn-name="Unfolding of nqueens" log-uuid="3f32dc62-4857-4582-9a2f-8436863d72b6" name="Measures" simplified-UI="false">
+  <gspn name="nqueens-8-unfolded">
+    <nodes>
+      <place name="P_c1_c1" x="4.0" y="12.0"/>
+      <place name="P_c1_c2" x="7.0" y="12.0"/>
+      <place name="P_c1_c3" x="10.0" y="12.0"/>
+      <place name="P_c1_c4" x="13.0" y="12.0"/>
+      <place name="P_c1_c5" x="16.0" y="12.0"/>
+      <place name="P_c1_c6" x="19.0" y="12.0"/>
+      <place name="P_c1_c7" x="22.0" y="12.0"/>
+      <place name="P_c1_c8" x="25.0" y="12.0"/>
+      <place name="P_c2_c1" x="4.0" y="15.0"/>
+      <place name="P_c2_c2" x="7.0" y="15.0"/>
+      <place name="P_c2_c3" x="10.0" y="15.0"/>
+      <place name="P_c2_c4" x="13.0" y="15.0"/>
+      <place name="P_c2_c5" x="16.0" y="15.0"/>
+      <place name="P_c2_c6" x="19.0" y="15.0"/>
+      <place name="P_c2_c7" x="22.0" y="15.0"/>
+      <place name="P_c2_c8" x="25.0" y="15.0"/>
+      <place name="P_c3_c1" x="4.0" y="18.0"/>
+      <place name="P_c3_c2" x="7.0" y="18.0"/>
+      <place name="P_c3_c3" x="10.0" y="18.0"/>
+      <place name="P_c3_c4" x="13.0" y="18.0"/>
+      <place name="P_c3_c5" x="16.0" y="18.0"/>
+      <place name="P_c3_c6" x="19.0" y="18.0"/>
+      <place name="P_c3_c7" x="22.0" y="18.0"/>
+      <place name="P_c3_c8" x="25.0" y="18.0"/>
+      <place name="P_c4_c1" x="4.0" y="21.0"/>
+      <place name="P_c4_c2" x="7.0" y="21.0"/>
+      <place name="P_c4_c3" x="10.0" y="21.0"/>
+      <place name="P_c4_c4" x="13.0" y="21.0"/>
+      <place name="P_c4_c5" x="16.0" y="21.0"/>
+      <place name="P_c4_c6" x="19.0" y="21.0"/>
+      <place name="P_c4_c7" x="22.0" y="21.0"/>
+      <place name="P_c4_c8" x="25.0" y="21.0"/>
+      <place name="P_c5_c1" x="4.0" y="24.0"/>
+      <place name="P_c5_c2" x="7.0" y="24.0"/>
+      <place name="P_c5_c3" x="10.0" y="24.0"/>
+      <place name="P_c5_c4" x="13.0" y="24.0"/>
+      <place name="P_c5_c5" x="16.0" y="24.0"/>
+      <place name="P_c5_c6" x="19.0" y="24.0"/>
+      <place name="P_c5_c7" x="22.0" y="24.0"/>
+      <place name="P_c5_c8" x="25.0" y="24.0"/>
+      <place name="P_c6_c1" x="4.0" y="27.0"/>
+      <place name="P_c6_c2" x="7.0" y="27.0"/>
+      <place name="P_c6_c3" x="10.0" y="27.0"/>
+      <place name="P_c6_c4" x="13.0" y="27.0"/>
+      <place name="P_c6_c5" x="16.0" y="27.0"/>
+      <place name="P_c6_c6" x="19.0" y="27.0"/>
+      <place name="P_c6_c7" x="22.0" y="27.0"/>
+      <place name="P_c6_c8" x="25.0" y="27.0"/>
+      <place name="P_c7_c1" x="4.0" y="30.0"/>
+      <place name="P_c7_c2" x="7.0" y="30.0"/>
+      <place name="P_c7_c3" x="10.0" y="30.0"/>
+      <place name="P_c7_c4" x="13.0" y="30.0"/>
+      <place name="P_c7_c5" x="16.0" y="30.0"/>
+      <place name="P_c7_c6" x="19.0" y="30.0"/>
+      <place name="P_c7_c7" x="22.0" y="30.0"/>
+      <place name="P_c7_c8" x="25.0" y="30.0"/>
+      <place name="P_c8_c1" x="4.0" y="33.0"/>
+      <place name="P_c8_c2" x="7.0" y="33.0"/>
+      <place name="P_c8_c3" x="10.0" y="33.0"/>
+      <place name="P_c8_c4" x="13.0" y="33.0"/>
+      <place name="P_c8_c5" x="16.0" y="33.0"/>
+      <place name="P_c8_c6" x="19.0" y="33.0"/>
+      <place name="P_c8_c7" x="22.0" y="33.0"/>
+      <place name="P_c8_c8" x="25.0" y="33.0"/>
+      <place marking="1" name="cX_c1" x="17.0" y="5.0"/>
+      <place marking="1" name="cX_c2" x="17.0" y="8.0"/>
+      <place marking="1" name="cX_c3" x="17.0" y="11.0"/>
+      <place marking="1" name="cX_c4" x="17.0" y="14.0"/>
+      <place marking="1" name="cX_c5" x="17.0" y="17.0"/>
+      <place marking="1" name="cX_c6" x="17.0" y="20.0"/>
+      <place marking="1" name="cX_c7" x="17.0" y="23.0"/>
+      <place marking="1" name="cX_c8" x="17.0" y="26.0"/>
+      <place marking="1" name="cY_c1" x="33.0" y="5.0"/>
+      <place marking="1" name="cY_c2" x="33.0" y="8.0"/>
+      <place marking="1" name="cY_c3" x="33.0" y="11.0"/>
+      <place marking="1" name="cY_c4" x="33.0" y="14.0"/>
+      <place marking="1" name="cY_c5" x="33.0" y="17.0"/>
+      <place marking="1" name="cY_c6" x="33.0" y="20.0"/>
+      <place marking="1" name="cY_c7" x="33.0" y="23.0"/>
+      <place marking="1" name="cY_c8" x="33.0" y="26.0"/>
+      <place marking="1" name="leftDiag_dL1" x="22.0" y="3.0"/>
+      <place marking="1" name="leftDiag_dL2" x="22.0" y="6.0"/>
+      <place marking="1" name="leftDiag_dL3" x="22.0" y="9.0"/>
+      <place marking="1" name="leftDiag_dL4" x="22.0" y="12.0"/>
+      <place marking="1" name="leftDiag_dL5" x="22.0" y="15.0"/>
+      <place marking="1" name="leftDiag_dL6" x="22.0" y="18.0"/>
+      <place marking="1" name="leftDiag_dL7" x="22.0" y="21.0"/>
+      <place marking="1" name="leftDiag_dL8" x="22.0" y="24.0"/>
+      <place marking="1" name="leftDiag_dU1" x="22.0" y="27.0"/>
+      <place marking="1" name="leftDiag_dU2" x="22.0" y="30.0"/>
+      <place marking="1" name="leftDiag_dU3" x="22.0" y="33.0"/>
+      <place marking="1" name="leftDiag_dU4" x="22.0" y="36.0"/>
+      <place marking="1" name="leftDiag_dU5" x="22.0" y="39.0"/>
+      <place marking="1" name="leftDiag_dU6" x="22.0" y="42.0"/>
+      <place marking="1" name="leftDiag_dU7" x="22.0" y="45.0"/>
+      <place marking="1" name="leftDiag_dU8" x="22.0" y="48.0"/>
+      <place marking="1" name="rightDiag_dL1" x="28.0" y="3.0"/>
+      <place marking="1" name="rightDiag_dL2" x="28.0" y="6.0"/>
+      <place marking="1" name="rightDiag_dL3" x="28.0" y="9.0"/>
+      <place marking="1" name="rightDiag_dL4" x="28.0" y="12.0"/>
+      <place marking="1" name="rightDiag_dL5" x="28.0" y="15.0"/>
+      <place marking="1" name="rightDiag_dL6" x="28.0" y="18.0"/>
+      <place marking="1" name="rightDiag_dL7" x="28.0" y="21.0"/>
+      <place marking="1" name="rightDiag_dL8" x="28.0" y="24.0"/>
+      <place marking="1" name="rightDiag_dU1" x="28.0" y="27.0"/>
+      <place marking="1" name="rightDiag_dU2" x="28.0" y="30.0"/>
+      <place marking="1" name="rightDiag_dU3" x="28.0" y="33.0"/>
+      <place marking="1" name="rightDiag_dU4" x="28.0" y="36.0"/>
+      <place marking="1" name="rightDiag_dU5" x="28.0" y="39.0"/>
+      <place marking="1" name="rightDiag_dU6" x="28.0" y="42.0"/>
+      <place marking="1" name="rightDiag_dU7" x="28.0" y="45.0"/>
+      <place marking="1" name="rightDiag_dU8" x="28.0" y="48.0"/>
+      <transition name="T_l_dL1_r_dU1_x_c1_y_c8" nservers-x="0.5" type="EXP" x="70.55" y="12.0"/>
+      <transition name="T_l_dL2_r_dL8_x_c1_y_c7" nservers-x="0.5" type="EXP" x="64.55" y="15.0"/>
+      <transition name="T_l_dL2_r_dU2_x_c2_y_c8" nservers-x="0.5" type="EXP" x="73.55" y="18.0"/>
+      <transition name="T_l_dL3_r_dL7_x_c1_y_c6" nservers-x="0.5" type="EXP" x="58.55" y="18.0"/>
+      <transition name="T_l_dL3_r_dU1_x_c2_y_c7" nservers-x="0.5" type="EXP" x="67.55" y="21.0"/>
+      <transition name="T_l_dL3_r_dU3_x_c3_y_c8" nservers-x="0.5" type="EXP" x="76.55" y="24.0"/>
+      <transition name="T_l_dL4_r_dL6_x_c1_y_c5" nservers-x="0.5" type="EXP" x="52.55" y="21.0"/>
+      <transition name="T_l_dL4_r_dL8_x_c2_y_c6" nservers-x="0.5" type="EXP" x="61.55" y="24.0"/>
+      <transition name="T_l_dL4_r_dU2_x_c3_y_c7" nservers-x="0.5" type="EXP" x="70.55" y="27.0"/>
+      <transition name="T_l_dL4_r_dU4_x_c4_y_c8" nservers-x="0.5" type="EXP" x="79.55" y="30.0"/>
+      <transition name="T_l_dL5_r_dL5_x_c1_y_c4" nservers-x="0.5" type="EXP" x="46.55" y="24.0"/>
+      <transition name="T_l_dL5_r_dL7_x_c2_y_c5" nservers-x="0.5" type="EXP" x="55.55" y="27.0"/>
+      <transition name="T_l_dL5_r_dU1_x_c3_y_c6" nservers-x="0.5" type="EXP" x="64.55" y="30.0"/>
+      <transition name="T_l_dL5_r_dU3_x_c4_y_c7" nservers-x="0.5" type="EXP" x="73.55" y="33.0"/>
+      <transition name="T_l_dL5_r_dU5_x_c5_y_c8" nservers-x="0.5" type="EXP" x="82.55" y="36.0"/>
+      <transition name="T_l_dL6_r_dL4_x_c1_y_c3" nservers-x="0.5" type="EXP" x="40.55" y="27.0"/>
+      <transition name="T_l_dL6_r_dL6_x_c2_y_c4" nservers-x="0.5" type="EXP" x="49.55" y="30.0"/>
+      <transition name="T_l_dL6_r_dL8_x_c3_y_c5" nservers-x="0.5" type="EXP" x="58.55" y="33.0"/>
+      <transition name="T_l_dL6_r_dU2_x_c4_y_c6" nservers-x="0.5" type="EXP" x="67.55" y="36.0"/>
+      <transition name="T_l_dL6_r_dU4_x_c5_y_c7" nservers-x="0.5" type="EXP" x="76.55" y="39.0"/>
+      <transition name="T_l_dL6_r_dU6_x_c6_y_c8" nservers-x="0.5" type="EXP" x="85.55" y="42.0"/>
+      <transition name="T_l_dL7_r_dL3_x_c1_y_c2" nservers-x="0.5" type="EXP" x="34.55" y="30.0"/>
+      <transition name="T_l_dL7_r_dL5_x_c2_y_c3" nservers-x="0.5" type="EXP" x="43.55" y="33.0"/>
+      <transition name="T_l_dL7_r_dL7_x_c3_y_c4" nservers-x="0.5" type="EXP" x="52.55" y="36.0"/>
+      <transition name="T_l_dL7_r_dU1_x_c4_y_c5" nservers-x="0.5" type="EXP" x="61.55" y="39.0"/>
+      <transition name="T_l_dL7_r_dU3_x_c5_y_c6" nservers-x="0.5" type="EXP" x="70.55" y="42.0"/>
+      <transition name="T_l_dL7_r_dU5_x_c6_y_c7" nservers-x="0.5" type="EXP" x="79.55" y="45.0"/>
+      <transition name="T_l_dL7_r_dU7_x_c7_y_c8" nservers-x="0.5" type="EXP" x="88.55" y="48.0"/>
+      <transition name="T_l_dL8_r_dL2_x_c1_y_c1" nservers-x="0.5" type="EXP" x="28.55" y="33.0"/>
+      <transition name="T_l_dL8_r_dL4_x_c2_y_c2" nservers-x="0.5" type="EXP" x="37.55" y="36.0"/>
+      <transition name="T_l_dL8_r_dL6_x_c3_y_c3" nservers-x="0.5" type="EXP" x="46.55" y="39.0"/>
+      <transition name="T_l_dL8_r_dL8_x_c4_y_c4" nservers-x="0.5" type="EXP" x="55.55" y="42.0"/>
+      <transition name="T_l_dL8_r_dU2_x_c5_y_c5" nservers-x="0.5" type="EXP" x="64.55" y="45.0"/>
+      <transition name="T_l_dL8_r_dU4_x_c6_y_c6" nservers-x="0.5" type="EXP" x="73.55" y="48.0"/>
+      <transition name="T_l_dL8_r_dU6_x_c7_y_c7" nservers-x="0.5" type="EXP" x="82.55" y="51.0"/>
+      <transition name="T_l_dL8_r_dU8_x_c8_y_c8" nservers-x="0.5" type="EXP" x="91.55" y="54.0"/>
+      <transition name="T_l_dU1_r_dL3_x_c2_y_c1" nservers-x="0.5" type="EXP" x="31.55" y="39.0"/>
+      <transition name="T_l_dU1_r_dL5_x_c3_y_c2" nservers-x="0.5" type="EXP" x="40.55" y="42.0"/>
+      <transition name="T_l_dU1_r_dL7_x_c4_y_c3" nservers-x="0.5" type="EXP" x="49.55" y="45.0"/>
+      <transition name="T_l_dU1_r_dU1_x_c5_y_c4" nservers-x="0.5" type="EXP" x="58.55" y="48.0"/>
+      <transition name="T_l_dU1_r_dU3_x_c6_y_c5" nservers-x="0.5" type="EXP" x="67.55" y="51.0"/>
+      <transition name="T_l_dU1_r_dU5_x_c7_y_c6" nservers-x="0.5" type="EXP" x="76.55" y="54.0"/>
+      <transition name="T_l_dU1_r_dU7_x_c8_y_c7" nservers-x="0.5" type="EXP" x="85.55" y="57.0"/>
+      <transition name="T_l_dU2_r_dL4_x_c3_y_c1" nservers-x="0.5" type="EXP" x="34.55" y="45.0"/>
+      <transition name="T_l_dU2_r_dL6_x_c4_y_c2" nservers-x="0.5" type="EXP" x="43.55" y="48.0"/>
+      <transition name="T_l_dU2_r_dL8_x_c5_y_c3" nservers-x="0.5" type="EXP" x="52.55" y="51.0"/>
+      <transition name="T_l_dU2_r_dU2_x_c6_y_c4" nservers-x="0.5" type="EXP" x="61.55" y="54.0"/>
+      <transition name="T_l_dU2_r_dU4_x_c7_y_c5" nservers-x="0.5" type="EXP" x="70.55" y="57.0"/>
+      <transition name="T_l_dU2_r_dU6_x_c8_y_c6" nservers-x="0.5" type="EXP" x="79.55" y="60.0"/>
+      <transition name="T_l_dU3_r_dL5_x_c4_y_c1" nservers-x="0.5" type="EXP" x="37.55" y="51.0"/>
+      <transition name="T_l_dU3_r_dL7_x_c5_y_c2" nservers-x="0.5" type="EXP" x="46.55" y="54.0"/>
+      <transition name="T_l_dU3_r_dU1_x_c6_y_c3" nservers-x="0.5" type="EXP" x="55.55" y="57.0"/>
+      <transition name="T_l_dU3_r_dU3_x_c7_y_c4" nservers-x="0.5" type="EXP" x="64.55" y="60.0"/>
+      <transition name="T_l_dU3_r_dU5_x_c8_y_c5" nservers-x="0.5" type="EXP" x="73.55" y="63.0"/>
+      <transition name="T_l_dU4_r_dL6_x_c5_y_c1" nservers-x="0.5" type="EXP" x="40.55" y="57.0"/>
+      <transition name="T_l_dU4_r_dL8_x_c6_y_c2" nservers-x="0.5" type="EXP" x="49.55" y="60.0"/>
+      <transition name="T_l_dU4_r_dU2_x_c7_y_c3" nservers-x="0.5" type="EXP" x="58.55" y="63.0"/>
+      <transition name="T_l_dU4_r_dU4_x_c8_y_c4" nservers-x="0.5" type="EXP" x="67.55" y="66.0"/>
+      <transition name="T_l_dU5_r_dL7_x_c6_y_c1" nservers-x="0.5" type="EXP" x="43.55" y="63.0"/>
+      <transition name="T_l_dU5_r_dU1_x_c7_y_c2" nservers-x="0.5" type="EXP" x="52.55" y="66.0"/>
+      <transition name="T_l_dU5_r_dU3_x_c8_y_c3" nservers-x="0.5" type="EXP" x="61.55" y="69.0"/>
+      <transition name="T_l_dU6_r_dL8_x_c7_y_c1" nservers-x="0.5" type="EXP" x="46.55" y="69.0"/>
+      <transition name="T_l_dU6_r_dU2_x_c8_y_c2" nservers-x="0.5" type="EXP" x="55.55" y="72.0"/>
+      <transition name="T_l_dU7_r_dU1_x_c8_y_c1" nservers-x="0.5" type="EXP" x="49.55" y="75.0"/>
+      <constant consttype="INTEGER" name="n" value="8" x="2.25" y="2.0"/>
+    </nodes>
+    <edges>
+      <arc head="T_l_dL1_r_dU1_x_c1_y_c8" kind="INPUT" tail="cY_c8"/>
+      <arc head="P_c1_c8" kind="OUTPUT" tail="T_l_dL1_r_dU1_x_c1_y_c8"/>
+      <arc head="T_l_dL1_r_dU1_x_c1_y_c8" kind="INPUT" tail="rightDiag_dU1"/>
+      <arc head="T_l_dL1_r_dU1_x_c1_y_c8" kind="INPUT" tail="leftDiag_dL1"/>
+      <arc head="T_l_dL1_r_dU1_x_c1_y_c8" kind="INPUT" tail="cX_c1"/>
+      <arc head="T_l_dL2_r_dL8_x_c1_y_c7" kind="INPUT" tail="cY_c7"/>
+      <arc head="P_c1_c7" kind="OUTPUT" tail="T_l_dL2_r_dL8_x_c1_y_c7"/>
+      <arc head="T_l_dL2_r_dL8_x_c1_y_c7" kind="INPUT" tail="rightDiag_dL8"/>
+      <arc head="T_l_dL2_r_dL8_x_c1_y_c7" kind="INPUT" tail="leftDiag_dL2"/>
+      <arc head="T_l_dL2_r_dL8_x_c1_y_c7" kind="INPUT" tail="cX_c1"/>
+      <arc head="T_l_dL2_r_dU2_x_c2_y_c8" kind="INPUT" tail="cY_c8"/>
+      <arc head="P_c2_c8" kind="OUTPUT" tail="T_l_dL2_r_dU2_x_c2_y_c8"/>
+      <arc head="T_l_dL2_r_dU2_x_c2_y_c8" kind="INPUT" tail="rightDiag_dU2"/>
+      <arc head="T_l_dL2_r_dU2_x_c2_y_c8" kind="INPUT" tail="leftDiag_dL2"/>
+      <arc head="T_l_dL2_r_dU2_x_c2_y_c8" kind="INPUT" tail="cX_c2"/>
+      <arc head="T_l_dL3_r_dL7_x_c1_y_c6" kind="INPUT" tail="cY_c6"/>
+      <arc head="P_c1_c6" kind="OUTPUT" tail="T_l_dL3_r_dL7_x_c1_y_c6"/>
+      <arc head="T_l_dL3_r_dL7_x_c1_y_c6" kind="INPUT" tail="rightDiag_dL7"/>
+      <arc head="T_l_dL3_r_dL7_x_c1_y_c6" kind="INPUT" tail="leftDiag_dL3"/>
+      <arc head="T_l_dL3_r_dL7_x_c1_y_c6" kind="INPUT" tail="cX_c1"/>
+      <arc head="T_l_dL3_r_dU1_x_c2_y_c7" kind="INPUT" tail="cY_c7"/>
+      <arc head="P_c2_c7" kind="OUTPUT" tail="T_l_dL3_r_dU1_x_c2_y_c7"/>
+      <arc head="T_l_dL3_r_dU1_x_c2_y_c7" kind="INPUT" tail="rightDiag_dU1"/>
+      <arc head="T_l_dL3_r_dU1_x_c2_y_c7" kind="INPUT" tail="leftDiag_dL3"/>
+      <arc head="T_l_dL3_r_dU1_x_c2_y_c7" kind="INPUT" tail="cX_c2"/>
+      <arc head="T_l_dL3_r_dU3_x_c3_y_c8" kind="INPUT" tail="cY_c8"/>
+      <arc head="P_c3_c8" kind="OUTPUT" tail="T_l_dL3_r_dU3_x_c3_y_c8"/>
+      <arc head="T_l_dL3_r_dU3_x_c3_y_c8" kind="INPUT" tail="rightDiag_dU3"/>
+      <arc head="T_l_dL3_r_dU3_x_c3_y_c8" kind="INPUT" tail="leftDiag_dL3"/>
+      <arc head="T_l_dL3_r_dU3_x_c3_y_c8" kind="INPUT" tail="cX_c3"/>
+      <arc head="T_l_dL4_r_dL6_x_c1_y_c5" kind="INPUT" tail="cY_c5"/>
+      <arc head="P_c1_c5" kind="OUTPUT" tail="T_l_dL4_r_dL6_x_c1_y_c5"/>
+      <arc head="T_l_dL4_r_dL6_x_c1_y_c5" kind="INPUT" tail="rightDiag_dL6"/>
+      <arc head="T_l_dL4_r_dL6_x_c1_y_c5" kind="INPUT" tail="leftDiag_dL4"/>
+      <arc head="T_l_dL4_r_dL6_x_c1_y_c5" kind="INPUT" tail="cX_c1"/>
+      <arc head="T_l_dL4_r_dL8_x_c2_y_c6" kind="INPUT" tail="cY_c6"/>
+      <arc head="P_c2_c6" kind="OUTPUT" tail="T_l_dL4_r_dL8_x_c2_y_c6"/>
+      <arc head="T_l_dL4_r_dL8_x_c2_y_c6" kind="INPUT" tail="rightDiag_dL8"/>
+      <arc head="T_l_dL4_r_dL8_x_c2_y_c6" kind="INPUT" tail="leftDiag_dL4"/>
+      <arc head="T_l_dL4_r_dL8_x_c2_y_c6" kind="INPUT" tail="cX_c2"/>
+      <arc head="T_l_dL4_r_dU2_x_c3_y_c7" kind="INPUT" tail="cY_c7"/>
+      <arc head="P_c3_c7" kind="OUTPUT" tail="T_l_dL4_r_dU2_x_c3_y_c7"/>
+      <arc head="T_l_dL4_r_dU2_x_c3_y_c7" kind="INPUT" tail="rightDiag_dU2"/>
+      <arc head="T_l_dL4_r_dU2_x_c3_y_c7" kind="INPUT" tail="leftDiag_dL4"/>
+      <arc head="T_l_dL4_r_dU2_x_c3_y_c7" kind="INPUT" tail="cX_c3"/>
+      <arc head="T_l_dL4_r_dU4_x_c4_y_c8" kind="INPUT" tail="cY_c8"/>
+      <arc head="P_c4_c8" kind="OUTPUT" tail="T_l_dL4_r_dU4_x_c4_y_c8"/>
+      <arc head="T_l_dL4_r_dU4_x_c4_y_c8" kind="INPUT" tail="rightDiag_dU4"/>
+      <arc head="T_l_dL4_r_dU4_x_c4_y_c8" kind="INPUT" tail="leftDiag_dL4"/>
+      <arc head="T_l_dL4_r_dU4_x_c4_y_c8" kind="INPUT" tail="cX_c4"/>
+      <arc head="T_l_dL5_r_dL5_x_c1_y_c4" kind="INPUT" tail="cY_c4"/>
+      <arc head="P_c1_c4" kind="OUTPUT" tail="T_l_dL5_r_dL5_x_c1_y_c4"/>
+      <arc head="T_l_dL5_r_dL5_x_c1_y_c4" kind="INPUT" tail="rightDiag_dL5"/>
+      <arc head="T_l_dL5_r_dL5_x_c1_y_c4" kind="INPUT" tail="leftDiag_dL5"/>
+      <arc head="T_l_dL5_r_dL5_x_c1_y_c4" kind="INPUT" tail="cX_c1"/>
+      <arc head="T_l_dL5_r_dL7_x_c2_y_c5" kind="INPUT" tail="cY_c5"/>
+      <arc head="P_c2_c5" kind="OUTPUT" tail="T_l_dL5_r_dL7_x_c2_y_c5"/>
+      <arc head="T_l_dL5_r_dL7_x_c2_y_c5" kind="INPUT" tail="rightDiag_dL7"/>
+      <arc head="T_l_dL5_r_dL7_x_c2_y_c5" kind="INPUT" tail="leftDiag_dL5"/>
+      <arc head="T_l_dL5_r_dL7_x_c2_y_c5" kind="INPUT" tail="cX_c2"/>
+      <arc head="T_l_dL5_r_dU1_x_c3_y_c6" kind="INPUT" tail="cY_c6"/>
+      <arc head="P_c3_c6" kind="OUTPUT" tail="T_l_dL5_r_dU1_x_c3_y_c6"/>
+      <arc head="T_l_dL5_r_dU1_x_c3_y_c6" kind="INPUT" tail="rightDiag_dU1"/>
+      <arc head="T_l_dL5_r_dU1_x_c3_y_c6" kind="INPUT" tail="leftDiag_dL5"/>
+      <arc head="T_l_dL5_r_dU1_x_c3_y_c6" kind="INPUT" tail="cX_c3"/>
+      <arc head="T_l_dL5_r_dU3_x_c4_y_c7" kind="INPUT" tail="cY_c7"/>
+      <arc head="P_c4_c7" kind="OUTPUT" tail="T_l_dL5_r_dU3_x_c4_y_c7"/>
+      <arc head="T_l_dL5_r_dU3_x_c4_y_c7" kind="INPUT" tail="rightDiag_dU3"/>
+      <arc head="T_l_dL5_r_dU3_x_c4_y_c7" kind="INPUT" tail="leftDiag_dL5"/>
+      <arc head="T_l_dL5_r_dU3_x_c4_y_c7" kind="INPUT" tail="cX_c4"/>
+      <arc head="T_l_dL5_r_dU5_x_c5_y_c8" kind="INPUT" tail="cY_c8"/>
+      <arc head="P_c5_c8" kind="OUTPUT" tail="T_l_dL5_r_dU5_x_c5_y_c8"/>
+      <arc head="T_l_dL5_r_dU5_x_c5_y_c8" kind="INPUT" tail="rightDiag_dU5"/>
+      <arc head="T_l_dL5_r_dU5_x_c5_y_c8" kind="INPUT" tail="leftDiag_dL5"/>
+      <arc head="T_l_dL5_r_dU5_x_c5_y_c8" kind="INPUT" tail="cX_c5"/>
+      <arc head="T_l_dL6_r_dL4_x_c1_y_c3" kind="INPUT" tail="cY_c3"/>
+      <arc head="P_c1_c3" kind="OUTPUT" tail="T_l_dL6_r_dL4_x_c1_y_c3"/>
+      <arc head="T_l_dL6_r_dL4_x_c1_y_c3" kind="INPUT" tail="rightDiag_dL4"/>
+      <arc head="T_l_dL6_r_dL4_x_c1_y_c3" kind="INPUT" tail="leftDiag_dL6"/>
+      <arc head="T_l_dL6_r_dL4_x_c1_y_c3" kind="INPUT" tail="cX_c1"/>
+      <arc head="T_l_dL6_r_dL6_x_c2_y_c4" kind="INPUT" tail="cY_c4"/>
+      <arc head="P_c2_c4" kind="OUTPUT" tail="T_l_dL6_r_dL6_x_c2_y_c4"/>
+      <arc head="T_l_dL6_r_dL6_x_c2_y_c4" kind="INPUT" tail="rightDiag_dL6"/>
+      <arc head="T_l_dL6_r_dL6_x_c2_y_c4" kind="INPUT" tail="leftDiag_dL6"/>
+      <arc head="T_l_dL6_r_dL6_x_c2_y_c4" kind="INPUT" tail="cX_c2"/>
+      <arc head="T_l_dL6_r_dL8_x_c3_y_c5" kind="INPUT" tail="cY_c5"/>
+      <arc head="P_c3_c5" kind="OUTPUT" tail="T_l_dL6_r_dL8_x_c3_y_c5"/>
+      <arc head="T_l_dL6_r_dL8_x_c3_y_c5" kind="INPUT" tail="rightDiag_dL8"/>
+      <arc head="T_l_dL6_r_dL8_x_c3_y_c5" kind="INPUT" tail="leftDiag_dL6"/>
+      <arc head="T_l_dL6_r_dL8_x_c3_y_c5" kind="INPUT" tail="cX_c3"/>
+      <arc head="T_l_dL6_r_dU2_x_c4_y_c6" kind="INPUT" tail="cY_c6"/>
+      <arc head="P_c4_c6" kind="OUTPUT" tail="T_l_dL6_r_dU2_x_c4_y_c6"/>
+      <arc head="T_l_dL6_r_dU2_x_c4_y_c6" kind="INPUT" tail="rightDiag_dU2"/>
+      <arc head="T_l_dL6_r_dU2_x_c4_y_c6" kind="INPUT" tail="leftDiag_dL6"/>
+      <arc head="T_l_dL6_r_dU2_x_c4_y_c6" kind="INPUT" tail="cX_c4"/>
+      <arc head="T_l_dL6_r_dU4_x_c5_y_c7" kind="INPUT" tail="cY_c7"/>
+      <arc head="P_c5_c7" kind="OUTPUT" tail="T_l_dL6_r_dU4_x_c5_y_c7"/>
+      <arc head="T_l_dL6_r_dU4_x_c5_y_c7" kind="INPUT" tail="rightDiag_dU4"/>
+      <arc head="T_l_dL6_r_dU4_x_c5_y_c7" kind="INPUT" tail="leftDiag_dL6"/>
+      <arc head="T_l_dL6_r_dU4_x_c5_y_c7" kind="INPUT" tail="cX_c5"/>
+      <arc head="T_l_dL6_r_dU6_x_c6_y_c8" kind="INPUT" tail="cY_c8"/>
+      <arc head="P_c6_c8" kind="OUTPUT" tail="T_l_dL6_r_dU6_x_c6_y_c8"/>
+      <arc head="T_l_dL6_r_dU6_x_c6_y_c8" kind="INPUT" tail="rightDiag_dU6"/>
+      <arc head="T_l_dL6_r_dU6_x_c6_y_c8" kind="INPUT" tail="leftDiag_dL6"/>
+      <arc head="T_l_dL6_r_dU6_x_c6_y_c8" kind="INPUT" tail="cX_c6"/>
+      <arc head="T_l_dL7_r_dL3_x_c1_y_c2" kind="INPUT" tail="cY_c2"/>
+      <arc head="P_c1_c2" kind="OUTPUT" tail="T_l_dL7_r_dL3_x_c1_y_c2"/>
+      <arc head="T_l_dL7_r_dL3_x_c1_y_c2" kind="INPUT" tail="rightDiag_dL3"/>
+      <arc head="T_l_dL7_r_dL3_x_c1_y_c2" kind="INPUT" tail="leftDiag_dL7"/>
+      <arc head="T_l_dL7_r_dL3_x_c1_y_c2" kind="INPUT" tail="cX_c1"/>
+      <arc head="T_l_dL7_r_dL5_x_c2_y_c3" kind="INPUT" tail="cY_c3"/>
+      <arc head="P_c2_c3" kind="OUTPUT" tail="T_l_dL7_r_dL5_x_c2_y_c3"/>
+      <arc head="T_l_dL7_r_dL5_x_c2_y_c3" kind="INPUT" tail="rightDiag_dL5"/>
+      <arc head="T_l_dL7_r_dL5_x_c2_y_c3" kind="INPUT" tail="leftDiag_dL7"/>
+      <arc head="T_l_dL7_r_dL5_x_c2_y_c3" kind="INPUT" tail="cX_c2"/>
+      <arc head="T_l_dL7_r_dL7_x_c3_y_c4" kind="INPUT" tail="cY_c4"/>
+      <arc head="P_c3_c4" kind="OUTPUT" tail="T_l_dL7_r_dL7_x_c3_y_c4"/>
+      <arc head="T_l_dL7_r_dL7_x_c3_y_c4" kind="INPUT" tail="rightDiag_dL7"/>
+      <arc head="T_l_dL7_r_dL7_x_c3_y_c4" kind="INPUT" tail="leftDiag_dL7"/>
+      <arc head="T_l_dL7_r_dL7_x_c3_y_c4" kind="INPUT" tail="cX_c3"/>
+      <arc head="T_l_dL7_r_dU1_x_c4_y_c5" kind="INPUT" tail="cY_c5"/>
+      <arc head="P_c4_c5" kind="OUTPUT" tail="T_l_dL7_r_dU1_x_c4_y_c5"/>
+      <arc head="T_l_dL7_r_dU1_x_c4_y_c5" kind="INPUT" tail="rightDiag_dU1"/>
+      <arc head="T_l_dL7_r_dU1_x_c4_y_c5" kind="INPUT" tail="leftDiag_dL7"/>
+      <arc head="T_l_dL7_r_dU1_x_c4_y_c5" kind="INPUT" tail="cX_c4"/>
+      <arc head="T_l_dL7_r_dU3_x_c5_y_c6" kind="INPUT" tail="cY_c6"/>
+      <arc head="P_c5_c6" kind="OUTPUT" tail="T_l_dL7_r_dU3_x_c5_y_c6"/>
+      <arc head="T_l_dL7_r_dU3_x_c5_y_c6" kind="INPUT" tail="rightDiag_dU3"/>
+      <arc head="T_l_dL7_r_dU3_x_c5_y_c6" kind="INPUT" tail="leftDiag_dL7"/>
+      <arc head="T_l_dL7_r_dU3_x_c5_y_c6" kind="INPUT" tail="cX_c5"/>
+      <arc head="T_l_dL7_r_dU5_x_c6_y_c7" kind="INPUT" tail="cY_c7"/>
+      <arc head="P_c6_c7" kind="OUTPUT" tail="T_l_dL7_r_dU5_x_c6_y_c7"/>
+      <arc head="T_l_dL7_r_dU5_x_c6_y_c7" kind="INPUT" tail="rightDiag_dU5"/>
+      <arc head="T_l_dL7_r_dU5_x_c6_y_c7" kind="INPUT" tail="leftDiag_dL7"/>
+      <arc head="T_l_dL7_r_dU5_x_c6_y_c7" kind="INPUT" tail="cX_c6"/>
+      <arc head="T_l_dL7_r_dU7_x_c7_y_c8" kind="INPUT" tail="cY_c8"/>
+      <arc head="P_c7_c8" kind="OUTPUT" tail="T_l_dL7_r_dU7_x_c7_y_c8"/>
+      <arc head="T_l_dL7_r_dU7_x_c7_y_c8" kind="INPUT" tail="rightDiag_dU7"/>
+      <arc head="T_l_dL7_r_dU7_x_c7_y_c8" kind="INPUT" tail="leftDiag_dL7"/>
+      <arc head="T_l_dL7_r_dU7_x_c7_y_c8" kind="INPUT" tail="cX_c7"/>
+      <arc head="T_l_dL8_r_dL2_x_c1_y_c1" kind="INPUT" tail="cY_c1"/>
+      <arc head="P_c1_c1" kind="OUTPUT" tail="T_l_dL8_r_dL2_x_c1_y_c1"/>
+      <arc head="T_l_dL8_r_dL2_x_c1_y_c1" kind="INPUT" tail="rightDiag_dL2"/>
+      <arc head="T_l_dL8_r_dL2_x_c1_y_c1" kind="INPUT" tail="leftDiag_dL8"/>
+      <arc head="T_l_dL8_r_dL2_x_c1_y_c1" kind="INPUT" tail="cX_c1"/>
+      <arc head="T_l_dL8_r_dL4_x_c2_y_c2" kind="INPUT" tail="cY_c2"/>
+      <arc head="P_c2_c2" kind="OUTPUT" tail="T_l_dL8_r_dL4_x_c2_y_c2"/>
+      <arc head="T_l_dL8_r_dL4_x_c2_y_c2" kind="INPUT" tail="rightDiag_dL4"/>
+      <arc head="T_l_dL8_r_dL4_x_c2_y_c2" kind="INPUT" tail="leftDiag_dL8"/>
+      <arc head="T_l_dL8_r_dL4_x_c2_y_c2" kind="INPUT" tail="cX_c2"/>
+      <arc head="T_l_dL8_r_dL6_x_c3_y_c3" kind="INPUT" tail="cY_c3"/>
+      <arc head="P_c3_c3" kind="OUTPUT" tail="T_l_dL8_r_dL6_x_c3_y_c3"/>
+      <arc head="T_l_dL8_r_dL6_x_c3_y_c3" kind="INPUT" tail="rightDiag_dL6"/>
+      <arc head="T_l_dL8_r_dL6_x_c3_y_c3" kind="INPUT" tail="leftDiag_dL8"/>
+      <arc head="T_l_dL8_r_dL6_x_c3_y_c3" kind="INPUT" tail="cX_c3"/>
+      <arc head="T_l_dL8_r_dL8_x_c4_y_c4" kind="INPUT" tail="cY_c4"/>
+      <arc head="P_c4_c4" kind="OUTPUT" tail="T_l_dL8_r_dL8_x_c4_y_c4"/>
+      <arc head="T_l_dL8_r_dL8_x_c4_y_c4" kind="INPUT" tail="rightDiag_dL8"/>
+      <arc head="T_l_dL8_r_dL8_x_c4_y_c4" kind="INPUT" tail="leftDiag_dL8"/>
+      <arc head="T_l_dL8_r_dL8_x_c4_y_c4" kind="INPUT" tail="cX_c4"/>
+      <arc head="T_l_dL8_r_dU2_x_c5_y_c5" kind="INPUT" tail="cY_c5"/>
+      <arc head="P_c5_c5" kind="OUTPUT" tail="T_l_dL8_r_dU2_x_c5_y_c5"/>
+      <arc head="T_l_dL8_r_dU2_x_c5_y_c5" kind="INPUT" tail="rightDiag_dU2"/>
+      <arc head="T_l_dL8_r_dU2_x_c5_y_c5" kind="INPUT" tail="leftDiag_dL8"/>
+      <arc head="T_l_dL8_r_dU2_x_c5_y_c5" kind="INPUT" tail="cX_c5"/>
+      <arc head="T_l_dL8_r_dU4_x_c6_y_c6" kind="INPUT" tail="cY_c6"/>
+      <arc head="P_c6_c6" kind="OUTPUT" tail="T_l_dL8_r_dU4_x_c6_y_c6"/>
+      <arc head="T_l_dL8_r_dU4_x_c6_y_c6" kind="INPUT" tail="rightDiag_dU4"/>
+      <arc head="T_l_dL8_r_dU4_x_c6_y_c6" kind="INPUT" tail="leftDiag_dL8"/>
+      <arc head="T_l_dL8_r_dU4_x_c6_y_c6" kind="INPUT" tail="cX_c6"/>
+      <arc head="T_l_dL8_r_dU6_x_c7_y_c7" kind="INPUT" tail="cY_c7"/>
+      <arc head="P_c7_c7" kind="OUTPUT" tail="T_l_dL8_r_dU6_x_c7_y_c7"/>
+      <arc head="T_l_dL8_r_dU6_x_c7_y_c7" kind="INPUT" tail="rightDiag_dU6"/>
+      <arc head="T_l_dL8_r_dU6_x_c7_y_c7" kind="INPUT" tail="leftDiag_dL8"/>
+      <arc head="T_l_dL8_r_dU6_x_c7_y_c7" kind="INPUT" tail="cX_c7"/>
+      <arc head="T_l_dL8_r_dU8_x_c8_y_c8" kind="INPUT" tail="cY_c8"/>
+      <arc head="P_c8_c8" kind="OUTPUT" tail="T_l_dL8_r_dU8_x_c8_y_c8"/>
+      <arc head="T_l_dL8_r_dU8_x_c8_y_c8" kind="INPUT" tail="rightDiag_dU8"/>
+      <arc head="T_l_dL8_r_dU8_x_c8_y_c8" kind="INPUT" tail="leftDiag_dL8"/>
+      <arc head="T_l_dL8_r_dU8_x_c8_y_c8" kind="INPUT" tail="cX_c8"/>
+      <arc head="T_l_dU1_r_dL3_x_c2_y_c1" kind="INPUT" tail="cY_c1"/>
+      <arc head="P_c2_c1" kind="OUTPUT" tail="T_l_dU1_r_dL3_x_c2_y_c1"/>
+      <arc head="T_l_dU1_r_dL3_x_c2_y_c1" kind="INPUT" tail="rightDiag_dL3"/>
+      <arc head="T_l_dU1_r_dL3_x_c2_y_c1" kind="INPUT" tail="leftDiag_dU1"/>
+      <arc head="T_l_dU1_r_dL3_x_c2_y_c1" kind="INPUT" tail="cX_c2"/>
+      <arc head="T_l_dU1_r_dL5_x_c3_y_c2" kind="INPUT" tail="cY_c2"/>
+      <arc head="P_c3_c2" kind="OUTPUT" tail="T_l_dU1_r_dL5_x_c3_y_c2"/>
+      <arc head="T_l_dU1_r_dL5_x_c3_y_c2" kind="INPUT" tail="rightDiag_dL5"/>
+      <arc head="T_l_dU1_r_dL5_x_c3_y_c2" kind="INPUT" tail="leftDiag_dU1"/>
+      <arc head="T_l_dU1_r_dL5_x_c3_y_c2" kind="INPUT" tail="cX_c3"/>
+      <arc head="T_l_dU1_r_dL7_x_c4_y_c3" kind="INPUT" tail="cY_c3"/>
+      <arc head="P_c4_c3" kind="OUTPUT" tail="T_l_dU1_r_dL7_x_c4_y_c3"/>
+      <arc head="T_l_dU1_r_dL7_x_c4_y_c3" kind="INPUT" tail="rightDiag_dL7"/>
+      <arc head="T_l_dU1_r_dL7_x_c4_y_c3" kind="INPUT" tail="leftDiag_dU1"/>
+      <arc head="T_l_dU1_r_dL7_x_c4_y_c3" kind="INPUT" tail="cX_c4"/>
+      <arc head="T_l_dU1_r_dU1_x_c5_y_c4" kind="INPUT" tail="cY_c4"/>
+      <arc head="P_c5_c4" kind="OUTPUT" tail="T_l_dU1_r_dU1_x_c5_y_c4"/>
+      <arc head="T_l_dU1_r_dU1_x_c5_y_c4" kind="INPUT" tail="rightDiag_dU1"/>
+      <arc head="T_l_dU1_r_dU1_x_c5_y_c4" kind="INPUT" tail="leftDiag_dU1"/>
+      <arc head="T_l_dU1_r_dU1_x_c5_y_c4" kind="INPUT" tail="cX_c5"/>
+      <arc head="T_l_dU1_r_dU3_x_c6_y_c5" kind="INPUT" tail="cY_c5"/>
+      <arc head="P_c6_c5" kind="OUTPUT" tail="T_l_dU1_r_dU3_x_c6_y_c5"/>
+      <arc head="T_l_dU1_r_dU3_x_c6_y_c5" kind="INPUT" tail="rightDiag_dU3"/>
+      <arc head="T_l_dU1_r_dU3_x_c6_y_c5" kind="INPUT" tail="leftDiag_dU1"/>
+      <arc head="T_l_dU1_r_dU3_x_c6_y_c5" kind="INPUT" tail="cX_c6"/>
+      <arc head="T_l_dU1_r_dU5_x_c7_y_c6" kind="INPUT" tail="cY_c6"/>
+      <arc head="P_c7_c6" kind="OUTPUT" tail="T_l_dU1_r_dU5_x_c7_y_c6"/>
+      <arc head="T_l_dU1_r_dU5_x_c7_y_c6" kind="INPUT" tail="rightDiag_dU5"/>
+      <arc head="T_l_dU1_r_dU5_x_c7_y_c6" kind="INPUT" tail="leftDiag_dU1"/>
+      <arc head="T_l_dU1_r_dU5_x_c7_y_c6" kind="INPUT" tail="cX_c7"/>
+      <arc head="T_l_dU1_r_dU7_x_c8_y_c7" kind="INPUT" tail="cY_c7"/>
+      <arc head="P_c8_c7" kind="OUTPUT" tail="T_l_dU1_r_dU7_x_c8_y_c7"/>
+      <arc head="T_l_dU1_r_dU7_x_c8_y_c7" kind="INPUT" tail="rightDiag_dU7"/>
+      <arc head="T_l_dU1_r_dU7_x_c8_y_c7" kind="INPUT" tail="leftDiag_dU1"/>
+      <arc head="T_l_dU1_r_dU7_x_c8_y_c7" kind="INPUT" tail="cX_c8"/>
+      <arc head="T_l_dU2_r_dL4_x_c3_y_c1" kind="INPUT" tail="cY_c1"/>
+      <arc head="P_c3_c1" kind="OUTPUT" tail="T_l_dU2_r_dL4_x_c3_y_c1"/>
+      <arc head="T_l_dU2_r_dL4_x_c3_y_c1" kind="INPUT" tail="rightDiag_dL4"/>
+      <arc head="T_l_dU2_r_dL4_x_c3_y_c1" kind="INPUT" tail="leftDiag_dU2"/>
+      <arc head="T_l_dU2_r_dL4_x_c3_y_c1" kind="INPUT" tail="cX_c3"/>
+      <arc head="T_l_dU2_r_dL6_x_c4_y_c2" kind="INPUT" tail="cY_c2"/>
+      <arc head="P_c4_c2" kind="OUTPUT" tail="T_l_dU2_r_dL6_x_c4_y_c2"/>
+      <arc head="T_l_dU2_r_dL6_x_c4_y_c2" kind="INPUT" tail="rightDiag_dL6"/>
+      <arc head="T_l_dU2_r_dL6_x_c4_y_c2" kind="INPUT" tail="leftDiag_dU2"/>
+      <arc head="T_l_dU2_r_dL6_x_c4_y_c2" kind="INPUT" tail="cX_c4"/>
+      <arc head="T_l_dU2_r_dL8_x_c5_y_c3" kind="INPUT" tail="cY_c3"/>
+      <arc head="P_c5_c3" kind="OUTPUT" tail="T_l_dU2_r_dL8_x_c5_y_c3"/>
+      <arc head="T_l_dU2_r_dL8_x_c5_y_c3" kind="INPUT" tail="rightDiag_dL8"/>
+      <arc head="T_l_dU2_r_dL8_x_c5_y_c3" kind="INPUT" tail="leftDiag_dU2"/>
+      <arc head="T_l_dU2_r_dL8_x_c5_y_c3" kind="INPUT" tail="cX_c5"/>
+      <arc head="T_l_dU2_r_dU2_x_c6_y_c4" kind="INPUT" tail="cY_c4"/>
+      <arc head="P_c6_c4" kind="OUTPUT" tail="T_l_dU2_r_dU2_x_c6_y_c4"/>
+      <arc head="T_l_dU2_r_dU2_x_c6_y_c4" kind="INPUT" tail="rightDiag_dU2"/>
+      <arc head="T_l_dU2_r_dU2_x_c6_y_c4" kind="INPUT" tail="leftDiag_dU2"/>
+      <arc head="T_l_dU2_r_dU2_x_c6_y_c4" kind="INPUT" tail="cX_c6"/>
+      <arc head="T_l_dU2_r_dU4_x_c7_y_c5" kind="INPUT" tail="cY_c5"/>
+      <arc head="P_c7_c5" kind="OUTPUT" tail="T_l_dU2_r_dU4_x_c7_y_c5"/>
+      <arc head="T_l_dU2_r_dU4_x_c7_y_c5" kind="INPUT" tail="rightDiag_dU4"/>
+      <arc head="T_l_dU2_r_dU4_x_c7_y_c5" kind="INPUT" tail="leftDiag_dU2"/>
+      <arc head="T_l_dU2_r_dU4_x_c7_y_c5" kind="INPUT" tail="cX_c7"/>
+      <arc head="T_l_dU2_r_dU6_x_c8_y_c6" kind="INPUT" tail="cY_c6"/>
+      <arc head="P_c8_c6" kind="OUTPUT" tail="T_l_dU2_r_dU6_x_c8_y_c6"/>
+      <arc head="T_l_dU2_r_dU6_x_c8_y_c6" kind="INPUT" tail="rightDiag_dU6"/>
+      <arc head="T_l_dU2_r_dU6_x_c8_y_c6" kind="INPUT" tail="leftDiag_dU2"/>
+      <arc head="T_l_dU2_r_dU6_x_c8_y_c6" kind="INPUT" tail="cX_c8"/>
+      <arc head="T_l_dU3_r_dL5_x_c4_y_c1" kind="INPUT" tail="cY_c1"/>
+      <arc head="P_c4_c1" kind="OUTPUT" tail="T_l_dU3_r_dL5_x_c4_y_c1"/>
+      <arc head="T_l_dU3_r_dL5_x_c4_y_c1" kind="INPUT" tail="rightDiag_dL5"/>
+      <arc head="T_l_dU3_r_dL5_x_c4_y_c1" kind="INPUT" tail="leftDiag_dU3"/>
+      <arc head="T_l_dU3_r_dL5_x_c4_y_c1" kind="INPUT" tail="cX_c4"/>
+      <arc head="T_l_dU3_r_dL7_x_c5_y_c2" kind="INPUT" tail="cY_c2"/>
+      <arc head="P_c5_c2" kind="OUTPUT" tail="T_l_dU3_r_dL7_x_c5_y_c2"/>
+      <arc head="T_l_dU3_r_dL7_x_c5_y_c2" kind="INPUT" tail="rightDiag_dL7"/>
+      <arc head="T_l_dU3_r_dL7_x_c5_y_c2" kind="INPUT" tail="leftDiag_dU3"/>
+      <arc head="T_l_dU3_r_dL7_x_c5_y_c2" kind="INPUT" tail="cX_c5"/>
+      <arc head="T_l_dU3_r_dU1_x_c6_y_c3" kind="INPUT" tail="cY_c3"/>
+      <arc head="P_c6_c3" kind="OUTPUT" tail="T_l_dU3_r_dU1_x_c6_y_c3"/>
+      <arc head="T_l_dU3_r_dU1_x_c6_y_c3" kind="INPUT" tail="rightDiag_dU1"/>
+      <arc head="T_l_dU3_r_dU1_x_c6_y_c3" kind="INPUT" tail="leftDiag_dU3"/>
+      <arc head="T_l_dU3_r_dU1_x_c6_y_c3" kind="INPUT" tail="cX_c6"/>
+      <arc head="T_l_dU3_r_dU3_x_c7_y_c4" kind="INPUT" tail="cY_c4"/>
+      <arc head="P_c7_c4" kind="OUTPUT" tail="T_l_dU3_r_dU3_x_c7_y_c4"/>
+      <arc head="T_l_dU3_r_dU3_x_c7_y_c4" kind="INPUT" tail="rightDiag_dU3"/>
+      <arc head="T_l_dU3_r_dU3_x_c7_y_c4" kind="INPUT" tail="leftDiag_dU3"/>
+      <arc head="T_l_dU3_r_dU3_x_c7_y_c4" kind="INPUT" tail="cX_c7"/>
+      <arc head="T_l_dU3_r_dU5_x_c8_y_c5" kind="INPUT" tail="cY_c5"/>
+      <arc head="P_c8_c5" kind="OUTPUT" tail="T_l_dU3_r_dU5_x_c8_y_c5"/>
+      <arc head="T_l_dU3_r_dU5_x_c8_y_c5" kind="INPUT" tail="rightDiag_dU5"/>
+      <arc head="T_l_dU3_r_dU5_x_c8_y_c5" kind="INPUT" tail="leftDiag_dU3"/>
+      <arc head="T_l_dU3_r_dU5_x_c8_y_c5" kind="INPUT" tail="cX_c8"/>
+      <arc head="T_l_dU4_r_dL6_x_c5_y_c1" kind="INPUT" tail="cY_c1"/>
+      <arc head="P_c5_c1" kind="OUTPUT" tail="T_l_dU4_r_dL6_x_c5_y_c1"/>
+      <arc head="T_l_dU4_r_dL6_x_c5_y_c1" kind="INPUT" tail="rightDiag_dL6"/>
+      <arc head="T_l_dU4_r_dL6_x_c5_y_c1" kind="INPUT" tail="leftDiag_dU4"/>
+      <arc head="T_l_dU4_r_dL6_x_c5_y_c1" kind="INPUT" tail="cX_c5"/>
+      <arc head="T_l_dU4_r_dL8_x_c6_y_c2" kind="INPUT" tail="cY_c2"/>
+      <arc head="P_c6_c2" kind="OUTPUT" tail="T_l_dU4_r_dL8_x_c6_y_c2"/>
+      <arc head="T_l_dU4_r_dL8_x_c6_y_c2" kind="INPUT" tail="rightDiag_dL8"/>
+      <arc head="T_l_dU4_r_dL8_x_c6_y_c2" kind="INPUT" tail="leftDiag_dU4"/>
+      <arc head="T_l_dU4_r_dL8_x_c6_y_c2" kind="INPUT" tail="cX_c6"/>
+      <arc head="T_l_dU4_r_dU2_x_c7_y_c3" kind="INPUT" tail="cY_c3"/>
+      <arc head="P_c7_c3" kind="OUTPUT" tail="T_l_dU4_r_dU2_x_c7_y_c3"/>
+      <arc head="T_l_dU4_r_dU2_x_c7_y_c3" kind="INPUT" tail="rightDiag_dU2"/>
+      <arc head="T_l_dU4_r_dU2_x_c7_y_c3" kind="INPUT" tail="leftDiag_dU4"/>
+      <arc head="T_l_dU4_r_dU2_x_c7_y_c3" kind="INPUT" tail="cX_c7"/>
+      <arc head="T_l_dU4_r_dU4_x_c8_y_c4" kind="INPUT" tail="cY_c4"/>
+      <arc head="P_c8_c4" kind="OUTPUT" tail="T_l_dU4_r_dU4_x_c8_y_c4"/>
+      <arc head="T_l_dU4_r_dU4_x_c8_y_c4" kind="INPUT" tail="rightDiag_dU4"/>
+      <arc head="T_l_dU4_r_dU4_x_c8_y_c4" kind="INPUT" tail="leftDiag_dU4"/>
+      <arc head="T_l_dU4_r_dU4_x_c8_y_c4" kind="INPUT" tail="cX_c8"/>
+      <arc head="T_l_dU5_r_dL7_x_c6_y_c1" kind="INPUT" tail="cY_c1"/>
+      <arc head="P_c6_c1" kind="OUTPUT" tail="T_l_dU5_r_dL7_x_c6_y_c1"/>
+      <arc head="T_l_dU5_r_dL7_x_c6_y_c1" kind="INPUT" tail="rightDiag_dL7"/>
+      <arc head="T_l_dU5_r_dL7_x_c6_y_c1" kind="INPUT" tail="leftDiag_dU5"/>
+      <arc head="T_l_dU5_r_dL7_x_c6_y_c1" kind="INPUT" tail="cX_c6"/>
+      <arc head="T_l_dU5_r_dU1_x_c7_y_c2" kind="INPUT" tail="cY_c2"/>
+      <arc head="P_c7_c2" kind="OUTPUT" tail="T_l_dU5_r_dU1_x_c7_y_c2"/>
+      <arc head="T_l_dU5_r_dU1_x_c7_y_c2" kind="INPUT" tail="rightDiag_dU1"/>
+      <arc head="T_l_dU5_r_dU1_x_c7_y_c2" kind="INPUT" tail="leftDiag_dU5"/>
+      <arc head="T_l_dU5_r_dU1_x_c7_y_c2" kind="INPUT" tail="cX_c7"/>
+      <arc head="T_l_dU5_r_dU3_x_c8_y_c3" kind="INPUT" tail="cY_c3"/>
+      <arc head="P_c8_c3" kind="OUTPUT" tail="T_l_dU5_r_dU3_x_c8_y_c3"/>
+      <arc head="T_l_dU5_r_dU3_x_c8_y_c3" kind="INPUT" tail="rightDiag_dU3"/>
+      <arc head="T_l_dU5_r_dU3_x_c8_y_c3" kind="INPUT" tail="leftDiag_dU5"/>
+      <arc head="T_l_dU5_r_dU3_x_c8_y_c3" kind="INPUT" tail="cX_c8"/>
+      <arc head="T_l_dU6_r_dL8_x_c7_y_c1" kind="INPUT" tail="cY_c1"/>
+      <arc head="P_c7_c1" kind="OUTPUT" tail="T_l_dU6_r_dL8_x_c7_y_c1"/>
+      <arc head="T_l_dU6_r_dL8_x_c7_y_c1" kind="INPUT" tail="rightDiag_dL8"/>
+      <arc head="T_l_dU6_r_dL8_x_c7_y_c1" kind="INPUT" tail="leftDiag_dU6"/>
+      <arc head="T_l_dU6_r_dL8_x_c7_y_c1" kind="INPUT" tail="cX_c7"/>
+      <arc head="T_l_dU6_r_dU2_x_c8_y_c2" kind="INPUT" tail="cY_c2"/>
+      <arc head="P_c8_c2" kind="OUTPUT" tail="T_l_dU6_r_dU2_x_c8_y_c2"/>
+      <arc head="T_l_dU6_r_dU2_x_c8_y_c2" kind="INPUT" tail="rightDiag_dU2"/>
+      <arc head="T_l_dU6_r_dU2_x_c8_y_c2" kind="INPUT" tail="leftDiag_dU6"/>
+      <arc head="T_l_dU6_r_dU2_x_c8_y_c2" kind="INPUT" tail="cX_c8"/>
+      <arc head="T_l_dU7_r_dU1_x_c8_y_c1" kind="INPUT" tail="cY_c1"/>
+      <arc head="P_c8_c1" kind="OUTPUT" tail="T_l_dU7_r_dU1_x_c8_y_c1"/>
+      <arc head="T_l_dU7_r_dU1_x_c8_y_c1" kind="INPUT" tail="rightDiag_dU1"/>
+      <arc head="T_l_dU7_r_dU1_x_c8_y_c1" kind="INPUT" tail="leftDiag_dU7"/>
+      <arc head="T_l_dU7_r_dU1_x_c8_y_c1" kind="INPUT" tail="cX_c8"/>
+    </edges>
+  </gspn>
+  <measures gspn-name="nqueens-5-unfolded" name="Measures" simplified-UI="false">
     <assignments/>
     <rgmedd2/>
     <formulas>
-      <formula expr="deadlock" language="CTL">
-        <result-table>
-          <mc-result failure_reason="&lt;not computed&gt;" name="MEASURE0" state="FAIL_COMPUTE">
-            <bindings/>
-          </mc-result>
-        </result-table>
-      </formula>
-      <formula language="STAT">
-        <result-table>
-          <stat-result name="STAT">
-            <bindings/>
-            <stat key="CTL_time" value="0.007046 seconds."/>
-            <stat key="build_time" value="0.010917 seconds."/>
-            <stat key="num_rs_nodes" value="1411"/>
-            <stat key="num_tangible_markings" value="0"/>
-            <stat key="total_firings" value="0"/>
-          </stat-result>
-        </result-table>
-      </formula>
+      <formula expr="deadlock" language="CTL"/>
+      <formula language="STAT"/>
     </formulas>
   </measures>
-  <resource-list>
-    <document-log uuid="3f32dc62-4857-4582-9a2f-8436863d72b6">rO0ABXNyABRqYXZhLnV0aWwuTGlua2VkTGlzdAwpU11KYIgiAwAAeHB3BAAAADx0AIsbWzBtRVhFQzogL3Vzci9sb2NhbC9HcmVhdFNQTi9iaW4vcGludmFyICIvaG9tZS91c2VyL0dyZWF0U1BOL1NPVVJDRVMvbW9kZWxzL24tcXVlZW5zLU1lYXN1cmVzLnNvbHV0aW9uL1VuZm9sZGluZyBvZiBucXVlZW5zIiAtZGV0ZWN0LWV4cCAKdAABCnQAbVBsYWNlIGludmFyaWFudHMgZm9yIG5ldCAvaG9tZS91c2VyL0dyZWF0U1BOL1NPVVJDRVMvbW9kZWxzL24tcXVlZW5zLU1lYXN1cmVzLnNvbHV0aW9uL1VuZm9sZGluZyBvZiBucXVlZW5zOgp0AAEKdAA7ICAgUF9jNV9jMSAgIFBfYzVfYzIgICBQX2M1X2MzICAgUF9jNV9jNCAgIFBfYzVfYzUgICBjWF9jNQp0ADsgICBQX2MxX2M1ICAgUF9jMl9jNSAgIFBfYzNfYzUgICBQX2M0X2M1ICAgUF9jNV9jNSAgIGNZX2M1CnQAOyAgIFBfYzFfYzQgICBQX2MyX2M0ICAgUF9jM19jNCAgIFBfYzRfYzQgICBQX2M1X2M0ICAgY1lfYzQKdAA7ICAgUF9jMV9jMyAgIFBfYzJfYzMgICBQX2MzX2MzICAgUF9jNF9jMyAgIFBfYzVfYzMgICBjWV9jMwp0ADsgICBQX2MxX2MyICAgUF9jMl9jMiAgIFBfYzNfYzIgICBQX2M0X2MyICAgUF9jNV9jMiAgIGNZX2MyCnQAOyAgIFBfYzFfYzEgICBQX2MyX2MxICAgUF9jM19jMSAgIFBfYzRfYzEgICBQX2M1X2MxICAgY1lfYzEKdAA7ICAgUF9jNF9jMSAgIFBfYzRfYzIgICBQX2M0X2MzICAgUF9jNF9jNCAgIFBfYzRfYzUgICBjWF9jNAp0ADsgICBQX2MzX2MxICAgUF9jM19jMiAgIFBfYzNfYzMgICBQX2MzX2M0ICAgUF9jM19jNSAgIGNYX2MzCnQAOyAgIFBfYzJfYzEgICBQX2MyX2MyICAgUF9jMl9jMyAgIFBfYzJfYzQgICBQX2MyX2M1ICAgY1hfYzIKdAA7ICAgUF9jMV9jMSAgIFBfYzFfYzIgICBQX2MxX2MzICAgUF9jMV9jNCAgIFBfYzFfYzUgICBjWF9jMQp0AAEKdAArQUxMIHBsYWNlcyBhcmUgY292ZXJlZCBieSBzb21lIFAtaW52YXJpYW50CnQAAQp0ACcbWzBYG1szMm0gUFJPQ0VTUyBFWElURUQgTk9STUFMTFkuG1swbQp0AIkbWzBtRVhFQzogL3Vzci9sb2NhbC9HcmVhdFNQTi9iaW4vc3RydWN0ICIvaG9tZS91c2VyL0dyZWF0U1BOL1NPVVJDRVMvbW9kZWxzL24tcXVlZW5zLU1lYXN1cmVzLnNvbHV0aW9uL1VuZm9sZGluZyBvZiBucXVlZW5zIiAtb25seS1ibmQgCnEAfgATdACQG1swbUVYRUM6IC91c3IvbG9jYWwvR3JlYXRTUE4vYmluL0RTUE4tVG9vbCAtbG9hZCAiL2hvbWUvdXNlci9HcmVhdFNQTi9TT1VSQ0VTL21vZGVscy9uLXF1ZWVucy1NZWFzdXJlcy5zb2x1dGlvbi9VbmZvbGRpbmcgb2YgbnF1ZWVucyIgLXBiYXNpcyAKdACEG1sxbRtbNG1MT0FESU5HIFBFVFJJIE5FVCAvaG9tZS91c2VyL0dyZWF0U1BOL1NPVVJDRVMvbW9kZWxzL24tcXVlZW5zLU1lYXN1cmVzLnNvbHV0aW9uL1VuZm9sZGluZyBvZiBucXVlZW5zIChuZXQvZGVmKS4uLhtbMjJtG1syNG0KdAAPTUFSS0lORyBQQVI6IDEKdAAQUExBQ0VTOiAgICAgIDM1CnQAD1JBVEUgUEFSOiAgICAwCnQAEFRSQU5TSVRJT05TOiAyNQp0AA9NRUFTVVJFUzogICAgMAp0AChMT0FESU5HIFRJTUU6IFtVc2VyIDAuMDAwcywgU3lzIDAuMDAwc10KdAABCnQAAQp0AB5DT01QVVRJTkcgUExBQ0UgRkxPVyBCQVNJUy4uLgp0ADlDb21wdXRhdGlvbiBvZiBGbG93IGJhc2lzOiBzdGVwIDEvMjUsIHxLfD0zMiwgcHJvZHVjdHM9Mgp0AFMbWzFBICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnQAVBtbMUFDb21wdXRhdGlvbiBvZiBGbG93IGJhc2lzOiBjb21wbGV0ZWQgaW4gMjUgc3RlcHMsIHxLfD0xMC4gICAgICAgICAgICAgICAgICAgICAgCnQAQUZPVU5EIDEwIFZFQ1RPUlMgSU4gVEhFIFBMQUNFIEZMT1cgQkFTSVMgKDkgc2VtaWZsb3dzLCAxIGZsb3dzKS4KdAABCnQAAQp0ACdBbGwgcGxhY2VzIGFyZSBjb3ZlcmVkIGJ5IHNvbWUgUC1mbG93Lgp0AAEKdAAmVE9UQUwgVElNRTogW1VzZXIgMC4wMDRzLCBTeXMgMC4wMDBzXQpxAH4AE3QAkxtbMG1FWEVDOiAvdXNyL2xvY2FsL0dyZWF0U1BOL2Jpbi9SR01FREQyICIvaG9tZS91c2VyL0dyZWF0U1BOL1NPVVJDRVMvbW9kZWxzL24tcXVlZW5zLU1lYXN1cmVzLnNvbHV0aW9uL1VuZm9sZGluZyBvZiBucXVlZW5zIiAtTUVUQSAgLWd1aS1zdGF0IC1DCnQAEUdyZWF0U1BOL01lZGRseS4KdAA4ICBDb3B5cmlnaHQgKEMpIDE5ODctMjAxNywgVW5pdmVyc2l0eSBvZiBUb3Jpbm8sIEl0YWx5Lgp0AAEKdAAfQmFzZWQgb24gTUVERExZIHZlcnNpb24gMC4xNS4wCnQARiAgQ29weXJpZ2h0IChDKSAyMDA5LCBJb3dhIFN0YXRlIFVuaXZlcnNpdHkgUmVzZWFyY2ggRm91bmRhdGlvbiwgSW5jLgp0ACkgIHdlYnNpdGU6IGh0dHA6Ly9tZWRkbHkuc291cmNlZm9yZ2UubmV0CnQAAQp0AENXQVJOSU5HOiBwZXItZXZlbnQgUlMgKC1ldmVudC1uc2YpIGlzIG5vdCBzdXBwb3J0ZWQgaW4gQ1RMIG1vZGUhISEKdAA3ICAgICAgICAgU3dpdGNoaW5nIGJhY2sgdG8gbW9ub2xpdGhpYyBOU0YgKC1tb25vLW5zZikuCnQAAQp0AAEKdAARUHJvY2VzcyBJRDogNDU2MQp0AF9NT0RFTCBOQU1FOiAvaG9tZS91c2VyL0dyZWF0U1BOL1NPVVJDRVMvbW9kZWxzL24tcXVlZW5zLU1lYXN1cmVzLnNvbHV0aW9uL1VuZm9sZGluZyBvZiBucXVlZW5zCnQAHSAgMzUgcGxhY2VzLCAyNSB0cmFuc2l0aW9ucy4KdAABCnQAb0ZPUk1VTEEgTUVBU1VSRTAgRkFMU0UgVEVDSE5JUVVFUyBERUNJU0lPTl9ESUFHUkFNUyBTRVFVRU5USUFMX1BST0NFU1NJTkcgVU5GT0xESU5HX1RPX1BUIFVTRV9OVVBOIFRPUE9MT0dJQ0FMCnQABE9rLgpxAH4AE3hzcQB+AAB3BAAAADxzcgARamF2YS5sYW5nLkJvb2xlYW7NIHKA1Zz67gIAAVoABXZhbHVleHABcQB+AD1xAH4APXEAfgA9cQB+AD1xAH4APXEAfgA9cQB+AD1xAH4APXEAfgA9cQB+AD1xAH4APXEAfgA9cQB+AD1xAH4APXEAfgA9cQB+AD1xAH4APXEAfgA9cQB+AD1xAH4APXEAfgA9cQB+AD1xAH4APXEAfgA9cQB+AD1xAH4APXEAfgA9cQB+AD1xAH4APXEAfgA9cQB+AD1xAH4APXEAfgA9cQB+AD1xAH4APXEAfgA9cQB+AD1xAH4APXEAfgA9cQB+AD1xAH4APXEAfgA9cQB+AD1xAH4APXEAfgA9cQB+AD1xAH4APXEAfgA9cQB+AD1xAH4APXEAfgA9cQB+AD1xAH4APXEAfgA9cQB+AD1xAH4APXEAfgA9cQB+AD1xAH4APXg=</document-log>
-  </resource-list>
 </project>

@@ -348,6 +348,8 @@ public abstract class EvaluatedFormula {
 
     // return the neutral term of the given unary/binary operation
     private static EvaluatedFormula neutralTermForOperationFn(Type outType, int opFn, int leftRight) {
+        if (outType == null)
+            return null; // blocked expressions
         boolean outInt = (outType == Type.INT);
         boolean outReal = (outType == Type.REAL);
         boolean outBool = (outType == Type.BOOLEAN);
@@ -636,6 +638,18 @@ public abstract class EvaluatedFormula {
                         return this;
                     return new UnevaluatedFormula(computeType, NeutralColorClass.INSTANCE, 
                                                   toString()+" / "+op.toString());
+                case ExprLangParser.AND:
+                    if (equalsZero()) // false
+                        return BooleanScalarValue.FALSE;
+                    if (op.equalsZero()) // false
+                        return BooleanScalarValue.FALSE;
+                    return new UnevaluatedFormula(computeType, NeutralColorClass.INSTANCE, 
+                                                  toString()+" && "+op.toString());
+                   
+                case ExprLangParser.EQUAL:  
+                    // Both terms must be unblocked to perform the test
+                    return new UnevaluatedFormula(computeType, NeutralColorClass.INSTANCE, 
+                                                  toString()+"  "+op.toString());
                 default:
                     throw new UnsupportedOperationException("Unsupported: blocked binaryFn = "+binaryFn);
             }

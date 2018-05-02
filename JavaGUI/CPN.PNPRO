@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="Fluid and Colored PN" version="121">
+  <gspn name="nqueens" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <color-class definition="c{1..n}" name="N" x="2.125" y="3.0"/>
+      <color-class alt-name-fn="LATEX_TEXT" definition="N*N" name="N2" shown-as="\mathit{N}\,^2" x="2.125" y="5.1875"/>
+      <place domain="N2" name="P" x="4.0" y="12.0"/>
+      <transition guard="(CN[l]==(CN[x]-CN[y]+n)) &amp;&amp; (CN[r]==CN[x]+CN[y])" guard-x="10.5" guard-y="1.0" label-x="-1.5" label-y="-0.5" name="T" nservers-x="0.5" type="EXP" x="25.55" y="12.0"/>
+      <color-var domain="N" name="x" x="2.25" y="7.0"/>
+      <color-var domain="N" name="y" x="2.25" y="8.0"/>
+      <place domain="N" label-y="-1.5" marking="&lt;All&gt;" name="cX" x="17.0" y="5.0"/>
+      <place domain="N" label-y="-1.5" marking="&lt;All&gt;" name="cY" x="33.0" y="5.0"/>
+      <constant consttype="INTEGER" name="n" value="5" x="2.25" y="2.0"/>
+      <color-class definition="dL{1..n}+dU{1..n}" name="D" x="2.125" y="4.0"/>
+      <place domain="D" label-x="0.5" label-y="-1.5" marking="&lt;All&gt;" name="leftDiag" x="22.0" y="3.0"/>
+      <color-var domain="D" name="l" x="2.1875" y="9.0"/>
+      <place domain="D" label-x="1.5" label-y="-1.5" marking="&lt;All&gt;" name="rightDiag" x="28.0" y="3.0"/>
+      <color-var domain="D" name="r" x="2.25" y="10.0"/>
+    </nodes>
+    <edges>
+      <arc head="P" kind="OUTPUT" mult="&lt;x,y&gt;" mult-k="0.49990234375" mult-x="-0.13857421875000142" mult-y="-0.5" tail="T"/>
+      <arc head="T" kind="INPUT" mult="&lt;x&gt;" mult-x="0.5" mult-y="-0.5" tail="cX"/>
+      <arc head="T" kind="INPUT" mult="&lt;y&gt;" mult-x="-0.5" mult-y="-0.5" tail="cY"/>
+      <arc head="T" kind="INPUT" mult="&lt;l&gt;" mult-k="0.38896484374999996" mult-x="0.875" mult-y="0.0625" tail="leftDiag"/>
+      <arc head="T" kind="INPUT" mult="&lt;r&gt;" mult-k="0.39990234375" mult-x="-0.6497070312499993" mult-y="-0.050878906250000355" tail="rightDiag"/>
+    </edges>
+  </gspn>
   <gspn name="3queens" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
     <nodes>
       <color-class definition="c{1..3}" name="N" x="2.125" y="2.0"/>

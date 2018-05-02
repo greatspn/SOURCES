@@ -116,7 +116,7 @@ public abstract class Expr implements Serializable {
             return null;
         EvaluatedFormula result;
         result = context.evaluate(getExpr(), getParseRule(getExpr()), args, getExprDescr(), getParseFlags());
-//        System.out.println("result = "+result.toStringFormat("%.2f"));
+//        System.out.println("result = "+result);
         return result;
     }
     

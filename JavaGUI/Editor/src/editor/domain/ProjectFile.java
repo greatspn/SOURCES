@@ -99,7 +99,9 @@ public class ProjectFile extends Observable implements Serializable, UuidObject 
     
     private static final Set<ProjectPage> NO_PAGE_CHANGED = new HashSet<>();
     public void startChanges() {
-        assert beforeChanges == null;
+        if (beforeChanges != null) {
+            System.out.println("Warning: beforeChanges != null.");
+        }
         beforeChanges = current.createSnapshot(undoChain.size() > 0 ? undoChain.get(0) : lastSnapshot);
     }
     
