@@ -29,12 +29,15 @@ First, install the following dependencies (using the developer packages with the
  * libxml++ (devel), glibmm24 (devel) and glib2 (devel)
  * glpk (devel) and lpsolve (devel)
 
-Once all dependencies are installed, create a `GreatSPN` directory.
+Once all dependencies are installed, create a `GreatSPN` directory using:
+```
+    mkdir ~/GreatSPN
+```
 Inside this directory you will need to setup two different repositories: 
 one for the Meddly library, and another for the GreatSPN framework.
 To download the Meddly library, type:
 ```
-	cd GreatSPN
+	cd ~/GreatSPN
 	git clone git://git.code.sf.net/p/meddly/code-git meddly
 	cd meddly
 	./autogen.sh
@@ -48,12 +51,13 @@ informations on how to download, compile and install it.
 Once Meddly is downloaded, compiled and installed, go back to the `GreatSPN`
 directory, and type:
 ```
-	git clone git@github.com:greatspn/SOURCES.git SOURCES
+    cd ~/GreatSPN
+	git clone https://github.com/greatspn/SOURCES.git SOURCES
 ```
-to download the sources. The `SOURCES` directory *must* bu at the same level of the `meddly` directory.
+to download the sources. The `SOURCES` directory *must* be at the same level of the `meddly` directory.
 To compile the sources, type:
 ```
-	cd SOURCES
+	cd ~/GreatSPN/SOURCES
 	make
 	sudo make install
 ```
@@ -63,11 +67,17 @@ To compile the sources, type:
 
 GreatSPN is known to be working on macOS. 
 You will first need to install the Developer Tools (Xcode) to compile GreatSPN.
-Install all the required dependencies using a software like [Homebrew](https://brew.sh/).
+Install all the required dependencies using a software like [Homebrew](https://brew.sh/), e.g. 
+by running the command:
 ```
 brew install gmp boost flex byacc ant graphviz libxml++ lp_solve
 ```
-The lp_solve package could require to be built from sources.
+In the last Homebrew version, the lp_solve package could require to be built from sources.
+In that case, download the lp_solve sources from Sourceforge and follow the instructions
+to compile the package.
+After yu have installed Xcode, brew, and the required dependecies, follow
+ the above instructions to compile Meddly and GreatSPN.
+
 
 #### Windows installation instructions:
 
