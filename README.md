@@ -31,19 +31,19 @@ First, install the following dependencies (using the developer packages with the
 
 Once all dependencies are installed, create a `GreatSPN` directory using:
 ```
-    mkdir ~/GreatSPN
+mkdir ~/GreatSPN
 ```
 Inside this directory you will need to setup two different repositories: 
 one for the Meddly library, and another for the GreatSPN framework.
 To download the Meddly library, type:
 ```
-	cd ~/GreatSPN
-	git clone git://git.code.sf.net/p/meddly/code-git meddly
-	cd meddly
-	./autogen.sh
-	./configure --prefix=/usr/local
-	make
-	sudo make install
+cd ~/GreatSPN
+git clone git://git.code.sf.net/p/meddly/code-git meddly
+cd meddly
+./autogen.sh
+./configure --prefix=/usr/local
+make
+sudo make install
 ```
 Please, refer to the [Meddly site](https://meddly.sourceforge.io) for all the
 informations on how to download, compile and install it.
@@ -51,15 +51,15 @@ informations on how to download, compile and install it.
 Once Meddly is downloaded, compiled and installed, go back to the `GreatSPN`
 directory, and type:
 ```
-    cd ~/GreatSPN
-	git clone https://github.com/greatspn/SOURCES.git SOURCES
+cd ~/GreatSPN
+git clone https://github.com/greatspn/SOURCES.git SOURCES
 ```
 to download the sources. The `SOURCES` directory *must* be at the same level of the `meddly` directory.
 To compile the sources, type:
 ```
-	cd ~/GreatSPN/SOURCES
-	make
-	sudo make install
+cd ~/GreatSPN/SOURCES
+make
+sudo make install
 ```
 
 
@@ -112,7 +112,7 @@ in the Linux application menu. Sometimes, a logout is required.
 In case the Editor does not appear in the system menu, you can launch it from the command line
 with this command:
 ```
-	java -jar /usr/local/GreatSPN/bin/Editor.jar
+java -jar /usr/local/GreatSPN/bin/Editor.jar
 ```
 For macOS users, a compiled app is generated in the `SOURCES/JavaGUI/Editor/dist` directory.
 
