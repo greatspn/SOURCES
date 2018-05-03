@@ -119,6 +119,11 @@ For macOS users, a compiled app is generated in the `SOURCES/JavaGUI/Editor/dist
 
 
 
+### Citing GreatSPN:
+
+TBD.
+
+
 
 ### How to run the command-line solvers.
 
@@ -141,7 +146,7 @@ which is available within the repository in the [LICENSE](LICENSE) file.
 The source code owner is the University of Torino, Italy.
 If you are interested in a different licensing scheme, please [contact us](mailto:greatspn@di.unito.it).
 Any contributing code is not owned by the contributor.
-Contributors are required to sign a [Contributor License Agreement](CLA.txt) (CLA) 
+Contributors are required to sign a [Contributor License Agreement](CONTRIBUTING) (CLA) 
 when contributing code to the GreatSPN Framework.
 
 

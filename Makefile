@@ -185,7 +185,6 @@ else
   INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I/usr/include/lpsolve/
 endif
 
-
 GMP_LIBRARY_1 := /usr/include/gmpxx.h
 GMP_LIBRARY_2 := /usr/local/include/gmpxx.h
 ifeq ($(wildcard $(GMP_LIBRARY_1)),)

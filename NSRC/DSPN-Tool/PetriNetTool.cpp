@@ -314,7 +314,9 @@ struct ToolData {
     shared_ptr<flow_matrix_t> pminflows, tminflows;
     shared_ptr<flow_matrix_t> pnestflspan, tnestflspan;
     shared_ptr<place_bounds_t> pbounds;
+#ifdef HAS_LP_SOLVE_LIB
     shared_ptr<place_ilp_bounds_t> pIlpBounds;
+#endif
     bool                detectExpFlows = false;
     bool 				withVanishings;
     bool 				withVPaths;
@@ -1112,6 +1114,8 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
                 LoadBounds(*pn, *pbounds, bnd_is);
                 PrintBounds(*pn, *pbounds, verboseLvl);
             }
+#ifdef HAS_LP_SOLVE_LIB
+            // Commands that use the ILP solver
             else if (cmdArg == "-ilp-bnd") {
                 cout << "COMPUTING PLACE BOUNDS USING ILP ..." << endl;
                 RequirePetriNet();
@@ -1133,6 +1137,7 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
                 ifstream UB(argv[argNum++]);
                 UpperBoundsMCC(*pn, verboseLvl, UB);
             }
+#endif // HAS_LP_SOLVE_LIB
             else if (cmdArg == "-omega" && remainedArgs >= 1) {
                 spar.omega = atof(argv[argNum++]);
                 cout << "USING OVER-RELAXATION COEFFICIENT ";
