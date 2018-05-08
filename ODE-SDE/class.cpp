@@ -1579,10 +1579,17 @@ return -1;
                 const long double C335d33 =335.0/33.0;	
                 const long double C46732d5247 =46732.0/5247.0;
                 const long double C49d176 =49.0/176.0;
-                const long double C5103d18656 =5103.0/18656;
+                const long double C5103d18656 =5103.0/18656.0;
                 const long double C35d384 =35.0/384.0;
-                		
-                
+                const long double C500d1113 =500.0/1113.0;		
+                const long double C125d192 =125.0/192.0;
+                const long double C2187d6784 =2187.0/6784.0;
+                const long double C11d84 =11.0/84.0;
+                const long double C5179d57600 =5179.0/57600.0;
+                const long double C7571d16695 =7571.0/16695.0;
+                const long double C393d640 =393.0/640.0;
+                const long double C92097d339200 =92097.0/339200.0;
+                const long double C187d2100 =187.0/2100.0;
                 
                 this->fh=h;
                 this->Max_Run=Max_Run;
@@ -1716,7 +1723,7 @@ return -1;
                     i=headDirc;
                     while (i!=DEFAULT)
                     {
-                    	Value[i]=ValuePrv[i]+(k1[i]*C35d384+k3[i]*500.0/1113.0+k4[i]*125.0/192.0-k5[i]*2187.0/6784+k6[i]*11.0/84.0);
+                    	Value[i]=ValuePrv[i]+(k1[i]*C35d384+k3[i]*C500d1113+k4[i]*C125d192-k5[i]*C2187d6784+k6[i]*C11d84);
                     	i=VEq[i].getNext();//next place that is computed directly
                     }
                     derived();// it derives all the rest of places
@@ -1728,7 +1735,7 @@ return -1;
                     i=headDirc;
                     while (i!=DEFAULT)
                     { 
-                        ValueA1[i]=ValuePrv[i]+(k1[i]*5179.0/57600.0+k3[i]*7571.0/16695.0+k4[i]*393.0/640.0-k5[i]*92097.0/339200.0+k6[i]*187.0/2100.0+k7[i]/40);
+                        ValueA1[i]=ValuePrv[i]+(k1[i]*C5179d57600+k3[i]*C7571d16695+k4[i]*C393d640-k5[i]*C92097d339200+k6[i]*C187d2100+k7[i]/40.0);
 						tmp_error_ass= fabs(Value[i]-ValueA1[i]);		
                         error = (error > tmp_error_ass) ? error : tmp_error_ass;
                        // cout<<"\t"<<Value[i]<<endl;
