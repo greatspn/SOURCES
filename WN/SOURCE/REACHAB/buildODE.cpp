@@ -420,9 +420,9 @@ void build_ODE(ofstream &out, std::string path, std::string net)
         out << " std::cerr<<\"\\n\\nUSE:" << net << "_solve <out_file> <type> <step_factor> <perc1> <perc2> <runs> <Max_time> <output> <step_output> -B <bound_file> \";\n\t";
     }
     //automaton
-    out << " std::cerr<<\"\\n\\t <type>:\\t ODE-E or ODE-KM  or (H)SDE or HODE or SIM or STEP:\";\n\t";
-    out << " std::cerr<<\"\\n\\t <step_factor>:\\t Maximum Euler's step size\";\n\t";
-    out << " std::cerr<<\"\\n\\t <perc1>:\\t Value used to compute Euler Step (smaller -> greater precision but slower solution)\";\n\t";
+    out << " std::cerr<<\"\\n\\t <type>:\\t ODE-E or ODE-RKF or ODE45  or (H)SDE or HODE or SIM or STEP:\";\n\t";
+    out << " std::cerr<<\"\\n\\t <step_factor>:\\t Initial step step size\";\n\t";
+    out << " std::cerr<<\"\\n\\t <perc1>:\\t Value used to compute Step (smaller -> greater precision but slower solution)\";\n\t";
     out << " std::cerr<<\"\\n\\t <perc1>:\\tValue used to compute Euler Step when the model is closed to bounds (smaller -> greater precision but slower solution)\";\n\t";
     out << " std::cerr<<\"\\n\\t <runs>:\\t integer number corresponding to runs (only for (H)SDE)\";\n\t";
     out << " std::cerr<<\"\\n\\t <Max_time>:\\t double number used to set the upper bound of the evolution time\";\n\t";
@@ -441,7 +441,8 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     out << " int  runs=atoi(argv[6]);\n";
     out << " double Max_time=atof(argv[7]);\n\n";
     out << " if ((strcmp(argv[2],\"ODE-E\")==0)||(strcmp(argv[2],\"ode-e\")==0))\n\t SOLVE = 1;\n";
-    out << " if ((strcmp(argv[2],\"ODE-KM\")==0)||(strcmp(argv[2],\"ode-km\")==0))\n\t SOLVE = 5;\n";
+    out << " if ((strcmp(argv[2],\"ODE-RKF\")==0)||(strcmp(argv[2],\"ode-rkf\")==0))\n\t SOLVE = 5;\n";
+    out << " if ((strcmp(argv[2],\"ODE45\")==0)||(strcmp(argv[2],\"ode45\")==0))\n\t SOLVE = 6;\n";
     out << " if ((strcmp(argv[2],\"STEP\")==0)||(strcmp(argv[2],\"step\")==0))\n\t SOLVE = 4;\n";
     out << " if ((strcmp(argv[2],\"SIM\")==0)||(strcmp(argv[2],\"sim\")==0))\n\t{\n";
     out << "\t cout<<\"\\t using simulation\"<<endl;\n\t epsilon=10000000000;\n\t step=MAXSTEP;\n\t SOLVE=3;\n\t}\n";
@@ -563,8 +564,8 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     }
     //automaton
     out << "\n\ntry\t{";
-    out << "\n\tif (SOLVE==-1) \{\n\t\t cerr<< \"\\n\\nError: solution methods\"<<argv[2]<<\"is not implemented\\nYou should use:  ODE-E or ODE-KM  or SDE or HODE or HSDE or SIM or STEP\\n\"; \n\t\t exit(EXIT_FAILURE);\n\t}\n\n ";
-    out << "\n\tif (SOLVE == 1)\n\t\t se.SolveODEEuler(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);\n\t else\n\t\t if (SOLVE == 0)\n\t\t\t se.SolveSDEEuler(step,perc1,perc2,Max_time,runs,OUTPUT,step_o,argv[1]);\n\t\t else \n\t\t\tif (SOLVE == 3)\n\t\t\t\t se.SolveHODEEuler(step,perc1,perc2,Max_time,runs,OUTPUT,step_o,argv[1]); \n\t\t\t else \n\t\t\t\t if (SOLVE == 4)\n\t\t\t\t\t  se.HeuristicStep(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\t  se.SolveODERK5(step,perc1,Max_time,OUTPUT,step_o,argv[1]);\n";
+    out << "\n\tif (SOLVE==-1) \{\n\t\t cerr<< \"\\n\\nError: solution methods \"<<argv[2]<<\" is not implemented\\nYou should use:  ODE-E or ODE-RKF or ODE45 or SDE or HODE or HSDE or SIM or STEP\\n\"; \n\t\t exit(EXIT_FAILURE);\n\t}\n\n ";
+    out << "\n\tif (SOLVE == 1)\n\t\t se.SolveODEEuler(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);\n\t else\n\t\t if (SOLVE == 0)\n\t\t\t se.SolveSDEEuler(step,perc1,perc2,Max_time,runs,OUTPUT,step_o,argv[1]);\n\t\t else \n\t\t\tif (SOLVE == 3)\n\t\t\t\t se.SolveHODEEuler(step,perc1,perc2,Max_time,runs,OUTPUT,step_o,argv[1]); \n\t\t\t else \n\t\t\t\t if (SOLVE == 4)\n\t\t\t\t\t  se.HeuristicStep(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\t if (SOLVE == 5)\n\t\t\t\t\t  se.SolveODERKF(step,perc1,Max_time,OUTPUT,step_o,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\t se.SolveODE45(step,perc1,Max_time,OUTPUT,step_o,argv[1]);\n";
 
     out << "\n\tse.PrintStatistic(argv[1]);\n\t}\n catch(Exception obj)\n\t{\n\tcerr<<endl<<obj.get()<<endl;\n\t}\n\n";
     out << " time(&time_4);\n\n cout<<\"\\n\\nEND EXECUTION\"<<endl;\n cout<<\"\\nResults are saved in: \"<<argv[1]<<endl;\n";

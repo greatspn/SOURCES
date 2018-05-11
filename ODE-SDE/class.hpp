@@ -86,7 +86,7 @@
 
 #ifndef __MTH_H__
 #define __MTH_H__
-#include <math.h>       /* exp */
+#include <cmath>       /* exp */
 #include <limits.h>
 #endif	
 
@@ -377,10 +377,12 @@ namespace SDE
     void resetTrans();
     //! It solves the ODE system using Euler method. It takes in input the step size and the Max_Time
     void SolveODEEuler(double h,double prec1,double prec2, double Max_Time,bool Info,double Print_Step,char *argv);
-    //! It solves the ODE system using Kutta-Merson method. It takes in input the step size and the Max_Time
-    void SolveODERK5(double h,double perc1,double Max_Time,bool Info,double Print_Step,char *argv);
+    //! It solves the ODE system using Kutta-Merson-Fehlberg method. It takes in input the step size and the Max_Time
+    void SolveODERKF(double h,double perc1,double Max_Time,bool Info,double Print_Step,char *argv);
+    //! It solves the ODE system using  Dormand and Princ method - ode45  method. It takes in input the step size and the Max_Time
+     void SolveODE45(double h,double perc1,double Max_Time,bool Info,double Print_Step,char *argv);
     //!It computes a single step of Kutta-Merson integration
-    void StepODERK5(long double* Yn,long double* Kn);
+    void StepODERK5(long double* Yn,long double* Kn,const double& h);
     //! It solves the (H)SDE system using Euler method. It takes in input the step size, the Max_Time and Max_Run. To print the trace of each run -> Info = true 
     void SolveSDEEuler(double h,double prec1,double prec2,double Max_Time,int Max_Run, bool Info,double Print_Step,char *argv);
     //! It solves the HODE system using Euler method. It takes in input the step size, the Max_Time and Max_Run. To print the trace of each run -> Info = true 
