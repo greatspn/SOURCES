@@ -190,6 +190,7 @@ void write_dot(int id, int pri, int mark_type, int tr, double rate) {
     if ((id == 1) && !init_mark_printed) { // Initial marking
         init_mark_printed = 1;
         is_new_marking = 1;
+        *num_marks = 1;
     }
     else if (id > *num_marks) { // New marking
         is_new_marking = 1;

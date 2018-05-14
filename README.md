@@ -125,7 +125,8 @@ To cite the GreatSPN framework, please use this reference [PDF](https://iris.uni
 ```
 @incollection{amparore201630,
   title={30 years of GreatSPN},
-  author={Amparore, Elvio Gilberto and Balbo, Gianfranco and Beccuti, Marco and Donatelli, Susanna and Franceschinis, Giuliana},
+  author={Amparore, Elvio Gilberto and Balbo, Gianfranco and Beccuti, Marco 
+  	      and Donatelli, Susanna and Franceschinis, Giuliana},
   booktitle={Principles of Performance and Reliability Modeling and Evaluation},
   pages={227--254},
   year={2016},
