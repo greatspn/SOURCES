@@ -39,7 +39,6 @@ import editor.domain.measures.ModelCheckingResultEntry;
 import editor.domain.measures.NSolveParams;
 import editor.domain.measures.PdfResultEntry;
 import editor.domain.measures.RGMEDD2SolverParams;
-import editor.domain.measures.RGMEDDSolverParams;
 import editor.domain.measures.ScalarResultEntry;
 import editor.domain.measures.SolverParams;
 import editor.domain.measures.StatResultEntry;
@@ -98,7 +97,7 @@ public class PnProFormat {
         XML_CLASS_TO_NODE.put(MeasurePage.class, "measures");
         XML_CLASS_TO_NODE.put(VarMultiAssignment.class, "assignment");
         XML_CLASS_TO_NODE.put(MC4CSLTASolverParams.class, "mc4cslta");
-        XML_CLASS_TO_NODE.put(RGMEDDSolverParams.class, "rgmedd");
+//        XML_CLASS_TO_NODE.put(RGMEDDSolverParams.class, "rgmedd");
         XML_CLASS_TO_NODE.put(RGMEDD2SolverParams.class, "rgmedd2");
         XML_CLASS_TO_NODE.put(GreatSPNSolverParams.class, "greatspn");
         XML_CLASS_TO_NODE.put(CosmosSolverParams.class, "cosmos");

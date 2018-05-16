@@ -21,7 +21,7 @@ public abstract class SolverParams implements Serializable, XmlExchangeable {
     public static enum Solvers {
         GREATSPN("GreatSPN", GreatSPNSolverParams.class),
         MC4CSLTA("<html>MC<font color=blue>4</font>CSLTA</html>", MC4CSLTASolverParams.class),
-        RGMEDD("RGMEDD", RGMEDDSolverParams.class),
+//        RGMEDD("RGMEDD", RGMEDDSolverParams.class),
         RGMEDD2("RGMEDD2", RGMEDD2SolverParams.class),
         NSOLVE("NSolve", NSolveParams.class),
         COSMOS("Cosmos", CosmosSolverParams.class),

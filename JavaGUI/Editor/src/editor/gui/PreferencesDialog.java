@@ -7,12 +7,10 @@ package editor.gui;
 import common.Util;
 import editor.Main;
 import editor.domain.measures.CosmosSolver;
-import editor.domain.measures.MC4CSLTASolver;
 import editor.domain.measures.NSolve;
-import editor.domain.measures.RGMEDDSolver;
+import editor.domain.measures.RGMEDD2Solver;
 import editor.domain.measures.SolverInvokator;
 import editor.gui.net.IndeterminateListCellRenderer;
-import java.io.File;
 import javax.swing.JFrame;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
@@ -50,10 +48,10 @@ public class PreferencesDialog extends javax.swing.JDialog {
         comboBoxUiSizes.setSelectedItem(Main.getStartupUiSize());
         
         // Solvers
-        filenameGreatSPN.setText(RGMEDDSolver.getPathToGreatSPN());
+        filenameGreatSPN.setText(RGMEDD2Solver.getPathToGreatSPN());
         filenameGreatSPN.setDirPrefKey("greatspn-dir-pref");
         
-        filenameCosmos.setText(RGMEDDSolver.getPathToCosmos());
+        filenameCosmos.setText(RGMEDD2Solver.getPathToCosmos());
         filenameCosmos.setDirPrefKey("cosmos-dir-pref");
         
         filenameNSolve.setText(NSolve.getPathToNSolve());
@@ -411,7 +409,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         Main.setStartupUiSize((Main.UiSize)comboBoxUiSizes.getSelectedItem());
         
         // Solvers
-        RGMEDDSolver.setPathToGreatSPN(filenameGreatSPN.getText());
+        RGMEDD2Solver.setPathToGreatSPN(filenameGreatSPN.getText());
         CosmosSolver.setPathToCosmos(filenameCosmos.getText());
         NSolve.setPathToNSolve(filenameNSolve.getText());
         Main.setGreatSPNExtAllowed(checkBox_allowGreatSPNExt.isSelected());

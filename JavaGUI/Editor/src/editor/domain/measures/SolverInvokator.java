@@ -58,12 +58,24 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
 //    private ResultTable[] results;
     
     
+    private static class StepCmd {
+        // The command line
+        public String cmd;
+        // Is it optional? (i.e. it may fail and the computation is not stopped)
+        public boolean mayFail;
+
+        public StepCmd(String cmd, boolean mayFail) {
+            this.cmd = cmd;
+            this.mayFail = mayFail;
+        }
+    }
+    
     // Single solver invokation in a multi-solution measure
     public class SolutionStep {
         // Incremental step number
         public final int stepNum;
         // The invoked command line
-        public String[] cmdLines;
+        private ArrayList<StepCmd> cmdLines = new ArrayList<>();
         // The entries that will interpret the results
         public ArrayList<ResultEntry> entries = new ArrayList<>();
         // This value indicates that the process has not been completed
@@ -79,6 +91,14 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
             this.theInvokator = theInvokator;
         }
         
+        public void addCmd(String cmd) {
+            cmdLines.add(new StepCmd(cmd, false));
+        }
+
+        public void addOptionalCmd(String cmd) {
+            cmdLines.add(new StepCmd(cmd, true));
+        }
+        
         private boolean invokeSolutionStep(int stepNum) throws Exception {
             theInvokator.startOfStep(this);
             
@@ -90,10 +110,10 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
             
             boolean interrupted = false;
             int numCompletedCmds = 0;
-            for (String cmdLine : cmdLines) {
-                asyncLogStdout("\033[0mEXEC: "+cmdLine+"\n");
+            for (StepCmd step : cmdLines) {
+                asyncLogStdout("\033[0mEXEC: "+step.cmd+"\n");
 
-                proc = Runtime.getRuntime().exec(splitCommandLine(cmdLine), envp);
+                proc = Runtime.getRuntime().exec(splitCommandLine(step.cmd), envp);
 
                 errStrm = new BufferedInputStream(proc.getErrorStream());
                 outStrm = new BufferedInputStream(proc.getInputStream());
@@ -130,7 +150,10 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
                 }
                 else if (retVal != 0) {
                     asyncLogStdout("\033[1X\033[31m PROCESS EXITED WITH VALUE "+retVal+".\033[0m\n");
-                    break; // do not execute other commands
+                    if (!step.mayFail)
+                        break; // do not execute other commands
+                    else 
+                        numCompletedCmds++; // continue anyway
                 }
                 else {
                     asyncLogStdout("\033[0X\033[32m PROCESS EXITED NORMALLY.\033[0m\n");
@@ -138,7 +161,7 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
                 }                
             }
             // Notify the end of this step.
-            theInvokator.endOfStep(this, interrupted, (numCompletedCmds == cmdLines.length));
+            theInvokator.endOfStep(this, interrupted, (numCompletedCmds == cmdLines.size()));
             asyncLogStdout(CMD_PREFIX+" END_STEP\n");            
             if (!completed) {
                 asyncLogStdout("\033[1X\033[31m DID NOT COMPLETE THE SOLUTION.\033[0m\n");

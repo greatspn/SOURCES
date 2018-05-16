@@ -113,8 +113,7 @@ public class NSolve extends SolverInvokator {
         }
         
         // Setup the NSolve command
-        step.cmdLines = new String[1];
-        step.cmdLines[0] = "/bin/sh "+useNSolve_binary("nsolvefornm.sh")+" "+baseName;
+        step.addCmd("/bin/sh "+useNSolve_binary("nsolvefornm.sh")+" "+baseName);
     }
 
     @Override

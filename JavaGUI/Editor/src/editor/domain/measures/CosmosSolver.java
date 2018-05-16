@@ -90,9 +90,8 @@ public class CosmosSolver extends SolverInvokator {
             meas.getResults().table.add(entry);
         }
   
-        step.cmdLines = new String[1];
-        step.cmdLines[0] = "Cosmos";
-        step.cmdLines[0] = useCosmos_binary(step.cmdLines[0]) + " \"" + grmlFile.getAbsolutePath() + "\" --loop 100 --max-run 20000";
+        step.addCmd(useCosmos_binary("Cosmos") + " \"" + grmlFile.getAbsolutePath() +
+                    "\" --loop 100 --max-run 20000");
         //step.cmdLines[0] += getParamBindingCmd(currBind, true, true);
         //step.cmdLines[0] += measCmd;
 

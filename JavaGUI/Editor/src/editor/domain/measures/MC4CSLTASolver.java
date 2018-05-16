@@ -24,13 +24,12 @@ public class MC4CSLTASolver extends SolverInvokator {
     void prepareStepForBinding(SolutionStep step, TemplateBinding currBind,
                                AbstractMeasure[] measures) throws IOException
     {
-        step.cmdLines = new String[1];
-        step.cmdLines[0] = useGreatSPN_binary("DSPN-Tool");
-        if (!new File(step.cmdLines[0]).canExecute()) {
+        String cmd = useGreatSPN_binary("DSPN-Tool");
+        if (!new File(cmd).canExecute()) {
             throw new IllegalStateException("The path to the MC4CSLTA solver is not set.\n"
                     + "You must first set the solver path from the Edit > Options menu.");
         }
-        step.cmdLines[0] += " -load " + quotedFn(null);
+        cmd += " -load " + quotedFn(null);
         String performanceIndexTime;
         
         // Add the solver parameters
@@ -39,23 +38,23 @@ public class MC4CSLTASolver extends SolverInvokator {
         MC4CSLTASolverParams params = (MC4CSLTASolverParams)getPage().solverParams;
         EvaluatedBinding evalBind = currBind.createEvaluated(getContext());
         params.epsilon.checkExprCorrectness(getContext(), getPage().targetGspn, null);
-        step.cmdLines[0] += " -epsilon "+params.epsilon.evaluate(getContext(), EvaluationArguments.NO_ARGS).getScalarRealOrIntAsReal();
-        step.cmdLines[0] += params.onTheFly ? " -on-the-fly" : "";
-//            step.cmdLines[0] += params.mcSolType==MC4CSLTASolverParams.McSolutionType.FORWARD ?
+        cmd += " -epsilon "+params.epsilon.evaluate(getContext(), EvaluationArguments.NO_ARGS).getScalarRealOrIntAsReal();
+        cmd += params.onTheFly ? " -on-the-fly" : "";
+//            cmd += params.mcSolType==MC4CSLTASolverParams.McSolutionType.FORWARD ?
 //                            " -fmc" : " -bmc";
         switch (params.mrpMethod) {
-            case EXPLICIT:         step.cmdLines[0] += " -e"; break;
-            case IMPLICIT:         step.cmdLines[0] += " -i"; break;
-            case COMPONENT_METHOD: step.cmdLines[0] += " -i -scc"; break;
+            case EXPLICIT:         cmd += " -e"; break;
+            case IMPLICIT:         cmd += " -i"; break;
+            case COMPONENT_METHOD: cmd += " -i -scc"; break;
         }
         switch (params.linAlgo) {
-            case FORWARD_SOR:  step.cmdLines[0] += " -forward-sor"; break;
-            case BACKWARD_SOR: step.cmdLines[0] += " -backward-sor"; break;
-            case JOR:          step.cmdLines[0] += " -jor"; break;
-            case GMRES:        step.cmdLines[0] += " -gmres"; break;
-            case CGS:          step.cmdLines[0] += " -cgs"; break;
-            case BICGSTAB:     step.cmdLines[0] += " -bicgstab"; break;
-            case POWER_METHOD: step.cmdLines[0] += " -i-power"; break;
+            case FORWARD_SOR:  cmd += " -forward-sor"; break;
+            case BACKWARD_SOR: cmd += " -backward-sor"; break;
+            case JOR:          cmd += " -jor"; break;
+            case GMRES:        cmd += " -gmres"; break;
+            case CGS:          cmd += " -cgs"; break;
+            case BICGSTAB:     cmd += " -bicgstab"; break;
+            case POWER_METHOD: cmd += " -i-power"; break;
             default: 
                 throw new UnsupportedOperationException();
         }
@@ -78,7 +77,7 @@ public class MC4CSLTASolver extends SolverInvokator {
 
         
         // Add the command for parameter bindings
-        step.cmdLines[0] += getParamBindingCmd(currBind, true, true);
+        cmd += getParamBindingCmd(currBind, true, true);
         
         // Prepare the measures passed on the command line
         int measureNum = 0;
@@ -140,22 +139,24 @@ public class MC4CSLTASolver extends SolverInvokator {
         }
         
         if (hasStat)
-            step.cmdLines[0] += " -gui-stat";
+            cmd += " -gui-stat";
         if (hasCslta)
-            step.cmdLines[0] += " -dta-path \""+getSolutionDir().getAbsolutePath()+"\"";
-        step.cmdLines[0] += measCmd;
+            cmd += " -dta-path \""+getSolutionDir().getAbsolutePath()+"\"";
+        cmd += measCmd;
         if (hasMeasures || hasAll)
-            step.cmdLines[0] += performanceIndexTime;
+            cmd += performanceIndexTime;
         else if (hasStat && !(hasRG || hasTRG)) // No measure bu have stats, just build the TRG
-            step.cmdLines[0] += " -new-trg";
+            cmd += " -new-trg";
         if (hasAll)
-            step.cmdLines[0] += " -all-measures";
+            cmd += " -all-measures";
         if (hasRG || hasTRG) 
-            step.cmdLines[0] += extraTrgArgs;
+            cmd += extraTrgArgs;
         if (hasTRG)
-            step.cmdLines[0] += trgDot;
+            cmd += trgDot;
         if (hasRG) // keep last since it rebuilds the reachability graph with vanishings.
-            step.cmdLines[0] += rgDot;
+            cmd += rgDot;
+        
+        step.addCmd(cmd);
     }
 
     @Override

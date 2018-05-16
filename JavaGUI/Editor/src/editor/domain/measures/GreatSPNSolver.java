@@ -103,18 +103,15 @@ public class GreatSPNSolver extends SolverInvokator {
             if (vGraphCmd != null && params.mode != SolverMode.EGSPN)
                 rgBuildCmd += vGraphCmd;
 
-            // Generate the command line sequence
-            step.cmdLines = new String[ hasMeasures ? 7 : 1 ];
-
             // Step 0: generate RG
-            step.cmdLines[0] = rgBuildCmd;
+            step.addCmd(rgBuildCmd);
 
             if (hasMeasures) { // Solution of the Markov chain and measure computation
                 // Step 1: empty .gst file
-                step.cmdLines[1] = "/bin/cp /dev/null "+quotedFn(".gst");
+                step.addCmd("/bin/cp /dev/null "+quotedFn(".gst"));
 
                 // Step 2: invoke swn_stndrd
-                step.cmdLines[2] = useGreatSPN_binary("swn_stndrd") + " " + quotedFn(null);
+                step.addCmd(useGreatSPN_binary("swn_stndrd") + " " + quotedFn(null));
 
                 // Step 3: numerical solution of the CTMC
                 params.epsilon.checkExprCorrectness(getContext(), getPage().targetGspn, null);
@@ -125,36 +122,34 @@ public class GreatSPNSolver extends SolverInvokator {
                         .getScalarInt();
                 if (params.solTime == SolutionTime.STEADY_STATE) {
                     // Use Gauss-Seidel
-                    step.cmdLines[3] = useGreatSPN_binary("swn_ggsc") + " " + quotedFn(null); 
-                    step.cmdLines[3] += " -e"+epsilon+ " -i"+maxIters;
+                    step.addCmd(useGreatSPN_binary("swn_ggsc") + " " + quotedFn(null) +
+                                " -e"+epsilon+ " -i"+maxIters);
                 }
                 else {
                     params.timeT.checkExprCorrectness(getContext(), getPage().targetGspn, null);
                     double timeT = params.timeT.evaluate(getContext(), EvaluationArguments.NO_ARGS)
                             .getScalarRealOrIntAsReal();
                     // Use transient uniformization at time params.timeT
-                    step.cmdLines[3] = useGreatSPN_binary("swn_ntrs") + " " + quotedFn(null); 
-                    step.cmdLines[3] += " " +timeT+ " -e"+epsilon+ " -i"+maxIters;
+                    step.addCmd(useGreatSPN_binary("swn_ntrs") + " " + quotedFn(null) + 
+                                " " +timeT+ " -e"+epsilon+ " -i"+maxIters);
                 }
 
                 // Step 4: copy .epd into .mpd
-                step.cmdLines[4] = "/bin/cp "+quotedFn(".epd")+" "+quotedFn(".mpd");
+                step.addCmd("/bin/cp "+quotedFn(".epd")+" "+quotedFn(".mpd"));
 
                 // Step 5: prepare measures (use modified mark/rate params and extra defs)
-                step.cmdLines[5] = useGreatSPN_binary("swn_gst_prep") + " " + quotedFn(null);
-                step.cmdLines[5] += getParamBindingCmd(currBind, true, true);
-                step.cmdLines[5] += measCmd;
+                step.addCmd(useGreatSPN_binary("swn_gst_prep") + " " + quotedFn(null) +
+                            getParamBindingCmd(currBind, true, true) + measCmd);
 
                 // Step 6: compute measures
-                step.cmdLines[6] = useGreatSPN_binary("swn_gst_stndrd") + " " + quotedFn(null);
-                step.cmdLines[6] += " -append " + quotedFn(".sta");
+                step.addCmd(useGreatSPN_binary("swn_gst_stndrd") + " " + quotedFn(null) +
+                            " -append " + quotedFn(".sta"));
             }
         }
         else {
             //------------------------------------------------------------------
             // Use simulation
             //------------------------------------------------------------------
-            step.cmdLines = new String[1];
             String rgBuildCmd;
             switch (params.mode) {
                 case EGSPN_SIMUL:       rgBuildCmd = "GSPNSIM";   break;
@@ -162,22 +157,22 @@ public class GreatSPNSolver extends SolverInvokator {
                 case SWN_SYM_SIMUL:     rgBuildCmd = "WNSYMB";   break;
                 default:        throw new IllegalStateException();
             }
-            step.cmdLines[0] = useGreatSPN_binary(rgBuildCmd) + " " + quotedFn(null);
-            step.cmdLines[0] += getParamBindingCmd(currBind, true, true);
-            step.cmdLines[0] += hasStat ? " -gui-stat" : "";
-            step.cmdLines[0] += measCmd;
+            String cmd = useGreatSPN_binary(rgBuildCmd) + " " + quotedFn(null);
+            cmd += getParamBindingCmd(currBind, true, true);
+            cmd += hasStat ? " -gui-stat" : "";
+            cmd += measCmd;
 
             if (params.useFirstTrLength) {
                 params.firstTrLength.checkExprCorrectness(getContext(), getPage().targetGspn, null);
                 double firstTr = params.firstTrLength.evaluate(getContext(), EvaluationArguments.NO_ARGS)
                         .getScalarRealOrIntAsReal();
-                step.cmdLines[0] += " -f "+firstTr;
+                cmd += " -f "+firstTr;
             }
             if (params.solTime == SolutionTime.TRANSIENT) {
                 params.timeT.checkExprCorrectness(getContext(), getPage().targetGspn, null);
                 double timeT = params.timeT.evaluate(getContext(), EvaluationArguments.NO_ARGS)
                         .getScalarRealOrIntAsReal();
-                step.cmdLines[0] += " -t "+timeT;
+                cmd += " -t "+timeT;
             }
             if (params.useBatchConstraints) {
                 params.minBatch.checkExprCorrectness(getContext(), getPage().targetGspn, null);
@@ -185,21 +180,23 @@ public class GreatSPNSolver extends SolverInvokator {
                 double minBatch = params.minBatch.evaluate(getContext(), EvaluationArguments.NO_ARGS).getScalarRealOrIntAsReal();
                 double maxBatch = params.maxBatch.evaluate(getContext(), EvaluationArguments.NO_ARGS).getScalarRealOrIntAsReal();
                 if (params.batchLengthMode == GreatSPNSolverParams.BatchLengthMode.BY_EVENT_COUNT)
-                    step.cmdLines[0] += " -m "+(int)minBatch+" -M "+(int)maxBatch;
+                    cmd += " -m "+(int)minBatch+" -M "+(int)maxBatch;
                 else
-                    step.cmdLines[0] += " -d "+minBatch+" -D "+maxBatch;                    
+                    cmd += " -d "+minBatch+" -D "+maxBatch;                    
             }
             params.approxPercentage.checkExprCorrectness(getContext(), getPage().targetGspn, null);
             int approx = params.approxPercentage.evaluate(getContext(), EvaluationArguments.NO_ARGS).getScalarInt();
-            step.cmdLines[0] += " -a "+approx;
+            cmd += " -a "+approx;
 
-            step.cmdLines[0] += " -c "+params.confidence.getConfidencePercentage();
+            cmd += " -c "+params.confidence.getConfidencePercentage();
 
             if (params.useSeed) {
                 params.seed.checkExprCorrectness(getContext(), getPage().targetGspn, null);
                 int seed = params.seed.evaluate(getContext(), EvaluationArguments.NO_ARGS).getScalarInt();
-                step.cmdLines[0] += " -s "+seed;
+                cmd += " -s "+seed;
             }
+            
+            step.addCmd(cmd);
         }
     }
 

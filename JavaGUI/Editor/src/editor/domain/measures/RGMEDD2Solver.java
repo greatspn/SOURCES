@@ -28,32 +28,32 @@ public class RGMEDD2Solver extends SolverInvokator {
         RGMEDD2SolverParams params = (RGMEDD2SolverParams)getPage().solverParams;
         EvaluatedBinding evalBind = currBind.createEvaluated(getContext());
         RGMEDD2SolverParams.VariableOrder varOrder = params.varOrder;
-        boolean callPinvar = varOrder.usesPinvars();
-        int s = 0;
-        step.cmdLines = new String[callPinvar ? 4 : 2];
+//        boolean callPinvar = varOrder.usesPinvars();
         
-        if (callPinvar) {
-            // Add a pinvar invocation step
-            step.cmdLines[s] = useGreatSPN_binary("pinvar") + " " + quotedFn(null) + " -detect-exp ";
-            step.cmdLines[s] += getParamBindingCmd(currBind, true, false);
-            s++;
-            // Add a struct invocation step (write also mpar switches)
-            step.cmdLines[s] = useGreatSPN_binary("struct") + " " + quotedFn(null) + " -only-bnd ";
-            step.cmdLines[s] += getParamBindingCmd(currBind, true, false);
-            s++;
-        }
+//        if (callPinvar) {
+//            // Add a pinvar invocation step
+//            step.addOptionalCmd(useGreatSPN_binary("pinvar") + " " + quotedFn(null) + 
+//                        " -detect-exp " + getParamBindingCmd(currBind, true, false));
+//            // Add a struct invocation step (write also mpar switches)
+//            step.addCmd(useGreatSPN_binary("struct") + " " + quotedFn(null) + 
+//                        " -only-bnd " + getParamBindingCmd(currBind, true, false));
+//        }
         
-        // Generate the P-basis
-        step.cmdLines[s] = useGreatSPN_binary("DSPN-Tool") + " -load "+ quotedFn(null) + " -pbasis ";
-        s++;
+        // Generate the P-basis, the P-semiflows and the bounds
+        step.addOptionalCmd(useGreatSPN_binary("DSPN-Tool") + " -load "+ quotedFn(null) + 
+                            " -pbasis -detect-exp -psfl -bnd ");
         
-        step.cmdLines[s] = useGreatSPN_binary("RGMEDD2") + " " + quotedFn(null);
-        step.cmdLines[s] += " " + varOrder.getCmdOption() + " ";
+        // Generate the bounds from the ILP
+        step.addOptionalCmd("timeout 5s "+useGreatSPN_binary("DSPN-Tool") + " -load "+ quotedFn(null) + 
+                            " -load-bnd -ilp-bnd ");
+        
+        String rgmeddCmd = useGreatSPN_binary("RGMEDD2") + " " + quotedFn(null);
+        rgmeddCmd += " " + varOrder.getCmdOption() + " ";
         if (params.genCounterExamples)
-            step.cmdLines[s] += " -c";
+            rgmeddCmd += " -c";
         
         // Add the command for parameter bindings
-        step.cmdLines[s] += getParamBindingCmd(currBind, true, true);
+        rgmeddCmd += getParamBindingCmd(currBind, true, true);
         
         // Format measures
         int measureNum = 0;
@@ -112,13 +112,14 @@ public class RGMEDD2Solver extends SolverInvokator {
         }
         
         if (hasStat)
-            step.cmdLines[s] += " -gui-stat";
+            rgmeddCmd += " -gui-stat";
         if (ctlWriter != null) { // there are CTL measures to compute
             ctlWriter.close();
-            step.cmdLines[s] += " -C";
+            rgmeddCmd += " -C";
         }
-        step.cmdLines[s] += ddCmd;
-        step.cmdLines[s] += incCmd;
+        rgmeddCmd += ddCmd;
+        rgmeddCmd += incCmd;
+        step.addCmd(rgmeddCmd);
     }
 
     @Override
