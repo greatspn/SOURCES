@@ -463,7 +463,7 @@ void write_on_srg(FILE  *srg, int dir) {
                         fputs(clrtok_sep, srg);
                     if (!omit_clr_mult_1 || tk_p->molt!=1)
                         fprintf(srg, "%d", tk_p->molt);
-                    fprintf(srg, "<");
+                    fprintf(srg, "&lt;");
                     for (k = 0 ; k < tabp[pl].comp_num - 1; k++) {
                         cl = tabp[pl].dominio[k];
 #ifdef COLOURED
@@ -487,7 +487,7 @@ void write_on_srg(FILE  *srg, int dir) {
                     else
                         get_object_name(cl, tk_p->id[k], obj_name);
 #endif
-                    fprintf(srg, "%s>", obj_name);
+                    fprintf(srg, "%s&gt;", obj_name);
                 }/* Per ogni token della marcatura */
                 fprintf(srg, ")");
             }/* Posto colorato */
