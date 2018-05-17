@@ -23,6 +23,7 @@ then
     echo "       -R ->   Export in R format "
     echo "       -P ->   Export in R format with optimization "
     echo "       -O ->   Export in Matlab format"
+    echo "       -G ->   Export in GPU format"
     echo
 
     echo "Please, be aware that:"
@@ -49,7 +50,7 @@ while [[ $# -gt 0 ]]
 do
 
 case "$1" in
-    -O|-P|-R)
+    -O|-P|-R|-G)
     EXPORT_FORMAT="$1"
     ;;
 
@@ -147,7 +148,17 @@ then
 	exit 1
 fi
 
-
+if   [ "$EXPORT_FORMAT" == "-G" ]
+then
+	echo "Output files:" 
+	echo "	$NET_PATH.left_side"   
+	echo "	$NET_PATH.right_side"
+	echo "	$NET_PATH.M_0"
+        echo "	$NET_PATH.M_feed "
+	echo "	$NET_PATH.c_vector "
+	echo
+	exit 1
+fi
 
 NET_PATH="$(readlink $NET_PATH -m)"
 

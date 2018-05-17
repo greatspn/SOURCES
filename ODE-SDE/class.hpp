@@ -377,7 +377,7 @@ namespace SDE
     void resetTrans();
     //! It solves the ODE system using Euler method. It takes in input the step size and the Max_Time
     void SolveODEEuler(double h,double prec1,double prec2, double Max_Time,bool Info,double Print_Step,char *argv);
-    //! It solves the ODE system using Kutta-Merson-Fehlberg method. It takes in input the step size and the Max_Time
+    //! It solves the ODE system using Runge-Kutta-Fehlberg method. It takes in input the step size and the Max_Time
     void SolveODERKF(double h,double perc1,double Max_Time,bool Info,double Print_Step,char *argv);
     //! It solves the ODE system using  Dormand and Princ method - ode45  method. It takes in input the step size and the Max_Time
      void SolveODE45(double h,double perc1,double Max_Time,bool Info,double Print_Step,char *argv);
