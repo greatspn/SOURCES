@@ -124,7 +124,7 @@ For macOS users, a compiled app is generated in the `SOURCES/JavaGUI/Editor/dist
 
 To cite the GreatSPN framework, please use this reference [PDF](https://iris.unito.it/retrieve/handle/2318/1624717/295450/Amparore-trivedi-chapter.pdf):
 ```
-@incollection{amparore201630,
+@incollection{bib:30YearsOfGreatSPN,
   title={30 years of GreatSPN},
   author={Amparore, Elvio Gilberto and Balbo, Gianfranco and Beccuti, Marco 
   	      and Donatelli, Susanna and Franceschinis, Giuliana},
