@@ -123,6 +123,7 @@ extern "C" {
     bool AUTOMATON = false;
     bool R = false;
     bool P = false;
+    bool GPU=false;
     std::string TRANS_PATH;
     std::string OBJ_PATH;
 }
@@ -133,6 +134,7 @@ extern void build_ODE(ofstream &out, string path, string net);
 extern void build_ODEM(ofstream &out, string net);
 extern void build_ODER(ofstream &out, string net);
 extern void build_ODEOPT(ofstream &out, string net, string transitions, string objective_function);
+extern void build_ODEGPU(string net);
 int Max_Token_Bound = 255; //max number of different tokens for places
 
 /****************************************************/
@@ -1138,6 +1140,10 @@ int initialize(int  argc,  char  *argv[]) {
             MATLAB = true;
             break;
 
+        case 'G' :
+            GPU = true;
+            break;
+
         case 'R' :
             R = true;
             break;
@@ -1335,7 +1341,8 @@ int main(int argc, char **argv) {
     initialize(argc, argv);
     string net(argv[1]);
     //creo file .R
-
+   
+    if (!GPU){
     if (R)
         net = net + ".R";
     else if (P)
@@ -1350,7 +1357,7 @@ int main(int argc, char **argv) {
         cerr << "Error: it is not possible to open output file\n\n";
         exit(EXIT_FAILURE);
     }
-
+    
     char *pch;
     string path(argv[1]);
     pch = strtok(argv[1], "/.");
@@ -1368,11 +1375,18 @@ int main(int argc, char **argv) {
         }
 
     else if (MATLAB)
-        build_ODEM(out, net);
-    else
+        build_ODEM(out, net);		
+    else	
         build_ODE(out, path, net); 				    /* OPERAZIONI */
+    
+    out.close(); 
+    }
+    else{
+    build_ODEGPU(net);	
+    }
+    	
+ 
     finalize();
-    out.close();
     return 0;
 }
 

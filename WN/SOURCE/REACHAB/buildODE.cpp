@@ -611,6 +611,177 @@ void build_ODE(ofstream &out, std::string path, std::string net)
 
 
 
+
+/**************************************************************/
+/* NAME : */
+/* DESCRIPTION : */
+/* PARAMETERS : */
+/* RETURN VALUE : */
+/**************************************************************/
+void build_ODEGPU(std::string net)
+{
+/* Init build_ODEGPU */
+
+Node_p l_ptr = NULL;
+int pp;
+clock_t startGlobal, endGlobal;
+double timeGlobal;
+startGlobal = clock();
+
+
+cout << "\n\n------------------------------------------------" << endl;
+cout << "               Start  encoding" << endl;
+cout << "------------------------------------------------\n" << endl;
+	
+	
+//transition rate	
+std::string filename=net+".c_vector";	
+ofstream out(filename.c_str());
+
+if (!out) {
+    cerr << "Error: it is not possible to output file "<<filename<<"\n\n";
+    exit(EXIT_FAILURE);
+}
+
+for (int i=0;i<ntr;i++)
+	out<<tabt[i].mean_t<<"\t";
+out<<endl;
+out.close();
+
+
+//initial marking
+filename=net+".M_0";
+out.open(filename.c_str());
+
+if (!out) {
+    cerr << "Error: it is not possible to output file "<<filename<<"\n\n";
+    exit(EXIT_FAILURE);
+}
+
+for (int i=0;i<npl;i++)
+	out<<net_mark[i].total<<"\t";
+out<<endl;
+
+out.close();
+
+//constant marking if different by 0
+filename=net+".M_feed";
+
+if (!out) {
+    cerr << "Error: it is not possible to output file "<<filename<<"\n\n";
+    exit(EXIT_FAILURE);
+}
+
+out.open(filename.c_str());
+for (int i=0;i<npl;i++)
+	out<<"0"<<"\t";
+out<<endl;
+out.close();
+
+
+int **TPO = (int **) malloc((ntr) *  sizeof(int *));
+int **TPI = (int **) malloc((ntr) *  sizeof(int *));
+for (int tt = 0; tt < ntr; tt++)
+{
+    TPO[tt] = (int *) malloc((npl) * sizeof(int));
+    memset(TPO[tt], 0, npl * sizeof(int));
+    TPI[tt] = (int *) malloc((npl) * sizeof(int));
+    memset(TPI[tt], 0, npl * sizeof(int));
+}
+
+for (int tt = 0; tt < ntr; tt++){
+    l_ptr = GET_INPUT_LIST(tt);
+    while (l_ptr != NULL)
+    {
+        pp = GET_PLACE_INDEX(l_ptr);
+        //TP[tt][pp] = -l_ptr->molt;
+        TPI[tt][pp] = -l_ptr->molt;
+        l_ptr = NEXT_NODE(l_ptr);
+    }
+    l_ptr = GET_OUTPUT_LIST(tt);
+    while (l_ptr != NULL)
+    {
+        pp = GET_PLACE_INDEX(l_ptr);
+        TPO[tt][pp] = l_ptr->molt;
+        l_ptr = NEXT_NODE(l_ptr);
+    }
+    
+#if DEBUG
+    for (int i = 0; i < npl; i++)
+        cout << "\t" << TP[tt][i];
+    cout << endl;
+#endif
+}
+
+
+//stoichiometric matrix  left side
+filename=net+".left_side";
+
+if (!out) {
+    cerr << "Error: it is not possible to output file "<<filename<<"\n\n";
+    exit(EXIT_FAILURE);
+}
+
+out.open(filename.c_str());
+for (int tt = 0; tt < ntr; tt++){
+	out<<TPI[tt][0];
+	for (int pp = 1; pp < npl; pp++){
+		out<<"\t"<<TPI[tt][pp];
+	}
+	out<<"\n";
+}
+out.close();
+
+
+//stoichiometric matrix  right side
+filename=net+".right_side";
+
+if (!out) {
+    cerr << "Error: it is not possible to output file "<<filename<<"\n\n";
+    exit(EXIT_FAILURE);
+}
+
+out.open(filename.c_str());
+for (int tt = 0; tt < ntr; tt++){
+	out<<TPO[tt][0];
+	for (int pp = 1; pp < npl; pp++){
+		out<<"\t"<<TPO[tt][pp];
+	}
+	out<<"\n";
+}
+out.close();
+
+//free memory
+    for (int tt = 0; tt < ntr; tt++)
+    {
+        free(TPI[tt]);
+        free(TPO[tt]);
+    }
+    free(TPO);
+    free(TPI);
+    cout << "------------------------------------------------" << endl;
+    cout << "                 End encoding" << endl;
+    cout << "------------------------------------------------\n\n" << endl;
+
+    int who1 = RUSAGE_SELF;
+    struct rusage usage1;
+    getrusage(who1, &usage1);
+
+
+    endGlobal = clock();
+    timeGlobal = ((double)(endGlobal - startGlobal)) / CLOCKS_PER_SEC;
+
+
+
+    cout << "===================== INFO =====================" << endl;
+    cout << " Total Time: " << setprecision(7) << timeGlobal << " sec" << endl;
+    cout << " Total Used Memory: " << usage1.ru_maxrss << "KB" << endl;
+    cout << "================================================\n" << endl;
+
+
+}
+
+
 /**************************************************************/
 /* NAME : */
 /* DESCRIPTION : */
