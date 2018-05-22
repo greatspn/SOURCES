@@ -2,7 +2,7 @@
 <!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="Fluid and Colored PN" version="121">
   <gspn name="nqueens" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
     <nodes>
-      <color-class definition="c{1..n}" name="N" x="2.125" y="3.0"/>
+      <color-class definition="circular c{1..n}" name="N" x="2.125" y="3.0"/>
       <color-class alt-name-fn="LATEX_TEXT" definition="N*N" name="N2" shown-as="\mathit{N}\,^2" x="2.125" y="5.1875"/>
       <place domain="N2" name="P" x="4.0" y="12.0"/>
       <transition guard="(CN[l]==(CN[x]-CN[y]+n)) &amp;&amp; (CN[r]==CN[x]+CN[y])" guard-x="10.5" guard-y="1.0" label-x="-1.5" label-y="-0.5" name="T" nservers-x="0.5" type="EXP" x="25.55" y="12.0"/>

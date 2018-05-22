@@ -1761,11 +1761,14 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
         jToolBarEdgeCmd.add(jToggleButtonBrokenEdge);
 
         jPanelToolbars.add(jToolBarEdgeCmd, new java.awt.GridBagConstraints());
+
+        jPanel2.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 0.1;
         jPanelToolbars.add(jPanel2, gridBagConstraints);
 
+        jPanel1.setOpaque(false);
         jPanel1.setLayout(new java.awt.GridLayout(1, 0));
 
         jToolBar1.setFloatable(false);

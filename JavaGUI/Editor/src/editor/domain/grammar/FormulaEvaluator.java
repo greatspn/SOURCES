@@ -862,13 +862,13 @@ public class FormulaEvaluator extends ExprLangBaseVisitor<EvaluatedFormula> {
         return colorNextPrev(value, ctx.op.getType());
     }
 
-    @Override
-    public EvaluatedFormula visitColorTermNextPrev2(ExprLangParser.ColorTermNextPrev2Context ctx) {
-        EvaluatedFormula value = visit(ctx.colorTerm());
-        int op = ctx.op.getType() == ExprLangParser.NOT ? ExprLangParser.POSTINCR 
-                                                        : ExprLangParser.POSTDECR;
-        return colorNextPrev(value, op);
-    }
+//    @Override
+//    public EvaluatedFormula visitColorTermNextPrev2(ExprLangParser.ColorTermNextPrev2Context ctx) {
+//        EvaluatedFormula value = visit(ctx.colorTerm());
+//        int op = ctx.op.getType() == ExprLangParser.NOT ? ExprLangParser.POSTINCR 
+//                                                        : ExprLangParser.POSTDECR;
+//        return colorNextPrev(value, op);
+//    }
     
     private EvaluatedFormula colorNextPrev(EvaluatedFormula value, int op) {
         assert value instanceof MultiSet && ((MultiSet)value).numElements() == 1;

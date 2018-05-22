@@ -197,7 +197,7 @@ colorVar : COLORVAR_ID  # ColorVarIdentifier ;
 colorSubclass : COLORSUBCLASS_ID  # ColorSubclassIdentifier ;
 
 colorTerm : colorTerm op=('++'|'--')               # ColorTermNextPrev
-          | op=('!'|'^') colorTerm                 # ColorTermNextPrev2
+          //| op=('!'|'^') colorTerm                 # ColorTermNextPrev2
           | colorVar                               # ColorTermVar
           | COLOR_ID                               # ColorTermColor
           ;
