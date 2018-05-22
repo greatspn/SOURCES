@@ -66,8 +66,9 @@ sudo make install
 #### macOS installation instructions:
 
 GreatSPN compiles and runs successfully on macOS. 
-Before running the Linux/Unix installation steps, you will first need to install the Developer Tools (Xcode).
-Install all the required dependencies using a software like [Homebrew](https://brew.sh/), e.g. 
+Before running the Linux/Unix installation steps, you will first need to install the Developer Tools (Xcode)
+and Oracle Java (version 8 or greater).
+Then install all the required dependencies using a software like [Homebrew](https://brew.sh/), e.g. 
 by running the command:
 ```
 brew install gmp boost flex byacc ant graphviz libxml++ autoconf automake libtool lp_solve

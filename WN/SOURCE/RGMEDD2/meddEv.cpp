@@ -52,6 +52,21 @@ const char* rgmedd_exception::what() const noexcept {
 
 //-----------------------------------------------------------------------------
 
+// remove any tags (used by algebra) from a place/transition name
+static const char* filter_tags(const char* name, std::string& cache) {
+    const char* tag_sep = strchr(name, '|');
+    if (tag_sep == nullptr)
+        return name; // no tags in the object name
+    size_t n_chars = tag_sep - name;
+    cache.resize(n_chars + 1);
+    std::copy(name, tag_sep, cache.begin());
+    cache.back() = '\0';
+    // cout << "<"<<name<<"> -> <"<<cache<<">" << endl;
+    return cache.c_str();
+}
+
+//-----------------------------------------------------------------------------
+
 // Main initialization of Meddly: variable ordering, make domain & forests, ...
 void RSRG::initialize(bool _use_monolithic_nsf,
                       const VariableOrderCriteria voc,
@@ -65,13 +80,15 @@ void RSRG::initialize(bool _use_monolithic_nsf,
     this->netname = net_name;
 
     // Map place & transition names to their indexes
+    // Note: algebra tags needs to be removed here.
+    std::string cache_str;
     for (int i = 0; i < npl; i++) {
-        S2Ipl[tabp[i].place_name] = i;
+        S2Ipl[filter_tags(tabp[i].place_name, cache_str)] = i;
     }
     for (int i = 0; i < ntr; i++) {
-        S2Itr[tabt[i].trans_name] = i;
+        S2Itr[filter_tags(tabt[i].trans_name, cache_str)] = i;
     }
-
+    
     // Determine the variable ordering that will be used in the MDD/MxD domain
     cout << endl;
     print_banner(" VARIABLE ORDER ");
