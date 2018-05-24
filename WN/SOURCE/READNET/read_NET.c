@@ -47,6 +47,23 @@ inline static int islinebreak(int ch) {
 }
 
 /**************************************************************/
+
+// separate the entity name from the list of tags (used by algebra)
+// Added May, 2018.
+int separate_name_tags(char* name_buf, char** p_tags) {
+    char *tags = strchr(name_buf, '|'); // the pipe is the tags separator
+    if (tags == NULL) { // no algebra tags
+        *p_tags = NULL;
+        return 0;
+    }
+    // split the tags from the name, and return a separate pointer
+    *p_tags = tags + 1;
+    *tags = '\0';
+    return 1;
+}
+
+
+/**************************************************************/
 /* NAME : Add a new arc to a transition */
 /* DESCRIPTION : */
 /* PARAMETERS : */
@@ -267,6 +284,7 @@ int num;
     for (i = 0; i < num; i++) {
         /* Per ogni elemento della tabella */
         tabp[i].place_name = NULL;
+        tabp[i].algebra_tags = NULL;
 #ifdef SWN
         tabp[i].dominio = NULL;
 #endif
@@ -332,6 +350,7 @@ int num;
     for (i = 0; i < num; i++) {
         /* Per ogni elemento della tabella */
         tabt[i].trans_name = NULL;
+        tabt[i].algebra_tags = NULL;
 #ifdef SWN
         tabt[i].names = NULL;
 #endif
@@ -608,12 +627,12 @@ int parse_sane_integer(const char* buffer) {
 /* RETURN VALUE : */
 /**************************************************************/
 void read_NET_file(int read_postproc) {
-    char tmp[MAXSTRING];
+    char tmp[MAXSTRING], *algebra_tags;
     char trash[MAXSTRING];
     char lex_buffer[MAXSTRING+100];
     char int_val_buffer[128];
     char type;
-    int item, item_skip;
+    int item, item_skip, has_tags;
     float xcoord2, ycoord2;
     double float_val;
 
@@ -689,8 +708,15 @@ void read_NET_file(int read_postproc) {
             fgets(tmp, MAXSTRING - 1, net_fp);
 
             sscanf(tmp, "%s %s %f %f %f %f %n", read_name, int_val_buffer, &xcoord1, &ycoord1, &xcoord2, &ycoord2, &char_read);
+            // separate place name from algebra tags
+            has_tags = separate_name_tags(read_name, &algebra_tags);
             tabp[npl].place_name = (char *)ecalloc(strlen(read_name) + 1, sizeof(char));
             strcpy(tabp[npl].place_name, read_name);
+            if (has_tags) {
+                tabp[npl].algebra_tags = (char *)ecalloc(strlen(algebra_tags) + 1, sizeof(char));
+                strcpy(tabp[npl].algebra_tags, algebra_tags);
+            }
+            // printf("place '%s' tags='%s'\n", tabp[npl].place_name, tabp[npl].algebra_tags);
             int_val = parse_sane_integer(int_val_buffer);
 
             name_p = tmp + char_read ;
@@ -821,13 +847,13 @@ void read_NET_file(int read_postproc) {
 
 void read_transition() {
 
-    char tmp [MAXSTRING];
+    char tmp [MAXSTRING], *algebra_tags;
     char lex_buffer[MAXSTRING+100];
     char int_val_buffer[128];
     int int_val1, int_val2, int_val3, int_val4;
     float xcoord2, ycoord2;
     float xcoord3, ycoord3;
-    int item_arc, item_skip;
+    int item_arc, item_skip, has_tags;
     int rte;
     float float_val;
 
@@ -840,8 +866,15 @@ void read_transition() {
            &int_val1, &int_val2, &int_val3, &int_val4,
            &xcoord1, &ycoord1, &xcoord2, &ycoord2, &xcoord3, &ycoord3,
            &char_read);
+    // separate transition name from algebra tags
+    has_tags = separate_name_tags(read_name, &algebra_tags);
     tabt[ntr].trans_name = (char *)ecalloc(strlen(read_name) + 1, sizeof(char));
     strcpy(tabt[ntr].trans_name, read_name);
+    if (has_tags) {
+        tabt[ntr].algebra_tags = (char *)ecalloc(strlen(algebra_tags) + 1, sizeof(char));
+        strcpy(tabt[ntr].algebra_tags, algebra_tags);        
+    }
+    // printf("transition '%s' tags='%s'\n", tabt[ntr].trans_name, tabt[ntr].algebra_tags);
 
 
 #ifdef ESYMBOLIC
