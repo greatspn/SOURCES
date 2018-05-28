@@ -4,7 +4,6 @@ objects/
 lib/
 PRIV
 GreatSPN-Editor-v*
-perm_test
 JavaGUI/Editor/build
 JavaGUI/Editor/MANIFEST.MF
 JavaGUI/Editor/dist/Editor.jar

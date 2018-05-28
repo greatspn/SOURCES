@@ -552,7 +552,7 @@ void RSRG::MakeAllNsfs() {
                         mh->pPlaceFunction[i] = -1;
                 }
                 // timepoint = clock();
-                createEdgeForRelVar(mddPl, mh->pPlaceFunction, firingAtVar);
+                createEdgeForRelVar2(mddPl, mh->pPlaceFunction, firingAtVar);
                 // mh->clkCrEdg3 += clock() - timepoint;
 
                 // timepoint = clock();

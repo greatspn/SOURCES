@@ -38,14 +38,14 @@ one for the Meddly library, and another for the GreatSPN framework.
 To download the Meddly library, type:
 ```
 cd ~/GreatSPN
-git clone git://git.code.sf.net/p/meddly/code-git meddly
+git clone  https://github.com/asminer/meddly.git meddly
 cd meddly
 ./autogen.sh
 ./configure --prefix=/usr/local
 make
 sudo make install
 ```
-Please, refer to the [Meddly site](https://meddly.sourceforge.io) for all the
+Please, refer to the [Meddly site](https://github.com/asminer/meddly) for all the
 informations on how to download, compile and install it.
 
 Once Meddly is downloaded, compiled and installed, go back to the `GreatSPN`

@@ -5,7 +5,8 @@
         <group>
             <file>file:/home/user/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/UnfoldPNML2NetDefCommandLineTool.java</file>
             <file>file:/home/user/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/io/PnProFormat.java</file>
-            <file>file:/home/user/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/io/XmlExchangeUtils.java</file>
+            <file>file:/home/user/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/grammar/ParserContext.java</file>
+            <file>file:/home/user/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/unfolding/Unfolding.java</file>
         </group>
     </open-files>
 </project-private>
