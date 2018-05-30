@@ -113,7 +113,7 @@ in the Linux application menu. Sometimes, a logout is required.
 In case the Editor does not appear in the system menu, you can launch it from the command line
 with this command:
 ```
-java -jar /usr/local/GreatSPN/bin/Editor.jar
+greatspn_editor
 ```
 For macOS users, a compiled app is generated in the `SOURCES/JavaGUI/Editor/dist` directory.
 
