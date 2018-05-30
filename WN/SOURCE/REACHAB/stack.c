@@ -65,7 +65,7 @@ unsigned long length_to_insert;
         /*return(0);
           min = MIN(length_to_insert,length_to_compare); */
         fseek(mark, to_compare_ptr, 0);
-        fread(compare, 1, length_to_compare, mark);
+        size_t nreads = fread(compare, 1, length_to_compare, mark);
         for (ii = length_to_insert; ii; ii--) {
             /*load_compact(&op1,string);
             load_compact(&op2,mark);*/

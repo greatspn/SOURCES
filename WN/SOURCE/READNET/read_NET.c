@@ -547,7 +547,10 @@ void pre_read_NET_file() {
             if (feof(net))
                 break;
         if (line[0] == '|' && islinebreak(line[1])) { // next line is the header
-            fgets(line, MAXSTRING - 1, net); // read marking parameter line
+            if (NULL == fgets(line, MAXSTRING - 1, net)) { // read marking parameter line
+                fprintf(stderr, "Missing header in .net file.\n");
+                exit(1);
+            }
             sscanf(line, "f %d", &num_preread_mpars);
             break;
         }
@@ -556,7 +559,10 @@ void pre_read_NET_file() {
     if (num_preread_mpars > 0) {
         preread_mpars = (struct MARK_PAR*)ecalloc(num_preread_mpars, sizeof(struct MARK_PAR));
         for (m=0; m<num_preread_mpars; m++) {
-            fgets(line, MAXSTRING - 1, net); // read marking parameter line
+            if (NULL == fgets(line, MAXSTRING - 1, net)) { // read marking parameter line
+                fprintf(stderr, "Missing expected marking parameter in .net file.\n");
+                exit(1);
+            }
             sscanf(line, "%s %d", name, &preread_mpars[m].mark_val); // extract name
             preread_mpars[m].mark_name = ecalloc(strlen(name)+1, sizeof(char));
             strcpy(preread_mpars[m].mark_name, name);
@@ -652,7 +658,10 @@ void read_NET_file(int read_postproc) {
                 break;
         if (tmp[0] == '|' && islinebreak(tmp[1])) {
             /* Parsing della prima riga */
-            fscanf(net_fp, "%c %d %d %d %d %d %d", &type, &el[0], &el[1], &el[2], &el[4], &el[3], &el[5]);
+            if (0 == fscanf(net_fp, "%c %d %d %d %d %d %d", &type, &el[0], &el[1], &el[2], &el[4], &el[3], &el[5])) {
+                fprintf(stderr, "Missing header in .net file.\n");
+                exit(1);
+            }
             ntrSave = el[4];
 #ifdef LIBSPOT
 #ifndef LIBDMC
@@ -660,7 +669,10 @@ void read_NET_file(int read_postproc) {
             char tmp2 [256];
             sprintf(tmp2, "%stobs", net_name);
             propA = efopen(tmp2, "r");
-            fscanf(propA, "%d\n", &nSpottr);
+            if (0 == fscanf(propA, "%d\n", &nSpottr)) {
+                fprintf(stderr, "Missing expected SPOT_TR parameter.\n");
+                exit(1);
+            }
             el[4] = el[4] + nSpottr;
 #endif
 #endif
@@ -687,7 +699,10 @@ void read_NET_file(int read_postproc) {
         init_marking_parameters(el[0]);
         for (item = 1; item <= el[0]; item++) {
             /* Lettura dei Marking Parameters */
-            fgets(tmp, MAXSTRING - 1, net_fp);
+            if (NULL == fgets(tmp, MAXSTRING - 1, net_fp)) {
+                fprintf(stderr, "Missing expected marking parameter definition in .net file.\n");
+                exit(1);
+            }
 
             sscanf(tmp, "%s %s %f %f %s", read_name, int_val_buffer, &xcoord1, &ycoord1, trash);
             tabmp[nmp].mark_name = (char *)ecalloc(strlen(read_name) + 1, sizeof(char));
@@ -705,7 +720,10 @@ void read_NET_file(int read_postproc) {
         init_places(el[1]);
         for (item = 1; item <= el[1]; item++) {
             /* Lettura dei Posti */
-            fgets(tmp, MAXSTRING - 1, net_fp);
+            if (NULL == fgets(tmp, MAXSTRING - 1, net_fp)) {
+                fprintf(stderr, "Missing expected place definition in .net file.\n");
+                exit(1);
+            }
 
             sscanf(tmp, "%s %s %f %f %f %f %n", read_name, int_val_buffer, &xcoord1, &ycoord1, &xcoord2, &ycoord2, &char_read);
             // separate place name from algebra tags
@@ -776,7 +794,10 @@ void read_NET_file(int read_postproc) {
         init_rate_parameters(el[2]);
         for (item = 1; item <= el[2]; item++) {
             /* Lettura dei Rate Parameters */
-            fgets(tmp, MAXSTRING - 1, net_fp);
+            if (NULL == fgets(tmp, MAXSTRING - 1, net_fp)) {
+                fprintf(stderr, "Missing expected rate parameter definition in .net file.\n");
+                exit(1);
+            }
 
             sscanf(tmp, "%s %lg %f %f %s", read_name, &float_val, &xcoord1, &ycoord1, trash);
             tabrp[nrp].rate_name = (char *)ecalloc(strlen(read_name) + 1, sizeof(char));
@@ -794,7 +815,10 @@ void read_NET_file(int read_postproc) {
         init_groups(el[3]);
         for (item = 1; item <= el[3]; item++) {
             /* Lettura dei Groups */
-            fgets(tmp, MAXSTRING - 1, net_fp);
+            if (NULL == fgets(tmp, MAXSTRING - 1, net_fp)) {
+                fprintf(stderr, "Missing expected group definition in .net file.\n");
+                exit(1);
+            }
 
             sscanf(tmp, "%s %f %f %d", read_name, &xcoord1, &ycoord1, &int_val);
             tabg[ngr].name = (char *)ecalloc(strlen(read_name) + 1, sizeof(char));
@@ -858,7 +882,10 @@ void read_transition() {
     float float_val;
 
     /* Lettura delle transizioni */
-    fgets(tmp, MAXSTRING - 1, net_fp);
+    if (NULL == fgets(tmp, MAXSTRING - 1, net_fp)) {
+        fprintf(stderr, "Missing expected transition definition in .net file.\n");
+        exit(1);
+    }
 
     sscanf(tmp, "%s %f %d %d %d %d %f %f %f %f %f %f %n",
            read_name,
@@ -977,7 +1004,10 @@ void read_transition() {
         input_flag = TRUE;
         for (item_arc = 1; item_arc <= tabt[ntr].in_arc; item_arc++) {
             /* Lettura di ogni arco di ingresso */
-            fgets(tmp, MAXSTRING - 1, net_fp);
+            if (NULL == fgets(tmp, MAXSTRING - 1, net_fp)) {
+                fprintf(stderr, "Missing expected input arc definition in .net file.\n");
+                exit(1);
+            }
 
             sscanf(tmp, "%s %d %d %n", // multiplicity  place  num_points  [layers]
                    int_val_buffer, &int_val2, &int_val3,
@@ -990,12 +1020,16 @@ void read_transition() {
             }
             while (skip_layer);
             parse_node(INPUT, item_arc, int_val1, int_val2, name_p);
-            for (item_skip = 1; item_skip <= int_val3; item_skip++)
-                fgets(tmp, MAXSTRING - 1, net_fp);
+            for (item_skip = 1; item_skip <= int_val3; item_skip++) {
+                if (NULL == fgets(tmp, MAXSTRING - 1, net_fp)) { }
+            }
         }/* Lettura di ogni arco di ingresso */
     }/* Ci sono archi di ingresso */
     /*********** OUTPUT ARCS *************/
-    fgets(tmp, MAXSTRING - 1, net_fp);
+    if (NULL == fgets(tmp, MAXSTRING - 1, net_fp)) {
+        fprintf(stderr, "Missing expected output arc definitions header in .net file.\n");
+        exit(1);
+    }
     sscanf(tmp, "%d", &int_val3);
 
     input_flag = FALSE;
@@ -1005,7 +1039,10 @@ void read_transition() {
         /* Ci sono archi di uscita */
         for (item_arc = 1; item_arc <= tabt[ntr].out_arc; item_arc++) {
             /* Lettura di ogni arco di ingresso */
-            fgets(tmp, MAXSTRING - 1, net_fp);
+            if (NULL == fgets(tmp, MAXSTRING - 1, net_fp)) {
+                fprintf(stderr, "Missing expected output arc definition in .net file.\n");
+                exit(1);
+            }
 
             sscanf(tmp, "%s %d %d %n",
                    int_val_buffer, &int_val2, &int_val3,
@@ -1018,12 +1055,16 @@ void read_transition() {
             }
             while (skip_layer);
             parse_node(OUTPUT, item_arc, int_val1, int_val2, name_p);
-            for (item_skip = 1; item_skip <= int_val3; item_skip++)
-                fgets(tmp, MAXSTRING - 1, net_fp);
+            for (item_skip = 1; item_skip <= int_val3; item_skip++) {
+                if (NULL == fgets(tmp, MAXSTRING - 1, net_fp)) { }
+            }
         }/* Lettura di ogni arco di ingresso */
     }/* Ci sono archi di uscita */
     /*********** INHIBITOR ARCS *************/
-    fgets(tmp, MAXSTRING - 1, net_fp);
+    if (NULL == fgets(tmp, MAXSTRING - 1, net_fp)) {
+        fprintf(stderr, "Missing expected inhibitor arc definitions header in .net file.\n");
+        exit(1);
+    }
     sscanf(tmp, "%d", &int_val3);
 
     input_flag = FALSE;
@@ -1033,7 +1074,10 @@ void read_transition() {
         /* Ci sono archi inibitori */
         for (item_arc = 1; item_arc <= tabt[ntr].inib_arc; item_arc++) {
             /* Lettura di ogni arco di ingresso */
-            fgets(tmp, MAXSTRING - 1, net_fp);
+            if (NULL == fgets(tmp, MAXSTRING - 1, net_fp)) {
+                fprintf(stderr, "Missing expected inhibitor arc definition in .net file.\n");
+                exit(1);
+            }
 
             sscanf(tmp, "%s %d %d %n",
                    int_val_buffer, &int_val2, &int_val3,
@@ -1046,8 +1090,9 @@ void read_transition() {
             }
             while (skip_layer);
             parse_node(INHIBITOR, item_arc, int_val1, int_val2, name_p);
-            for (item_skip = 1; item_skip <= int_val3; item_skip++)
-                fgets(tmp, MAXSTRING - 1, net_fp);
+            for (item_skip = 1; item_skip <= int_val3; item_skip++) {
+                if (NULL == fgets(tmp, MAXSTRING - 1, net_fp)) { }
+            }
         }/* Lettura di ogni arco di ingresso */
     }/* Ci sono archi inibitori */
     fill_transition_data_structure(ntr);
@@ -1116,7 +1161,10 @@ static void read_nested_units() {
     if (nufp == NULL)
         return; // No Nested Units file
 
-    fscanf(nufp, "NUPN units %d", &num_units);
+    if (0 == fscanf(nufp, "NUPN units %d", &num_units)) {
+        fprintf(stderr, "Nested Unit file is broken.\n");
+        exit(1);
+    }
     num_nested_units = 0;
     nu_array = (NESTED_UNIT**)emalloc(sizeof(NESTED_UNIT*) * num_units);
     nu_root = read_nested_unit_recursively(nufp, NULL);

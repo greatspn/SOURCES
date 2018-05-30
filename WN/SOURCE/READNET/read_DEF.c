@@ -45,15 +45,17 @@ void read_DEF_file() {
     def_fp = efopen(tmp, "r");
     while (TRUE) {
         /* Scanning .def file */
-        if (fgets(tmp, MAXSTRING - 1, def_fp) == NULL)
+        if (fgets(tmp, MAXSTRING - 1, def_fp) == NULL) {
             if (feof(def_fp))
                 break;
+        }
         if (tmp[0] == '|') {
             /* Rate MD o delimitatore */
             if (tmp[1] == '2' && tmp[2] == '5' && tmp[3] == '6' && islinebreak(tmp[4])) {
                 /* Delimitatore |256 */
                 do {
-                    fgets(tmp, MAXSTRING - 1, def_fp);
+                    if (NULL == fgets(tmp, MAXSTRING - 1, def_fp))
+                        break;
                 }
                 while (!(tmp[0] == '|' && islinebreak(tmp[1])));
                 start_parse = TRUE;
@@ -67,7 +69,10 @@ void read_DEF_file() {
                     name_p = tmp;
                     sscanf(tmp + 1, "%d", &tr);
                     nmd = tr - 1;
-                    fgets(large_buf, SZBUF - 1, def_fp);
+                    if (NULL == fgets(large_buf, SZBUF - 1, def_fp)) {
+                        fprintf(stderr, "Missing expected definition in .def file.\n");
+                        exit(1);
+                    }
                     if (tabt[nmd].pri == 127 && tabt[nmd].mean_t == 0.0) {
                         // 12/07/2016 Elvio: do not parse general functions, but store them.
                         // This change allows to encode the general function in the .def
@@ -121,7 +126,10 @@ void read_DEF_file() {
                     strcpy(error_name, read_name);
 
                     /* Lettura della definizione */
-                    fgets(tmp, MAXSTRING - 1, def_fp);
+                    if (NULL == fgets(tmp, MAXSTRING - 1, def_fp))  {
+                        fprintf(stderr, "Missing expected definition in .def file.\n");
+                        exit(1);
+                    }
 
                     /* Tipo di definizione e in tmp c'e' la definizione */
                     switch (type) {
@@ -169,7 +177,7 @@ void read_DEF_file() {
                             fprintf(nfp2, "# define %s %s", bufname, tmp);
                         break;
                     }
-                    fgets(tmp, MAXSTRING - 1, def_fp);
+                    if (NULL == fgets(tmp, MAXSTRING - 1, def_fp)) { }
                 }/* Definizioni di colori, marcature o funzioni */
             }/* Non e' la sola lettura degli MD terza passata */
             else
