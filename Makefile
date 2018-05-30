@@ -1724,9 +1724,15 @@ clean_JavaGUI_x:
 
 clean_JavaGUI: clean_JavaGUI_x
 
-# On Linux, directly install the Java GUI
-linux-install-JavaGUI: JavaGUI
+
+install_JavaGUI_jars: JavaGUI
 	@echo "  [INSTALL] JavaGUI"
+	@mkdir -p $(INSTALLDIR)/bin
+	@cp -R $(OBJDIR)/JavaGUI/bin/* $(INSTALLDIR)/bin
+
+# On Linux,also install the JavaGUI in the system menu using the XDG tools
+linux-install-JavaGUI: install_JavaGUI_jars
+	@echo "  [INSTALL] JavaGUI XDG resources"
 	@(cd $(OBJDIR)/JavaGUI/ && export INSTALLDIR=$(INSTALLDIR) && bash install.sh -silent )
 
 # Install GUI library of models
@@ -1749,13 +1755,13 @@ all: JavaGUI
 
 clean: clean_JavaGUI
 
-install: install_JavaGUI_models
+install: install_JavaGUI_models install_JavaGUI_jars
 
  endif
 endif
 
 .PHONY += JavaGUI clean_JavaGUI JavaGUI-antlr java-jars clean_java-gui linux-install-JavaGUI
-.PHONY += JavaGUI-win JavaGUI-macosx JavaGUI-linux JavaGUI-jar upload_JavaGUI
+.PHONY += JavaGUI-win JavaGUI-macosx JavaGUI-linux JavaGUI-jar upload_JavaGUI install_JavaGUI_jars
 
 
 ######################################
