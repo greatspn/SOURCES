@@ -1383,9 +1383,10 @@ void flows_generator_t::compute_basis()
 
         printer.advance(ALGO, step, f.M, f.mK.size(), num_sums);
 
-        if (num_posi == 0 || num_posi == AiNonnullRows.size()) {
+        // if (num_posi == 0 || num_posi == AiNonnullRows.size()) {
+        if (AiNonnullRows.size() == 1) {
             if (verboseLvl >= VL_VERY_VERBOSE) {
-                cout << console::red_fgnd() << "ALL ROWS HAVE UNIFORM SIGN AT COLUMN i=" << i 
+                cout << console::red_fgnd() << "SINGLE ROW AT COLUMN i=" << i 
                      << ", N+=" << num_posi << ", N-=" << (AiNonnullRows.size() - num_posi) 
                      << console::default_disp() << endl; 
             }
