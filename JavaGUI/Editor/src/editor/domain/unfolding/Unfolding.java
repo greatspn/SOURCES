@@ -262,6 +262,8 @@ public class Unfolding {
                             for (int el=0; el < vmset.numElements(); el++) {
                                 DomainElement elem = vmset.getElement(el);
                                 EvaluatedFormula newArcMult = vmset.getValue(el);
+                                if (newArcMult.equalsZero())
+                                    continue;
 //                                Place unfPlc = placeUnfolding.get(new Tuple<>(plc, elem));
                                 Place unfPlc = placeUnfolding.get(plc).get(elem);
 
