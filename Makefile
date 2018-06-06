@@ -1042,6 +1042,8 @@ PN2ODE.sh_SOURCEFILE := ODE-SDE/PN2ODE.sh
 
 INSTALLEDSOURCES := 	ODE-SDE/class.hpp \
 			ODE-SDE/class.cpp \
+			ODE-SDE/lsode.hpp \
+			ODE-SDE/lsode.cpp \
 			ODE-SDE/makefile \
 			ODE-SDE/automa.hpp \
 			ODE-SDE/automa.cpp \

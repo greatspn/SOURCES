@@ -178,6 +178,7 @@ then
   echo "#Copying file form ${GREATSPN_SCRIPTDIR}/../inst_src to ${MyTempDir}"
   echo
   cp ./class.* ${MyTempDir}
+  cp ./lsode.*  ${MyTempDir}
   cp ./makefile ${MyTempDir}
   cp ./readingAutomaton.* ${MyTempDir}
   cp ./automa.* ${MyTempDir}
@@ -194,6 +195,7 @@ else
   echo "#Copying file form ${GREATSPN_SCRIPTDIR}/../inst_src to ${MyTempDir}"
   echo
   cp ./class.* ${MyTempDir}
+  cp ./lsode.* ${MyTempDir}
   cp ./makefile ${MyTempDir}
    cd ${MyTempDir}
   echo "#cd ${MyTempDir}"

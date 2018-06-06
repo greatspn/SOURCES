@@ -18,6 +18,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+
+
 #ifndef __SSTREAM__
 #define __SSTREAM__
 #include <sstream>
@@ -37,6 +39,11 @@
 #ifndef __STDL__
 #define __STDL__
 #include <stdlib.h>
+#endif
+
+#ifndef __STDR__
+#define __STDR__
+#include <stdarg.h>
 #endif
 
 #ifndef __STR_H__
@@ -103,6 +110,12 @@
 #endif
 //automaton
 
+#ifndef __LSD_H__
+#define __LSD_H__
+#include "lsode.hpp" 
+#endif
+
+
 namespace SDE
 {
 
@@ -121,6 +134,7 @@ namespace SDE
   using namespace AUTOMA;
 #endif
 //automaton 
+  
   
   //!Exception 
   struct Exception
@@ -280,15 +294,15 @@ namespace SDE
     //!it encodes all the system equations
     class Equation* VEq {nullptr};
     //!it stores the current equation values (at time variable "time")
-    long double* Value {nullptr}; 
+    double* Value {nullptr}; 
     //!it stores the previous equation values (at time variable time")
-    long double* ValuePrv {nullptr};
+    double* ValuePrv {nullptr};
     //!it stores the current enabling degree for continuous transition fire
-    long double* EnabledTransValueCon {nullptr};
+    double* EnabledTransValueCon {nullptr};
     //!it stores the current enabling degree for discrete transition fire
-    long double* EnabledTransValueDis {nullptr};
+    double* EnabledTransValueDis {nullptr};
     //!it  store the final place value of each run
-    long double** FinalValueXRun {nullptr};
+    double** FinalValueXRun {nullptr};
     int Max_Run {1};
     //!it stores the current time for which the equation values are computed
     double time;
@@ -320,7 +334,7 @@ namespace SDE
     //!It derived the place which are not directly computed (for ODE and SDE)
     void derived();
     //!It derived the place which are not directly computed from its input vector Value* (for ODE and SDE)
-    void derived(long double*);
+    void derived(double*);
     //!From a place name it provides its position in NamePlaces.
     int search(string& name);
     //Max number of attempt used in RK
@@ -332,6 +346,8 @@ namespace SDE
 //automaton    
     
   public:
+    //! Empty Constructor
+    SystEq(void){};
     //! Constructor it takes in input the total number of transitions and places and two vector with the names of places and transitions. Moreover the input parameter usedMin is true if transition infinity server policy is used, otherwise mass-product policy is used.
     SystEq(int nPlaces,int nTrans, string NameTrans[], string NamePlaces[]);
     //! Deconstruct
@@ -348,7 +364,7 @@ namespace SDE
     bool NotEnable(int Tran);
     //! It is a pure virtual function which must be implemented 
     virtual void getValTranFire()=0;
-    virtual void getValTranFire(long double*)=0;
+    virtual void getValTranFire(double*)=0;
     //! It checks if there is an enable transition which will fire in the current time step;
     int fireEnableTrans(  int SetTran[],double& h);
     //int fireEnableTrans(  set<int>&SetTran,double& h);
@@ -381,8 +397,12 @@ namespace SDE
     void SolveODERKF(double h,double perc1,double Max_Time,bool Info,double Print_Step,char *argv);
     //! It solves the ODE system using  Dormand and Princ method - ode45  method. It takes in input the step size and the Max_Time
      void SolveODE45(double h,double perc1,double Max_Time,bool Info,double Print_Step,char *argv);
+     //! It solves the ODE system using  LSODA method
+     void SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool Info,double Print_Step,char *argv);
     //!It computes a single step of Kutta-Merson integration
-    void StepODERK5(long double* Yn,long double* Kn,const double& h);
+    void StepODERK5(double* Yn, double* Kn,const double& h);
+    //!It   computes the values of the derivatives in the ODE system
+    void fex(double t, double *y, double *ydot, void *data);
     //! It solves the (H)SDE system using Euler method. It takes in input the step size, the Max_Time and Max_Run. To print the trace of each run -> Info = true 
     void SolveSDEEuler(double h,double prec1,double prec2,double Max_Time,int Max_Run, bool Info,double Print_Step,char *argv);
     //! It solves the HODE system using Euler method. It takes in input the step size, the Max_Time and Max_Run. To print the trace of each run -> Info = true 
@@ -402,7 +422,7 @@ namespace SDE
     //! For each transition it returns  the min of the values of its input places 
      void getValTranFire();
      //! For each transition it returns  the min of the values of its input places considering its input vector ValuePrv as marking
-     void getValTranFire(long double* ValuePrv);
+     void getValTranFire(double* ValuePrv);
   };
   
   class SystEqMas:public SystEq
@@ -413,7 +433,7 @@ namespace SDE
     //! For each transition it returns the product  of the values of its input places 
      void getValTranFire();
     //! For each transition it returns  the min of the values of its input places considering its input vector ValuePrv as marking
-    void getValTranFire(long double* ValuePrv);
+    void getValTranFire(double* ValuePrv);
   };
   
 }

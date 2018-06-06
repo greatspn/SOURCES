@@ -393,8 +393,72 @@ void build_ODE(ofstream &out, std::string path, std::string net)
         TPI[tt] = (int *) malloc((npl) * sizeof(int));
         memset(TPI[tt], 0, npl * sizeof(int));
     }
+    
+   
+    
+    
+/*
+    //Creating function for ODE
+    out<< "\nvoid fex(double t, double *y, double *ydot, void *data){\n\n";
+    
+    out<<" double tt["<<ntr<<"];\n\n";
+    //creating transition intensities
+    
+    for (int tt = 0; tt < ntr; tt++){
+    	out<<" tt["<<tt<<"]= ";
+    	if (tabt[tt].general_function==NULL){
+    		if (MASSACTION){
+    			out << tabt[tt].mean_t;
+    			for (int pp1 = 0; pp1 < npl; pp1++){
+    				if (TPI[tt][pp1] < 0){
+    					out << " * y[" << pp1 << "]^" << abs(TPI[tt][pp1]);
+    				}
+    			}
+    		}
+    		else{
+    			out << tabt[tt].mean_t << "*min("<<tt_count[tt];
+    			bool first = true;
+    			for (int pp1 = 0; pp1 < npl; pp1++){
+    				if (TPI[tt][pp1] < 0){
+    						out << ", y[" << pp1 << "]/" << abs(TPI[tt][pp1]);
 
+    				}
 
+    			}
+    			out << ")";
+    		}
+    	}
+    	else{
+    		std::string general_function(tabt[tt].general_function);
+    		out<<general_function.substr(3,general_function.size()-4);
+    	}
+    	out<<";\n";
+    }
+    out<<"\n\n";
+    
+    for (pp = 0; pp < npl; pp++){
+           out << " ydot[" << pp << "] =";
+           bool found = false;
+           for (int tt = 0; tt < ntr; tt++){
+               if (TP[tt][pp] != 0){ 
+            	   found=true;
+            	   if (TP[tt][pp]>0.0)
+            		   out<< " +";
+            	   else
+            		   out<< " ";
+            	   out<<TP[tt][pp]<<"*tt["<<tt<<"]";
+               }
+ 
+           }          
+           if  (!found)
+        	   out<<"0";
+           out<<";\n";
+    }
+           
+    out<<"\n\n}\n\n";
+    //Creating function for ODE    
+*/
+    
 
     out << "\nint main(int argc, char **argv) {\n\n";
     out << " time_t time_1,time_4;\n";
@@ -420,7 +484,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
         out << " std::cerr<<\"\\n\\nUSE:" << net << "_solve <out_file> <type> <step_factor> <perc1> <perc2> <runs> <Max_time> <output> <step_output> -B <bound_file> \";\n\t";
     }
     //automaton
-    out << " std::cerr<<\"\\n\\t <type>:\\t ODE-E or ODE-RKF or ODE45  or (H)SDE or HODE or SIM or STEP:\";\n\t";
+    out << " std::cerr<<\"\\n\\t <type>:\\t ODE-E or ODE-RKF or ODE45 or LSODA or (H)SDE or HODE or SIM or STEP:\";\n\t";
     out << " std::cerr<<\"\\n\\t <step_factor>:\\t Initial step step size\";\n\t";
     out << " std::cerr<<\"\\n\\t <perc1>:\\t Value used to compute Step (smaller -> greater precision but slower solution)\";\n\t";
     out << " std::cerr<<\"\\n\\t <perc1>:\\tValue used to compute Euler Step when the model is closed to bounds (smaller -> greater precision but slower solution)\";\n\t";
@@ -443,6 +507,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     out << " if ((strcmp(argv[2],\"ODE-E\")==0)||(strcmp(argv[2],\"ode-e\")==0))\n\t SOLVE = 1;\n";
     out << " if ((strcmp(argv[2],\"ODE-RKF\")==0)||(strcmp(argv[2],\"ode-rkf\")==0))\n\t SOLVE = 5;\n";
     out << " if ((strcmp(argv[2],\"ODE45\")==0)||(strcmp(argv[2],\"ode45\")==0))\n\t SOLVE = 6;\n";
+    out << " if ((strcmp(argv[2],\"LSODA\")==0)||(strcmp(argv[2],\"lsoda\")==0))\n\t SOLVE = 7;\n";
     out << " if ((strcmp(argv[2],\"STEP\")==0)||(strcmp(argv[2],\"step\")==0))\n\t SOLVE = 4;\n";
     out << " if ((strcmp(argv[2],\"SIM\")==0)||(strcmp(argv[2],\"sim\")==0))\n\t{\n";
     out << "\t cout<<\"\\t using simulation\"<<endl;\n\t epsilon=10000000000;\n\t step=MAXSTEP;\n\t SOLVE=3;\n\t}\n";
@@ -564,8 +629,8 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     }
     //automaton
     out << "\n\ntry\t{";
-    out << "\n\tif (SOLVE==-1) \{\n\t\t cerr<< \"\\n\\nError: solution methods \"<<argv[2]<<\" is not implemented\\nYou should use:  ODE-E or ODE-RKF or ODE45 or SDE or HODE or HSDE or SIM or STEP\\n\"; \n\t\t exit(EXIT_FAILURE);\n\t}\n\n ";
-    out << "\n\tif (SOLVE == 1)\n\t\t se.SolveODEEuler(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);\n\t else\n\t\t if (SOLVE == 0)\n\t\t\t se.SolveSDEEuler(step,perc1,perc2,Max_time,runs,OUTPUT,step_o,argv[1]);\n\t\t else \n\t\t\tif (SOLVE == 3)\n\t\t\t\t se.SolveHODEEuler(step,perc1,perc2,Max_time,runs,OUTPUT,step_o,argv[1]); \n\t\t\t else \n\t\t\t\t if (SOLVE == 4)\n\t\t\t\t\t  se.HeuristicStep(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\t if (SOLVE == 5)\n\t\t\t\t\t  se.SolveODERKF(step,perc1,Max_time,OUTPUT,step_o,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\t se.SolveODE45(step,perc1,Max_time,OUTPUT,step_o,argv[1]);\n";
+    out << "\n\tif (SOLVE==-1) \{\n\t\t cerr<< \"\\n\\nError: solution methods \"<<argv[2]<<\" is not implemented\\nYou should use:  ODE-E or ODE-RKF or ODE45 or LSODA or SDE or HODE or HSDE or SIM or STEP\\n\"; \n\t\t exit(EXIT_FAILURE);\n\t}\n\n ";
+    out << "\n\tif (SOLVE == 1)\n\t\t se.SolveODEEuler(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);\n\t else\n\t\t if (SOLVE == 0)\n\t\t\t se.SolveSDEEuler(step,perc1,perc2,Max_time,runs,OUTPUT,step_o,argv[1]);\n\t\t else \n\t\t\tif (SOLVE == 3)\n\t\t\t\t se.SolveHODEEuler(step,perc1,perc2,Max_time,runs,OUTPUT,step_o,argv[1]); \n\t\t\t else \n\t\t\t\t if (SOLVE == 4)\n\t\t\t\t\t  se.HeuristicStep(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\t if (SOLVE == 5)\n\t\t\t\t\t  se.SolveODERKF(step,perc1,Max_time,OUTPUT,step_o,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\tif (SOLVE == 6)\n\t\t\t\t\t\t se.SolveODE45(step,perc1,Max_time,OUTPUT,step_o,argv[1]);\n\t\t\t\t else\n\t\t\t\t\t\t se.SolveLSODE(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);\n";
 
     out << "\n\tse.PrintStatistic(argv[1]);\n\t}\n catch(Exception obj)\n\t{\n\tcerr<<endl<<obj.get()<<endl;\n\t}\n\n";
     out << " time(&time_4);\n\n cout<<\"\\n\\nEND EXECUTION\"<<endl;\n cout<<\"\\nResults are saved in: \"<<argv[1]<<endl;\n";
@@ -644,8 +709,7 @@ if (!out) {
 }
 
 for (int i=0;i<ntr;i++)
-	out<<tabt[i].mean_t<<"\t";
-out<<endl;
+	out<<tabt[i].mean_t<<"\n";
 out.close();
 
 
@@ -695,7 +759,7 @@ for (int tt = 0; tt < ntr; tt++){
     {
         pp = GET_PLACE_INDEX(l_ptr);
         //TP[tt][pp] = -l_ptr->molt;
-        TPI[tt][pp] = -l_ptr->molt;
+        TPI[tt][pp] = l_ptr->molt;
         l_ptr = NEXT_NODE(l_ptr);
     }
     l_ptr = GET_OUTPUT_LIST(tt);
