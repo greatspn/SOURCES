@@ -38,14 +38,14 @@ one for the Meddly library, and another for the GreatSPN framework.
 To download the Meddly library, type:
 ```
 cd ~/GreatSPN
-git clone git://git.code.sf.net/p/meddly/code-git meddly
+git clone  https://github.com/asminer/meddly.git meddly
 cd meddly
 ./autogen.sh
 ./configure --prefix=/usr/local
 make
 sudo make install
 ```
-Please, refer to the [Meddly site](https://meddly.sourceforge.io) for all the
+Please, refer to the [Meddly site](https://github.com/asminer/meddly) for all the
 informations on how to download, compile and install it.
 
 Once Meddly is downloaded, compiled and installed, go back to the `GreatSPN`
@@ -66,11 +66,12 @@ sudo make install
 #### macOS installation instructions:
 
 GreatSPN compiles and runs successfully on macOS. 
-Before running the Linux/Unix installation steps, you will first need to install the Developer Tools (Xcode).
-Install all the required dependencies using a software like [Homebrew](https://brew.sh/), e.g. 
+Before running the Linux/Unix installation steps, you will first need to install the Developer Tools (Xcode)
+and Oracle Java (version 8 or greater).
+Then install all the required dependencies using a software like [Homebrew](https://brew.sh/), e.g. 
 by running the command:
 ```
-brew install gmp boost flex byacc ant graphviz libxml++ lp_solve
+brew install gmp boost flex byacc ant graphviz libxml++ autoconf automake libtool lp_solve
 ```
 In the last Homebrew version, the lp_solve package could require to be built from sources.
 In that case, download the lp_solve sources from Sourceforge and follow the instructions
@@ -112,7 +113,7 @@ in the Linux application menu. Sometimes, a logout is required.
 In case the Editor does not appear in the system menu, you can launch it from the command line
 with this command:
 ```
-java -jar /usr/local/GreatSPN/bin/Editor.jar
+greatspn_editor
 ```
 For macOS users, a compiled app is generated in the `SOURCES/JavaGUI/Editor/dist` directory.
 
@@ -123,8 +124,8 @@ For macOS users, a compiled app is generated in the `SOURCES/JavaGUI/Editor/dist
 
 To cite the GreatSPN framework, please use this reference [PDF](https://iris.unito.it/retrieve/handle/2318/1624717/295450/Amparore-trivedi-chapter.pdf):
 ```
-@incollection{amparore201630,
-  title={30 years of GreatSPN},
+@incollection{bib:30YearsOfGreatSPN,
+  title={30 years of {GreatSPN}},
   author={Amparore, Elvio Gilberto and Balbo, Gianfranco and Beccuti, Marco 
   	      and Donatelli, Susanna and Franceschinis, Giuliana},
   booktitle={Principles of Performance and Reliability Modeling and Evaluation},

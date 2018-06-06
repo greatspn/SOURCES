@@ -290,7 +290,7 @@ int             num;
 #endif
 
     /* write first line */
-    fprintf(nfp, " %f %3d %3d %3d %1d %f %f %f %f %f %f",
+    fprintf(nfp, " %.15f %3d %3d %3d %1d %f %f %f %f %f %f",
             ftemp, trans->enabl, knd, j, trans->orient,
             PIX_TO_IN(trans->center.x), PIX_TO_IN(trans->center.y),
             PIX_TO_IN(trans->tagpos.x + trans->center.x),

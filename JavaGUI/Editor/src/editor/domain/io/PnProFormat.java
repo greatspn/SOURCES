@@ -97,7 +97,7 @@ public class PnProFormat {
         XML_CLASS_TO_NODE.put(MeasurePage.class, "measures");
         XML_CLASS_TO_NODE.put(VarMultiAssignment.class, "assignment");
         XML_CLASS_TO_NODE.put(MC4CSLTASolverParams.class, "mc4cslta");
-//        XML_CLASS_TO_NODE.put(RGMEDDSolverParams.class, "rgmedd");
+//        XML_CLASS_TO_NODE.put(RGMEDD2SolverParams.class, "rgmedd");
         XML_CLASS_TO_NODE.put(RGMEDD2SolverParams.class, "rgmedd2");
         XML_CLASS_TO_NODE.put(GreatSPNSolverParams.class, "greatspn");
         XML_CLASS_TO_NODE.put(CosmosSolverParams.class, "cosmos");
@@ -115,6 +115,7 @@ public class PnProFormat {
         XML_NODE_TO_CLASS = new HashMap<>();
         for (Entry<Class, String> e : XML_CLASS_TO_NODE.entrySet())
             XML_NODE_TO_CLASS.put(e.getValue(), e.getKey());
+        XML_NODE_TO_CLASS.put("rgmedd", null); // backward compatibility
         
         XML_NET_PAGES = new HashSet<>();
         XML_NET_PAGES.add("gspn");
@@ -400,8 +401,11 @@ public class PnProFormat {
                     Element solverElem = (Element)solverItem;
                     if (!XML_SOLVER_PARAMS.contains(solverElem.getNodeName()))
                         continue; // search next XML element in for loop
-                    measPage.solverParams = (SolverParams)XML_NODE_TO_CLASS.get(solverElem.getNodeName()).newInstance();
-                    measPage.solverParams.exchangeXML(solverElem, exDir);
+                    Class cl = XML_NODE_TO_CLASS.get(solverElem.getNodeName());
+                    if (cl != null) {
+                        measPage.solverParams = (SolverParams)XML_NODE_TO_CLASS.get(solverElem.getNodeName()).newInstance();
+                        measPage.solverParams.exchangeXML(solverElem, exDir);
+                    }
                     break;
                 }
                 if (measPage.solverParams == null)

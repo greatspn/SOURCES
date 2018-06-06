@@ -65,8 +65,8 @@ mkdir -p ${XDG_DIR}/pixmaps
 mkdir -p $APP_PATH
 
 # Install the application
-echo "Copying application data..."
-cp -R bin/*  ${APP_PATH}/
+# echo "Copying application data..."
+# cp -R bin/*  ${APP_PATH}/
 
 # Install the icons
 xdg-icon-resource install --novendor --size 48 $APP_PATH/$APP.png $APP

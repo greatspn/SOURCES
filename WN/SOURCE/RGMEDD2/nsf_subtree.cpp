@@ -8,13 +8,66 @@
 #include <memory>
 #include <meddly.h>
 #include <assert.h>
-#include "../../../../meddly/src/forests/mtmxdbool.h"
-#include "../../../../meddly/src/forests/mtmddbool.h"
+// #include "../../../../meddly/src/forests/mtmxdbool.h"
+// #include "../../../../meddly/src/forests/mtmddbool.h"
 
 using namespace MEDDLY;
 using namespace std;
 
 
+// This method generates a relational tree with values at level vh and vh'
+// The generated MxD has this shape:
+//     1 1' ... vh     vh'         ...
+//     * *   *   0 primed_vars[0]   *  T
+//     * *   *   1 primed_vars[1]   *  T
+//     * *   *   2 primed_vars[2]   *  T
+// vh is the involved level.
+// primed_vars[] contains the post-image values.
+void createEdgeForRelVar2(int vh, int const* primed_vars, dd_edge& out) {
+    forest* mxd = out.getForest();
+    const int sz = mxd->getDomain()->getVariableBound(vh + 1, false);
+    const int nvars = mxd->getDomain()->getNumVariables();
+    assert(vh >= 0 && vh < nvars);
+    // cout << "    vh="<<vh<<" bound="<<sz<<endl;
+
+    int *vlist[sz], *vplist[sz];
+    int N = 0;
+    // Create several edges with shape:
+    //    1  1' 2  2' ... vh       vh'      ...
+    //    *  *  *  *   *  i  primed_vars[i]  *    T 
+    for (int i=0; i<sz; i++) {
+        if (primed_vars[i] < 0 || primed_vars[i] >= sz)
+            continue; // out of bound
+
+        vlist[N] = new int[nvars + 1];
+        vplist[N] = new int[nvars + 1];
+        std::fill(vlist[N], vlist[N] + nvars + 1, DONT_CARE);
+        std::fill(vplist[N], vplist[N] + nvars + 1, DONT_CARE);
+        // vlist[N][0] = vplist[N][0] = 0;
+
+        vlist[N][vh + 1] = i;
+        vplist[N][vh + 1] = primed_vars[i];
+        // for (int n=0; n<nvars; n++)
+        //     cout << " " << vlist[N][n+1]<<":"<<vplist[N][n+1];
+        // cout << endl;
+
+        N++;
+    }
+
+    mxd->createEdge(vlist, vplist, N, out);
+
+    // MEDDLY::ostream_output stdout_wrap(cout);
+    // out.show(stdout_wrap, 2);
+    // cout << endl;
+
+    for (int i=0; i<N; i++) {
+        delete[] vlist[i];
+        delete[] vplist[i];
+    }
+}
+
+
+#if 0
 // This method generates a relational tree with values at level vh and vh'
 // It works exclusively on boolean MxD forests having the Identity Reduced policy.
 // The generated tree has this shape:
@@ -210,3 +263,4 @@ int main(){
     cout << ", total: " << ((clock() - startOfNsfEv) / double(CLOCKS_PER_SEC)) << endl;
     return 0;
 }*/
+#endif

@@ -150,6 +150,7 @@ extern int num_nested_units; // number of nested units
 /***** TABELLA DEI POSTI *****/
 struct PLACES {
     char *place_name;
+    char *algebra_tags;
     int *dominio ;
     int comp_num ;
     int card;
@@ -201,6 +202,7 @@ typedef struct MD_RATE *MDrate_p;
 /***** TABELLA DELLE TRANSIZIONI *****/
 struct TRANS {
     char *trans_name;
+    char *algebra_tags;
 #ifdef SWN
     char **names;
 #endif

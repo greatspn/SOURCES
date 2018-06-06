@@ -247,13 +247,6 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	T visitColorVarDef(@NotNull ExprLangParser.ColorVarDefContext ctx);
 
 	/**
-	 * Visit a parse tree produced by {@link ExprLangParser#ColorTermNextPrev2}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitColorTermNextPrev2(@NotNull ExprLangParser.ColorTermNextPrev2Context ctx);
-
-	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#RealMSetExprElemProduct}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

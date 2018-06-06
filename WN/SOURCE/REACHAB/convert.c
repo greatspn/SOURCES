@@ -236,7 +236,7 @@ void reset_to_M0(unsigned long mark_ptr, unsigned long ilength, int tr)
 
 
     fseek(mark, mark_ptr, 0);
-    fread(cache_string, 1, ilength, mark);
+    size_t n_reads = fread(cache_string, 1, ilength, mark);
 #ifdef SYMBOLIC
     lp = cache_string + (dyn_ptr - mark_ptr);
 #endif
@@ -356,7 +356,7 @@ void string_to_marking(unsigned long  mark_ptr,  unsigned long  dyn_ptr,  unsign
 
     if (!SPEC_TRAI) {
         fseek(mark, mark_ptr, 0);
-        fread(cache_string, 1, ilength, mark);
+        size_t n_reads = fread(cache_string, 1, ilength, mark);
         lp = cache_string + (dyn_ptr - mark_ptr);
     }
     else { lp = cache_string + dyn_ptr; }

@@ -1628,12 +1628,12 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         return colorTermNextPrev(visit(ctx.colorTerm()), ctx.colorTerm().getText(), ctx.op.getType());
     }
 
-    @Override
-    public FormattedFormula visitColorTermNextPrev2(ExprLangParser.ColorTermNextPrev2Context ctx) {
-        int op = (ctx.op.getType() == ExprLangParser.NOT) ? ExprLangParser.POSTINCR 
-                                                          : ExprLangParser.POSTDECR;
-        return colorTermNextPrev(visit(ctx.colorTerm()), ctx.colorTerm().getText(), op);
-    }
+//    @Override
+//    public FormattedFormula visitColorTermNextPrev2(ExprLangParser.ColorTermNextPrev2Context ctx) {
+//        int op = (ctx.op.getType() == ExprLangParser.NOT) ? ExprLangParser.POSTINCR 
+//                                                          : ExprLangParser.POSTDECR;
+//        return colorTermNextPrev(visit(ctx.colorTerm()), ctx.colorTerm().getText(), op);
+//    }
     
     private FormattedFormula colorTermNextPrev(FormattedFormula term, String termText, int op) {
         if (term.getPayload() != null && term.getPayload() instanceof MultiSetElemType) {

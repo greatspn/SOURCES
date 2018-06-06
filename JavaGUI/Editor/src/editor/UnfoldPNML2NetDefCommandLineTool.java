@@ -121,7 +121,12 @@ public class UnfoldPNML2NetDefCommandLineTool {
         GspnPage gspn = new GspnPage();
         PNMLFormat.NuPNUnit rootUnit[] = new PNMLFormat.NuPNUnit[1];
         Map<String, String> pnmlId2name = null;
+        // Input files
         File inputPnpro = new File(baseName+".PNPRO");
+        File inputPnml = new File(baseName+".pnml");
+        File inputNet = new File(baseName+".net");
+        File inputDef = new File(baseName+".def");
+        boolean outSuffix = false;
         if (inputPnpro.exists()) {
             ProjectFile pf = PnProFormat.readXML(inputPnpro);
             ProjectPage page0 = pf.getCurrent().getPageAt(0);
@@ -131,13 +136,8 @@ public class UnfoldPNML2NetDefCommandLineTool {
             }
             gspn = (GspnPage)page0;
         }
-        else {
+        else if (inputPnml.canRead()) {
             // Read input PNML file
-            File inputPnml = new File(baseName+".pnml");
-            if (!inputPnml.canRead()) {
-                System.out.println("Cannot read file: "+inputPnml.getName());
-                System.exit(1);
-            }
             System.out.println("LOADING "+inputPnml.getName()+" ...");
             pnmlId2name = new TreeMap<>();
             String log = PNMLFormat.importPNML(gspn, inputPnml, pnmlId2name, rootUnit);
@@ -146,11 +146,27 @@ public class UnfoldPNML2NetDefCommandLineTool {
                 System.exit(1);
             }
         }
+        else if (inputNet.canRead() && inputDef.canRead()) {
+            // Read net/def file
+            System.out.println("LOADING "+inputNet.getName()+"/def ...");
+            String log = GreatSpnFormat.importGspn(gspn, inputNet, inputDef);
+            if (log != null) {
+                System.out.println("Error loading net/def file.\n"+log);
+                System.exit(1);
+            }
+            outSuffix = true;
+        }
+        else {
+            System.out.println("Cannot read file: "+baseName+".{PNPRO,pnml,net/def}");
+            System.exit(1);
+        }
         printGspnStat(gspn, rootUnit[0]);
         System.out.println("LOADING TIME: "+(System.currentTimeMillis() - start)/1000.0);
         System.out.println("");
 
         
+        if (outSuffix)
+            baseName += "_unf";
 
         // GSPN semantic check
         ArrayList<ProjectPage> pages = new ArrayList<>();

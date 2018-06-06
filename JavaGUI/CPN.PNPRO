@@ -2,7 +2,7 @@
 <!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="Fluid and Colored PN" version="121">
   <gspn name="nqueens" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
     <nodes>
-      <color-class definition="c{1..n}" name="N" x="2.125" y="3.0"/>
+      <color-class definition="circular c{1..n}" name="N" x="2.125" y="3.0"/>
       <color-class alt-name-fn="LATEX_TEXT" definition="N*N" name="N2" shown-as="\mathit{N}\,^2" x="2.125" y="5.1875"/>
       <place domain="N2" name="P" x="4.0" y="12.0"/>
       <transition guard="(CN[l]==(CN[x]-CN[y]+n)) &amp;&amp; (CN[r]==CN[x]+CN[y])" guard-x="10.5" guard-y="1.0" label-x="-1.5" label-y="-0.5" name="T" nservers-x="0.5" type="EXP" x="25.55" y="12.0"/>
@@ -84,13 +84,13 @@
   </gspn>
   <gspn name="Database">
     <nodes>
-      <color-class definition="circular s{1 .. 4} " name="S" x="23.5625" y="2.0"/>
+      <color-class definition="circular s{1 .. 4} " name="Sv" x="23.5625" y="2.0"/>
       <color-class definition="enum r{1 .. 3}" name="R" x="23.5" y="3.0"/>
-      <color-class alt-name-fn="LATEX_TEXT" definition="S * R" name="SxR" shown-as="\mathit{S}\!\times\hspace{-5pt}\mathit{R}" x="23.5625" y="4.875"/>
-      <place domain="S" label-x="5.5" label-y="0.0" marking="&lt;All&gt;" name="all_active" x="2.0" y="9.0"/>
+      <color-class alt-name-fn="LATEX_TEXT" definition="Sv * R" name="SxR" shown-as="\mathit{S}\!\times\hspace{-5pt}\mathit{R}" x="23.5625" y="4.875"/>
+      <place domain="Sv" label-x="5.5" label-y="0.0" marking="&lt;All&gt;" name="all_active" x="2.0" y="9.0"/>
       <transition label-x="2.375" label-y="0.0" name="Start" rotation="1.5707963267948966" type="EXP" x="2.55" y="5.0"/>
       <place domain="SxR" label-x="1.5" label-y="-1.5" name="wait_mutex" x="6.0" y="3.0"/>
-      <color-var domain="S" name="s" x="35.9375" y="2.0"/>
+      <color-var domain="Sv" name="s" x="35.9375" y="2.0"/>
       <color-var domain="R" name="r" x="35.9375" y="3.0"/>
       <transition label-x="2.5" label-y="0.0" magnets="THREE_PER_SIDE" name="Acquire" rotation="1.5707963267948966" type="IMM" x="10.85" y="5.0"/>
       <place domain="SxR" label-x="3.9375" label-y="-0.9375" name="modify" x="10.0" y="9.0"/>
@@ -101,7 +101,7 @@
       <place domain="SxR" label-x="0.5" label-y="-1.5" name="rec_buf" x="27.0" y="11.0"/>
       <transition label-y="1.75" name="SendMessage" type="EXP" x="22.55" y="11.0"/>
       <transition label-x="2.5" label-y="0.0" magnets="THREE_PER_SIDE" name="Update" rotation="1.5707963267948966" type="IMM" x="31.85" y="13.0"/>
-      <place domain="S" label-x="6.0" label-y="0.0" marking="&lt;All&gt;" name="all_passive" x="31.0" y="9.0"/>
+      <place domain="Sv" label-x="6.0" label-y="0.0" marking="&lt;All&gt;" name="all_passive" x="31.0" y="9.0"/>
       <place domain="SxR" label-x="5.0" label-y="0.0" name="updating" x="31.0" y="17.0"/>
       <transition label-x="3.5" label-y="0.0" magnets="THREE_PER_SIDE" name="EndUpdate" rotation="1.5707963267948966" type="EXP" x="31.55" y="21.0"/>
       <place domain="SxR" label-x="0.5" label-y="-1.5" name="reply_buf" x="27.0" y="23.0"/>
