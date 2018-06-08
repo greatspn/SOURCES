@@ -3,6 +3,8 @@
 #include <ctype.h>
 #include <string.h>
 #include <assert.h>
+#include <limits.h>
+#include <errno.h>
 #include "../../INCLUDE/const.h"
 #include "../../INCLUDE/struct.h"
 #include "../../INCLUDE/var_ext.h"
@@ -611,17 +613,22 @@ int get_rpar_value(const char* name, double* value) {
 
 /**************************************************************/
 
-// Double-checks that a parsed integer is really an integer
-// and fits into a machine int.
-int parse_sane_integer(const char* buffer) {
-    int value = atoi(buffer);
-    char newbuffer[64];
-    snprintf(newbuffer, sizeof(newbuffer), "%d", value);
-    if (0 == strcmp(buffer, newbuffer))
-        return value; // we parsed the value properly
+// Convert a string into an int ensuring that no overflows occurs
+int atoi_checked(const char* buffer) {
+    char *endptr;
+    errno = 0; // to distinguish errors
+    long int value = strtol(buffer, &endptr, 10);
 
-    fprintf(stderr, "Value '%s' is not a valid integer.\n", buffer);
-    exit(EXIT_FAILURE);
+    if (errno != 0) {
+        fprintf(stderr, "Value '%s' is not a valid integer.\n", buffer);
+        exit(EXIT_FAILURE);
+    }
+    if (value > INT_MAX || value < INT_MIN) {
+        fprintf(stderr, "Value '%s' cannot be stored as an int.\n", buffer);
+        exit(EXIT_FAILURE);
+    }
+
+    return value;
 }
 
 /**************************************************************/
@@ -707,7 +714,7 @@ void read_NET_file(int read_postproc) {
             sscanf(tmp, "%s %s %f %f %s", read_name, int_val_buffer, &xcoord1, &ycoord1, trash);
             tabmp[nmp].mark_name = (char *)ecalloc(strlen(read_name) + 1, sizeof(char));
             strcpy(tabmp[nmp].mark_name, read_name);
-            int_val = parse_sane_integer(int_val_buffer);
+            int_val = atoi_checked(int_val_buffer);
             tabmp[nmp].mark_val = int_val;
             change_marking_param_value(tabmp[nmp].mark_name, &tabmp[nmp].mark_val);
             nmp++;
@@ -735,7 +742,7 @@ void read_NET_file(int read_postproc) {
                 strcpy(tabp[npl].algebra_tags, algebra_tags);
             }
             // printf("place '%s' tags='%s'\n", tabp[npl].place_name, tabp[npl].algebra_tags);
-            int_val = parse_sane_integer(int_val_buffer);
+            int_val = atoi_checked(int_val_buffer);
 
             name_p = tmp + char_read ;
             do {
@@ -1013,7 +1020,7 @@ void read_transition() {
                    int_val_buffer, &int_val2, &int_val3,
                    &char_read);
             name_p = tmp + char_read;
-            int_val1 = parse_sane_integer(int_val_buffer);
+            int_val1 = atoi_checked(int_val_buffer);
             do {
                 sscanf(name_p, "%d%n", &skip_layer, &char_read);
                 name_p += char_read;
@@ -1048,7 +1055,7 @@ void read_transition() {
                    int_val_buffer, &int_val2, &int_val3,
                    &char_read);
             name_p = tmp + char_read;
-            int_val1 = parse_sane_integer(int_val_buffer);
+            int_val1 = atoi_checked(int_val_buffer);
             do {
                 sscanf(name_p, "%d%n", &skip_layer, &char_read);
                 name_p += char_read;
@@ -1083,7 +1090,7 @@ void read_transition() {
                    int_val_buffer, &int_val2, &int_val3,
                    &char_read);
             name_p = tmp + char_read ;
-            int_val1 = parse_sane_integer(int_val_buffer);
+            int_val1 = atoi_checked(int_val_buffer);
             do {
                 sscanf(name_p, "%d%n", &skip_layer, &char_read);
                 name_p += char_read;
