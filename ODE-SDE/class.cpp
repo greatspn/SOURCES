@@ -114,13 +114,18 @@ inline void SystEqMin::getValTranFire()
 		unsigned int size=Trans[t].InPlaces.size();
 		EnabledTransValueCon[t]=0.0;
 		EnabledTransValueDis[t]=0.0;
-		if (size==0)
-			EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
-		else
-		{
-			double tmpC;
-			double tmpD;
-			//if (Trans[t].InPlaces.size()>0)
+
+		if (Trans[t].FuncT!=nullptr){
+			EnabledTransValueCon[t]=Trans[t].FuncT(Value,NameTrans,NamePlaces);
+		}
+		else {
+			if (size==0)
+				EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
+			else
+			{
+				double tmpC;
+				double tmpD;
+				//if (Trans[t].InPlaces.size()>0)
 				//{
 				EnabledTransValueCon[t] =ValuePrv[Trans[t].InPlaces[0].Id]/Trans[t].InPlaces[0].Card; 
 				EnabledTransValueDis[t] =trunc(EnabledTransValueCon[t]); 
@@ -136,6 +141,7 @@ inline void SystEqMin::getValTranFire()
 
 				}
 
+			}
 		}
 
 	}
@@ -153,29 +159,35 @@ inline void SystEqMas::getValTranFire()
 	for(int t=0; t<nTrans; t++)
 	{
 		EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
-		if (Trans[t].InPlaces.size()>0)
-		{ 
-			for (unsigned int k=0; k<Trans[t].InPlaces.size(); k++)//for all variables in the components
-			{
-				double valD,valC;
-				valD=valC=ValuePrv[Trans[t].InPlaces[k].Id];
-				double fatt=1;
-				for (int i=2;i<=Trans[t].InPlaces[k].Card;i++)
-				{
-					valD*=(ValuePrv[Trans[t].InPlaces[k].Id]-i+1);
-					valC*=ValuePrv[Trans[t].InPlaces[k].Id];
-					fatt*=(double)i; 
 
-				}
-
-				if (valD>0)
-					EnabledTransValueDis[t]*=valD/fatt;
-				else
-					EnabledTransValueDis[t]=0.0;
-				EnabledTransValueCon[t]*=valC/fatt;
-			}  
+		if (Trans[t].FuncT!=nullptr){
+			EnabledTransValueCon[t]=Trans[t].FuncT(Value,NameTrans,NamePlaces);
 		}
+		else {
 
+			if (Trans[t].InPlaces.size()>0)
+			{ 
+				for (unsigned int k=0; k<Trans[t].InPlaces.size(); k++)//for all variables in the components
+				{
+					double valD,valC;
+					valD=valC=ValuePrv[Trans[t].InPlaces[k].Id];
+					double fatt=1;
+					for (int i=2;i<=Trans[t].InPlaces[k].Card;i++)
+					{
+						valD*=(ValuePrv[Trans[t].InPlaces[k].Id]-i+1);
+						valC*=ValuePrv[Trans[t].InPlaces[k].Id];
+						fatt*=(double)i; 
+
+					}
+
+					if (valD>0)
+						EnabledTransValueDis[t]*=valD/fatt;
+					else
+						EnabledTransValueDis[t]=0.0;
+					EnabledTransValueCon[t]*=valC/fatt;
+				}  
+			}
+		}
 	}
 }
 
@@ -2221,7 +2233,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 	if (Info){
 		out<<tout<<" ";
 	}
-	cout<<"T:"<<tout<<endl;
+	cout<<" Time:"<<tout<<endl;
 	derived(y+1);
 	for (int j=1;j<=nPlaces;j++){
 		if (Info){
@@ -2452,6 +2464,7 @@ void SystEq::InsertTran(int num, struct InfTr T){
 	}
 	Trans[num].rate=T.rate;
 	Trans[num].enable=true; 
+	Trans[num].GenFun=T.GenFun;
 	Trans[num].dist[0] = std::exponential_distribution<double> (T.rate);
 	vector<InfPlace>::iterator it=T.InhPlaces.begin();
 	//inhibitor places
@@ -2729,48 +2742,52 @@ inline void Elem::Print(vector <string>& NamePlaces, vector <string>& NameTrans,
 		cout<<" +";  
 	else
 		cout<<" ";
-	cout<<IncDec<<"*"<<NameTrans[IdTran]<<"*"<<typeTfunction<<"( ";
+	if (Trans[IdTran].GenFun!="")
+		cout<<IncDec<<"*"<<Trans[IdTran].GenFun<<"()";
+	else{	
+		cout<<IncDec<<"*"<<NameTrans[IdTran]<<"*"<<typeTfunction<<"( ";
 
-	vector <struct InfPlace>::const_iterator it = Trans[IdTran].InPlaces.begin();
-	if ((it== Trans[IdTran].InPlaces.end()))
-		cout<<"1.0";
-	while (it!= Trans[IdTran].InPlaces.end())
-	{
-		cout<<NamePlaces[it->Id];
-		if (it->Card!=1)
-		{
-			if (typeTfunction!="Prod")
-				cout<<"/"<<it->Card;
-			else{
-				int fatt=1;
-				for (int i=2;i<=it->Card;i++){
-					fatt*=i;
-					cout<<"*("<<NamePlaces[it->Id]<<"-"<<i-1<<")";
-				}
-				cout<<"/"<<fatt;
-			}
-		}
-		++it;
-		if (it!=Trans[IdTran].InPlaces.end())
-			cout<<", ";
-	}
-	cout<<" )";
-	if (Trans[IdTran].InhPlaces.size()>0)
-	{
-		cout<<"*1_(";
-		it = Trans[IdTran].InhPlaces.begin();
-		while (it!= Trans[IdTran].InhPlaces.end())
+		vector <struct InfPlace>::const_iterator it = Trans[IdTran].InPlaces.begin();
+		if ((it== Trans[IdTran].InPlaces.end()))
+			cout<<"1.0";
+		while (it!= Trans[IdTran].InPlaces.end())
 		{
 			cout<<NamePlaces[it->Id];
-			if (it->Card>1)
+			if (it->Card!=1)
 			{
-				cout<<"<"<<it->Card;
+				if (typeTfunction!="Prod")
+					cout<<"/"<<it->Card;
+				else{
+					int fatt=1;
+					for (int i=2;i<=it->Card;i++){
+						fatt*=i;
+						cout<<"*("<<NamePlaces[it->Id]<<"-"<<i-1<<")";
+					}
+					cout<<"/"<<fatt;
+				}
 			}
 			++it;
-			if (it!=Trans[IdTran].InhPlaces.end())
-				cout<<" && ";
+			if (it!=Trans[IdTran].InPlaces.end())
+				cout<<", ";
 		}
-		cout<<")";
+		cout<<" )";
+		if (Trans[IdTran].InhPlaces.size()>0)
+		{
+			cout<<"*1_(";
+			it = Trans[IdTran].InhPlaces.begin();
+			while (it!= Trans[IdTran].InhPlaces.end())
+			{
+				cout<<NamePlaces[it->Id];
+				if (it->Card>1)
+				{
+					cout<<"<"<<it->Card;
+				}
+				++it;
+				if (it!=Trans[IdTran].InhPlaces.end())
+					cout<<" && ";
+			}
+			cout<<")";
+		}
 	}
 }
 

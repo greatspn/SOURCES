@@ -353,6 +353,19 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     out << "\n#include <iostream>\n#include \"class.hpp\"\n\n";
     out << "using namespace SDE;\nextern double epsilon;\n\n";
 
+    //for transition function rates
+    set<std::string> function_names;
+    for (int tt = 0; tt < ntr; tt++){
+    	if (tabt[tt].general_function!=NULL){
+    		std::string general_function=std::string(tabt[tt].general_function).substr(3,general_function.size()-4);
+    		if (function_names.find(general_function)==function_names.end()){
+    			out<<" double "<<general_function<<"(double *Value, vector <string>& NameTrans, vector <string>& NamePlaces){};\n";
+    			function_names.insert(general_function);
+    		}
+    	}
+    }
+    //for transition function rates
+    
     out << " string places[]={";
     for (int i = 0; i < npl; i++)
     {
@@ -394,70 +407,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
         memset(TPI[tt], 0, npl * sizeof(int));
     }
     
-   
-    
-    
-/*
-    //Creating function for ODE
-    out<< "\nvoid fex(double t, double *y, double *ydot, void *data){\n\n";
-    
-    out<<" double tt["<<ntr<<"];\n\n";
-    //creating transition intensities
-    
-    for (int tt = 0; tt < ntr; tt++){
-    	out<<" tt["<<tt<<"]= ";
-    	if (tabt[tt].general_function==NULL){
-    		if (MASSACTION){
-    			out << tabt[tt].mean_t;
-    			for (int pp1 = 0; pp1 < npl; pp1++){
-    				if (TPI[tt][pp1] < 0){
-    					out << " * y[" << pp1 << "]^" << abs(TPI[tt][pp1]);
-    				}
-    			}
-    		}
-    		else{
-    			out << tabt[tt].mean_t << "*min("<<tt_count[tt];
-    			bool first = true;
-    			for (int pp1 = 0; pp1 < npl; pp1++){
-    				if (TPI[tt][pp1] < 0){
-    						out << ", y[" << pp1 << "]/" << abs(TPI[tt][pp1]);
 
-    				}
-
-    			}
-    			out << ")";
-    		}
-    	}
-    	else{
-    		std::string general_function(tabt[tt].general_function);
-    		out<<general_function.substr(3,general_function.size()-4);
-    	}
-    	out<<";\n";
-    }
-    out<<"\n\n";
-    
-    for (pp = 0; pp < npl; pp++){
-           out << " ydot[" << pp << "] =";
-           bool found = false;
-           for (int tt = 0; tt < ntr; tt++){
-               if (TP[tt][pp] != 0){ 
-            	   found=true;
-            	   if (TP[tt][pp]>0.0)
-            		   out<< " +";
-            	   else
-            		   out<< " ";
-            	   out<<TP[tt][pp]<<"*tt["<<tt<<"]";
-               }
- 
-           }          
-           if  (!found)
-        	   out<<"0";
-           out<<";\n";
-    }
-           
-    out<<"\n\n}\n\n";
-    //Creating function for ODE    
-*/
     
 
     out << "\nint main(int argc, char **argv) {\n\n";
@@ -550,6 +500,12 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     {
 
         out << "//Transition " << tabt[tt].trans_name << "\n t.InPlaces.clear();\n t.InhPlaces.clear();\n t.InOuPlaces.clear();\n t.rate = " << tabt[tt].mean_t << ";\n";
+		
+        if (tabt[tt].general_function!=NULL){
+            std::string general_function(tabt[tt].general_function);
+			out<<" t.GenFun= \""<<general_function.substr(3,general_function.size()-4)<<"\";\n";
+			out<<" t.FuncT=  &"<<general_function.substr(3,general_function.size()-4)<<";\n";
+        }
         l_ptr = GET_INPUT_LIST(tt);
         while (l_ptr != NULL)
         {

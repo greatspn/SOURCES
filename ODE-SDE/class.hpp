@@ -168,12 +168,16 @@ namespace SDE
     //!encode the list of transition input places 
     vector <InfPlace> InPlaces;
     set<int> InOuPlaces;
-    //encode a negative exponential distribution
+    //!encode a negative exponential distribution
     std::exponential_distribution<double> dist[1];
-    //remember if this transition is enable in the diffusion process
+    //!remember if this transition is enable in the diffusion process
     bool enable;
-    //encode the  brown noise value for the current time 
+    //!encode the  brown noise value for the current time 
     double BrownNoise;
+    //!it stores for generic transition
+    std::string GenFun {""};
+    //!it is a pointer to a function   returns the transition intesity
+    double (*FuncT)(double *Value, vector <string>& NameTrans, vector <string>& NamePlaces) {nullptr};
   };
   
   //!Class Elem
@@ -435,5 +439,7 @@ namespace SDE
     //! For each transition it returns  the min of the values of its input places considering its input vector ValuePrv as marking
     void getValTranFire(double* ValuePrv);
   };
+  
+  
   
 }
