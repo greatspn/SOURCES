@@ -80,7 +80,7 @@ void read_DEF_file() {
                         // DSPN tool. The WN* tools ignore general functions, so this
                         // change does not affect the WN* tools. 
                         tabt[nmd].general_function = strdup(large_buf);
-                        printf("transition %s has function:  %s\n", 
+                        printf("Transition %s has function:  %s\n", 
                                 tabt[nmd].trans_name, tabt[nmd].general_function);
                         should_parse = FALSE;
                     }

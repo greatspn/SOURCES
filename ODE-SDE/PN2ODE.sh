@@ -12,13 +12,14 @@ echo
 
 if [ "$1" = "" ] || [ "$1" = "-h" ] || [ "$1" = "-help" ]
 then
-	echo "Use PN2ODE <path_net>/<net> [options] [format] -T <path_transitions>/<transitions> -F <path_obj_funct>/<obj_funct>"
+	echo "Use PN2ODE <path_net>/<net> [options] [format] -T <path_transitions>/<transitions> -F <path_obj_funct>/<obj_funct> -C <path_c_funct>/<c_funct>"
 	echo "       Options:"
     echo "       -M ->   Genelarized Mass Action policy"
     echo "       -I ->   Infinity servers policy (default)"
     echo "       -A ->   Automaton verification"
     echo "       -F ->   Specifies objective function file (only with -P)"
     echo "       -T ->   Specifies transition bounds file (only with -P)"
+    echo "       -C ->   Specifies C++ code for generic rate function"
     echo "       Format:"
     echo "       -R ->   Export in R format "
     echo "       -P ->   Export in R format with optimization "
@@ -76,8 +77,8 @@ case "$1" in
 
     -F)
     if [ $# -gt 1 ]
-    then
-        FUN_PATH="$2"
+    then 
+	FUN_PATH="$2"
     else
         printf "**ERROR** You must specify a legal objective function file path after -F. \n\n"
         exit 1
@@ -85,6 +86,17 @@ case "$1" in
     shift
     ;;
 
+    -C)
+    if [ $# -gt 1 ]
+    then
+	CFUN="$1"
+        CFUN_PATH="$2"
+    else
+        printf "**ERROR** You must specify an existing function file path after -C. \n\n"
+        exit 1
+    fi
+    shift
+    ;;
 
     *)
     printf "**ERROR** Invalid Options.You can check syntax rules by executing PN2ODE.sh -help.\n\n"
@@ -178,6 +190,18 @@ then
   echo "#Copying file form ${GREATSPN_SCRIPTDIR}/../inst_src to ${MyTempDir}"
   echo
   cp ./class.* ${MyTempDir}
+  if  [ "$CFUN" == "-C" ]
+  then
+
+	echo "  namespace SDE {"  >  ${MyTempDir}/tmpB
+	echo "}; "	>  ${MyTempDir}/tmpE
+ 	echo "#cat ${MyTempDir}/tmpB  $CFUN_PATH  ${MyTempDir}/tmpE >> ${MyTempDir}/tmpA"
+	cat ${MyTempDir}/tmpB $CFUN_PATH  ${MyTempDir}/tmpE > ${MyTempDir}/tmpA
+	cat ${MyTempDir}/tmpA >>  ${MyTempDir}/class.cpp
+	echo	FuncT
+	echo "#cat ${MyTempDir}/tmpA >>  ${MyTempDir}/class.cpp"
+	echo
+  fi
   cp ./lsode.*  ${MyTempDir}
   cp ./makefile ${MyTempDir}
   cp ./readingAutomaton.* ${MyTempDir}
@@ -195,8 +219,20 @@ else
   echo "#Copying file form ${GREATSPN_SCRIPTDIR}/../inst_src to ${MyTempDir}"
   echo
   cp ./class.* ${MyTempDir}
+  if  [ "$CFUN" == "-C" ]
+  then
+
+	echo "  namespace SDE {"  >  ${MyTempDir}/tmpB
+	echo "}; "	>  ${MyTempDir}/tmpE
+ 	echo "#cat ${MyTempDir}/tmpB  $CFUN_PATH  ${MyTempDir}/tmpE >> ${MyTempDir}/tmpA"
+	cat ${MyTempDir}/tmpB $CFUN_PATH  ${MyTempDir}/tmpE > ${MyTempDir}/tmpA
+	cat ${MyTempDir}/tmpA >>  ${MyTempDir}/class.cpp
+	echo	FuncT
+	echo "#cat ${MyTempDir}/tmpA >>  ${MyTempDir}/class.cpp"
+	echo
+  fi
   cp ./lsode.* ${MyTempDir}
-  cp ./makefile ${MyTempDir}
+  cp ./makefile ${MyTempDir} 
    cd ${MyTempDir}
   echo "#cd ${MyTempDir}"
   echo
