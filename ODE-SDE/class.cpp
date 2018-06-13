@@ -2179,6 +2179,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 	iwork1 = iwork2 = iwork5 = iwork6 = iwork7 = iwork8 = iwork9 = 0;
 	rwork1 = rwork5 = rwork6 = rwork7 = 0.0;
 
+
 	this->Max_Run=Max_Run;
 	//For statistic
 	FinalValueXRun=new double*[nPlaces];
