@@ -116,7 +116,7 @@ inline void SystEqMin::getValTranFire()
 		EnabledTransValueDis[t]=0.0;
 
 		if (Trans[t].FuncT!=nullptr){
-			EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces);
+			EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,t);
 		}
 		else {
 			if (size==0)
@@ -161,7 +161,7 @@ inline void SystEqMas::getValTranFire()
 		EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
 
 		if (Trans[t].FuncT!=nullptr){
-			EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces);
+			EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,t);
 		}
 		else {
 
@@ -205,7 +205,7 @@ inline void SystEqMas::getValTranFire()
             EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
             if (Trans[t].FuncT!=nullptr)
             {
-                EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces);
+                EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,t);
             }
             else
             {
@@ -255,7 +255,7 @@ inline void SystEqMas::getValTranFire()
             if (Trans[t].FuncT!=nullptr)
             {
 
-                EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces);
+                EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,t);
             }
             else
             {

@@ -177,7 +177,7 @@ namespace SDE
     //!it stores for generic transition
     std::string GenFun {""};
     //!it is a pointer to a function   returns the transition intesity
-    double (*FuncT)(double *Value, map <string,int>& NameTrans, map <string,int>& NamePlaces) {nullptr};
+    double (*FuncT)(double *Value, map <string,int>& NumTrans, map <string,int>& NumPlaces,const vector <string>& NameTrans, const int Trans) {nullptr};
   };
 
   //!Class Elem
