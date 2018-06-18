@@ -110,6 +110,14 @@
 #endif
 //automaton
 
+
+
+#ifndef __RGEX__
+#define __RGEX__
+#include <regex>
+#endif
+
+
 #ifndef __LSD_H__
 #define __LSD_H__
 #include "lsode.hpp"
