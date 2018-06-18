@@ -376,7 +376,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
             if (function_names.find(general_function)==function_names.end())
             {
                 cout<<general_function<<endl;
-                hout<<"double "<<general_function<<"(double *Value, map <std::string,int>& NumTrans, map <std::string,int>& NumPlaces,const vector <string>& NameTrans,const int Trans);\n";
+                hout<<"double "<<general_function<<"(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran);\n";
                 function_names.insert(general_function);
 
             }
