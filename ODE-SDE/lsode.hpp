@@ -294,8 +294,8 @@ tam@wri.com
 #include <math.h>
 #include <stdlib.h>
 
-#define max( a , b )  ( (a) > (b) ? (a) : (b) )
-#define min( a , b )  ( (a) < (b) ? (a) : (b) )
+//#define max( a , b )  ( (a) > (b) ? (a) : (b) )
+//#define min( a , b )  ( (a) < (b) ? (a) : (b) )
 
 #define ETA 2.2204460492503131e-16
 
@@ -461,7 +461,7 @@ void lsoda(class SystEq& f, int neq, double *y, double *t, double tout, int itol
 		   int iwork1, int iwork2, int iwork5, int iwork6, int iwork7, int iwork8, int iwork9,
 		   double rwork1, double rwork5, double rwork6, double rwork7, void *_data);
 /*
-void 
+void
 lsoda(f, neq, y, t, tout, itol, rtol, atol, itask, istate,
       iopt, jt, iwork1, iwork2, iwork5, iwork6, iwork7, iwork8,
       iwork9, rwork1, rwork5, rwork6, rwork7, _data)

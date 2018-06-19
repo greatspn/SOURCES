@@ -91,7 +91,10 @@ extern "C" {
     extern bool MASSACTION;
     extern bool AUTOMATON;
 
-    int exceeded_markings_bound() { return FALSE; }
+    int exceeded_markings_bound()
+    {
+        return FALSE;
+    }
 }
 
 using namespace std;
@@ -351,7 +354,38 @@ void build_ODE(ofstream &out, std::string path, std::string net)
 
 
     out << "\n#include <iostream>\n#include \"class.hpp\"\n\n";
-    out << "using namespace SDE;\nextern double epsilon;\n\n";
+    out << "\n#include <iostream>\n#include \""<<path<<".hpp\"\n\n";
+
+    //for transition function rates
+    std::string filename=path+".hpp";
+    ofstream hout(filename.c_str());
+
+    if (!hout)
+    {
+        cerr << "Error: it is not possible to output file "<<filename<<"\n\n";
+        exit(EXIT_FAILURE);
+    }
+    hout << "namespace SDE {\n";
+    set<std::string> function_names;
+    for (int tt = 0; tt < ntr; tt++)
+    {
+        if (tabt[tt].general_function!=NULL)
+        {
+            std::string general_function=std::string(tabt[tt].general_function);
+            general_function=general_function.substr(3,general_function.size()-4);
+            if (function_names.find(general_function)==function_names.end())
+            {
+                cout<<general_function<<endl;
+                hout<<"double "<<general_function<<"(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran);\n";
+                function_names.insert(general_function);
+
+            }
+        }
+    }
+    hout<<"};\n";
+    hout.close();
+        //for transition function rates
+        out << "using namespace SDE;\nextern double epsilon;\n\n";
 
     out << " string places[]={";
     for (int i = 0; i < npl; i++)
@@ -393,72 +427,9 @@ void build_ODE(ofstream &out, std::string path, std::string net)
         TPI[tt] = (int *) malloc((npl) * sizeof(int));
         memset(TPI[tt], 0, npl * sizeof(int));
     }
-    
-   
-    
-    
-/*
-    //Creating function for ODE
-    out<< "\nvoid fex(double t, double *y, double *ydot, void *data){\n\n";
-    
-    out<<" double tt["<<ntr<<"];\n\n";
-    //creating transition intensities
-    
-    for (int tt = 0; tt < ntr; tt++){
-    	out<<" tt["<<tt<<"]= ";
-    	if (tabt[tt].general_function==NULL){
-    		if (MASSACTION){
-    			out << tabt[tt].mean_t;
-    			for (int pp1 = 0; pp1 < npl; pp1++){
-    				if (TPI[tt][pp1] < 0){
-    					out << " * y[" << pp1 << "]^" << abs(TPI[tt][pp1]);
-    				}
-    			}
-    		}
-    		else{
-    			out << tabt[tt].mean_t << "*min("<<tt_count[tt];
-    			bool first = true;
-    			for (int pp1 = 0; pp1 < npl; pp1++){
-    				if (TPI[tt][pp1] < 0){
-    						out << ", y[" << pp1 << "]/" << abs(TPI[tt][pp1]);
 
-    				}
 
-    			}
-    			out << ")";
-    		}
-    	}
-    	else{
-    		std::string general_function(tabt[tt].general_function);
-    		out<<general_function.substr(3,general_function.size()-4);
-    	}
-    	out<<";\n";
-    }
-    out<<"\n\n";
-    
-    for (pp = 0; pp < npl; pp++){
-           out << " ydot[" << pp << "] =";
-           bool found = false;
-           for (int tt = 0; tt < ntr; tt++){
-               if (TP[tt][pp] != 0){ 
-            	   found=true;
-            	   if (TP[tt][pp]>0.0)
-            		   out<< " +";
-            	   else
-            		   out<< " ";
-            	   out<<TP[tt][pp]<<"*tt["<<tt<<"]";
-               }
- 
-           }          
-           if  (!found)
-        	   out<<"0";
-           out<<";\n";
-    }
-           
-    out<<"\n\n}\n\n";
-    //Creating function for ODE    
-*/
-    
+
 
     out << "\nint main(int argc, char **argv) {\n\n";
     out << " time_t time_1,time_4;\n";
@@ -512,8 +483,8 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     out << " if ((strcmp(argv[2],\"SIM\")==0)||(strcmp(argv[2],\"sim\")==0))\n\t{\n";
     out << "\t cout<<\"\\t using simulation\"<<endl;\n\t epsilon=10000000000;\n\t step=MAXSTEP;\n\t SOLVE=3;\n\t}\n";
     out << " if ((strcmp(argv[2],\"HODE\")==0)||(strcmp(argv[2],\"hode\")==0))\n\t SOLVE = 2;\n";
-    out << " if ((strcmp(argv[2],\"SDE\")==0)||(strcmp(argv[2],\"sde\")==0) || (strcmp(argv[2],\"HSDE\")==0)||(strcmp(argv[2],\"hsde\")==0) )\n\t SOLVE = 0;\n"; 
-    
+    out << " if ((strcmp(argv[2],\"SDE\")==0)||(strcmp(argv[2],\"sde\")==0) || (strcmp(argv[2],\"HSDE\")==0)||(strcmp(argv[2],\"hsde\")==0) )\n\t SOLVE = 0;\n";
+
     out << " if ((!strcmp(argv[8],\"true\"))||(!strcmp(argv[6],\"TRUE\")))\n\t OUTPUT= true;\n";
     out << " double step_o=atof(argv[9]);\n";
 
@@ -549,7 +520,17 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     for (int tt = 0; tt < ntr; tt++)
     {
 
-        out << "//Transition " << tabt[tt].trans_name << "\n t.InPlaces.clear();\n t.InhPlaces.clear();\n t.InOuPlaces.clear();\n t.rate = " << tabt[tt].mean_t << ";\n";
+        out << "//Transition " << tabt[tt].trans_name << "\n t.InPlaces.clear();\n t.InhPlaces.clear();\n t.InOuPlaces.clear();\n";
+
+        if (tabt[tt].general_function!=NULL)
+        {
+            std::string general_function(tabt[tt].general_function);
+            out<<" t.GenFun= \""<<general_function.substr(3,general_function.size()-4)<<"\";\n";
+            out<<" t.FuncT=  &"<<general_function.substr(3,general_function.size()-4)<<";\n";
+            out<<" t.rate = 1.0;\n";
+        }
+        else
+            out<<"t.rate = "<<tabt[tt].mean_t << ";\n";
         l_ptr = GET_INPUT_LIST(tt);
         while (l_ptr != NULL)
         {
@@ -578,7 +559,8 @@ void build_ODE(ofstream &out, std::string path, std::string net)
         out << " se.InsertTran(" << tt << ",t);\n\n";
     }
 //to remove implicit places
-    if (ErrorLU){
+    if (ErrorLU)
+    {
         cout<<"\n\tWarning: no imlicit places are considered.\n\n";
         implPlace.clear();
     }
@@ -685,135 +667,145 @@ void build_ODE(ofstream &out, std::string path, std::string net)
 /**************************************************************/
 void build_ODEGPU(std::string net)
 {
-/* Init build_ODEGPU */
+    /* Init build_ODEGPU */
 
-Node_p l_ptr = NULL;
-int pp;
-clock_t startGlobal, endGlobal;
-double timeGlobal;
-startGlobal = clock();
+    Node_p l_ptr = NULL;
+    int pp;
+    clock_t startGlobal, endGlobal;
+    double timeGlobal;
+    startGlobal = clock();
 
 
-cout << "\n\n------------------------------------------------" << endl;
-cout << "               Start  encoding" << endl;
-cout << "------------------------------------------------\n" << endl;
-	
-	
-//transition rate	
-std::string filename=net+".c_vector";	
-ofstream out(filename.c_str());
+    cout << "\n\n------------------------------------------------" << endl;
+    cout << "               Start  encoding" << endl;
+    cout << "------------------------------------------------\n" << endl;
 
-if (!out) {
-    cerr << "Error: it is not possible to output file "<<filename<<"\n\n";
-    exit(EXIT_FAILURE);
-}
 
-for (int i=0;i<ntr;i++)
-	out<<tabt[i].mean_t<<"\n";
-out.close();
+//transition rate
+    std::string filename=net+".c_vector";
+    ofstream out(filename.c_str());
+
+    if (!out)
+    {
+        cerr << "Error: it is not possible to output file "<<filename<<"\n\n";
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i=0; i<ntr; i++)
+        out<<tabt[i].mean_t<<"\n";
+    out.close();
 
 
 //initial marking
-filename=net+".M_0";
-out.open(filename.c_str());
+    filename=net+".M_0";
+    out.open(filename.c_str());
 
-if (!out) {
-    cerr << "Error: it is not possible to output file "<<filename<<"\n\n";
-    exit(EXIT_FAILURE);
-}
+    if (!out)
+    {
+        cerr << "Error: it is not possible to output file "<<filename<<"\n\n";
+        exit(EXIT_FAILURE);
+    }
 
-for (int i=0;i<npl;i++)
-	out<<net_mark[i].total<<"\t";
-out<<endl;
+    for (int i=0; i<npl; i++)
+        out<<net_mark[i].total<<"\t";
+    out<<endl;
 
-out.close();
+    out.close();
 
 //constant marking if different by 0
-filename=net+".M_feed";
+    filename=net+".M_feed";
 
-if (!out) {
-    cerr << "Error: it is not possible to output file "<<filename<<"\n\n";
-    exit(EXIT_FAILURE);
-}
-
-out.open(filename.c_str());
-for (int i=0;i<npl;i++)
-	out<<"0"<<"\t";
-out<<endl;
-out.close();
-
-
-int **TPO = (int **) malloc((ntr) *  sizeof(int *));
-int **TPI = (int **) malloc((ntr) *  sizeof(int *));
-for (int tt = 0; tt < ntr; tt++)
-{
-    TPO[tt] = (int *) malloc((npl) * sizeof(int));
-    memset(TPO[tt], 0, npl * sizeof(int));
-    TPI[tt] = (int *) malloc((npl) * sizeof(int));
-    memset(TPI[tt], 0, npl * sizeof(int));
-}
-
-for (int tt = 0; tt < ntr; tt++){
-    l_ptr = GET_INPUT_LIST(tt);
-    while (l_ptr != NULL)
+    if (!out)
     {
-        pp = GET_PLACE_INDEX(l_ptr);
-        //TP[tt][pp] = -l_ptr->molt;
-        TPI[tt][pp] = l_ptr->molt;
-        l_ptr = NEXT_NODE(l_ptr);
+        cerr << "Error: it is not possible to output file "<<filename<<"\n\n";
+        exit(EXIT_FAILURE);
     }
-    l_ptr = GET_OUTPUT_LIST(tt);
-    while (l_ptr != NULL)
+
+    out.open(filename.c_str());
+    for (int i=0; i<npl; i++)
+        out<<"0"<<"\t";
+    out<<endl;
+    out.close();
+
+
+    int **TPO = (int **) malloc((ntr) *  sizeof(int *));
+    int **TPI = (int **) malloc((ntr) *  sizeof(int *));
+    for (int tt = 0; tt < ntr; tt++)
     {
-        pp = GET_PLACE_INDEX(l_ptr);
-        TPO[tt][pp] = l_ptr->molt;
-        l_ptr = NEXT_NODE(l_ptr);
+        TPO[tt] = (int *) malloc((npl) * sizeof(int));
+        memset(TPO[tt], 0, npl * sizeof(int));
+        TPI[tt] = (int *) malloc((npl) * sizeof(int));
+        memset(TPI[tt], 0, npl * sizeof(int));
     }
-    
+
+    for (int tt = 0; tt < ntr; tt++)
+    {
+        l_ptr = GET_INPUT_LIST(tt);
+        while (l_ptr != NULL)
+        {
+            pp = GET_PLACE_INDEX(l_ptr);
+            //TP[tt][pp] = -l_ptr->molt;
+            TPI[tt][pp] = l_ptr->molt;
+            l_ptr = NEXT_NODE(l_ptr);
+        }
+        l_ptr = GET_OUTPUT_LIST(tt);
+        while (l_ptr != NULL)
+        {
+            pp = GET_PLACE_INDEX(l_ptr);
+            TPO[tt][pp] = l_ptr->molt;
+            l_ptr = NEXT_NODE(l_ptr);
+        }
+
 #if DEBUG
-    for (int i = 0; i < npl; i++)
-        cout << "\t" << TP[tt][i];
-    cout << endl;
+        for (int i = 0; i < npl; i++)
+            cout << "\t" << TP[tt][i];
+        cout << endl;
 #endif
-}
+    }
 
 
 //stoichiometric matrix  left side
-filename=net+".left_side";
+    filename=net+".left_side";
 
-if (!out) {
-    cerr << "Error: it is not possible to output file "<<filename<<"\n\n";
-    exit(EXIT_FAILURE);
-}
+    if (!out)
+    {
+        cerr << "Error: it is not possible to output file "<<filename<<"\n\n";
+        exit(EXIT_FAILURE);
+    }
 
-out.open(filename.c_str());
-for (int tt = 0; tt < ntr; tt++){
-	out<<TPI[tt][0];
-	for (int pp = 1; pp < npl; pp++){
-		out<<"\t"<<TPI[tt][pp];
-	}
-	out<<"\n";
-}
-out.close();
+    out.open(filename.c_str());
+    for (int tt = 0; tt < ntr; tt++)
+    {
+        out<<TPI[tt][0];
+        for (int pp = 1; pp < npl; pp++)
+        {
+            out<<"\t"<<TPI[tt][pp];
+        }
+        out<<"\n";
+    }
+    out.close();
 
 
 //stoichiometric matrix  right side
-filename=net+".right_side";
+    filename=net+".right_side";
 
-if (!out) {
-    cerr << "Error: it is not possible to output file "<<filename<<"\n\n";
-    exit(EXIT_FAILURE);
-}
+    if (!out)
+    {
+        cerr << "Error: it is not possible to output file "<<filename<<"\n\n";
+        exit(EXIT_FAILURE);
+    }
 
-out.open(filename.c_str());
-for (int tt = 0; tt < ntr; tt++){
-	out<<TPO[tt][0];
-	for (int pp = 1; pp < npl; pp++){
-		out<<"\t"<<TPO[tt][pp];
-	}
-	out<<"\n";
-}
-out.close();
+    out.open(filename.c_str());
+    for (int tt = 0; tt < ntr; tt++)
+    {
+        out<<TPO[tt][0];
+        for (int pp = 1; pp < npl; pp++)
+        {
+            out<<"\t"<<TPO[tt][pp];
+        }
+        out<<"\n";
+    }
+    out.close();
 
 //free memory
     for (int tt = 0; tt < ntr; tt++)
@@ -886,12 +878,12 @@ void build_ODER(ofstream &out, std::string net)
 
     out << "\nlibrary(deSolve)\n\n";
     out <<"Times <- seq(from = 0, to = FinalTime, by = step)\n";
-   
+
     out << "\n##Begin parameter rates\n";
     for(int i=0; i<nrp; ++i)
         out<<tabrp[i].rate_name<<" = "<<tabrp[i].rate_val<<endl;
     out << "##End parameter rates\n";
-    
+
     out << "\n##Begin Transition rates\n";
     for (int tt = 0; tt < ntr; tt++)
     {
@@ -914,7 +906,7 @@ void build_ODER(ofstream &out, std::string net)
         out << tabt[tt].trans_name << " = ";
         if (tabt[tt].rate_par_id>=0)
             out<<tabrp[tabt[tt].rate_par_id].rate_name<<"\n";
-        else    
+        else
             out<<tabt[tt].mean_t<< "\n";
 #if DEBUG
         for (int i = 0; i < npl; i++)
@@ -924,8 +916,8 @@ void build_ODER(ofstream &out, std::string net)
     }
 
     out << "##End Transition rates\n\n";
-    
-    
+
+
     out << "funODE <- function(t,y, parms){\n\n";
 
     out << "##Places array\n";
@@ -989,15 +981,15 @@ void build_ODER(ofstream &out, std::string net)
                 }
                 else
                 {
-                  std::string general_function(tabt[tt].general_function);
-                  if (TP[tt][pp]>0)
-                  {
-                    out<<"+1 * "<<general_function.substr(3,general_function.size()-4);
-                  }
-                  else
-                  {
-                    out<<TP[tt][pp]<<" * "<<general_function.substr(3,general_function.size()-4);
-                  }
+                    std::string general_function(tabt[tt].general_function);
+                    if (TP[tt][pp]>0)
+                    {
+                        out<<"+1 * "<<general_function.substr(3,general_function.size()-4);
+                    }
+                    else
+                    {
+                        out<<TP[tt][pp]<<" * "<<general_function.substr(3,general_function.size()-4);
+                    }
                 }
 
             }
@@ -1039,7 +1031,7 @@ void build_ODER(ofstream &out, std::string net)
     out << "\n\n##REMEMBER TO INITIALIZE Times ARRAY.";
     out<<"\ncat(\"\\n\\nExecution time ODE:\",difftime(Sys.time(), t1, unit = \"secs\"), \"sec.\\n\")";
     out << "\n\nwrite.table(file=\"ODE_01.txt\",res1)\n\n##PLEASE REMEMBER TO DEFINE Times ARRAY";
-  
+
     cout << "\tDone.\n" << endl;
 
 //free memory
@@ -1128,8 +1120,9 @@ void build_ODEOPT(ofstream &out, std::string net, std::string trans_path, std::s
     {
         while (!(myfile.eof()))
         {
-            getline (myfile,line); 
-            if (line!=""){
+            getline (myfile,line);
+            if (line!="")
+            {
                 transition_def k;
                 k.locat = -1;
                 parser.update(delimC,line);
@@ -1168,7 +1161,8 @@ void build_ODEOPT(ofstream &out, std::string net, std::string trans_path, std::s
 
     //constraint check loop
     std::map<std::string, transition_def>::iterator it;
-    for( it = transit.begin(); it != transit.end(); it++) {
+    for( it = transit.begin(); it != transit.end(); it++)
+    {
         cout << it->first<<" ";
         cout << it->second.tr_min<<" ";
         cout << it->second.tr_max<<" ";
@@ -1193,15 +1187,15 @@ void build_ODEOPT(ofstream &out, std::string net, std::string trans_path, std::s
     out <<   "#You can report bugs  by sending an e-mail to beccuti@di.unito.it #\n";
     out <<   "###################################################################\n\n";
 
-    #if DEBUGOPT
-        out << "library(parallel)"<< endl;
-        out << "library(alabama)" <<endl;
-    #endif
+#if DEBUGOPT
+    out << "library(parallel)"<< endl;
+    out << "library(alabama)" <<endl;
+#endif
 
     out << "library(deSolve)" << endl;
     out << "library(GenSA)"<< endl;
-   // out << "#If you want to use a different opt solver library uncomment this:"<< endl;
-  //  out << "#library()" << endl;
+    // out << "#If you want to use a different opt solver library uncomment this:"<< endl;
+    //  out << "#library()" << endl;
 
 
     out << "\n##Begin Transition Rates\n";
@@ -1228,7 +1222,8 @@ void build_ODEOPT(ofstream &out, std::string net, std::string trans_path, std::s
         bool flag = false;
 
         it = transit.find(tabt[tt].trans_name);
-        if (it != transit.end()){
+        if (it != transit.end())
+        {
             flag= true;
         }
 
@@ -1251,7 +1246,7 @@ void build_ODEOPT(ofstream &out, std::string net, std::string trans_path, std::s
 #endif
     }
     out << "##End Transition Rates";
-    
+
 
     out << "\n\n##Setting number of places:\nyini = rep(0," << npl<<")" <<endl;
     out << "\n##Begin Place Mapping\n";
@@ -1275,13 +1270,13 @@ void build_ODEOPT(ofstream &out, std::string net, std::string trans_path, std::s
 
     out <<"##Token Sum:\n";
     out <<"tot_token=sum(yini)\n";
-    
+
     out <<"##Object value:\n";
     out<<"objvalue=.Machine$double.xmax\n";
-    
+
     out <<"##Object res:\n";
     out<<"objres=rep(0,"<<npl+1<<")\n";
-    
+
 
 
     out <<"\n\n##ODE Result:\n";
@@ -1291,7 +1286,8 @@ void build_ODEOPT(ofstream &out, std::string net, std::string trans_path, std::s
     out <<"\n\n##LOWERBOUNDS ARRAY:\n";
     out <<"LB=c(";
     it = transit.begin();
-    while(it != transit.end()){
+    while(it != transit.end())
+    {
 
         out << it->second.tr_min;
 
@@ -1307,7 +1303,8 @@ void build_ODEOPT(ofstream &out, std::string net, std::string trans_path, std::s
     out <<"\n##UPPERBOUNDS ARRAY:\n";
     out <<"UB=c(";
     it = transit.begin();
-    while(it != transit.end()){
+    while(it != transit.end())
+    {
 
         out << it->second.tr_max;
 
@@ -1324,16 +1321,17 @@ void build_ODEOPT(ofstream &out, std::string net, std::string trans_path, std::s
     out <<"\n##STARTING-POINTS ARRAY:\n";
     out <<"k=c(";
     it = transit.begin();
-    while(it != transit.end()){
+    while(it != transit.end())
+    {
 
         if(it->second.locat<=0)
-            {
-                out<<(it->second.tr_min+it->second.tr_max)/2;
-            }
-            else
-            {
-                out<<it->second.locat;
-            }
+        {
+            out<<(it->second.tr_min+it->second.tr_max)/2;
+        }
+        else
+        {
+            out<<it->second.locat;
+        }
 
         ++it;
 
@@ -1351,10 +1349,11 @@ void build_ODEOPT(ofstream &out, std::string net, std::string trans_path, std::s
     //ODE1 WITHOUT OPT
     out << "##Function used to calculate the objective function\n";
     out << "funODE <- function(t,y,parms) {\n\n";
-    
+
     it = transit.begin();
     int count = 1;
-    while(it != transit.end()){
+    while(it != transit.end())
+    {
         out << it->first << " <- parms["<<count<<"]\n";
         ++count;
         ++it;
@@ -1368,7 +1367,8 @@ void build_ODEOPT(ofstream &out, std::string net, std::string trans_path, std::s
     }
     out << "\n";
     out<<"ddy=rep(0,"<<npl<<")\n";
-    for (pp = 0; pp < npl; pp++){
+    for (pp = 0; pp < npl; pp++)
+    {
 
         out << "ddy["<<pp+1<<"] = d" << tabp[pp].place_name << " = ";
         bool found = false;
@@ -1429,9 +1429,10 @@ void build_ODEOPT(ofstream &out, std::string net, std::string trans_path, std::s
                 }
             }
         }
-        if (!found){//case test loop
+        if (!found) //case test loop
+        {
             out << "0";
-            }
+        }
         out << "\n";
     }
     out << "\n#cat(\"ddy  :\",ddy,\"\\n\") \nreturn(list(ddy))\n}\n";
@@ -1439,11 +1440,12 @@ void build_ODEOPT(ofstream &out, std::string net, std::string trans_path, std::s
 
     std::stringstream buf;
     std::ifstream file(obj_funct_path.c_str());
-     if(!file){
-      cerr << "\n*****Error opening input file "<<obj_funct_path<<" *****\n" << endl;
-      exit(EXIT_FAILURE);
-     }
-     buf<<file.rdbuf();
+    if(!file)
+    {
+        cerr << "\n*****Error opening input file "<<obj_funct_path<<" *****\n" << endl;
+        exit(EXIT_FAILURE);
+    }
+    buf<<file.rdbuf();
 
     std::string obj_string = parseObjectiveFunction(obj_funct_path,"y");
     std::string objlast_string = parseObjectiveFunction(obj_funct_path,"last");
@@ -1456,7 +1458,7 @@ void build_ODEOPT(ofstream &out, std::string net, std::string trans_path, std::s
     out << "\n##OPT FUNCT\n";
     out << "fn <-function(x,y,hini,Time) { \n";
     out << "Times <- seq(from = TimeOLD, to = Time, by = step)\n";
-    
+
     out << "res <- lsode(y,Times,funODE,parms=x,hini=hini)\n";
     out << "last=tail(res,1)\n";
 
@@ -1466,27 +1468,27 @@ void build_ODEOPT(ofstream &out, std::string net, std::string trans_path, std::s
     out <<      "assign('objres', last, envir = .GlobalEnv) \n}";
     out << "\nreturn(fn)\n}";
     out << "\n##END OPT FUNCT\n\n";
-    #if DEBUGOPT
-        out << "\n##Begin Inequality Constraints\n";
-        out << "hin <- function(x) {\n";
-        out << "hin <- rep(0, "<< (transit.size())*2<<")\n";
-        int j = 1;
-        int i = 0;
-        for(it = transit.begin(); it != transit.end(); it++)
-        {
-            out << "## "<<it->second.tr_min << " < " <<  it->first << " < " << it->second.tr_max << "\n";
-            out << "hin["<<j++<<"]<- x["<<i+1<<"]-"<< it->second.tr_min<<"\n";
-            out << "hin["<<j++<<"]<- -x["<<i+1<<"]+"<<it->second.tr_max<<"\n";
-            i++;
-        }
-        out << "return (hin)\n}\n";
-        out << "##End Inequality Constraints\n\n";
+#if DEBUGOPT
+    out << "\n##Begin Inequality Constraints\n";
+    out << "hin <- function(x) {\n";
+    out << "hin <- rep(0, "<< (transit.size())*2<<")\n";
+    int j = 1;
+    int i = 0;
+    for(it = transit.begin(); it != transit.end(); it++)
+    {
+        out << "## "<<it->second.tr_min << " < " <<  it->first << " < " << it->second.tr_max << "\n";
+        out << "hin["<<j++<<"]<- x["<<i+1<<"]-"<< it->second.tr_min<<"\n";
+        out << "hin["<<j++<<"]<- -x["<<i+1<<"]+"<<it->second.tr_max<<"\n";
+        i++;
+    }
+    out << "return (hin)\n}\n";
+    out << "##End Inequality Constraints\n\n";
 
-        out << "\n##Begin Gradients Def\n";
-        out << "gr <- function(x,dx,F,y) {\n";
-        out << "grad(func=fn, x=x, dx=dx, F = F, parms=0)\n}\n";
-        out << "##End Gradients Def\n";
-    #endif
+    out << "\n##Begin Gradients Def\n";
+    out << "gr <- function(x,dx,F,y) {\n";
+    out << "grad(func=fn, x=x, dx=dx, F = F, parms=0)\n}\n";
+    out << "##End Gradients Def\n";
+#endif
     out << "##Begin External loop\n";
     out << "compute = function(Time,hini){\n\n";
     out << "q=GenSA(par=k,fn=fn,upper=UB,lower=LB,control=list(max.time=2,verbose=F,trace.mat=F),y=y,hini=hini,Time=Time)" << endl << endl;
@@ -1501,7 +1503,8 @@ void build_ODEOPT(ofstream &out, std::string net, std::string trans_path, std::s
     std::ostringstream inhibited_rates;
     it = transit.begin();
 
-    while(it != transit.end()){
+    while(it != transit.end())
+    {
         inhibited_rates << (it->first);
         ++it;
         if(it!=transit.end())
@@ -1519,16 +1522,16 @@ void build_ODEOPT(ofstream &out, std::string net, std::string trans_path, std::s
 
     //removing last comma
     out <<"assign('kv', rbind(kv,c("<< inhibited_rates.str() <<")), envir = .GlobalEnv)\n\n";
-  
+
     out<<"cat(\"Y:\",objres,\"\\n\")\n";
     out<<"cat(\"k:\",k,\"\\n\")";
 
     out << "\nreturn(objres)\n}\n##END ODE SYSTEM\n";
 
-    
+
     out<<"t1=Sys.time()\n";
     out<<"Times <- seq(from = 0, to = FinalTime, by = step)\n";
-    out<<"TimesLength=length(Times)\n"; 
+    out<<"TimesLength=length(Times)\n";
     out<<"y=yini\n";
     out<<"TimeOLD=Times[1]\n";
     out<<"res=sapply(Times[2:TimesLength],compute,hini)\n";
@@ -1543,9 +1546,9 @@ void build_ODEOPT(ofstream &out, std::string net, std::string trans_path, std::s
     out << ")\n";
 
     out<<"\ncat(\"\\n\\nExecution time ODE+OPT solver:\",difftime(Sys.time(), t1, unit = \"secs\"), \"sec.\\n\")";
-    
+
     out << "\n\nwrite.table(file=\"Opt_01.txt\",res)\n\n##PLEASE REMEMBER TO DEFINE Times ARRAY";
-    
+
 
 //free memory
     for (int tt = 0; tt < ntr; tt++)

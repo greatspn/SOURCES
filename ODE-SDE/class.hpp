@@ -28,13 +28,13 @@
 #ifndef __IOS_H__
 #define __IOS_H__
 #include <iostream>
-#endif 
+#endif
 
 #ifndef __FST_H__
 #define __FST_H__
 #include <fstream>
 #include <limits.h>
-#endif 
+#endif
 
 #ifndef __STDL__
 #define __STDL__
@@ -75,7 +75,7 @@
 
 #ifndef __TLT_H__
 #define __TLT_H__
-#include <utility> 
+#include <utility>
 #endif
 
 #ifndef __TIM_H__
@@ -95,13 +95,13 @@
 #define __MTH_H__
 #include <cmath>       /* exp */
 #include <limits.h>
-#endif	
+#endif
 
 #ifndef __MEM_H__
 #define __MEM_H__
 #include <sys/time.h>
-#include <sys/resource.h> 
-#endif	
+#include <sys/resource.h>
+#endif
 
 //automaton
 #ifdef AUTOMATON
@@ -110,9 +110,17 @@
 #endif
 //automaton
 
+
+
+#ifndef __RGEX__
+#define __RGEX__
+#include <regex>
+#endif
+
+
 #ifndef __LSD_H__
 #define __LSD_H__
-#include "lsode.hpp" 
+#include "lsode.hpp"
 #endif
 
 
@@ -127,21 +135,21 @@ namespace SDE
   #define ADAPTATIVE 1
   #define ALPHA 0.99
   const double MAXSTEP=4294967295.0;
-  
+
   using namespace std;
 //automaton
 #ifdef AUTOMATON
   using namespace AUTOMA;
 #endif
-//automaton 
-  
-  
-  //!Exception 
+//automaton
+
+
+  //!Exception
   struct Exception
   {
     std::string mess;
   public:
-    //! Empty constructors 
+    //! Empty constructors
     Exception() {mess="";};
     //! constructor takes in input a message
     Exception(std::string mess) {this->mess=mess;};
@@ -151,47 +159,51 @@ namespace SDE
     std::string get(void) {return mess;};
     //@}
   };
-  
+
   //! It uses for encoding the place information
   struct InfPlace
   {
     double Card;
     int Id;
   };
-  
+
   //! It uses for encoding the transition information (i.e. rate, inhibitor places, and its associated  negative exponential distribution)
   struct InfTr
   {
     double rate;
     //!encode the list of place connected by an inhibitor arc to the transition
     vector <InfPlace> InhPlaces;
-    //!encode the list of transition input places 
+    //!encode the list of transition input places
     vector <InfPlace> InPlaces;
     set<int> InOuPlaces;
-    //encode a negative exponential distribution
+    //!encode a negative exponential distribution
     std::exponential_distribution<double> dist[1];
-    //remember if this transition is enable in the diffusion process
+    //!remember if this transition is enable in the diffusion process
     bool enable;
-    //encode the  brown noise value for the current time 
+    //!encode the  brown noise value for the current time
     double BrownNoise;
+    //!it stores for generic transition
+    std::string GenFun {""};
+    //!it is a pointer to a function   returns the transition intesity
+    double (*FuncT)(double *Value, map <string,int>& NumTrans, map <string,int>& NumPlaces, const vector <string>& NameTrans, const struct InfTr* Trans,  const int Tran) {nullptr};
   };
-  
+
   //!Class Elem
-  /*! 
+  /*!
    * This class stores an equation component.
-   */  
-  
+   */
+
   class Elem
   {
   private:
     int IncDec; //!variable decrements or increment
-    int IdTran; //!transition id used to fetch the transition information 
+    int IdTran; //!transition id used to fetch the transition information
     //vector <struct InfPlace> IdPlaces; //! a list of place/variable identifiers to fetch the place information
-    
-  public:  
+
+  public:
     //! Empty Constructor.
     Elem(){IncDec=-1; IdTran=-1;};
-    //! Constructor. It takes in input all the information to create an  equation component 
+    //! Constructor. It takes in input all the information to create an  equation component
     Elem(int IncDec, int IdTran);
     //! Copy Constructor.
     Elem(const Elem&  El);
@@ -218,25 +230,25 @@ namespace SDE
       out<<"IncDec: "<<E.IncDec<<" IdTran: "<<E.IdTran<<endl;
       return out;
     };
-    
-    
+
+
   };
-  
+
   //!Class Equation
-  /*! 
+  /*!
    * This class stores a single equation, each equation component is encoded on class Elem.
-   */  
+   */
   class Equation
   {
   private:
-    //! it encodes all the  equation components for a variable 
+    //! it encodes all the  equation components for a variable
     vector <class Elem> LElem;
     //! it encodes the list of places and their cardinality used to compute this value. The last element is the P-invariant value.
     vector <struct InfPlace> PSemiflow;
     //! it is used to encode the list of places directly computed by Eurel method or those derived  by the others places in the same P-semiflow.
     unsigned int next;
   public:
-    //! Empty constructor 
+    //! Empty constructor
     Equation() {next=DEFAULT; };
     //! Constructor for the places derived  by the others places in the same P-semiflow.
     Equation(vector <struct InfPlace> pl);
@@ -277,24 +289,24 @@ namespace SDE
       }
       out<<endl;
       return out;
-    } 
-    
+    }
+
   };
-  
-  
+
+
   //!Class SystEq
-  /*! 
+  /*!
    * This class stores the system equations encoded on class Equation.
    */
   class SystEq
   {
   protected:
-    //! it encodes the transitions information 
+    //! it encodes the transitions information
     struct InfTr* Trans;
     //!it encodes all the system equations
     class Equation* VEq {nullptr};
     //!it stores the current equation values (at time variable "time")
-    double* Value {nullptr}; 
+    double* Value {nullptr};
     //!it stores the previous equation values (at time variable time")
     double* ValuePrv {nullptr};
     //!it stores the current enabling degree for continuous transition fire
@@ -307,11 +319,13 @@ namespace SDE
     //!it stores the current time for which the equation values are computed
     double time;
     //!it stores the number of equation/places
-    int nPlaces; 
+    int nPlaces;
     //!it stores the number of transition
-    int nTrans; 
+    int nTrans;
     vector <string> NameTrans;
     vector <string> NamePlaces;
+    map<std::string,int> NumTrans;
+    map<std::string,int> NumPlaces;
     string typeTfunction;
     //!It encodes the lower bound for each place
     double* LBound;
@@ -323,7 +337,7 @@ namespace SDE
     double *SUBound;
     //!It encodes the list of places computed directly
     unsigned int headDirc;
-    //!It encodes the list of places derived by others 
+    //!It encodes the list of places derived by others
     unsigned int headDerv;
     //!It encodes the maximum step factor
     double fh {64};
@@ -342,9 +356,9 @@ namespace SDE
 //automaton
 #ifdef AUTOMATON
     class automaton automaton;
-#endif    
-//automaton    
-    
+#endif
+//automaton
+
   public:
     //! Empty Constructor
     SystEq(void){};
@@ -352,17 +366,17 @@ namespace SDE
     SystEq(int nPlaces,int nTrans, string NameTrans[], string NamePlaces[]);
     //! Deconstruct
     ~SystEq();
-    //! It stores the transition information. It takes in input the transition id and its information encodes on ``struct InfTr'' 
+    //! It stores the transition information. It takes in input the transition id and its information encodes on ``struct InfTr''
     void InsertTran(int num, struct InfTr T);
-    //! It stores an equation. It takes in input the equation/place id, its information encodes on class Equation, its initial value and its bounds. 
+    //! It stores an equation. It takes in input the equation/place id, its information encodes on class Equation, its initial value and its bounds.
     void InsertEq(int num, class Equation& Eq,double InitValue,double LBound, double UBound);
     //! It updates the initial value of the equation in position num.
     inline void UpdateInitialValue(int num ,double InitValue){Value[num]=InitValue;};
     //! It prints all the system information
-    void Print(); 
+    void Print();
     //! It checks if it is disable by an inhibitor arc
     bool NotEnable(int Tran);
-    //! It is a pure virtual function which must be implemented 
+    //! It is a pure virtual function which must be implemented
     virtual void getValTranFire()=0;
     virtual void getValTranFire(double*)=0;
     //! It checks if there is an enable transition which will fire in the current time step;
@@ -374,22 +388,22 @@ namespace SDE
     void setBNoiseTrans(int);
     //!It automaticaly updates  Euler step according to maximum transition increment
     void ComputeHstep(double& h);
-    void ComputeHstep(const double& prv, const double& next, double& h); 
+    void ComputeHstep(const double& prv, const double& next, double& h);
 //automaton
 #ifdef AUTOMATON
      /*!
       * initialize_automaton() it initializes automaton
       * @parm file_name name of the file storing the automaton description
-      */ 
+      */
       void initialize_automaton(char *file_name);
-#endif    
-//automaton   
-    
+#endif
+//automaton
+
     //It returns the brown noise value for the input transition.
     inline double getBNoiseTran(int Tran) {return Trans[Tran].BrownNoise;};
     //It reads from a file the softh lower and upper bounds.
     bool readSLUBounds(char *argv);
-    //! It resets the list of enable transition 
+    //! It resets the list of enable transition
     void resetTrans();
     //! It solves the ODE system using Euler method. It takes in input the step size and the Max_Time
     void SolveODEEuler(double h,double prec1,double prec2, double Max_Time,bool Info,double Print_Step,char *argv);
@@ -403,37 +417,39 @@ namespace SDE
     void StepODERK5(double* Yn, double* Kn,const double& h);
     //!It   computes the values of the derivatives in the ODE system
     void fex(double t, double *y, double *ydot, void *data);
-    //! It solves the (H)SDE system using Euler method. It takes in input the step size, the Max_Time and Max_Run. To print the trace of each run -> Info = true 
+    //! It solves the (H)SDE system using Euler method. It takes in input the step size, the Max_Time and Max_Run. To print the trace of each run -> Info = true
     void SolveSDEEuler(double h,double prec1,double prec2,double Max_Time,int Max_Run, bool Info,double Print_Step,char *argv);
-    //! It solves the HODE system using Euler method. It takes in input the step size, the Max_Time and Max_Run. To print the trace of each run -> Info = true 
+    //! It solves the HODE system using Euler method. It takes in input the step size, the Max_Time and Max_Run. To print the trace of each run -> Info = true
     void SolveHODEEuler(double h,double prec1,double prec2,double Max_Time,int Max_Run, bool Info,double Print_Step,char *argv);
-    //! It computes an estimation for the Euler step 
+    //! It computes an estimation for the Euler step
     void HeuristicStep(double h,double perc1,double perc2,double Max_Time,bool Info,double Print_Step,char *argv);
     //! It prints a matrix PlacesXRuns with the final computed values
     void PrintStatistic(char *argv);
     void PrintValue(std::ostream &os){ for (auto i=0; i<nPlaces; ++i) os<<NamePlaces[i]<<":"<<Value[i]<<" ";}
   };
-  
+
   class SystEqMin:public SystEq
   {
-    public: 
-    SystEqMin(int nPlaces, int nTrans, string NameTrans[], string NamePlaces[]):SystEq(nPlaces,nTrans,NameTrans,NamePlaces){typeTfunction="Min";}; 
+    public:
+    SystEqMin(int nPlaces, int nTrans, string NameTrans[], string NamePlaces[]):SystEq(nPlaces,nTrans,NameTrans,NamePlaces){typeTfunction="Min";};
     ~SystEqMin(){};
-    //! For each transition it returns  the min of the values of its input places 
+    //! For each transition it returns  the min of the values of its input places
      void getValTranFire();
      //! For each transition it returns  the min of the values of its input places considering its input vector ValuePrv as marking
      void getValTranFire(double* ValuePrv);
   };
-  
+
   class SystEqMas:public SystEq
   {
-    public: 
-    SystEqMas(int nPlaces, int nTrans, string NameTrans[], string NamePlaces[]):SystEq(nPlaces,nTrans,NameTrans,NamePlaces){typeTfunction="Prod";}; 
-    //~SystEqMas():~SystEq(){};  
-    //! For each transition it returns the product  of the values of its input places 
+    public:
+    SystEqMas(int nPlaces, int nTrans, string NameTrans[], string NamePlaces[]):SystEq(nPlaces,nTrans,NameTrans,NamePlaces){typeTfunction="Prod";};
+    //~SystEqMas():~SystEq(){};
+    //! For each transition it returns the product  of the values of its input places
      void getValTranFire();
     //! For each transition it returns  the min of the values of its input places considering its input vector ValuePrv as marking
     void getValTranFire(double* ValuePrv);
   };
-  
+
+//  double Fg(double *Value, vector <string>& NameTrans, vector <string>& NamePlaces);
+
 }

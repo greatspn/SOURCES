@@ -604,7 +604,7 @@ void fill_marking_data_structure() {
                 assert(strlen(tabm[h].mark_expr) <= MAXSTRING);
                 sprintf(lex_buffer, "~m %s", tabm[h].mark_expr);
                 lexer_set_buffer(lex_buffer);
-                
+
                 parser();
                 lexer_set_buffer(NULL);
 #ifdef GSPN
@@ -1341,7 +1341,7 @@ int main(int argc, char **argv) {
     initialize(argc, argv);
     string net(argv[1]);
     //creo file .R
-   
+
     if (!GPU){
     if (R)
         net = net + ".R";
@@ -1357,7 +1357,7 @@ int main(int argc, char **argv) {
         cerr << "Error: it is not possible to open output file\n\n";
         exit(EXIT_FAILURE);
     }
-    
+
     char *pch;
     string path(argv[1]);
     pch = strtok(argv[1], "/.");
@@ -1375,17 +1375,17 @@ int main(int argc, char **argv) {
         }
 
     else if (MATLAB)
-        build_ODEM(out, net);		
-    else	
+        build_ODEM(out, net);
+    else
         build_ODE(out, path, net); 				    /* OPERAZIONI */
-    
-    out.close(); 
+
+    out.close();
     }
     else{
-    build_ODEGPU(net);	
+    build_ODEGPU(net);
     }
-    	
- 
+
+
     finalize();
     return 0;
 }
