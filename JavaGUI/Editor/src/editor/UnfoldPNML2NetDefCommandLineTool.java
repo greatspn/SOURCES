@@ -64,6 +64,7 @@ public class UnfoldPNML2NetDefCommandLineTool {
         boolean saveAsPnml = false;
         boolean anonimize = false;
         boolean useLongNames = false;
+        boolean doUnfolding = true;
         SemanticParser.strictColorExpressionChecks = false;
         
         // Read command line arguments
@@ -105,6 +106,10 @@ public class UnfoldPNML2NetDefCommandLineTool {
 
                 case "-short-names":
                     useLongNames = false;
+                    break;
+                    
+                case "-no-unfolding":
+                    doUnfolding = false;
                     break;
 
                 default:
@@ -165,8 +170,8 @@ public class UnfoldPNML2NetDefCommandLineTool {
         System.out.println("");
 
         
-        if (outSuffix)
-            baseName += "_unf";
+        if (outSuffix) 
+            baseName += doUnfolding ? "_unf" : "_new";
 
         // GSPN semantic check
         ArrayList<ProjectPage> pages = new ArrayList<>();
@@ -186,7 +191,7 @@ public class UnfoldPNML2NetDefCommandLineTool {
         // Unfold if the net has colors
         boolean unfolded = false;
         Unfolding unf = null;
-        if (gspn.gspnHasColors()) {
+        if (gspn.gspnHasColors() && doUnfolding) {
 //            if (saveNameMap) {
 //                System.out.println("Warning: Cannot save name map when unfolding...");
 //                saveNameMap = false;
