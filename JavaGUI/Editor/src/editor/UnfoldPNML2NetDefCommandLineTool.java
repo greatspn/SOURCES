@@ -26,6 +26,7 @@ import editor.domain.unfolding.Unfolding;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -261,6 +262,12 @@ public class UnfoldPNML2NetDefCommandLineTool {
                 System.out.println("Problems exporting the PNML file:\n"+ret);
                 System.exit(1);
             }
+            // Save unfolded relations
+            if (unfolded) {
+                System.out.println("SAVING UNFOLDING MAP FILE "+baseName+"_unf.unfmap ...");
+                File outUnfMapName = new File(baseName+"_unf.unfmap");
+                saveUnfMap(outUnfMapName, unf);
+            }
         }
         else { // Save in GreatSPN format
             // Save in GreatSPN net/def format
@@ -291,33 +298,7 @@ public class UnfoldPNML2NetDefCommandLineTool {
                 if (unfolded) {
                     System.out.println("SAVING UNFOLDING MAP FILE "+baseName+".unfmap ...");
                     File outUnfMapName = new File(baseName+".unfmap");
-                    PrintWriter unfmap = new PrintWriter(new BufferedOutputStream(new FileOutputStream(outUnfMapName)));
-    //                Map<Place, List<Place>> unfPlc = new HashMap<>();
-    //                for (Map.Entry<Tuple<Place, DomainElement>, Place> e : unf.placeUnfolding.entrySet()) {
-    //                    List<Place> list = unfPlc.get(e.getKey().x);
-    //                    if (list == null)
-    //                        unfPlc.put(e.getKey().x, list = new LinkedList<>());
-    //                    list.add(e.getValue());
-    //                }
-    //                unfmap.println(unfPlc.size());
-                    // Save unfolded places
-                    unfmap.println(unf.placeUnfolding.size());
-                    for (Map.Entry<Place, Map<DomainElement, Place>> e : unf.placeUnfolding.entrySet()) {
-                        unfmap.println(e.getKey().getUniqueName()+" "+e.getValue().size());
-                        for (Place p : e.getValue().values())
-                            unfmap.print(" "+p.getUniqueName());
-                        unfmap.println();
-                    }
-                    // Save unfolded transitions
-                    unfmap.println(unf.trnUnfolding.size());
-                    for (Map.Entry<Transition, List<Transition>> e : unf.trnUnfolding.entrySet()) {
-                        unfmap.println(e.getKey().getUniqueName()+" "+e.getValue().size());
-                        for (Transition p : e.getValue())
-                            unfmap.print(" "+p.getUniqueName());
-                        unfmap.println();
-                    }
-
-                    unfmap.close();
+                    saveUnfMap(outUnfMapName, unf);
                 }
             }
 
@@ -341,6 +322,30 @@ public class UnfoldPNML2NetDefCommandLineTool {
 
         System.out.println("TOTAL TIME: "+(System.currentTimeMillis() - totalStart)/1000.0);
         System.out.println("OK.");
+    }
+    
+    
+    private static void saveUnfMap(File f, Unfolding unf) throws IOException {
+        PrintWriter unfmap = new PrintWriter(new BufferedOutputStream(new FileOutputStream(f)));
+
+        // Save unfolded places
+        unfmap.println(unf.placeUnfolding.size());
+        for (Map.Entry<Place, Map<DomainElement, Place>> e : unf.placeUnfolding.entrySet()) {
+            unfmap.println(e.getKey().getUniqueName()+" "+e.getValue().size());
+            for (Place p : e.getValue().values())
+                unfmap.print(" "+p.getUniqueName());
+            unfmap.println();
+        }
+        // Save unfolded transitions
+        unfmap.println(unf.trnUnfolding.size());
+        for (Map.Entry<Transition, List<Transition>> e : unf.trnUnfolding.entrySet()) {
+            unfmap.println(e.getKey().getUniqueName()+" "+e.getValue().size());
+            for (Transition p : e.getValue())
+                unfmap.print(" "+p.getUniqueName());
+            unfmap.println();
+        }
+
+        unfmap.close();
     }
     
 //    private static void savePlaceUnfoldingAsNestedUnits(PrintWriter out, Unfolding unf, Map<String, Integer> plc2Index) {
