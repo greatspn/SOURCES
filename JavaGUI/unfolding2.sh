@@ -12,6 +12,7 @@ if [[ $# == 0 ]] ; then
 	echo "             -anonimize     Remove all names of places and transitions."
 	echo "             -long-names    Unfold using long names, like 'move_x_c1_y_s2'."
 	echo "             -short-names   Unfold using short names, like 'move_1_2'. [default]"
+	echo "             -no-unfolding  Do not unfold, just load and save."
 	
 	exit
 fi
