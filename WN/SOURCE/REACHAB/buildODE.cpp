@@ -369,7 +369,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     set<std::string> function_names;
     for (int tt = 0; tt < ntr; tt++)
     {
-        if (tabt[tt].general_function!=NULL)
+        if ((tabt[tt].general_function!=NULL)&&( (tabt[tt].general_function!="Discrete" || tabt[tt].general_function!="discrete" || tabt[tt].general_function!="DISCRETE")))
         {
             std::string general_function=std::string(tabt[tt].general_function);
             general_function=general_function.substr(3,general_function.size()-4);
@@ -520,14 +520,17 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     for (int tt = 0; tt < ntr; tt++)
     {
 
-        out << "//Transition " << tabt[tt].trans_name << "\n t.InPlaces.clear();\n t.InhPlaces.clear();\n t.InOuPlaces.clear();\n";
+
+        out << "//Transition " << tabt[tt].trans_name << "\n t.InPlaces.clear();\n t.InhPlaces.clear();\n t.InOuPlaces.clear();\n t.Places.clear();\n t.GenFun=\"\";\n t.FuncT=nullptr;\n";
 
         if (tabt[tt].general_function!=NULL)
         {
             std::string general_function(tabt[tt].general_function);
-            out<<" t.GenFun= \""<<general_function.substr(3,general_function.size()-4)<<"\";\n";
-            out<<" t.FuncT=  &"<<general_function.substr(3,general_function.size()-4)<<";\n";
-            out<<" t.rate = 1.0;\n";
+            general_function=general_function.substr(3,general_function.size()-4);
+            out<<" t.GenFun= \""<<general_function<<"\";\n";
+            if (!(general_function=="Discrete" || general_function=="discrete" || general_function=="DISCRETE"))
+                out<<" t.FuncT=  &"<<general_function<<";\n";
+            out<<"t.rate = 1.0;\n";
         }
         else
             out<<"t.rate = "<<tabt[tt].mean_t << ";\n";
@@ -556,6 +559,14 @@ void build_ODE(ofstream &out, std::string path, std::string net)
             out <<" t.InOuPlaces.insert("<<pp<<");\n";
             l_ptr = NEXT_NODE(l_ptr);
         }
+
+        for (int i=0;i<npl;i++){
+            if (TP[tt][i]!=0){
+                out << " pt.Id = " << i << ";\n pt.Card = " << TP[tt][pp] << ";\n t.Places.push_back(pt);\n";
+            }
+        }
+
+
         out << " se.InsertTran(" << tt << ",t);\n\n";
     }
 //to remove implicit places

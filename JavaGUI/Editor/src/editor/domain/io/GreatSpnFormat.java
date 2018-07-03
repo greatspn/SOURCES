@@ -142,14 +142,14 @@ public class GreatSpnFormat {
     private static double scaleCoord(double coord) {
         return coord / 6.0;
     }
-    
+
     private static final String[][] old2new = {
         /*{ "!", "++" }, { "^", "--" },*/
         { "not", "!" }, { "and", "&&" }, { "or", "||" },
-        { "~", "!" }, { "&", "&&" }, 
+        { "~", "!" }, { "&", "&&" },
         { "<>", "!=" }, { "/=", "!=" }, { "=", "==" }
     };
-            
+
     // converts an expression from the editor language to the greatspn language
     private static String exportExpr(String expr, Set<ColorClass> allColorClasses, ArrayList<String> log) {
         ArrayList<SimpleLexer.Token> list = SimpleLexer.lex(expr);
@@ -158,9 +158,9 @@ public class GreatSpnFormat {
             SimpleLexer.Token prevTok = (i == 0 ? null : list.get(i-1));
             SimpleLexer.Token tok = list.get(i);
             SimpleLexer.Token nextTok = (i == list.size() - 1 ? null : list.get(i+1));
-            
+
             if ((tok.data.equals("in") || tok.data.equals("!in")) &&
-                prevTok != null &&  prevTok.type == SimpleLexer.TokenType.ID) 
+                prevTok != null &&  prevTok.type == SimpleLexer.TokenType.ID)
             {
                 // beware: "in" is an ID, while "!in" is an OP.
                 //  x  in Class   ->   d(x) =  Class
@@ -189,7 +189,7 @@ public class GreatSpnFormat {
                         tok.data = "S";
                         break;
                     }
-                    
+
                     // subclass -> S subclass
                     for (ColorClass cc : allColorClasses)
                         if (cc.isSimpleClass() && cc.testHasStaticSubclassNamed(tok.data)) {
@@ -198,7 +198,7 @@ public class GreatSpnFormat {
                         }
                 }
                 break;
-                    
+
                 case OP: {
                     if (tok.data.equals("++") && prevTok != null) { // x++ -> !x
                         prevTok.data = "!" + prevTok.data;
@@ -222,7 +222,7 @@ public class GreatSpnFormat {
         }
         return SimpleLexer.unlex(list);
     }
-    
+
     // imports an expression in the greatspn language
     private static String importExpr(String expr, Set<ColorClass> allColorClasses) {
         ArrayList<SimpleLexer.Token> list = SimpleLexer.lex(expr);
@@ -233,7 +233,7 @@ public class GreatSpnFormat {
             SimpleLexer.Token nextTok = (i == list.size() - 1 ? null : list.get(i+1));
             switch (tok.type) {
                 case ID: {
-                    
+
                     if (tok.data.equals("S") && nextTok != null) {
                         // S subclass -> subclass
                         for (ColorClass cc : allColorClasses)
@@ -279,7 +279,7 @@ public class GreatSpnFormat {
                     }
                 }
                 break;
-                    
+
                 case OP: {
                     if (tok.data.equals("!") && nextTok != null) { // !x -> x++
                         tok.data = "++";
@@ -305,7 +305,7 @@ public class GreatSpnFormat {
         }
         return SimpleLexer.unlex(list);
     }
-    
+
     // Converts an ordinary marking to a short marking, if possible,
     // otherwise returns the orinary marking as-is.
     //   ordinary_marking :=  coeff  '<'  marking_list  '>'
@@ -324,7 +324,7 @@ public class GreatSpnFormat {
         else
             return  coeff + " S";
     }
-    
+
 //    public static void main(String[] args) {
 //        System.out.println(ordinaryToShortMarking("<S>"));
 //        System.out.println(ordinaryToShortMarking("23<S>"));
@@ -333,7 +333,7 @@ public class GreatSpnFormat {
 //        System.out.println(ordinaryToShortMarking("3<S,S>"));
 //        System.out.println(ordinaryToShortMarking("2<S> + <S>"));
 //    }
-    
+
     // Converts a short marking into an ordinary marking
     private static String shortToOrdinaryMarking(String mark, String colorDomainDef) {
 //        System.out.print("shortToOrdinaryMarking("+mark+", "+colorDomainDef+")  ->  ");
@@ -345,7 +345,7 @@ public class GreatSpnFormat {
                 return mark; // not a short marking
             coeff = m.group("coeff");
         }
-        
+
         StringBuilder ordMark = new StringBuilder();
         if (coeff != null)
             ordMark.append(coeff).append(" ");
@@ -359,7 +359,7 @@ public class GreatSpnFormat {
         ordMark.append(">");
         return ordMark.toString();
     }
-    
+
     // Some old tools in the GreatSPN toolchain expect transitions to be ordered,
     // from timed to immediate, and immediate sorted by increasing priority
     public static Transition[] getTransitionsInOrder(GspnPage gspn) {
@@ -378,7 +378,7 @@ public class GreatSpnFormat {
         });
         return trns.toArray(new Transition[trns.size()]);
     }
-    
+
     private static int getIntPriorityOf(Transition t) {
         if (!t.hasPriority())
             return 0; // Timed transition has priority 0
@@ -389,7 +389,7 @@ public class GreatSpnFormat {
             return Integer.MAX_VALUE;
         }
     }
-    
+
     private static int getMaxNameLength(GspnPage gspn, Class nodeClass) {
         int maxLen = 0;
         for (Node node : gspn.nodes) {
@@ -400,7 +400,7 @@ public class GreatSpnFormat {
         }
         return maxLen;
     }
-    
+
     private static void printPaddedName(PrintWriter out, Node node, int maxNameLength) {
         String name = node.getUniqueName();
         String tag = node.getSuperPosTags();
@@ -414,13 +414,13 @@ public class GreatSpnFormat {
         for (int i=0; i<pad; i++)
             out.print(" ");
     }
-    
+
 //    public static void main(String[] args) {
 //        System.out.println(shortToOrdinaryMarking("S", "C"));
 //        System.out.println(shortToOrdinaryMarking("3 S", "C1*C2*C3"));
 //    }
 
-    // Parameter useExt means that we are using the new extensions of the format that 
+    // Parameter useExt means that we are using the new extensions of the format that
     // are not compatible with the old GreatSPN GUI.
     public static String exportGspn(GspnPage gspn, File netFile, File defFile, boolean useExt) throws Exception {
         if (!gspn.isPageCorrect()) {
@@ -432,21 +432,21 @@ public class GreatSpnFormat {
         try {
             ParserContext context = new ParserContext(gspn);
             oldLineSep = sysProps.setProperty("line.separator", "\n");
-            
+
             ArrayList<String> log = new ArrayList<>();
 
             PrintWriter net = new PrintWriter(new BufferedOutputStream(new FileOutputStream(netFile)));
             PrintWriter def = new PrintWriter(new BufferedOutputStream(new FileOutputStream(defFile)));
 
             net.println("|0|\n|");
-            
+
             ArrayList<String> defs = new ArrayList<>();
             int numMarkDefs = 0;
-            
+
             ArrayList<String> markDepDefs = new ArrayList<>();
             int maxPlaceNameLen = getMaxNameLength(gspn, Place.class);
             int maxTransitionNameLen = getMaxNameLength(gspn, Transition.class);
-            
+
             // Start writing the .net file
             int numMarkPars = 0, numPlaces = 0, numTrns = 0, numRatePars = 0;
             Set<Integer> groups = new TreeSet<>();
@@ -476,7 +476,7 @@ public class GreatSpnFormat {
                     }
                 }
             }
-            
+
             // Print the color definitions
             Set<ColorClass> allColorClasses = new HashSet<>();
             for (Node node : gspn.nodes) {
@@ -488,13 +488,13 @@ public class GreatSpnFormat {
                     String[] subclassNames = new String[cc.numSubClasses()];
                     String allSubclasses = "";
                     for (int i=0; i<cc.numSubClasses(); i++) {
-                        subclassNames[i] = (cc.getSubclass(i).isNamed() ? 
+                        subclassNames[i] = (cc.getSubclass(i).isNamed() ?
                                             cc.getSubclass(i).name : cc.getUniqueName()+"_"+i);
                         allSubclasses += (i==0 ? "" : ",") + subclassNames[i];
                     }
                     String colorDef = "("+cc.getUniqueName()+" c " +
                                       scaleCoord(cc.getX()) + " " +
-                                      scaleCoord(cc.getY()) + " " +                            
+                                      scaleCoord(cc.getY()) + " " +
                                       " (@c\n" + (cc.isCircular() ? "o " : "u ") +
                                       allSubclasses + "\n))";
                     defs.add(colorDef);
@@ -512,13 +512,13 @@ public class GreatSpnFormat {
                         }
                         colorDef = "("+subclassNames[i]+" c " +
                                       scaleCoord(cc.getX() + 4*(i+1)) + " " +
-                                      scaleCoord(cc.getY()) + " " +                                
+                                      scaleCoord(cc.getY()) + " " +
                                    " (@c\n"+subClassDef+"\n))";
                         defs.add(colorDef);
                     }
                 }
             }
-            
+
             // Export the int multiset constants in the .def file
             Map<String, Integer> intMsetMarks = new HashMap<>();
             for (Node node : gspn.nodes) {
@@ -600,7 +600,7 @@ public class GreatSpnFormat {
                         }
                     }
                     else {
-                        initMarkExpr = intOrMpar(plc.getInitMarkingEditable().getValue().toString(), 
+                        initMarkExpr = intOrMpar(plc.getInitMarkingEditable().getValue().toString(),
                                                  "initial marking", gspn, log);
                     }
                     printPaddedName(net, plc, maxPlaceNameLen);
@@ -639,7 +639,7 @@ public class GreatSpnFormat {
                 prio2grp.put(prio, prio2grp.size() + 1);
                 net.println("G" + prio2grp.size() + " 0.0 0.0 " + prio);
             }
-            
+
             // Print transitions
             Map<Transition, EdgeList> trn2edgeList = buildTransitionsEdgeLists(gspn);
             int trnNum = 0;
@@ -658,7 +658,7 @@ public class GreatSpnFormat {
                     if (simpleDet != null)
                         delay = simpleDet;
                     else {
-                        markDepDefs.add("|"+(trnNum+1)+"\n"+trn.getDelay());
+                        markDepDefs.add("|"+(trnNum+1)+" \n"+trn.getDelay());
                         delay = "-5.100000e+02";
                     }
                     prio = 127;
@@ -716,8 +716,8 @@ public class GreatSpnFormat {
                 StringBuilder outArcs = new StringBuilder();
                 StringBuilder inhibArcs = new StringBuilder();
                 int numInputArcs = 0, numOutpurArcs = 0, numInhibArcs = 0;
-                for (EdgeList edgeList = trn2edgeList.get(trn); 
-                    edgeList != null; edgeList = edgeList.next) 
+                for (EdgeList edgeList = trn2edgeList.get(trn);
+                    edgeList != null; edgeList = edgeList.next)
                 {
                     GspnEdge arc = edgeList.edge;
                     int plcIndex;
@@ -786,7 +786,7 @@ public class GreatSpnFormat {
                 String guard = "";
                 if (trn.hasGuard() && !trn.getGuard().equalsIgnoreCase("True"))
                     guard = " " + scaleCoord(trn.getCenterX() + trn.getGuardDecor().getRelativeX()) +
-                            " " + scaleCoord(trn.getCenterY() + trn.getGuardDecor().getRelativeY()) + 
+                            " " + scaleCoord(trn.getCenterY() + trn.getGuardDecor().getRelativeY()) +
                             " [" + exportExpr(trn.getGuard(), allColorClasses, log) + "]";
 
                 printPaddedName(net, trn, maxTransitionNameLen);
@@ -803,7 +803,7 @@ public class GreatSpnFormat {
                 net.print(inhibArcs.toString());
                 trnNum++;
             }
-            
+
             // Write the .def file. First write the marking-dependent functions
             for (String d : markDepDefs)
                 def.println(d);
@@ -833,7 +833,7 @@ public class GreatSpnFormat {
             }
         }
     }
-    
+
     private static class EdgeList {
         GspnEdge edge;
         EdgeList next;
@@ -842,7 +842,7 @@ public class GreatSpnFormat {
             this.edge = edge;
             this.next = next;
         }
-        
+
         public static EdgeList reverse(EdgeList head) {
             // if head is null or only one node, it's reverse of itself.
             if ( (head==null) || (head.next == null) ) return head;
@@ -859,7 +859,7 @@ public class GreatSpnFormat {
             return reverse;
         }
     }
-    
+
     // Map that assigns to each transition a linked list of edges
     private static Map<Transition, EdgeList> buildTransitionsEdgeLists(GspnPage gspn) {
         Map<Transition, EdgeList> trn2edgeList = new HashMap<>();
@@ -867,7 +867,7 @@ public class GreatSpnFormat {
 //            if (node instanceof Transition)
 //                trn2edgeList.put((Transition)node, null);
 //        }
-        
+
         for (Edge edge : gspn.edges) {
             if (edge instanceof GspnEdge) {
                 GspnEdge arc = (GspnEdge) edge;
@@ -882,7 +882,7 @@ public class GreatSpnFormat {
         for (Map.Entry<Transition, EdgeList> e : trn2edgeList.entrySet()) {
             e.setValue(EdgeList.reverse(e.getValue()));
         }
-        
+
         return trn2edgeList;
     }
 
@@ -901,7 +901,7 @@ public class GreatSpnFormat {
     private static Point2D readPos(Scanner sc) {
         return new Point2D.Double(readCoord(sc), readCoord(sc));
     }
-    
+
     // A definition in the .def file.
     private static class Def {
         String name, type /*= c,f,m*/, expr;
@@ -914,7 +914,7 @@ public class GreatSpnFormat {
             this.pos = pos;
         }
     }
-    
+
     private static void skip_layers(Scanner net) {
         int num;
         do {
@@ -922,7 +922,7 @@ public class GreatSpnFormat {
         }
         while (num != 0);
     }
-    
+
     private static String sanitizeName(String name) {
         return name.replace("'", "_prime").replace("-", "_");
     }
@@ -932,12 +932,12 @@ public class GreatSpnFormat {
         Scanner net = new Scanner(netFile);
         Scanner def = new Scanner(defFile);
         String line;
-        
+
         // ------ Read the .def file ------
         Map<Integer, String> markDepDefs = new HashMap<>();
         ArrayList<Def> definitions = new ArrayList<>();
         int numExtraColDef = 0;
-        
+
         // Read marking-dependent functions
         while(def.hasNextLine()) {
             line = def.nextLine().trim();
@@ -950,8 +950,8 @@ public class GreatSpnFormat {
                 System.out.println("reading mark dep def: "+line);
             }
         }
-         
-        // Skip all lines until the '|' line    
+
+        // Skip all lines until the '|' line
         def.nextLine();
         do {
             line = def.nextLine().trim();
@@ -971,7 +971,7 @@ public class GreatSpnFormat {
 //            System.out.println("name="+name+" type="+type+" expr="+expr);
             definitions.add(new Def(name.substring(1), type, expr, pos));
         }
-        
+
         // Create color classes
         Set<ColorClass> allColorClasses = new HashSet<>();
         for (Def d : definitions) {
@@ -999,14 +999,14 @@ public class GreatSpnFormat {
                 allColorClasses.add(cc);
             }
         }
-        
+
         // ------ Read the .net file ------
         // Skip the initial .net header
         net.nextLine();
         do {
             line = net.nextLine();
         } while (net.hasNextLine() && (line.isEmpty() || line.charAt(0) != '|'));
-        
+
         // Header with object counters
         readToken(net, "f");
         int numMarkPars = net.nextInt();
@@ -1029,7 +1029,7 @@ public class GreatSpnFormat {
             Point2D pos = readPos(net);
             net.nextLine();
 
-            BaseID mpar; 
+            BaseID mpar;
             if (value == -7134) // template marking parameter
                 mpar = new TemplateVariable(TemplateVariable.Type.INTEGER, name, "", pos);
             else
@@ -1066,7 +1066,7 @@ public class GreatSpnFormat {
                     String classDef = colorDomain.replace(",", " * ");
                     colorDomain = colorDomain.replace(",", "x");
                     if (null == gspn.getNodeByUniqueName(colorDomain)) {
-                        ColorClass ccdom = new ColorClass(colorDomain, 
+                        ColorClass ccdom = new ColorClass(colorDomain,
                                 new Point2D.Double(20, 3+numExtraColDef++), classDef);
                         gspn.nodes.add(ccdom);
                     }
@@ -1085,7 +1085,7 @@ public class GreatSpnFormat {
                         // Create int multiset constants
                         initMarkExpr = d.name;
                         if (gspn.getNodeByUniqueName(d.name) == null) {
-                            ConstantID con = new ConstantID(ConstantID.ConstType.INTEGER, d.name, 
+                            ConstantID con = new ConstantID(ConstantID.ConstType.INTEGER, d.name,
                                                             importExpr(defExpr, allColorClasses),
                                                             colorDomain, d.pos);
                             gspn.nodes.add(con);
@@ -1159,7 +1159,7 @@ public class GreatSpnFormat {
             Point2D ratePos = readPos(net);
             skip_layers(net);
             String colGuard = net.nextLine().trim();
-            
+
             String delay = delayMark;
             if (delayMark.equals("*"))
                 delay = net.nextLine().trim();
@@ -1241,7 +1241,7 @@ public class GreatSpnFormat {
                     throw new IllegalStateException("Wrong orientation index.");
             }
             degree *= Math.PI / 4.0;
-            
+
             String guard = "True";
             if (!colGuard.isEmpty()) {
                 Scanner guardScan = new Scanner(colGuard);
@@ -1277,7 +1277,7 @@ public class GreatSpnFormat {
                         arcDefScan.next(); // skip X
                         arcDefScan.next(); // skip Y
                         multExpr = importExpr(arcDefScan.nextLine().trim(), allColorClasses);
-                        
+
                         ColorClass cc = (ColorClass)gspn.getNodeByUniqueName(pl.getColorDomainName());
                         if (cc == null) {
                             log.add("Missing color class '"+pl.getColorDomainName()+
@@ -1335,7 +1335,7 @@ public class GreatSpnFormat {
                 }
             }
         }
-        
+
         net.close();
         def.close();
 
@@ -1350,21 +1350,21 @@ public class GreatSpnFormat {
             return message;
         }
     }
-    
-    
+
+
     // Deduce color variable types from an arc expression.
     // Example: given an arc expression: <x, y++>  connected with a place of color domain C=C1*C2,
     // the function deduces that exists a color variable named x of type C1, and
     // another color variable named y of type C2
     // Returns the number of deduced color vars
-    private static int deduceColorVarsFromExpr(GspnPage gspn, ColorClass colorDom, 
-                                               String expr, int numExtraColDef) 
+    private static int deduceColorVarsFromExpr(GspnPage gspn, ColorClass colorDom,
+                                               String expr, int numExtraColDef)
     {
         int numDeducedVars = 0;
-        
+
         while (true) {
             // Extract the tuple part of the expression. For instance, the expr
-            //     2<x,y> + 3<x++, z> 
+            //     2<x,y> + 3<x++, z>
             // will extract:    x,y         and:   x++, z
             int startOfParen = expr.indexOf('<');
             if (startOfParen == -1)
@@ -1372,14 +1372,14 @@ public class GreatSpnFormat {
             int endOfParen = expr.indexOf('>', startOfParen);
             if (endOfParen == -1)
                 break;
-            
+
             // Extract the tuple from expr
             String tuple = expr.substring(startOfParen+1, endOfParen);
             expr = expr.substring(endOfParen+1);
-            
+
             String[] terms = tuple.split(",");
             // We must have one term per color class in domain to continue parsing
-            if (terms.length == colorDom.getNumClassesInDomain()) { 
+            if (terms.length == colorDom.getNumClassesInDomain()) {
                 for (int d=0; d<colorDom.getNumClassesInDomain(); d++) {
                     String colorClassName = colorDom.getColorClassName(d);
                     Node ccNode = gspn.getNodeByUniqueName(colorClassName);
@@ -1394,17 +1394,17 @@ public class GreatSpnFormat {
                     colVar = colVar.replaceAll("\\+\\+", "");
                     colVar = colVar.replaceAll("--", "");
                     colVar = colVar.trim();
-                    
+
                     // Is the term that remains a valid identifier?
                     if (NetObject.isAlphanumericIdentifier(colVar) &&
                         !cc.testHasStaticSubclassNamed(colVar) &&
-                        !cc.testHasColorNamed(gspn, colVar)) 
+                        !cc.testHasColorNamed(gspn, colVar))
                     {
 //                        System.out.println("Deduce "+colVar+" of type "+cc.getUniqueName());
                         Node cv = gspn.getNodeByUniqueName(colVar);
                         if (cv == null) { // A color variable named colVar does not exists yet
                             // Create a new color variable.
-                            cv = new ColorVar(colVar, new Point2D.Double(20, 3+numExtraColDef+numDeducedVars), 
+                            cv = new ColorVar(colVar, new Point2D.Double(20, 3+numExtraColDef+numDeducedVars),
                                               cc.getUniqueName());
                             numDeducedVars++;
                             gspn.nodes.add(cv);
@@ -1416,15 +1416,15 @@ public class GreatSpnFormat {
         return numDeducedVars;
     }
 
-    
+
 //    public static void main(String[] args) throws Exception {
 //        Util.initApplication(PREF_ROOT_KEY, "/org/unito/mainprefs");
 //        LatexProvider.initializeProvider(false);
 //        File net = new File("/Users/elvio/Downloads/rete_colorata_errore 14.28.52/master_slave_E_b.net");
 //        File def = new File("/Users/elvio/Downloads/rete_colorata_errore 14.28.52/master_slave_E_b.def");
 //        GspnPage gspn = new GspnPage();
-//        
+//
 //        importGspn(gspn, net, def);
 //    }
-    
+
 }

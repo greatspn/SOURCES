@@ -175,6 +175,8 @@ namespace SDE
     vector <InfPlace> InhPlaces;
     //!encode the list of transition input places
     vector <InfPlace> InPlaces;
+    //!encode the list of places modified by the transition (it is a duplicated information)
+    vector <InfPlace> Places;
     set<int> InOuPlaces;
     //!encode a negative exponential distribution
     std::exponential_distribution<double> dist[1];
@@ -315,13 +317,15 @@ namespace SDE
     double* EnabledTransValueDis {nullptr};
     //!it  store the final place value of each run
     double** FinalValueXRun {nullptr};
+    //!It used for TauLeaping
+    double* TransRate {nullptr};
     int Max_Run {1};
     //!it stores the current time for which the equation values are computed
     double time;
     //!it stores the number of equation/places
     int nPlaces;
     //!it stores the number of transition
-    int nTrans;
+int nTrans;
     vector <string> NameTrans;
     vector <string> NamePlaces;
     map<std::string,int> NumTrans;
@@ -353,6 +357,7 @@ namespace SDE
     int search(string& name);
     //Max number of attempt used in RK
     int max_attempt {500};
+
 //automaton
 #ifdef AUTOMATON
     class automaton automaton;
@@ -376,13 +381,16 @@ namespace SDE
     void Print();
     //! It checks if it is disable by an inhibitor arc
     bool NotEnable(int Tran);
+
+    //!It computes the Tau taking as input the list of descrete transitions and the next time point. It returns a possible transition firing otherwise  -1. It requires that  getValTranFire() must be called before.
+    int getComputeTau(int SetTran[], double& nextTimePoint);
     //! It is a pure virtual function which must be implemented
     virtual void getValTranFire()=0;
     virtual void getValTranFire(double*)=0;
     //! It checks if there is an enable transition which will fire in the current time step;
     int fireEnableTrans(  int SetTran[],double& h);
     //int fireEnableTrans(  set<int>&SetTran,double& h);
-    //It generates the brown noise value for all the transition involved  the diffusion process
+    //!It generates the brown noise value for all the transition involved  the diffusion process
     bool setBNoiseTrans();
     //It generates the brown noise value for all the transition involved  the diffusion process
     void setBNoiseTrans(int);
@@ -421,6 +429,8 @@ namespace SDE
     void SolveSDEEuler(double h,double prec1,double prec2,double Max_Time,int Max_Run, bool Info,double Print_Step,char *argv);
     //! It solves the HODE system using Euler method. It takes in input the step size, the Max_Time and Max_Run. To print the trace of each run -> Info = true
     void SolveHODEEuler(double h,double prec1,double prec2,double Max_Time,int Max_Run, bool Info,double Print_Step,char *argv);
+    //! It solves the HODE system using Tauleaping and LSODE.It takes in input the step size, the Max_Time and Max_Run. To print the trace of each run -> Info = true
+    void SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int Max_Run,bool Info,double Print_Step,char *argv);
     //! It computes an estimation for the Euler step
     void HeuristicStep(double h,double perc1,double perc2,double Max_Time,bool Info,double Print_Step,char *argv);
     //! It prints a matrix PlacesXRuns with the final computed values

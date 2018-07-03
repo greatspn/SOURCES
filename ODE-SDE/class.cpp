@@ -310,6 +310,7 @@ SystEq::SystEq(int nPlaces,int nTrans, string NamePlaces[],  string NameTrans[])
 	SUBound=(double*)malloc(sizeof(double)*nPlaces);
 	EnabledTransValueCon=(double*)malloc(sizeof(double)*nTrans);
 	EnabledTransValueDis=(double*)malloc(sizeof(double)*nTrans);
+	TransRate=(double*)malloc(sizeof(double)*(nTrans+1));
 
 	time=0.0;
 	int i=0;
@@ -349,6 +350,7 @@ SystEq::~SystEq(){
 	free(ValuePrv);
 	free(EnabledTransValueCon);
 	free(EnabledTransValueDis);
+	free(TransRate);
 	if (FinalValueXRun!=nullptr)
 	{
 		for(int i=0;i<nPlaces;i++)
@@ -2180,7 +2182,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 	rwork1 = rwork5 = rwork6 = rwork7 = 0.0;
 
 
-	this->Max_Run=Max_Run;
+	this->Max_Run=0;
 	//For statistic
 	FinalValueXRun=new double*[nPlaces];
 	for (int i=0;i<nPlaces;i++)
@@ -2232,14 +2234,12 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 			}
 		cout<<"\t Time:"<<tout<<endl;
 		derived(y+1);
-		for (int j=1;j<=nPlaces;j++){
-			if (Info){
-				out<<y[j]<<" ";
-				}
-		}
 		if (Info){
+            for (int j=1;j<=nPlaces;j++){
+				out<<y[j]<<" ";
+            }
 			out<<endl;
-			}
+        }
 		tout+=Print_Step;
 		if (istate <= 0){
 			throw   Exception("*****Error during the integration step*****\n\n");
@@ -2254,12 +2254,10 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 	}
 	cout<<"\t Time:"<<tout<<endl;
 	derived(y+1);
-	for (int j=1;j<=nPlaces;j++){
-		if (Info){
+	if (Info){
+        for (int j=1;j<=nPlaces;j++){
 			out<<y[j]<<" ";
 		}
-	}
-	if (Info){
 		out<<endl;
 	}
 	if (istate <= 0){
@@ -2278,6 +2276,180 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 	for (int i=0;i<nPlaces;i++)//save initial state
 	{
 		cout<<"\t"<<NamePlaces[i]<<": "<<y[i+1]<<"\n";
+	}
+	cout<<endl;
+}
+
+/**************************************************************/
+/* NAME :  Class SystEq*/
+/* DESCRIPTION : It computes the Tau. It requires that  getValTranFire() must be called before.*/
+/**************************************************************/
+int SystEq::getComputeTau(int SetTran[], double& nextTimePoint){
+
+double tau=0.0;
+//double TransRate[nTrans+1];
+
+if (SetTran[0]!=0)
+	{
+		int size= SetTran[0];
+		double sumRate=0.0;
+		for (int i=1;i<=size;++i){
+		sumRate=EnabledTransValueDis[SetTran[i]];
+		TransRate[i]=sumRate;
+		}
+    std::exponential_distribution<> ExpD(1.0/sumRate);
+ 	tau=ExpD(generator);
+ 	if (tau>=nextTimePoint)
+        return -1;
+    std::uniform_real_distribution<> UnfRealD(0.0,1.0);
+    double val=UnfRealD(generator)*sumRate;
+    int t=0;
+    while (val>TransRate[t]) ++t;
+    return t;
+    }
+return -1;
+}
+
+
+
+
+/**************************************************************/
+/* NAME :  Class SystEq*/
+/* DESCRIPTION : It solves the ODE system using  LSODA method*/
+/**************************************************************/
+void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int Max_Run,bool Info,double Print_Step,char *argv){
+
+
+	double          rwork1, rwork5, rwork6, rwork7;
+	double          atol[nPlaces+1], rtol[nPlaces+1], y[nPlaces+1], t=0.0E0, tout=Print_Step;
+	int             iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9;
+	int             neq = nPlaces;
+	int             itol=2, itask=1, istate=1, iopt=0, jt=2;
+
+	iwork1 = iwork2 = iwork5 = iwork6 = iwork7 = iwork8 = iwork9 = 0;
+	rwork1 = rwork5 = rwork6 = rwork7 = 0.0;
+
+
+	this->Max_Run=Max_Run;
+	//For statistic
+	FinalValueXRun=new double*[nPlaces];
+    double Mean[nPlaces] {0.0};
+	//For negative marking
+	double ValuePrev[nPlaces+1] {0.0};
+
+
+
+    for (int i=0;i<nPlaces;i++)
+	{
+		FinalValueXRun[i]=new double[Max_Run+1];
+		for (int j=0;j<Max_Run+1;j++)
+			FinalValueXRun[i][j]=0.0;
+		atol[i]=perc1;
+		rtol[i]=perc2;
+	}
+
+
+
+   int SetTran[nTrans+1] {0};
+//disable discrite transition from fluid computation
+    for (int i=0;i<nTrans;i++)
+	{
+     if  (Trans[i].GenFun=="Discrete" || Trans[i].GenFun=="discrete" || Trans[i].GenFun=="DISCRETE"){
+        Trans[i].enable=false;
+        SetTran[++SetTran[0]]=i;
+        }
+	}
+
+	int run=0;
+
+	while (run<Max_Run){
+
+		//Initialization for each run
+		ValuePrev[0]=y[0]=0.0;
+        for (int j=1;j<=nPlaces;j++){
+            y[j]=ValuePrev[j]=Value[j-1];
+        }
+
+        double nextTimePoint=tout=Print_Step;
+
+
+        while(nextTimePoint<Max_Time){
+
+
+        getValTranFire(y+1);
+        //compute tau
+        int Tran=getComputeTau(SetTran,nextTimePoint);
+        double tmpt=t;
+
+
+            lsoda(*this,neq, y, &t, nextTimePoint, itol, rtol, atol, itask, &istate, iopt, jt,
+				iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
+				rwork1, rwork5, rwork6, rwork7, 0);
+
+            //check if the selected descrete transition can fire (no negative markings)
+            if (Tran!=-1){
+            int size=(Trans[Tran].Places).size();
+            bool neg=false;
+            for (int i=0;i<size&&!neg;++i){
+                y[(Trans[Tran].Places[i]).Id]+=(Trans[Tran].Places[i]).Card;
+                if   (y[(Trans[Tran].Places[i]).Id]<0)
+                    neg=true;
+            }
+            if (neg){
+
+             lsoda(*this,neq, Value, &tmpt, (nextTimePoint=nextTimePoint/2.0), itol, rtol, atol, itask, &istate, iopt, jt,
+				iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
+				rwork1, rwork5, rwork6, rwork7, 0);
+              for (int j=0;j<=nPlaces;j++){
+                    y[j]=ValuePrev[j];
+                }
+              t=tmpt;
+              }
+            }
+            else{
+			    for (int j=0;j<=nPlaces;j++){
+                    ValuePrev[j]=y[j];
+                }
+                tmpt=t;
+            }
+            cout<<"\t Time:"<<nextTimePoint<<endl;
+            derived(y+1);
+
+            if (tout==nextTimePoint)
+             nextTimePoint=(tout+=Print_Step);
+            else
+             nextTimePoint=tout;
+
+            if (istate <= 0){
+                throw   Exception("*****Error during the integration step*****\n\n");
+
+            }
+        }
+        lsoda(*this,neq, y, &t, Max_Time, itol, rtol, atol, itask, &istate, iopt, jt,
+					iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
+					rwork1, rwork5, rwork6, rwork7, 0);
+
+        cout<<"\t Time:"<<Max_Time<<endl;
+        derived(y+1);
+
+        if (istate <= 0){
+            throw   Exception("*****Error during the integration step*****\n\n");
+
+        }
+
+        for (int i=0;i<nPlaces;i++)//store resul ode
+        {
+            Mean[i]+=FinalValueXRun[i][run]= y[i+1];
+        }
+
+        ++run;
+    }
+
+	//Print final time for each trace
+	cout<<"\nSolution at time "<<Max_Time<<":\n";
+	for (int i=0;i<nPlaces;i++)//save initial state
+	{
+		cout<<"\t"<<NamePlaces[i]<<"~= "<<Mean[i+1]/run<<"\n";
 	}
 	cout<<endl;
 }

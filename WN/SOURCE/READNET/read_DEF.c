@@ -78,16 +78,16 @@ void read_DEF_file() {
                         // This change allows to encode the general function in the .def
                         // file (like any other marking-dependent functions), for the
                         // DSPN tool. The WN* tools ignore general functions, so this
-                        // change does not affect the WN* tools. 
+                        // change does not affect the WN* tools.
                         tabt[nmd].general_function = strdup(large_buf);
-                        printf("Transition %s has function:  %s\n", 
+                        printf("Transition %s has function:  %s\n",
                                 tabt[nmd].trans_name, tabt[nmd].general_function);
                         should_parse = FALSE;
                     }
 #ifdef SIMULATION
 #ifndef SYMBOLIC
                     else if (tabt[nmd].pri == 0 && tabt[nmd].mean_t == 0.0) {
-                        // Try interpreting this MDEP function definition as a general 
+                        // Try interpreting this MDEP function definition as a general
                         // function policy for the simulator
                         should_parse = parse_mdep_function_simulator(large_buf, nmd);
                     }
@@ -95,7 +95,7 @@ void read_DEF_file() {
 #endif // SIMULATION
 
                     // Parse the MDEP function
-                    if (should_parse) { 
+                    if (should_parse) {
                         /*tabmd[nmd].trans_ind = tr;*/
                         // Initialize Lex buffer
                         assert(strlen(large_buf) <= MAXSTRING);
@@ -134,7 +134,7 @@ void read_DEF_file() {
                     /* Tipo di definizione e in tmp c'e' la definizione */
                     switch (type) {
 #ifdef SWN
-                    case 'c' : 
+                    case 'c' :
                         if (parse_DEF == FALSE || parse_DEF == COLOR_CLASS) {
                             // Initialize Lex buffer
                             assert(strlen(tmp) <= MAXSTRING);
@@ -213,9 +213,9 @@ int parse_mdep_function_simulator(const char* fn, int trnum) {
     if (fn[0] == 'F' && fn[1] == 'N' && fn[2] == ':')
         fn += 3; // verbatim general function: skip the initial "FN:" prefix
 
-    // Parse by pattern-matching: 
+    // Parse by pattern-matching:
     if (2 == sscanf(fn, "Erlang [ %[a-zA-Z_0-9.] , %[a-zA-Z_0-9] ]", buf1, buf2)) {
-        // Erlang[ rate, stages ] 
+        // Erlang[ rate, stages ]
         if (0 == get_rpar_value(buf1, &r1)) // convert rate parameter (Erlang rate)
             r1 = atof(buf1);
         if (0 == get_mpar_value(buf2, &i2)) { // convert marking parameter (# of stages)
@@ -256,7 +256,7 @@ int parse_mdep_function_simulator(const char* fn, int trnum) {
         return FALSE; // Do not parse over
     }
 
-    printf("parse_mdep_function_simulator(): Unknown MDEP function %s of transition %s.\n", 
+    printf("parse_mdep_function_simulator(): Unknown MDEP function %s of transition %s.\n",
            fn, tabt[trnum].trans_name);
     // Yet to parse
     return TRUE;
