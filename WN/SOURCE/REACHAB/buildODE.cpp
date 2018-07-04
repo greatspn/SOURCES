@@ -346,7 +346,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     clock_t startGlobal, endGlobal;
     double timeGlobal;
     startGlobal = clock();
-
+    char delims[]=": ()\n\r\t";
 
     cout << "\n\n------------------------------------------------" << endl;
     cout << "               Start  encoding" << endl;
@@ -369,16 +369,21 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     set<std::string> function_names;
     for (int tt = 0; tt < ntr; tt++)
     {
-        if ((tabt[tt].general_function!=NULL)&&( (tabt[tt].general_function!="Discrete" || tabt[tt].general_function!="discrete" || tabt[tt].general_function!="DISCRETE")))
-        {
-            std::string general_function=std::string(tabt[tt].general_function);
-            general_function=general_function.substr(3,general_function.size()-4);
-            if (function_names.find(general_function)==function_names.end())
-            {
-                cout<<general_function<<endl;
-                hout<<"double "<<general_function<<"(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran);\n";
-                function_names.insert(general_function);
-
+        if (tabt[tt].general_function!=NULL){
+            //cout<<tabt[tt].general_function
+            std::string tmp_st(tabt[tt].general_function);
+            char* stoken=strtok((char*)tmp_st.c_str(),delims);
+            vector<std::string>token;
+            while (stoken!=NULL){
+                token.push_back(stoken);
+                stoken=strtok(NULL,delims);
+            }
+            if ((token.size()>1)&&( (token[1]!="Discrete" || token[1]!="discrete" || token[1]!="DISCRETE"))){
+                if (function_names.find(token[1])==function_names.end()){
+                    //cout<<token[1]<<endl;
+                    hout<<"double "<<token[1]<<"(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran);\n";
+                    function_names.insert(token[1]);
+                }
             }
         }
     }
@@ -455,10 +460,10 @@ void build_ODE(ofstream &out, std::string path, std::string net)
         out << " std::cerr<<\"\\n\\nUSE:" << net << "_solve <out_file> <type> <step_factor> <perc1> <perc2> <runs> <Max_time> <output> <step_output> -B <bound_file> \";\n\t";
     }
     //automaton
-    out << " std::cerr<<\"\\n\\t <type>:\\t ODE-E or ODE-RKF or ODE45 or LSODA or (H)SDE or HODE or SIM or STEP:\";\n\t";
-    out << " std::cerr<<\"\\n\\t <step_factor>:\\t Initial step step size\";\n\t";
-    out << " std::cerr<<\"\\n\\t <perc1>:\\t Value used to compute Step (smaller -> greater precision but slower solution)\";\n\t";
-    out << " std::cerr<<\"\\n\\t <perc1>:\\tValue used to compute Euler Step when the model is closed to bounds (smaller -> greater precision but slower solution)\";\n\t";
+    out << " std::cerr<<\"\\n\\t <type>:\\t ODE-E or ODE-RKF or ODE45 or LSODA or HLSODA or (H)SDE or HODE or SIM or STEP:\";\n\t";
+    out << " std::cerr<<\"\\n\\t <hini>:\\t Initial step step size\";\n\t";
+    out << " std::cerr<<\"\\n\\t <rtol>:\\t Value used to compute Step (smaller -> greater precision but slower solution)\";\n\t";
+    out << " std::cerr<<\"\\n\\t <atol>:\\tValue used to compute Euler Step when the model is closed to bounds (smaller -> greater precision but slower solution)\";\n\t";
     out << " std::cerr<<\"\\n\\t <runs>:\\t integer number corresponding to runs (only for (H)SDE)\";\n\t";
     out << " std::cerr<<\"\\n\\t <Max_time>:\\t double number used to set the upper bound of the evolution time\";\n\t";
     out << " std::cerr<<\"\\n\\t <output>:\\t true/false to save traces\";\n\t";
@@ -483,6 +488,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     out << " if ((strcmp(argv[2],\"SIM\")==0)||(strcmp(argv[2],\"sim\")==0))\n\t{\n";
     out << "\t cout<<\"\\t using simulation\"<<endl;\n\t epsilon=10000000000;\n\t step=MAXSTEP;\n\t SOLVE=3;\n\t}\n";
     out << " if ((strcmp(argv[2],\"HODE\")==0)||(strcmp(argv[2],\"hode\")==0))\n\t SOLVE = 2;\n";
+    out << " if ((strcmp(argv[2],\"HLSODA\")==0)||(strcmp(argv[2],\"hlsoda\")==0))\n\t SOLVE = 8;\n";
     out << " if ((strcmp(argv[2],\"SDE\")==0)||(strcmp(argv[2],\"sde\")==0) || (strcmp(argv[2],\"HSDE\")==0)||(strcmp(argv[2],\"hsde\")==0) )\n\t SOLVE = 0;\n";
 
     out << " if ((!strcmp(argv[8],\"true\"))||(!strcmp(argv[6],\"TRUE\")))\n\t OUTPUT= true;\n";
@@ -521,19 +527,40 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     {
 
 
-        out << "//Transition " << tabt[tt].trans_name << "\n t.InPlaces.clear();\n t.InhPlaces.clear();\n t.InOuPlaces.clear();\n t.Places.clear();\n t.GenFun=\"\";\n t.FuncT=nullptr;\n";
+        out << "//Transition " << tabt[tt].trans_name << "\n t.InPlaces.clear();\n t.InhPlaces.clear();\n t.InOuPlaces.clear();\n t.Places.clear();\n";
 
         if (tabt[tt].general_function!=NULL)
         {
-            std::string general_function(tabt[tt].general_function);
-            general_function=general_function.substr(3,general_function.size()-4);
-            out<<" t.GenFun= \""<<general_function<<"\";\n";
-            if (!(general_function=="Discrete" || general_function=="discrete" || general_function=="DISCRETE"))
-                out<<" t.FuncT=  &"<<general_function<<";\n";
-            out<<"t.rate = 1.0;\n";
+            cout<<tabt[tt].general_function<<endl;
+            std::string tmp_st(tabt[tt].general_function);
+            char* stoken=strtok((char*)tmp_st.c_str(),delims);
+            vector<std::string>token;
+            while (stoken!=NULL){
+                token.push_back(stoken);
+                stoken=strtok(NULL,delims);
+            }
+
+            out<<" t.GenFun= \""<<token[1]<<"\";\n";
+            if (!(token[1]=="Discrete" || token[1]=="discrete" || token[1]=="DISCRETE")){
+                out<<" t.FuncT=  &"<<token[1]<<";\n";
+                out<<" t.rate = 1.0;\n";
+
+                }
+            else
+                if (token.size()>2){
+                    out<<" t.FuncT=nullptr;\n";
+                    out<<" t.rate = "<<token[2]<<";\n";
+                    }
+
+                else{
+                    cerr << "Error: Discrete transition without rate: "<<tabt[tt].trans_name<<"\n\n";
+                    exit(EXIT_FAILURE);
+                    }
         }
-        else
-            out<<"t.rate = "<<tabt[tt].mean_t << ";\n";
+        else{
+            out<<" t.GenFun=\"\";\n t.FuncT=nullptr;\n";
+            out<<" t.rate = "<<tabt[tt].mean_t << ";\n";
+            }
         l_ptr = GET_INPUT_LIST(tt);
         while (l_ptr != NULL)
         {
@@ -562,7 +589,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
 
         for (int i=0;i<npl;i++){
             if (TP[tt][i]!=0){
-                out << " pt.Id = " << i << ";\n pt.Card = " << TP[tt][pp] << ";\n t.Places.push_back(pt);\n";
+                out << " pt.Id = " << i << ";\n pt.Card = " << TP[tt][i] << ";\n t.Places.push_back(pt);\n";
             }
         }
 
@@ -623,8 +650,10 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     //automaton
     out << "\n\ntry\t{";
     out << "\n\tif (SOLVE==-1) \{\n\t\t cerr<< \"\\n\\nError: solution methods \"<<argv[2]<<\" is not implemented\\nYou should use:  ODE-E or ODE-RKF or ODE45 or LSODA or SDE or HODE or HSDE or SIM or STEP\\n\"; \n\t\t exit(EXIT_FAILURE);\n\t}\n\n ";
-    out << "\n\tif (SOLVE == 1)\n\t\t se.SolveODEEuler(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);\n\t else\n\t\t if (SOLVE == 0)\n\t\t\t se.SolveSDEEuler(step,perc1,perc2,Max_time,runs,OUTPUT,step_o,argv[1]);\n\t\t else \n\t\t\tif (SOLVE == 3)\n\t\t\t\t se.SolveHODEEuler(step,perc1,perc2,Max_time,runs,OUTPUT,step_o,argv[1]); \n\t\t\t else \n\t\t\t\t if (SOLVE == 4)\n\t\t\t\t\t  se.HeuristicStep(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\t if (SOLVE == 5)\n\t\t\t\t\t  se.SolveODERKF(step,perc1,Max_time,OUTPUT,step_o,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\tif (SOLVE == 6)\n\t\t\t\t\t\t se.SolveODE45(step,perc1,Max_time,OUTPUT,step_o,argv[1]);\n\t\t\t\t else\n\t\t\t\t\t\t se.SolveLSODE(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);\n";
 
+
+
+    out << "\n\tif (SOLVE == 1)\n\t\t se.SolveODEEuler(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);\n\t else\n\t\t if (SOLVE == 0)\n\t\t\t se.SolveSDEEuler(step,perc1,perc2,Max_time,runs,OUTPUT,step_o,argv[1]);\n\t\t else \n\t\t\tif (SOLVE == 3)\n\t\t\t\t se.SolveHODEEuler(step,perc1,perc2,Max_time,runs,OUTPUT,step_o,argv[1]); \n\t\t\t else \n\t\t\t\t if (SOLVE == 4)\n\t\t\t\t\t  se.HeuristicStep(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\t if (SOLVE == 5)\n\t\t\t\t\t  se.SolveODERKF(step,perc1,Max_time,OUTPUT,step_o,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\tif (SOLVE == 6)\n\t\t\t\t\t\t se.SolveODE45(step,perc1,Max_time,OUTPUT,step_o,argv[1]);\n\t\t\t\t else\n\t\t\t\t\t  if (SOLVE == 8)\n\t\t\t\t\t\t\t se.SolveHLSODE(step,perc1,perc2,Max_time,runs,OUTPUT,step_o,argv[1]);\n\t\t\t\t\t else \n\t\t\t\t\t\t se.SolveLSODE(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);\n";
     out << "\n\tse.PrintStatistic(argv[1]);\n\t}\n catch(Exception obj)\n\t{\n\tcerr<<endl<<obj.get()<<endl;\n\t}\n\n";
     out << " time(&time_4);\n\n cout<<\"\\n\\nEND EXECUTION\"<<endl;\n cout<<\"\\nResults are saved in: \"<<argv[1]<<endl;\n";
     out << " cout<<\"\\n=========================== TIME ===========================\\n\\n\\t\";\n";

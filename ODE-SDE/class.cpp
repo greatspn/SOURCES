@@ -2213,6 +2213,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 
 
 	y[0]=0.0;
+
 	for (int j=1;j<=nPlaces;j++){
 		y[j]=Value[j-1];
 		if (Info){
@@ -2284,7 +2285,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 /* NAME :  Class SystEq*/
 /* DESCRIPTION : It computes the Tau. It requires that  getValTranFire() must be called before.*/
 /**************************************************************/
-int SystEq::getComputeTau(int SetTran[], double& nextTimePoint){
+int SystEq::getComputeTau(int SetTran[], double& nextTimePoint,double t){
 
 double tau=0.0;
 //double TransRate[nTrans+1];
@@ -2294,18 +2295,25 @@ if (SetTran[0]!=0)
 		int size= SetTran[0];
 		double sumRate=0.0;
 		for (int i=1;i<=size;++i){
-		sumRate=EnabledTransValueDis[SetTran[i]];
+		sumRate+=EnabledTransValueDis[SetTran[i]];
 		TransRate[i]=sumRate;
 		}
-    std::exponential_distribution<> ExpD(1.0/sumRate);
- 	tau=ExpD(generator);
+	//cout<<"SUMRATE:"<<sumRate<<"t"<<t<<"Next"<<nextTimePoint<<endl;
+
+    if (sumRate==0.0)
+        return -1;
+    std::exponential_distribution<> ExpD(sumRate);
+ 	tau=(ExpD(generator)+t);
+ //	cout<<"Tau:"<<tau<<" Next: "<<nextTimePoint<<" t:"<<t<<endl;
  	if (tau>=nextTimePoint)
         return -1;
+    nextTimePoint=tau;
     std::uniform_real_distribution<> UnfRealD(0.0,1.0);
     double val=UnfRealD(generator)*sumRate;
-    int t=0;
-    while (val>TransRate[t]) ++t;
-    return t;
+    int trans=0;
+    while (val>TransRate[trans]) ++trans;
+    //cout<<"Trans"<<NameTrans[SetTran[trans]]<<endl;
+    return SetTran[trans];
     }
 return -1;
 }
@@ -2318,6 +2326,7 @@ return -1;
 /* DESCRIPTION : It solves the ODE system using  LSODA method*/
 /**************************************************************/
 void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int Max_Run,bool Info,double Print_Step,char *argv){
+
 
 
 	double          rwork1, rwork5, rwork6, rwork7;
@@ -2337,7 +2346,7 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 	//For negative marking
 	double ValuePrev[nPlaces+1] {0.0};
 
-
+	cout.precision(16);
 
     for (int i=0;i<nPlaces;i++)
 	{
@@ -2347,7 +2356,8 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 		atol[i]=perc1;
 		rtol[i]=perc2;
 	}
-
+    atol[nPlaces]=perc1;
+    rtol[nPlaces]=perc2;
 
 
    int SetTran[nTrans+1] {0};
@@ -2364,13 +2374,20 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 
 	while (run<Max_Run){
 
+	if (run%100==0){
+		cout<<"\r\t START RUN..."<<run<<" ";
+		cout.flush();
+	}
 		//Initialization for each run
 		ValuePrev[0]=y[0]=0.0;
         for (int j=1;j<=nPlaces;j++){
             y[j]=ValuePrev[j]=Value[j-1];
         }
 
+
         double nextTimePoint=tout=Print_Step;
+        istate=1;
+        t=0.0E0;
 
 
         while(nextTimePoint<Max_Time){
@@ -2378,41 +2395,44 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 
         getValTranFire(y+1);
         //compute tau
-        int Tran=getComputeTau(SetTran,nextTimePoint);
+        int Tran=getComputeTau(SetTran,nextTimePoint,t);
         double tmpt=t;
 
 
+        //tmpt=t;
             lsoda(*this,neq, y, &t, nextTimePoint, itol, rtol, atol, itask, &istate, iopt, jt,
 				iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
 				rwork1, rwork5, rwork6, rwork7, 0);
 
             //check if the selected descrete transition can fire (no negative markings)
-            if (Tran!=-1){
-            int size=(Trans[Tran].Places).size();
             bool neg=false;
-            for (int i=0;i<size&&!neg;++i){
-                y[(Trans[Tran].Places[i]).Id]+=(Trans[Tran].Places[i]).Card;
-                if   (y[(Trans[Tran].Places[i]).Id]<0)
-                    neg=true;
+            if (Tran!=-1){
+                int size=(Trans[Tran].Places).size();
+                for (int i=0;i<size&&!neg;++i){
+                    y[(Trans[Tran].Places[i]).Id+1]+=(Trans[Tran].Places[i]).Card;
+                    if   (y[(Trans[Tran].Places[i]).Id+1]<0)
+                        neg=true;
+                }
+            istate=1;
             }
-            if (neg){
 
-             lsoda(*this,neq, Value, &tmpt, (nextTimePoint=nextTimePoint/2.0), itol, rtol, atol, itask, &istate, iopt, jt,
+            if (neg){
+             lsoda(*this,neq, Value, &tmpt, nextTimePoint=(tmpt+(nextTimePoint-tmpt)/2), itol, rtol, atol, itask, &istate, iopt, jt,
 				iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
 				rwork1, rwork5, rwork6, rwork7, 0);
               for (int j=0;j<=nPlaces;j++){
                     y[j]=ValuePrev[j];
                 }
               t=tmpt;
+
               }
-            }
             else{
 			    for (int j=0;j<=nPlaces;j++){
                     ValuePrev[j]=y[j];
-                }
+                };
                 tmpt=t;
             }
-            cout<<"\t Time:"<<nextTimePoint<<endl;
+           // cout<<"\t Time:"<<nextTimePoint<<endl;
             derived(y+1);
 
             if (tout==nextTimePoint)
@@ -2429,7 +2449,7 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 					iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
 					rwork1, rwork5, rwork6, rwork7, 0);
 
-        cout<<"\t Time:"<<Max_Time<<endl;
+       // cout<<"\t Time:"<<Max_Time<<endl;
         derived(y+1);
 
         if (istate <= 0){
@@ -2446,12 +2466,13 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
     }
 
 	//Print final time for each trace
-	cout<<"\nSolution at time "<<Max_Time<<":\n";
+	cout<<"\n\nSolution at time "<<Max_Time<<":\n";
 	for (int i=0;i<nPlaces;i++)//save initial state
 	{
-		cout<<"\t"<<NamePlaces[i]<<"~= "<<Mean[i+1]/run<<"\n";
+		cout<<"\t"<<NamePlaces[i]<<"~= "<<Mean[i]/run<<"\n";
 	}
 	cout<<endl;
+
 }
 
 
@@ -2672,7 +2693,20 @@ void SystEq::InsertTran(int num, struct InfTr T){
 		Trans[num].InPlaces.push_back(*it);
 		++it;
 	}
+
+
+    it=T.Places.begin();
+	while(it!=T.Places.end())
+	{
+		Trans[num].Places.push_back(*it);
+		++it;
+	}
+
+
 	Trans[num].InOuPlaces=T.InOuPlaces;
+
+
+
 }
 
 

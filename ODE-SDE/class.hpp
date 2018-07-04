@@ -112,6 +112,8 @@
 
 
 
+
+
 #ifndef __RGEX__
 #define __RGEX__
 #include <regex>
@@ -383,7 +385,7 @@ int nTrans;
     bool NotEnable(int Tran);
 
     //!It computes the Tau taking as input the list of descrete transitions and the next time point. It returns a possible transition firing otherwise  -1. It requires that  getValTranFire() must be called before.
-    int getComputeTau(int SetTran[], double& nextTimePoint);
+    int getComputeTau(int SetTran[], double& nextTimePoint,double t);
     //! It is a pure virtual function which must be implemented
     virtual void getValTranFire()=0;
     virtual void getValTranFire(double*)=0;
