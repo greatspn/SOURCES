@@ -11,9 +11,14 @@ It implements efficient analysis algorithms to allow its use on rather complex a
 ### Recent Awards (Model Checking Context 2018 edition):
 
 GreatSPN participated to the Model Checking Context (MCC) 2018 edition, receiving these awards:
- * Gold medal in StateSpace category ![MCC2018 Award StateSpace Gold](/contrib/gold-StateSpace-2018.png)
- * Bronze medal in UpperBounds category ![MCC2018 Award UpperBound Bronze](/contrib/gold-StateSpace-2018.png)
- * 100% accuracy of the results ![MCC2018 100% accuracy](/contrib/gold-StateSpace-2018.png)
+
+![MCC2018 Award StateSpace Gold](/contrib/gold-StateSpace-2018.png)
+Gold medal in StateSpace category;
+![MCC2018 Award UpperBound Bronze](/contrib/bronze-UpperBounds-2018.png)
+Bronze medal in UpperBounds category;
+![MCC2018 100% accuracy](/contrib/conf100-GreatSPN-Meddly-2018.png)
+100% accuracy of the results.
+
 See the [MCC2018 site](https://mcc.lip6.fr/results.php) for further details.
 
 
