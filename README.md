@@ -7,6 +7,8 @@ using Generalized Stochastic Petri Nets and their colored extension, Stochastic 
 The tool provides a friendly framework to experiment with timed Petri net based modeling techniques. 
 It implements efficient analysis algorithms to allow its use on rather complex applications.
 
+Recent Awards (Model Checking Context 2018 edition):
+![MCC2018 Award StateSpace Gold](/contrib/gold-StateSpace-2018.png)
 
 
 ### How to compile and install GreatSPN on your PC.
