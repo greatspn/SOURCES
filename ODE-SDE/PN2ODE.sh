@@ -42,7 +42,7 @@ fi
 
 
 
-NET_PATH=$1
+NET_PATH=$(perl -e "use File::Spec; print(File::Spec->rel2abs(\"${1}\"),\"\n\")")
 TRANS_POLICY="-I"
 
 shift
@@ -90,7 +90,7 @@ case "$1" in
     if [ $# -gt 1 ]
     then
 	CFUN="$1"
-        CFUN_PATH="$2"
+        CFUN_PATH=$(perl -e "use File::Spec; print(File::Spec->rel2abs(\"${2}\"),\"\n\")")
     else
         printf "**ERROR** You must specify an existing function file path after -C. \n\n"
         exit 1
