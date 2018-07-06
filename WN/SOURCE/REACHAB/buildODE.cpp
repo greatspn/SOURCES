@@ -381,7 +381,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
             if ((token.size()>1)&&( (token[1]!="Discrete" || token[1]!="discrete" || token[1]!="DISCRETE"))){
                 if (function_names.find(token[1])==function_names.end()){
                     //cout<<token[1]<<endl;
-                    hout<<"double "<<token[1]<<"(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran);\n";
+                    hout<<"double "<<token[1]<<"(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double Time);\n";
                     function_names.insert(token[1]);
                 }
             }

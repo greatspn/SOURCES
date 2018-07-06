@@ -116,7 +116,7 @@ inline void SystEqMin::getValTranFire()
 		EnabledTransValueDis[t]=0.0;
 
 		if (Trans[t].FuncT!=nullptr){
-			EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t);
+			EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
 		}
 		else {
 			if (size==0)
@@ -161,7 +161,7 @@ inline void SystEqMas::getValTranFire()
 		EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
 
 		if (Trans[t].FuncT!=nullptr){
-			EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t);
+			EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
 		}
 		else {
 
@@ -205,7 +205,7 @@ inline void SystEqMas::getValTranFire()
             EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
             if (Trans[t].FuncT!=nullptr)
             {
-                EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t);
+                EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
             }
             else
             {
@@ -255,7 +255,7 @@ inline void SystEqMas::getValTranFire()
             if (Trans[t].FuncT!=nullptr)
             {
 
-                EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t);
+                EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
             }
             else
             {
@@ -2146,6 +2146,7 @@ void SystEq::fex(double t, double *y, double *ydot, void *data){
 
 	//compute transition enable value in Yn
 	derived(y);
+	time=t;
 	getValTranFire(y);
 	unsigned int i=headDirc;
 	while (i!=DEFAULT)
@@ -2295,7 +2296,7 @@ if (SetTran[0]!=0)
 		int size= SetTran[0];
 		double sumRate=0.0;
 		for (int i=1;i<=size;++i){
-		sumRate+=EnabledTransValueDis[SetTran[i]];
+		sumRate+=EnabledTransValueDis[SetTran[i]]*Trans[SetTran[i]].rate;
 		TransRate[i]=sumRate;
 		}
 	//cout<<"SUMRATE:"<<sumRate<<"t"<<t<<"Next"<<nextTimePoint<<endl;
@@ -2304,13 +2305,13 @@ if (SetTran[0]!=0)
         return -1;
     std::exponential_distribution<> ExpD(sumRate);
  	tau=(ExpD(generator)+t);
- //	cout<<"Tau:"<<tau<<" Next: "<<nextTimePoint<<" t:"<<t<<endl;
+   // cout<<"Tau:"<<tau<<" Next: "<<nextTimePoint<<" t:"<<t<<endl;
  	if (tau>=nextTimePoint)
         return -1;
     nextTimePoint=tau;
     std::uniform_real_distribution<> UnfRealD(0.0,1.0);
     double val=UnfRealD(generator)*sumRate;
-    int trans=0;
+    int trans=1;
     while (val>TransRate[trans]) ++trans;
     //cout<<"Trans"<<NameTrans[SetTran[trans]]<<endl;
     return SetTran[trans];
@@ -2400,10 +2401,10 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 
 
         //tmpt=t;
-            lsoda(*this,neq, y, &t, nextTimePoint, itol, rtol, atol, itask, &istate, iopt, jt,
+                lsoda(*this,neq, y, &t, nextTimePoint, itol, rtol, atol, itask, &istate, iopt, jt,
 				iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
 				rwork1, rwork5, rwork6, rwork7, 0);
-
+        //t=nextTimePoint;
             //check if the selected descrete transition can fire (no negative markings)
             bool neg=false;
             if (Tran!=-1){
@@ -2434,7 +2435,7 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
             }
            // cout<<"\t Time:"<<nextTimePoint<<endl;
             derived(y+1);
-
+           // cout<<nextTimePoint<<endl;
             if (tout==nextTimePoint)
              nextTimePoint=(tout+=Print_Step);
             else
