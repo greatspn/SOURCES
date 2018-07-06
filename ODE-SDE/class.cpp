@@ -2365,8 +2365,7 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 //disable discrite transition from fluid computation
     for (int i=0;i<nTrans;i++)
 	{
-     if  (Trans[i].GenFun=="Discrete" || Trans[i].GenFun=="discrete" || Trans[i].GenFun=="DISCRETE"){
-        Trans[i].enable=false;
+     if (Trans[i].enable==false){
         SetTran[++SetTran[0]]=i;
         }
 	}
@@ -2676,7 +2675,7 @@ void SystEq::InsertTran(int num, struct InfTr T){
 		throw Exception("Error id transition is not corrected\n\n");
 	}
 	Trans[num].rate=T.rate;
-	Trans[num].enable=true;
+	Trans[num].enable=T.enable;
 	Trans[num].GenFun=T.GenFun;
 	Trans[num].FuncT=T.FuncT;
 	Trans[num].dist[0] = std::exponential_distribution<double> (T.rate);

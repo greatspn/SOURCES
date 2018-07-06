@@ -373,18 +373,16 @@ void build_ODE(ofstream &out, std::string path, std::string net)
             //cout<<tabt[tt].general_function
             std::string tmp_st(tabt[tt].general_function);
             char* stoken=strtok((char*)tmp_st.c_str(),delims);
-            vector<std::string>token;
+             stoken=strtok(NULL,delims);
+            //vector<std::string>token;
             while (stoken!=NULL){
-                token.push_back(stoken);
+                if ((strcmp(stoken,"Discrete")!=0 || strcmp(stoken,"discrete")!=0 || strcmp(stoken,"D")!=0)&& (!isdigit(stoken[0]))&& (function_names.find(stoken)==function_names.end())){
+                   hout<<"double "<<stoken<<"(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double Time);\n";
+                   function_names.insert(stoken);
+                }
                 stoken=strtok(NULL,delims);
             }
-            if ((token.size()>1)&&( (token[1]!="Discrete" || token[1]!="discrete" || token[1]!="DISCRETE"))){
-                if (function_names.find(token[1])==function_names.end()){
-                    //cout<<token[1]<<endl;
-                    hout<<"double "<<token[1]<<"(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double Time);\n";
-                    function_names.insert(token[1]);
-                }
-            }
+
         }
     }
     hout<<"};\n";
@@ -529,36 +527,38 @@ void build_ODE(ofstream &out, std::string path, std::string net)
 
         out << "//Transition " << tabt[tt].trans_name << "\n t.InPlaces.clear();\n t.InhPlaces.clear();\n t.InOuPlaces.clear();\n t.Places.clear();\n";
 
+        std::string enable="true";
+        std::string GenFun="";
+        std::string FuncT="nullptr";
+        std::string rate="1.0";
         if (tabt[tt].general_function!=NULL)
         {
             cout<<tabt[tt].general_function<<endl;
             std::string tmp_st(tabt[tt].general_function);
             char* stoken=strtok((char*)tmp_st.c_str(),delims);
-            vector<std::string>token;
+            //to remove FN
+            stoken=strtok(NULL,delims);
             while (stoken!=NULL){
-                token.push_back(stoken);
+                if (strcmp(stoken,"Discrete")==0 ||strcmp(stoken,"discrete")==0 || strcmp(stoken,"D")==0)
+                   enable="false";
+                else
+                    if (isdigit(stoken[0]))
+                         rate =stoken;
+                         else{
+                            GenFun=stoken;
+                            FuncT=std::string("&")+std::string(stoken);
+                         }
                 stoken=strtok(NULL,delims);
             }
-
-            out<<" t.GenFun= \""<<token[1]<<"\";\n";
-            if (!(token[1]=="Discrete" || token[1]=="discrete" || token[1]=="DISCRETE")){
-                out<<" t.FuncT=  &"<<token[1]<<";\n";
-                out<<" t.rate = 1.0;\n";
-
-                }
-            else
-                if (token.size()>2){
-                    out<<" t.FuncT=nullptr;\n";
-                    out<<" t.rate = "<<token[2]<<";\n";
-                    }
-
-                else{
-                    cerr << "Error: Discrete transition without rate: "<<tabt[tt].trans_name<<"\n\n";
-                    exit(EXIT_FAILURE);
-                    }
+        out<<" t.enable= "<<enable<<";\n";
+        out<<" t.GenFun= \""<<GenFun<<"\";\n";
+        out<<" t.FuncT=  "<<FuncT<<";\n";
+        out<<" t.rate = "<<rate << ";\n";
         }
         else{
-            out<<" t.GenFun=\"\";\n t.FuncT=nullptr;\n";
+            out<<" t.enable= true;\n";
+            out<<" t.GenFun= \"\";\n";
+            out<<" t.FuncT=  nullptr;\n";
             out<<" t.rate = "<<tabt[tt].mean_t << ";\n";
             }
         l_ptr = GET_INPUT_LIST(tt);
