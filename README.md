@@ -8,7 +8,6 @@ The tool provides a friendly framework to experiment with timed Petri net based 
 It implements efficient analysis algorithms to allow its use on rather complex applications.
 
 
-
 ### How to compile and install GreatSPN on your PC.
 
 GreatSPN can be compiled and installed on most POSIX-compliant systems.
@@ -134,6 +133,21 @@ To cite the GreatSPN framework, please use this reference [PDF](https://iris.uni
   publisher={Springer}
 }
 ```
+
+
+
+### Recent Awards (Model Checking Context 2018 edition):
+
+GreatSPN participated to the Model Checking Context (MCC) 2018 edition, receiving these awards:
+
+ * ![MCC2018 Award StateSpace Gold](/contrib/gold-StateSpace-2018.png)
+   Gold medal in StateSpace category;
+ * ![MCC2018 Award UpperBound Bronze](/contrib/bronze-UpperBounds-2018.png)
+   Bronze medal in UpperBounds category;
+ * ![MCC2018 100% accuracy](/contrib/conf100-GreatSPN-Meddly-2018.png)
+   100% accuracy of the results.
+
+See the [MCC2018 site](https://mcc.lip6.fr/results.php) for further details.
 
 
 
