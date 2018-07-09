@@ -7,7 +7,7 @@ You have to use General transition and type FN:<name_function>
 The default input parameters of the function are:
 (double *Value, map <string,int>& NumTrans, map <string,int>& NumPlaces, const vector <string>& NameTrans, const struct InfTr* Trans,  const int Tran, const double& Time) 
 
-The default output paramter is
+The default output parameter is
 double 
 
 
@@ -27,13 +27,12 @@ return Value[NumPlaces["P0"]]*1.0;
 
 
 
-How to define generic descrete  function in ODE
+How to define generic discrete  function in ODE
 ===============================================
 
 
 #From GUI
 You have to use General transition and type:
-	1. FN:D:<double_value> for exponential descrete transition with rate <double_value>
-	2. FN:D:<name_function> for exponential descrete transition with generic rate
-
+	1. FN:D:<double_value> for exponential discrete transition with rate <double_value>
+	2. FN:D:<name_function> for exponential discrete transition with generic rate
 
