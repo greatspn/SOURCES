@@ -2296,7 +2296,8 @@ if (SetTran[0]!=0)
 		int size= SetTran[0];
 		double sumRate=0.0;
 		for (int i=1;i<=size;++i){
-		sumRate+=EnabledTransValueDis[SetTran[i]]*Trans[SetTran[i]].rate;
+		if (EnabledTransValueDis[SetTran[i]]!=0)
+		sumRate+=Trans[SetTran[i]].rate/EnabledTransValueDis[SetTran[i]];
 		TransRate[i]=sumRate;
 		}
 	//cout<<"SUMRATE:"<<sumRate<<"t"<<t<<"Next"<<nextTimePoint<<endl;
@@ -2365,7 +2366,7 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 //disable discrite transition from fluid computation
     for (int i=0;i<nTrans;i++)
 	{
-     if (Trans[i].enable==false){
+     if (Trans[i].discrete){
         SetTran[++SetTran[0]]=i;
         }
 	}
@@ -2675,7 +2676,8 @@ void SystEq::InsertTran(int num, struct InfTr T){
 		throw Exception("Error id transition is not corrected\n\n");
 	}
 	Trans[num].rate=T.rate;
-	Trans[num].enable=T.enable;
+	Trans[num].enable=true;
+	Trans[num].discrete=T.discrete;
 	Trans[num].GenFun=T.GenFun;
 	Trans[num].FuncT=T.FuncT;
 	Trans[num].dist[0] = std::exponential_distribution<double> (T.rate);

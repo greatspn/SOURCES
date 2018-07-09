@@ -377,7 +377,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
             //vector<std::string>token;
             while (stoken!=NULL){
                 if ((strcmp(stoken,"Discrete")!=0 || strcmp(stoken,"discrete")!=0 || strcmp(stoken,"D")!=0)&& (!isdigit(stoken[0]))&& (function_names.find(stoken)==function_names.end())){
-                   hout<<"double "<<stoken<<"(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double Time);\n";
+                   hout<<"double "<<stoken<<"(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n";
                    function_names.insert(stoken);
                 }
                 stoken=strtok(NULL,delims);
@@ -527,7 +527,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
 
         out << "//Transition " << tabt[tt].trans_name << "\n t.InPlaces.clear();\n t.InhPlaces.clear();\n t.InOuPlaces.clear();\n t.Places.clear();\n";
 
-        std::string enable="true";
+        std::string enable="false";
         std::string GenFun="";
         std::string FuncT="nullptr";
         std::string rate="1.0";
@@ -540,7 +540,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
             stoken=strtok(NULL,delims);
             while (stoken!=NULL){
                 if (strcmp(stoken,"Discrete")==0 ||strcmp(stoken,"discrete")==0 || strcmp(stoken,"D")==0)
-                   enable="false";
+                   enable="true";
                 else
                     if (isdigit(stoken[0]))
                          rate =stoken;
@@ -550,13 +550,13 @@ void build_ODE(ofstream &out, std::string path, std::string net)
                          }
                 stoken=strtok(NULL,delims);
             }
-        out<<" t.enable= "<<enable<<";\n";
+        out<<" t.discrete= "<<enable<<";\n";
         out<<" t.GenFun= \""<<GenFun<<"\";\n";
         out<<" t.FuncT=  "<<FuncT<<";\n";
         out<<" t.rate = "<<rate << ";\n";
         }
         else{
-            out<<" t.enable= true;\n";
+            out<<" t.discrete= false;\n";
             out<<" t.GenFun= \"\";\n";
             out<<" t.FuncT=  nullptr;\n";
             out<<" t.rate = "<<tabt[tt].mean_t << ";\n";
@@ -653,7 +653,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
 
 
 
-    out << "\n\tif (SOLVE == 1)\n\t\t se.SolveODEEuler(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);\n\t else\n\t\t if (SOLVE == 0)\n\t\t\t se.SolveSDEEuler(step,perc1,perc2,Max_time,runs,OUTPUT,step_o,argv[1]);\n\t\t else \n\t\t\tif (SOLVE == 3)\n\t\t\t\t se.SolveHODEEuler(step,perc1,perc2,Max_time,runs,OUTPUT,step_o,argv[1]); \n\t\t\t else \n\t\t\t\t if (SOLVE == 4)\n\t\t\t\t\t  se.HeuristicStep(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\t if (SOLVE == 5)\n\t\t\t\t\t  se.SolveODERKF(step,perc1,Max_time,OUTPUT,step_o,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\tif (SOLVE == 6)\n\t\t\t\t\t\t se.SolveODE45(step,perc1,Max_time,OUTPUT,step_o,argv[1]);\n\t\t\t\t else\n\t\t\t\t\t  if (SOLVE == 8)\n\t\t\t\t\t\t\t se.SolveHLSODE(step,perc1,perc2,Max_time,runs,OUTPUT,step_o,argv[1]);\n\t\t\t\t\t else \n\t\t\t\t\t\t se.SolveLSODE(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);\n";
+    out << "\n\tif (SOLVE == 1)\n\t\t se.SolveODEEuler(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);\n\t else\n\t\t if (SOLVE == 0)\n\t\t\t se.SolveSDEEuler(step,perc1,perc2,Max_time,runs,OUTPUT,step_o,argv[1]);\n\t\t else \n\t\t\tif (SOLVE == 3)\n\t\t\t\t se.SolveHODEEuler(step,perc1,perc2,Max_time,runs,OUTPUT,step_o,argv[1]); \n\t\t\t else \n\t\t\t\t if (SOLVE == 4)\n\t\t\t\t\t  se.HeuristicStep(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\t if (SOLVE == 5)\n\t\t\t\t\t  se.SolveODERKF(step,perc1,Max_time,OUTPUT,step_o,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\tif (SOLVE == 6)\n\t\t\t\t\t\t se.SolveODE45(step,perc1,Max_time,OUTPUT,step_o,argv[1]);\n\t\t\t\t else\n\t\t\t\t\t if (SOLVE == 8)\n\t\t\t\t\t\t\t se.SolveHLSODE(step,perc1,perc2,Max_time,runs,OUTPUT,step_o,argv[1]);\n\t\t\t\t\t else \n\t\t\t\t\t\t\t se.SolveLSODE(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);\n";
     out << "\n\tse.PrintStatistic(argv[1]);\n\t}\n catch(Exception obj)\n\t{\n\tcerr<<endl<<obj.get()<<endl;\n\t}\n\n";
     out << " time(&time_4);\n\n cout<<\"\\n\\nEND EXECUTION\"<<endl;\n cout<<\"\\nResults are saved in: \"<<argv[1]<<endl;\n";
     out << " cout<<\"\\n=========================== TIME ===========================\\n\\n\\t\";\n";

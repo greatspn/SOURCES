@@ -184,12 +184,13 @@ namespace SDE
     std::exponential_distribution<double> dist[1];
     //!remember if this transition is enable in the diffusion process
     bool enable;
+    bool discrete {false};
     //!encode the  brown noise value for the current time
     double BrownNoise;
     //!it stores for generic transition
     std::string GenFun {""};
     //!it is a pointer to a function   returns the transition intesity
-    double (*FuncT)(double *Value, map <string,int>& NumTrans, map <string,int>& NumPlaces, const vector <string>& NameTrans, const struct InfTr* Trans,  const int Tran, const double Time) {nullptr};
+    double (*FuncT)(double *Value, map <string,int>& NumTrans, map <string,int>& NumPlaces, const vector <string>& NameTrans, const struct InfTr* Trans,  const int Tran, const double& Time) {nullptr};
   };
 
   //!Class Elem
