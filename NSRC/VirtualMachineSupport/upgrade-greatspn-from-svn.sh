@@ -24,9 +24,10 @@ read -p "Press any key to start upgrading..." -n1 -s
 echo
 
 # SVNLOGIN="--username vboxuser -password vboxuser --non-interactive"
-SVNLOGIN="--username vboxuser"
-(cd /home/user/GreatSPN/SOURCES && svn revert ${SVNLOGIN} --depth infinity . )
-(cd /home/user/GreatSPN/SOURCES && svn update ${SVNLOGIN} --accept theirs-full )
+# SVNLOGIN="--username vboxuser"
+# (cd /home/user/GreatSPN/SOURCES && svn revert ${SVNLOGIN} --depth infinity . )
+# (cd /home/user/GreatSPN/SOURCES && svn update ${SVNLOGIN} --accept theirs-full )
+(cd /home/user/GreatSPN/SOURCES && git pull )
 if [ $? -eq 0 ]; then
 	echo
 	echo "${B1}Source tree has been upgraded. ${B0}"
