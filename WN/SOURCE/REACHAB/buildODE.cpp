@@ -455,7 +455,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     else
     {
         out << " if (argc<10)\n\t{\n \t";
-        out << " std::cerr<<\"\\n\\nUSE:" << net << "_solve <out_file> <type> <step_factor> <perc1> <perc2> <runs> <Max_time> <output> <step_output> -B <bound_file> \";\n\t";
+        out << " std::cerr<<\"\\n\\nUSE:" << net << "_solve <out_file> <type> <hini> <rtol> <atol> <runs> <Max_time> <output> <step_output> -B <bound_file> \";\n\t";
     }
     //automaton
     out << " std::cerr<<\"\\n\\t <type>:\\t ODE-E or ODE-RKF or ODE45 or LSODA or HLSODA or (H)SDE or HODE or SIM or STEP:\";\n\t";
@@ -943,11 +943,11 @@ void build_ODER(ofstream &out, std::string net)
             l_ptr = NEXT_NODE(l_ptr);
         }
         //Encoding transition rates
-        out << tabt[tt].trans_name << " = ";
         if (tabt[tt].rate_par_id>=0)
-            out<<tabrp[tabt[tt].rate_par_id].rate_name<<"\n";
+            out<<tabt[tt].trans_name << " = "<<tabrp[tabt[tt].rate_par_id].rate_name<<"\n";
         else
-            out<<tabt[tt].mean_t<< "\n";
+            if (tabt[tt].mean_t!=0)
+                out<<tabt[tt].trans_name << " = "<<tabt[tt].mean_t<< "\n";
 #if DEBUG
         for (int i = 0; i < npl; i++)
             cout << "\t" << TP[tt][i];
@@ -971,23 +971,17 @@ void build_ODER(ofstream &out, std::string net)
     }
     out << "##End Place mapping\n\n";
 //Initialization variables
-
-    out << "##Begin ODE system\n";
-    for (pp = 0; pp < npl; pp++)
-    {
-        out << "d" << tabp[pp].place_name << " = ";
-        bool found = false;
-        for (int tt = 0; tt < ntr; tt++)
+    out<<"##Begin ODE Terms (X all transitions)\n";
+    for (int tt = 0; tt < ntr; tt++)
         {
-            if (TP[tt][pp] != 0)
-            {
-                found = true;
+        out<<"R_"<<tabt[tt].trans_name<<" = ";
+
                 if (tabt[tt].general_function==NULL)
                 {
 
                     if (MASSACTION)
                     {
-                        out << " + " << tabt[tt].trans_name << " * " << TP[tt][pp];
+                        out << " + " << tabt[tt].trans_name;
                         for (int pp1 = 0; pp1 < npl; pp1++)
                         {
                             if (TPI[tt][pp1] < 0)
@@ -998,7 +992,7 @@ void build_ODER(ofstream &out, std::string net)
                     }
                     else
                     {
-                        out << "+ " << tabt[tt].trans_name << " * " << TP[tt][pp] << "*min( ";
+                        out << "+ " << tabt[tt].trans_name <<"*min( ";
                         bool first = true;
                         for (int pp1 = 0; pp1 < npl; pp1++)
                         {
@@ -1022,16 +1016,32 @@ void build_ODER(ofstream &out, std::string net)
                 else
                 {
                     std::string general_function(tabt[tt].general_function);
-                    if (TP[tt][pp]>0)
-                    {
-                        out<<"+1 * "<<general_function.substr(3,general_function.size()-4);
-                    }
-                    else
-                    {
-                        out<<TP[tt][pp]<<" * "<<general_function.substr(3,general_function.size()-4);
-                    }
+                    out<<general_function.substr(3,general_function.size()-4)<<"(y,\""<<tabt[tt].trans_name<<"\")";
+
                 }
 
+
+            out<<endl;
+        }
+    out<<"##End ODE Terms\n\n";
+
+
+    out << "##Begin ODE system\n";
+    for (pp = 0; pp < npl; pp++)
+    {
+        out << "d" << tabp[pp].place_name << " = ";
+        bool found = false;
+         for (int tt = 0; tt < ntr; tt++)
+        {
+
+            if (TP[tt][pp] != 0)
+            {
+                found = true;
+                if (TP[tt][pp]>0)
+                out<<"+"<< TP[tt][pp]<<"*";
+                else
+                out<< TP[tt][pp]<<"*";
+                out<<"R_"<<tabt[tt].trans_name;
             }
         }
         if (!found)//case test loop

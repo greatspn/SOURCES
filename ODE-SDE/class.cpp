@@ -116,7 +116,7 @@ inline void SystEqMin::getValTranFire()
 		EnabledTransValueDis[t]=0.0;
 
 		if (Trans[t].FuncT!=nullptr){
-			EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+			 EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
 		}
 		else {
 			if (size==0)
@@ -159,9 +159,9 @@ inline void SystEqMas::getValTranFire()
 	for(int t=0; t<nTrans; t++)
 	{
 		EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
-
+       // cout<<" T:"<<NameTrans[t]<<endl;
 		if (Trans[t].FuncT!=nullptr){
-			EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+			 EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
 		}
 		else {
 
@@ -171,6 +171,7 @@ inline void SystEqMas::getValTranFire()
 				{
 					double valD,valC;
 					valD=valC=ValuePrv[Trans[t].InPlaces[k].Id];
+		//			cout<<"\t"<<NamePlaces[Trans[t].InPlaces[k].Id]<<" card:"<<Trans[t].InPlaces[k].Card<<" num:"<<ValuePrv[Trans[t].InPlaces[k].Id]<<endl;
 					double fatt=1;
 					for (int i=2;i<=Trans[t].InPlaces[k].Card;i++)
 					{
@@ -184,7 +185,9 @@ inline void SystEqMas::getValTranFire()
 						EnabledTransValueDis[t]*=valD/fatt;
 					else
 						EnabledTransValueDis[t]=0.0;
+
 					EnabledTransValueCon[t]*=valC/fatt;
+			//		cout<<"\t"<<valC/fatt<<" Tot:"<<EnabledTransValueCon[t]<<endl;
 				}
 			}
 		}
@@ -203,9 +206,11 @@ inline void SystEqMas::getValTranFire()
         for(int t=0; t<nTrans; t++)
         {
             EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
+              //cout<<" T:"<<NameTrans[t]<<endl;
             if (Trans[t].FuncT!=nullptr)
             {
-                EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+                 EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+
             }
             else
             {
@@ -216,6 +221,7 @@ inline void SystEqMas::getValTranFire()
                     {
                         double valD,valC;
                         valD=valC=ValuePrv[Trans[t].InPlaces[k].Id];
+                      //  cout<<"\t"<<NamePlaces[Trans[t].InPlaces[k].Id]<<" card:"<<Trans[t].InPlaces[k].Card<<" num:"<<ValuePrv[Trans[t].InPlaces[k].Id]<<endl;
                         double fatt=1;
                         for (int i=2; i<=Trans[t].InPlaces[k].Card; i++)
                         {
@@ -230,6 +236,7 @@ inline void SystEqMas::getValTranFire()
                         else
                             EnabledTransValueDis[t]=0.0;
                         EnabledTransValueCon[t]*=valC/fatt;
+                       // cout<<"\t"<<valC/fatt<<" Tot:"<<EnabledTransValueCon[t]<<endl;
                     }
                 }
             }
@@ -255,7 +262,7 @@ inline void SystEqMas::getValTranFire()
             if (Trans[t].FuncT!=nullptr)
             {
 
-                EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+                 EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
             }
             else
             {
@@ -2252,9 +2259,9 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 					iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
 					rwork1, rwork5, rwork6, rwork7, 0);
 	if (Info){
-		out<<tout<<" ";
+		out<<Max_Time<<" ";
 	}
-	cout<<"\t Time:"<<tout<<endl;
+	cout<<"\t Time:"<<Max_Time<<endl;
 	derived(y+1);
 	if (Info){
         for (int j=1;j<=nPlaces;j++){
@@ -2289,24 +2296,30 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 int SystEq::getComputeTau(int SetTran[], double& nextTimePoint,double t){
 
 double tau=0.0;
-//double TransRate[nTrans+1];
 
 if (SetTran[0]!=0)
 	{
 		int size= SetTran[0];
 		double sumRate=0.0;
+
 		for (int i=1;i<=size;++i){
-		if (EnabledTransValueDis[SetTran[i]]!=0)
-		sumRate+=Trans[SetTran[i]].rate/EnabledTransValueDis[SetTran[i]];
+		if (EnabledTransValueDis[SetTran[i]]!=0){
+            if (Trans[SetTran[i]].GenFun==""){
+                sumRate+=EnabledTransValueDis[SetTran[i]]/Trans[SetTran[i]].rate;
+                }
+            else{
+                sumRate+=EnabledTransValueDis[SetTran[i]];
+                }
+            }
 		TransRate[i]=sumRate;
 		}
-	//cout<<"SUMRATE:"<<sumRate<<"t"<<t<<"Next"<<nextTimePoint<<endl;
+
 
     if (sumRate==0.0)
         return -1;
     std::exponential_distribution<> ExpD(sumRate);
  	tau=(ExpD(generator)+t);
-   // cout<<"Tau:"<<tau<<" Next: "<<nextTimePoint<<" t:"<<t<<endl;
+
  	if (tau>=nextTimePoint)
         return -1;
     nextTimePoint=tau;
@@ -2314,7 +2327,6 @@ if (SetTran[0]!=0)
     double val=UnfRealD(generator)*sumRate;
     int trans=1;
     while (val>TransRate[trans]) ++trans;
-    //cout<<"Trans"<<NameTrans[SetTran[trans]]<<endl;
     return SetTran[trans];
     }
 return -1;
@@ -2368,6 +2380,7 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 	{
      if (Trans[i].discrete){
         SetTran[++SetTran[0]]=i;
+        Trans[i].enable=false;
         }
 	}
 
@@ -2390,23 +2403,29 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
         istate=1;
         t=0.0E0;
 
-
-        while(nextTimePoint<Max_Time){
-
-
-        getValTranFire(y+1);
-        //compute tau
-        int Tran=getComputeTau(SetTran,nextTimePoint,t);
+        bool neg=false;
         double tmpt=t;
+
+        while(nextTimePoint<=Max_Time){
+
+            if (!neg){
+                getValTranFire(y+1);
+
+            }
+            neg=false;
+        //compute tau
+            int Tran=getComputeTau(SetTran,nextTimePoint,t);
+
+
 
 
         //tmpt=t;
-                lsoda(*this,neq, y, &t, nextTimePoint, itol, rtol, atol, itask, &istate, iopt, jt,
+            lsoda(*this,neq, y, &t, nextTimePoint, itol, rtol, atol, itask, &istate, iopt, jt,
 				iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
 				rwork1, rwork5, rwork6, rwork7, 0);
         //t=nextTimePoint;
             //check if the selected descrete transition can fire (no negative markings)
-            bool neg=false;
+
             if (Tran!=-1){
                 int size=(Trans[Tran].Places).size();
                 for (int i=0;i<size&&!neg;++i){
@@ -2416,7 +2435,26 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
                 }
             istate=1;
             }
-
+            if (neg){
+            for (int j=0;j<=nPlaces;j++){
+                    y[j]=ValuePrev[j];
+                }
+              t=tmpt;
+              nextTimePoint= (tmpt+(nextTimePoint-tmpt)/2);
+            }
+            else
+            {
+			    for (int j=0;j<=nPlaces;j++){
+                    ValuePrev[j]=y[j];
+                }
+                tmpt=t;
+                derived(y+1);
+                if (tout==nextTimePoint)
+                    nextTimePoint=(tout+=Print_Step);
+                else
+                    nextTimePoint=tout;
+            }
+/*
             if (neg){
              lsoda(*this,neq, Value, &tmpt, nextTimePoint=(tmpt+(nextTimePoint-tmpt)/2), itol, rtol, atol, itask, &istate, iopt, jt,
 				iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
@@ -2440,23 +2478,24 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
              nextTimePoint=(tout+=Print_Step);
             else
              nextTimePoint=tout;
-
+*/
             if (istate <= 0){
                 throw   Exception("*****Error during the integration step*****\n\n");
 
             }
         }
-        lsoda(*this,neq, y, &t, Max_Time, itol, rtol, atol, itask, &istate, iopt, jt,
-					iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
-					rwork1, rwork5, rwork6, rwork7, 0);
+
+       // lsoda(*this,neq, y, &t, Max_Time, itol, rtol, atol, itask, &istate, iopt, jt,
+					//iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
+					//rwork1, rwork5, rwork6, rwork7, 0);
 
        // cout<<"\t Time:"<<Max_Time<<endl;
-        derived(y+1);
+        //derived(y+1);
 
-        if (istate <= 0){
-            throw   Exception("*****Error during the integration step*****\n\n");
+       // if (istate <= 0){
+       //     throw   Exception("*****Error during the integration step*****\n\n");
 
-        }
+        //}
 
         for (int i=0;i<nPlaces;i++)//store resul ode
         {
