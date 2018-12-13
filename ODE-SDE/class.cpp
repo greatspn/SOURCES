@@ -2296,7 +2296,6 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 int SystEq::getComputeTau(int SetTran[], double& nextTimePoint,double t){
 
 double tau=0.0;
-
 if (SetTran[0]!=0)
 	{
 		int size= SetTran[0];
@@ -2325,9 +2324,20 @@ if (SetTran[0]!=0)
     nextTimePoint=tau;
     std::uniform_real_distribution<> UnfRealD(0.0,1.0);
     double val=UnfRealD(generator)*sumRate;
-    int trans=1;
-    while (val>TransRate[trans]) ++trans;
-    return SetTran[trans];
+    //int trans=1;
+   // while (val>TransRate[trans]) ++trans;
+
+     int lo = 0, hi = size - 1;
+     while (lo < hi) {
+        int mid = lo + (hi - lo)/2;
+        if (TransRate[mid] < val)
+         lo = mid + 1;
+      else
+         hi = mid;
+     }
+    //cout<<trans<<" "<<lo<<endl;
+
+    return SetTran[lo];
     }
 return -1;
 }
