@@ -2360,6 +2360,25 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 	//For negative marking
 	double ValuePrev[nPlaces+1] {0.0};
 
+
+
+    ofstream out;
+    if (Info)
+	{
+		out.open(string(argv)+".trace",ofstream::out);
+		out.precision(12);
+		if(!out)
+		{
+			throw Exception("*****Error opening output file *****\n\n");
+
+		}
+		out<<"Time";
+		for (int i=0;i<nPlaces;i++)
+			out<<" "<<NamePlaces[i];
+		out<<endl;
+	}
+
+
 	cout.precision(16);
 
     for (int i=0;i<nPlaces;i++)
@@ -2385,6 +2404,12 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 	}
 
 	int run=0;
+
+
+
+
+
+
 
 	while (run<Max_Run){
 
@@ -2449,8 +2474,18 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
                 }
                 tmpt=t;
                 derived(y+1);
-                if (tout==nextTimePoint)
+
+                if (tout==nextTimePoint){
+                    if (Info){
+                     out<<nextTimePoint;
+                     for (int j=1;j<=nPlaces;j++){
+                        out<<" "<<y[j];
+                        }
+                     out<<endl;
+                     }
+
                     nextTimePoint=(tout+=Print_Step);
+                    }
                 else
                     nextTimePoint=tout;
             }

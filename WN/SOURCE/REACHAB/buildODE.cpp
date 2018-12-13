@@ -455,14 +455,14 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     else
     {
         out << " if (argc<10)\n\t{\n \t";
-        out << " std::cerr<<\"\\n\\nUSE:" << net << "_solve <out_file> <type> <hini> <rtol> <atol> <runs> <Max_time> <output> <step_output> -B <bound_file> \";\n\t";
+        out << " std::cerr<<\"\\n\\nUSE:" << net << "_solve <out_file> <type> <hini> <atol> <rtol> <runs> <Max_time> <output> <step_output> -B <bound_file> \";\n\t";
     }
     //automaton
     out << " std::cerr<<\"\\n\\t <type>:\\t ODE-E or ODE-RKF or ODE45 or LSODA or HLSODA or (H)SDE or HODE or SIM or STEP:\";\n\t";
     out << " std::cerr<<\"\\n\\t <hini>:\\t Initial step step size\";\n\t";
-    out << " std::cerr<<\"\\n\\t <rtol>:\\t Value used to compute Step (smaller -> greater precision but slower solution)\";\n\t";
     out << " std::cerr<<\"\\n\\t <atol>:\\tValue used to compute Euler Step when the model is closed to bounds (smaller -> greater precision but slower solution)\";\n\t";
-    out << " std::cerr<<\"\\n\\t <runs>:\\t integer number corresponding to runs (only for (H)SDE)\";\n\t";
+    out << " std::cerr<<\"\\n\\t <rtol>:\\t Value used to compute Step (smaller -> greater precision but slower solution)\";\n\t";
+       out << " std::cerr<<\"\\n\\t <runs>:\\t integer number corresponding to runs (only for (H)SDE)\";\n\t";
     out << " std::cerr<<\"\\n\\t <Max_time>:\\t double number used to set the upper bound of the evolution time\";\n\t";
     out << " std::cerr<<\"\\n\\t <output>:\\t true/false to save traces\";\n\t";
     out << " std::cerr<<\"\\n\\t <step_output>:\\t double number used to set the step in the output\";\n\t";
