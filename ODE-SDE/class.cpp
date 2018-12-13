@@ -2361,6 +2361,7 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 	double ValuePrev[nPlaces+1] {0.0};
 
 
+    cout<<endl<<"Seed value: "<<seed<<endl<<endl;
 
     ofstream out;
     if (Info)
