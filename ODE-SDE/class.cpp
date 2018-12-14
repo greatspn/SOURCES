@@ -2430,10 +2430,19 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 	}
 		//Initialization for each run
 		ValuePrev[0]=y[0]=0.0;
+
+        if (Info){
+            out<<"0.0";
+        }
         for (int j=1;j<=nPlaces;j++){
             y[j]=ValuePrev[j]=Value[j-1];
+            if (Info){
+                out<<" "<<y[j];
+            }
         }
-
+        if (Info){
+            out<<endl;;
+        }
 
         double nextTimePoint=tout=Print_Step;
         istate=1;
