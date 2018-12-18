@@ -70,11 +70,11 @@ int SystEq::search(string& name){
 /* NAME :  Class SystEq*/
 /* DESCRIPTION : readSLUBounds reads softbound from a file*/
 /**************************************************************/
-bool SystEq::readSLUBounds(char *argv){
-	ifstream in(argv, std::ifstream::in);
+bool SystEq::readSLUBounds(const string& file){
+	ifstream in(file.c_str(), std::ifstream::in);
 	if (!in)
 	{
-		cerr<<"\nError:  it is not possible to open the soft bound file "<<argv<< "\n";
+		cerr<<"\nError:  it is not possible to open the soft bound file "<<file<< "\n";
 		return false;
 	}
 	int i=0;
@@ -99,8 +99,64 @@ bool SystEq::readSLUBounds(char *argv){
 		}
 	}
 	cout<<"-----------------------------------------------------------\n";
+	in.close();
 	return true;
 }
+
+
+
+/**************************************************************/
+/* NAME :  Class SystEq*/
+/* DESCRIPTION : readInitialMarking reads initial marking from a file*/
+/**************************************************************/
+bool SystEq::readInitialMarking(const string& file){
+	ifstream in(file.c_str(), std::ifstream::in);
+	if (!in)
+	{
+		cerr<<"\nError:  it is not possible to open the initila marking file "<<file<< "\n\n";
+		return false;
+	}
+
+	std::string name;
+	cout<<"\n\n-----------------------------------------------------------\n";
+	cout<<"\t\t  Reading initial marking"<<endl;
+	cout<<"-----------------------------------------------------------\n";
+	double buffer=-1;
+	int num=0;
+
+    while(in){
+        buffer=-1;
+        in>>buffer;
+        if (buffer>=0.0){
+            Value[num]=buffer;
+#if DEBUG==1
+            cout<<"Place "<<num<<" marking:"<<buffer<<endl;
+#endif
+            num++;
+        }
+
+    }
+    if ((num)!=nPlaces){
+            cerr<<"\nError:  initial marking file does not cointain a marking for each place\n\n";
+            return false;
+        }
+//updating p-semiflow
+    unsigned int i=headDerv;
+	while (i!=DEFAULT){
+		double value =0.0, coff=0.0;
+		int place=-1;
+		for (int j=0;j<VEq[i].getSizeP()-1;j++){
+			VEq[i].getPsemflw(j,place,coff);
+			value+=Value[place]*coff;
+		}
+		value+=Value[i];
+        VEq[i].setPsemflw(VEq[i].getSizeP()-1,value);
+        i=VEq[i].getNext();
+	}
+	cout<<"-----------------------------------------------------------\n";
+	return true;
+}
+
 
 /**************************************************************/
 /* NAME :  Class SystEqMin*/
