@@ -1,0 +1,7 @@
+import os
+flags = "-Wall --std=c++17 -Wno-unused-function -I/usr/include -O2"
+
+alpha_env = Environment(ENV=os.environ, CC="gcc", CCFLAGS=flags)
+Export("alpha_env")
+
+SConscript("./alphaFactory/SConstruct")

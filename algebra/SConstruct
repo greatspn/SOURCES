@@ -1,0 +1,6 @@
+#initialize the environment
+import os
+alg_env = Environment(ENV = os.environ, CC="gcc", CCFLAGS="-O2 -lm", LIBS=["m"])
+Export('alg_env')
+SConscript("./Composition/SConstruct")
+SConscript("./Remove/SConstruct")

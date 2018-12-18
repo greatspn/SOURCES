@@ -1,0 +1,6 @@
+import os
+Import("alpha_env")
+
+sources = ["alphaFactory.cpp"]
+
+Program("alphaFactory", sources)

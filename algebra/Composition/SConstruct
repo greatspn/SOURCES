@@ -1,0 +1,12 @@
+#initialize the environment
+import os
+Import('alg_env')
+
+#'algebra' sources
+sources = ["global.c", "alloc.c", "layer.c", "save.c", "load.c", "rescale.c", "algebra.c", "parser.y.h", "lexer.l"]
+
+# generate parser using byacc
+alg_env.CFile(target="parser.y.h", source="parser.y")
+
+# build the 'algebra' target
+alg_env.Program('algebra', sources)

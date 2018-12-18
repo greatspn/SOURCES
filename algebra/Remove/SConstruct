@@ -1,0 +1,12 @@
+#initialize the environment
+import os
+Import('alg_env')
+
+#'remove' sources
+sources = ["global.c", "alloc.c", "layer.c", "save.c", "load.c", "remove.c", "parser.y.h", "lexer.l"]
+
+# generate parser using byacc
+alg_env.CFile(target="parser.y.h", source="parser.y")
+
+# build the 'remove' target
+alg_env.Program('remove', sources)
