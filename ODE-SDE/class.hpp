@@ -133,7 +133,7 @@ namespace SDE
   //#define epsilon 100000
   #define INCDEC 0.0
   #define DEFAULT 4294967295U
-  #define DEBUG 0
+  #define DEBUG 1
   #define ADAPTATIVE 1
   #define ALPHA 0.99
   const double MAXSTEP=4294967295.0;
@@ -275,6 +275,7 @@ namespace SDE
     inline int  getIdTrans(int i){ return LElem[i].getIdTran();};
     inline void getPsemflw(int i, int& place, double& coff) {place=PSemiflow[i].Id; coff=PSemiflow[i].Card;};
     inline void getPsemflw(int i, int& place) {place=PSemiflow[i].Id;};
+    inline void setPsemflw(int i, double& coff) {PSemiflow[i].Card=coff;};
     //It returns the next place to be processed.
     inline unsigned int getNext() {return next;};
     //It set the next place to be processed.
@@ -378,8 +379,6 @@ namespace SDE
     void InsertTran(int num, struct InfTr T);
     //! It stores an equation. It takes in input the equation/place id, its information encodes on class Equation, its initial value and its bounds.
     void InsertEq(int num, class Equation& Eq,double InitValue,double LBound, double UBound);
-    //! It updates the initial value of the equation in position num.
-    inline void UpdateInitialValue(int num ,double InitValue){Value[num]=InitValue;};
     //! It prints all the system information
     void Print();
     //! It checks if it is disable by an inhibitor arc
@@ -413,7 +412,9 @@ namespace SDE
     //It returns the brown noise value for the input transition.
     inline double getBNoiseTran(int Tran) {return Trans[Tran].BrownNoise;};
     //It reads from a file the softh lower and upper bounds.
-    bool readSLUBounds(char *argv);
+    bool readSLUBounds(const string& file);
+    //It reads from a file the initial marking.
+    bool readInitialMarking(const string& file);
     //! It resets the list of enable transition
     void resetTrans();
     //! It solves the ODE system using Euler method. It takes in input the step size and the Max_Time
