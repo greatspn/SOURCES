@@ -1,5 +1,7 @@
 import os
-Import("alpha_env")
+
+alpha_flags = "-Wall --std=c++17 -Wno-unused-function -I/usr/include -O2"
+alpha_env = Environment(ENV=os.environ, CC="gcc", CCFLAGS=alpha_flags)
 
 sources = ["alphaFactory.cpp"]
 

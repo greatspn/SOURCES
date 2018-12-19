@@ -1,7 +1,14 @@
 import os
-flags = "-Wall --std=c++17 -Wno-unused-function -I/usr/include -O2"
 
-alpha_env = Environment(ENV=os.environ, CC="gcc", CCFLAGS=flags)
-Export("alpha_env")
+Import("basepath")
 
+lemonpath = basepath+"/bin/lemon"
+Export("lemonpath")
+
+SConscript("./lemon/SConstruct")
 SConscript("./alphaFactory/SConstruct")
+SConscript("./DSPN-Tool/SConstruct")
+
+#SConscript("./CSLTA-solver/SConstruct") # seems unused, does not compile
+
+

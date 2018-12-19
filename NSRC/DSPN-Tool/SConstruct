@@ -1,0 +1,50 @@
+import os
+
+Import("cflags")
+Import("boostpath")
+Import("basepath")
+
+dspn_flags = cflags
+
+# TODO check with lpsolve library & extend flags if present
+
+dspn_flags.extend(["-Wall",
+					"-std=c++17",
+					"-I"+basepath+"/objects/DSPN-Tool/NSRC/DSPN-Tool/",
+					"-Wno-unused-function",
+					"-DNDEBUG=1"])
+paths = [boostpath]
+
+dspn_env = Environment(ENV=os.environ, CC="gcc", CCFLAGS=dspn_flags, LIBPATH=paths)
+
+act=basepath+"/bin/lemon newparser.lyy"
+lemon_parser = dspn_env.Command(target="", source="newparser.lyy", action=act)
+dspn_env.AlwaysBuild(lemon_parser)
+if os.path.isfile("newparser.c"): os.rename("newparser.c", "newparser.cpp")
+
+sources = [ "lexer.ll",
+			"CSLTA.cpp",
+			"DTA.cpp",
+			"Experiment.cpp",
+			"Language.cpp",
+			"LinearProg.cpp",
+			"MRP.cpp",
+			"MRP_Explicit.cpp",
+			"MRP_Implicit.cpp",
+			"MRP_SccDecomp.cpp",
+			"Measure.cpp",
+			"PackedMemoryPool.cpp",
+			"ParserDefs.cpp",
+			"PetriExport.cpp",
+			"PetriNet.cpp",
+			"PetriNetTool.cpp",
+			"ReachabilityGraph.cpp",
+			"NewReachabilityGraph.cpp",
+			"Semiflows.cpp",
+			"SolveCTMC.cpp",
+			"SynchProduct.cpp",
+			"SynchProductSCC.cpp",
+			"utils.cpp",
+			"../numeric/numeric.cpp"]
+
+Program("DSPN-Tool", sources)

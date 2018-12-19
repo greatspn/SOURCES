@@ -1,0 +1,15 @@
+import os
+
+Import("cflags")
+Import("boostpath")
+
+cslta_flags = cflags
+cslta_flags.extend(["-Wall", "-std=c++17"])
+paths = [boostpath]
+sources = ["asmc.cpp", "commands.cpp", "cslta.cpp", "dspn.cpp", "dta.cpp", "lexer.l", "parser.tab.c"]
+
+cslta_env = Environment(ENV=os.environ, CC="gcc", CCFLAGS=cslta_flags, LIBPATH=paths)
+cslta_env.CFile(target="parser.cpp", source="parser.y")
+
+Program("CSLTA", sources)
+
