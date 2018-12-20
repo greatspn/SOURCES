@@ -248,8 +248,8 @@ ostream& flow_matrix_t::print(ostream& os, bool highlight_annulled) const {
 
 //-----------------------------------------------------------------------------
 
-flow_matrix_t::flow_matrix_t(size_t _N, size_t _N0, size_t _M, InvariantKind _ik, int _inc_dec, bool _add_extra_vars) 
-: N(_N), N0(_N0), M(_M), inv_kind(_ik), inc_dec(_inc_dec), add_extra_vars(_add_extra_vars), mat_kind(FlowMatrixKind::EMPTY) 
+flow_matrix_t::flow_matrix_t(size_t _N, size_t _N0, size_t _M, InvariantKind _ik, int _inc_dec, bool _add_extra_vars, bool _use_Colom_pivoting) 
+: N(_N), N0(_N0), M(_M), inv_kind(_ik), inc_dec(_inc_dec), add_extra_vars(_add_extra_vars), use_Colom_pivoting(_use_Colom_pivoting), mat_kind(FlowMatrixKind::EMPTY) 
 { /*cout << "M="<<M<<", N="<<N<<endl;*/ }
 
 //-----------------------------------------------------------------------------
@@ -731,18 +731,32 @@ void flows_generator_t::compute_semiflows()
             cout << *this << endl;
 
         // Pivoting: determine the column i which will generate less candidate rows
-        ssize_t i = -1, num_prod = std::numeric_limits<ssize_t>::max();
-        for (size_t k=0; k<f.M; k++) {
-            int npos = A_cols_count[k].first, nneg = A_cols_count[k].second;
-            if ((npos + nneg) == 0)
-                continue;
-            ssize_t new_num_prod = npos * nneg - npos - nneg; // number of generated entries
-            if (num_prod > new_num_prod) { // pivot k is better than pivot i
-                i = k;
-                num_prod = new_num_prod;
+        size_t i = f.M;
+        ssize_t num_prod = std::numeric_limits<ssize_t>::max();
+        if (f.use_Colom_pivoting) {
+            for (size_t k=0; k<f.M; k++) {
+                int npos = A_cols_count[k].first, nneg = A_cols_count[k].second;
+                if ((npos + nneg) == 0)
+                    continue;
+                ssize_t new_num_prod = npos * nneg - npos - nneg; // number of generated entries
+                if (num_prod > new_num_prod) { // pivot k is better than pivot i
+                    i = k;
+                    num_prod = new_num_prod;
+                }
             }
         }
-        if (i == -1)
+        else {
+            i = step;
+            do {
+                int npos = A_cols_count[i].first, nneg = A_cols_count[i].second;
+                if ((npos + nneg) != 0) {
+                    num_prod = npos * nneg - npos - nneg;
+                    break; // column i has non-zero entries
+                }
+                i++;
+            } while (i < f.M);
+        }
+        if (i == f.M)
             break; // Nothing more to do.
 
         // Extract from the K=[D|A] matrix all the rows with A[i] != 0
@@ -874,18 +888,32 @@ void flows_generator_t::compute_integer_flows()
             cout << *this << endl;
 
         // Pivoting: determine the column i which will generate less candidate rows
-        ssize_t i = -1, num_prod = std::numeric_limits<ssize_t>::max();
-        for (size_t k=0; k<f.M; k++) {
-            int nrows = A_cols_count[k].first + A_cols_count[k].second;
-            if (nrows == 0)
-                continue;
-            ssize_t new_num_prod = nrows * (nrows - 1); // number of generated entries
-            if (num_prod > new_num_prod) { // pivot k is better than pivot i
-                i = k;
-                num_prod = new_num_prod;
+        size_t i = f.M;
+        ssize_t num_prod = std::numeric_limits<ssize_t>::max();
+        if (f.use_Colom_pivoting) {
+            for (size_t k=0; k<f.M; k++) {
+                int nrows = A_cols_count[k].first + A_cols_count[k].second;
+                if (nrows == 0)
+                    continue;
+                ssize_t new_num_prod = nrows * (nrows - 1); // number of generated entries
+                if (num_prod > new_num_prod) { // pivot k is better than pivot i
+                    i = k;
+                    num_prod = new_num_prod;
+                }
             }
+        } 
+        else {
+            i = step;
+            do {
+                int nrows = A_cols_count[i].first + A_cols_count[i].second;
+                if ((nrows) != 0) {
+                    num_prod = nrows * (nrows - 1);
+                    break; // column i has non-zero entries
+                }
+                i++;
+            } while (i < f.M);
         }
-        if (i == -1)
+        if (i == f.M)
             break; // Nothing more to do.
 
         // Extract from the K=[D|A] matrix all the rows with A[i] != 0
@@ -1343,24 +1371,38 @@ void flows_generator_t::compute_basis()
             cout << *this << endl;
 
         // Pivoting: determine the column i of A for which either npos=nneg=1, or npos*nneg is minimum
-        ssize_t i = -1, num_sums = std::numeric_limits<ssize_t>::max();
-        for (size_t phase=0; phase<2 && i==-1; phase++) {
-            for (size_t k=0; k<f.M; k++) {
-                int npos = A_cols_count[k].first, nneg = A_cols_count[k].second;
-                if ((npos + nneg) == 0)
-                    continue;
-                if (phase == 0 && npos==1 && nneg==1) { // select k when npos==nneg
-                    i = k;
-                    num_sums = 1;
-                    break;
-                } 
-                else if (phase == 1 && num_sums > npos * nneg) { // pivot k is better than pivot i
-                    i = k;
-                    num_sums = (npos + nneg - 1);
+        size_t i = f.M;
+        ssize_t num_sums = std::numeric_limits<ssize_t>::max();
+        if (f.use_Colom_pivoting) {
+            for (size_t phase=0; phase<2 && i==f.M; phase++) {
+                for (size_t k=0; k<f.M; k++) {
+                    int npos = A_cols_count[k].first, nneg = A_cols_count[k].second;
+                    if ((npos + nneg) == 0)
+                        continue;
+                    if (phase == 0 && npos==1 && nneg==1) { // select k when npos==nneg
+                        i = k;
+                        num_sums = 1;
+                        break;
+                    } 
+                    else if (phase == 1 && num_sums > npos * nneg) { // pivot k is better than pivot i
+                        i = k;
+                        num_sums = (npos + nneg - 1);
+                    }
                 }
             }
         }
-        if (i == -1)
+        else {
+             i = step;
+            do {
+                int npos = A_cols_count[i].first, nneg = A_cols_count[i].second;
+                if ((npos + nneg) != 0) {
+                    num_sums = (npos + nneg - 1);
+                    break; // column i has non-zero entries
+                }
+                i++;
+            } while (i < f.M);           
+        }
+        if (i == f.M)
             break; // Nothing more to do.
 
         // Extract from the K=[D|A] matrix all the rows with A[i] != 0
@@ -1492,7 +1534,8 @@ void flows_generator_t::compute_basis()
 
 shared_ptr<flow_matrix_t>
 ComputeFlows(const PN& pn, InvariantKind inv_kind, FlowMatrixKind mat_kind, 
-             bool detect_exp_growth, int inc_dec, VerboseLevel verboseLvl) 
+             bool detect_exp_growth, int inc_dec, bool use_Colom_pivoting,
+             VerboseLevel verboseLvl) 
 {
     if (verboseLvl >= VL_BASIC) {
         cout << "COMPUTING " << GetFlowName(inv_kind, mat_kind) << "..." << endl;
@@ -1512,7 +1555,8 @@ ComputeFlows(const PN& pn, InvariantKind inv_kind, FlowMatrixKind mat_kind,
         N  = N0 + (is_id ? pn.plcs.size() : 0);
         M  = pn.plcs.size();
     }
-    pfm = make_shared<flow_matrix_t>(N, N0, M, inv_kind, inc_dec, dynamic_extra_var_gen);
+    pfm = make_shared<flow_matrix_t>(N, N0, M, inv_kind, inc_dec, 
+                                     dynamic_extra_var_gen, use_Colom_pivoting);
 
     // Initialize the flow matrix with the incidence matrix
     incidence_matrix_generator_t inc_gen(*pfm);

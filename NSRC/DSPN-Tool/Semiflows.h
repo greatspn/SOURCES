@@ -74,7 +74,8 @@ public:
     typedef sparsevector<spvec_int_tag>    spintvector;
     // typedef sparsevector<size_t, bool>   spboolvector;
 
-    flow_matrix_t(size_t N, size_t N0, size_t M, InvariantKind k, int inc_dec, bool add_extra_vars);
+    flow_matrix_t(size_t N, size_t N0, size_t M, InvariantKind k, int inc_dec, 
+                  bool add_extra_vars, bool use_Colom_pivoting);
     flow_matrix_t(const flow_matrix_t&) = delete;
     flow_matrix_t(flow_matrix_t&&) = default;
     flow_matrix_t& operator=(const flow_matrix_t&) = delete;
@@ -155,6 +156,8 @@ public:
     const int inc_dec; // 0 means normal P/T flows, otherwise +1/-1 for increasing/decreasing inv.
     // Extra variables should be added dynamically during flow generation?
     const bool add_extra_vars;
+    // Use Colom pivoting strategy
+    const bool use_Colom_pivoting;
 
     // The content of this flow matrix
     FlowMatrixKind mat_kind;
@@ -290,7 +293,8 @@ typedef std::vector<PlaceBounds> place_bounds_t;
 
 shared_ptr<flow_matrix_t>
 ComputeFlows(const PN& pn, InvariantKind kind, FlowMatrixKind mat_kind, 
-             bool detect_exp_growth, int inc_dec, VerboseLevel verboseLvl);
+             bool detect_exp_growth, int inc_dec, bool use_Colom_pivoting, 
+             VerboseLevel verboseLvl);
 
 void SaveFlows(const flow_matrix_t& msa, ofstream& file);
 
