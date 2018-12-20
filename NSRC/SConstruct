@@ -1,13 +1,45 @@
 import os
+import shutil
 
 Import("basepath")
+Import("colorgcc")
 
-lemonpath = basepath+"/bin/lemon"
+##############
+### LEMON ####
+##############
+
+lemonpath = basepath + "/bin/lemon"
 Export("lemonpath")
 
-SConscript("./lemon/SConstruct")
+objdir = basepath + "/objects/lemon/NSRC/lemon"
+if not os.path.exists(objdir):
+	print("[LEMON] creating directory " + objdir)
+	os.mkdir(objdir)
+else:
+	print("[LEMON] using directory " + objdir)
+
+# initialize the environment
+lemon_source = basepath + "/NSRC/lemon/lemon.c"
+obj_source = objdir + "/lemon.o"
+lemon_flags = ["-O2", "-MMD", "-MF", objdir + "/lemon.d"]
+lemon_env = Environment(ENV=os.environ, CC=colorgcc, CFLAGS=lemon_flags)
+shutil.copy2(basepath + "/NSRC/lemon/lempar.c", objdir + "/")
+
+# build the object files
+lemon_env.Object(obj_source, lemon_source)
+
+# build lemon
+lemon = lemon_env.Program(lemonpath, obj_source)
+Export("lemon")
+
+###############
+### /LEMON ####
+###############
+
+# invoke tool scripts
 SConscript("./alphaFactory/SConstruct")
-SConscript("./DSPN-Tool/SConstruct")
+
+script = SConscript("./DSPN-Tool/SConstruct")
 
 #SConscript("./CSLTA-solver/SConstruct") # seems unused, does not compile
 

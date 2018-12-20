@@ -1,4 +1,5 @@
 import os
+import shutil
 
 Import("lemonpath")
 Import("basepath")
@@ -16,6 +17,7 @@ lemon_source = basepath + "/NSRC/lemon/lemon.c"
 obj_source = objdir + "/lemon.o"
 lemon_flags = ["-O2", "-MMD", "-MF", objdir + "/lemon.d"]
 lemon_env = Environment(ENV=os.environ, CC=colorgcc, CFLAGS=lemon_flags)
+shutil.copy2(basepath + "/NSRC/lemon/lempar.c", objdir + "/")
 
 # build the object files
 lemon_env.Object(obj_source, lemon_source)

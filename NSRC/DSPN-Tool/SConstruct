@@ -3,28 +3,66 @@ import os
 Import("cflags")
 Import("boostpath")
 Import("basepath")
+Import("colorgcc")
+Import("lemonpath")
+Import("lemon")
 
 dspn_flags = cflags
 
+cwd = os.getcwd()
+objdir = basepath + "/objects/DSPN-Tool/NSRC/DSPN-Tool"
+
+if not os.path.exists(objdir):
+	print("[DSPN] creating directory " + objdir)
+	os.mkdir(objdir)
+else:
+	print("[DSPN] using directory " + objdir)
+
 # TODO check with lpsolve library & extend flags if present
-
-dspn_flags.extend(["-Wall",
+dspn_flags.extend([ "-Wall",
 					"-std=c++17",
-					"-I"+basepath+"/objects/DSPN-Tool/NSRC/DSPN-Tool/",
+					"-I/usr/include",
+					"-I"+objdir,
+					"-I"+cwd,
 					"-Wno-unused-function",
+					"-MMD",
+					"-MF",
+					objdir+"/newparser.lyy.d",
 					"-DNDEBUG=1"])
-paths = [boostpath]
+paths = [boostpath, objdir, cwd]
 
-dspn_env = Environment(ENV=os.environ, CC="gcc", CCFLAGS=dspn_flags, LIBPATH=paths)
+### initialize the environment
+dspn_env = Environment(ENV=os.environ, CC=colorgcc, CCFLAGS=dspn_flags, LIBPATH=paths)
 
-act=basepath+"/bin/lemon newparser.lyy"
-lemon_parser = dspn_env.Command(target="", source="newparser.lyy", action=act)
-dspn_env.AlwaysBuild(lemon_parser)
-if os.path.isfile("newparser.c"): os.rename("newparser.c", "newparser.cpp")
+### build the parser
+# add the `lemon` builder
+lemon_act = lemonpath + " $SOURCE"
+lemon_builder = Builder(action=lemon_act)
+dspn_env['BUILDERS']['Lemon'] = lemon_builder
 
+# construct parser derived files (newparser.c, newparser.h, newparser.out)
+os.chdir(basepath);
+print("[LEMON] creating `newparser` derived objects")
+derived = dspn_env.Lemon(target=[cwd+"/newparser.h", cwd+"/newparser.out", cwd+"/newparser.c"], source=cwd + "/newparser.lyy")
+Requires(derived, lemon)
+os.chdir(cwd);
+
+# move derived files to `objdir`
+move_builder = Builder(action="mv $SOURCE $TARGET")
+dspn_env['BUILDERS']['MV'] = move_builder
+m1 = dspn_env.MV(target=objdir + "/newparser.lyy.h", source=derived[0])
+m2 = dspn_env.MV(target=objdir + "/newparser.lyy.out", source=derived[1])
+sed_act = 'cat $SOURCE | sed "s/NSRC\/DSPN-Tool\/newparser.c/objects\/DSPN-Tool\/NSRC\/DSPN-Tool\/newparser.lyy.cpp/g" > $TARGET'
+final = dspn_env.Command(objdir + "/newparser.lyy.cpp", derived[2], action=sed_act)
+
+# construct parser object
+parse_obj = dspn_env.Object(objdir+"/newparser.lyy.o", final)
+dspn_env.Append(LIBS=parse_obj)
+
+### build DSPN-Tool
 sources = [ "lexer.ll",
-			"CSLTA.cpp",
 			"DTA.cpp",
+			"CSLTA.cpp",
 			"Experiment.cpp",
 			"Language.cpp",
 			"LinearProg.cpp",
@@ -47,4 +85,4 @@ sources = [ "lexer.ll",
 			"utils.cpp",
 			"../numeric/numeric.cpp"]
 
-Program("DSPN-Tool", sources)
+dspn = dspn_env.Program("DSPN-Tool", sources)
