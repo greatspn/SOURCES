@@ -3,6 +3,9 @@ import os
 basepath = os.getcwd()
 Export("basepath")
 
+colorgcc = basepath + "/contrib/colorgcc"
+Export("colorgcc")
+
 cflags = ["-O2"]
 Export("cflags")
 
