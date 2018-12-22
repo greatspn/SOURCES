@@ -189,7 +189,7 @@ int read_pinv(std::string &net, double **A, int *P, double *B, map <int, list < 
             in >> val >> col;
             // cout << "Val"<< val<<" col"<<col<<endl;
             A[row][col - 1] = val;
-            B[row] += net_mark[col - 1].total;
+            B[row] += net_mark[col - 1].total*val;
         }
         row++;
     }
@@ -437,7 +437,10 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     out << "\nint main(int argc, char **argv) {\n\n";
     out << " time_t time_1,time_4;\n";
     out<<  " int who = RUSAGE_SELF;\n struct rusage usage;\n";
-    out << " int SOLVE = -1, OUTPUT=false; //SOLVE = 0 --> (H)SDE/SIM,  SOLVE = 1 --> ODE  SOLVE = 2 -->HODE\n\n";
+    out << " int SOLVE = 7, runs=1;\n";
+    out << " bool OUTPUT=false;\n";
+    out << " std::string fbound=\"\", finit=\"\";\n";
+    out << " double hini = 1e-6, atol = 1e-6, rtol=1e-6, ftime=1.0, stime=0.0;\n\n";
     out << " cout<<\"\\n\\n =========================================================\\n\";\n";
     out << " cout<<\"|	              ODE/SDE Solver                       |\\n\";\n";
     out << " cout<<\" =========================================================\\n\";\n";
@@ -448,67 +451,173 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     //automaton
     if (AUTOMATON)
     {
-        out << " if (argc<11)\n\t{\n \t";
-        out << " std::cerr<<\"\\n\\nUSE:" << net << "_solve <out_file> <type> <step_factor>  <perc1> <perc2> <runs> <Max_time> <output> <step_output> <automaton_file> -B <bound_file> \";\n\t";
+        out << " if (argc<3)\n\t{\n \t";
+        out << " std::cerr<<\"\\n\\nUSE:" << net << "_solve <out_file> <automaton_file> [OPTION ]<type> <hini>  <atol> <rtol> <runs> <ftime> <stime>   -B <bound_file> \";\n\t";
 
     }
     else
     {
-        out << " if (argc<10)\n\t{\n \t";
-        out << " std::cerr<<\"\\n\\nUSE:" << net << "_solve <out_file> <type> <step_factor> <perc1> <perc2> <runs> <Max_time> <output> <step_output> -B <bound_file> \";\n\t";
+        out << " if (argc<2)\n\t{\n \t";
+        out << " std::cerr<<\"\\n\\nUSE:" << net << "_solve <out_file> [OPTIONS]\";\n\t";
     }
     //automaton
-    out << " std::cerr<<\"\\n\\t <type>:\\t ODE-E or ODE-RKF or ODE45 or LSODA or HLSODA or (H)SDE or HODE or SIM or STEP:\";\n\t";
-    out << " std::cerr<<\"\\n\\t <hini>:\\t Initial step step size\";\n\t";
-    out << " std::cerr<<\"\\n\\t <rtol>:\\t Value used to compute Step (smaller -> greater precision but slower solution)\";\n\t";
-    out << " std::cerr<<\"\\n\\t <atol>:\\tValue used to compute Euler Step when the model is closed to bounds (smaller -> greater precision but slower solution)\";\n\t";
-    out << " std::cerr<<\"\\n\\t <runs>:\\t integer number corresponding to runs (only for (H)SDE)\";\n\t";
-    out << " std::cerr<<\"\\n\\t <Max_time>:\\t double number used to set the upper bound of the evolution time\";\n\t";
-    out << " std::cerr<<\"\\n\\t <output>:\\t true/false to save traces\";\n\t";
-    out << " std::cerr<<\"\\n\\t <step_output>:\\t double number used to set the step in the output\";\n\t";
-    out << " std::cerr<<\"\\n\\t <bound_file>:\\t soft bound are defined in the file <bound_file>\";\n\t";
+    out<<"std::cerr<<\"\\n\\n\\tOPTIONS\\n\";\n";
+    out << " std::cerr<<\"\\n\\t -type <type>:\\t\\t ODE-E or ODE-RKF or ODE45 or LSODA or HLSODA or (H)SDE or HODE or SIM or STEP. Default: LSODA \";\n\t";
+    out << " std::cerr<<\"\\n\\t -hini <double>:\\t Initial step size. Default: 1e-6\";\n\t";
+      out << " std::cerr<<\"\\n\\t -atol <double>:\\t Absolute error tolerance. Dafault: 1e-6\";\n\t";
+    out << " std::cerr<<\"\\n\\t -rtol <double>:\\t Relative error tolerance. Dafault: 1e-6\";\n\t";
+    //out << " std::cerr<<\"\\n\\t <atol>:\\tValue used to compute Euler Step when the model is closed to bounds (smaller -> greater precision but slower solution)\";\n\t";
+    //out << " std::cerr<<\"\\n\\t <rtol>:\\t Value used to compute Step (smaller -> greater precision but slower solution)\";\n\t";
+    out << " std::cerr<<\"\\n\\t -runs <int>:\\t\\t Integer number corresponding to runs (only used in SIM, HODE,HLSODA). Default: 1\";\n\t";
+    out << " std::cerr<<\"\\n\\t -ftime <double>:\\t Double number used to set the upper bound of the evolution time. Dafault: 1\";\n\t";
+    out << " std::cerr<<\"\\n\\t -stime <double>:\\t Double number used to set the step in the output. Default: 0.0 (no output)\";\n\t";
+    out << " std::cerr<<\"\\n\\t -b <bound_file>:\\t Soft bound are defined in the file <bound_file>\";\n\t";
+    out << " std::cerr<<\"\\n\\t -init <init_file>:\\t The file <initial_file> contains the initial marking. Default:  initial marking in the orginal net\";\n\t";
     //automaton
     if (AUTOMATON)
-        out << "std::cerr<<\"\\n\\t <automaton_file>:\\t automaton is defined in the file <automaton>\\n\";";
-    out <<"std::cerr<<endl<<endl;";
+        out << " std::cerr<<\"\\n\\t <automaton_file>:\\t automaton is defined in the file <automaton>\\n\";";
+    out <<" std::cerr<<endl<<endl;";
     //automaton
     out << "\n\t exit(EXIT_FAILURE);\n\t}\n\n";
-    out << " double step=atof(argv[3]);\n";
-    out << " double perc1=atof(argv[4]);\n";
-    out << " double perc2=atof(argv[5]);\n";
-    out << " int  runs=atoi(argv[6]);\n";
-    out << " double Max_time=atof(argv[7]);\n\n";
-    out << " if ((strcmp(argv[2],\"ODE-E\")==0)||(strcmp(argv[2],\"ode-e\")==0))\n\t SOLVE = 1;\n";
-    out << " if ((strcmp(argv[2],\"ODE-RKF\")==0)||(strcmp(argv[2],\"ode-rkf\")==0))\n\t SOLVE = 5;\n";
-    out << " if ((strcmp(argv[2],\"ODE45\")==0)||(strcmp(argv[2],\"ode45\")==0))\n\t SOLVE = 6;\n";
-    out << " if ((strcmp(argv[2],\"LSODA\")==0)||(strcmp(argv[2],\"lsoda\")==0))\n\t SOLVE = 7;\n";
-    out << " if ((strcmp(argv[2],\"STEP\")==0)||(strcmp(argv[2],\"step\")==0))\n\t SOLVE = 4;\n";
-    out << " if ((strcmp(argv[2],\"SIM\")==0)||(strcmp(argv[2],\"sim\")==0))\n\t{\n";
-    out << "\t cout<<\"\\t using simulation\"<<endl;\n\t epsilon=10000000000;\n\t step=MAXSTEP;\n\t SOLVE=3;\n\t}\n";
-    out << " if ((strcmp(argv[2],\"HODE\")==0)||(strcmp(argv[2],\"hode\")==0))\n\t SOLVE = 2;\n";
-    out << " if ((strcmp(argv[2],\"HLSODA\")==0)||(strcmp(argv[2],\"hlsoda\")==0))\n\t SOLVE = 8;\n";
-    out << " if ((strcmp(argv[2],\"SDE\")==0)||(strcmp(argv[2],\"sde\")==0) || (strcmp(argv[2],\"HSDE\")==0)||(strcmp(argv[2],\"hsde\")==0) )\n\t SOLVE = 0;\n";
 
-    out << " if ((!strcmp(argv[8],\"true\"))||(!strcmp(argv[6],\"TRUE\")))\n\t OUTPUT= true;\n";
-    out << " double step_o=atof(argv[9]);\n";
+
+    if (AUTOMATON)
+        out<<" int ii=3;\n";
+    else
+        out<<" int ii=2;\n";
+    out<<" for (; ii<argc; ii++){\n";
+        out<<"\t if (strcmp(\"-type\", argv[ii])==0){\n";
+            out<<"\t\t if (++ii<argc){\n";
+                out << "\t\t\t if ((strcmp(argv[ii],\"ODE-E\")==0)||(strcmp(argv[ii],\"ode-e\")==0)) SOLVE = 1;\n";
+                out << "\t\t\t if ((strcmp(argv[ii],\"ODE-RKF\")==0)||(strcmp(argv[ii],\"ode-rkf\")==0)) SOLVE = 5;\n";
+                out << "\t\t\t if ((strcmp(argv[ii],\"ODE45\")==0)||(strcmp(argv[ii],\"ode45\")==0)) SOLVE = 6;\n";
+                out << "\t\t\t if ((strcmp(argv[ii],\"LSODA\")==0)||(strcmp(argv[ii],\"lsoda\")==0)) SOLVE = 7;\n";
+                out << "\t\t\t if ((strcmp(argv[ii],\"STEP\")==0)||(strcmp(argv[ii],\"step\")==0)) SOLVE = 4;\n";
+                out << "\t\t\t if ((strcmp(argv[ii],\"SIM\")==0)||(strcmp(argv[ii],\"sim\")==0)){\n";
+                out << "\t\t\t\t cout<<\"\\t using simulation\"<<endl;\n\t\t\t\t epsilon=10000000000;\n\t\t\t\t hini=MAXSTEP;\n\t\t\t\t SOLVE=3;\n\t\t\t }\n";
+                out << "\t\t\t if ((strcmp(argv[ii],\"HODE\")==0)||(strcmp(argv[ii],\"hode\")==0)) SOLVE = 2;\n";
+                out << "\t\t\t if ((strcmp(argv[ii],\"HLSODA\")==0)||(strcmp(argv[ii],\"hlsoda\")==0)) SOLVE = 8;\n";
+                out << "\t\t\t if ((strcmp(argv[ii],\"SDE\")==0)||(strcmp(argv[ii],\"sde\")==0) || (strcmp(argv[ii],\"HSDE\")==0)||(strcmp(argv[ii],\"hsde\")==0) ) SOLVE = 0;\n";
+            out<<"\t\t }\n";
+            out<<"\t\t else{\n";
+                out<< "\t\t\t std::cerr<<\"\\nError:  -type  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+            out<<"\t\t continue;\n";
+        out<<"\t }\n";
+ //hini code
+        out<<"\t if (strcmp(\"-hini\", argv[ii])==0){\n";
+            out<<"\t\t if (++ii<argc){\n";
+                out<<"\t\t\t hini=atof(argv[ii]);\n\t\t }\n";
+            out<<"\t\t else{\n";
+                out<< "\t\t\t std::cerr<<\"\\nError:  -hini  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+        out<<"\t\t continue;\n";
+        out<<"\t }\n";
+ //atol code
+        out<<"\t if (strcmp(\"-atol\", argv[ii])==0){\n";
+            out<<"\t\t if (++ii<argc){\n";
+                out<<"\t\t\t atol=atof(argv[ii]);\n\t\t }\n";
+            out<<"\t\t else{\n";
+                out<< "\t\t\t std::cerr<<\"\\nError:  -atol  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+        out<<"\t\t continue;\n";
+        out<<"\t }\n";
+ //rtol code
+        out<<"\t if (strcmp(\"-rtol\", argv[ii])==0){\n";
+            out<<"\t\t if (++ii<argc){\n";
+                out<<"\t\t\t rtol=atof(argv[ii]);\n\t\t }\n";
+            out<<"\t\t else{\n";
+                out<< "\t\t\t std::cerr<<\"\\nError:  -rtol  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+        out<<"\t\t continue;\n";
+        out<<"\t }\n";
+ //runs code
+        out<<"\t if (strcmp(\"-runs\", argv[ii])==0){\n";
+            out<<"\t\t if (++ii<argc){\n";
+                out<<"\t\t\t runs=atoi(argv[ii]);\n\t\t }\n";
+            out<<"\t\t else{\n";
+                out<< "\t\t\t std::cerr<<\"\\nError:  -runs  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+        out<<"\t\t continue;\n";
+        out<<"\t }\n";
+ //ftime code
+        out<<"\t if (strcmp(\"-ftime\", argv[ii])==0){\n";
+            out<<"\t\t if (++ii<argc){\n";
+                out<<"\t\t\t ftime=atof(argv[ii]);\n\t\t }\n";
+            out<<"\t\t else{\n";
+                out<< "\t\t\t std::cerr<<\"\\nError:  -ftime  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+        out<<"\t\t continue;\n";
+        out<<"\t }\n";
+
+//stime code
+        out<<"\t if (strcmp(\"-stime\", argv[ii])==0){\n";
+            out<<"\t\t if (++ii<argc){\n";
+                out<<"\t\t\t OUTPUT=true;\n";
+                out<<"\t\t\t stime=atof(argv[ii]);\n\t\t }\n";
+            out<<"\t\t else{\n";
+                out<< "\t\t\t std::cerr<<\"\\nError:  -stime  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+        out<<"\t\t continue;\n";
+        out<<"\t }\n";
+
+//bound file code
+        out<<"\t if (strcmp(\"-b\", argv[ii])==0){\n";
+            out<<"\t\t if (++ii<argc){\n";
+                out<<"\t\t\t fbound=string(argv[ii]);\n\t\t }\n";
+            out<<"\t\t else{\n";
+                out<< "\t\t\t std::cerr<<\"\\nError:  -b  <file_name>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+        out<<"\t\t continue;\n";
+        out<<"\t }\n";
+
+
+//initial file code
+        out<<"\t if (strcmp(\"-init\", argv[ii])==0){\n";
+            out<<"\t\t if (++ii<argc){\n";
+                out<<"\t\t\t finit=string(argv[ii]);\n\t\t }\n";
+            out<<"\t\t else{\n";
+                out<< "\t\t\t std::cerr<<\"\\nError:  -init  <file_name>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+        out<<"\t\t continue;\n";
+        out<<"\t }\n";
+        out<< "\t\t\t std::cerr<<\"\\nError:  unknown parameter \"<<argv[ii]<<\"\\n\\n\";\n\t\t\t exit(EXIT_FAILURE);\n";
+    out<<" }\n\n\n";
+
+
+    out<<" if (stime==0.0)  stime=ftime;\n\n";
+
+    //out << " double step=atof(argv[3]);\n";
+    //out << " double atol=atof(argv[4]);\n";
+    //out << " double perc2=atof(argv[5]);\n";
+   // out << " int  runs=atoi(argv[6]);\n";
+    //out << " double Max_time=atof(argv[7]);\n\n";
+    //out << " if ((strcmp(argv[2],\"ODE-E\")==0)||(strcmp(argv[2],\"ode-e\")==0))\n\t SOLVE = 1;\n";
+    //out << " if ((strcmp(argv[2],\"ODE-RKF\")==0)||(strcmp(argv[2],\"ode-rkf\")==0))\n\t SOLVE = 5;\n";
+   // out << " if ((strcmp(argv[2],\"ODE45\")==0)||(strcmp(argv[2],\"ode45\")==0))\n\t SOLVE = 6;\n";
+    //out << " if ((strcmp(argv[2],\"LSODA\")==0)||(strcmp(argv[2],\"lsoda\")==0))\n\t SOLVE = 7;\n";
+    //out << " if ((strcmp(argv[2],\"STEP\")==0)||(strcmp(argv[2],\"step\")==0))\n\t SOLVE = 4;\n";
+    //out << " if ((strcmp(argv[2],\"SIM\")==0)||(strcmp(argv[2],\"sim\")==0))\n\t{\n";
+   // out << "\t cout<<\"\\t using simulation\"<<endl;\n\t epsilon=10000000000;\n\t hini=MAXSTEP;\n\t SOLVE=3;\n\t}\n";
+   // out << " if ((strcmp(argv[2],\"HODE\")==0)||(strcmp(argv[2],\"hode\")==0))\n\t SOLVE = 2;\n";
+   // out << " if ((strcmp(argv[2],\"HLSODA\")==0)||(strcmp(argv[2],\"hlsoda\")==0))\n\t SOLVE = 8;\n";
+   // out << " if ((strcmp(argv[2],\"SDE\")==0)||(strcmp(argv[2],\"sde\")==0) || (strcmp(argv[2],\"HSDE\")==0)||(strcmp(argv[2],\"hsde\")==0) )\n\t SOLVE = 0;\n";
+
+    //out << " if ((!strcmp(argv[8],\"true\"))||(!strcmp(argv[6],\"TRUE\")))\n\t OUTPUT= true;\n";
+    //out << " double step_o=atof(argv[9]);\n";
 
     out << " time(&time_1);\n\n";
 
     out << " cout<<\"\\n=====================INPUT PARAMETERS======================\\n\";\n";
-    out << " cout<<\"\\n\\tType solution: \"<<argv[2]<<\"\\n\";\n";
+    out << " cout<<\"\\n\\tType solution: \"<<SOLVE<<\"\\n\";\n";
     if (MASSACTION)
-        out << " cout<<\"\\n\\tTransition policy: Genelarized Mass Action policy\\n\";\n";
+        out << " cout<<\"\\tTransition policy: Genelarized Mass Action policy\\n\";\n";
     else
-        out << " cout<<\"\\n\\tTransition policy: Minimum\\n\";\n";
-    out << " cout<<\"\\tSolution end time: \"<<Max_time<<\"\\n\";\n";
-    out << " cout<<\"\\tSolution step: \"<<step<<\"\\n\";\n";
-    out << " if ((strcmp(argv[2],\"ODE\")!=0)&&(strcmp(argv[2],\"ode\")!=0)){\n";
-    out << "\tcout<<\"\\tSolution runs: \"<<runs<<\"\\n\";\n }\n";
+        out << " cout<<\"\\tTransition policy: Minimum\\n\";\n";
+    out << " cout<<\"\\tSolution final time: \"<<ftime<<\"\\n\";\n";
+    out << " cout<<\"\\tInitial size step: \"<<hini<<\"\\n\";\n";
+    out << " cout<<\"\\tAbosolute tolerance: \"<<atol<<\"\\n\";\n";
+    out << " cout<<\"\\tRelative tolerance: \"<<rtol<<\"\\n\";\n";
+    //out << " if ((strcmp(argv[2],\"ODE\")!=0)&&(strcmp(argv[2],\"ode\")!=0)){\n";
+    out << " cout<<\"\\tSolution runs: \"<<runs<<\"\\n\";\n";
+    out << " if (fbound!=\"\") cout<<\"\\tBound file: \"<<fbound<<\"\\n\";\n";
+    out << " if (finit!=\"\") cout<<\"\\tInitial marking file: \"<<finit<<\"\\n\";\n";
     //automaton
     if (AUTOMATON)
-        out << " cout<<\"\\tAutomaton input: \"<<argv[10]<<\"\\n\";\n";
+        out << " cout<<\"\\tAutomaton input: \"<<argv[2]<<\"\\n\";\n";
     //automaton
-    out << " cout<<\"\\tDetailed output: \"<<argv[9]<<\"\\n\";\n";
+    out << " cout<<\"\\tDetailed output: \"<<stime<<\"\\n\";\n";
     out << " cout<<\"\\n===========================================================\\n\";";
     out << " cout<<\"\\n\\nSTART EXECUTION...\"<<endl;\n\n";
 
@@ -632,10 +741,14 @@ void build_ODE(ofstream &out, std::string path, std::string net)
         out << " se.InsertEq(" << pp << ",eq," << net_mark[pp].total << "," << lbound[pp] << "," << ubound[pp] << ");\n\n";
     }
     //automaton
-    if (AUTOMATON)
-        out << "\n if ((SOLVE!=3)&&(argc>10) && (argv[10][1]=='B')) {\n\tse.readSLUBounds(argv[11]);\n }";
-    else
-        out << "\n if ((SOLVE!=3)&&(argc>9) && (argv[9][1]=='B')) {\n\tse.readSLUBounds(argv[10]);\n }";
+
+//if soft bound file is specified
+    out << "\n if (fbound!=\"\") {\n\t if (!(se.readSLUBounds(fbound))) exit(EXIT_FAILURE);;\n }";
+
+ //if soft init file is specified
+    out << "\n if (finit!=\"\") {\n\t if (!(se.readInitialMarking(finit))) exit(EXIT_FAILURE);\n }";
+
+
     //automaton
     cout << "\tDone.\n" << endl;
 
@@ -644,16 +757,16 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     if (AUTOMATON)
     {
         out << "\n cout<<\"\\n\\nREADING AUTOMATON...\"<<endl;\n";
-        out << " se.initialize_automaton(argv[10]);\n";
+        out << " se.initialize_automaton(argv[2]);\n";
         out << " cout<<\"\\n\\nDONE.\"<<endl;\n";
     }
     //automaton
     out << "\n\ntry\t{";
-    out << "\n\tif (SOLVE==-1) \{\n\t\t cerr<< \"\\n\\nError: solution methods \"<<argv[2]<<\" is not implemented\\nYou should use:  ODE-E or ODE-RKF or ODE45 or LSODA or SDE or HODE or HSDE or SIM or STEP\\n\"; \n\t\t exit(EXIT_FAILURE);\n\t}\n\n ";
+    out << "\n\tif (SOLVE==-1) \{\n\t\t cerr<< \"\\n\\nError: solution methods is not implemented\\nYou should use:  ODE-E or ODE-RKF or ODE45 or LSODA or SDE or HODE or HSDE or SIM or STEP\\n\"; \n\t\t exit(EXIT_FAILURE);\n\t}\n\n ";
 
 
 
-    out << "\n\tif (SOLVE == 1)\n\t\t se.SolveODEEuler(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);\n\t else\n\t\t if (SOLVE == 0)\n\t\t\t se.SolveSDEEuler(step,perc1,perc2,Max_time,runs,OUTPUT,step_o,argv[1]);\n\t\t else \n\t\t\tif (SOLVE == 3)\n\t\t\t\t se.SolveHODEEuler(step,perc1,perc2,Max_time,runs,OUTPUT,step_o,argv[1]); \n\t\t\t else \n\t\t\t\t if (SOLVE == 4)\n\t\t\t\t\t  se.HeuristicStep(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\t if (SOLVE == 5)\n\t\t\t\t\t  se.SolveODERKF(step,perc1,Max_time,OUTPUT,step_o,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\tif (SOLVE == 6)\n\t\t\t\t\t\t se.SolveODE45(step,perc1,Max_time,OUTPUT,step_o,argv[1]);\n\t\t\t\t else\n\t\t\t\t\t if (SOLVE == 8)\n\t\t\t\t\t\t\t se.SolveHLSODE(step,perc1,perc2,Max_time,runs,OUTPUT,step_o,argv[1]);\n\t\t\t\t\t else \n\t\t\t\t\t\t\t se.SolveLSODE(step,perc1,perc2,Max_time,OUTPUT,step_o,argv[1]);\n";
+    out << "\n\tif (SOLVE == 1)\n\t\t se.SolveODEEuler(hini,atol,rtol,ftime,OUTPUT,stime,argv[1]);\n\t else\n\t\t if (SOLVE == 0)\n\t\t\t se.SolveSDEEuler(hini,atol,rtol,ftime,runs,OUTPUT,stime,argv[1]);\n\t\t else \n\t\t\tif (SOLVE == 3)\n\t\t\t\t se.SolveHODEEuler(hini,atol,rtol,ftime,runs,OUTPUT,stime,argv[1]); \n\t\t\t else \n\t\t\t\t if (SOLVE == 4)\n\t\t\t\t\t  se.HeuristicStep(hini,atol,rtol,ftime,OUTPUT,stime,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\t if (SOLVE == 5)\n\t\t\t\t\t  se.SolveODERKF(hini,atol,ftime,OUTPUT,stime,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\tif (SOLVE == 6)\n\t\t\t\t\t\t se.SolveODE45(hini,atol,ftime,OUTPUT,stime,argv[1]);\n\t\t\t\t else\n\t\t\t\t\t if (SOLVE == 8)\n\t\t\t\t\t\t\t se.SolveHLSODE(hini,atol,rtol,ftime,runs,OUTPUT,stime,argv[1]);\n\t\t\t\t\t else \n\t\t\t\t\t\t\t se.SolveLSODE(hini,atol,rtol,ftime,OUTPUT,stime,argv[1]);\n";
     out << "\n\tse.PrintStatistic(argv[1]);\n\t}\n catch(Exception obj)\n\t{\n\tcerr<<endl<<obj.get()<<endl;\n\t}\n\n";
     out << " time(&time_4);\n\n cout<<\"\\n\\nEND EXECUTION\"<<endl;\n cout<<\"\\nResults are saved in: \"<<argv[1]<<endl;\n";
     out << " cout<<\"\\n=========================== TIME ===========================\\n\\n\\t\";\n";
@@ -943,11 +1056,11 @@ void build_ODER(ofstream &out, std::string net)
             l_ptr = NEXT_NODE(l_ptr);
         }
         //Encoding transition rates
-        out << tabt[tt].trans_name << " = ";
         if (tabt[tt].rate_par_id>=0)
-            out<<tabrp[tabt[tt].rate_par_id].rate_name<<"\n";
+            out<<tabt[tt].trans_name << " = "<<tabrp[tabt[tt].rate_par_id].rate_name<<"\n";
         else
-            out<<tabt[tt].mean_t<< "\n";
+            if (tabt[tt].mean_t!=0)
+                out<<tabt[tt].trans_name << " = "<<tabt[tt].mean_t<< "\n";
 #if DEBUG
         for (int i = 0; i < npl; i++)
             cout << "\t" << TP[tt][i];
@@ -971,23 +1084,17 @@ void build_ODER(ofstream &out, std::string net)
     }
     out << "##End Place mapping\n\n";
 //Initialization variables
-
-    out << "##Begin ODE system\n";
-    for (pp = 0; pp < npl; pp++)
-    {
-        out << "d" << tabp[pp].place_name << " = ";
-        bool found = false;
-        for (int tt = 0; tt < ntr; tt++)
+    out<<"##Begin ODE Terms (X all transitions)\n";
+    for (int tt = 0; tt < ntr; tt++)
         {
-            if (TP[tt][pp] != 0)
-            {
-                found = true;
+        out<<"R_"<<tabt[tt].trans_name<<" = ";
+
                 if (tabt[tt].general_function==NULL)
                 {
 
                     if (MASSACTION)
                     {
-                        out << " + " << tabt[tt].trans_name << " * " << TP[tt][pp];
+                        out << " + " << tabt[tt].trans_name;
                         for (int pp1 = 0; pp1 < npl; pp1++)
                         {
                             if (TPI[tt][pp1] < 0)
@@ -998,7 +1105,7 @@ void build_ODER(ofstream &out, std::string net)
                     }
                     else
                     {
-                        out << "+ " << tabt[tt].trans_name << " * " << TP[tt][pp] << "*min( ";
+                        out << "+ " << tabt[tt].trans_name <<"*min( ";
                         bool first = true;
                         for (int pp1 = 0; pp1 < npl; pp1++)
                         {
@@ -1022,16 +1129,32 @@ void build_ODER(ofstream &out, std::string net)
                 else
                 {
                     std::string general_function(tabt[tt].general_function);
-                    if (TP[tt][pp]>0)
-                    {
-                        out<<"+1 * "<<general_function.substr(3,general_function.size()-4);
-                    }
-                    else
-                    {
-                        out<<TP[tt][pp]<<" * "<<general_function.substr(3,general_function.size()-4);
-                    }
+                    out<<general_function.substr(3,general_function.size()-4)<<"(y,\""<<tabt[tt].trans_name<<"\")";
+
                 }
 
+
+            out<<endl;
+        }
+    out<<"##End ODE Terms\n\n";
+
+
+    out << "##Begin ODE system\n";
+    for (pp = 0; pp < npl; pp++)
+    {
+        out << "d" << tabp[pp].place_name << " = ";
+        bool found = false;
+         for (int tt = 0; tt < ntr; tt++)
+        {
+
+            if (TP[tt][pp] != 0)
+            {
+                found = true;
+                if (TP[tt][pp]>0)
+                out<<"+"<< TP[tt][pp]<<"*";
+                else
+                out<< TP[tt][pp]<<"*";
+                out<<"R_"<<tabt[tt].trans_name;
             }
         }
         if (!found)//case test loop

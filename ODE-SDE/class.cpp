@@ -70,11 +70,11 @@ int SystEq::search(string& name){
 /* NAME :  Class SystEq*/
 /* DESCRIPTION : readSLUBounds reads softbound from a file*/
 /**************************************************************/
-bool SystEq::readSLUBounds(char *argv){
-	ifstream in(argv, std::ifstream::in);
+bool SystEq::readSLUBounds(const string& file){
+	ifstream in(file.c_str(), std::ifstream::in);
 	if (!in)
 	{
-		cerr<<"\nError:  it is not possible to open the soft bound file "<<argv<< "\n";
+		cerr<<"\nError:  it is not possible to open the soft bound file "<<file<< "\n";
 		return false;
 	}
 	int i=0;
@@ -99,8 +99,64 @@ bool SystEq::readSLUBounds(char *argv){
 		}
 	}
 	cout<<"-----------------------------------------------------------\n";
+	in.close();
 	return true;
 }
+
+
+
+/**************************************************************/
+/* NAME :  Class SystEq*/
+/* DESCRIPTION : readInitialMarking reads initial marking from a file*/
+/**************************************************************/
+bool SystEq::readInitialMarking(const string& file){
+	ifstream in(file.c_str(), std::ifstream::in);
+	if (!in)
+	{
+		cerr<<"\nError:  it is not possible to open the initila marking file "<<file<< "\n\n";
+		return false;
+	}
+
+	std::string name;
+	cout<<"\n\n-----------------------------------------------------------\n";
+	cout<<"\t\t  Reading initial marking"<<endl;
+	cout<<"-----------------------------------------------------------\n";
+	double buffer=-1;
+	int num=0;
+
+    while(in){
+        buffer=-1;
+        in>>buffer;
+        if (buffer>=0.0){
+            Value[num]=buffer;
+#if DEBUG==1
+            cout<<"Place "<<num<<" marking:"<<buffer<<endl;
+#endif
+            num++;
+        }
+
+    }
+    if ((num)!=nPlaces){
+            cerr<<"\nError:  initial marking file does not cointain a marking for each place\n\n";
+            return false;
+        }
+//updating p-semiflow
+    unsigned int i=headDerv;
+	while (i!=DEFAULT){
+		double value =0.0, coff=0.0;
+		int place=-1;
+		for (int j=0;j<VEq[i].getSizeP()-1;j++){
+			VEq[i].getPsemflw(j,place,coff);
+			value+=Value[place]*coff;
+		}
+		value+=Value[i];
+        VEq[i].setPsemflw(VEq[i].getSizeP()-1,value);
+        i=VEq[i].getNext();
+	}
+	cout<<"-----------------------------------------------------------\n";
+	return true;
+}
+
 
 /**************************************************************/
 /* NAME :  Class SystEqMin*/
@@ -116,7 +172,7 @@ inline void SystEqMin::getValTranFire()
 		EnabledTransValueDis[t]=0.0;
 
 		if (Trans[t].FuncT!=nullptr){
-			EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+			 EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
 		}
 		else {
 			if (size==0)
@@ -159,9 +215,9 @@ inline void SystEqMas::getValTranFire()
 	for(int t=0; t<nTrans; t++)
 	{
 		EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
-
+       // cout<<" T:"<<NameTrans[t]<<endl;
 		if (Trans[t].FuncT!=nullptr){
-			EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+			 EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
 		}
 		else {
 
@@ -171,6 +227,7 @@ inline void SystEqMas::getValTranFire()
 				{
 					double valD,valC;
 					valD=valC=ValuePrv[Trans[t].InPlaces[k].Id];
+		//			cout<<"\t"<<NamePlaces[Trans[t].InPlaces[k].Id]<<" card:"<<Trans[t].InPlaces[k].Card<<" num:"<<ValuePrv[Trans[t].InPlaces[k].Id]<<endl;
 					double fatt=1;
 					for (int i=2;i<=Trans[t].InPlaces[k].Card;i++)
 					{
@@ -184,7 +241,9 @@ inline void SystEqMas::getValTranFire()
 						EnabledTransValueDis[t]*=valD/fatt;
 					else
 						EnabledTransValueDis[t]=0.0;
+
 					EnabledTransValueCon[t]*=valC/fatt;
+			//		cout<<"\t"<<valC/fatt<<" Tot:"<<EnabledTransValueCon[t]<<endl;
 				}
 			}
 		}
@@ -203,9 +262,11 @@ inline void SystEqMas::getValTranFire()
         for(int t=0; t<nTrans; t++)
         {
             EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
+              //cout<<" T:"<<NameTrans[t]<<endl;
             if (Trans[t].FuncT!=nullptr)
             {
-                EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+                 EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+
             }
             else
             {
@@ -216,6 +277,7 @@ inline void SystEqMas::getValTranFire()
                     {
                         double valD,valC;
                         valD=valC=ValuePrv[Trans[t].InPlaces[k].Id];
+                      //  cout<<"\t"<<NamePlaces[Trans[t].InPlaces[k].Id]<<" card:"<<Trans[t].InPlaces[k].Card<<" num:"<<ValuePrv[Trans[t].InPlaces[k].Id]<<endl;
                         double fatt=1;
                         for (int i=2; i<=Trans[t].InPlaces[k].Card; i++)
                         {
@@ -230,6 +292,7 @@ inline void SystEqMas::getValTranFire()
                         else
                             EnabledTransValueDis[t]=0.0;
                         EnabledTransValueCon[t]*=valC/fatt;
+                       // cout<<"\t"<<valC/fatt<<" Tot:"<<EnabledTransValueCon[t]<<endl;
                     }
                 }
             }
@@ -255,7 +318,7 @@ inline void SystEqMas::getValTranFire()
             if (Trans[t].FuncT!=nullptr)
             {
 
-                EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+                 EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
             }
             else
             {
@@ -2252,9 +2315,9 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 					iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
 					rwork1, rwork5, rwork6, rwork7, 0);
 	if (Info){
-		out<<tout<<" ";
+		out<<Max_Time<<" ";
 	}
-	cout<<"\t Time:"<<tout<<endl;
+	cout<<"\t Time:"<<Max_Time<<endl;
 	derived(y+1);
 	if (Info){
         for (int j=1;j<=nPlaces;j++){
@@ -2289,33 +2352,48 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 int SystEq::getComputeTau(int SetTran[], double& nextTimePoint,double t){
 
 double tau=0.0;
-//double TransRate[nTrans+1];
-
 if (SetTran[0]!=0)
 	{
 		int size= SetTran[0];
 		double sumRate=0.0;
+
 		for (int i=1;i<=size;++i){
-		if (EnabledTransValueDis[SetTran[i]]!=0)
-		sumRate+=Trans[SetTran[i]].rate/EnabledTransValueDis[SetTran[i]];
+		if (EnabledTransValueDis[SetTran[i]]!=0){
+            if (Trans[SetTran[i]].GenFun==""){
+                sumRate+=EnabledTransValueDis[SetTran[i]]/Trans[SetTran[i]].rate;
+                }
+            else{
+                sumRate+=EnabledTransValueDis[SetTran[i]];
+                }
+            }
 		TransRate[i]=sumRate;
 		}
-	//cout<<"SUMRATE:"<<sumRate<<"t"<<t<<"Next"<<nextTimePoint<<endl;
+
 
     if (sumRate==0.0)
         return -1;
     std::exponential_distribution<> ExpD(sumRate);
  	tau=(ExpD(generator)+t);
-   // cout<<"Tau:"<<tau<<" Next: "<<nextTimePoint<<" t:"<<t<<endl;
+
  	if (tau>=nextTimePoint)
         return -1;
     nextTimePoint=tau;
     std::uniform_real_distribution<> UnfRealD(0.0,1.0);
     double val=UnfRealD(generator)*sumRate;
-    int trans=1;
-    while (val>TransRate[trans]) ++trans;
-    //cout<<"Trans"<<NameTrans[SetTran[trans]]<<endl;
-    return SetTran[trans];
+    //int trans=1;
+   // while (val>TransRate[trans]) ++trans;
+
+     int lo = 0, hi = size - 1;
+     while (lo < hi) {
+        int mid = lo + (hi - lo)/2;
+        if (TransRate[mid] < val)
+         lo = mid + 1;
+      else
+         hi = mid;
+     }
+    //cout<<trans<<" "<<lo<<endl;
+
+    return SetTran[lo];
     }
 return -1;
 }
@@ -2348,6 +2426,26 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 	//For negative marking
 	double ValuePrev[nPlaces+1] {0.0};
 
+
+    cout<<endl<<"Seed value: "<<seed<<endl<<endl;
+
+    ofstream out;
+    if (Info)
+	{
+		out.open(string(argv)+".trace",ofstream::out);
+		out.precision(12);
+		if(!out)
+		{
+			throw Exception("*****Error opening output file *****\n\n");
+
+		}
+		out<<"Time";
+		for (int i=0;i<nPlaces;i++)
+			out<<" "<<NamePlaces[i];
+		out<<endl;
+	}
+
+
 	cout.precision(16);
 
     for (int i=0;i<nPlaces;i++)
@@ -2368,10 +2466,17 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 	{
      if (Trans[i].discrete){
         SetTran[++SetTran[0]]=i;
+        Trans[i].enable=false;
         }
 	}
 
 	int run=0;
+
+
+
+
+
+
 
 	while (run<Max_Run){
 
@@ -2381,32 +2486,47 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 	}
 		//Initialization for each run
 		ValuePrev[0]=y[0]=0.0;
+
+        if (Info){
+            out<<"0.0";
+        }
         for (int j=1;j<=nPlaces;j++){
             y[j]=ValuePrev[j]=Value[j-1];
+            if (Info){
+                out<<" "<<y[j];
+            }
         }
-
+        if (Info){
+            out<<endl;;
+        }
 
         double nextTimePoint=tout=Print_Step;
         istate=1;
         t=0.0E0;
 
-
-        while(nextTimePoint<Max_Time){
-
-
-        getValTranFire(y+1);
-        //compute tau
-        int Tran=getComputeTau(SetTran,nextTimePoint,t);
+        bool neg=false;
         double tmpt=t;
+
+        while(nextTimePoint<=Max_Time){
+
+            if (!neg){
+                getValTranFire(y+1);
+
+            }
+            neg=false;
+        //compute tau
+            int Tran=getComputeTau(SetTran,nextTimePoint,t);
+
+
 
 
         //tmpt=t;
-                lsoda(*this,neq, y, &t, nextTimePoint, itol, rtol, atol, itask, &istate, iopt, jt,
+            lsoda(*this,neq, y, &t, nextTimePoint, itol, rtol, atol, itask, &istate, iopt, jt,
 				iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
 				rwork1, rwork5, rwork6, rwork7, 0);
         //t=nextTimePoint;
             //check if the selected descrete transition can fire (no negative markings)
-            bool neg=false;
+
             if (Tran!=-1){
                 int size=(Trans[Tran].Places).size();
                 for (int i=0;i<size&&!neg;++i){
@@ -2416,7 +2536,36 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
                 }
             istate=1;
             }
+            if (neg){
+            for (int j=0;j<=nPlaces;j++){
+                    y[j]=ValuePrev[j];
+                }
+              t=tmpt;
+              nextTimePoint= (tmpt+(nextTimePoint-tmpt)/2);
+            }
+            else
+            {
+			    for (int j=0;j<=nPlaces;j++){
+                    ValuePrev[j]=y[j];
+                }
+                tmpt=t;
+                derived(y+1);
 
+                if (tout==nextTimePoint){
+                    if (Info){
+                     out<<nextTimePoint;
+                     for (int j=1;j<=nPlaces;j++){
+                        out<<" "<<y[j];
+                        }
+                     out<<endl;
+                     }
+
+                    nextTimePoint=(tout+=Print_Step);
+                    }
+                else
+                    nextTimePoint=tout;
+            }
+/*
             if (neg){
              lsoda(*this,neq, Value, &tmpt, nextTimePoint=(tmpt+(nextTimePoint-tmpt)/2), itol, rtol, atol, itask, &istate, iopt, jt,
 				iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
@@ -2440,23 +2589,24 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
              nextTimePoint=(tout+=Print_Step);
             else
              nextTimePoint=tout;
-
+*/
             if (istate <= 0){
                 throw   Exception("*****Error during the integration step*****\n\n");
 
             }
         }
-        lsoda(*this,neq, y, &t, Max_Time, itol, rtol, atol, itask, &istate, iopt, jt,
-					iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
-					rwork1, rwork5, rwork6, rwork7, 0);
+
+       // lsoda(*this,neq, y, &t, Max_Time, itol, rtol, atol, itask, &istate, iopt, jt,
+					//iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
+					//rwork1, rwork5, rwork6, rwork7, 0);
 
        // cout<<"\t Time:"<<Max_Time<<endl;
-        derived(y+1);
+        //derived(y+1);
 
-        if (istate <= 0){
-            throw   Exception("*****Error during the integration step*****\n\n");
+       // if (istate <= 0){
+       //     throw   Exception("*****Error during the integration step*****\n\n");
 
-        }
+        //}
 
         for (int i=0;i<nPlaces;i++)//store resul ode
         {

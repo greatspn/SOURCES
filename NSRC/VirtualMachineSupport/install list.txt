@@ -18,9 +18,8 @@ dnf -y install cups-pdf terminus-fonts graphviz evince motif-devel libxml++-deve
 # Patch bug in boost library
 sed -i 's/fixed_matrix \&operator = (matrix m) {/fixed_matrix \&operator = (fixed_matrix m) {/g' /usr/include/boost/numeric/ublas/matrix.hpp
 
-# Download GreatSPN sources from the read-only SVN repository, and compile it using -O2
-( mkdir GreatSPN ; cd GreatSPN ; \
-	 svn co --username vboxuser --password vboxuser --non-interactive https://svn.di.unito.it/repository/amparore/amparore-svn/GreatSPN/SOURCES SOURCES )
+# Download GreatSPN sources from the read-only Git repository, and compile it using -O2
+( mkdir GreatSPN ; cd GreatSPN ; git clone https://github.com/greatspn/SOURCES.git SOURCES )
 RUN=/home/user/GreatSPN/SOURCES/NSRC/VirtualMachineSupport/run_as_root.sh
 # Scrivi version number e file per compilazione di rgmedd2
 dd of=~/.greatspn-on-vbox << '800'
@@ -30,14 +29,14 @@ ${RUN} touch /root/.use-rgmedd2
 
 
 # Download and install Meddly from sourceforge. 
-(mkdir meddly ; \
+( cd GreatSPN ; mkdir meddly ; \
 	 git clone git://git.code.sf.net/p/meddly/code-git meddly ; \
 	 cd meddly ; \
 	 ./autogen.sh ; \
 	 CXXFLAGS=-O2 LDFLAGS=-O2 ./configure --prefix=/usr/local ; \
 	 make ; \
 	 ${RUN} make install )
-${RUN} ln -s /home/user/meddly /home/meddly
+${RUN} ln -s /home/user/GreatSPN/meddly /home/meddly
 
 # Install GreatSPN
 # Compile and install GreatSPN from sources

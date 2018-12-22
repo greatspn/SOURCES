@@ -130,7 +130,7 @@ This virtual machine contains a pre-installed version of the GreatSPN framework.
 It is designed to be run under VirtualBox or VMWare, to ease the software portability.
 =======================================================================================
 
-UPGRADE GREATSPN FROM SOURCES USING THE SVN:
+UPGRADE GREATSPN FROM SOURCES USING THE GITHUB REPOSITORY:
 
 Just double-click on the Upgrade-GreatSPN script on the Desktop.
 The script downloads the latest sources of GreatSPN and builds it.

@@ -426,6 +426,7 @@ int num;
 }/* End init_transitions */
 /**************************************************************/
 
+
 /**************************************************************/
 /* Support for dynamically change the value of marking and
    rate parameters. */
