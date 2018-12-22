@@ -134,19 +134,26 @@ inline ssize_t traverse_both(typename Container1::const_iterator& it1,
 
 //-----------------------------------------------------------------------------
 
-const char* GetGreatSPN_FileExt(InvariantKind ik, FlowMatrixKind matk, int inc_dec) {
-    typedef const char*  T[3];
-    size_t i = (inc_dec == 0 ? 0 : (inc_dec > 0 ? 1 : 2));
+const char* GetGreatSPN_FileExt(InvariantKind ik, FlowMatrixKind matk, int suppl_flags) {
+    typedef const char*  T[4];
+    size_t i = 0;
+    if (suppl_flags & FM_POSITIVE_SUPPLEMENTARY)
+        i += 1;
+    if (suppl_flags & FM_NEGATIVE_SUPPLEMENTARY)
+        i += 2;
     const char *ext;
     switch (matk) {
         case FlowMatrixKind::SEMIFLOWS:
-            ext = (ik==InvariantKind::PLACE) ? T{ ".pin", ".pin+", ".pin-" }[i] : T{ ".tin", ".tin+", ".tin-" }[i];
+            ext = (ik==InvariantKind::PLACE) ? T{ ".pin", ".pin+", ".pin-", ".pin+-" }[i] 
+                                             : T{ ".tin", ".tin+", ".tin-", ".tin+-" }[i];
             break;
         case FlowMatrixKind::BASIS:
-            ext = (ik==InvariantKind::PLACE) ? T{ ".pba", ".pba+", ".pba-" }[i] : T{ ".tba", ".tba+", ".tba-" }[i];
+            ext = (ik==InvariantKind::PLACE) ? T{ ".pba", ".pba+", ".pba-", ".pba+-" }[i] 
+                                             : T{ ".tba", ".tba+", ".tba-", ".tba+-" }[i];
             break;
         case FlowMatrixKind::INTEGER_FLOWS:
-            ext = (ik==InvariantKind::PLACE) ? T{ ".pfl", ".pfl+", ".pfl-" }[i] : T{ ".tfl", ".tfl+", ".tfl-" }[i];
+            ext = (ik==InvariantKind::PLACE) ? T{ ".pfl", ".pfl+", ".pfl-", ".pfl+-" }[i] 
+                                             : T{ ".tfl", ".tfl+", ".tfl-", ".tfl+-" }[i];
             break;
         // case FlowMatrixKind::NESTED_FLOW_SPAN:
         //     return (ik==InvariantKind::PLACE) ? ".pspan" : ".tspan";
@@ -248,9 +255,9 @@ ostream& flow_matrix_t::print(ostream& os, bool highlight_annulled) const {
 
 //-----------------------------------------------------------------------------
 
-flow_matrix_t::flow_matrix_t(size_t _N, size_t _N0, size_t _M, InvariantKind _ik, int _inc_dec, bool _add_extra_vars, bool _use_Colom_pivoting) 
-: N(_N), N0(_N0), M(_M), inv_kind(_ik), inc_dec(_inc_dec), add_extra_vars(_add_extra_vars), use_Colom_pivoting(_use_Colom_pivoting), mat_kind(FlowMatrixKind::EMPTY) 
-{ /*cout << "M="<<M<<", N="<<N<<endl;*/ }
+flow_matrix_t::flow_matrix_t(size_t _N, size_t _N0, size_t _M, InvariantKind _ik, int _suppl_flags, bool _add_extra_vars, bool _use_Colom_pivoting) 
+: N(_N), N0(_N0), M(_M), inv_kind(_ik), suppl_flags(_suppl_flags), add_extra_vars(_add_extra_vars), use_Colom_pivoting(_use_Colom_pivoting), mat_kind(FlowMatrixKind::EMPTY) 
+{ cout << "M="<<M<<", N="<<N<<", N0="<<N0<<endl; }
 
 //-----------------------------------------------------------------------------
 
@@ -657,6 +664,9 @@ void incidence_matrix_generator_t::generate_matrix() {
             row.A.add_element(it1->j, it1->card);
         }
 
+        if (row.A.empty() && i >= f.N0) // empty supplementary variable row, can drop it
+            continue;
+
         f.mK.emplace_back(std::move(row));
     }
     initEntries.clear();
@@ -666,12 +676,17 @@ void incidence_matrix_generator_t::generate_matrix() {
 //-----------------------------------------------------------------------------
 
 void incidence_matrix_generator_t::add_increase_decrease_flows() {
-    assert(f.M == f.N - f.N0);
-    assert(f.inc_dec == 1 || f.inc_dec == -1);
+    assert(f.M == (f.N - f.N0) / 2);
+    // assert(f.inc_dec == 1 || f.inc_dec == -1);
 
     // add an arc for each place N0+i from transition i
-    for (size_t i=0; f.N0 + i < f.N; i++)
-        add_flow_entry(f.N0 + i, i, f.inc_dec);
+    for (size_t i=0; i < f.M; i++) {
+        if (f.suppl_flags & FM_NEGATIVE_SUPPLEMENTARY)
+            add_flow_entry(f.N0 + i, i, -1);
+
+        if (f.suppl_flags & FM_POSITIVE_SUPPLEMENTARY)
+            add_flow_entry(f.N0 + f.M + i, i, +1);
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -695,6 +710,16 @@ void flows_generator_t::init_A_columns_sum() {
         }
     }
 }
+
+//-----------------------------------------------------------------------------
+
+// size_t flows_generator_t::column_of_suppl_var(size_t var, int sign) {
+//     assert(sign>0 || (suppl_flags & FM_NEGATIVE_SUPPLEMENTARY));
+//     assert(sign<0 || (suppl_flags & FM_POSITIVE_SUPPLEMENTARY));
+
+//     size_t col = N0 + var;
+//     if ()
+// }
 
 //-----------------------------------------------------------------------------
 
@@ -733,15 +758,18 @@ void flows_generator_t::compute_semiflows()
         // Pivoting: determine the column i which will generate less candidate rows
         size_t i = f.M;
         ssize_t num_prod = std::numeric_limits<ssize_t>::max();
+        int best_cat = 2;
         if (f.use_Colom_pivoting) {
             for (size_t k=0; k<f.M; k++) {
                 int npos = A_cols_count[k].first, nneg = A_cols_count[k].second;
                 if ((npos + nneg) == 0)
                     continue;
                 ssize_t new_num_prod = npos * nneg - npos - nneg; // number of generated entries
-                if (num_prod > new_num_prod) { // pivot k is better than pivot i
+                int new_cat = (npos>0 && nneg>0) ? 1 : 2;
+                if (num_prod > new_num_prod || best_cat > new_cat) { // pivot k is better than pivot i
                     i = k;
                     num_prod = new_num_prod;
+                    best_cat = new_cat;
                 }
             }
         }
@@ -790,10 +818,10 @@ void flows_generator_t::compute_semiflows()
             }
             if (f.add_extra_vars) {
                 // Add a new row that will annull column i, using an extra variable T_i
-                int sgn = (AiPositiveRows.size() == 0) ? -1 : +1;
+                int sgn = (AiPositiveRows.size() == 0) ? +1 : -1;
                 flow_matrix_t::row_t newRow(f);
-                newRow.D.insert_element(f.N0 + i, -sgn);
-                newRow.A.insert_element(i, -sgn);
+                newRow.D.insert_element(f.N0 + i + (sgn>0 ? f.M : 0), sgn);
+                newRow.A.insert_element(i, sgn);
                 newRow.neg_D = newRow.count_negatives_D();
                 update_neg_D_count = true;
                 newRow.gen_step = step;
@@ -887,18 +915,23 @@ void flows_generator_t::compute_integer_flows()
         if (verboseLvl >= VL_VERY_VERBOSE)
             cout << *this << endl;
 
+
+
         // Pivoting: determine the column i which will generate less candidate rows
         size_t i = f.M;
         ssize_t num_prod = std::numeric_limits<ssize_t>::max();
+        int best_cat = 2;
         if (f.use_Colom_pivoting) {
             for (size_t k=0; k<f.M; k++) {
                 int nrows = A_cols_count[k].first + A_cols_count[k].second;
                 if (nrows == 0)
                     continue;
-                ssize_t new_num_prod = nrows * (nrows - 1); // number of generated entries
-                if (num_prod > new_num_prod) { // pivot k is better than pivot i
+                ssize_t new_num_prod = nrows * (nrows - 1) - nrows; // number of generated entries
+                int new_cat = (A_cols_count[k].first>0 && A_cols_count[k].second>0) ? 1 : 2;
+                if (num_prod > new_num_prod || best_cat > new_cat) { // pivot k is better than pivot i
                     i = k;
                     num_prod = new_num_prod;
+                    best_cat = new_cat;
                 }
             }
         } 
@@ -907,7 +940,7 @@ void flows_generator_t::compute_integer_flows()
             do {
                 int nrows = A_cols_count[i].first + A_cols_count[i].second;
                 if ((nrows) != 0) {
-                    num_prod = nrows * (nrows - 1);
+                    num_prod = nrows * (nrows - 1) - nrows;
                     break; // column i has non-zero entries
                 }
                 i++;
@@ -945,10 +978,10 @@ void flows_generator_t::compute_integer_flows()
             }
             if (f.add_extra_vars) {
                 // Add a new row that will annull column i, using an extra variable T_i
-                int sgn = (num_posi == 0) ? -1 : +1;
+                int sgn = (num_posi == 0) ? +1 : -1;
                 flow_matrix_t::row_t newRow(f);
-                newRow.D.insert_element(f.N0 + i, -sgn);
-                newRow.A.insert_element(i, -sgn);
+                newRow.D.insert_element(f.N0 + i + (sgn>0 ? f.M : 0), sgn);
+                newRow.A.insert_element(i, sgn);
                 newRow.neg_D = newRow.count_negatives_D();
                 newRow.gen_step = step;
                 if (verboseLvl >= VL_VERY_VERBOSE) {
@@ -1065,298 +1098,6 @@ void flows_generator_t::compute_integer_flows()
 
 //-----------------------------------------------------------------------------
 
-/*void flows_generator_t::compute_nested_flow_span() 
-{
-    const char* ALGO = "Generation of Nested Flows Span";
-    verify(f.mat_kind == FlowMatrixKind::INCIDENCE);
-    init_A_columns_sum();
-
-    // Fourier-Motzkin Elimination procedure for general flows (both positive and negative).
-    // Matrix A starts with the incidence matrix, D starts as the identity.
-    // Invariants: rows in [D|A] are linearly independent, and gcd(D,A)=1.
-    for (step = 0; step < f.M; step++) {
-        if (verboseLvl >= VL_VERY_VERBOSE)
-            cout << *this << endl;
-
-        // TODO: fix
-        // Pivoting: determine the column i which will generate less candidate rows
-        ssize_t i = -1, num_prod = std::numeric_limits<ssize_t>::max();
-        for (size_t k=0; k<f.M; k++) {
-            int nrows = A_cols_count[k].first + A_cols_count[k].second;
-            if (nrows == 0)
-                continue;
-            ssize_t new_num_prod = nrows * (nrows - 1); // number of generated entries
-            if (num_prod > new_num_prod) { // pivot k is better than pivot i
-                i = k;
-                num_prod = new_num_prod;
-            }
-        }
-        if (i == -1)
-            break; // Nothing more to do.
-
-        // Extract from the K=[D|A] matrix all the rows with A[i] != 0
-        // These rows are removed from K, and are combined to generate the new rows
-        std::list<flow_matrix_t::row_t> AiNonnullRows;
-        for (auto row = f.mK.begin(); row != f.mK.end(); ) {
-            if (row->A[i] != 0) {
-                update_A_columns_sum(row->A, -1);
-                AiNonnullRows.splice(AiNonnullRows.begin(), f.mK, row++);
-            }
-            else 
-                ++row;
-        }
-        if (verboseLvl >= VL_VERY_VERBOSE)
-            cout << "pivot="<<i<<": |K|=" << f.mK.size() 
-                 << " |Ai_nn|="<<AiNonnullRows.size() << endl;
-
-        printer.advance(ALGO, step, f.M, f.mK.size(), num_prod);
-
-        if (AiNonnullRows.size() <= 1)
-            continue; // Nothing to combine, simply throw away all the selected rows.
-
-        // Append to the matrix [D|A] every rows resulting as a
-        // linear combination of row pairs from the rows with A[i] != 0
-        for (size_t phase = 0; phase < 2; phase++) {
-            size_t index1 = 0;
-            for (auto row1 = AiNonnullRows.begin(); row1 != AiNonnullRows.end(); ++row1, ++index1) {
-                size_t index2 = 0;
-                for (auto row2 = AiNonnullRows.begin(); row2 != AiNonnullRows.end(); ++row2, ++index2) {
-                    if (index1 >= index2)
-                        continue; // skip same rows and avoid making both A+B and B+A.
-                    // Start first with the integer flows, then pass to the semiflows.
-                    // In this way, when we build the semiflows we already have the integer flows
-                    // built, to simplify them.
-                    bool combine_subtract = (sign(row1->A[i]) == sign(row2->A[i]));
-                    if ((phase == 1) == combine_subtract)
-                        continue; // phase 0: subtract.  phase 1: add
-                    // Subtract only if we have at least a common place between row1 and row2
-                    // if (combine_subtract && row1->test_common_nonzeros(row2->D))
-                    //     continue;
-                    if ((row1->is_negative() || row2->is_negative()) && 
-                        row1->test_disjoint_supports(*row2, combine_subtract ? -1 : +1))
-                        continue;
-                    // // Do not combine integer flows togheter
-                    // if (row1->is_negative() && row2->is_negative())
-                    //     continue;
-                    // if (combine_subtract && row1->is_negative() &&
-                    //     !row1->test_minimal_positive_support_D(row2->D, +1))
-                    //     continue;
-                    // if (combine_subtract && row2->is_negative() &&
-                    //     !row2->test_minimal_positive_support_D(row1->D, +1))
-                    //     continue;
-
-                    // Get the multiplier coefficients such that row1*mult1 + row2*mult2 annuls A[i]
-                    int mult1 = std::abs(row2->A[i]), mult2 = std::abs(row1->A[i]);
-                    int gcd12 = gcd(mult1, mult2);
-                    mult1 /= gcd12;
-                    mult2 /= gcd12;
-                    if (combine_subtract)
-                        mult1 *= -1;
-
-                    // Create newRow = row1 * mult1 + row2 * mult2
-                    flow_matrix_t::row_t newRow(f);
-                    if (!newRow.linear_comb_nnD(*row1, mult1, *row2, mult2))
-                        continue; // dropped because newRow.D is empty
-                    newRow.neg_D = newRow.count_negatives_D();
-                    newRow.gen_step = step;
-
-                    if (newRow.neg_D == newRow.D.nonzeros())
-                        continue;
-
-                    assert(newRow.A[i] == 0);
-
-                    // Make newRow canonical, i.e. gcd of its non-zero elements is 1
-                    newRow.canonicalize();
-
-
-                    // TODO: remove these checks.
-                    bool stop = false;
-                    for (auto e : newRow.D) {
-                        if (abs(e.value) > 1) 
-                            stop = true;
-                    }
-                    for (auto e : newRow.A) {
-                        if (abs(e.value) > 1) 
-                            stop = true;
-                    }
-                    if (newRow.neg_D == newRow.D.nonzeros())
-                        stop = true;
-                        
-                    if (stop) {
-                        cout << endl;
-                        cout << "row1   " << *row1 << endl;
-                        cout << "row2   " << *row2 << endl;
-                        cout << "newRow " << newRow << endl;
-                        cout << "mult1 " << mult1 << endl;
-                        cout << "mult2 " << mult2 << endl;
-                        cout << "combine_subtract " << combine_subtract << endl;
-                        cout << "row1->is_negative() " << row1->is_negative() << endl;
-                        cout << "row2->is_negative() " << row2->is_negative() << endl;
-                        exit(0);
-                    }
-
-
-                    bool dropNewRow = false;
-                    // Apply all reductions to newRow
-                    for (auto row = f.mK.begin(); row != f.mK.end() && !dropNewRow; ) {
-                        if (row->is_negative() 
-                            //&& row->A.nonzeros() == 0 
-                            / *&& row->test_minimal_positive_support_D(newRow.D, +1)* /)
-                        {
-                            int m1, m2;
-                            if (newRow.test_subst(row->D, m1, m2)) {
-                                cout << "SBST" << console::green_fgnd() << newRow 
-                                               << console::default_disp() << endl;
-                                cout << "  + " << console::green_fgnd() << *row 
-                                               << console::default_disp() << endl;
-                                flow_matrix_t::row_t tmpRow(f);
-                                if (!tmpRow.linear_comb_nnD(newRow, m1, *row, m2)) {
-                                    if (verboseLvl >= VL_VERY_VERBOSE)
-                                        cout << "  NO" << console::red_fgnd() << tmpRow 
-                                             << console::default_disp() << endl;
-                                    dropNewRow = true;
-                                    continue; // dropped because newRow.D is empty
-                                }
-                                tmpRow.canonicalize();
-                                tmpRow.neg_D = tmpRow.count_negatives_D();
-                                tmpRow.gen_step = step;
-                                newRow = std::move(tmpRow);
-                                cout << "  = " << console::green_fgnd() << newRow 
-                                               << console::default_disp() << endl;
-                                // TODO: Restart from the beginning
-                                // row = f.mK.begin();
-                            }
-                        }
-                        ++row;
-                    }
-                    if (dropNewRow)
-                        continue;
-
-                    // Test if newRow is not minimal.
-                    // A row is not minimal if another row in K shares the same support,
-                    // i.e. has non-zero values in at least the same places as newRow.
-                    // Test all the existing rows in K exhaustively.
-                    for (auto row = f.mK.begin(); row != f.mK.end() && !dropNewRow;) {
-                        if (newRow.test_minimal_support_D(row->D)) {
-                        // if (newRow.test_minimal_positive_support_D(row->D, -1)) {
-                            if (verboseLvl >= VL_VERY_VERBOSE)
-                                cout << "DROP" << console::red_fgnd() << newRow 
-                                     << console::default_disp() << endl;
-                            dropNewRow = true;
-                            break;
-                        }
-                        // else if (row->is_negative() / *&& row->A.nonzeros() == 0* /) {
-                        //     // Test if newRow +/- row already exists in K
-                        //     for (auto&& row2 : f.mK) {
-                        //         if (newRow.test_minimal_support_linear_comb_D(row2.D, row->D)) {
-                        //             if (verboseLvl >= VL_VERY_VERBOSE) {
-                        //                 cout << "DROP" << console::magenta_fgnd() << newRow 
-                        //                      << console::default_disp() << endl;
-                        //                 cout << "  D2" << console::cyan_fgnd() << row2 
-                        //                      << console::default_disp() << endl;
-                        //                 cout << "   R" << console::cyan_fgnd() << *row 
-                        //                      << console::default_disp() << endl;
-                        //             }
-                        //             dropNewRow = true;
-                        //             break; 
-                        //         }
-                        //     }
-                        //     if (dropNewRow)
-                        //         break;
-                        // }
-                        // else if (row->is_negative() && //row->A.nonzeros() == 0 &&
-                        //          // (newRow.test_minimal_positive_support_D(row->D, +1) ||
-                        //           newRow.test_minimal_positive_support_D(row->D, -1)) 
-                        // {
-                        //     // Throw iff K already contains newRow - row
-                        //     if (verboseLvl >= VL_VERY_VERBOSE)
-                        //         cout << "DROP" << console::magenta_fgnd() << newRow 
-                        //              << console::default_disp() << endl;
-                        //     dropNewRow = true;
-                        //     break;                        
-                        // }
-                        ++row;
-                    }
-                    if (dropNewRow)
-                        continue;
-
-                    if (verboseLvl >= VL_VERY_VERBOSE) {
-                        cout << "ADD ";
-                        newRow.print(cout, true) << endl;
-                    }
-
-                    if (newRow.is_negative() / *&& newRow.A.nonzeros() == 0* /) {
-                        // We discovered a new integer flow invariant!
-                        for (auto ex_row = f.mK.begin(); ex_row != f.mK.end(); ) {
-                            int m1, m2;
-                            if (ex_row->gen_step != step)
-                                break;
-                            if (ex_row->test_subst(newRow.D, m1, m2)) {
-                                update_A_columns_sum(ex_row->A, -1);
-                                cout << "SBST" << console::cyan_fgnd() << *ex_row 
-                                               << console::default_disp() << endl;
-                                cout << "  + " << console::cyan_fgnd() << newRow 
-                                               << console::default_disp() << endl;
-                                flow_matrix_t::row_t tmpRow(f);
-                                if (!tmpRow.linear_comb_nnD(*ex_row, m1, newRow, m2)) {
-                                    if (verboseLvl >= VL_VERY_VERBOSE)
-                                        cout << "  NO" << console::red_fgnd() << tmpRow 
-                                             << console::default_disp() << endl;
-                                    // dropped because newRow.D is empty
-                                    ex_row = f.mK.erase(ex_row);
-                                    continue;
-                                }
-                                tmpRow.canonicalize();
-                                tmpRow.neg_D = tmpRow.count_negatives_D();
-                                tmpRow.gen_step = ex_row->gen_step;
-
-                                // Test unique support of the modified row
-                                bool dropExRow = false;
-                                for (auto row = f.mK.begin(); row != f.mK.end() && !dropExRow;) {
-                                    if (tmpRow.test_minimal_support_D(row->D)) {
-                                        if (verboseLvl >= VL_VERY_VERBOSE)
-                                            cout << "DROP" << console::cyan_fgnd() << tmpRow 
-                                                 << console::default_disp() << endl;
-                                        dropExRow = true;
-                                        break;
-                                    }
-                                    ++row;
-                                }
-                                if (dropExRow) {
-                                    ex_row = f.mK.erase(ex_row);
-                                    continue;
-                                }
-
-                                *ex_row = std::move(tmpRow);
-                                update_A_columns_sum(ex_row->A, +1);
-                                cout << "  = " << console::cyan_fgnd() << *ex_row 
-                                               << console::default_disp() << endl;
-                            }
-                            ++ex_row;
-                        }
-                    }
-
-                    // Add newRow to K, and update the pre-computed column sums of A
-                    update_A_columns_sum(newRow.A, +1);
-                    // Beware: newRow must be inserted at the front!!!
-                    f.mK.emplace_front(std::move(newRow));
-                    if (f.mK.size() > max_peak_rows)
-                        throw program_exception("Exceeded peak row count in nested flow generation.");
-                }
-            }
-        }
-    }
-
-    printer.advance(ALGO, f.M, f.M, f.mK.size(), step);
-    f.mat_kind = FlowMatrixKind::NESTED_FLOW_SPAN;
-    if (verboseLvl >= VL_VERY_VERBOSE)    
-        cout << f << endl;
-    f.clear_A_vectors();
-    A_cols_count.clear();
-}*/
-
-//-----------------------------------------------------------------------------
-
 void flows_generator_t::compute_basis() 
 {
     const char* ALGO = "Computation of Flow basis";
@@ -1373,20 +1114,27 @@ void flows_generator_t::compute_basis()
         // Pivoting: determine the column i of A for which either npos=nneg=1, or npos*nneg is minimum
         size_t i = f.M;
         ssize_t num_sums = std::numeric_limits<ssize_t>::max();
+        int best_cat = 2;
         if (f.use_Colom_pivoting) {
             for (size_t phase=0; phase<2 && i==f.M; phase++) {
                 for (size_t k=0; k<f.M; k++) {
                     int npos = A_cols_count[k].first, nneg = A_cols_count[k].second;
                     if ((npos + nneg) == 0)
                         continue;
-                    if (phase == 0 && npos==1 && nneg==1) { // select k when npos==nneg
-                        i = k;
-                        num_sums = 1;
-                        break;
+                    if (phase == 0) {
+                        if (npos==1 && nneg==1) { // select k when npos==nneg
+                            i = k;
+                            num_sums = 1;
+                            break;
+                        }
                     } 
-                    else if (phase == 1 && num_sums > npos * nneg) { // pivot k is better than pivot i
-                        i = k;
-                        num_sums = (npos + nneg - 1);
+                    else { // phase == 1
+                        int new_cat = (npos>0 && nneg>0) ? 1 : 2;
+                        if (num_sums > npos * nneg || best_cat > new_cat) { // pivot k is better than pivot i
+                            i = k;
+                            num_sums = (npos + nneg - 1);
+                            best_cat = new_cat;
+                        }
                     }
                 }
             }
@@ -1434,10 +1182,10 @@ void flows_generator_t::compute_basis()
             }
             if (f.add_extra_vars) {
                 // Add a new row that will annull column i, using an extra variable T_i
-                int sgn = (num_posi == 0) ? -1 : +1;
+                int sgn = (num_posi == 0) ? +1 : -1;
                 flow_matrix_t::row_t newRow(f);
-                newRow.D.insert_element(f.N0 + i, -sgn);
-                newRow.A.insert_element(i, -sgn);
+                newRow.D.insert_element(f.N0 + i + (sgn>0 ? f.M : 0), sgn);
+                newRow.A.insert_element(i, sgn);
                 newRow.neg_D = newRow.count_negatives_D();
                 newRow.gen_step = step;
                 if (verboseLvl >= VL_VERY_VERBOSE) {
@@ -1534,34 +1282,36 @@ void flows_generator_t::compute_basis()
 
 shared_ptr<flow_matrix_t>
 ComputeFlows(const PN& pn, InvariantKind inv_kind, FlowMatrixKind mat_kind, 
-             bool detect_exp_growth, int inc_dec, bool use_Colom_pivoting,
+             bool detect_exp_growth, int suppl_flags, bool use_Colom_pivoting,
              VerboseLevel verboseLvl) 
 {
     if (verboseLvl >= VL_BASIC) {
         cout << "COMPUTING " << GetFlowName(inv_kind, mat_kind) << "..." << endl;
     }
-    bool is_id = (inc_dec != 0);
-    bool dynamic_extra_var_gen = (inc_dec == 2);
+    bool has_suppl_vars = (suppl_flags != 0);
+    bool dynamic_extra_var_gen = 0 != (suppl_flags & FM_ON_THE_FLY_SUPPL_VARS);
 
     shared_ptr<flow_matrix_t> pfm;
     size_t N, M, N0;
     if (inv_kind == InvariantKind::PLACE) { // P-invariants
-        N0 = pn.plcs.size();
-        N  = N0 + (is_id ? pn.trns.size() : 0);
+        N = N0 = pn.plcs.size();
+        if (has_suppl_vars)
+            N += 2 * pn.trns.size();
         M  = pn.trns.size();
     }
     else { // T-invariants
-        N0 = pn.trns.size();
-        N  = N0 + (is_id ? pn.plcs.size() : 0);
+        N = N0 = pn.trns.size();
+        if (has_suppl_vars)
+            N += 2 * pn.plcs.size();
         M  = pn.plcs.size();
     }
-    pfm = make_shared<flow_matrix_t>(N, N0, M, inv_kind, inc_dec, 
+    pfm = make_shared<flow_matrix_t>(N, N0, M, inv_kind, suppl_flags, 
                                      dynamic_extra_var_gen, use_Colom_pivoting);
 
     // Initialize the flow matrix with the incidence matrix
     incidence_matrix_generator_t inc_gen(*pfm);
     inc_gen.add_flows_from(pn, verboseLvl >= VL_BASIC);
-    if (is_id && !dynamic_extra_var_gen)
+    if (has_suppl_vars && !dynamic_extra_var_gen)
         inc_gen.add_increase_decrease_flows();
     inc_gen.generate_matrix();
 
@@ -1665,6 +1415,7 @@ void PrintFlows(const PN& pn, const flow_matrix_t& psfm,
     size_t num = 1;
     bool pinv = (psfm.inv_kind == InvariantKind::PLACE);
     bool semi = (psfm.mat_kind == FlowMatrixKind::SEMIFLOWS);
+    size_t NP = pn.plcs.size(), NT = pn.trns.size();
 
     if (verboseLvl > VL_BASIC) {
         const int space = int(std::log10(psfm.num_flows())) + 1;
@@ -1686,17 +1437,21 @@ void PrintFlows(const PN& pn, const flow_matrix_t& psfm,
                     else if (elem.value != 1)
                         cout << elem.value << "*";
                     if (pinv) {
-                        if (elem.index < pn.plcs.size())
+                        if (elem.index < NP)
                             cout << pn.plcs[elem.index].name;
+                        else if (elem.index < NP + NT)
+                            cout << "[º" << pn.trns[elem.index - NP].name << "]";
                         else
-                            cout << "[" << pn.trns[elem.index - pn.plcs.size()].name << "]";
+                            cout << "[" << pn.trns[elem.index - NP - NT].name << "º]";
                             // cout << "[T" << (elem.index - pn.plcs.size()) << "]";
                     }
                     else {
-                        if (elem.index < pn.trns.size())
+                        if (elem.index < NT)
                             cout << pn.trns[elem.index].name;
+                        else if (elem.index < NT + NP)
+                            cout << "[ºP" << (elem.index - NT) << "]";
                         else
-                            cout << "[P" << (elem.index - pn.trns.size()) << "]";
+                            cout << "[P" << (elem.index - NT - NP) << "º]";
                     }
                     cout << " ";
                     if (i == 1 || elem.index >= psfm.N0)
@@ -1732,7 +1487,7 @@ void PrintFlows(const PN& pn, const flow_matrix_t& psfm,
 
     if (verboseLvl >= VL_BASIC) {
         // Compute coverage
-        std::vector<bool> covered(pinv ? pn.plcs.size() : pn.trns.size(), false);
+        std::vector<bool> covered(pinv ? NP : NT, false);
         for (auto&& flow : psfm)
             for (auto&& elem : flow)
                 if (elem.index < psfm.N0)

@@ -1048,17 +1048,17 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
                 cout << "USING TRIVIAL PIVOTING." << endl;
                 use_Colom_pivoting = false;
             }
-            else if (cmdArg == "-pinv"   || cmdArg == "-pinv+"   || cmdArg == "-pinv-"   || cmdArg == "-pinv*"   ||
-                     cmdArg == "-tinv"   || cmdArg == "-tinv+"   || cmdArg == "-tinv-"   || cmdArg == "-tinv*"   ||
-                     cmdArg == "-psfl"   || cmdArg == "-psfl+"   || cmdArg == "-psfl-"   || cmdArg == "-psfl*"   ||
-                     cmdArg == "-tsfl"   || cmdArg == "-tsfl+"   || cmdArg == "-tsfl-"   || cmdArg == "-tsfl*"   ||
-                     cmdArg == "-pbasis" || cmdArg == "-pbasis+" || cmdArg == "-pbasis-" || cmdArg == "-pbasis*" ||
-                     cmdArg == "-tbasis" || cmdArg == "-tbasis+" || cmdArg == "-tbasis-" || cmdArg == "-tbasis*" ||
-                     cmdArg == "-pfl"    || cmdArg == "-pfl+"    || cmdArg == "-pfl-"    || cmdArg == "-pfl*"    ||
-                     cmdArg == "-tfl"    || cmdArg == "-tfl+"    || cmdArg == "-tfl-"    || cmdArg == "-tfl*") 
+            else if (cmdArg == "-pinv"   || cmdArg == "-pinv+"   || cmdArg == "-pinv-"   || cmdArg == "-pinv+-"   || cmdArg == "-pinv*"   ||
+                     cmdArg == "-tinv"   || cmdArg == "-tinv+"   || cmdArg == "-tinv-"   || cmdArg == "-tinv+-"   || cmdArg == "-tinv*"   ||
+                     cmdArg == "-psfl"   || cmdArg == "-psfl+"   || cmdArg == "-psfl-"   || cmdArg == "-psfl+-"   || cmdArg == "-psfl*"   ||
+                     cmdArg == "-tsfl"   || cmdArg == "-tsfl+"   || cmdArg == "-tsfl-"   || cmdArg == "-tsfl+-"   || cmdArg == "-tsfl*"   ||
+                     cmdArg == "-pbasis" || cmdArg == "-pbasis+" || cmdArg == "-pbasis-" || cmdArg == "-pbasis+-" || cmdArg == "-pbasis*" ||
+                     cmdArg == "-tbasis" || cmdArg == "-tbasis+" || cmdArg == "-tbasis-" || cmdArg == "-tbasis+-" || cmdArg == "-tbasis*" ||
+                     cmdArg == "-pfl"    || cmdArg == "-pfl+"    || cmdArg == "-pfl-"    || cmdArg == "-pfl+-"    || cmdArg == "-pfl*"    ||
+                     cmdArg == "-tfl"    || cmdArg == "-tfl+"    || cmdArg == "-tfl-"    || cmdArg == "-tfl+-"    || cmdArg == "-tfl*") 
             {
                 RequirePetriNet();
-                int inc_dec;
+                size_t suppl_flags = 0;
                 InvariantKind invknd = (cmdArg[1]=='p' ? InvariantKind::PLACE : InvariantKind::TRANSITION);
                 FlowMatrixKind matk = FlowMatrixKind::SEMIFLOWS;
                 if (cmdArg[2] == 'b') // [b]asis
@@ -1066,16 +1066,18 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
                 if (cmdArg[2] == 'f') // [f]l
                     matk = FlowMatrixKind::INTEGER_FLOWS;
                 switch (cmdArg[strlen(cmdArg.c_str()) - 1]) {
-                    case '+': inc_dec = +1; break;
-                    case '-': inc_dec = -1; break;
-                    case '*': inc_dec = 2; break;
-                    default:  inc_dec = 0;  break;
+                    case '+': suppl_flags |= FM_POSITIVE_SUPPLEMENTARY; break;
+                    case '-': suppl_flags |= FM_NEGATIVE_SUPPLEMENTARY; break;
+                    case '*': suppl_flags |= FM_ON_THE_FLY_SUPPL_VARS | FM_POSITIVE_SUPPLEMENTARY | FM_NEGATIVE_SUPPLEMENTARY; break;
+                    default:  suppl_flags = 0;  break;
                 }
+                if (cmdArg[strlen(cmdArg.c_str()) - 2] == '+')
+                    suppl_flags |= FM_POSITIVE_SUPPLEMENTARY;
                 // if (cmdArg[3] == 'p') // s[p]an
                 //     matk = FlowMatrixKind::NESTED_FLOW_SPAN;
                 performance_timer timer;
                 shared_ptr<flow_matrix_t> psf = ComputeFlows(*pn, invknd, matk, detectExpFlows, 
-                                                             inc_dec, use_Colom_pivoting, verboseLvl);
+                                                             suppl_flags, use_Colom_pivoting, verboseLvl);
                 shared_ptr<flow_matrix_t> *dst;
                 switch (matk) {
                     case FlowMatrixKind::SEMIFLOWS:
@@ -1094,7 +1096,7 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
                 }
                 *dst = psf;
                 // Save the flows to the disk in GreatSPN format
-                string FlowFile(*netName + GetGreatSPN_FileExt(invknd, psf->mat_kind, inc_dec));
+                string FlowFile(*netName + GetGreatSPN_FileExt(invknd, psf->mat_kind, suppl_flags));
                 ofstream flow_os(FlowFile.c_str());
                 SaveFlows(*psf, flow_os);
                 PrintFlows(*pn, *psf, cmdArg.c_str(), verboseLvl);
