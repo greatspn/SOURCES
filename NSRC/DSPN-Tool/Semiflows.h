@@ -148,7 +148,7 @@ public:
         // count the # of negative entries in D
         size_t count_negatives_D() const;
 
-        ostream& print(ostream& os, bool highlight_annulled = false) const;
+        ostream& print(ostream& os, const ssize_t M, bool highlight_annulled = false) const;
     };
 
     // For P-semiflows: N=|P|, M=|T| (for T-semiflows: N=|T|, M=|P|)
@@ -201,13 +201,13 @@ public:
     };
 
     friend ostream& operator<<(ostream& os, const flow_matrix_t& msa);
-    friend ostream& operator<<(ostream& os, const flow_matrix_t::row_t& mrow);
+    // friend ostream& operator<<(ostream& os, const flow_matrix_t::row_t& mrow);
 
     ostream& print(ostream& os, bool highlight_annulled = false) const;
 };
 
 ostream& operator<<(ostream& os, const flow_matrix_t& msa);
-ostream& operator<<(ostream& os, const flow_matrix_t::row_t& mrow);
+// ostream& operator<<(ostream& os, const flow_matrix_t::row_t& mrow);
 
 //-----------------------------------------------------------------------------
 

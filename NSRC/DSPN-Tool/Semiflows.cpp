@@ -204,15 +204,15 @@ ostream& operator<<(ostream& os, const flow_entry_t& f) {
 
 //-----------------------------------------------------------------------------
 
-ostream& operator<<(ostream& os, const flow_matrix_t::row_t& mrow) {
-    return mrow.print(os, false);
-}
+// ostream& operator<<(ostream& os, const flow_matrix_t::row_t& mrow) {
+//     return mrow.print(os, false);
+// }
 
 //-----------------------------------------------------------------------------
 static const size_t MAX_DENSE_REPR = 35;
 
-ostream& flow_matrix_t::row_t::print(ostream& os, bool highlight_annulled) const {
-    if (D.size() > MAX_DENSE_REPR) { // dense representation
+ostream& flow_matrix_t::row_t::print(ostream& os, const ssize_t M, bool highlight_annulled) const {
+    if (D.size() > MAX_DENSE_REPR) { // sparse representation
         for (size_t i = 0, cnt = 0; i < D.nonzeros(); i++)
             if (D.ith_nonzero(i).value)
                 os << (cnt++ > 0 ? ", " : "") << (D.ith_nonzero(i).index+1) 
@@ -223,9 +223,9 @@ ostream& flow_matrix_t::row_t::print(ostream& os, bool highlight_annulled) const
                 os << (cnt++ > 0 ? ", " : "") << (A.ith_nonzero(i).index+1) 
                    << ":" << A.ith_nonzero(i).value;
     }
-    else { // sparse representation
+    else { // dense representation
         for (size_t n=0; n<D.size(); n++)
-            os << setw(3) << D[n];
+            os << setw(3) << D[n] << (ssize_t(n)==M+1||ssize_t(n)==(2*M)+1 ? " " : "");
         os << " |";
         for (size_t m=0; m<A.size(); m++)
             os << setw(3) << A[m];
@@ -247,7 +247,7 @@ ostream& flow_matrix_t::print(ostream& os, bool highlight_annulled) const {
     size_t row = 0;
     for (const auto& rr : mK) {
         os << setw(2) << row++ << ": ";
-        rr.print(os, highlight_annulled) << endl;
+        rr.print(os, M, highlight_annulled) << endl;
         assert(rr.neg_D == rr.count_negatives_D());
     }
     return os;
@@ -257,7 +257,7 @@ ostream& flow_matrix_t::print(ostream& os, bool highlight_annulled) const {
 
 flow_matrix_t::flow_matrix_t(size_t _N, size_t _N0, size_t _M, InvariantKind _ik, int _suppl_flags, bool _add_extra_vars, bool _use_Colom_pivoting) 
 : N(_N), N0(_N0), M(_M), inv_kind(_ik), suppl_flags(_suppl_flags), add_extra_vars(_add_extra_vars), use_Colom_pivoting(_use_Colom_pivoting), mat_kind(FlowMatrixKind::EMPTY) 
-{ cout << "M="<<M<<", N="<<N<<", N0="<<N0<<endl; }
+{ /*cout << "M="<<M<<", N="<<N<<", N0="<<N0<<endl;*/ }
 
 //-----------------------------------------------------------------------------
 
@@ -827,7 +827,7 @@ void flows_generator_t::compute_semiflows()
                 newRow.gen_step = step;
                 if (verboseLvl >= VL_VERY_VERBOSE) {
                     cout << "+++ ";
-                    newRow.print(cout, true) << endl << endl;
+                    newRow.print(cout, f.M, true) << endl << endl;
                 }
                 if (AiPositiveRows.size() == 0)
                     AiPositiveRows.emplace_back(std::move(newRow));
@@ -872,14 +872,15 @@ void flows_generator_t::compute_semiflows()
                     else ++row;
                 }
                 if (dropNewRow) {
-                    if (verboseLvl >= VL_VERY_VERBOSE)
-                        cout << "DROP" << console::red_fgnd() << newRow 
-                             << console::default_disp() << endl;
+                    if (verboseLvl >= VL_VERY_VERBOSE) {
+                        cout << console::red_fgnd() << "DROP" << console::default_disp();
+                        newRow.print(cout, f.M, true) << endl;
+                    }
                     continue;
                 }
                 if (verboseLvl >= VL_VERY_VERBOSE) {
                     cout << "ADD ";
-                    newRow.print(cout, true) << endl;
+                    newRow.print(cout, f.M, true) << endl;
                 }
 
                 // Add newRow to K, and update the pre-computed column sums of A
@@ -986,7 +987,7 @@ void flows_generator_t::compute_integer_flows()
                 newRow.gen_step = step;
                 if (verboseLvl >= VL_VERY_VERBOSE) {
                     cout << "+++ ";
-                    newRow.print(cout, true) << endl << endl;
+                    newRow.print(cout, f.M, true) << endl << endl;
                 }
                 AiNonnullRows.emplace_back(std::move(newRow));
             }
@@ -1056,14 +1057,14 @@ void flows_generator_t::compute_integer_flows()
                     else ++row;
                 }
                 if (dropNewRow) {
-                    if (verboseLvl >= VL_VERY_VERBOSE)
-                        cout << "DROP" << console::red_fgnd() << newRow 
-                             << console::default_disp() << endl;
+                    if (verboseLvl >= VL_VERY_VERBOSE) {
+                        cout << console::red_fgnd() << "DROP" << console::default_disp();
+                        newRow.print(cout, f.M, true) << endl;                    }
                     continue;
                 }
                 if (verboseLvl >= VL_VERY_VERBOSE) {
                     cout << "ADD ";
-                    newRow.print(cout, true) << endl;
+                    newRow.print(cout, f.M, true) << endl;
                 }
 
                 // // Unlike P-semiflows, whose support cannot decrease (monotonic property),
@@ -1190,7 +1191,7 @@ void flows_generator_t::compute_basis()
                 newRow.gen_step = step;
                 if (verboseLvl >= VL_VERY_VERBOSE) {
                     cout << "+++ ";
-                    newRow.print(cout, true) << endl << endl;
+                    newRow.print(cout, f.M, true) << endl << endl;
                 }
                 AiNonnullRows.emplace_back(std::move(newRow));
             }
@@ -1259,7 +1260,7 @@ void flows_generator_t::compute_basis()
             
             if (verboseLvl >= VL_VERY_VERBOSE) {
                 cout << "ADD ";
-                newRow.print(cout, true) << endl;
+                newRow.print(cout, f.M, true) << endl;
             }
 
             // Add newRow to K, and update the pre-computed column sums of A
@@ -1440,18 +1441,18 @@ void PrintFlows(const PN& pn, const flow_matrix_t& psfm,
                         if (elem.index < NP)
                             cout << pn.plcs[elem.index].name;
                         else if (elem.index < NP + NT)
-                            cout << "[º" << pn.trns[elem.index - NP].name << "]";
+                            cout << "[°" << pn.trns[elem.index - NP].name << "]";
                         else
-                            cout << "[" << pn.trns[elem.index - NP - NT].name << "º]";
+                            cout << "[" << pn.trns[elem.index - NP - NT].name << "°]";
                             // cout << "[T" << (elem.index - pn.plcs.size()) << "]";
                     }
                     else {
                         if (elem.index < NT)
                             cout << pn.trns[elem.index].name;
                         else if (elem.index < NT + NP)
-                            cout << "[ºP" << (elem.index - NT) << "]";
+                            cout << "[°P" << (elem.index - NT) << "]";
                         else
-                            cout << "[P" << (elem.index - NT - NP) << "º]";
+                            cout << "[P" << (elem.index - NT - NP) << "°]";
                     }
                     cout << " ";
                     if (i == 1 || elem.index >= psfm.N0)
