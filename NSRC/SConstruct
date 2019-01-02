@@ -38,8 +38,7 @@ Export("lemon")
 
 # invoke tool scripts
 SConscript("./alphaFactory/SConstruct")
-
-script = SConscript("./DSPN-Tool/SConstruct")
+SConscript("./DSPN-Tool/SConstruct")
 
 #SConscript("./CSLTA-solver/SConstruct") # seems unused, does not compile
 

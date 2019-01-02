@@ -1,0 +1,34 @@
+import os
+
+Import("basepath")
+Import("dspn_env")
+
+### build DSPN-Tool
+sources = [ "newparser.h",
+			"lexer.ll",
+			"DTA.cpp",
+			"CSLTA.cpp",
+			"Experiment.cpp",
+			"Language.cpp",
+			"LinearProg.cpp",
+			"MRP.cpp",
+			"MRP_Explicit.cpp",
+			"MRP_Implicit.cpp",
+			"MRP_SccDecomp.cpp",
+			"Measure.cpp",
+			"PackedMemoryPool.cpp",
+			"ParserDefs.cpp",
+			"PetriExport.cpp",
+			"PetriNet.cpp",
+			"PetriNetTool.cpp",
+			"ReachabilityGraph.cpp",
+			"NewReachabilityGraph.cpp",
+			"Semiflows.cpp",
+			"SolveCTMC.cpp",
+			"SynchProduct.cpp",
+			"SynchProductSCC.cpp",
+			"utils.cpp",
+			"../numeric/numeric.cpp"]
+
+dspn = dspn_env.Program("DSPN-Tool", [os.path.join("../", s) for s in sources])
+dspn_env.Install(source=dspn, target=basepath + "/bin/")
