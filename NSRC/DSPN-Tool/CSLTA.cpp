@@ -46,7 +46,7 @@ using namespace numerical;
 #include "ReachabilityGraph.h"
 #include "PackedMemoryPool.h"
 #include "NewReachabilityGraph.h"
-#include "newparser.lyy.h"
+#include "newparser.h"
 #include "DTA.h"
 #include "MRP.h"
 #include "MRP_Explicit.h"

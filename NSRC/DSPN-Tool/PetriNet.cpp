@@ -37,7 +37,7 @@ using namespace numerical;
 #include "PetriNet.h"
 #include "Measure.h"
 #include "Language.h"
-#include "newparser.lyy.h"
+#include "newparser.h"
 // #include "../alphaFactory/alphaFactory.h"
 
 //=============================================================================
