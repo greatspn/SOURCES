@@ -1,0 +1,46 @@
+import os
+Import("basepath")
+Import("installdir")
+
+###############
+### JavaGUI ###
+###############
+
+# scan for source files in `src_dir`
+def build_source_path(src_dir):
+	spath = list()
+	for root, subdir, files in os.walk(src_dir):
+		for dir in subdir:
+			spath.append(root+dir)
+	return spath
+
+# initialize environment
+src_dir = basepath + "/JavaGUI/Editor/src/"
+obj_dir = basepath + "/objects/JavaGUI/bin/"
+lib_dir = obj_dir + "lib/"
+build_dir = basepath + "/JavaGUI/Editor/build/"
+java_env = Environment(ENV=os.environ)
+
+# build the ANTLR grammar
+grammar = basepath + "/JavaGUI/Editor/src/editor/domain/grammar/ExprLang.g4"
+deps_target = basepath + "/JavaGUI/Editor/src/editor/domain/grammar/ExprLang.tokens"
+antlr_com = "java -jar " + basepath + "/JavaGUI/antlr-4.2.1-complete.jar -visitor -no-listener -package editor.domain.grammar " + grammar
+
+antlr = java_env.Command(deps_target, grammar, antlr_com)
+
+# build the GUI (.jar)
+sources = build_source_path(src_dir)
+java_env.Append(JAVASOURCEPATH=src_dir)
+
+gui_target = basepath + "/JavaGUI/Editor/dist/Editor.jar"
+gui_com = "ant -quiet -buildfile " + basepath + "/JavaGUI/Editor/build.xml  jar bundle-app"
+
+gui = java_env.Command(target=gui_target, source="", action=gui_com)
+Requires(gui, antlr)
+
+# install in `obj_dir`
+java_env.Install(obj_dir, source=gui_target)
+java_env.Install(lib_dir, source=Glob(basepath + "/JavaGUI/Editor/dist/lib/*.jar"))
+java_env.Install(lib_dir, source=basepath + "/JavaGUI/Additional/splash.png")
+java_env.InstallAs(obj_dir+"pnpro-editor.png", source=basepath + "/JavaGUI/Additional/greatspn48.png")
+java_env.InstallAs(obj_dir+"application-x-pnpro-editor.png", source=basepath + "/JavaGUI/Additional/pnpro-doc48.png")
