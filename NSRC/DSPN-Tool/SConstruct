@@ -42,14 +42,16 @@ lemon_builder = Builder(action=lemon_act)
 dspn_env['BUILDERS']['Lemon'] = lemon_builder
 
 # construct parser derived files (newparser.c, newparser.h, newparser.out)
-derived = dspn_env.Lemon(target=["newparser.h", "newparser.out", "newparser.c"], source="newparser.lyy")
+derived = dspn_env.Lemon(target="newparser.h", source="newparser.lyy")
 Requires(derived, lemon)
 
+mv = dspn_env.Command(target="newparser.lyy.h", source="newparser.h", action="mv $SOURCE $TARGET")
+
 # move derived files to `objdir`
-#m1 = dspn_env.Install(target=objdir + "newparser.lyy.h", source=derived[0])
-m2 = dspn_env.Install(target=objdir + "newparser.lyy.out", source=derived[1])
+m1 = dspn_env.InstallAs(target=objdir + "newparser.lyy.h", source="newparser.lyy.h")
+m2 = dspn_env.InstallAs(target=objdir + "newparser.lyy.out", source="newparser.out")
 sed_act = 'cat $SOURCE | sed "s/NSRC\/DSPN-Tool\/newparser.c/objects\/DSPN-Tool\/NSRC\/DSPN-Tool\/newparser.lyy.cpp/g" > $TARGET'
-final = dspn_env.Command(objdir + "newparser.lyy.cpp", derived[2], action=sed_act)
+final = dspn_env.Command(objdir + "newparser.lyy.cpp", "newparser.c", action=sed_act)
 
 # construct parser object
 parse_obj = dspn_env.Object(objdir+"newparser.lyy.o", final)

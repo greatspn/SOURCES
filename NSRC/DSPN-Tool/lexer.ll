@@ -67,7 +67,7 @@ using namespace numerical;
 #define register
 	
 //#include "parser.hh"
-#include "newparser.h"
+#include "newparser.lyy.h"
 
 typedef Token YYSTYPE;
 

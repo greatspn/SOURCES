@@ -4,7 +4,7 @@ Import("basepath")
 Import("dspn_env")
 
 ### build DSPN-Tool
-sources = [ "newparser.h",
+sources = [ "newparser.lyy.h",
 			"lexer.ll",
 			"DTA.cpp",
 			"CSLTA.cpp",

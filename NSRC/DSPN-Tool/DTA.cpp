@@ -45,7 +45,7 @@ using namespace numerical;
 #include "Measure.h"
 #include "Language.h"
 #include "DTA.h"
-#include "newparser.h"
+#include "newparser.lyy.h"
 
 //=============================================================================
 
