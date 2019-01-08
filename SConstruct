@@ -18,4 +18,4 @@ Export("installdir")
 SConscript('./algebra/SConstruct')
 SConscript('./NSRC/SConstruct')
 SConscript('./JavaGUI/SConstruct')
-
+SConscript('./WN/SConstruct')

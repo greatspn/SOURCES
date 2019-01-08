@@ -1,0 +1,79 @@
+import os
+Import("colorgcc")
+Import("generate_flags")
+Import("basepath")
+
+#############
+### WNSIM ###
+#############
+
+# initialize the environment
+wnsim_flags, paths = generate_flags("TOOL_WNSIM", "WNSIM")
+
+env = Environment(ENV=os.environ, CC=colorgcc, CCFLAGS=wnsim_flags, LIBPATH=paths, LIBS="m")
+
+
+sources = [ "WN/SOURCE/SHARED/service.c",
+                 "WN/SOURCE/SHARED/ealloc.c",
+                 "WN/SOURCE/SHARED/token.c",
+                 "WN/SOURCE/SHARED/dimensio.c",
+                 "WN/SOURCE/SHARED/errors.c",
+                 "WN/SOURCE/SHARED/common.c",
+                 "WN/SOURCE/SHARED/enabling.c",
+                 "WN/SOURCE/SHARED/fire.c",
+                 "WN/SOURCE/SHARED/shared1.c",
+                 "WN/SOURCE/SHARED/shared2.c",
+                 "WN/SOURCE/SHARED/outdom.c",
+                 "WN/SOURCE/SHARED/report.c",
+                 "WN/SOURCE/SHARED/precheck.c",
+                 "WN/SOURCE/SHARED/degree.c",
+                 "WN/SOURCE/SHARED/main.c",
+                 "WN/SOURCE/SIMULAT/eng_wn.c",
+                 "WN/SOURCE/SIMULAT/lists.c",
+                 "WN/SOURCE/SIMULAT/engine.c",
+                 "WN/SOURCE/SIMULAT/distribu.c",
+                 "WN/SOURCE/SIMULAT/increm.c",
+                 "WN/SOURCE/SIMULAT/presel.c",
+                 "WN/SOURCE/SIMULAT/random.c",
+                 "WN/SOURCE/SIMULAT/stat.c",
+                 "WN/SOURCE/READNET/read_arc.c",
+                 "WN/SOURCE/READNET/read_t_c.c",
+                 "WN/SOURCE/READNET/read_DEF.c",
+                 "WN/SOURCE/READNET/read_NET.c",
+                 "WN/SOURCE/READNET/read_t_s.c",
+                 "WN/SOURCE/READNET/wn_yac.c",
+                 "WN/TRANSL/wn.l" ]
+
+# parse the yacc source
+env.CFile(target=basepath + "/WN/TRANSL/wn_grammar.y.h", source=basepath + "/WN/TRANSL/wn_grammar.y")
+
+# build WNSIM
+wnsim = env.Program("WNSIM", [basepath + "/" + s for s in sources])
+
+# install to bin/
+env.Install(basepath + "/bin/", "WNSIM")
+
+###############
+#### WNSYMB ###
+###############
+
+## modify the environment
+#wnsymb_flags, paths = generate_flags("TOOL_WNSYMB", "WNSYMB")
+
+#env["CCFLAGS"] = wnsymb_flags
+#env["LIBPATH"] = paths
+
+#symb_sources = sources + ["WN/SOURCE/SHARED/split.c",
+					 #"WN/SOURCE/SHARED/group.c",
+					 #"WN/SOURCE/SIMULAT/after.c"]
+#VariantDir("./WNSYMB/", basepath + "WN/SOURCE/SHARED")
+#VariantDir("./WNSYMB/", basepath + "WN/SOURCE/SIMULAT")
+
+## parse the yacc source
+#env.CFile(target=basepath + "/WN/TRANSL/wn_grammar.y.h", source=basepath + "/WN/TRANSL/wn_grammar.y")
+
+## build WNSYMB
+#wnsymb = env.Program("WNSYMB", [basepath + "/" + s for s in symb_sources])
+
+## install to bin/
+#env.Install(basepath + "/bin/", "WNSYMB")

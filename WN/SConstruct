@@ -1,0 +1,10 @@
+import os
+Import("cflags")
+Import("basepath")
+
+def generate_flags(arg1, arg2):
+    return cflags + ["-D"+arg1+"=1", "-Iobjects/"+arg2+"/WN/TRANSL/"], basepath + "/objects/"+arg2+"/WN/TRANSL/"
+Export("generate_flags")
+
+# WNSIM, WNSYMB
+SConscript("./build/WNSIM/SConstruct")
