@@ -28,7 +28,7 @@ enum class FlowMatrixKind {
 };
 
 // Returns the GreatSPN file extension for the given type of flow (like .pin, .tin, etc...)
-const char* GetGreatSPN_FileExt(InvariantKind fk, FlowMatrixKind matk, int inc_dec);
+const char* GetGreatSPN_FileExt(InvariantKind fk, FlowMatrixKind matk, int suppl_flags);
 // Return the name of the type of flows (like "PLACE SEMIFLOWS" or "TRANSITIONS FLOW BASIS")
 const char* GetFlowName(InvariantKind fk, FlowMatrixKind matk);
 
@@ -60,6 +60,12 @@ public:
 
 //-----------------------------------------------------------------------------
 
+const size_t FM_POSITIVE_SUPPLEMENTARY = 1;
+const size_t FM_NEGATIVE_SUPPLEMENTARY = 2;
+const size_t FM_ON_THE_FLY_SUPPL_VARS = 4;
+
+//-----------------------------------------------------------------------------
+
 // Matrix of flows in a P/T net. 
 // Can be used to represent both P/T-semiflows and a P/T-flow basis.
 // The flow matrix is made by the combination of two separate matrices [D|A].
@@ -74,7 +80,8 @@ public:
     typedef sparsevector<spvec_int_tag>    spintvector;
     // typedef sparsevector<size_t, bool>   spboolvector;
 
-    flow_matrix_t(size_t N, size_t N0, size_t M, InvariantKind k, int inc_dec, bool add_extra_vars);
+    flow_matrix_t(size_t N, size_t N0, size_t M, InvariantKind k, int suppl_flags, 
+                  bool add_extra_vars, bool use_Colom_pivoting);
     flow_matrix_t(const flow_matrix_t&) = delete;
     flow_matrix_t(flow_matrix_t&&) = default;
     flow_matrix_t& operator=(const flow_matrix_t&) = delete;
@@ -141,7 +148,7 @@ public:
         // count the # of negative entries in D
         size_t count_negatives_D() const;
 
-        ostream& print(ostream& os, bool highlight_annulled = false) const;
+        ostream& print(ostream& os, const ssize_t M, bool highlight_annulled = false) const;
     };
 
     // For P-semiflows: N=|P|, M=|T| (for T-semiflows: N=|T|, M=|P|)
@@ -151,16 +158,21 @@ public:
     // Stores P or T flows?
     const InvariantKind inv_kind;
 
-    // We are also considering increasing/decereasing invariants
-    const int inc_dec; // 0 means normal P/T flows, otherwise +1/-1 for increasing/decreasing inv.
+    // Columns for the supplementary variables
+    const size_t suppl_flags; // 0 means normal P/T flows, otherwise have supplementary vars.
     // Extra variables should be added dynamically during flow generation?
     const bool add_extra_vars;
+    // Use Colom pivoting strategy
+    const bool use_Colom_pivoting;
 
     // The content of this flow matrix
     FlowMatrixKind mat_kind;
 
     // Flow matrix mK=[D|A], kept as a list for ease of adding/removing rows
     std::list<row_t> mK;
+
+    // return the column of a supplementary variable
+    // size_t column_of_suppl_var(size_t var, int sign);
 
     // Drop all the vectors in the A part of the [D|A] matrix.
     void clear_A_vectors();
@@ -189,13 +201,13 @@ public:
     };
 
     friend ostream& operator<<(ostream& os, const flow_matrix_t& msa);
-    friend ostream& operator<<(ostream& os, const flow_matrix_t::row_t& mrow);
+    // friend ostream& operator<<(ostream& os, const flow_matrix_t::row_t& mrow);
 
     ostream& print(ostream& os, bool highlight_annulled = false) const;
 };
 
 ostream& operator<<(ostream& os, const flow_matrix_t& msa);
-ostream& operator<<(ostream& os, const flow_matrix_t::row_t& mrow);
+// ostream& operator<<(ostream& os, const flow_matrix_t::row_t& mrow);
 
 //-----------------------------------------------------------------------------
 
@@ -290,7 +302,8 @@ typedef std::vector<PlaceBounds> place_bounds_t;
 
 shared_ptr<flow_matrix_t>
 ComputeFlows(const PN& pn, InvariantKind kind, FlowMatrixKind mat_kind, 
-             bool detect_exp_growth, int inc_dec, VerboseLevel verboseLvl);
+             bool detect_exp_growth, int suppl_flags, bool use_Colom_pivoting, 
+             VerboseLevel verboseLvl);
 
 void SaveFlows(const flow_matrix_t& msa, ofstream& file);
 
