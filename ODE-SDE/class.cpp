@@ -2522,7 +2522,7 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
             neg=false;
         //compute tau
             int Tran=getComputeTau(SetTran,nextTimePoint,t);
-            cout<<"TIME:"<<nextTimePoint<<endl;
+            //cout<<"TIME:"<<nextTimePoint<<endl;
 
 
 
