@@ -225,7 +225,7 @@ ostream& flow_matrix_t::row_t::print(ostream& os, const ssize_t M, bool highligh
     }
     else { // dense representation
         for (size_t n=0; n<D.size(); n++)
-            os << setw(3) << D[n] << (ssize_t(n)==M+1||ssize_t(n)==(2*M)+1 ? " " : "");
+            os << setw(3) << D[n] << (ssize_t(n)==M||ssize_t(n)==(2*M) ? " " : "");
         os << " |";
         for (size_t m=0; m<A.size(); m++)
             os << setw(3) << A[m];
@@ -820,7 +820,7 @@ void flows_generator_t::compute_semiflows()
                 // Add a new row that will annull column i, using an extra variable T_i
                 int sgn = (AiPositiveRows.size() == 0) ? +1 : -1;
                 flow_matrix_t::row_t newRow(f);
-                newRow.D.insert_element(f.N0 + i + (sgn>0 ? f.M : 0), sgn);
+                newRow.D.insert_element(f.N0 + i + (sgn>0 ? f.M : 0), +1);
                 newRow.A.insert_element(i, sgn);
                 newRow.neg_D = newRow.count_negatives_D();
                 update_neg_D_count = true;
@@ -981,7 +981,7 @@ void flows_generator_t::compute_integer_flows()
                 // Add a new row that will annull column i, using an extra variable T_i
                 int sgn = (num_posi == 0) ? +1 : -1;
                 flow_matrix_t::row_t newRow(f);
-                newRow.D.insert_element(f.N0 + i + (sgn>0 ? f.M : 0), sgn);
+                newRow.D.insert_element(f.N0 + i + (sgn>0 ? f.M : 0), +1);
                 newRow.A.insert_element(i, sgn);
                 newRow.neg_D = newRow.count_negatives_D();
                 newRow.gen_step = step;
@@ -1185,7 +1185,7 @@ void flows_generator_t::compute_basis()
                 // Add a new row that will annull column i, using an extra variable T_i
                 int sgn = (num_posi == 0) ? +1 : -1;
                 flow_matrix_t::row_t newRow(f);
-                newRow.D.insert_element(f.N0 + i + (sgn>0 ? f.M : 0), sgn);
+                newRow.D.insert_element(f.N0 + i + (sgn>0 ? f.M : 0), +1);
                 newRow.A.insert_element(i, sgn);
                 newRow.neg_D = newRow.count_negatives_D();
                 newRow.gen_step = step;

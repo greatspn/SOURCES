@@ -2352,6 +2352,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 int SystEq::getComputeTau(int SetTran[], double& nextTimePoint,double t){
 
 double tau=0.0;
+
 if (SetTran[0]!=0)
 	{
 		int size= SetTran[0];
@@ -2360,13 +2361,19 @@ if (SetTran[0]!=0)
 		for (int i=1;i<=size;++i){
 		if (EnabledTransValueDis[SetTran[i]]!=0){
             if (Trans[SetTran[i]].GenFun==""){
-                sumRate+=EnabledTransValueDis[SetTran[i]]/Trans[SetTran[i]].rate;
+                sumRate+=EnabledTransValueDis[SetTran[i]]*Trans[SetTran[i]].rate;
+
                 }
             else{
                 sumRate+=EnabledTransValueDis[SetTran[i]];
+               // cout<<"trans "<<NameTrans[SetTran[i]]<<" "<<EnabledTransValueDis[SetTran[i]]<<endl;
                 }
+
+           /// cout<<NameTrans[i]<<" "<<sumRate<<endl;
             }
-		TransRate[i]=sumRate;
+
+		TransRate[i-1]=sumRate;
+	//	cout<<"i "<< i<<" sumRate:"<<sumRate<<NameTrans[SetTran[i]]<<endl;
 		}
 
 
@@ -2374,7 +2381,7 @@ if (SetTran[0]!=0)
         return -1;
     std::exponential_distribution<> ExpD(sumRate);
  	tau=(ExpD(generator)+t);
-
+   // cout<<"\nReaction:"<<tau<<" "<<tau-t<<endl;
  	if (tau>=nextTimePoint)
         return -1;
     nextTimePoint=tau;
@@ -2382,7 +2389,7 @@ if (SetTran[0]!=0)
     double val=UnfRealD(generator)*sumRate;
     //int trans=1;
    // while (val>TransRate[trans]) ++trans;
-
+   // cout<<"\nval "<<val<<endl;
      int lo = 0, hi = size - 1;
      while (lo < hi) {
         int mid = lo + (hi - lo)/2;
@@ -2391,9 +2398,8 @@ if (SetTran[0]!=0)
       else
          hi = mid;
      }
-    //cout<<trans<<" "<<lo<<endl;
-
-    return SetTran[lo];
+  //  cout<<"trans "<<NameTrans[SetTran[lo+1]]<<" id"<<lo+1<<endl;
+    return SetTran[lo+1];
     }
 return -1;
 }
@@ -2516,7 +2522,7 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
             neg=false;
         //compute tau
             int Tran=getComputeTau(SetTran,nextTimePoint,t);
-
+            //cout<<"TIME:"<<nextTimePoint<<endl;
 
 
 
