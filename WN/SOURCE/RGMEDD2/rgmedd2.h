@@ -554,7 +554,7 @@ public:
         return Mark->getCardinality();
     };
 
-    inline bool getMarking(int *vmark, int &idm) {
+    inline bool getMarking(int *vmark, long &idm) {
         const int *plmark;
         if (it == NULL || *it == 0)
             return false;
