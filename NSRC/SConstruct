@@ -14,7 +14,7 @@ Export("lemonpath")
 objdir = basepath + "/objects/lemon/NSRC/lemon"
 if not os.path.exists(objdir):
 	print("[LEMON] creating directory " + objdir)
-	os.mkdir(objdir)
+	os.makedirs(objdir)
 else:
 	print("[LEMON] using directory " + objdir)
 
