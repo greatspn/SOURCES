@@ -6,5 +6,8 @@ def generate_flags(arg1, arg2):
     return cflags + ["-D"+arg1+"=1", "-Iobjects/"+arg2+"/WN/TRANSL/"], basepath + "/objects/"+arg2+"/WN/TRANSL/"
 Export("generate_flags")
 
-# WNSIM, WNSYMB
-SConscript("./build/WNSIM/SConstruct")
+# WNSIM
+# SConscript("SOURCE/SIMULAT/SConstruct", variant_dir="./build/WNSIM/")
+
+# RGMEDD2
+SConscript("SOURCE/RGMEDD2/SConstruct", variant_dir="./build/SOURCE/RGMEDD2")

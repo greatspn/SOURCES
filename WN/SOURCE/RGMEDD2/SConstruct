@@ -1,0 +1,121 @@
+import os
+Import("basepath")
+Import("colorgcc")
+Import("cflags")
+
+# generate compiler flags
+cflags = [c for c in cflags if "DSPN" not in c]
+
+def generate_flags(arg1, arg2):
+    return cflags + ["-D"+arg1+"=1", "-Iobjects/"+arg2+"/WN/TRANSL/"], basepath + "/objects/"+arg2+"/WN/TRANSL/"
+Export("generate_flags")
+
+###############
+### RGMEDD2 ###
+###############
+
+common_sources = [
+            "WN/SOURCE/SHARED/service.c",
+			"WN/SOURCE/SHARED/ealloc.c",
+			"WN/SOURCE/SHARED/token.c",
+			"WN/SOURCE/SHARED/dimensio.c",
+			"WN/SOURCE/SHARED/errors.c",
+			"WN/SOURCE/SHARED/common.c",
+			"WN/SOURCE/SHARED/enabling.c",
+			"WN/SOURCE/SHARED/fire.c",
+			"WN/SOURCE/SHARED/shared1.c",
+			"WN/SOURCE/SHARED/shared2.c",
+			"WN/SOURCE/SHARED/outdom.c",
+			"WN/SOURCE/SHARED/report.c",
+			"WN/SOURCE/SHARED/precheck.c",
+			"WN/SOURCE/SHARED/flush.c",
+			"WN/SOURCE/SHARED/degree.c",
+			"WN/SOURCE/REACHAB/graph_se.c",
+			"WN/SOURCE/REACHAB/stack.c",
+			"WN/SOURCE/REACHAB/convert.c",
+			"WN/SOURCE/REACHAB/rg_files.c",
+			"WN/SOURCE/REACHAB/rgengwn.c",
+			"WN/SOURCE/READNET/read_arc.c",
+			"WN/SOURCE/READNET/read_t_c.c",
+			"WN/SOURCE/READNET/read_DEF.c",
+			"WN/SOURCE/READNET/read_NET.c",
+			"WN/SOURCE/READNET/read_PIN.c",
+			"WN/SOURCE/READNET/read_t_s.c",
+			"WN/SOURCE/READNET/wn_yac.c",
+            "WN/SOLVE/compact.c",
+            "WN/TRANSL/wn_grammar.y",
+            "WN/TRANSL/wn.l",
+            ];
+
+# initialize the environment
+rgmedd2_flags, paths = generate_flags("TOOL_RGMEDD2", "RGMEDD2")
+rgmedd2_flags.extend(['-DTOOL_RGMEDD2=1', '-I'+basepath+'/objects/WN/TRANSL/'])
+paths = [paths, "/usr/local/lib", basepath+"/objects/RGMEDD2/WN/SOURCE/RGMEDD2"]
+
+cppflags = ["-std=c++17",
+            "-Wno-sign-compare",
+            "-I"+basepath+"/objects/RGMEDD2/WN/SOURCE/RGMEDD2/",
+            "-I"+basepath+"/WN/INCLUDE",
+            "-I"+basepath+"/WN/SOURCE/RGMEDD2",
+            "-I/usr/local/include",
+            "-L"+basepath+"/WN/build/SOURCE/RGMEDD2/",
+            "-DHAS_GMP_LIBRARY=1",
+            "-DTOOL_RGMEDD2=1"]
+
+rg2_env = Environment(ENV=os.environ,
+                        CC=colorgcc,
+                        CCFLAGS=rgmedd2_flags,
+                        CXXFLAGS=cppflags,
+                        LIBPATH=paths,
+                        LINKFLAGS="-shared-libgcc",
+                        LIBS=["fl", "meddly", "gmp", "gmpxx"])
+
+# generate lexer
+flexpp_builder = Builder(action = "flex++ -+ -o $TARGET --header-file=${SOURCE}.h $SOURCE")
+
+rg2_env.Append(BUILDERS = {'Flexpp': flexpp_builder})
+
+lexer1 = rg2_env.Flexpp(basepath + '/WN/SOURCE/RGMEDD2/CTLLexer.ll.cpp', basepath + '/WN/SOURCE/RGMEDD2/CTLLexer.ll')
+lexer2 = rg2_env.Flexpp(basepath + '/WN/TRANSL/wn.l.c', basepath + '/WN/TRANSL/wn.l')
+
+Export("lexer1")
+Export("lexer2")
+
+# generate parser
+parser_header = basepath + "/objects/RGMEDD2/"
+byacc_builder = Builder(
+		action = "byacc -p mm -v -d -o $TARGET $SOURCE; find ./ -iname 'y.tab.h' -type f -exec mv {} " + parser_header + "${SOURCE}.h \;")
+
+rg2_env.Append(BUILDERS = {'Byacc': byacc_builder})
+
+parser1 = rg2_env.Byacc(paths[2] + '/CTLParser.yy.cpp', basepath + '/WN/SOURCE/RGMEDD2/CTLParser.yy')
+parser2 = rg2_env.Byacc(basepath + '/WN/TRANSL/wn_grammar.y.c', basepath + '/WN/TRANSL/wn_grammar.y')
+
+# list source files for RGMEDD2 and generate program executable
+r2sources = [
+		   "WN/SOURCE/SHARED/mainMEDD2.cpp",
+		   "WN/SOURCE/RGMEDD2/nsf_subtree.cpp",
+		   "WN/SOURCE/RGMEDD2/varorders.cpp",
+		   "WN/SOURCE/RGMEDD2/varorders_bgl.cpp",
+		   "WN/SOURCE/RGMEDD2/varorders_meta.cpp",
+		   "WN/SOURCE/RGMEDD2/meddEv.cpp",
+		   "WN/SOURCE/RGMEDD2/general.cpp",
+		   "WN/SOURCE/RGMEDD2/graphMEDD.cpp",
+		   "WN/SOURCE/RGMEDD2/CTL.cpp",
+		   "WN/SOURCE/RGMEDD2/CTLLexer.ll.cpp"
+		   ];
+
+r2sources.extend(common_sources)
+r2sources = [basepath + "/" + src for src in r2sources]
+r2sources.extend([basepath + "/objects/RGMEDD2/WN/SOURCE/RGMEDD2/CTLParser.yy.cpp"])
+
+# build the program, specifying build requirements explicitly
+rgmedd2 = rg2_env.Program("RGMEDD2", r2sources)
+
+rg2_env.Requires(lexer1, parser1)
+rg2_env.Requires(lexer2, parser2)
+rg2_env.Requires(rgmedd2, lexer1)
+rg2_env.Requires(rgmedd2, lexer2)
+
+rg2_env.Alias('RGMEDD2', rgmedd2)
+rg2_env.Install(source=rgmedd2, target=basepath + "/bin/")
