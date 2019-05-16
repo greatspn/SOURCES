@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 basepath = os.getcwd()
 Export("basepath")
@@ -19,3 +20,7 @@ SConscript('./algebra/SConstruct')
 SConscript('./NSRC/SConstruct')
 SConscript('./JavaGUI/SConstruct')
 SConscript('./WN/SConstruct')
+
+# copy scripts
+subprocess.call(["make", "scripts",">", "/dev/null"])
+subprocess.call(["cp", "contrib/great_package.sh", "scripts"])

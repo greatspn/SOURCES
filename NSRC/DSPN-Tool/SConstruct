@@ -14,7 +14,7 @@ objdir = basepath + "/objects/DSPN-Tool/NSRC/DSPN-Tool/"
 
 if not os.path.exists(objdir):
 	print("[DSPN] creating directory " + objdir)
-	os.mkdir(objdir)
+	os.makedirs(objdir)
 else:
 	print("[DSPN] using directory " + objdir)
 
