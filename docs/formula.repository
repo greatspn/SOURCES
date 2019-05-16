@@ -1,0 +1,38 @@
+\form#0:$(A+Id)$
+\form#1:$ y = A \cdot x $
+\form#2:$ y = x \cdot A $
+\form#3:$ y += x \cdot A $
+\form#4:$ y += A \cdot x $
+\form#5:$ y = (A+Id) \cdot x $
+\form#6:$ y = x \cdot (A+Id) $
+\form#7:$ y = y + (c \cdot x) $
+\form#8:$ y = (c \cdot x) $
+\form#9:$ y = y \cdot c $
+\form#10:$ y = x $
+\form#11:$ y += x $
+\form#12:$ y = y / c $
+\form#13:$ y += c $
+\form#14:$ y = c $
+\form#15:$ c = |x|_1 $
+\form#16:$ c = \sum x_i $
+\form#17:$ c = x \cdot y $
+\form#18:$ y = x * (A/lambda + I) $
+\form#19:$ (A/lambda + I) $
+\form#20:$ y = (A/lambda + I) * x $
+\form#21:$ out += -in \cdot (diag^{-1}(M)) \times M $
+\form#22:$ out += - (diag^{-1}(M)) \times M \cdot in $
+\form#23:$\pi$
+\form#24:$(A+Id) \cdot x=b$
+\form#25:\[ x' = D^{-1} \cdot (b - (L+U)x) \]
+\form#26:$ (A+Id)=D+L+U $
+\form#27:\[ x' = (D+L)^{-1} \cdot (b - Ux) \]
+\form#28:\[ x' = D^{-1} \cdot (b - (Ux + Lx')) \]
+\form#29:\[ x' = (D+U)^{-1} \cdot (b - Lx) \]
+\form#30:\[ x' = D^{-1} \cdot (b - (Ux' + Lx)) \]
+\form#31:$x^T \cdot (A+Id)^T=b^T$
+\form#32:\[ x' = (b - x(L+U)) \cdot D^{-1} \]
+\form#33:$ (A+Id)^T=D+L+U $
+\form#34:\[ x' = (b - xL) \cdot (D+U)^{-1} \]
+\form#35:\[ x' = (b - (xL + x'U)) \cdot D^{-1} \]
+\form#36:\[ x' = (b - xU) \cdot (D+L)^{-1} \]
+\form#37:\[ x' = (b - (x'L + xU)) \cdot D^{-1} \]
