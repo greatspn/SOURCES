@@ -22,5 +22,5 @@ SConscript('./JavaGUI/SConstruct')
 SConscript('./WN/SConstruct')
 
 # copy scripts
-subprocess.call(["make", "scripts",">", "/dev/null"])
+subprocess.call(["make", "scripts"])
 subprocess.call(["cp", "contrib/great_package.sh", "scripts"])
