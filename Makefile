@@ -1716,6 +1716,7 @@ upload_JavaGUI: JavaGUI
 clean_JavaGUI_x:
 	@echo "  [CLEAN]  Editor.jar"
 	@rm -rf  JavaGUI/Editor/build
+	@rm -f 	 JavaGUI/Editor/dist/Editor.jar
 	#@ant -quiet -silent -buildfile  JavaGUI/Editor/build.xml  clean
 	# @echo "  [CLEAN]  MathProvider.jar"
 	# @rm -rf  JavaGUI/MathProvider/build
