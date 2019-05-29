@@ -36,9 +36,9 @@ extern bool print_CTL_counterexamples;
 void yyerror(const char *str) {
   cout<<"Parse error at \"" << lexer->YYText() << "\": " << str << "." << endl;
 }
- 
+
 int yylex(void){
-    int i = lexer->yylex(); 
+    int i = lexer->mmlex();
     return i;
 }
 extern int yyparse(void);
