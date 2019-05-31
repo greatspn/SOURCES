@@ -2412,8 +2412,8 @@ return -1;
 
 double SystEq::getComputeTauGillespie(int SetTran[], double& nextTimePoint,double t){
 {
-	bool first=True //boolean value if it is the first time we call this function -> this allow the computation only one single time of the total propensity a_0
-	double a_0=0
+	bool first=true; //boolean value if it is the first time we call this function -> this allow the computation only one single time of the total propensity a_0
+	double a_0=0;
 	if (SetTran[0]!=0){
 
 		int size= SetTran[0];//dice quante transizioni vengono gestite in maniera stocastica

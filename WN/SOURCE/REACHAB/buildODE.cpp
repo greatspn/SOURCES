@@ -461,10 +461,10 @@ void build_ODE(ofstream &out, std::string path, std::string net)
         out << " std::cerr<<\"\\n\\nUSE:" << net << "_solve <out_file> [OPTIONS]\";\n\t";
     }
     //automaton
-    out<<"std::cerr<<\"\\n\\n\\tOPTIONS\\n\";\n";
+    out<<"std::cerr<<\"\\n\\n\\tOPTIONS\\n\";\n\t";
     out << " std::cerr<<\"\\n\\t -type <type>:\\t\\t ODE-E or ODE-RKF or ODE45 or LSODA or HLSODA or (H)SDE or HODE or SIM or TAUG or STEP. Default: LSODA \";\n\t";
     out << " std::cerr<<\"\\n\\t -hini <double>:\\t Initial step size. Default: 1e-6\";\n\t";
-      out << " std::cerr<<\"\\n\\t -atol <double>:\\t Absolute error tolerance. Dafault: 1e-6\";\n\t";
+    out << " std::cerr<<\"\\n\\t -atol <double>:\\t Absolute error tolerance. Dafault: 1e-6\";\n\t";
     out << " std::cerr<<\"\\n\\t -rtol <double>:\\t Relative error tolerance. Dafault: 1e-6\";\n\t";
     out << " std::cerr<<\"\\n\\t -runs <int>:\\t\\t Integer number corresponding to runs (only used in SIM, HODE,HLSODA). Default: 1\";\n\t";
     out << " std::cerr<<\"\\n\\t -ftime <double>:\\t Double number used to set the upper bound of the evolution time. Dafault: 1\";\n\t";
@@ -746,7 +746,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
 
 
 
-    out << "\n\tif (SOLVE == 1)\n\t\t se.SolveODEEuler(hini,atol,rtol,ftime,OUTPUT,stime,argv[1]);\n\t else\n\t\t if (SOLVE == 0)\n\t\t\t se.SolveSDEEuler(hini,atol,rtol,ftime,runs,OUTPUT,stime,argv[1]);\n\t\t else \n\t\t\tif (SOLVE == 3)\n\t\t\t\t se.SolveHODEEuler(hini,atol,rtol,ftime,runs,OUTPUT,stime,argv[1]); \n\t\t\t else \n\t\t\t\t if (SOLVE == 4)\n\t\t\t\t\t  se.HeuristicStep(hini,atol,rtol,ftime,OUTPUT,stime,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\t if (SOLVE == 5)\n\t\t\t\t\t  se.SolveODERKF(hini,atol,ftime,OUTPUT,stime,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\tif (SOLVE == 6)\n\t\t\t\t\t\t se.SolveODE45(hini,atol,ftime,OUTPUT,stime,argv[1]);\n\t\t\t\t else\n\t\t\t\t\t if (SOLVE == 8)\n\t\t\t\t\t\t\t se.SolveHLSODE(hini,atol,rtol,ftime,runs,OUTPUT,stime,argv[1]);\n\t\t\t\t\t else \n\t\t\t\t\t\t\t if (SOLVE == 8) \n\t\t\t\t\t\t\t\t se.SolveLSODE(hini,atol,rtol,ftime,OUTPUT,stime,argv[1]);\n\t\t\t\t\t\t\t se.SolveTAUG(ftime,OUTPUT,stime,argv[1]);";
+    out << "\n\tif (SOLVE == 1)\n\t\t se.SolveODEEuler(hini,atol,rtol,ftime,OUTPUT,stime,argv[1]);\n\t else\n\t\t if (SOLVE == 0)\n\t\t\t se.SolveSDEEuler(hini,atol,rtol,ftime,runs,OUTPUT,stime,argv[1]);\n\t\t else \n\t\t\tif (SOLVE == 3)\n\t\t\t\t se.SolveHODEEuler(hini,atol,rtol,ftime,runs,OUTPUT,stime,argv[1]); \n\t\t\t else \n\t\t\t\t if (SOLVE == 4)\n\t\t\t\t\t  se.HeuristicStep(hini,atol,rtol,ftime,OUTPUT,stime,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\t if (SOLVE == 5)\n\t\t\t\t\t  se.SolveODERKF(hini,atol,ftime,OUTPUT,stime,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\tif (SOLVE == 6)\n\t\t\t\t\t\t se.SolveODE45(hini,atol,ftime,OUTPUT,stime,argv[1]);\n\t\t\t\t else\n\t\t\t\t\t if (SOLVE == 8)\n\t\t\t\t\t\t\t se.SolveHLSODE(hini,atol,rtol,ftime,runs,OUTPUT,stime,argv[1]);\n\t\t\t\t\t else \n\t\t\t\t\t\t\t if (SOLVE == 8) \n\t\t\t\t\t\t\t\t se.SolveLSODE(hini,atol,rtol,ftime,OUTPUT,stime,argv[1]);\n\t\t\t\t\t\t\t else  \n\t\t\t\t\t\t\t\t se.SolveTAUG(ftime,OUTPUT,stime,argv[1]);";
     out << "\n\tse.PrintStatistic(argv[1]);\n\t}\n catch(Exception obj)\n\t{\n\tcerr<<endl<<obj.get()<<endl;\n\t}\n\n";
     out << " time(&time_4);\n\n cout<<\"\\n\\nEND EXECUTION\"<<endl;\n cout<<\"\\nResults are saved in: \"<<argv[1]<<endl;\n";
     out << " cout<<\"\\n=========================== TIME ===========================\\n\\n\\t\";\n";
