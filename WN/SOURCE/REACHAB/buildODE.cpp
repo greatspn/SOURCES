@@ -1184,7 +1184,7 @@ void build_ODER(ofstream &out, std::string net)
     }
     out << ")\n";
     out<<"t1=Sys.time()";
-    out << "\nres1 <-lsode(yini,Times,funODE,parms=0,hini=hini)";
+    out << "\nres1 <-lsoda(yini,Times,funODE,parms=0,hini=hini)";
     out <<"\ncolnames(res1)= c(\"Time\"";
     for (pp = 0; pp < npl; pp++)
     {
@@ -1622,7 +1622,7 @@ void build_ODEOPT(ofstream &out, std::string net, std::string trans_path, std::s
     out << "fn <-function(x,y,hini,Time) { \n";
     out << "Times <- seq(from = TimeOLD, to = Time, by = step)\n";
 
-    out << "res <- lsode(y,Times,funODE,parms=x,hini=hini)\n";
+    out << "res <- lsoda(y,Times,funODE,parms=x,hini=hini)\n";
     out << "last=tail(res,1)\n";
 
     out << "fn="<<objlast_string<<"\n";
