@@ -91,10 +91,10 @@ extern "C" {
 //predefined "machine epsilon", a numeric value representing the difference between 1 and the least value greater than 1 that is representable [1]
 #define _DIFFMIN(T) numeric_limits<T>::epsilon()
 
-extern "C" { 
+extern "C" {
     int read_PIN_file();
     void free_PIN_file();
-    int* sort_according_to_pinv(); 
+    int* sort_according_to_pinv();
 };
 extern void print_banner(const char* title);
 
@@ -181,9 +181,9 @@ enum class BoundGuessPolicy {
     M0_EXP, // each variable starts at its initial marking value or 1, then underestimated variables increase by their max_var_incr times 2^restarts
     MAX0_LINEAR, // all variables start with the max token count in m0, then underestimated variables increase by their max_var_incr times restarts
     MAX0_EXP, // all variables start with the max token count in m0, then underestimated variables increase by their max_var_incr times 2^restarts
-    M0_MAX0_EXP, // each variable starts at its initial marking value or 1, underestimated variables start with the max token count in m0, 
+    M0_MAX0_EXP, // each variable starts at its initial marking value or 1, underestimated variables start with the max token count in m0,
                  // then underestimated variables increase by their max_var_incr times 2^(restarts-1)
-    LOAD_FROM_FILE // loads the bounds from the bnd file; if a bound of a place is not available m0 or 1 is used. 
+    LOAD_FROM_FILE // loads the bounds from the bnd file; if a bound of a place is not available m0 or 1 is used.
                    // The underestimated variables increase by their max_var_incr times 2^restarts
 };
 
@@ -201,10 +201,10 @@ protected:
     forest *forestEVplMDD = nullptr; // RS + id states forest (EV+MDD)
 
     satpregen_opname::pregen_relation* nsf_collection = nullptr;
-    
+
     dd_edge rs;
     dd_edge indexrs;
-    dd_edge NSF;         // Monolithic Next State Function 
+    dd_edge NSF;         // Monolithic Next State Function
     dd_edge NSFReal;//timed transitions with rates
     dd_edge DiagReal;//Matrix diagonal
     // dd_edge *NSFi = nullptr;//immediate transitions
@@ -236,13 +236,13 @@ protected:
     std::vector<int> net_to_mddLevel;
     // Inverse relation (useful to print markings from dd_edge iterators)
     std::vector<int> mddLevel_to_net;
-    
+
     // maximum increment a variable could receive from the firing of any event
     std::vector<int> maxVarIncr;
-    
+
     // our current estimate of each variable max value (inclusive)
     std::vector<int> guessedBounds;
-    
+
     // The domain bound for variable i (exclusive) that will be used for Meddly variable domains.
     int domainBounds(int i) const;
 
@@ -265,13 +265,13 @@ private:
     //!compute the effective variable bounds associated with the current RS.
     void computeRealBounds();
 
-    // const cardinality_t& 
+    // const cardinality_t&
     // visitXTrnEnabling(const node_handle node, int visit_level, const std::vector<pair<int, int>> &enabling,
     //                   std::vector<cardinality_t> &cache, std::vector<cardinality_t> &cache2) const;
 
     struct MakeNsfHelper;
     friend struct MakeNsfHelper;
-    
+
 public:
     // Make a new estimate of the guessed bounds, using the realBounds[] values
     bool updateGuessedBounds(int restart_count);
@@ -279,7 +279,7 @@ public:
     int computeRealBoundOfVariables(const std::vector<bool> &selected_vars) const;
 
     // Count # of fired transitions in RS
-    // const cardinality_t& 
+    // const cardinality_t&
     // count_markings_enabling(int tr, std::vector<pair<int, int>>& enabling,
     //                         std::vector<cardinality_t>& cache,
     //                         std::vector<cardinality_t> &cache2) const;
@@ -301,7 +301,7 @@ public:
                     const VariableOrderCriteria voc,
                     bool save_ordering_image,
                     bool reorder_SCC,
-                    const long meddly_cache_size, 
+                    const long meddly_cache_size,
                     BoundGuessPolicy bound_policy);
 
     // Initialize the dd_edges of the initial marking
@@ -309,7 +309,7 @@ public:
     //! \name Methods use to build the NEXT STATE FUNCTIONS
     //@{
     // //! it takes in input matrices I,O,H for a transition and its type and computes its next state function.
-    // bool MakeNextState(const std::vector<int>& F, const std::vector<int>& T, 
+    // bool MakeNextState(const std::vector<int>& F, const std::vector<int>& T,
     //                    const std::vector<int>& H, const int tt);
     // //! it takes in input matrices I,O,H for a transition and its type and computes recursively its next state function. It returns -1 in case of error 0 otherwise.
     // void MakeNextState(int *f, int *t, int *h, const int &tt, int pl);
@@ -328,7 +328,7 @@ public:
 
     //! \name Methods use to index the RS
     //@{
-    //! it creates an RS EV+MDD from the RS MDD. 
+    //! it creates an RS EV+MDD from the RS MDD.
     void IndexRS();
     //@}
 
@@ -348,7 +348,7 @@ public:
     void getSizeRS(cardinality_t& card) {
         MEDDLY::apply(CARDINALITY, rs, cardinality_ref(card));
     }
-        
+
     //!It prints the RS and the domain info.
     void statistic() {
         MEDDLY::ostream_output stdout_wrap(cout);
@@ -414,7 +414,7 @@ public:
     void setPropName(std::string propname) {
         this->propname = propname;
     }
-    
+
 
     // It returns the MDD encoding the RS
     const dd_edge& getRS() const  { return rs;}
@@ -441,7 +441,7 @@ public:
 
     // Converts a place id into its corresponding MDD variable (0-based)
     int convertPlaceToMDDLevel(int place) const { return net_to_mddLevel.at(place); }
-    
+
     // Converts a (0-based) MDD variable level into the place name it is encoding
     const char* placeNameOfMDDVar(int var) const { return tabp[mddLevel_to_net.at(var)].place_name; }
 };
@@ -554,7 +554,8 @@ public:
         return Mark->getCardinality();
     };
 
-    inline bool getMarking(int *vmark, long &idm) {
+    template<typename ID>
+    inline bool getMarking(int *vmark, ID& idm) {
         const int *plmark;
         if (it == NULL || *it == 0)
             return false;
