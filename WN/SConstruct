@@ -2,8 +2,8 @@ import os
 Import("cflags")
 Import("basepath")
 
-def generate_flags(arg1, arg2):
-    return cflags + ["-D"+arg1+"=1", "-Iobjects/"+arg2+"/WN/TRANSL/"], basepath + "/objects/"+arg2+"/WN/TRANSL/"
+def generate_flags(arg1, arg2, arg3="TRANSL/"):
+    return cflags + ["-D"+arg1+"=1", "-Iobjects/"+arg2+"/WN/"+arg3], basepath + "/objects/"+arg2+"/WN/"+arg3
 Export("generate_flags")
 
 # WNSIM
@@ -11,3 +11,6 @@ Export("generate_flags")
 
 # RGMEDD2
 SConscript("SOURCE/RGMEDD2/SConstruct", variant_dir="./build/SOURCE/RGMEDD2")
+
+# SOLVE
+SConscript("SOLVE/SConstruct", variant_dir="./build/SOLVE/")

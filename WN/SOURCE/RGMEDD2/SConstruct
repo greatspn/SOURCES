@@ -6,9 +6,8 @@ Import("cflags")
 # generate compiler flags
 cflags = [c for c in cflags if "DSPN" not in c]
 
-def generate_flags(arg1, arg2):
+def generate_flags_rgmedd(arg1, arg2):
     return cflags + ["-D"+arg1+"=1", "-Iobjects/"+arg2+"/WN/TRANSL/"], basepath + "/objects/"+arg2+"/WN/TRANSL/"
-Export("generate_flags")
 
 ###############
 ### RGMEDD2 ###
@@ -48,7 +47,7 @@ common_sources = [
             ];
 
 # initialize the environment
-rgmedd2_flags, paths = generate_flags("TOOL_RGMEDD2", "RGMEDD2")
+rgmedd2_flags, paths = generate_flags_rgmedd("TOOL_RGMEDD2", "RGMEDD2")
 rgmedd2_flags.extend(['-DTOOL_RGMEDD2=1', '-I'+basepath+'/objects/WN/TRANSL/'])
 paths = [paths, "/usr/local/lib", basepath+"/objects/RGMEDD2/WN/SOURCE/RGMEDD2"]
 
