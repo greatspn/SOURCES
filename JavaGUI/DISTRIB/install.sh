@@ -10,10 +10,14 @@ if [[ $EUID -eq 0 ]]; then
     if [ -z $PREFIX ]; then
         PREFIX=/usr/local/GreatSPN/
     fi
-    XDG_DIR=/usr/local/share
+	if [ -z $XDG_DIR ]; then
+    	XDG_DIR=/usr/local/share
+	fi
 else
     PREFIX=${HOME}
-    XDG_DIR=~/.local/share
+	if [ -z $XDG_DIR ]; then
+		XDG_DIR=~/.local/share
+	fi
 fi
 
 # idiomatic parameter and option handling in sh
