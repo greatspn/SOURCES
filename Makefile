@@ -134,24 +134,33 @@ endif
 
 
 LIBXMLPP2-6_LIB := /usr/local/lib/libxml++-2.6
-ifeq ($(wildcard $(LIBXMLPP2-6_LIB)),)
-  $(warning "The libXML++-2.6 library is not installed. Some packages will not be compiled.")
-else
+LIBXMLPP2-6_LIB_2 := /usr/lib/libxml++-2.6
+ifneq ($(wildcard $(LIBXMLPP2-6_LIB)),)
   HAS_LIBXMLPP2-6_LIB := 1
+else ifneq ($(wildcard $(LIBXMLPP2-6_LIB_2)),)
+  HAS_LIBXMLPP2-6_LIB := 1
+else
+  $(warning "The libXML++-2.6 library is not installed. Some packages will not be compiled.")
 endif
 
 GLIBMM2-4_LIB := /usr/local/lib/libglibmm-2.4.*
-ifeq ($(wildcard $(GLIBMM2-4_LIB)),)
-  $(warning "The glibmm-2.4 library is not installed. Some packages will not be compiled.")
-else
+GLIBMM2-4_LIB_2 := /usr/lib/libglibmm-2.4.*
+ifneq ($(wildcard $(GLIBMM2-4_LIB)),)
   HAS_GLIBMM2-4_LIB := 1
+else ifneq ($(wildcard $(GLIBMM2-4_LIB_2)),)
+  HAS_GLIBMM2-4_LIB := 1
+else
+  $(warning "The glibmm-2.4 library is not installed. Some packages will not be compiled.")
 endif
 
 GLPK_LIB := /usr/local/lib/libglpk.a
-ifeq ($(wildcard $(GLPK_LIB)),)
-  $(warning "The GLPJ library is not installed. Some packages will not be compiled.")
-else
+GLPK_LIB_2 := /usr/lib/libglpk.a
+ifneq ($(wildcard $(GLPK_LIB)),)
   HAS_GLPK_LIB := 1
+else ifneq ($(wildcard $(GLPK_LIB)),)
+  HAS_GLPK_LIB := 1
+else
+  $(warning "The GLPJ library is not installed. Some packages will not be compiled.")
 endif
 
 
