@@ -386,6 +386,8 @@ namespace SDE
 
     //!It computes the Tau taking as input the list of descrete transitions and the next time point. It returns a possible transition firing otherwise  -1. It requires that  getValTranFire() must be called before.
     int getComputeTau(int SetTran[], double& nextTimePoint,double t);
+    //!It computes the Tau according to Gillespie algorithm. It takes as input the list of descrete transitions and the next time point. It returns a possible transition firing otherwise  -1. It requires that  getValTranFire() must be called before.
+    double getComputeTauGillespie(int SetTran[], double& nextTimePoint,double t);
     //! It is a pure virtual function which must be implemented
     virtual void getValTranFire()=0;
     virtual void getValTranFire(double*)=0;
@@ -435,6 +437,8 @@ namespace SDE
     void SolveHODEEuler(double h,double prec1,double prec2,double Max_Time,int Max_Run, bool Info,double Print_Step,char *argv);
     //! It solves the HODE system using Tauleaping and LSODE.It takes in input the step size, the Max_Time and Max_Run. To print the trace of each run -> Info = true
     void SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int Max_Run,bool Info,double Print_Step,char *argv);
+     //! It solves the ODE system using  tau-leaping method  method. It returns tthe computed tau.
+    double SolveTAUG(double Max_Time,bool Info,double Print_Step,char *argv);
     //! It computes an estimation for the Euler step
     void HeuristicStep(double h,double perc1,double perc2,double Max_Time,bool Info,double Print_Step,char *argv);
     //! It prints a matrix PlacesXRuns with the final computed values

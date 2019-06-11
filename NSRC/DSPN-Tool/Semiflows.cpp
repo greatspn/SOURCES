@@ -211,7 +211,9 @@ ostream& operator<<(ostream& os, const flow_entry_t& f) {
 //-----------------------------------------------------------------------------
 static const size_t MAX_DENSE_REPR = 35;
 
-ostream& flow_matrix_t::row_t::print(ostream& os, const ssize_t M, bool highlight_annulled) const {
+ostream& flow_matrix_t::row_t::print(ostream& os, const ssize_t M, const ssize_t N0, 
+                                     bool highlight_annulled) const 
+{
     if (D.size() > MAX_DENSE_REPR) { // sparse representation
         for (size_t i = 0, cnt = 0; i < D.nonzeros(); i++)
             if (D.ith_nonzero(i).value)
@@ -225,7 +227,7 @@ ostream& flow_matrix_t::row_t::print(ostream& os, const ssize_t M, bool highligh
     }
     else { // dense representation
         for (size_t n=0; n<D.size(); n++)
-            os << setw(3) << D[n] << (ssize_t(n)==M||ssize_t(n)==(2*M) ? " " : "");
+            os << setw(3) << D[n] << (ssize_t(n)==(N0-1)||ssize_t(n)==(N0+M-1) ? " " : "");
         os << " |";
         for (size_t m=0; m<A.size(); m++)
             os << setw(3) << A[m];
@@ -247,7 +249,7 @@ ostream& flow_matrix_t::print(ostream& os, bool highlight_annulled) const {
     size_t row = 0;
     for (const auto& rr : mK) {
         os << setw(2) << row++ << ": ";
-        rr.print(os, M, highlight_annulled) << endl;
+        rr.print(os, M, N0, highlight_annulled) << endl;
         assert(rr.neg_D == rr.count_negatives_D());
     }
     return os;
@@ -827,7 +829,7 @@ void flows_generator_t::compute_semiflows()
                 newRow.gen_step = step;
                 if (verboseLvl >= VL_VERY_VERBOSE) {
                     cout << "+++ ";
-                    newRow.print(cout, f.M, true) << endl << endl;
+                    newRow.print(cout, f.M, f.N0, true) << endl << endl;
                 }
                 if (AiPositiveRows.size() == 0)
                     AiPositiveRows.emplace_back(std::move(newRow));
@@ -874,13 +876,13 @@ void flows_generator_t::compute_semiflows()
                 if (dropNewRow) {
                     if (verboseLvl >= VL_VERY_VERBOSE) {
                         cout << console::red_fgnd() << "DROP" << console::default_disp();
-                        newRow.print(cout, f.M, true) << endl;
+                        newRow.print(cout, f.M, f.N0, true) << endl;
                     }
                     continue;
                 }
                 if (verboseLvl >= VL_VERY_VERBOSE) {
                     cout << "ADD ";
-                    newRow.print(cout, f.M, true) << endl;
+                    newRow.print(cout, f.M, f.N0, true) << endl;
                 }
 
                 // Add newRow to K, and update the pre-computed column sums of A
@@ -987,7 +989,7 @@ void flows_generator_t::compute_integer_flows()
                 newRow.gen_step = step;
                 if (verboseLvl >= VL_VERY_VERBOSE) {
                     cout << "+++ ";
-                    newRow.print(cout, f.M, true) << endl << endl;
+                    newRow.print(cout, f.M, f.N0, true) << endl << endl;
                 }
                 AiNonnullRows.emplace_back(std::move(newRow));
             }
@@ -1059,12 +1061,12 @@ void flows_generator_t::compute_integer_flows()
                 if (dropNewRow) {
                     if (verboseLvl >= VL_VERY_VERBOSE) {
                         cout << console::red_fgnd() << "DROP" << console::default_disp();
-                        newRow.print(cout, f.M, true) << endl;                    }
+                        newRow.print(cout, f.M, f.N0, true) << endl;                    }
                     continue;
                 }
                 if (verboseLvl >= VL_VERY_VERBOSE) {
                     cout << "ADD ";
-                    newRow.print(cout, f.M, true) << endl;
+                    newRow.print(cout, f.M, f.N0, true) << endl;
                 }
 
                 // // Unlike P-semiflows, whose support cannot decrease (monotonic property),
@@ -1191,7 +1193,7 @@ void flows_generator_t::compute_basis()
                 newRow.gen_step = step;
                 if (verboseLvl >= VL_VERY_VERBOSE) {
                     cout << "+++ ";
-                    newRow.print(cout, f.M, true) << endl << endl;
+                    newRow.print(cout, f.M, f.N0, true) << endl << endl;
                 }
                 AiNonnullRows.emplace_back(std::move(newRow));
             }
@@ -1260,7 +1262,7 @@ void flows_generator_t::compute_basis()
             
             if (verboseLvl >= VL_VERY_VERBOSE) {
                 cout << "ADD ";
-                newRow.print(cout, f.M, true) << endl;
+                newRow.print(cout, f.M, f.N0, true) << endl;
             }
 
             // Add newRow to K, and update the pre-computed column sums of A

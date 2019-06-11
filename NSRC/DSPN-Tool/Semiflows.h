@@ -148,7 +148,7 @@ public:
         // count the # of negative entries in D
         size_t count_negatives_D() const;
 
-        ostream& print(ostream& os, const ssize_t M, bool highlight_annulled = false) const;
+        ostream& print(ostream& os, const ssize_t M, const ssize_t N0, bool highlight_annulled) const;
     };
 
     // For P-semiflows: N=|P|, M=|T| (for T-semiflows: N=|T|, M=|P|)
