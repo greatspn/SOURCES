@@ -59,6 +59,7 @@ SCRIPTDIR := scripts
 LIBDIR := lib
 INSTALLEDSOURCEDIR :=inst_src
 INSTALLDIR ?= /usr/local/GreatSPN
+PKGDIR = /usr/local/GreatSPN
 
 ### - Platform-specific variations - ###
 UNAME_S := $(shell uname -s)
@@ -1922,7 +1923,7 @@ install-great_package-script:
 	@echo "  [GEN] " $(GREAT_PKG_SCRIPT)
 	@$(MKDIR) $(dir $(GREAT_PKG_SCRIPT))
 	@#echo GSPN2PACKAGE=$(INSTALLDIR) > $@
-	@cat contrib/great_package.sh | sed 's/@@@@@@/$(subst /,\/,$(INSTALLDIR))/g' >> $(GREAT_PKG_SCRIPT)
+	@cat contrib/great_package.sh | sed 's/@@@@@@/$(subst /,\/,$(PKGDIR))/g' >> $(GREAT_PKG_SCRIPT)
 	@chmod a+x $(GREAT_PKG_SCRIPT)
 
 # $(SCRIPTDIR)/great_package.sh: contrib/great_package.sh
