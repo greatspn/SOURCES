@@ -3,14 +3,16 @@ Import("cflags")
 Import("generate_flags")
 Import("basepath")
 Import("colorgcc")
+Import("linkflags")
 
 ##################
 ### swn_stndrd ###
 ##################
 
 swn_stndrd_flags, paths = generate_flags("TOOL_SWN_STNDRD", "SWN_STNDRD", "SOLVE")
+paths = [paths].extend(["/usr/lib/", "/usr/local/lib"])
 
-swn_stndrd_env = Environment(ENV=os.environ, CC=colorgcc, CCFLAGS=swn_stndrd_flags, LIBPATH=paths, LIBS="m")
+swn_stndrd_env = Environment(ENV=os.environ, CC=colorgcc, CCFLAGS=swn_stndrd_flags, LIBPATH=paths, LIBS="m", LINKFLAGS=linkflags)
 
 sources = ["WN/SOLVE/swn_stndrd.c", "WN/SOLVE/compact.o"]
 swn_stndrd = swn_stndrd_env.Program("swn_stndrd", [basepath + "/" + s for s in sources])
@@ -24,8 +26,9 @@ swn_stndrd_env.Install(basepath + "/bin/", swn_stndrd)
 ################
 
 swn_ggsc_flags, paths = generate_flags("TOOL_SWN_GGSC", "SWN_GGSC", "SOLVE")
+paths = [paths].extend(["/usr/lib/", "/usr/local/lib"])
 
-swn_ggsc_env = Environment(ENV=os.environ, CC=colorgcc, CCFLAGS=swn_ggsc_flags, LIBPATH=paths, LIBS="m")
+swn_ggsc_env = Environment(ENV=os.environ, CC=colorgcc, CCFLAGS=swn_ggsc_flags, LIBPATH=paths, LIBS="m", LINKFLAGS=linkflags)
 
 sources = ["WN/SOLVE/swn_ggsc.c", "WN/SOLVE/compact.o"]
 swn_ggsc = swn_ggsc_env.Program("swn_ggsc", [basepath + "/" + s for s in sources])
@@ -39,8 +42,9 @@ swn_ggsc_env.Install(basepath + "/bin/", swn_ggsc)
 ################
 
 swn_ntrs_flags, paths = generate_flags("TOOL_SWN_NTRS", "SWN_NTRS", "SOLVE")
+paths = [paths].extend(["/usr/lib/", "/usr/local/lib"])
 
-swn_ntrs_env = Environment(ENV=os.environ, CC=colorgcc, CCFLAGS=swn_ntrs_flags, LIBPATH=paths, LIBS="m")
+swn_ntrs_env = Environment(ENV=os.environ, CC=colorgcc, CCFLAGS=swn_ntrs_flags, LIBPATH=paths, LIBS="m", LINKFLAGS=linkflags)
 
 sources = ["WN/SOLVE/swn_ntrs.c", "WN/SOLVE/compact.o"]
 swn_ntrs = swn_ntrs_env.Program("swn_ntrs", [basepath + "/" + s for s in sources])
@@ -54,8 +58,9 @@ swn_ntrs_env.Install(basepath + "/bin/", swn_ntrs)
 ######################
 
 swn_gst_stndrd_flags, paths = generate_flags("TOOL_SWN_GST_STNDRD", "SWN_GST_STNDRD", "SOLVE")
+paths = [paths].extend(["/usr/lib/", "/usr/local/lib"])
 
-swn_gst_stndrd_env = Environment(ENV=os.environ, CC=colorgcc, CCFLAGS=swn_gst_stndrd_flags, LIBPATH=paths, LIBS="m")
+swn_gst_stndrd_env = Environment(ENV=os.environ, CC=colorgcc, CCFLAGS=swn_gst_stndrd_flags, LIBPATH=paths, LIBS="m", LINKFLAGS=linkflags)
 
 sources = ["WN/SOLVE/swn_gst_stndrd.c", "WN/SOLVE/compact.o"]
 swn_gst_stndrd = swn_gst_stndrd_env.Program("swn_gst_stndrd", [basepath + "/" + s for s in sources])

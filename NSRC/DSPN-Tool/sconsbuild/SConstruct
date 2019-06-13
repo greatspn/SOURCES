@@ -32,3 +32,4 @@ sources = [ "newparser.lyy.h",
 
 dspn = dspn_env.Program("DSPN-Tool", [os.path.join("../", s) for s in sources])
 dspn_env.Install(source=dspn, target=basepath + "/bin/")
+dspn_env.Alias("DSPN-Tool", dspn)

@@ -2,6 +2,7 @@ import os
 Import("basepath")
 Import("colorgcc")
 Import("cflags")
+Import("linkflags")
 
 # generate compiler flags
 cflags = [c for c in cflags if "DSPN" not in c]
@@ -49,12 +50,13 @@ common_sources = [
 # initialize the environment
 rgmedd2_flags, paths = generate_flags_rgmedd("TOOL_RGMEDD2", "RGMEDD2")
 rgmedd2_flags.extend(['-DTOOL_RGMEDD2=1', '-I'+basepath+'/objects/WN/TRANSL/'])
-paths = [paths, "/usr/local/lib", basepath+"/objects/RGMEDD2/WN/SOURCE/RGMEDD2"]
+paths = [paths, "/usr/lib", "/usr/local/lib", basepath+"/WN/TRANSL/", basepath+"/objects/RGMEDD2/WN/SOURCE/RGMEDD2"]
 
 cppflags = ["-std=c++17",
             "-Wno-sign-compare",
             "-I"+basepath+"/objects/RGMEDD2/WN/SOURCE/RGMEDD2/",
             "-I"+basepath+"/WN/INCLUDE",
+            "-I"+basepath+"/WN/TRANSL",
             "-I"+basepath+"/WN/SOURCE/RGMEDD2",
             "-I/usr/local/include",
             "-L"+basepath+"/WN/build/SOURCE/RGMEDD2/",
@@ -66,11 +68,11 @@ rg2_env = Environment(ENV=os.environ,
                         CCFLAGS=rgmedd2_flags,
                         CXXFLAGS=cppflags,
                         LIBPATH=paths,
-                        LINKFLAGS="-shared-libgcc",
+                        LINKFLAGS=linkflags,
                         LIBS=["fl", "meddly", "gmp", "gmpxx"])
 
 # generate lexer
-flexpp_builder = Builder(action = "flex++ -+ -o $TARGET --header-file=${SOURCE}.h $SOURCE")
+flexpp_builder = Builder(action = "flex++ -P mm -+ -o $TARGET --header-file=${SOURCE}.h $SOURCE")
 
 rg2_env.Append(BUILDERS = {'Flexpp': flexpp_builder})
 

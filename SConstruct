@@ -1,6 +1,10 @@
 import os
 import subprocess
 
+# build static libraries
+linkflags="--static --static-libgcc --static-libstdc++"
+Export("linkflags")
+
 basepath = os.getcwd()
 Export("basepath")
 
@@ -20,6 +24,7 @@ SConscript('./algebra/SConstruct')
 SConscript('./NSRC/SConstruct')
 SConscript('./JavaGUI/SConstruct')
 SConscript('./WN/SConstruct')
+SConscript('./PRIV/SConstruct')
 
 # copy scripts
 subprocess.call(["make", "scripts"])

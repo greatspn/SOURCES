@@ -29,10 +29,11 @@ dspn_flags.extend([ "-Wall",
 					"-MF",
 					objdir+"newparser.lyy.d",
 					"-DNDEBUG=1"])
-paths = [boostpath, objdir, cwd]
+paths = [boostpath, objdir, cwd, "/usr/lib/", "/usr/local/lib"]
 
 ### initialize the environment
-dspn_env = Environment(ENV=os.environ, CC=colorgcc, CCFLAGS=dspn_flags, LIBPATH=paths)
+dspn_env = Environment(ENV=os.environ, CC=colorgcc, CCFLAGS=dspn_flags, LIBPATH=paths,
+        LINKFLAGS="--static -static-libgcc -static-libstdc++")
 
 ### build the parser
 #

@@ -9,8 +9,8 @@ Export("generate_flags")
 # WNSIM
 # SConscript("SOURCE/SIMULAT/SConstruct", variant_dir="./build/WNSIM/")
 
-# RGMEDD2
-SConscript("SOURCE/RGMEDD2/SConstruct", variant_dir="./build/SOURCE/RGMEDD2")
+# RGMEDD2 (disabled, waiting for RGMEDD3)
+# SConscript("SOURCE/RGMEDD2/SConstruct", variant_dir="./build/SOURCE/RGMEDD2")
 
 # SOLVE
 SConscript("SOLVE/SConstruct", variant_dir="./build/SOLVE/")
