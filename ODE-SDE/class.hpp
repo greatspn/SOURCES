@@ -357,6 +357,8 @@ namespace SDE
     void derived();
     //!It derived the place which are not directly computed from its input vector Value* (for ODE and SDE)
     void derived(double*);
+    //!It derived the place which are not directly computed. It ends as soon as negative value is derived.
+    void derived(bool&);
     //!From a place name it provides its position in NamePlaces.
     int search(string& name);
     //Max number of attempt used in RK
@@ -438,7 +440,7 @@ namespace SDE
     //! It solves the HODE system using Tauleaping and LSODE.It takes in input the step size, the Max_Time and Max_Run. To print the trace of each run -> Info = true
     void SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int Max_Run,bool Info,double Print_Step,char *argv);
      //! It solves the ODE system using  tau-leaping method  method. It returns tthe computed tau.
-    double SolveTAUG(double Max_Time,bool Info,double Print_Step,char *argv);
+    double SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,char *argv);
     //! It computes an estimation for the Euler step
     void HeuristicStep(double h,double perc1,double perc2,double Max_Time,bool Info,double Print_Step,char *argv);
     //! It prints a matrix PlacesXRuns with the final computed values
