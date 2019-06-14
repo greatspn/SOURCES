@@ -23,7 +23,7 @@ AR := ar rcs
 # CFLAGS ?= -g -DGLIBCXX_DEBUG
 CFLAGS ?= -O2 
 CPPFLAGS ?= $(CFLAGS)
-LDFLAGS ?= -O2
+LDFLAGS ?= -O2 -static -static-libgcc -static-libstdc++
 # LDFLAGS ?= -g
 INCLUDES ?= 
 LEXFLAGS ?=
@@ -38,8 +38,8 @@ ENABLE_Cxx14 ?= -std=c++17
 FLEX-INCLUDE :=
 FLEX-LIB := -lfl
 
-GLIB-INCLUDE := $(shell pkg-config --silence-errors --cflags glib-2.0)
-GLIB-LIB := $(shell pkg-config --silence-errors --libs glib-2.0)
+GLIB-INCLUDE := $(shell pkg-config --static --silence-errors --cflags glib-2.0)
+GLIB-LIB := $(shell pkg-config --static --silence-errors --libs glib-2.0)
 
 X11-INCLUDE := -I/usr/include/X11 -I/usr/include/openmotif -I/usr/include/Xm
 X11-LIB := -L/usr/lib/X11 -L/usr/lib/openmotif -L/usr/lib/Xm -L/usr/local/lib
@@ -207,7 +207,7 @@ ifeq ($(wildcard $(GMP_LIBRARY_1)),)
   endif
 else
   HAS_GMP_LIBRARY := 1
-  LINK_GMP_LIBRARY := -L/usr/lib -lgmp -lgmpxx
+  LINK_GMP_LIBRARY := -L/usr/lib64 -lgmp -lgmpxx
   INCLUDE_GMP_LIBRARY := -DHAS_GMP_LIBRARY=1
 endif
 
@@ -1380,7 +1380,7 @@ TARGETS += ESRG_CTMC
 
 
 
-MDP_includes := $(CPPFLAGS) `pkg-config --cflags glib-2.0 libxml++-2.6 glibmm-2.4` \
+MDP_includes := $(CPPFLAGS) `pkg-config --static --cflags glib-2.0 libxml++-2.6 glibmm-2.4` \
 				$(call generate_WN_FLAGS,TOOL_MDP,MDP) \
 				-I/usr/local/include/graphMDP -I/usr/include/glpk/ $(FLEX-INCLUDE) \
 				$(X11-INCLUDE)
@@ -1389,7 +1389,7 @@ MDP_SOURCES := WN/SOURCE/MDWN/mdp_main.cc WN/SOURCE/MDWN/general.cpp
 MDP_CPPFLAGS := $(MDP_includes)
 MDP_LD := $(LDPP)
 MDP_LDFLAGS := $(LDFLAGS) $(X11-LIB) -lgraphmdp $(OPENGL-LIB) -lglpk \
-			   `pkg-config --libs glib-2.0 libxml++-2.6 glibmm-2.4`
+	`pkg-config --static --libs glib-2.0 libxml++-2.6 glibmm-2.4`
 
 ifdef HAS_GRAPHMDP_LIB
   ifdef HAS_LIBXMLPP2-6_LIB
