@@ -1444,6 +1444,38 @@ void  SystEq::derived(){
 
 }
 
+
+/**************************************************************/
+/* NAME :  Class SystEq*/
+/* DESCRIPTION : It derives the place which are not directly computed*. It stops when value is negative*/
+/**************************************************************/
+
+void  SystEq::derived(bool& neg){
+
+	unsigned int i=headDerv;
+	while (i!=DEFAULT)
+	{
+		double value =0.0, coff=0.0;
+		int place=-1;
+		for (int j=0;j<VEq[i].getSizeP()-1;j++)
+		{
+			VEq[i].getPsemflw(j,place,coff);
+			value+=Value[place]*coff;
+		}
+		VEq[i].getPsemflw((VEq[i].getSizeP()-1),place,coff);
+		Value[i] = coff - value;
+		if (Value[i]<0)
+		{//normalization
+            neg=true;
+            return;
+		}//normalization
+		i=VEq[i].getNext();
+	}
+
+}
+
+
+
 /**************************************************************/
 /* NAME :  Class SystEq*/
 /* DESCRIPTION : It derives the place which are not directly computed
@@ -2411,7 +2443,7 @@ return -1;
 /**************************************************************/
 
 double SystEq::getComputeTauGillespie(int SetTran[], double& nextTimePoint,double t){
-{
+/*
 	bool first=true; //boolean value if it is the first time we call this function -> this allow the computation only one single time of the total propensity a_0
 	double a_0=0;
 	if (SetTran[0]!=0){
@@ -2455,8 +2487,9 @@ double SystEq::getComputeTauGillespie(int SetTran[], double& nextTimePoint,doubl
 	// else
 		// throw Exception("*****There are no possible reactions, hence the time step is null*****\n\n");
 		// tau=0;
+		*/
+		return 0.1;
 }
-//*************************//
 
 
 
@@ -2660,182 +2693,7 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 /**************************************************************/
 double SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,char *argv){
 
-
-
-
-
-	this->Max_Run=Max_Run;
-	//For statistic
-	FinalValueXRun=new double*[nPlaces];
-    double Mean[nPlaces] {0.0};
-
-	double ValuePrev[nPlaces] {0.0};
-	//Storing the initial values
-    double ValueInit[nPlaces];
-
-    cout<<endl<<"Seed value: "<<seed<<endl<<endl;
-
-    ofstream out;
-    if (Info)
-	{
-		out.open(string(argv)+".trace",ofstream::out);
-		out.precision(12);
-		if(!out)
-		{
-			throw Exception("*****Error opening output file *****\n\n");
-
-		}
-		out<<"Time";
-		for (int i=0;i<nPlaces;i++)
-			out<<" "<<NamePlaces[i];
-		out<<endl;
-	}
-
-
-	cout.precision(16);
-
-    for (int i=0;i<nPlaces;i++)
-	{
-		FinalValueXRun[i]=new double[Max_Run+1];
-		for (int j=0;j<Max_Run+1;j++)
-			FinalValueXRun[i][j]=0.0;
-        ValueInit[i]=Value[i];
-
-	}
-
-
-
-   int SetTran[nTrans+1] {0};
-//disable discrite transition from fluid computation
-    for (int i=0;i<nTrans;i++)
-	{
-     if (Trans[i].discrete){
-        SetTran[++SetTran[0]]=i;
-        Trans[i].enable=false;
-        }
-	}
-
-	int run=0;
-
-
-
-
-
-
-
-	while (run<Max_Run){
-
-	if (run%100==0){
-		cout<<"\r\t START RUN..."<<run<<" ";
-		cout.flush();
-	}
-		//Initialization for each run
-        if (Info){
-            out<<"0.0";
-        }
-        for (int j=1;j<=nPlaces;j++){
-            ValuePrev[j]=ValueInit[j];
-            if (Info){
-                out<<" "<<ValuePrev[j];
-            }
-        }
-        if (Info){
-            out<<endl;;
-        }
-
-        double nextTimePoint=tout=Print_Step;
-        istate=1;
-        t=0.0E0;
-
-        bool neg=false;
-        double tmpt=t;
-
-        while(nextTimePoint<=Max_Time){
-
-            if (!neg){
-                getValTranFire(y+1);
-
-            }
-            neg=false;
-        //compute tau
-            double tau=getComputeTau(SetTran,nextTimePoint,t);
-            //cout<<"TIME:"<<nextTimePoint<<endl;
-            if (tau==-1){
-             throw   Exception("*****Error during the tau computation*****\n\n");
-            }
-
-/*
-
-            //!QUI!!!!!!
-
-        //tmpt=t;
-            lsoda(*this,neq, y, &t, nextTimePoint, itol, rtol, atol, itask, &istate, iopt, jt,
-				iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
-				rwork1, rwork5, rwork6, rwork7, 0);
-        //t=nextTimePoint;
-            //check if the selected descrete transition can fire (no negative markings)
-
-            if (Tran!=-1){
-                int size=(Trans[Tran].Places).size();
-                for (int i=0;i<size&&!neg;++i){
-                    y[(Trans[Tran].Places[i]).Id+1]+=(Trans[Tran].Places[i]).Card;
-                    if   (y[(Trans[Tran].Places[i]).Id+1]<0)
-                        neg=true;
-                }
-            istate=1;
-            }
-            if (neg){
-            for (int j=0;j<=nPlaces;j++){
-                    y[j]=ValuePrev[j];
-                }
-              t=tmpt;
-              nextTimePoint= (tmpt+(nextTimePoint-tmpt)/2);
-            }
-            else
-            {
-			    for (int j=0;j<=nPlaces;j++){
-                    ValuePrev[j]=y[j];
-                }
-                tmpt=t;
-                derived(y+1);
-
-                if (tout==nextTimePoint){
-                    if (Info){
-                     out<<nextTimePoint;
-                     for (int j=1;j<=nPlaces;j++){
-                        out<<" "<<y[j];
-                        }
-                     out<<endl;
-                     }
-
-                    nextTimePoint=(tout+=Print_Step);
-                    }
-                else
-                    nextTimePoint=tout;
-            }
-
-            if (istate <= 0){
-                throw   Exception("*****Error during the integration step*****\n\n");
-
-            }
-        }
-*/
-        for (int i=0;i<nPlaces;i++)//store resul ode
-        {
-            Mean[i]+=FinalValueXRun[i][run]= y[i+1];
-        }
-
-        ++run;
-    }
-
-	//Print final time for each trace
-	cout<<"\n\nSolution at time "<<Max_Time<<":\n";
-	for (int i=0;i<nPlaces;i++)//save initial state
-	{
-		cout<<"\t"<<NamePlaces[i]<<"~= "<<Mean[i]/run<<"\n";
-	}
-	cout<<endl;
-
+return 0.1;
 }
 
 
