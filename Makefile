@@ -436,7 +436,7 @@ algebra_SOURCES := algebra/Composition/global.c \
 				   algebra/Composition/lexer.l \
 				   algebra/Composition/parser.y
 				   
-algebra_LDFLAGS:= -lm
+algebra_LDFLAGS:= $(LDFLAGS) -lm
 SCRIPTS += unfolding algebra remove
 
 algebra/Remove/lexer.l: $(OBJDIR)/remove/algebra/Remove/parser.y.o
@@ -507,7 +507,7 @@ TARGETS += WNSIM WNSYMB WNRG WNSRG MDWNRG MDWNSRG WNESRG \
 		   GSPNRG GSPNSIM swn-translator PN2ODE
 
 WNSIM_CFLAGS := $(call generate_WN_FLAGS,TOOL_WNSIM,WNSIM)
-WNSIM_LDFLAGS:= -lm
+WNSIM_LDFLAGS:= $(LDFLAGS) -lm
 WNSIM_SOURCES := WN/SOURCE/SHARED/service.c \
 				 WN/SOURCE/SHARED/ealloc.c \
 				 WN/SOURCE/SHARED/token.c \
@@ -541,7 +541,7 @@ WNSIM_SOURCES := WN/SOURCE/SHARED/service.c \
 				 WN/TRANSL/wn.l
 
 WNSYMB_CFLAGS := $(call generate_WN_FLAGS,TOOL_WNSYMB,WNSYMB)
-WNSYMB_LDFLAGS:= -lm
+WNSYMB_LDFLAGS:= $(LDFLAGS) -lm
 WNSYMB_SOURCES := $(WNSIM_SOURCES) \
 				  WN/SOURCE/SHARED/split.c \
 				  WN/SOURCE/SHARED/group.c \
@@ -559,7 +559,7 @@ WNSYMB_SOURCES := $(WNSIM_SOURCES) \
 # SPOTSOU = WN/SOURCE/SPOT
 
 WNRG_CFLAGS := $(call generate_WN_FLAGS,TOOL_WNRG,WNRG)
-WNRG_LDFLAGS:= -lm
+WNRG_LDFLAGS:= $(LDFLAGS) -lm
 WNRG_SOURCES := WN/SOURCE/SHARED/service.c \
 				WN/SOURCE/SHARED/ealloc.c \
 				WN/SOURCE/SHARED/token.c \
@@ -593,7 +593,7 @@ WNRG_SOURCES := WN/SOURCE/SHARED/service.c \
 				WN/TRANSL/wn.l
 
 WNSRG_CFLAGS := $(call generate_WN_FLAGS,TOOL_WNSRG,WNSRG)
-WNSRG_LDFLAGS:= -lm
+WNSRG_LDFLAGS:= $(LDFLAGS) -lm
 WNSRG_SOURCES := WN/SOURCE/SHARED/service.c \
 				 WN/SOURCE/SHARED/ealloc.c \
 				 WN/SOURCE/SHARED/token.c \
@@ -631,7 +631,7 @@ WNSRG_SOURCES := WN/SOURCE/SHARED/service.c \
 				 WN/TRANSL/wn.l
 
 MDWNRG_CFLAGS := $(call generate_WN_FLAGS,TOOL_MDWNRG,MDWNRG)
-MDWNRG_LDFLAGS:= -lm
+MDWNRG_LDFLAGS:= $(LDFLAGS) -lm
 MDWNRG_SOURCES := WN/SOURCE/SHARED/service.c \
 				  WN/SOURCE/SHARED/ealloc.c \
 				  WN/SOURCE/SHARED/token.c \
@@ -665,7 +665,7 @@ MDWNRG_SOURCES := WN/SOURCE/SHARED/service.c \
 				  WN/TRANSL/wn.l
 
 MDWNSRG_CFLAGS := $(call generate_WN_FLAGS,TOOL_MDWNSRG,MDWNSRG)
-MDWNSRG_LDFLAGS:= -lm
+MDWNSRG_LDFLAGS:= $(LDFLAGS) -lm
 MDWNSRG_SOURCES := WN/SOURCE/SHARED/service.c \
 				   WN/SOURCE/SHARED/ealloc.c \
 				   WN/SOURCE/SHARED/token.c \
@@ -703,7 +703,7 @@ MDWNSRG_SOURCES := WN/SOURCE/SHARED/service.c \
 				   WN/TRANSL/wn.l
 
 WNESRG_CFLAGS := $(call generate_WN_FLAGS,TOOL_WNESRG,WNESRG)
-WNESRG_LDFLAGS:= -lm
+WNESRG_LDFLAGS:= $(LDFLAGS) -lm
 WNESRG_SOURCES := WN/SOURCE/SHARED/service.c \
 				  WN/SOURCE/SHARED/ealloc.c \
 				  WN/SOURCE/SHARED/token.c \
@@ -900,7 +900,7 @@ TARGETS += RGMEDD2
 
 
 GSPNRG_CFLAGS := $(call generate_WN_FLAGS,TOOL_GSPNRG,GSPNRG)
-GSPNRG_LDFLAGS:= -lm
+GSPNRG_LDFLAGS:= $(LDFLAGS) -lm
 GSPNRG_SOURCES := WN/SOURCE/SHARED/service.c \
 				  WN/SOURCE/SHARED/ealloc.c \
 				  WN/SOURCE/SHARED/token.c \
@@ -938,7 +938,7 @@ GSPNRG_SOURCES := WN/SOURCE/SHARED/service.c \
 				  WN/TRANSL/wn.l
 
 GSPNSIM_CFLAGS := $(call generate_WN_FLAGS,TOOL_GSPNSIM,GSPNSIM)
-GSPNSIM_LDFLAGS:= -lm
+GSPNSIM_LDFLAGS:= $(LDFLAGS) -lm
 GSPNSIM_SOURCES := WN/SOURCE/SHARED/service.c \
 				   WN/SOURCE/SHARED/ealloc.c \
 				   WN/SOURCE/SHARED/token.c \
@@ -1373,7 +1373,7 @@ ESRG_CTMC_DEPENDS := $(LIBDIR)/libgspnMCESRG.a
 ESRG_CTMC_LD := $(LDPP)
 ESRG_CTMC_CPPFLAGS := $(CPPFLAGS) -I../../../INCLUDE -Wall \
 					  $(call generate_WN_FLAGS,TOOL_ESRG_CTMC,ESRG_CTMC)
-ESRG_CTMC_LDFLAGS := -L$(LIBDIR) -lgspnMCESRG -lm $(FLEX-LIB)
+ESRG_CTMC_LDFLAGS := $(LDFLAGS) -L$(LIBDIR) -lgspnMCESRG -lm $(FLEX-LIB)
 
 TARGETS += ESRG_CTMC
 
@@ -1549,7 +1549,7 @@ GreatSPN_SOURCES := $(GREATSRC)/Display.c           $(GREATSRC)/MenuCallBacks.c 
 					$(GREATSRC)/unfold.c            $(GREATSRC)/warningdialog.c    $(GREATSRC)/zoom.c
 
 GreatSPN_CFLAGS	:= -DLinux $(X11-INCLUDE) $(MOTIF-INCLUDE)
-GreatSPN_LDFLAGS := $(X11-LIB) $(MOTIF-LIB) -lMrm -lXm -lXp -lXext -lXt -lX11 -lm
+GreatSPN_LDFLAGS := $(LDFLAGS) $(X11-LIB) $(MOTIF-LIB) -lMrm -lXm -lXp -lXext -lXt -lX11 -lm
 
 UIL_FILES:= UIL/aboutdialog.uil       UIL/appconfig.uil           UIL/arcdialog.uil\
 			UIL/bitmaps.uil           UIL/colorchangedialog.uil   UIL/colors.uil\
@@ -1818,7 +1818,7 @@ CSLTA_CPPFLAGS := $(CPPFLAGS) -Wall $(ENABLE_Cxx14)
 CSLTA_LEX := flex
 CSLTA_YACC := bison -d
 CSLTA_LD := $(LDPP)
-CSLTA_LDFLAGS :=  $(BOOST_Cxx_LIB)/lib/libboost_timer.a \
+CSLTA_LDFLAGS :=  $(LDFLAGS) $(BOOST_Cxx_LIB)/lib/libboost_timer.a \
                   $(BOOST_Cxx_LIB)/lib/libboost_system.a \
                   $(BOOST_Cxx_LIB)/lib/libboost_chrono.a
 
@@ -1893,7 +1893,7 @@ DSPN-Tool-Debug_LEXPP := $(LEX)
 
 ifdef HAS_LP_SOLVE_LIB
   DSPN-Tool_CPPFLAGS := $(DSPN-Tool_CPPFLAGS) $(INCLUDE_LP_SOLVE_LIB)
-  DSPN-Tool_LDFLAGS := $(DSPN-Tool_LDFLAGS) $(LINK_LP_SOLVE_LIB)
+  DSPN-Tool_LDFLAGS := $(LDFLAGS) $(DSPN-Tool_LDFLAGS) $(LINK_LP_SOLVE_LIB)
   DSPN-Tool-Debug_CPPFLAGS := $(DSPN-Tool-Debug_CPPFLAGS) $(INCLUDE_LP_SOLVE_LIB)
   DSPN-Tool-Debug_LDFLAGS := $(DSPN-Tool-Debug_LDFLAGS) $(LINK_LP_SOLVE_LIB)
 endif
@@ -2010,11 +2010,11 @@ endif
 ### simsrc2 package
 ######################################
 
-engine_LDFLAGS := -lm
+engine_LDFLAGS := $(LDFLAGS) -lm
 engine_SOURCES := simsrc2/engine_control.c simsrc2/engine_event.c \
 				  simsrc2/engine_pn.c WN/SOLVE/compact.c
 cntrl_SOURCES := simsrc2/cntrl.c
-measure_LDFLAGS := -lm
+measure_LDFLAGS := $(LDFLAGS) -lm
 measure_SOURCES := simsrc2/measure_checkpoint.c simsrc2/measure_pn.c \
 				   WN/SOLVE/compact.c 
 
