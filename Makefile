@@ -186,12 +186,12 @@ ifeq ($(wildcard $(LP_SOLVE_LIB_1)),)
     endif
   else
     HAS_LP_SOLVE_LIB := 1
-    LINK_LP_SOLVE_LIB := -L/usr/local/lib -llpsolve55
+    LINK_LP_SOLVE_LIB := -L/usr/local/lib -llpsolve55 -lcolamd
     INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1
   endif
 else
   HAS_LP_SOLVE_LIB := 1
-  LINK_LP_SOLVE_LIB := -L/usr/lib64 -L/usr/lib/lp_solve/ -llpsolve55 -ldl 
+  LINK_LP_SOLVE_LIB := -L/usr/lib64 -L/usr/lib/lp_solve/ -llpsolve55 -ldl -lcolamd
   INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I/usr/include/lpsolve/
 endif
 
@@ -202,12 +202,12 @@ ifeq ($(wildcard $(GMP_LIBRARY_1)),)
     $(warning "The GMP library is not installed. Some packages will not be compiled.")
   else
     HAS_GMP_LIBRARY := 1
-    LINK_GMP_LIBRARY := -L/usr/local/lib -lgmp -lgmpxx
+    LINK_GMP_LIBRARY := -L/usr/local/lib -lgmpxx -lgmp
     INCLUDE_GMP_LIBRARY := -DHAS_GMP_LIBRARY=1
   endif
 else
   HAS_GMP_LIBRARY := 1
-  LINK_GMP_LIBRARY := -L/usr/lib64 -lgmp -lgmpxx
+  LINK_GMP_LIBRARY := -L/usr/lib64 -lgmpxx -lgmp
   INCLUDE_GMP_LIBRARY := -DHAS_GMP_LIBRARY=1
 endif
 
@@ -820,7 +820,7 @@ RGMEDD2_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx14) -Wno-deprecated-register \
                     $(RGMEDD2_CFLAGS) -I/usr/local/include 
                     
                     # -D_GLIBCXX_DEBUG=1
-RGMEDD2_LDFLAGS := -L/usr/local/lib $(LDFLAGS) $(FLEX-LIB) $(LINK_GMP_LIBRARY) -lmeddly 
+RGMEDD2_LDFLAGS := -L/usr/local/lib $(LDFLAGS) $(FLEX-LIB) -lmeddly $(LINK_GMP_LIBRARY)
 RGMEDD2_SOURCES := WN/SOURCE/SHARED/service.c \
 				   WN/SOURCE/SHARED/ealloc.c \
 				   WN/SOURCE/SHARED/token.c \
@@ -1893,7 +1893,7 @@ DSPN-Tool-Debug_LEXPP := $(LEX)
 
 ifdef HAS_LP_SOLVE_LIB
   DSPN-Tool_CPPFLAGS := $(DSPN-Tool_CPPFLAGS) $(INCLUDE_LP_SOLVE_LIB)
-  DSPN-Tool_LDFLAGS := $(LDFLAGS) $(DSPN-Tool_LDFLAGS) $(LINK_LP_SOLVE_LIB)
+  DSPN-Tool_LDFLAGS := $(LDFLAGS) $(LINK_LP_SOLVE_LIB)
   DSPN-Tool-Debug_CPPFLAGS := $(DSPN-Tool-Debug_CPPFLAGS) $(INCLUDE_LP_SOLVE_LIB)
   DSPN-Tool-Debug_LDFLAGS := $(DSPN-Tool-Debug_LDFLAGS) $(LINK_LP_SOLVE_LIB)
 endif
