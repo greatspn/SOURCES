@@ -21,9 +21,14 @@ AR := ar rcs
 ### The following variables can be overridden 
 ### by defining them as environment variables.
 # CFLAGS ?= -g -DGLIBCXX_DEBUG
-CFLAGS ?= -O2 
+CFLAGS ?= -O2
 CPPFLAGS ?= $(CFLAGS)
-LDFLAGS ?= -O2 -static -static-libstdc++
+LDFLAGS ?= -O2
+
+ifdef STATIC_LINK
+	LDFLAGS += -static -static-libstdc++
+endif
+
 # LDFLAGS ?= -g
 INCLUDES ?= 
 LEXFLAGS ?=
