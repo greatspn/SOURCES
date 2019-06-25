@@ -81,7 +81,7 @@ public:
     // typedef sparsevector<size_t, bool>   spboolvector;
 
     flow_matrix_t(size_t N, size_t N0, size_t M, InvariantKind k, int suppl_flags, 
-                  bool add_extra_vars, bool use_Colom_pivoting);
+                  bool add_extra_vars, bool use_Colom_pivoting, bool extra_vars_in_support);
     flow_matrix_t(const flow_matrix_t&) = delete;
     flow_matrix_t(flow_matrix_t&&) = default;
     flow_matrix_t& operator=(const flow_matrix_t&) = delete;
@@ -120,7 +120,7 @@ public:
 
         // Check if the support of D2 is included in D, i.e.
         // support(D2) subseteq support(D), where support(.) is the set of non-zero columns.
-        bool test_minimal_support_D(const spintvector& D2) const;
+        bool test_minimal_support_D(const spintvector& D2, const size_t N0) const;
 
         // Test if the support of the columns with positive entries of D2 is included in D
         bool test_minimal_positive_support_D(const spintvector& D2, int D_mult) const;
@@ -152,7 +152,8 @@ public:
     };
 
     // For P-semiflows: N=|P|, M=|T| (for T-semiflows: N=|T|, M=|P|)
-    // N0 is the same as N when no inc/dec invariants are considered, otherwise N has the additional entries
+    // N0 is the same as N when no slack variables are considered, otherwise 
+    // N has the additional slack variables, and N0 is the count of proper (non-slack) vars only.
     const size_t N, N0, M;
 
     // Stores P or T flows?
@@ -164,6 +165,8 @@ public:
     const bool add_extra_vars;
     // Use Colom pivoting strategy
     const bool use_Colom_pivoting;
+    // include extra variables from the support
+    const bool extra_vars_in_support;
 
     // The content of this flow matrix
     FlowMatrixKind mat_kind;
@@ -303,7 +306,7 @@ typedef std::vector<PlaceBounds> place_bounds_t;
 shared_ptr<flow_matrix_t>
 ComputeFlows(const PN& pn, InvariantKind kind, FlowMatrixKind mat_kind, 
              bool detect_exp_growth, int suppl_flags, bool use_Colom_pivoting, 
-             VerboseLevel verboseLvl);
+             bool extra_vars_in_support, VerboseLevel verboseLvl);
 
 void SaveFlows(const flow_matrix_t& msa, ofstream& file);
 

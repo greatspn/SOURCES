@@ -1,65 +1,65 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- This project file has been saved by 'New Editor' version 100 --><project name="Tool Presentation QEST" version="110">
+<!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="Tool Presentation QEST" version="121">
   <gspn name="FastQueueNet">
     <nodes>
-      <place label-x="0.0" label-y="1.5" magnets="TWO_PER_SIDE" marking="2" name="Packets1" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="15.0" y="13.0"/>
-      <transition delay="lambda/2" delay-x="0.5" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="start" nservers="1" nservers-x="-0.5" nservers-y="1.6875" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="20.55" y="13.0"/>
+      <place magnets="TWO_PER_SIDE" marking="2" name="Packets1" x="15.0" y="13.0"/>
+      <transition delay="lambda/2" name="start" nservers="1" nservers-y="1.6875" type="EXP" x="20.55" y="13.0"/>
       <constant consttype="REAL" name="lambda" value="2" x="7.1875" y="4.0"/>
       <constant consttype="INTEGER" name="N" value="3" x="7.0625" y="5.0"/>
       <constant consttype="INTEGER" name="K" value="3" x="7.0" y="6.0"/>
-      <transition delay="2.35" delay-x="0.0" delay-y="1.5" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="timeout" rotation="-0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="GEN" x="17.55" y="8.0"/>
-      <transition guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="im_req" priority="2" priority-x="0.5" priority-y="1.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="10.85" y="13.0"/>
-      <place label-x="1.5" label-y="1.5" magnets="CENTER_ONLY" marking="" name="End" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="26.0" y="13.0"/>
-      <transition delay="lambda" delay-x="0.5" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="2.0" label-y="-1.0" magnets="CENTER_ONLY" name="arrivals" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="1.5707963267948966" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="4.55" y="9.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="" name="LpQueue" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="6.0" y="17.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="" name="Queue" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="4.0" y="12.5"/>
-      <place label-x="-0.5" label-y="1.5" magnets="CENTER_ONLY" marking="4" name="Wait" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="12.0" y="6.0"/>
-      <place label-x="1.5" label-y="1.5" magnets="CENTER_ONLY" marking="" name="Release" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="22.0" y="6.0"/>
-      <transition delay="mu" delay-x="0.5" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="complete" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="17.55" y="4.0"/>
-      <transition guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="norm_req" priority="1" priority-x="0.5" priority-y="1.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="10.85" y="17.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="K" name="Packets2" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="15.0" y="17.0"/>
-      <transition delay="lambda" delay-x="0.5" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="start2" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="20.55" y="17.0"/>
+      <transition delay="2.35" delay-x="0.0" delay-y="1.5" magnets="THREE_PER_SIDE" name="timeout" rotation="-0.0" type="GEN" x="17.55" y="8.0"/>
+      <transition magnets="THREE_PER_SIDE" name="im_req" priority="2" type="IMM" x="10.85" y="13.0"/>
+      <place label-x="1.5" name="End" x="26.0" y="13.0"/>
+      <transition delay="lambda" label-x="2.0" label-y="-1.0" name="arrivals" rotation="1.5707963267948966" type="EXP" x="4.55" y="9.0"/>
+      <place name="LpQueue" x="6.0" y="17.0"/>
+      <place name="Queue" x="4.0" y="12.5"/>
+      <place label-x="-0.5" marking="4" name="Wait" x="12.0" y="6.0"/>
+      <place label-x="1.5" name="Release" x="22.0" y="6.0"/>
+      <transition delay="mu" name="complete" type="EXP" x="17.55" y="4.0"/>
+      <transition name="norm_req" type="IMM" x="10.85" y="17.0"/>
+      <place marking="K" name="Packets2" x="15.0" y="17.0"/>
+      <transition delay="lambda" name="start2" type="EXP" x="20.55" y="17.0"/>
       <constant consttype="REAL" name="mu" value="1.5" x="7.1875" y="3.0"/>
     </nodes>
     <edges>
-      <arc broken="false" head="start" kind="INPUT" multiplicity="N+1" multiplicity-k="0.5" multiplicity-x="-0.5" multiplicity-y="-1.5" tail="Packets1"/>
-      <arc broken="false" head="timeout" head-magnet="11" kind="INPUT" multiplicity="1" multiplicity-k="0.38212890624999996" multiplicity-x="1.0" multiplicity-y="1.0" tail="Packets1">
+      <arc head="start" kind="INPUT" mult="N+1" mult-x="-0.5" mult-y="-1.5" tail="Packets1"/>
+      <arc head="timeout" head-magnet="11" kind="INPUT" mult-k="0.38212890624999996" tail="Packets1">
         <point x="16.0" y="9.5"/>
       </arc>
-      <arc broken="false" head="im_req" head-magnet="3" kind="INHIBITOR" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="Packets1">
+      <arc head="im_req" head-magnet="3" kind="INHIBITOR" tail="Packets1">
         <point x="14.0" y="12.5"/>
       </arc>
-      <arc broken="false" head="Packets1" kind="OUTPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="im_req" tail-magnet="4"/>
-      <arc broken="false" head="End" kind="OUTPUT" multiplicity="N+1" multiplicity-k="0.5833007812500001" multiplicity-x="-0.5" multiplicity-y="-1.5" tail="start"/>
-      <arc broken="false" head="LpQueue" kind="OUTPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="im_req" tail-magnet="11">
+      <arc head="Packets1" kind="OUTPUT" tail="im_req" tail-magnet="4"/>
+      <arc head="End" kind="OUTPUT" mult="N+1" mult-k="0.5833007812500001" mult-x="-0.5" mult-y="-1.5" tail="start"/>
+      <arc head="LpQueue" kind="OUTPUT" tail="im_req" tail-magnet="11">
         <point x="7.0" y="14.5"/>
       </arc>
-      <arc broken="false" head="timeout" kind="INPUT" multiplicity="1" multiplicity-k="1.33310546875" multiplicity-x="1.0" multiplicity-y="1.0" tail="Wait">
+      <arc head="timeout" kind="INPUT" mult-k="1.33310546875" tail="Wait">
         <point x="14.0" y="9.0"/>
       </arc>
-      <arc broken="false" head="Release" kind="OUTPUT" multiplicity="1" multiplicity-k="1.4147460937499998" multiplicity-x="1.0" multiplicity-y="1.0" tail="timeout">
+      <arc head="Release" kind="OUTPUT" mult-k="1.4147460937499998" tail="timeout">
         <point x="22.0" y="9.0"/>
       </arc>
-      <arc broken="false" head="complete" kind="INPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="Release">
+      <arc head="complete" kind="INPUT" mult-k="0.6" tail="Release">
         <point x="22.0" y="5.0"/>
       </arc>
-      <arc broken="false" head="Wait" kind="OUTPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="complete">
+      <arc head="Wait" kind="OUTPUT" mult-k="0.6" tail="complete">
         <point x="14.0" y="5.0"/>
       </arc>
-      <arc broken="false" head="End" kind="OUTPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="timeout" tail-magnet="5">
+      <arc head="End" kind="OUTPUT" mult-k="0.6" tail="timeout" tail-magnet="5">
         <point x="27.0" y="9.5"/>
       </arc>
-      <arc broken="false" head="im_req" head-magnet="9" kind="INPUT" multiplicity="2" multiplicity-k="0.59833984375" multiplicity-x="-1.0099999999999998" multiplicity-y="-1.0" tail="Queue"/>
-      <arc broken="false" head="Queue" kind="OUTPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="arrivals"/>
-      <arc broken="false" head="norm_req" kind="INPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="LpQueue">
+      <arc head="im_req" head-magnet="9" kind="INPUT" mult="2" mult-k="0.59833984375" mult-x="-1.0099999999999998" mult-y="-1.0" tail="Queue"/>
+      <arc head="Queue" kind="OUTPUT" mult-k="0.6" tail="arrivals"/>
+      <arc head="norm_req" kind="INPUT" mult-k="0.6" tail="LpQueue">
         <point x="9.0" y="18.0"/>
       </arc>
-      <arc broken="false" head="Packets2" kind="OUTPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="norm_req"/>
-      <arc broken="false" head="start2" kind="INPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="Packets2"/>
-      <arc broken="false" head="End" kind="OUTPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="start2">
+      <arc head="Packets2" kind="OUTPUT" mult-k="0.6" tail="norm_req"/>
+      <arc head="start2" kind="INPUT" mult-k="0.6" tail="Packets2"/>
+      <arc head="End" kind="OUTPUT" mult-k="0.6" tail="start2">
         <point x="27.0" y="18.0"/>
       </arc>
-      <arc broken="true" head="arrivals" kind="INPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="End">
+      <arc broken="true" head="arrivals" kind="INPUT" mult-k="0.6" tail="End">
         <point x="29.0" y="12.0"/>
         <point x="29.0" y="2.5"/>
         <point x="5.0" y="2.5"/>
@@ -68,43 +68,43 @@
   </gspn>
   <gspn name="NaCL Reactions">
     <nodes>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="4" name="C2" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="2.0" y="7.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="5" name="O2" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="2.0" y="2.0"/>
-      <transition alt-name-fn="latex" delay="mu1" delay-x="0.5" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="T0" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" shown-as="\mathrm{C}_2+2\mathrm{O}_2\rightarrow 2 \mathrm{CO}_2" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="9.55" y="7.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="" name="CO2" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="15.0" y="7.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="2" name="NaOH" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="15.0" y="12.0"/>
-      <transition alt-name-fn="latex" delay="mu2" delay-x="0.5" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="-0.5" label-y="-1.5" magnets="THREE_PER_SIDE" name="T1" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" shown-as="\mathrm{CO}_2+\mathrm{NaOH}\rightarrow\mathrm{NaHCO}_3" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="22.55" y="7.0"/>
+      <place marking="4" name="C2" x="2.0" y="7.0"/>
+      <place marking="5" name="O2" x="2.0" y="2.0"/>
+      <transition alt-name-fn="LATEX_TEXT" delay="mu1" magnets="THREE_PER_SIDE" name="T0" shown-as="\mathrm{C}_2+2\mathrm{O}_2\rightarrow 2 \mathrm{CO}_2" type="EXP" x="9.55" y="7.0"/>
+      <place name="CO2" x="15.0" y="7.0"/>
+      <place marking="2" name="NaOH" x="15.0" y="12.0"/>
+      <transition alt-name-fn="LATEX_TEXT" delay="mu2" label-x="-0.5" magnets="THREE_PER_SIDE" name="T1" shown-as="\mathrm{CO}_2+\mathrm{NaOH}\rightarrow\mathrm{NaHCO}_3" type="EXP" x="22.55" y="7.0"/>
       <constant consttype="REAL" name="mu1" value="0.6522" x="1.875" y="12.0"/>
       <constant consttype="REAL" name="mu2" value="0.5534" x="1.875" y="13.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="" name="NaHCO3" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="28.0" y="7.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="3" name="HCl" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="30.0" y="12.0"/>
-      <transition alt-name-fn="latex" delay="mu3" delay-x="0.5" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="T2" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" shown-as=" \mathrm{NaHCO}_3+\mathrm{HCl} \rightarrow \mathrm{H}_2\mathrm{O}+\mathrm{NaCl}+\mathrm{O}_2" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="37.55" y="7.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="" name="H2O" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="47.0" y="7.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="" name="NaCl" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="47.0" y="12.0"/>
+      <place name="NaHCO3" x="28.0" y="7.0"/>
+      <place marking="3" name="HCl" x="30.0" y="12.0"/>
+      <transition alt-name-fn="LATEX_TEXT" delay="mu3" magnets="THREE_PER_SIDE" name="T2" shown-as=" \mathrm{NaHCO}_3+\mathrm{HCl} \rightarrow \mathrm{H}_2\mathrm{O}+\mathrm{NaCl}+\mathrm{O}_2" type="EXP" x="37.55" y="7.0"/>
+      <place name="H2O" x="47.0" y="7.0"/>
+      <place name="NaCl" x="47.0" y="12.0"/>
       <constant consttype="REAL" name="mu3" value="0.0023" x="1.875" y="14.0"/>
     </nodes>
     <edges>
-      <arc broken="false" head="T0" kind="INPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="C2"/>
-      <arc broken="false" head="T0" head-magnet="9" kind="INPUT" multiplicity="2" multiplicity-k="0.7004882812500001" multiplicity-x="1.0" multiplicity-y="-1.0" tail="O2">
+      <arc head="T0" kind="INPUT" tail="C2"/>
+      <arc head="T0" head-magnet="9" kind="INPUT" mult="2" mult-k="0.7004882812500001" mult-y="-1.0" tail="O2">
         <point x="6.0" y="7.5"/>
       </arc>
-      <arc broken="false" head="CO2" kind="OUTPUT" multiplicity="2" multiplicity-k="0.39990234375" multiplicity-x="1.0" multiplicity-y="1.0" tail="T0"/>
-      <arc broken="false" head="T1" kind="INPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="CO2"/>
-      <arc broken="false" head="T1" head-magnet="11" kind="INPUT" multiplicity="1" multiplicity-k="0.9577148437499999" multiplicity-x="1.0" multiplicity-y="1.0" tail="NaOH">
+      <arc head="CO2" kind="OUTPUT" mult="2" mult-k="0.39990234375" tail="T0"/>
+      <arc head="T1" kind="INPUT" tail="CO2"/>
+      <arc head="T1" head-magnet="11" kind="INPUT" mult-k="0.9577148437499999" tail="NaOH">
         <point x="20.0" y="8.5"/>
       </arc>
-      <arc broken="false" head="NaHCO3" kind="OUTPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T1"/>
-      <arc broken="false" head="T2" kind="INPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="NaHCO3">
+      <arc head="NaHCO3" kind="OUTPUT" tail="T1"/>
+      <arc head="T2" kind="INPUT" tail="NaHCO3">
         <point x="30.5" y="8.0"/>
       </arc>
-      <arc broken="false" head="T2" head-magnet="11" kind="INPUT" multiplicity="1" multiplicity-k="0.97294921875" multiplicity-x="1.0" multiplicity-y="1.0" tail="HCl">
+      <arc head="T2" head-magnet="11" kind="INPUT" mult-k="0.97294921875" tail="HCl">
         <point x="35.0" y="8.5"/>
       </arc>
-      <arc broken="false" head="H2O" kind="OUTPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T2"/>
-      <arc broken="false" head="NaCl" kind="OUTPUT" multiplicity="1" multiplicity-k="1.0270507812499998" multiplicity-x="1.0" multiplicity-y="1.0" tail="T2" tail-magnet="5">
+      <arc head="H2O" kind="OUTPUT" tail="T2"/>
+      <arc head="NaCl" kind="OUTPUT" mult-k="1.0270507812499998" tail="T2" tail-magnet="5">
         <point x="41.0" y="8.5"/>
       </arc>
-      <arc broken="false" head="O2" kind="OUTPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T2" tail-magnet="9">
+      <arc head="O2" kind="OUTPUT" tail="T2" tail-magnet="9">
         <point x="31.0" y="7.5"/>
         <point x="27.0" y="3.0"/>
       </arc>
@@ -112,51 +112,51 @@
   </gspn>
   <gspn name="Fork-JoinPT">
     <nodes>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="3" name="Queue" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="5.0" y="7.0"/>
-      <transition delay="lambda" delay-x="0.5" delay-y="1.25" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="Fork" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="-0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="9.55" y="7.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="" name="Wait1" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="13.0" y="10.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="" name="Wait2" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="13.0" y="4.0"/>
-      <transition delay="mu" delay-x="0.5" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="work1" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="6.283185307179586" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="17.55" y="10.0"/>
-      <transition delay="mu" delay-x="0.5" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="work2" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="6.283185307179586" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="17.55" y="4.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="" name="Finish1" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="21.0" y="10.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="" name="Finish2" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="21.0" y="4.0"/>
-      <transition delay="lambda" delay-x="0.5" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="Join" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="6.283185307179586" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="25.55" y="7.0"/>
+      <place marking="3" name="Queue" x="5.0" y="7.0"/>
+      <transition delay="lambda" delay-y="1.25" name="Fork" rotation="-0.0" type="EXP" x="9.55" y="7.0"/>
+      <place name="Wait1" x="13.0" y="10.0"/>
+      <place name="Wait2" x="13.0" y="4.0"/>
+      <transition delay="mu" name="work1" rotation="6.283185307179586" type="EXP" x="17.55" y="10.0"/>
+      <transition delay="mu" name="work2" rotation="6.283185307179586" type="EXP" x="17.55" y="4.0"/>
+      <place name="Finish1" x="21.0" y="10.0"/>
+      <place name="Finish2" x="21.0" y="4.0"/>
+      <transition delay="lambda" name="Join" rotation="6.283185307179586" type="EXP" x="25.55" y="7.0"/>
       <constant consttype="REAL" name="lambda" value="3.4" x="4.1875" y="12.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="2" name="Spares" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="9.0" y="15.0"/>
-      <transition delay="mu" delay-x="-1.0" delay-y="1.5" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="select" rotation="-0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="GEN" x="17.55" y="15.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="" name="Interm" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="21.0" y="15.0"/>
-      <transition delay="rho" delay-x="0.5" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="T0" nservers="Infinite" nservers-x="0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="25.55" y="15.0"/>
+      <place marking="2" name="Spares" x="9.0" y="15.0"/>
+      <transition delay="mu" delay-x="-1.0" delay-y="1.5" magnets="THREE_PER_SIDE" name="select" rotation="-0.0" type="GEN" x="17.55" y="15.0"/>
+      <place name="Interm" x="21.0" y="15.0"/>
+      <transition delay="rho" magnets="THREE_PER_SIDE" name="T0" nservers-x="0.5" type="EXP" x="25.55" y="15.0"/>
       <constant consttype="REAL" name="mu" value="2.0" x="4.1875" y="13.0"/>
       <constant consttype="REAL" name="rho" value="0.6" x="4.25" y="14.0"/>
     </nodes>
     <edges>
-      <arc broken="false" head="Fork" kind="INPUT" multiplicity="1" multiplicity-k="1.0" multiplicity-x="1.0" multiplicity-y="1.0" tail="Queue"/>
-      <arc broken="false" head="Wait1" kind="OUTPUT" multiplicity="1" multiplicity-k="1.0" multiplicity-x="1.0" multiplicity-y="1.0" tail="Fork"/>
-      <arc broken="false" head="Wait2" kind="OUTPUT" multiplicity="1" multiplicity-k="1.0" multiplicity-x="1.0" multiplicity-y="1.0" tail="Fork"/>
-      <arc broken="false" head="work1" kind="INPUT" multiplicity="1" multiplicity-k="1.0" multiplicity-x="1.0" multiplicity-y="1.0" tail="Wait1"/>
-      <arc broken="false" head="Finish1" kind="OUTPUT" multiplicity="1" multiplicity-k="1.0" multiplicity-x="1.0" multiplicity-y="1.0" tail="work1"/>
-      <arc broken="false" head="Join" kind="INPUT" multiplicity="1" multiplicity-k="1.0" multiplicity-x="1.0" multiplicity-y="1.0" tail="Finish1"/>
-      <arc broken="false" head="work2" kind="INPUT" multiplicity="1" multiplicity-k="1.0" multiplicity-x="1.0" multiplicity-y="1.0" tail="Wait2"/>
-      <arc broken="false" head="Finish2" kind="OUTPUT" multiplicity="1" multiplicity-k="1.0" multiplicity-x="1.0" multiplicity-y="1.0" tail="work2"/>
-      <arc broken="false" head="Join" kind="INPUT" multiplicity="1" multiplicity-k="1.0" multiplicity-x="1.0" multiplicity-y="1.0" tail="Finish2"/>
-      <arc broken="false" head="Queue" kind="OUTPUT" multiplicity="1" multiplicity-k="1.00009765625" multiplicity-x="1.0" multiplicity-y="1.0" tail="Join">
+      <arc head="Fork" kind="INPUT" mult-k="1.0" tail="Queue"/>
+      <arc head="Wait1" kind="OUTPUT" mult-k="1.0" tail="Fork"/>
+      <arc head="Wait2" kind="OUTPUT" mult-k="1.0" tail="Fork"/>
+      <arc head="work1" kind="INPUT" mult-k="1.0" tail="Wait1"/>
+      <arc head="Finish1" kind="OUTPUT" mult-k="1.0" tail="work1"/>
+      <arc head="Join" kind="INPUT" mult-k="1.0" tail="Finish1"/>
+      <arc head="work2" kind="INPUT" mult-k="1.0" tail="Wait2"/>
+      <arc head="Finish2" kind="OUTPUT" mult-k="1.0" tail="work2"/>
+      <arc head="Join" kind="INPUT" mult-k="1.0" tail="Finish2"/>
+      <arc head="Queue" kind="OUTPUT" mult-k="1.00009765625" tail="Join">
         <point x="29.5" y="8.0"/>
         <point x="29.5" y="2.5"/>
         <point x="6.0" y="2.5"/>
       </arc>
-      <arc broken="false" head="select" head-magnet="9" kind="INPUT" multiplicity="2" multiplicity-k="2.27021484375" multiplicity-x="1.0003076171875005" multiplicity-y="-1.0" tail="Wait1">
+      <arc head="select" head-magnet="9" kind="INPUT" mult="2" mult-k="2.27021484375" mult-x="1.0003076171875005" mult-y="-1.0" tail="Wait1">
         <point x="12.0" y="12.0"/>
         <point x="12.0" y="15.5"/>
       </arc>
-      <arc broken="false" head="select" kind="INPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="Spares"/>
-      <arc broken="false" head="Interm" kind="OUTPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="select" tail-magnet="4"/>
-      <arc broken="false" head="T0" kind="INPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="Interm"/>
-      <arc broken="false" head="Finish1" kind="OUTPUT" multiplicity="2" multiplicity-k="1.83779296875" multiplicity-x="-0.9653521960644937" multiplicity-y="0.49469777419540684" tail="T0" tail-magnet="3">
+      <arc head="select" kind="INPUT" mult-k="0.6" tail="Spares"/>
+      <arc head="Interm" kind="OUTPUT" mult-k="0.6" tail="select" tail-magnet="4"/>
+      <arc head="T0" kind="INPUT" mult-k="0.6" tail="Interm"/>
+      <arc head="Finish1" kind="OUTPUT" mult="2" mult-k="1.83779296875" mult-x="-0.9653521960644937" mult-y="0.49469777419540684" tail="T0" tail-magnet="3">
         <point x="28.0" y="15.5"/>
         <point x="28.0" y="12.0"/>
         <point x="27.0" y="11.0"/>
       </arc>
-      <arc broken="false" head="Spares" kind="OUTPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="T0" tail-magnet="4">
+      <arc head="Spares" kind="OUTPUT" mult-k="0.6" tail="T0" tail-magnet="4">
         <point x="29.5" y="16.0"/>
         <point x="29.5" y="19.0"/>
         <point x="7.0" y="19.0"/>
@@ -166,122 +166,122 @@
   </gspn>
   <gspn name="WorkNet">
     <nodes>
-      <place label-x="2.5" label-y="0.0" magnets="CENTER_ONLY" marking="n" name="Work" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="9.0" y="3.0"/>
-      <place label-x="4.0" label-y="0.0" magnets="CENTER_ONLY" marking="" name="Intermediate" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="9.0" y="11.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="" name="Finished" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="13.0" y="19.0"/>
-      <transition delay="2.3" delay-x="0.75" delay-y="0.75" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="-0.5" label-y="-1.0" magnets="CENTER_ONLY" name="w2i" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="4.71238898038469" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="5.55" y="7.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="1.6875" label-y="-1.1875" magnets="CENTER_ONLY" name="complete" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="4.71238898038469" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="13.55" y="15.0"/>
-      <transition delay="1.7" delay-x="0.5" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.4375" label-y="-1.0625" magnets="CENTER_ONLY" name="i2w" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="4.71238898038469" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="13.55" y="7.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="-0.75" label-y="-1.25" magnets="CENTER_ONLY" name="break" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="4.71238898038469" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="5.55" y="15.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="" name="Broken" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="5.0" y="19.0"/>
+      <place label-x="2.5" label-y="0.0" marking="n" name="Work" x="9.0" y="3.0"/>
+      <place label-x="4.0" label-y="0.0" name="Intermediate" x="9.0" y="11.0"/>
+      <place name="Finished" x="13.0" y="19.0"/>
+      <transition delay="2.3" delay-x="0.75" delay-y="0.75" label-x="-0.5" label-y="-1.0" name="w2i" rotation="4.71238898038469" type="EXP" x="5.55" y="7.0"/>
+      <transition label-x="1.6875" label-y="-1.1875" name="complete" rotation="4.71238898038469" type="EXP" x="13.55" y="15.0"/>
+      <transition delay="1.7" label-x="0.4375" label-y="-1.0625" name="i2w" rotation="4.71238898038469" type="EXP" x="13.55" y="7.0"/>
+      <transition label-x="-0.75" label-y="-1.25" name="break" rotation="4.71238898038469" type="EXP" x="5.55" y="15.0"/>
+      <place name="Broken" x="5.0" y="19.0"/>
       <template last-binding="3" name="n" type="INTEGER" x="3.0" y="3.0"/>
     </nodes>
     <edges>
-      <arc broken="false" head="w2i" kind="INPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="Work"/>
-      <arc broken="false" head="Intermediate" kind="OUTPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="w2i"/>
-      <arc broken="false" head="complete" kind="INPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="Intermediate"/>
-      <arc broken="false" head="Finished" kind="OUTPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="complete"/>
-      <arc broken="false" head="i2w" kind="INPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="Intermediate"/>
-      <arc broken="false" head="Work" kind="OUTPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="i2w"/>
-      <arc broken="false" head="Broken" kind="OUTPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="break"/>
-      <arc broken="false" head="break" kind="INPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="Intermediate"/>
+      <arc head="w2i" kind="INPUT" mult-k="0.6" tail="Work"/>
+      <arc head="Intermediate" kind="OUTPUT" mult-k="0.6" tail="w2i"/>
+      <arc head="complete" kind="INPUT" mult-k="0.6" tail="Intermediate"/>
+      <arc head="Finished" kind="OUTPUT" mult-k="0.6" tail="complete"/>
+      <arc head="i2w" kind="INPUT" mult-k="0.6" tail="Intermediate"/>
+      <arc head="Work" kind="OUTPUT" mult-k="0.6" tail="i2w"/>
+      <arc head="Broken" kind="OUTPUT" mult-k="0.6" tail="break"/>
+      <arc head="break" kind="INPUT" mult-k="0.6" tail="Intermediate"/>
     </edges>
   </gspn>
   <dta name="WorkNetDTA">
     <nodes>
       <clock name="x" x="12.5" y="6.25"/>
-      <location final="NON_FINAL" height="2.0" init-arrow-x="4.0" init-arrow-y="10.0" initial="true" magnets="CENTER_ONLY" name="l0" state-proposition="Phi1" state-proposition-x="1.0" state-proposition-y="1.5" width="3.0" x="5.5" y="9.0"/>
-      <location final="NON_FINAL" height="2.0" init-arrow-x="8.5" init-arrow-y="15.0" initial="false" magnets="THREE_PER_SIDE" name="l1" state-proposition="Phi1 &amp;&amp; !Phi2" state-proposition-x="0.0" state-proposition-y="1.5" width="3.0" x="10.5" y="14.0"/>
-      <location alt-name-fn="latex" final="ACCEPTING" height="2.0" init-arrow-x="14.5" init-arrow-y="10.0" initial="false" magnets="CENTER_ONLY" name="lok" shown-as="\mathit{l}_{ok}" state-proposition="Phi2" state-proposition-x="1.0" state-proposition-y="1.5" width="3.0" x="16.5" y="9.0"/>
+      <location init-arrow-x="4.0" init-arrow-y="10.0" initial="true" name="l0" state-proposition="Phi1" state-proposition-x="1.0" x="5.5" y="9.0"/>
+      <location init-arrow-x="8.5" init-arrow-y="15.0" magnets="THREE_PER_SIDE" name="l1" state-proposition="Phi1 &amp;&amp; !Phi2" x="10.5" y="14.0"/>
+      <location alt-name-fn="LATEX_TEXT" final="ACCEPTING" init-arrow-x="14.5" init-arrow-y="10.0" name="lok" shown-as="\mathit{l}_{ok}" state-proposition="Phi2" state-proposition-x="1.0" x="16.5" y="9.0"/>
       <template last-binding="3" name="alpha" type="REAL" x="12.375" y="5.0625"/>
       <template last-binding="4" name="beta" type="REAL" x="13.875" y="5.0625"/>
       <template last-binding="#Broken==0" name="Phi1" type="STATEPROP" x="15.5" y="5.0625"/>
       <template last-binding="#Finished&gt;0" name="Phi2" type="STATEPROP" x="17.5" y="5.0625"/>
     </nodes>
     <edges>
-      <edge actset="Act" actset-clock-k="1.49990234375" actset-x="-1.9627650258691176E-4" actset-y="-1.1875000070811108" clock-guard="x &lt; alpha" clock-guard-x="-1.9627650258691176E-4" clock-guard-y="-0.5000000070811108" head="l0" kind="INNER" reset="false" tail="l0">
+      <edge actset="Act" actset-clock-k="1.49990234375" actset-x="-1.9627650258691176E-4" actset-y="-1.1875000070811108" clock-guard="x &lt; alpha" clock-guard-x="-1.9627650258691176E-4" clock-guard-y="-0.5000000070811108" head="l0" kind="INNER" tail="l0">
         <point x="8.0" y="7.5"/>
         <point x="6.0" y="7.5"/>
       </edge>
-      <edge actset="Act" actset-clock-k="1.49990234375" actset-x="-1.962765025851354E-4" actset-y="-1.1875000070811108" clock-guard="alpha &lt; x &lt; beta" clock-guard-x="-1.962765025851354E-4" clock-guard-y="-0.5000000070811108" head="l1" kind="INNER" reset="false" tail="l1">
+      <edge actset="Act" actset-clock-k="1.49990234375" actset-x="-1.962765025851354E-4" actset-y="-1.1875000070811108" clock-guard="alpha &lt; x &lt; beta" clock-guard-x="-1.962765025851354E-4" clock-guard-y="-0.5000000070811108" head="l1" kind="INNER" tail="l1">
         <point x="13.0" y="12.5"/>
         <point x="11.0" y="12.5"/>
       </edge>
-      <edge actset="Act" actset-clock-k="0.7024414062500001" actset-x="1.4648437500142109E-4" actset-y="-0.515385742187501" clock-guard="alpha &lt; x &lt; beta" clock-guard-x="-0.10307617187500284" clock-guard-y="0.48316650390624893" head="lok" kind="INNER" reset="false" tail="l1">
+      <edge actset="Act" actset-clock-k="0.7024414062500001" actset-x="1.4648437500142109E-4" actset-y="-0.515385742187501" clock-guard="alpha &lt; x &lt; beta" clock-guard-x="-0.10307617187500284" clock-guard-y="0.48316650390624893" head="lok" kind="INNER" tail="l1">
         <point x="18.0" y="15.0"/>
       </edge>
-      <edge actset-clock-k="0.68173828125" actset-x="-0.1875" actset-y="-0.8125" clock-guard="x = alpha" clock-guard-x="-0.125" clock-guard-y="0.4375" head="lok" kind="BOUNDARY" reset="false" tail="l0"/>
-      <edge actset-clock-k="1.37294921875" actset-x="0.0" actset-y="-0.75" clock-guard="x = alpha" clock-guard-x="0.0" clock-guard-y="0.5" head="l1" kind="BOUNDARY" reset="false" tail="l0">
+      <edge actset-clock-k="0.68173828125" actset-x="-0.1875" actset-y="-0.8125" clock-guard="x = alpha" clock-guard-x="-0.125" clock-guard-y="0.4375" head="lok" kind="BOUNDARY" tail="l0"/>
+      <edge actset-clock-k="1.37294921875" actset-y="-0.75" clock-guard="x = alpha" head="l1" kind="BOUNDARY" tail="l0">
         <point x="7.0" y="15.0"/>
       </edge>
     </edges>
   </dta>
-  <measures gspn-name="Fork-JoinParam" name="MeasuresForkJoin">
+  <measures gspn-name="Fork-JoinParam" name="MeasuresForkJoin" simplified-UI="false">
     <assignments>
       <assignment bind-model="RANGE" range-from="1/16" range-step="1/16" range-to="0.5" type="REAL" varname="t"/>
     </assignments>
-    <mc4cslta epsilon="1.0e-7" index-time="TRANSIENT" linear-algorithm="GMRES" mc-sol-type="FORWARD" mrp-method="IMPLICIT" on-the-fly="1" time-T="t"/>
+    <mc4cslta index-time="TRANSIENT"/>
     <formulas>
-      <formula comment="" comment-shown="0" language="ALL"/>
+      <formula language="ALL"/>
     </formulas>
   </measures>
-  <measures gspn-name="WorkNet" name="CSLTA Measure">
+  <measures gspn-name="WorkNet" name="CSLTA Measure" simplified-UI="false">
     <assignments>
       <assignment bind-model="MULTIPLE_VALUES" multiple-vals="1,2,3,4" type="INTEGER" varname="n"/>
     </assignments>
-    <mc4cslta epsilon="1.0e-7" index-time="STEADY_STATE" linear-algorithm="GMRES" mc-sol-type="BACKWARD" mrp-method="IMPLICIT" on-the-fly="1" time-T="1.0"/>
+    <mc4cslta mc-sol-type="BACKWARD"/>
     <formulas>
-      <formula comment="" comment-shown="0" language="CSLTA">PROB_TA &gt; 0 WorkNetDTA ( alpha=1, beta=2| | Phi1=#Broken==0, Phi2=#Finished&gt;0 )</formula>
+      <formula expr="PROB_TA &gt; 0 WorkNetDTA ( alpha=1, beta=2| | Phi1=#Broken==0, Phi2=#Finished&gt;0 )" language="CSLTA"/>
     </formulas>
   </measures>
   <gspn name="Fork-JoinParam">
     <nodes>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="3" name="Queue" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="4.0" y="7.0"/>
-      <transition delay="lambda" delay-x="0.5" delay-y="1.25" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="Fork" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="-0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="8.55" y="7.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="" name="Wait1" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="12.0" y="10.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="" name="Wait2" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="12.0" y="4.0"/>
-      <transition delay="mu" delay-x="0.5" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="work1" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="6.283185307179586" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="16.55" y="10.0"/>
-      <transition delay="mu" delay-x="0.5" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="work2" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="6.283185307179586" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="16.55" y="4.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="" name="Finish1" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="20.0" y="10.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="" name="Finish2" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="20.0" y="4.0"/>
-      <transition delay="lambda" delay-x="0.5" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="Join" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="6.283185307179586" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="24.55" y="7.0"/>
+      <place marking="3" name="Queue" x="4.0" y="7.0"/>
+      <transition delay="lambda" delay-y="1.25" name="Fork" rotation="-0.0" type="EXP" x="8.55" y="7.0"/>
+      <place name="Wait1" x="12.0" y="10.0"/>
+      <place name="Wait2" x="12.0" y="4.0"/>
+      <transition delay="mu" name="work1" rotation="6.283185307179586" type="EXP" x="16.55" y="10.0"/>
+      <transition delay="mu" name="work2" rotation="6.283185307179586" type="EXP" x="16.55" y="4.0"/>
+      <place name="Finish1" x="20.0" y="10.0"/>
+      <place name="Finish2" x="20.0" y="4.0"/>
+      <transition delay="lambda" name="Join" rotation="6.283185307179586" type="EXP" x="24.55" y="7.0"/>
       <constant consttype="REAL" name="lambda" value="3.4" x="3.1875" y="12.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="2" name="Spares" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="8.0" y="15.0"/>
-      <transition delay="mu" delay-x="-1.0" delay-y="1.5" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="select" nservers="Infinite" nservers-x="0.5" nservers-y="2.0" rotation="-0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="16.55" y="15.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="" name="Interm" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="20.0" y="15.0"/>
-      <transition delay="rho" delay-x="0.5" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="T0" nservers="Infinite" nservers-x="0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="24.55" y="15.0"/>
+      <place marking="2" name="Spares" x="8.0" y="15.0"/>
+      <transition delay="mu" delay-x="-1.0" delay-y="1.5" magnets="THREE_PER_SIDE" name="select" nservers-x="0.5" rotation="-0.0" type="EXP" x="16.55" y="15.0"/>
+      <place name="Interm" x="20.0" y="15.0"/>
+      <transition delay="rho" magnets="THREE_PER_SIDE" name="T0" nservers-x="0.5" type="EXP" x="24.55" y="15.0"/>
       <constant consttype="REAL" name="mu" value="2.0" x="3.1875" y="13.0"/>
       <constant consttype="REAL" name="rho" value="0.6" x="3.25" y="14.0"/>
-      <template last-binding="" name="t" type="REAL" x="3.0" y="18.0"/>
+      <template last-binding="3" name="t" type="REAL" x="3.0" y="18.0"/>
     </nodes>
     <edges>
-      <arc broken="false" head="Fork" kind="INPUT" multiplicity="1" multiplicity-k="1.0" multiplicity-x="1.0" multiplicity-y="1.0" tail="Queue"/>
-      <arc broken="false" head="Wait1" kind="OUTPUT" multiplicity="1" multiplicity-k="1.0" multiplicity-x="1.0" multiplicity-y="1.0" tail="Fork"/>
-      <arc broken="false" head="Wait2" kind="OUTPUT" multiplicity="1" multiplicity-k="1.0" multiplicity-x="1.0" multiplicity-y="1.0" tail="Fork"/>
-      <arc broken="false" head="work1" kind="INPUT" multiplicity="1" multiplicity-k="1.0" multiplicity-x="1.0" multiplicity-y="1.0" tail="Wait1"/>
-      <arc broken="false" head="Finish1" kind="OUTPUT" multiplicity="1" multiplicity-k="1.0" multiplicity-x="1.0" multiplicity-y="1.0" tail="work1"/>
-      <arc broken="false" head="Join" kind="INPUT" multiplicity="1" multiplicity-k="1.0" multiplicity-x="1.0" multiplicity-y="1.0" tail="Finish1"/>
-      <arc broken="false" head="work2" kind="INPUT" multiplicity="1" multiplicity-k="1.0" multiplicity-x="1.0" multiplicity-y="1.0" tail="Wait2"/>
-      <arc broken="false" head="Finish2" kind="OUTPUT" multiplicity="1" multiplicity-k="1.0" multiplicity-x="1.0" multiplicity-y="1.0" tail="work2"/>
-      <arc broken="false" head="Join" kind="INPUT" multiplicity="1" multiplicity-k="1.0" multiplicity-x="1.0" multiplicity-y="1.0" tail="Finish2"/>
-      <arc broken="false" head="Queue" kind="OUTPUT" multiplicity="1" multiplicity-k="1.00009765625" multiplicity-x="1.0" multiplicity-y="1.0" tail="Join">
+      <arc head="Fork" kind="INPUT" mult-k="1.0" tail="Queue"/>
+      <arc head="Wait1" kind="OUTPUT" mult-k="1.0" tail="Fork"/>
+      <arc head="Wait2" kind="OUTPUT" mult-k="1.0" tail="Fork"/>
+      <arc head="work1" kind="INPUT" mult-k="1.0" tail="Wait1"/>
+      <arc head="Finish1" kind="OUTPUT" mult-k="1.0" tail="work1"/>
+      <arc head="Join" kind="INPUT" mult-k="1.0" tail="Finish1"/>
+      <arc head="work2" kind="INPUT" mult-k="1.0" tail="Wait2"/>
+      <arc head="Finish2" kind="OUTPUT" mult-k="1.0" tail="work2"/>
+      <arc head="Join" kind="INPUT" mult-k="1.0" tail="Finish2"/>
+      <arc head="Queue" kind="OUTPUT" mult-k="1.00009765625" tail="Join">
         <point x="28.5" y="8.0"/>
         <point x="28.5" y="2.5"/>
         <point x="5.0" y="2.5"/>
       </arc>
-      <arc broken="false" head="select" head-magnet="9" kind="INPUT" multiplicity="2" multiplicity-k="2.27021484375" multiplicity-x="1.0003076171875005" multiplicity-y="-1.0" tail="Wait1">
+      <arc head="select" head-magnet="9" kind="INPUT" mult="2" mult-k="2.27021484375" mult-x="1.0003076171875005" mult-y="-1.0" tail="Wait1">
         <point x="11.0" y="12.0"/>
         <point x="11.0" y="15.5"/>
       </arc>
-      <arc broken="false" head="select" kind="INPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="Spares"/>
-      <arc broken="false" head="Interm" kind="OUTPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="select" tail-magnet="4"/>
-      <arc broken="false" head="T0" kind="INPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="Interm"/>
-      <arc broken="false" head="Finish1" kind="OUTPUT" multiplicity="2" multiplicity-k="1.83779296875" multiplicity-x="-0.9653521960644937" multiplicity-y="0.49469777419540684" tail="T0" tail-magnet="3">
+      <arc head="select" kind="INPUT" mult-k="0.6" tail="Spares"/>
+      <arc head="Interm" kind="OUTPUT" mult-k="0.6" tail="select" tail-magnet="4"/>
+      <arc head="T0" kind="INPUT" mult-k="0.6" tail="Interm"/>
+      <arc head="Finish1" kind="OUTPUT" mult="2" mult-k="1.83779296875" mult-x="-0.9653521960644937" mult-y="0.49469777419540684" tail="T0" tail-magnet="3">
         <point x="27.0" y="15.5"/>
         <point x="27.0" y="12.0"/>
         <point x="26.0" y="11.0"/>
       </arc>
-      <arc broken="false" head="Spares" kind="OUTPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="T0" tail-magnet="4">
+      <arc head="Spares" kind="OUTPUT" mult-k="0.6" tail="T0" tail-magnet="4">
         <point x="28.5" y="16.0"/>
         <point x="28.5" y="19.0"/>
         <point x="6.0" y="19.0"/>
@@ -289,48 +289,149 @@
       </arc>
     </edges>
   </gspn>
+  <gspn name="ForkJoinT" view-rates="false">
+    <nodes>
+      <place marking="2" name="Queue" x="4.0" y="7.0"/>
+      <transition delay="lambda" delay-y="1.25" name="Fork" rotation="-0.0" type="EXP" x="8.55" y="7.0"/>
+      <place name="Wait1" x="12.0" y="10.0"/>
+      <place name="Wait2" x="12.0" y="4.0"/>
+      <transition delay="mu" name="work1" rotation="6.283185307179586" type="EXP" x="16.55" y="10.0"/>
+      <transition delay="mu" name="work2" rotation="6.283185307179586" type="EXP" x="16.55" y="4.0"/>
+      <place name="Finish1" x="20.0" y="10.0"/>
+      <place name="Finish2" x="20.0" y="4.0"/>
+      <transition delay="lambda" name="Join" rotation="6.283185307179586" type="EXP" x="24.55" y="7.0"/>
+      <constant consttype="REAL" name="lambda" value="3.4" x="3.1875" y="12.0"/>
+      <place marking="1" name="Spares" x="8.0" y="15.0"/>
+      <transition delay="mu" delay-x="-1.0" delay-y="1.5" magnets="THREE_PER_SIDE" name="select" nservers-x="0.5" rotation="-0.0" type="EXP" x="16.55" y="15.0"/>
+      <place name="Interm" x="20.0" y="15.0"/>
+      <transition delay="rho" magnets="THREE_PER_SIDE" name="T0" nservers-x="0.5" type="EXP" x="24.55" y="15.0"/>
+      <constant consttype="REAL" name="mu" value="2.0" x="3.1875" y="13.0"/>
+      <constant consttype="REAL" name="rho" value="0.6" x="3.25" y="14.0"/>
+    </nodes>
+    <edges>
+      <arc head="Fork" kind="INPUT" mult-k="1.0" tail="Queue"/>
+      <arc head="Wait1" kind="OUTPUT" mult-k="1.0" tail="Fork"/>
+      <arc head="Wait2" kind="OUTPUT" mult-k="1.0" tail="Fork"/>
+      <arc head="work1" kind="INPUT" mult-k="1.0" tail="Wait1"/>
+      <arc head="Finish1" kind="OUTPUT" mult-k="1.0" tail="work1"/>
+      <arc head="Join" kind="INPUT" mult-k="1.0" tail="Finish1"/>
+      <arc head="work2" kind="INPUT" mult-k="1.0" tail="Wait2"/>
+      <arc head="Finish2" kind="OUTPUT" mult-k="1.0" tail="work2"/>
+      <arc head="Join" kind="INPUT" mult-k="1.0" tail="Finish2"/>
+      <arc head="Queue" kind="OUTPUT" mult-k="1.00009765625" tail="Join">
+        <point x="28.5" y="8.0"/>
+        <point x="28.5" y="2.5"/>
+        <point x="5.0" y="2.5"/>
+      </arc>
+      <arc head="select" head-magnet="9" kind="INPUT" mult="2" mult-k="2.27021484375" mult-x="1.0003076171875005" mult-y="-1.0" tail="Wait1">
+        <point x="11.0" y="12.0"/>
+        <point x="11.0" y="15.5"/>
+      </arc>
+      <arc head="select" kind="INPUT" mult-k="0.6" tail="Spares"/>
+      <arc head="Interm" kind="OUTPUT" mult-k="0.6" tail="select" tail-magnet="4"/>
+      <arc head="T0" kind="INPUT" mult-k="0.6" tail="Interm"/>
+      <arc head="Finish1" kind="OUTPUT" mult="2" mult-k="1.83779296875" mult-x="-0.9653521960644937" mult-y="0.49469777419540684" tail="T0" tail-magnet="3">
+        <point x="27.0" y="15.5"/>
+        <point x="27.0" y="12.0"/>
+        <point x="26.0" y="11.0"/>
+      </arc>
+      <arc head="Spares" kind="OUTPUT" mult-k="0.6" tail="T0" tail-magnet="4">
+        <point x="28.5" y="16.0"/>
+        <point x="28.5" y="19.0"/>
+        <point x="6.0" y="19.0"/>
+        <point x="6.0" y="16.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="PN-MDD STTT" view-names="false" view-rates="false">
+    <nodes>
+      <place label-x="1.5" label-y="-1.0" marking="2" name="x1" x="4.0" y="3.0"/>
+      <transition delay="1" delay-y="1.25" label-x="-0.5" label-y="1.5" name="t0" rotation="-0.0" type="EXP" x="4.55" y="7.0"/>
+      <place label-x="-1.5" label-y="0.5" name="x4" x="7.0" y="9.0"/>
+      <place name="x2" x="7.0" y="5.0"/>
+      <transition delay="1" name="t2" rotation="6.283185307179586" type="EXP" x="10.55" y="9.0"/>
+      <transition delay="1" name="t1" rotation="6.283185307179586" type="EXP" x="10.55" y="5.0"/>
+      <place name="x5" x="13.0" y="9.0"/>
+      <place name="x3" x="13.0" y="5.0"/>
+      <transition delay="1" name="t3" rotation="6.283185307179586" type="EXP" x="16.55" y="7.0"/>
+      <place label-y="-1.5" marking="1" name="x6" x="4.0" y="13.0"/>
+      <transition delay="1" delay-x="-1.0" delay-y="1.5" magnets="THREE_PER_SIDE" name="t4" nservers-x="0.5" rotation="-0.0" type="EXP" x="10.55" y="13.0"/>
+      <place name="x7" x="13.0" y="13.0"/>
+      <transition delay="1" magnets="THREE_PER_SIDE" name="t5" nservers-x="0.5" type="EXP" x="16.55" y="13.0"/>
+    </nodes>
+    <edges>
+      <arc head="t0" kind="INPUT" mult-k="1.0" tail="x1"/>
+      <arc head="x4" kind="OUTPUT" mult-k="1.0" tail="t0"/>
+      <arc head="x2" kind="OUTPUT" mult-k="1.0" tail="t0"/>
+      <arc head="t2" kind="INPUT" mult-k="1.0" tail="x4"/>
+      <arc head="x5" kind="OUTPUT" mult-k="1.0" tail="t2"/>
+      <arc head="t3" kind="INPUT" mult-k="1.0" tail="x5"/>
+      <arc head="t1" kind="INPUT" mult-k="1.0" tail="x2"/>
+      <arc head="x3" kind="OUTPUT" mult-k="1.0" tail="t1"/>
+      <arc head="t3" kind="INPUT" mult-k="1.0" tail="x3"/>
+      <arc head="x1" kind="OUTPUT" mult-k="1.00009765625" tail="t3">
+        <point x="18.5" y="8.0"/>
+        <point x="18.5" y="4.0"/>
+      </arc>
+      <arc head="t4" head-magnet="9" kind="INPUT" mult="2" mult-k="0.6303710937500001" mult-x="-0.5" mult-y="0.044133911898279976" tail="x4">
+        <point x="8.0" y="13.5"/>
+      </arc>
+      <arc head="t4" kind="INPUT" mult-k="0.6" tail="x6"/>
+      <arc head="x7" kind="OUTPUT" mult-k="0.6" tail="t4" tail-magnet="4"/>
+      <arc head="t5" kind="INPUT" mult-k="0.6" tail="x7"/>
+      <arc head="x5" kind="OUTPUT" mult="2" mult-k="1.5348632812499998" mult-x="-0.5" mult-y="-1.5328322784924353E-4" tail="t5" tail-magnet="3">
+        <point x="18.5" y="13.5"/>
+        <point x="18.5" y="10.0"/>
+      </arc>
+      <arc head="x6" kind="OUTPUT" mult-k="0.5999023437500001" tail="t5" tail-magnet="4">
+        <point x="18.5" y="14.0"/>
+        <point x="18.5" y="16.5"/>
+        <point x="5.0" y="16.5"/>
+      </arc>
+    </edges>
+  </gspn>
   <gspn name="FMS">
     <nodes>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="N" name="Pallets" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="19.0" y="4.0"/>
-      <transition delay="0.4" delay-x="0.25" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="1.625" label-y="-0.75" magnets="CENTER_ONLY" name="load" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="3.141592653589793" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="13.55" y="4.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="" name="StartM1" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="7.0" y="4.0"/>
-      <transition guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="sw1" priority="1" priority-x="0.5" priority-y="1.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="7.85" y="12.0"/>
-      <place label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" marking="" name="M1on" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="10.0" y="12.0"/>
-      <place label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" marking="1" name="M1" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="10.0" y="8.0"/>
-      <transition delay="lambda1" delay-x="0.25" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="ew1" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="13.55" y="12.0"/>
-      <place label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" marking="" name="M2buff" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="17.0" y="12.0"/>
-      <transition guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="sw2" priority="1" priority-x="0.5" priority-y="1.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="21.85" y="12.0"/>
-      <place label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" marking="" name="M2on" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="24.0" y="12.0"/>
-      <place label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" marking="1" name="M2" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="24.0" y="8.0"/>
-      <transition delay="lambda2" delay-x="0.3125" delay-y="1.0625" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="ew2" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="27.55" y="12.0"/>
-      <place label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" marking="" name="M3buff" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="31.0" y="12.0"/>
-      <transition guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="sw3" priority="1" priority-x="0.5" priority-y="1.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="35.85" y="12.0"/>
-      <place label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" marking="" name="M3on" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="38.0" y="12.0"/>
-      <place label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" marking="1" name="M3" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="38.0" y="8.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="" name="Completed" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="41.0" y="4.0"/>
-      <place label-x="2.0" label-y="-0.9375" magnets="CENTER_ONLY" marking="" name="M2go" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="24.0" y="16.0"/>
-      <transition delay="rho2" delay-x="0.25" delay-y="0.9375" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="failM2" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="-0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="19.55" y="16.0"/>
-      <place label-x="-1.3125" label-y="1.1875" magnets="CENTER_ONLY" marking="" name="M2ko" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="14.0" y="16.0"/>
-      <transition guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.125" label-y="1.4375" magnets="THREE_PER_SIDE" name="repM2" priority="1" priority-x="0.5" priority-y="1.0" rotation="-0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="19.6" y="19.5"/>
-      <place label-x="2.5" label-y="0.0" magnets="CENTER_ONLY" marking="3" name="Spares" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="14.0" y="25.0"/>
-      <place label-x="-3.125" label-y="0.9375" magnets="CENTER_ONLY" marking="" name="SpareBroken" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="24.0" y="22.0"/>
-      <transition guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="-3.0" label-y="-0.25" magnets="THREE_PER_SIDE" name="repSpares" priority="2" priority-x="-2.125" priority-y="0.8125" rotation="1.5707963267948966" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="24.85" y="25.0"/>
-      <place label-x="-4.1875" label-y="0.0" magnets="CENTER_ONLY" marking="" name="SpareRepairing" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="24.0" y="28.0"/>
-      <transition delay="0.1" delay-x="0.5" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="repSpareE" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="3.141592653589793" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="27.55" y="32.0"/>
-      <place label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" marking="" name="Ready" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="31.0" y="22.0"/>
-      <transition guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="-1.4375" label-y="-0.625" magnets="CENTER_ONLY" name="goIdle" priority="1" priority-x="0.5" priority-y="1.0" rotation="1.5707963267948966" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="28.475" y="19.0"/>
-      <transition delay="0.6" delay-x="0.0" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="-2.0" label-y="-1.0" magnets="CENTER_ONLY" name="goReady" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="1.5707963267948966" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="35.1125" y="19.0"/>
-      <place label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" marking="1" name="Idle" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="31.0" y="16.0"/>
-      <place label-x="-2.75" label-y="0.0" magnets="THREE_PER_SIDE" marking="" name="EndRep" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="31.0" y="28.0"/>
-      <transition delay="0.5" delay-x="0.5" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="-3.0" label-y="0.0" magnets="CENTER_ONLY" name="goReady2" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="1.5707963267948966" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="31.55" y="25.0"/>
-      <place label-x="1.9375" label-y="-1.0" magnets="CENTER_ONLY" marking="" name="M3go" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="38.0" y="16.0"/>
-      <transition delay="rho3" delay-x="0.75" delay-y="0.5" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="1.8125" label-y="-1.0625" magnets="CENTER_ONLY" name="failM3" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="1.5707963267948966" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="38.55" y="19.0"/>
-      <place label-x="2.5" label-y="0.0" magnets="CENTER_ONLY" marking="" name="M3ko" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="38.0" y="22.0"/>
-      <transition guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="2.5" label-y="-0.3125" magnets="THREE_PER_SIDE" name="repM3" priority="3" priority-x="0.375" priority-y="0.75" rotation="1.5707963267948966" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="38.85" y="25.0"/>
-      <place label-x="3.5" label-y="0.0" magnets="CENTER_ONLY" marking="" name="M3repairing" superpos-x="0.0" superpos-y="2.5" superposition-tags="" x="38.0" y="28.0"/>
-      <transition delay="0.15" delay-x="0.5" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="repM3E" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="-0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="35.55" y="32.0"/>
-      <transition delay="lambda3" delay-x="0.1875" delay-y="1.0" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="ew3" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="41.55" y="12.0"/>
-      <transition delay="0.2" delay-x="0.1875" delay-y="1.0625" guard="True" guard-x="0.0" guard-y="1.5" height="2.0" label-x="2.0" label-y="-1.0" magnets="CENTER_ONLY" name="restart" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="3.141592653589793" superpos-x="0.0" superpos-y="-2.5" superposition-tags="" type="EXP" x="35.55" y="4.0"/>
+      <place marking="N" name="Pallets" x="19.0" y="4.0"/>
+      <transition delay="0.4" delay-x="0.25" label-x="1.625" label-y="-0.75" name="load" rotation="3.141592653589793" type="EXP" x="13.55" y="4.0"/>
+      <place name="StartM1" x="7.0" y="4.0"/>
+      <transition magnets="THREE_PER_SIDE" name="sw1" type="IMM" x="7.85" y="12.0"/>
+      <place label-y="-1.5" name="M1on" x="10.0" y="12.0"/>
+      <place label-y="-1.5" marking="1" name="M1" x="10.0" y="8.0"/>
+      <transition delay="lambda1" delay-x="0.25" magnets="THREE_PER_SIDE" name="ew1" type="EXP" x="13.55" y="12.0"/>
+      <place label-y="-1.5" name="M2buff" x="17.0" y="12.0"/>
+      <transition magnets="THREE_PER_SIDE" name="sw2" type="IMM" x="21.85" y="12.0"/>
+      <place label-y="-1.5" name="M2on" x="24.0" y="12.0"/>
+      <place label-y="-1.5" marking="1" name="M2" x="24.0" y="8.0"/>
+      <transition delay="lambda2" delay-x="0.3125" delay-y="1.0625" magnets="THREE_PER_SIDE" name="ew2" type="EXP" x="27.55" y="12.0"/>
+      <place label-y="-1.5" name="M3buff" x="31.0" y="12.0"/>
+      <transition magnets="THREE_PER_SIDE" name="sw3" type="IMM" x="35.85" y="12.0"/>
+      <place label-y="-1.5" name="M3on" x="38.0" y="12.0"/>
+      <place label-y="-1.5" marking="1" name="M3" x="38.0" y="8.0"/>
+      <place name="Completed" x="41.0" y="4.0"/>
+      <place label-x="2.0" label-y="-0.9375" name="M2go" x="24.0" y="16.0"/>
+      <transition delay="rho2" delay-x="0.25" delay-y="0.9375" name="failM2" rotation="-0.0" type="EXP" x="19.55" y="16.0"/>
+      <place label-x="-1.3125" label-y="1.1875" name="M2ko" x="14.0" y="16.0"/>
+      <transition label-x="0.125" label-y="1.4375" magnets="THREE_PER_SIDE" name="repM2" rotation="-0.0" type="IMM" x="19.6" y="19.5"/>
+      <place label-x="2.5" label-y="0.0" marking="3" name="Spares" x="14.0" y="25.0"/>
+      <place label-x="-3.125" label-y="0.9375" name="SpareBroken" x="24.0" y="22.0"/>
+      <transition label-x="-3.0" label-y="-0.25" magnets="THREE_PER_SIDE" name="repSpares" priority="2" priority-x="-2.125" priority-y="0.8125" rotation="1.5707963267948966" type="IMM" x="24.85" y="25.0"/>
+      <place label-x="-4.1875" label-y="0.0" name="SpareRepairing" x="24.0" y="28.0"/>
+      <transition delay="0.1" magnets="THREE_PER_SIDE" name="repSpareE" rotation="3.141592653589793" type="EXP" x="27.55" y="32.0"/>
+      <place label-y="-1.5" name="Ready" x="31.0" y="22.0"/>
+      <transition label-x="-1.4375" label-y="-0.625" name="goIdle" rotation="1.5707963267948966" type="IMM" x="28.475" y="19.0"/>
+      <transition delay="0.6" delay-x="0.0" label-x="-2.0" label-y="-1.0" name="goReady" rotation="1.5707963267948966" type="EXP" x="35.1125" y="19.0"/>
+      <place label-y="-1.5" marking="1" name="Idle" x="31.0" y="16.0"/>
+      <place label-x="-2.75" label-y="0.0" magnets="THREE_PER_SIDE" name="EndRep" x="31.0" y="28.0"/>
+      <transition delay="0.5" label-x="-3.0" label-y="0.0" name="goReady2" rotation="1.5707963267948966" type="EXP" x="31.55" y="25.0"/>
+      <place label-x="1.9375" label-y="-1.0" name="M3go" x="38.0" y="16.0"/>
+      <transition delay="rho3" delay-x="0.75" delay-y="0.5" label-x="1.8125" label-y="-1.0625" name="failM3" rotation="1.5707963267948966" type="EXP" x="38.55" y="19.0"/>
+      <place label-x="2.5" label-y="0.0" name="M3ko" x="38.0" y="22.0"/>
+      <transition label-x="2.5" label-y="-0.3125" magnets="THREE_PER_SIDE" name="repM3" priority="3" priority-x="0.375" priority-y="0.75" rotation="1.5707963267948966" type="IMM" x="38.85" y="25.0"/>
+      <place label-x="3.5" label-y="0.0" name="M3repairing" x="38.0" y="28.0"/>
+      <transition delay="0.15" magnets="THREE_PER_SIDE" name="repM3E" rotation="-0.0" type="EXP" x="35.55" y="32.0"/>
+      <transition delay="lambda3" delay-x="0.1875" magnets="THREE_PER_SIDE" name="ew3" type="EXP" x="41.55" y="12.0"/>
+      <transition delay="0.2" delay-x="0.1875" delay-y="1.0625" label-x="2.0" label-y="-1.0" name="restart" rotation="3.141592653589793" type="EXP" x="35.55" y="4.0"/>
       <constant consttype="REAL" name="lambda1" value="1.2" x="4.875" y="20.0"/>
       <constant consttype="REAL" name="lambda2" value="1.8" x="4.875" y="21.0"/>
       <constant consttype="REAL" name="lambda3" value="1.9" x="4.875" y="22.0"/>
@@ -339,130 +440,130 @@
       <template last-binding="3" name="N" type="INTEGER" x="2.0" y="19.0"/>
     </nodes>
     <edges>
-      <arc broken="false" head="load" kind="INPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="Pallets"/>
-      <arc broken="false" head="StartM1" kind="OUTPUT" multiplicity="1" multiplicity-k="0.79990234375" multiplicity-x="1.0" multiplicity-y="1.0" tail="load"/>
-      <arc broken="false" head="sw1" kind="INPUT" multiplicity="1" multiplicity-k="1.49462890625" multiplicity-x="1.0" multiplicity-y="1.0" tail="StartM1">
+      <arc head="load" kind="INPUT" tail="Pallets"/>
+      <arc head="StartM1" kind="OUTPUT" mult-k="0.79990234375" tail="load"/>
+      <arc head="sw1" kind="INPUT" mult-k="1.49462890625" tail="StartM1">
         <point x="4.5" y="5.0"/>
         <point x="4.5" y="13.0"/>
       </arc>
-      <arc broken="false" head="M1on" kind="OUTPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="sw1"/>
-      <arc broken="false" head="ew1" kind="INPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M1on"/>
-      <arc broken="false" head="M2buff" kind="OUTPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ew1"/>
-      <arc broken="false" head="sw1" head-magnet="9" kind="INPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M1">
+      <arc head="M1on" kind="OUTPUT" tail="sw1"/>
+      <arc head="ew1" kind="INPUT" tail="M1on"/>
+      <arc head="M2buff" kind="OUTPUT" tail="ew1"/>
+      <arc head="sw1" head-magnet="9" kind="INPUT" tail="M1">
         <point x="6.5" y="9.0"/>
         <point x="6.5" y="12.5"/>
       </arc>
-      <arc broken="false" head="M1" kind="OUTPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ew1" tail-magnet="3">
+      <arc head="M1" kind="OUTPUT" tail="ew1" tail-magnet="3">
         <point x="15.5" y="12.5"/>
         <point x="15.5" y="9.0"/>
       </arc>
-      <arc broken="false" head="sw2" head-magnet="10" kind="INPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M2buff"/>
-      <arc broken="false" head="M2on" kind="OUTPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="sw2"/>
-      <arc broken="false" head="ew2" kind="INPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M2on"/>
-      <arc broken="false" head="M3buff" kind="OUTPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ew2"/>
-      <arc broken="false" head="sw2" head-magnet="9" kind="INPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M2">
+      <arc head="sw2" head-magnet="10" kind="INPUT" tail="M2buff"/>
+      <arc head="M2on" kind="OUTPUT" tail="sw2"/>
+      <arc head="ew2" kind="INPUT" tail="M2on"/>
+      <arc head="M3buff" kind="OUTPUT" tail="ew2"/>
+      <arc head="sw2" head-magnet="9" kind="INPUT" tail="M2">
         <point x="20.5" y="9.0"/>
         <point x="20.5" y="12.5"/>
       </arc>
-      <arc broken="false" head="M2" kind="OUTPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ew2" tail-magnet="3">
+      <arc head="M2" kind="OUTPUT" tail="ew2" tail-magnet="3">
         <point x="29.5" y="12.5"/>
         <point x="29.5" y="9.0"/>
       </arc>
-      <arc broken="false" head="sw3" head-magnet="10" kind="INPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3buff"/>
-      <arc broken="false" head="M3on" kind="OUTPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="sw3"/>
-      <arc broken="false" head="sw3" head-magnet="9" kind="INPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3">
+      <arc head="sw3" head-magnet="10" kind="INPUT" tail="M3buff"/>
+      <arc head="M3on" kind="OUTPUT" tail="sw3"/>
+      <arc head="sw3" head-magnet="9" kind="INPUT" tail="M3">
         <point x="34.5" y="9.0"/>
         <point x="34.5" y="12.5"/>
       </arc>
-      <arc broken="false" head="M3" kind="OUTPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ew3" tail-magnet="3">
+      <arc head="M3" kind="OUTPUT" tail="ew3" tail-magnet="3">
         <point x="43.5" y="12.5"/>
         <point x="43.5" y="9.0"/>
       </arc>
-      <arc broken="false" head="Pallets" kind="OUTPUT" multiplicity="1" multiplicity-k="0.11494140625000002" multiplicity-x="1.0" multiplicity-y="1.0" tail="restart"/>
-      <arc broken="false" head="M2go" kind="OUTPUT" multiplicity="1" multiplicity-k="0.49990234375" multiplicity-x="1.0" multiplicity-y="1.0" tail="sw2" tail-magnet="5">
+      <arc head="Pallets" kind="OUTPUT" mult-k="0.11494140625000002" tail="restart"/>
+      <arc head="M2go" kind="OUTPUT" mult-k="0.49990234375" tail="sw2" tail-magnet="5">
         <point x="23.0" y="13.5"/>
       </arc>
-      <arc broken="false" head="ew2" head-magnet="11" kind="INPUT" multiplicity="1" multiplicity-k="1.1204101562499997" multiplicity-x="1.0" multiplicity-y="1.0" tail="M2go">
+      <arc head="ew2" head-magnet="11" kind="INPUT" mult-k="1.1204101562499997" tail="M2go">
         <point x="26.5" y="13.5"/>
       </arc>
-      <arc broken="false" head="failM2" kind="INPUT" multiplicity="1" multiplicity-k="0.0" multiplicity-x="1.0" multiplicity-y="1.0" tail="M2go"/>
-      <arc broken="false" head="M2ko" kind="OUTPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="failM2"/>
-      <arc broken="false" head="repM2" head-magnet="9" kind="INPUT" multiplicity="1" multiplicity-k="0.6266601562500002" multiplicity-x="1.0" multiplicity-y="1.0" tail="M2ko">
+      <arc head="failM2" kind="INPUT" mult-k="0.0" tail="M2go"/>
+      <arc head="M2ko" kind="OUTPUT" tail="failM2"/>
+      <arc head="repM2" head-magnet="9" kind="INPUT" mult-k="0.6266601562500002" tail="M2ko">
         <point x="15.0" y="20.0"/>
       </arc>
-      <arc broken="false" head="M2go" kind="OUTPUT" multiplicity="1" multiplicity-k="1.24013671875" multiplicity-x="1.0" multiplicity-y="1.0" tail="repM2" tail-magnet="3">
+      <arc head="M2go" kind="OUTPUT" mult-k="1.24013671875" tail="repM2" tail-magnet="3">
         <point x="25.0" y="20.0"/>
       </arc>
-      <arc broken="false" head="repM2" head-magnet="11" kind="INPUT" multiplicity="1" multiplicity-k="1.0110351562499997" multiplicity-x="1.0" multiplicity-y="1.0" tail="Spares">
+      <arc head="repM2" head-magnet="11" kind="INPUT" mult-k="1.0110351562499997" tail="Spares">
         <point x="15.0" y="21.0"/>
       </arc>
-      <arc broken="false" head="SpareBroken" kind="OUTPUT" multiplicity="1" multiplicity-k="1.5833007812499997" multiplicity-x="1.0" multiplicity-y="1.0" tail="repM2" tail-magnet="11">
+      <arc head="SpareBroken" kind="OUTPUT" mult-k="1.5833007812499997" tail="repM2" tail-magnet="11">
         <point x="22.5" y="21.0"/>
       </arc>
-      <arc broken="false" head="repSpares" kind="INPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="SpareBroken"/>
-      <arc broken="false" head="SpareRepairing" kind="OUTPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="repSpares"/>
-      <arc broken="false" head="repSpareE" head-magnet="5" kind="INPUT" multiplicity="1" multiplicity-k="1.0534179687500003" multiplicity-x="1.0" multiplicity-y="1.0" tail="SpareRepairing">
+      <arc head="repSpares" kind="INPUT" tail="SpareBroken"/>
+      <arc head="SpareRepairing" kind="OUTPUT" tail="repSpares"/>
+      <arc head="repSpareE" head-magnet="5" kind="INPUT" mult-k="1.0534179687500003" tail="SpareRepairing">
         <point x="25.0" y="32.5"/>
       </arc>
-      <arc broken="false" head="Spares" kind="OUTPUT" multiplicity="1" multiplicity-k="0.07822265625000002" multiplicity-x="1.0" multiplicity-y="1.0" tail="repSpareE">
+      <arc head="Spares" kind="OUTPUT" mult-k="0.07822265625000002" tail="repSpareE">
         <point x="15.0" y="33.0"/>
       </arc>
-      <arc broken="false" head="goIdle" kind="INPUT" multiplicity="1" multiplicity-k="0.86767578125" multiplicity-x="1.0" multiplicity-y="1.0" tail="Ready">
+      <arc head="goIdle" kind="INPUT" mult-k="0.86767578125" tail="Ready">
         <point x="28.625" y="21.5"/>
       </arc>
-      <arc broken="false" head="Idle" kind="OUTPUT" multiplicity="1" multiplicity-k="1.3415039062499998" multiplicity-x="1.0" multiplicity-y="1.0" tail="goIdle">
+      <arc head="Idle" kind="OUTPUT" mult-k="1.3415039062499998" tail="goIdle">
         <point x="28.625" y="18.0"/>
       </arc>
-      <arc broken="false" head="goReady" kind="INPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="Idle">
+      <arc head="goReady" kind="INPUT" tail="Idle">
         <point x="35.5625" y="18.0"/>
       </arc>
-      <arc broken="false" head="Ready" kind="OUTPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="goReady">
+      <arc head="Ready" kind="OUTPUT" tail="goReady">
         <point x="35.5625" y="21.5"/>
       </arc>
-      <arc broken="false" head="repSpares" head-magnet="9" kind="INPUT" multiplicity="1" multiplicity-k="0.50751953125" multiplicity-x="1.0" multiplicity-y="1.0" tail="Ready">
+      <arc head="repSpares" head-magnet="9" kind="INPUT" mult-k="0.50751953125" tail="Ready">
         <point x="25.5" y="24.5"/>
       </arc>
-      <arc broken="false" head="goReady2" kind="INPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="EndRep"/>
-      <arc broken="false" head="Ready" kind="OUTPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="goReady2"/>
-      <arc broken="false" head="EndRep" head-magnet="4" kind="OUTPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="repSpareE">
+      <arc head="goReady2" kind="INPUT" tail="EndRep"/>
+      <arc head="Ready" kind="OUTPUT" tail="goReady2"/>
+      <arc head="EndRep" head-magnet="4" kind="OUTPUT" tail="repSpareE">
         <point x="31.5" y="33.0"/>
       </arc>
-      <arc broken="false" head="ew3" head-magnet="11" kind="INPUT" multiplicity="1" multiplicity-k="1.16513671875" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3go">
+      <arc head="ew3" head-magnet="11" kind="INPUT" mult-k="1.16513671875" tail="M3go">
         <point x="40.5" y="13.5"/>
       </arc>
-      <arc broken="false" head="M3go" kind="OUTPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="sw3" tail-magnet="5">
+      <arc head="M3go" kind="OUTPUT" tail="sw3" tail-magnet="5">
         <point x="37.0" y="13.5"/>
       </arc>
-      <arc broken="false" head="failM3" kind="INPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3go"/>
-      <arc broken="false" head="M3ko" kind="OUTPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="failM3"/>
-      <arc broken="false" head="repM3" kind="INPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3ko"/>
-      <arc broken="false" head="repM3" head-magnet="11" kind="INPUT" multiplicity="1" multiplicity-k="0.49384765625000004" multiplicity-x="1.0" multiplicity-y="1.0" tail="Ready">
+      <arc head="failM3" kind="INPUT" tail="M3go"/>
+      <arc head="M3ko" kind="OUTPUT" tail="failM3"/>
+      <arc head="repM3" kind="INPUT" tail="M3ko"/>
+      <arc head="repM3" head-magnet="11" kind="INPUT" mult-k="0.49384765625000004" tail="Ready">
         <point x="38.5" y="24.5"/>
       </arc>
-      <arc broken="false" head="M3repairing" kind="OUTPUT" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="repM3"/>
-      <arc broken="false" head="repM3E" head-magnet="3" kind="INPUT" multiplicity="1" multiplicity-k="0.8583007812500001" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3repairing">
+      <arc head="M3repairing" kind="OUTPUT" tail="repM3"/>
+      <arc head="repM3E" head-magnet="3" kind="INPUT" mult-k="0.8583007812500001" tail="M3repairing">
         <point x="39.0" y="32.5"/>
       </arc>
-      <arc broken="false" head="EndRep" head-magnet="2" kind="OUTPUT" multiplicity="1" multiplicity-k="0.49990234375" multiplicity-x="1.0" multiplicity-y="1.0" tail="repM3E">
+      <arc head="EndRep" head-magnet="2" kind="OUTPUT" mult-k="0.49990234375" tail="repM3E">
         <point x="32.5" y="33.0"/>
       </arc>
-      <arc broken="false" head="M3go" kind="OUTPUT" multiplicity="1" multiplicity-k="0.14951171875000002" multiplicity-x="1.0" multiplicity-y="1.0" tail="repM3E">
+      <arc head="M3go" kind="OUTPUT" mult-k="0.14951171875000002" tail="repM3E">
         <point x="46.0" y="33.0"/>
         <point x="46.0" y="17.0"/>
       </arc>
-      <arc broken="false" head="Completed" kind="OUTPUT" multiplicity="1" multiplicity-k="0.78466796875" multiplicity-x="1.0" multiplicity-y="1.0" tail="ew3">
+      <arc head="Completed" kind="OUTPUT" mult-k="0.78466796875" tail="ew3">
         <point x="46.0" y="13.0"/>
         <point x="46.0" y="5.0"/>
       </arc>
-      <arc broken="false" head="ew3" kind="INPUT" multiplicity="1" multiplicity-k="0.6" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3on"/>
-      <arc broken="false" head="restart" kind="INPUT" multiplicity="1" multiplicity-k="0.0" multiplicity-x="1.0" multiplicity-y="1.0" tail="Completed"/>
+      <arc head="ew3" kind="INPUT" mult-k="0.6" tail="M3on"/>
+      <arc head="restart" kind="INPUT" mult-k="0.0" tail="Completed"/>
     </edges>
   </gspn>
-  <measures gspn-name="Fork-JoinPT" name="ALL FJPT">
+  <measures gspn-name="Fork-JoinPT" name="ALL FJPT" simplified-UI="false">
     <assignments/>
-    <mc4cslta epsilon="1.0e-7" index-time="STEADY_STATE" linear-algorithm="GMRES" mc-sol-type="FORWARD" mrp-method="IMPLICIT" on-the-fly="1" time-T="1.0"/>
+    <mc4cslta/>
     <formulas>
-      <formula comment="" comment-shown="0" language="ALL"/>
+      <formula language="ALL"/>
     </formulas>
   </measures>
 </project>

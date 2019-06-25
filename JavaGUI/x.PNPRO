@@ -65,7 +65,7 @@
         <point x="34.5" y="19.0"/>
         <point x="31.0" y="21.0"/>
       </arc>
-      <arc head="T11" kind="INPUT" mult="N" mult-k="0.5" tail="P3"/>
+      <arc head="T11" kind="INPUT" mult="N" tail="P3"/>
     </edges>
   </gspn>
   <gspn name="GSPN 1">
@@ -410,7 +410,7 @@
       </arc>
     </edges>
   </gspn>
-  <measures gspn-name="Fork-Join" log-uuid="629e68ce-e9eb-4b6e-b815-16bdea067d68" name="Measures 1">
+  <measures gspn-name="Fork-Join" log-uuid="629e68ce-e9eb-4b6e-b815-16bdea067d68" name="Measures 1" simplified-UI="false">
     <assignments>
       <assignment bind-model="RANGE" range-from="1" range-step="1" range-to="10" type="INTEGER" varname="n"/>
     </assignments>
@@ -910,42 +910,42 @@
       <transition name="T10" rotation="2.356194490192345" type="EXP" x="41.55" y="13.0"/>
     </nodes>
     <edges>
-      <arc head="P1" kind="OUTPUT" mult-k="0.5" tail="T1"/>
-      <arc head="T5" kind="INPUT" mult-k="0.5" tail="P1"/>
-      <arc head="P2" kind="OUTPUT" mult-k="0.5" tail="T5"/>
-      <arc head="T4" kind="INPUT" mult-k="0.5" tail="P2">
+      <arc head="P1" kind="OUTPUT" tail="T1"/>
+      <arc head="T5" kind="INPUT" tail="P1"/>
+      <arc head="P2" kind="OUTPUT" tail="T5"/>
+      <arc head="T4" kind="INPUT" tail="P2">
         <point x="14.0" y="24.5"/>
       </arc>
-      <arc head="T4" kind="INPUT" mult-k="0.5" tail="P13">
+      <arc head="T4" kind="INPUT" tail="P13">
         <point x="18.5" y="24.5"/>
       </arc>
-      <arc head="P4" kind="OUTPUT" mult-k="0.5" tail="T4"/>
-      <arc head="T1" kind="INPUT" mult-k="0.5" tail="P4"/>
-      <arc head="P3" kind="OUTPUT" mult-k="0.5" tail="T1"/>
-      <arc head="T1" kind="INPUT" mult-k="0.5" tail="P5">
+      <arc head="P4" kind="OUTPUT" tail="T4"/>
+      <arc head="T1" kind="INPUT" tail="P4"/>
+      <arc head="P3" kind="OUTPUT" tail="T1"/>
+      <arc head="T1" kind="INPUT" tail="P5">
         <point x="8.0" y="5.0"/>
       </arc>
-      <arc head="T6" kind="INPUT" mult-k="0.5" tail="P3"/>
-      <arc head="P14" kind="OUTPUT" mult-k="0.5" tail="T6"/>
-      <arc head="T2" kind="INPUT" mult-k="0.5" tail="P14"/>
-      <arc head="P6" kind="OUTPUT" mult-k="0.5" tail="T2"/>
-      <arc head="T7" kind="INPUT" mult-k="0.5" tail="P6"/>
-      <arc head="P5" kind="OUTPUT" mult-k="0.5" tail="T7"/>
-      <arc head="T2" kind="INPUT" mult-k="0.5" tail="P7"/>
-      <arc head="P8" kind="OUTPUT" mult-k="0.5" tail="T2"/>
-      <arc head="T8" kind="INPUT" mult-k="0.5" tail="P8"/>
-      <arc head="P9" kind="OUTPUT" mult-k="0.5" tail="T8"/>
-      <arc head="T3" kind="INPUT" mult-k="0.5" tail="P9"/>
-      <arc head="P10" kind="OUTPUT" mult-k="0.5" tail="T3"/>
-      <arc head="P11" kind="OUTPUT" mult-k="0.5" tail="T3"/>
-      <arc head="T10" kind="INPUT" mult-k="0.5" tail="P11"/>
-      <arc head="P12" kind="OUTPUT" mult-k="0.5" tail="T10"/>
-      <arc head="P13" kind="OUTPUT" mult-k="0.5" tail="T10">
+      <arc head="T6" kind="INPUT" tail="P3"/>
+      <arc head="P14" kind="OUTPUT" tail="T6"/>
+      <arc head="T2" kind="INPUT" tail="P14"/>
+      <arc head="P6" kind="OUTPUT" tail="T2"/>
+      <arc head="T7" kind="INPUT" tail="P6"/>
+      <arc head="P5" kind="OUTPUT" tail="T7"/>
+      <arc head="T2" kind="INPUT" tail="P7"/>
+      <arc head="P8" kind="OUTPUT" tail="T2"/>
+      <arc head="T8" kind="INPUT" tail="P8"/>
+      <arc head="P9" kind="OUTPUT" tail="T8"/>
+      <arc head="T3" kind="INPUT" tail="P9"/>
+      <arc head="P10" kind="OUTPUT" tail="T3"/>
+      <arc head="P11" kind="OUTPUT" tail="T3"/>
+      <arc head="T10" kind="INPUT" tail="P11"/>
+      <arc head="P12" kind="OUTPUT" tail="T10"/>
+      <arc head="P13" kind="OUTPUT" tail="T10">
         <point x="37.0" y="21.5"/>
       </arc>
-      <arc head="T9" kind="INPUT" mult-k="0.5" tail="P12"/>
-      <arc head="T9" kind="INPUT" mult-k="0.5" tail="P10"/>
-      <arc head="P7" kind="OUTPUT" mult-k="0.5" tail="T9"/>
+      <arc head="T9" kind="INPUT" tail="P12"/>
+      <arc head="T9" kind="INPUT" tail="P10"/>
+      <arc head="P7" kind="OUTPUT" tail="T9"/>
     </edges>
   </gspn>
   <gspn name="Reazione NaCl">
@@ -969,27 +969,27 @@
       <transition name="T3" nservers-x="0.5" type="EXP" x="18.55" y="24.0"/>
     </nodes>
     <edges>
-      <arc head="T0" kind="INPUT" mult-k="0.5" tail="C2"/>
+      <arc head="T0" kind="INPUT" tail="C2"/>
       <arc head="T0" head-magnet="9" kind="INPUT" mult="2" mult-k="0.7004882812500001" mult-y="-1.0" tail="O2">
         <point x="6.0" y="7.5"/>
       </arc>
       <arc head="CO2" kind="OUTPUT" mult="2" mult-k="0.39990234375" tail="T0"/>
-      <arc head="T1" kind="INPUT" mult-k="0.5" tail="CO2"/>
+      <arc head="T1" kind="INPUT" tail="CO2"/>
       <arc head="T1" head-magnet="11" kind="INPUT" mult-k="0.9577148437499999" tail="NaOH">
         <point x="20.0" y="8.5"/>
       </arc>
-      <arc head="NaHCO3" kind="OUTPUT" mult-k="0.5" tail="T1"/>
-      <arc head="T2" kind="INPUT" mult-k="0.5" tail="NaHCO3">
+      <arc head="NaHCO3" kind="OUTPUT" tail="T1"/>
+      <arc head="T2" kind="INPUT" tail="NaHCO3">
         <point x="30.5" y="8.0"/>
       </arc>
       <arc head="T2" head-magnet="11" kind="INPUT" mult-k="0.97294921875" tail="HCl">
         <point x="35.0" y="8.5"/>
       </arc>
-      <arc head="H2O" kind="OUTPUT" mult-k="0.5" tail="T2"/>
+      <arc head="H2O" kind="OUTPUT" tail="T2"/>
       <arc head="NaCl" kind="OUTPUT" mult-k="1.0270507812499998" tail="T2" tail-magnet="5">
         <point x="41.0" y="8.5"/>
       </arc>
-      <arc head="O2" kind="OUTPUT" mult-k="0.5" tail="T2" tail-magnet="9">
+      <arc head="O2" kind="OUTPUT" tail="T2" tail-magnet="9">
         <point x="31.0" y="7.5"/>
         <point x="27.0" y="3.0"/>
       </arc>

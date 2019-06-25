@@ -257,9 +257,15 @@ ostream& flow_matrix_t::print(ostream& os, bool highlight_annulled) const {
 
 //-----------------------------------------------------------------------------
 
-flow_matrix_t::flow_matrix_t(size_t _N, size_t _N0, size_t _M, InvariantKind _ik, int _suppl_flags, bool _add_extra_vars, bool _use_Colom_pivoting) 
-: N(_N), N0(_N0), M(_M), inv_kind(_ik), suppl_flags(_suppl_flags), add_extra_vars(_add_extra_vars), use_Colom_pivoting(_use_Colom_pivoting), mat_kind(FlowMatrixKind::EMPTY) 
-{ /*cout << "M="<<M<<", N="<<N<<", N0="<<N0<<endl;*/ }
+flow_matrix_t::flow_matrix_t(size_t _N, size_t _N0, size_t _M, InvariantKind _ik, 
+                             int _suppl_flags, bool _add_extra_vars, 
+                             bool _use_Colom_pivoting, bool _extra_vars_in_support) 
+: N(_N), N0(_N0), M(_M), inv_kind(_ik), suppl_flags(_suppl_flags), 
+add_extra_vars(_add_extra_vars), use_Colom_pivoting(_use_Colom_pivoting), 
+extra_vars_in_support(_extra_vars_in_support), mat_kind(FlowMatrixKind::EMPTY) 
+{ 
+    cout << "M="<<M<<", N="<<N<<", N0="<<N0<<endl;
+}
 
 //-----------------------------------------------------------------------------
 
@@ -285,15 +291,21 @@ inline int flow_matrix_t::row_t::gcd_nnz_DA() const {
 
 //-----------------------------------------------------------------------------
 
-inline bool flow_matrix_t::row_t::test_minimal_support_D(const spintvector& D2) const
+inline bool flow_matrix_t::row_t::test_minimal_support_D(const spintvector& D2, const size_t N0) const
 {
     // Check if the support of D2 is included in D
-    //   support(D2) subseteq sopport(D)    
+    //   support(D2) subseteq support(D)    
     // where support(.) is the set of columns with non-zero entries
+    // The test checks all the nonzero entries up to N0
     if (D2.nonzeros() > D.nonzeros())
         return false;
 
+    if (D2.nonzeros() > 0 && D2.ith_nonzero(0).index >= N0)
+        return false; // do not test containment of empty vectors
+
     for (size_t i2=0, i=0; i2<D2.nonzeros(); i2++) {
+        if (D2.ith_nonzero(i2).index >= N0)
+            break;
         while (i < D.nonzeros() && (D.ith_nonzero(i).index < D2.ith_nonzero(i2).index)) {
             i++;
         }
@@ -867,7 +879,8 @@ void flows_generator_t::compute_semiflows()
                 // Test all the existing rows in K exhaustively.
                 bool dropNewRow = false;
                 for (auto row = f.mK.begin(); row != f.mK.end() && !dropNewRow;) {
-                    if (newRow.test_minimal_support_D(row->D)) {
+                    if (newRow.test_minimal_support_D(row->D, f.extra_vars_in_support ? f.N : f.N0)) {
+                        // cout << " ** "; row->print(cout, f.M, f.N0, true) << endl;
                         dropNewRow = true;
                         break;
                     }
@@ -1052,7 +1065,7 @@ void flows_generator_t::compute_integer_flows()
                 // Test all the existing rows in K exhaustively.
                 bool dropNewRow = false;
                 for (auto row = f.mK.begin(); row != f.mK.end() && !dropNewRow;) {
-                    if (newRow.test_minimal_support_D(row->D)) {
+                    if (newRow.test_minimal_support_D(row->D, f.extra_vars_in_support ? f.N : f.N0)) {
                         dropNewRow = true;
                         break;
                     }
@@ -1073,7 +1086,7 @@ void flows_generator_t::compute_integer_flows()
                 // // for integer P-flows the support may be smaller. Therefore, entries in mK
                 // // could now have a support smaller than newRow
                 // for (auto row = f.mK.begin(); row != f.mK.end(); /**/) {
-                //     if (row->test_minimal_support_D(newRow.D)) {
+                //     if (row->test_minimal_support_D(newRow.D, f.extra_vars_in_support ? f.N : f.N0)) {
                 //         cout << "DROP" << endl;
                 //         row = f.mK.erase(row); // drop and continue;
                 //     }
@@ -1286,7 +1299,7 @@ void flows_generator_t::compute_basis()
 shared_ptr<flow_matrix_t>
 ComputeFlows(const PN& pn, InvariantKind inv_kind, FlowMatrixKind mat_kind, 
              bool detect_exp_growth, int suppl_flags, bool use_Colom_pivoting,
-             VerboseLevel verboseLvl) 
+             bool extra_vars_in_support, VerboseLevel verboseLvl) 
 {
     if (verboseLvl >= VL_BASIC) {
         cout << "COMPUTING " << GetFlowName(inv_kind, mat_kind) << "..." << endl;
@@ -1309,7 +1322,8 @@ ComputeFlows(const PN& pn, InvariantKind inv_kind, FlowMatrixKind mat_kind,
         M  = pn.plcs.size();
     }
     pfm = make_shared<flow_matrix_t>(N, N0, M, inv_kind, suppl_flags, 
-                                     dynamic_extra_var_gen, use_Colom_pivoting);
+                                     dynamic_extra_var_gen, use_Colom_pivoting,
+                                     extra_vars_in_support);
 
     // Initialize the flow matrix with the incidence matrix
     incidence_matrix_generator_t inc_gen(*pfm);
