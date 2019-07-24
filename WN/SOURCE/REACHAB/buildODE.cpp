@@ -487,20 +487,20 @@ void build_ODE(ofstream &out, std::string path, std::string net)
         out<<"\t if (strcmp(\"-type\", argv[ii])==0){\n";
             out<<"\t\t if (++ii<argc){\n";
                 out << "\t\t\t if ((strcmp(argv[ii],\"ODE-E\")==0)||(strcmp(argv[ii],\"ode-e\")==0)) SOLVE = 1;\n";
-                out << "\t\t\t if ((strcmp(argv[ii],\"ODE-RKF\")==0)||(strcmp(argv[ii],\"ode-rkf\")==0)) SOLVE = 5;\n";
-                out << "\t\t\t if ((strcmp(argv[ii],\"ODE45\")==0)||(strcmp(argv[ii],\"ode45\")==0)) SOLVE = 6;\n";
-                out << "\t\t\t if ((strcmp(argv[ii],\"LSODA\")==0)||(strcmp(argv[ii],\"lsoda\")==0)) SOLVE = 7;\n";
-                out << "\t\t\t if ((strcmp(argv[ii],\"STEP\")==0)||(strcmp(argv[ii],\"step\")==0)) SOLVE = 4;\n";
-                out << "\t\t\t if ((strcmp(argv[ii],\"SIM\")==0)||(strcmp(argv[ii],\"sim\")==0)){\n";
+                out << "\t\t\t else if ((strcmp(argv[ii],\"ODE-RKF\")==0)||(strcmp(argv[ii],\"ode-rkf\")==0)) SOLVE = 5;\n";
+                out << "\t\t\t else if ((strcmp(argv[ii],\"ODE45\")==0)||(strcmp(argv[ii],\"ode45\")==0)) SOLVE = 6;\n";
+                out << "\t\t\t else if ((strcmp(argv[ii],\"LSODA\")==0)||(strcmp(argv[ii],\"lsoda\")==0)) SOLVE = 7;\n";
+                out << "\t\t\t else if ((strcmp(argv[ii],\"STEP\")==0)||(strcmp(argv[ii],\"step\")==0)) SOLVE = 4;\n";
+                out << "\t\t\t else if ((strcmp(argv[ii],\"SIM\")==0)||(strcmp(argv[ii],\"sim\")==0)){\n";
                 out << "\t\t\t\t cout<<\"\\t using simulation\"<<endl;\n\t\t\t\t epsilon=10000000000;\n\t\t\t\t hini=MAXSTEP;\n\t\t\t\t SOLVE=3;\n\t\t\t }\n";
-                out << "\t\t\t if ((strcmp(argv[ii],\"HODE\")==0)||(strcmp(argv[ii],\"hode\")==0)) SOLVE = 2;\n";
-                out << "\t\t\t if ((strcmp(argv[ii],\"HLSODA\")==0)||(strcmp(argv[ii],\"hlsoda\")==0)) SOLVE = 8;\n";
-                out << "\t\t\t if ((strcmp(argv[ii],\"SDE\")==0)||(strcmp(argv[ii],\"sde\")==0) || (strcmp(argv[ii],\"HSDE\")==0)||(strcmp(argv[ii],\"hsde\")==0) ) SOLVE = 0;\n";
-                out << "\t\t\t if ((strcmp(argv[ii],\"TAUG\")==0)||(strcmp(argv[ii],\"taug\")==0)) SOLVE = 9;\n";
-            out<<"\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -type  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-            out<<"\t\t continue;\n";
+                out << "\t\t\t else if ((strcmp(argv[ii],\"HODE\")==0)||(strcmp(argv[ii],\"hode\")==0)) SOLVE = 2;\n";
+                out << "\t\t\t else if ((strcmp(argv[ii],\"HLSODA\")==0)||(strcmp(argv[ii],\"hlsoda\")==0)) SOLVE = 8;\n";
+                out << "\t\t\t else if ((strcmp(argv[ii],\"SDE\")==0)||(strcmp(argv[ii],\"sde\")==0) || (strcmp(argv[ii],\"HSDE\")==0)||(strcmp(argv[ii],\"hsde\")==0) ) SOLVE = 0;\n";
+                out << "\t\t\t else if ((strcmp(argv[ii],\"TAUG\")==0)||(strcmp(argv[ii],\"taug\")==0)) SOLVE = 9;\n";
+                 out<<"\t\t\t else{\n";
+                out<< "\t\t\t\t std::cerr<<\"\\n\\tError:  -type  <value>\\n\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+                out<<"\t\t }\n";
+                out<<"\t\t continue;\n";
         out<<"\t }\n";
  //hini code
         out<<"\t if (strcmp(\"-hini\", argv[ii])==0){\n";
@@ -696,17 +696,18 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     for (pp = 0; pp < npl; pp++)
     {
         out << "//Place " << tabp[pp].place_name << "\n eq.clear();\n";
-        if (implPlace.find(pp) == implPlace.end())   //explicit place
+//        if (implPlace.find(pp) == implPlace.end())   //explicit place
+//        {
+        for (int tt = 0; tt < ntr; tt++) //all places
         {
-            for (int tt = 0; tt < ntr; tt++)
+            if (TP[tt][pp] != 0)
             {
-                if (TP[tt][pp] != 0)
-                {
-                    out << " el.setIncDec(" << TP[tt][pp] << ");\n el.setIdTran(" << tt << ");\n eq.Insert(el);\n";
-                }
-            }//explicit place
-        }
-        else   // implicit place
+                out << " el.setIncDec(" << TP[tt][pp] << ");\n el.setIdTran(" << tt << ");\n eq.Insert(el);\n";
+            }
+        }//all places
+//        }
+//        else
+        if (implPlace.find(pp) != implPlace.end())// implicit place
         {
             out << " Vpl.clear();\n";
             list < pair<int, int> >::iterator it;

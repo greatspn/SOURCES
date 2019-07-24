@@ -26,6 +26,7 @@ double epsilon1=0.00000000001;
 double ep=0.9;
 double delta=0.00001;
 double slow=false;
+#define MAX_DOUBLE std::numeric_limits<double>::max()
 #ifdef AUTOMATON
 extern void reading_automaton( AUTOMA::automaton& a, char * name);
 extern double next_clock_automaton;
@@ -2439,18 +2440,29 @@ return -1;
 
 /**************************************************************/
 /* NAME :  Class SystEq*/
-/* DESCRIPTION : It computes the Tau according to Gillespie algorithm.. It requires that  getValTranFire() must be called before.*/
+/* DESCRIPTION : It computes the Tau according to Gillespie algorithm. It requires that  getValTranFire() must be called before.*/
 /**************************************************************/
 
 double SystEq::getComputeTauGillespie(int SetTran[], double& nextTimePoint,double t){
-/*
+
+
 	bool first=true; //boolean value if it is the first time we call this function -> this allow the computation only one single time of the total propensity a_0
 	double a_0=0;
+	double eps =0.1;
+	double tau=MAX_DOUBLE;
 	if (SetTran[0]!=0){
 
 		int size= SetTran[0];//dice quante transizioni vengono gestite in maniera stocastica
 		double f=0;
-		double tau=maxDouble;//massimo double possibile
+		//double tau=MAX_DOUBLE;//massimo double possibile
+
+        if(first==true){
+            for(int h=1;h<=size;h++){
+                a_0+=EnabledTransValueDis[SetTran[h]]/Trans[SetTran[h]].rate;
+            }
+            first=false;
+        }
+
 
 		for (int k=1;k<=size;k++){//identifica la transizione
 			int j=SetTran[k];
@@ -2459,39 +2471,35 @@ double SystEq::getComputeTauGillespie(int SetTran[], double& nextTimePoint,doubl
 			double sigma2=0;
 			double tmp;
 
-			if(first==True){
-				for(int h=1;h<=size;h++){
-					a_0+=EnabledTransValueDis[SetTran[h]]/Trans[SetTran[h]].rate
-				}
-				first=False
-			}
-
 			for (int kk=1;kk<=size;kk++)
 			{
 				int jp=SetTran[kk];
 				for(int i=0;i<N;i++)
 				{
-					f+=(EnabledTransValueDis[SetTran[j]]/Trans[SetTran[j]].rate)*(Trans[SetTran[j]].InPlace[i].card/Trans[SetTran[j]].InPlace[i].Id)*VEq[i].getIncDec[jp];	//non memorizzare
+					f+=(EnabledTransValueDis[j]/Trans[j].rate)*(Trans[j].InPlaces[i].Card/Trans[j].InPlaces[i].Id)*VEq[i].getIncDec(jp);	//non memorizzare
 				}
-				mu+=f*EnabledTransValueDis[SetTran[jp]]/Trans[SetTran[jp]].rate; //controllare strutture
-				sigma2+=f*f*EnabledTransValueDis[SetTran[jp]]/Trans[SetTran[jp]].rate;
+				mu+=f*EnabledTransValueDis[jp]/Trans[jp].rate; //controllare strutture
+				sigma2+=f*f*EnabledTransValueDis[jp]/Trans[jp].rate;
 			}
 			tmp=min(eps*a_0/fabs(mu),eps*a_0*eps*a_0/sigma2);
-		}
+
+
 		if (tmp<tau){
 			tau=tmp;
+			}
 		}
-		return tau;
 	}
-	return -1;
-	// else
-		// throw Exception("*****There are no possible reactions, hence the time step is null*****\n\n");
-		// tau=0;
+//
+//MB: qui devi riabilitare la throw
+/*	return -1;
 		*/
-		return 0.1;
+	else{
+		 throw Exception("*****There are no possible reactions, hence the time step is null*****\n\n");
+		 tau=0;
+		//return 0.1;
+	}
+		return tau;
 }
-
-
 
 
 /**************************************************************/
@@ -2691,9 +2699,181 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 /* NAME :  Class SystEq*/
 /* DESCRIPTION : It solves the ODE system using  LSODA method*/
 /**************************************************************/
-double SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,char *argv){
+void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,char *argv){
 
-return 0.1;
+
+	this-> Max_Run=Max_Run;
+	FinalValueXRun = new double*[nPlaces];
+	double Mean[nPlaces] {0.0};
+	double tout;
+
+	//double ValuePrev[nPlaces] {0.0};
+
+	double ValueInit[nPlaces];
+
+	int firing[nTrans] {0};
+	cout<<endl<<"Seed value: "<<seed<<endl<<endl;
+
+	ofstream out;
+
+	if (Info)
+	{
+		out.open(string(argv)+".trace",ofstream::out);
+		out.precision(12);
+		if(!out){
+			throw Exception("*****Error opening output file***\n\n");
+		}
+		out<<"Time";
+		for(int i=0;i<nPlaces;i++)
+			out<<" "<<NamePlaces[i];
+		out<<endl;
+	}
+
+	cout.precision(16);
+	for(int i=0;i<nPlaces;i++)
+	{
+		FinalValueXRun[i]=new double[Max_Run+1];
+		for(int j=0;j<Max_Run+1;j++)
+			FinalValueXRun[i][j]=0.0;
+		ValueInit[i]=Value[i];
+	}
+
+
+	int SetTran[nTrans+1] {0};
+	//disable discrete transition from fluid computation
+	for(int i=0;i<nTrans;i++)
+	{
+	//All transitions
+	//if (Trans[i].discrete){
+		SetTran[++SetTran[0]]=i;
+		Trans[i].enable=false;
+		//}
+	}
+
+	int run=0;
+
+
+	while (run<Max_Run){
+
+	if(run%100==0){
+		cout<<"\r\t START RUN..."<<run<<" ";
+		cout.flush();
+	}
+		//Initialization for each run
+		if(Info){
+			out<<"0.0";
+		}
+
+		for (int j=0;j<nPlaces;j++){
+			ValuePrv[j]=ValueInit[j];
+			if(Info){
+				out<<" "<<ValuePrv[j];
+			}
+		}
+		if(Info){
+			out<<endl;;
+		}
+
+		double nextTimePoint=tout=Print_Step;
+		//istate=1;
+		double t=MAX_DOUBLE;
+
+		bool neg=false;
+		double tmpt=t;
+
+		while(nextTimePoint<=Max_Time){
+
+			if(!neg){
+				getValTranFire();
+			}
+
+			neg=false;
+
+		//compute tau
+
+			double tau=getComputeTauGillespie(SetTran,nextTimePoint,t);
+			//cout<<"TIME:"<<nextTimePoint<<endl;
+			if(tau==-1){
+				throw Exception("*****Error during the tau computation*****\n\n");
+
+			}
+
+
+
+
+			for (int i=1;i<nTrans;i++){
+				if(EnabledTransValueDis[i]!=0){
+					std::poisson_distribution<>PoisD(tau*EnabledTransValueDis[i]/Trans[i].rate);
+					firing[i]=PoisD(generator);
+				}
+				else
+					firing[i]=0;
+			}
+
+			unsigned int i = headDirc;
+			while(i!=DEFAULT && !neg)
+			{
+				double tmpvalSIM=0.0;
+				for(int j=0; j<VEq[i].getSize();j++)//for all components
+				{
+					if(!NotEnable(VEq[i].getIdTrans(j)))
+					{
+						tmpvalSIM+=VEq[i].getIncDec(j)*firing[VEq[i].getIdTrans(j)];
+					}
+
+				}//for all components
+				if (ValuePrv[i]+tmpvalSIM<0){
+					neg=true;
+				}
+				else{
+				Value[i]=ValuePrv[i]+tmpvalSIM;
+				i=VEq[i].getNext();
+
+
+				}
+			derived(neg);//it derives all the rest of places
+
+			}
+
+
+			if(neg){
+				tau=tau/2;
+				t=tau;
+				nextTimePoint=(tmpt+(nextTimePoint-tmpt)/2);
+			}
+			else
+			{
+				for(int j=0;j<=nPlaces;i++){
+					ValuePrv[j]=Value[j];
+				}
+				tmpt=t;
+				if(tout==nextTimePoint){
+					if(Info){
+
+					out<<nextTimePoint;
+					for(int j=0; j<nPlaces;j++){
+
+						out<<" "<<Value[j];
+						}
+					out<<endl;
+					}
+					nextTimePoint=(tout+=Print_Step);
+				}
+				else
+					nextTimePoint=tout;
+
+			}
+
+		}
+
+	for (int i=0;i<nPlaces;i++)
+	{
+		Mean[i]+=FinalValueXRun[i][run]=Value[i];
+	}
+
+	++run;
+
+	}
 }
 
 
