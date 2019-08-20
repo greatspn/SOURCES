@@ -1027,8 +1027,8 @@ int RSRG::visitXBounds(const node_handle node, int visit_level,
         for (int i = rnode->getNNZs() - 1; i >= 0; i--) {
             int maxSumToks_di = visitXBounds(rnode->d(i), visit_level - 1, visited, nodeMaxSumTokens);
             if (maxSumToks_di != VBP_GOES_TO_ZERO_TERMINAL) {
-                realBounds.at(rnode->getLevel()-1) = std::max(realBounds.at(rnode->getLevel()-1), rnode->i(i));
-                nodeMaxSumTokens.at(node) = std::max(nodeMaxSumTokens.at(node), rnode->i(i) + maxSumToks_di);
+                realBounds.at(rnode->getLevel()-1) = std::max(realBounds.at(rnode->getLevel()-1), (int)rnode->i(i));
+                nodeMaxSumTokens.at(node) = std::max(nodeMaxSumTokens.at(node), (int)rnode->i(i) + maxSumToks_di);
             }
         }
     }
@@ -1492,7 +1492,7 @@ struct EventFiringsCounter {
         unpacked_node *rnode = unpacked_node::newFromNode(forestMDD, node, unpacked_node::storage_style::AS_STORED);
 
         if (rnode->isFull()) {
-            for (int i = lvl_enab.first; i < std::min(rnode->getSize(), lvl_enab.second); i++) {
+            for (int i = lvl_enab.first; i < std::min((int)rnode->getSize(), lvl_enab.second); i++) {
                 markings_count += count_firings_of_event(rnode->d(i), evt, visit_level - 1);
             }
         }

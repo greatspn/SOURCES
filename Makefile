@@ -818,90 +818,90 @@ $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoParser.yy.o: $(OBJDIR)/RGMEDD/WN/SOURCE/AU
 
 #### RGMEDD version 2 ########################################
 
-# RGMEDD2_CFLAGS := $(CFLAGS) $(call generate_WN_FLAGS,TOOL_RGMEDD2,RGMEDD2) \
-# 				          $(FLEX-INCLUDE) 
-# RGMEDD2_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx14) -Wno-deprecated-register \
-#                     -I/usr/local/include $(INCLUDE_GMP_LIBRARY) \
-#                     $(RGMEDD2_CFLAGS) -I/usr/local/include 
+RGMEDD2_CFLAGS := $(CFLAGS) $(call generate_WN_FLAGS,TOOL_RGMEDD2,RGMEDD2) \
+				          $(FLEX-INCLUDE) 
+RGMEDD2_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx14) -Wno-deprecated-register \
+                    -I/usr/local/include $(INCLUDE_GMP_LIBRARY) \
+                    $(RGMEDD2_CFLAGS) -I/usr/local/include 
                     
-#                     # -D_GLIBCXX_DEBUG=1
-# RGMEDD2_LDFLAGS := -L/usr/local/lib $(LDFLAGS) $(FLEX-LIB) -lmeddly $(LINK_GMP_LIBRARY)
-# RGMEDD2_SOURCES := WN/SOURCE/SHARED/service.c \
-# 				   WN/SOURCE/SHARED/ealloc.c \
-# 				   WN/SOURCE/SHARED/token.c \
-# 				   WN/SOURCE/SHARED/dimensio.c \
-# 				   WN/SOURCE/SHARED/errors.c \
-# 				   WN/SOLVE/compact.c \
-# 				   WN/SOURCE/SHARED/common.c \
-# 				   WN/SOURCE/SHARED/enabling.c \
-# 				   WN/SOURCE/SHARED/fire.c \
-# 				   WN/SOURCE/SHARED/shared1.c \
-# 				   WN/SOURCE/SHARED/shared2.c \
-# 				   WN/SOURCE/SHARED/outdom.c \
-# 				   WN/SOURCE/SHARED/report.c \
-# 				   WN/SOURCE/SHARED/precheck.c \
-# 				   WN/SOURCE/SHARED/flush.c \
-# 				   WN/SOURCE/SHARED/degree.c \
-# 				   WN/SOURCE/REACHAB/graph_se.c \
-# 				   WN/SOURCE/REACHAB/stack.c \
-# 				   WN/SOURCE/REACHAB/convert.c \
-# 				   WN/SOURCE/REACHAB/rg_files.c \
-# 				   WN/SOURCE/REACHAB/rgengwn.c \
-# 				   WN/SOURCE/READNET/read_arc.c \
-# 				   WN/SOURCE/READNET/read_t_c.c \
-# 				   WN/SOURCE/READNET/read_DEF.c \
-# 				   WN/SOURCE/READNET/read_NET.c \
-# 				   WN/SOURCE/READNET/read_PIN.c \
-# 				   WN/SOURCE/READNET/read_t_s.c \
-# 				   WN/SOURCE/READNET/wn_yac.c \
-# 				   WN/TRANSL/wn_grammar.y \
-# 				   WN/TRANSL/wn.l \
-# 				   WN/SOURCE/SHARED/mainMEDD2.cpp \
-# 				   WN/SOURCE/RGMEDD2/nsf_subtree.cpp \
-# 				   WN/SOURCE/RGMEDD2/varorders.cpp \
-# 				   WN/SOURCE/RGMEDD2/varorders_bgl.cpp \
-# 				   WN/SOURCE/RGMEDD2/varorders_meta.cpp \
-# 				   WN/SOURCE/RGMEDD2/meddEv.cpp \
-# 				   WN/SOURCE/RGMEDD2/general.cpp \
-# 				   WN/SOURCE/RGMEDD2/graphMEDD.cpp \
-# 				   WN/SOURCE/RGMEDD2/CTL.cpp \
-# 				   WN/SOURCE/RGMEDD2/CTLParser.yy \
-# 				   WN/SOURCE/RGMEDD2/CTLLexer.ll 
+                    # -D_GLIBCXX_DEBUG=1
+RGMEDD2_LDFLAGS := -L/usr/local/lib $(LDFLAGS) $(FLEX-LIB) -lmeddly $(LINK_GMP_LIBRARY)
+RGMEDD2_SOURCES := WN/SOURCE/SHARED/service.c \
+				   WN/SOURCE/SHARED/ealloc.c \
+				   WN/SOURCE/SHARED/token.c \
+				   WN/SOURCE/SHARED/dimensio.c \
+				   WN/SOURCE/SHARED/errors.c \
+				   WN/SOLVE/compact.c \
+				   WN/SOURCE/SHARED/common.c \
+				   WN/SOURCE/SHARED/enabling.c \
+				   WN/SOURCE/SHARED/fire.c \
+				   WN/SOURCE/SHARED/shared1.c \
+				   WN/SOURCE/SHARED/shared2.c \
+				   WN/SOURCE/SHARED/outdom.c \
+				   WN/SOURCE/SHARED/report.c \
+				   WN/SOURCE/SHARED/precheck.c \
+				   WN/SOURCE/SHARED/flush.c \
+				   WN/SOURCE/SHARED/degree.c \
+				   WN/SOURCE/REACHAB/graph_se.c \
+				   WN/SOURCE/REACHAB/stack.c \
+				   WN/SOURCE/REACHAB/convert.c \
+				   WN/SOURCE/REACHAB/rg_files.c \
+				   WN/SOURCE/REACHAB/rgengwn.c \
+				   WN/SOURCE/READNET/read_arc.c \
+				   WN/SOURCE/READNET/read_t_c.c \
+				   WN/SOURCE/READNET/read_DEF.c \
+				   WN/SOURCE/READNET/read_NET.c \
+				   WN/SOURCE/READNET/read_PIN.c \
+				   WN/SOURCE/READNET/read_t_s.c \
+				   WN/SOURCE/READNET/wn_yac.c \
+				   WN/TRANSL/wn_grammar.y \
+				   WN/TRANSL/wn.l \
+				   WN/SOURCE/SHARED/mainMEDD2.cpp \
+				   WN/SOURCE/RGMEDD2/nsf_subtree.cpp \
+				   WN/SOURCE/RGMEDD2/varorders.cpp \
+				   WN/SOURCE/RGMEDD2/varorders_bgl.cpp \
+				   WN/SOURCE/RGMEDD2/varorders_meta.cpp \
+				   WN/SOURCE/RGMEDD2/meddEv.cpp \
+				   WN/SOURCE/RGMEDD2/general.cpp \
+				   WN/SOURCE/RGMEDD2/graphMEDD.cpp \
+				   WN/SOURCE/RGMEDD2/CTL.cpp \
+				   WN/SOURCE/RGMEDD2/CTLParser.yy \
+				   WN/SOURCE/RGMEDD2/CTLLexer.ll 
 
-# # Modify the lexer and the parser generators used by the
-# # RGMEDD2_LEX_WN/SOURCE/AUTOMA/AutoLexer.l = $(LEX) -P kk --header-file=$(@:.c=.h)
-# # RGMEDD2_YACCPP_WN/SOURCE/AUTOMA/AutoParser.yy := byacc -v -p kk -d
-# RGMEDD2_YACCPP_WN/SOURCE/RGMEDD2/CTLParser.yy := byacc -p mm -v -d
-# RGMEDD2_LEXPP_WN/SOURCE/RGMEDD2/CTLLexer.ll = $(LEXPP) -+ --header-file=$(@:.cpp=.h)
-# RGMEDD2_LD := $(LDPP) -shared-libgcc
+# Modify the lexer and the parser generators used by the
+# RGMEDD2_LEX_WN/SOURCE/AUTOMA/AutoLexer.l = $(LEX) -P kk --header-file=$(@:.c=.h)
+# RGMEDD2_YACCPP_WN/SOURCE/AUTOMA/AutoParser.yy := byacc -v -p kk -d
+RGMEDD2_YACCPP_WN/SOURCE/RGMEDD2/CTLParser.yy := byacc -p mm -v -d
+RGMEDD2_LEXPP_WN/SOURCE/RGMEDD2/CTLLexer.ll = $(LEXPP) -+ --header-file=$(@:.cpp=.h)
+RGMEDD2_LD := $(LDPP) -shared-libgcc
 
-# $(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLParser.yy.o: $(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLLexer.ll.cpp
+$(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLParser.yy.o: $(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLLexer.ll.cpp
 
-# $(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLLexer.ll.o: $(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLParser.yy.cpp
+$(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLLexer.ll.o: $(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLParser.yy.cpp
 
-# # $(OBJDIR)/RGMEDD2/WN/SOURCE/CTL/CTLLexer.ll.o: $(OBJDIR)/RGMEDD2/WN/SOURCE/CTL/CTLParser.yy.cpp
+# $(OBJDIR)/RGMEDD2/WN/SOURCE/CTL/CTLLexer.ll.o: $(OBJDIR)/RGMEDD2/WN/SOURCE/CTL/CTLParser.yy.cpp
 
-# # $(OBJDIR)/RGMEDD2/WN/SOURCE/AUTOMA/AutoLexer.l.o: $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoParser.yy.cpp
+# $(OBJDIR)/RGMEDD2/WN/SOURCE/AUTOMA/AutoLexer.l.o: $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoParser.yy.cpp
 
-# # $(OBJDIR)/RGMEDD2/WN/SOURCE/AUTOMA/AutoParser.yy.o: $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoLexer.l.c
+# $(OBJDIR)/RGMEDD2/WN/SOURCE/AUTOMA/AutoParser.yy.o: $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoLexer.l.c
 
-# # ifdef HAS_LP_SOLVE_LIB
-# #   RGMEDD2_CPPFLAGS := $(RGMEDD2_CPPFLAGS) $(INCLUDE_LP_SOLVE_LIB)
-# #   RGMEDD2_LDFLAGS := $(RGMEDD2_LDFLAGS) $(LINK_LP_SOLVE_LIB) 
-# # endif
+# ifdef HAS_LP_SOLVE_LIB
+#   RGMEDD2_CPPFLAGS := $(RGMEDD2_CPPFLAGS) $(INCLUDE_LP_SOLVE_LIB)
+#   RGMEDD2_LDFLAGS := $(RGMEDD2_LDFLAGS) $(LINK_LP_SOLVE_LIB) 
+# endif
 
-# # ifdef USE_RGMEDD2
-# TARGETS += RGMEDD2
-#  #  ifneq ("$(wildcard ~/.elvio-temporary-hack)","")
-#  #  	 $(warning "Using both RGMEDD & RGMEDD2.")
-#  #  	RGMEDD2_CPPFLAGS := -I/Users/elvio/Desktop/meddly2015/src/ $(RGMEDD2_CPPFLAGS) 
-# 	# RGMEDD2_LDFLAGS := -L/Users/elvio/Desktop/meddly2015/src/.libs/ $(RGMEDD2_LDFLAGS) 
+# ifdef USE_RGMEDD2
+TARGETS += RGMEDD2
+ #  ifneq ("$(wildcard ~/.elvio-temporary-hack)","")
+ #  	 $(warning "Using both RGMEDD & RGMEDD2.")
+ #  	RGMEDD2_CPPFLAGS := -I/Users/elvio/Desktop/meddly2015/src/ $(RGMEDD2_CPPFLAGS) 
+	# RGMEDD2_LDFLAGS := -L/Users/elvio/Desktop/meddly2015/src/.libs/ $(RGMEDD2_LDFLAGS) 
 
-#  #  	TARGETS += RGMEDD
-#  #  endif
-# # else
-# #   TARGETS += RGMEDD
-# # endif
+ #  	TARGETS += RGMEDD
+ #  endif
+# else
+#   TARGETS += RGMEDD
+# endif
 
 #### RGMEDD version 3 ########################################
 
