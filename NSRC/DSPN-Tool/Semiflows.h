@@ -123,19 +123,19 @@ public:
         bool test_minimal_support_D(const spintvector& D2, const size_t N0) const;
 
         // Test if the support of the columns with positive entries of D2 is included in D
-        bool test_minimal_positive_support_D(const spintvector& D2, int D_mult) const;
+        // bool test_minimal_positive_support_D(const spintvector& D2, int D_mult) const;
 
         // Check support(D2) subseteq support(D +/- R)
-        bool test_minimal_support_linear_comb_D(const spintvector& D2, const spintvector& R) const;
+        // bool test_minimal_support_linear_comb_D(const spintvector& D2, const spintvector& R) const;
 
         // Test if the two vectors share at least a common non-zero
-        bool test_common_nonzeros(const spintvector& D2) const;
+        // bool test_common_nonzeros(const spintvector& D2) const;
 
         // Test if the two vectors have a disjoint support for their negative entries
-        bool test_disjoint_supports(const row_t& row2, int mult) const;
+        // bool test_disjoint_supports(const row_t& row2, int mult) const;
 
         // Test if we could apply the substitution rule of the given vector R
-        bool test_subst(const spintvector& R, int& multR, int& multD) const;
+        // bool test_subst(const spintvector& R, int& multR, int& multD) const;
 
         // Make the vector canonical, i.e. the gcd of its nonzero entries must be 1, and
         // if it has negative entries it must start with a positive one.
