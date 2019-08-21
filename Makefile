@@ -912,7 +912,7 @@ RGMEDD3_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx14) \
                     $(RGMEDD3_CFLAGS) -I/usr/local/include 
                     
                     # -D_GLIBCXX_DEBUG=1 /usr/local/lib/libmeddly.a
-RGMEDD3_LDFLAGS := -L/usr/local/lib $(LDFLAGS) $(FLEX-LIB) $(LINK_GMP_LIBRARY) -lmeddly
+RGMEDD3_LDFLAGS := -L/usr/local/lib $(LDFLAGS) $(FLEX-LIB) -lmeddly $(LINK_GMP_LIBRARY)
           #-lmeddly 
 RGMEDD3_SOURCES := WN/SOURCE/SHARED/service.c \
            WN/SOURCE/SHARED/ealloc.c \
