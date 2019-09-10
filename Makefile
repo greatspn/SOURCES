@@ -903,6 +903,84 @@ TARGETS += RGMEDD2
 #   TARGETS += RGMEDD
 # endif
 
+#### RGMEDD version 3 ########################################
+
+RGMEDD3_CFLAGS := $(CFLAGS) $(call generate_WN_FLAGS,TOOL_RGMEDD3,RGMEDD3) \
+                  $(FLEX-INCLUDE) 
+RGMEDD3_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx14) \
+                    -I/usr/local/include $(INCLUDE_GMP_LIBRARY) \
+                    $(RGMEDD3_CFLAGS) -I/usr/local/include 
+                    
+                    # -D_GLIBCXX_DEBUG=1 /usr/local/lib/libmeddly.a
+RGMEDD3_LDFLAGS := -L/usr/local/lib $(LDFLAGS) $(FLEX-LIB) -lmeddly $(LINK_GMP_LIBRARY)
+          #-lmeddly 
+RGMEDD3_SOURCES := WN/SOURCE/SHARED/service.c \
+           WN/SOURCE/SHARED/ealloc.c \
+           WN/SOURCE/SHARED/token.c \
+           WN/SOURCE/SHARED/dimensio.c \
+           WN/SOURCE/SHARED/errors.c \
+           WN/SOLVE/compact.c \
+           WN/SOURCE/SHARED/common.c \
+           WN/SOURCE/SHARED/enabling.c \
+           WN/SOURCE/SHARED/fire.c \
+           WN/SOURCE/SHARED/shared1.c \
+           WN/SOURCE/SHARED/shared2.c \
+           WN/SOURCE/SHARED/outdom.c \
+           WN/SOURCE/SHARED/report.c \
+           WN/SOURCE/SHARED/precheck.c \
+           WN/SOURCE/SHARED/flush.c \
+           WN/SOURCE/SHARED/degree.c \
+           WN/SOURCE/REACHAB/graph_se.c \
+           WN/SOURCE/REACHAB/stack.c \
+           WN/SOURCE/REACHAB/convert.c \
+           WN/SOURCE/REACHAB/rg_files.c \
+           WN/SOURCE/REACHAB/rgengwn.c \
+           WN/SOURCE/READNET/read_arc.c \
+           WN/SOURCE/READNET/read_t_c.c \
+           WN/SOURCE/READNET/read_DEF.c \
+           WN/SOURCE/READNET/read_NET.c \
+           WN/SOURCE/READNET/read_PIN.c \
+           WN/SOURCE/READNET/read_t_s.c \
+           WN/SOURCE/READNET/wn_yac.c \
+           WN/TRANSL/wn_grammar.y \
+           WN/TRANSL/wn.l \
+           WN/SOURCE/RGMEDD3/mainMEDD3.cpp \
+           WN/SOURCE/RGMEDD3/utils/mt19937-64.c \
+           WN/SOURCE/RGMEDD3/varorders.cpp \
+           WN/SOURCE/RGMEDD3/varorders_bgl.cpp \
+           WN/SOURCE/RGMEDD3/varorders_meta.cpp \
+           WN/SOURCE/RGMEDD3/varorders_soups.cpp \
+           WN/SOURCE/RGMEDD3/varorders_pbasis.cpp \
+           WN/SOURCE/RGMEDD3/meddEv.cpp \
+           WN/SOURCE/RGMEDD3/general.cpp \
+           WN/SOURCE/RGMEDD3/graphMEDD.cpp \
+           WN/SOURCE/RGMEDD3/CTL.cpp \
+           WN/SOURCE/RGMEDD3/CTLParser.yy \
+           WN/SOURCE/RGMEDD3/CTLLexer.ll 
+
+# Modify the lexer and the parser generators used by the
+# RGMEDD3_LEX_WN/SOURCE/AUTOMA/AutoLexer.l = $(LEX) -P kk --header-file=$(@:.c=.h)
+# RGMEDD3_YACCPP_WN/SOURCE/AUTOMA/AutoParser.yy := byacc -v -p kk -d
+RGMEDD3_YACCPP_WN/SOURCE/RGMEDD3/CTLParser.yy := byacc -p mm -v -d
+RGMEDD3_LEXPP_WN/SOURCE/RGMEDD3/CTLLexer.ll = $(LEXPP) -+ -P mm --header-file=$(@:.cpp=.h)
+RGMEDD3_LD := $(LDPP) -shared-libgcc
+RGMEDD3_CPPFLAGS := $(RGMEDD3_CPPFLAGS) -I.
+
+$(OBJDIR)/RGMEDD3/WN/SOURCE/RGMEDD3/CTLParser.yy.o: $(OBJDIR)/RGMEDD3/WN/SOURCE/RGMEDD3/CTLLexer.ll.cpp
+
+$(OBJDIR)/RGMEDD3/WN/SOURCE/RGMEDD3/CTLLexer.ll.o: $(OBJDIR)/RGMEDD3/WN/SOURCE/RGMEDD3/CTLParser.yy.cpp
+
+
+ifdef HAS_LP_SOLVE_LIB
+  RGMEDD3_CPPFLAGS := $(RGMEDD3_CPPFLAGS) $(INCLUDE_LP_SOLVE_LIB)
+  RGMEDD3_LDFLAGS := $(RGMEDD3_LDFLAGS) $(LINK_LP_SOLVE_LIB) 
+endif
+
+# ifdef USE_RGMEDD3
+TARGETS += RGMEDD3
+# endif
+
+###################################################################################
 
 GSPNRG_CFLAGS := $(call generate_WN_FLAGS,TOOL_GSPNRG,GSPNRG)
 GSPNRG_LDFLAGS:= $(LDFLAGS) -lm

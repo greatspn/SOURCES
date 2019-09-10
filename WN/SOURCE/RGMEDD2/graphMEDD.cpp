@@ -346,14 +346,14 @@ void build_graph(class RSRG &rs) {
     }
     if (!running_for_MCC()) {
         if (!CTL) {
-            rs.getRS().getForest()->garbageCollect();
+            // rs.getRS().getForest()->garbageCollect();
             forest* forestMxD = rs.getForestMxD();
             // if(rs.useMonolithicNSF())
             //     outputForest = rs.getNSF().getForest();
             // else
             //     outputForest = rs.getNSFCollection()->getOutForest();
                 
-            forestMxD->garbageCollect();
+            // forestMxD->garbageCollect();
 
             if (rg_edges >= 0)
                 cout << " # fired transitions:     " << rg_edges << endl;
