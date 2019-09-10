@@ -439,6 +439,8 @@ namespace SDE
     void SolveHODEEuler(double h,double prec1,double prec2,double Max_Time,int Max_Run, bool Info,double Print_Step,char *argv);
     //! It solves the HODE system using Tauleaping and LSODE.It takes in input the step size, the Max_Time and Max_Run. To print the trace of each run -> Info = true
     void SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int Max_Run,bool Info,double Print_Step,char *argv);
+    //! It solves the  system using SSA method.It takes in input the step size, the Max_Time and Max_Run. To print the trace of each run -> Info = true
+    void SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max_Run,bool Info,double Print_Step,char *argv);
      //! It solves the ODE system using  tau-leaping method  method. It returns tthe computed tau.
     void SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,char *argv);
     //! It computes an estimation for the Euler step
