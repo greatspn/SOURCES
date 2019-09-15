@@ -63,7 +63,7 @@
       </arc>
     </edges>
   </gspn>
-  <measures gspn-name="MRNP1" log-uuid="f375bac9-0fb7-4330-a783-89d6052e37e9" name="MRNP1withNsolve">
+  <measures gspn-name="MRNP1" log-uuid="f375bac9-0fb7-4330-a783-89d6052e37e9" name="MRNP1withNsolve" simplified-UI="false">
     <assignments/>
     <nsolve epsilon="1.0e-07" method="HSTR_BICGSTAB"/>
     <formulas>
@@ -93,7 +93,7 @@
       </formula>
     </formulas>
   </measures>
-  <measures gspn-name="MRNP1" log-uuid="241f60cb-0a61-4330-aca3-2f91bce97cfe" name="MRNP1withDSPNTool">
+  <measures gspn-name="MRNP1" log-uuid="241f60cb-0a61-4330-aca3-2f91bce97cfe" name="MRNP1withDSPNTool" simplified-UI="false">
     <assignments/>
     <mc4cslta/>
     <formulas>
@@ -131,6 +131,48 @@
       </formula>
     </formulas>
   </measures>
+  <gspn name="MRNP1-pict">
+    <nodes>
+      <place alt-name-fn="LATEX_TEXT" label-y="-2.4375" name="p12" partition="PART_i" partition-y="-1.4375" shown-as="\mathrm{P}\hspace{1pt}_\mathrm{i,2}" x="10.0" y="10.4375"/>
+      <transition alt-name-fn="LATEX_TEXT" delay="0.7" delay-y="1.0625" name="t11" nservers-x="-1.0" nservers-y="1.5625" shown-as="\mathrm{t}\hspace{1pt}_\mathrm{i,1}" type="EXP" x="22.55" y="10.4375"/>
+      <place alt-name-fn="LATEX_TEXT" label-y="-2.4375" marking="m1" name="p11" partition="PART_i" partition-y="-1.4375" shown-as="\mathrm{P}\hspace{1pt}_\mathrm{i,1}" x="18.0" y="10.4375"/>
+      <transition alt-name-fn="LATEX_TEXT" delay="1.2" delay-y="1.0625" name="t12" nservers-x="-0.8125" nservers-y="1.5" shown-as="\mathrm{t}\hspace{1pt}_\mathrm{i,2}" type="EXP" x="14.55" y="10.4375"/>
+      <place alt-name-fn="LATEX_TEXT" marking="1" name="p13" partition="PART_i" shown-as="\mathrm{P}\hspace{1pt}_\mathrm{i,3}" x="10.0" y="15.0"/>
+      <transition alt-name-fn="LATEX_TEXT" delay="0.8" name="t13" nservers-x="-1.5" rotation="6.283185307179586" shown-as="\mathrm{t}\hspace{1pt}_\mathrm{i,3}" type="EXP" x="14.55" y="15.0"/>
+      <place alt-name-fn="LATEX_TEXT" name="p14" partition="PART_i" shown-as="\mathrm{P}\hspace{1pt}_\mathrm{i,4}" x="18.0" y="15.0"/>
+      <transition alt-name-fn="LATEX_TEXT" delay="Erlang[mu, k]" delay-x="-2.5" delay-y="1.5" name="t14" rotation="-0.0" shown-as="\mathrm{t}\hspace{1pt}_\mathrm{i,4}" type="GEN" x="22.55" y="15.0"/>
+      <transition alt-name-fn="LATEX_TEXT" delay="Erlang[mu, k]" delay-x="-3.0" delay-y="1.5" name="t24" shown-as="\mathrm{t}\hspace{1pt}_\mathrm{i-1,4}" type="GEN" x="5.55" y="15.0"/>
+      <constant alt-name-fn="LATEX_TEXT" consttype="REAL" name="delta1" shown-as="\mathrm{\delta}_{i-1}" value="0.75" x="2.0" y="3.0"/>
+      <constant alt-name-fn="LATEX_TEXT" consttype="REAL" name="delta2" shown-as="\mathrm{\delta}_{i}" value="2.5" x="2.0" y="4.0"/>
+      <constant alt-name-fn="LATEX_TEXT" consttype="INTEGER" name="m1" shown-as="\mathrm{m}_{i}" value="2" x="1.625" y="1.0"/>
+      <template name="k" type="INTEGER" x="8.0" y="1.0"/>
+      <template name="mu" type="REAL" x="11.0" y="1.0"/>
+    </nodes>
+    <edges>
+      <arc head="t11" kind="INPUT" mult-k="0.77451171875" tail="p11"/>
+      <arc head="p12" kind="OUTPUT" mult-k="4.349902343750001" tail="t11">
+        <point x="25.0" y="11.4375"/>
+        <point x="25.0" y="8.125"/>
+        <point x="8.5" y="8.125"/>
+        <point x="8.5" y="11.4375"/>
+      </arc>
+      <arc head="t12" kind="INPUT" mult-k="0.5879882812500001" tail="p12"/>
+      <arc head="p11" kind="OUTPUT" mult-k="0.51396484375" tail="t12"/>
+      <arc head="p13" kind="OUTPUT" tail="t12"/>
+      <arc head="t12" kind="INPUT" tail="p13"/>
+      <arc head="t13" kind="INHIBITOR" mult-k="0.41162109375" tail="p12"/>
+      <arc head="t13" kind="INPUT" tail="p13"/>
+      <arc head="p14" kind="OUTPUT" mult-k="0.51298828125" tail="t13"/>
+      <arc head="t14" kind="INPUT" mult-k="0.6561523437500001" tail="p14"/>
+      <arc head="p13" kind="OUTPUT" mult-k="0.0" tail="t24"/>
+      <arc kind="INPUT_OR_OUTPUT" tail="t14">
+        <point x="26.5" y="16.0"/>
+      </arc>
+      <arc head="t24" kind="INPUT_OR_OUTPUT">
+        <point x="3.0" y="16.0"/>
+      </arc>
+    </edges>
+  </gspn>
   <gspn name="MRNP2">
     <nodes>
       <place label-y="-2.4375" name="p12" partition="PART1" partition-y="-1.4375" x="3.0" y="10.4375"/>
@@ -194,7 +236,7 @@
       </arc>
     </edges>
   </gspn>
-  <measures gspn-name="MRNP2" log-uuid="eb244e6e-b7cf-4ff2-ae23-4ed9ca66d698" name="MRNP2withNsolve">
+  <measures gspn-name="MRNP2" log-uuid="eb244e6e-b7cf-4ff2-ae23-4ed9ca66d698" name="MRNP2withNsolve" simplified-UI="false">
     <assignments/>
     <nsolve/>
     <formulas>
@@ -230,7 +272,7 @@
       </formula>
     </formulas>
   </measures>
-  <measures gspn-name="MRNP2" name="MRNP2withDSPNTool">
+  <measures gspn-name="MRNP2" name="MRNP2withDSPNTool" simplified-UI="false">
     <assignments/>
     <mc4cslta/>
     <formulas>
@@ -238,6 +280,41 @@
       <formula language="ALL"/>
     </formulas>
   </measures>
+  <gspn name="MRNP3-1" show-color-cmd="false" show-fluid-cmd="false">
+    <nodes>
+      <place name="P0" partition="PART1" x="6.0" y="6.0"/>
+      <place name="P1" partition="PART1" x="14.0" y="6.0"/>
+      <transition delay="2.0" name="T0" nservers="1" nservers-y="1.5" type="EXP" x="10.55" y="4.0"/>
+      <transition delay="0.75" name="T1" nservers="1" nservers-x="0.0" nservers-y="1.5" type="EXP" x="10.55" y="8.0"/>
+      <place name="P2" partition="PART2" x="17.0" y="13.0"/>
+      <transition delay="1.5" name="T2" nservers="1" nservers-x="0.0" nservers-y="1.5" type="EXP" x="20.55" y="13.0"/>
+      <place name="P3" partition="PART2" x="24.0" y="13.0"/>
+      <transition delay="2.0" name="T3" nservers="1" nservers-y="1.5" type="EXP" x="27.55" y="13.0"/>
+      <transition delay="Erlang[3.45, 2]" delay-x="-2.5" delay-y="1.5" name="D0" type="GEN" x="10.55" y="13.0"/>
+      <place label-x="-1.0" label-y="1.0" marking="n" name="P4" partition="PART2" partition-x="-1.5" partition-y="2.0" x="6.0" y="13.0"/>
+      <template name="n" type="INTEGER" x="21.0" y="5.0"/>
+      <text-box bold="true" border-color="#000000" fill-color="#f3f6ff" height="9.5" locked="true" name="__textBox0" shadow="true" shape="ROUND_RECTANGLE" text-color="#000000" width="15.0" x="3.5" y="2.25">PARTITION 1</text-box>
+      <text-box bold="true" border-color="#000000" fill-color="#fff3fc" height="7.0" name="__textBox1" shadow="true" shape="ROUND_RECTANGLE" text-color="#000000" vert-pos="3" width="28.75" x="3.25" y="12.0">PARTITION 2</text-box>
+    </nodes>
+    <edges>
+      <arc head="T1" kind="INPUT" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="T1"/>
+      <arc head="T0" kind="INPUT" tail="P1"/>
+      <arc head="P0" kind="OUTPUT" tail="T0"/>
+      <arc head="D0" kind="INPUT" tail="P4"/>
+      <arc head="P2" kind="OUTPUT" tail="D0"/>
+      <arc head="T2" kind="INPUT" tail="P2"/>
+      <arc head="P3" kind="OUTPUT" tail="T2"/>
+      <arc head="T3" kind="INPUT" tail="P3"/>
+      <arc head="P4" kind="OUTPUT" mult-k="2.1487304687499997" mult-x="0.7943598798386979" tail="T3">
+        <point x="30.5" y="14.0"/>
+        <point x="30.5" y="17.5"/>
+        <point x="7.0" y="17.5"/>
+      </arc>
+      <arc head="P0" kind="OUTPUT" mult-k="0.47294921874999996" mult-x="-0.6082031249999993" mult-y="0.3106445312499986" tail="D0"/>
+      <arc head="T3" kind="INPUT" tail="P1"/>
+    </edges>
+  </gspn>
   <gspn name="MRNP3" show-color-cmd="false" show-fluid-cmd="false">
     <nodes>
       <place name="P0" partition="PART1" x="20.0" y="6.0"/>
@@ -273,7 +350,7 @@
       <arc head="T3" kind="INPUT" tail="P1"/>
     </edges>
   </gspn>
-  <measures gspn-name="MRNP3" log-uuid="23e2c0e1-3e82-4dc6-936c-b41516292174" name="MRNP3withNsolve">
+  <measures gspn-name="MRNP3" log-uuid="23e2c0e1-3e82-4dc6-936c-b41516292174" name="MRNP3withNsolve" simplified-UI="false">
     <assignments>
       <assignment bind-model="SINGLE_VALUE" single-val="3" type="INTEGER" varname="n"/>
     </assignments>
@@ -301,7 +378,7 @@
       </formula>
     </formulas>
   </measures>
-  <measures gspn-name="MRNP3" log-uuid="dca8dbb8-5140-4764-b513-bc21b9b9da56" name="MRNP3withDSPNTool">
+  <measures gspn-name="MRNP3" log-uuid="dca8dbb8-5140-4764-b513-bc21b9b9da56" name="MRNP3withDSPNTool" simplified-UI="false">
     <assignments>
       <assignment bind-model="SINGLE_VALUE" single-val="3" type="INTEGER" varname="n"/>
     </assignments>
@@ -369,7 +446,7 @@
       <arc head="T3" kind="INPUT" tail="P1"/>
     </edges>
   </gspn>
-  <measures gspn-name="GSPN3" log-uuid="0066449c-6f59-4da7-9412-dc9b42f3a4f6" name="GSPN3withNsolve">
+  <measures gspn-name="GSPN3" log-uuid="0066449c-6f59-4da7-9412-dc9b42f3a4f6" name="GSPN3withNsolve" simplified-UI="false">
     <assignments/>
     <nsolve method="HSTR_GMRES"/>
     <formulas>
@@ -395,7 +472,7 @@
       </formula>
     </formulas>
   </measures>
-  <measures gspn-name="GSPN3" name="GSPN3withGreatSPN">
+  <measures gspn-name="GSPN3" name="GSPN3withGreatSPN" simplified-UI="false">
     <assignments/>
     <mc4cslta/>
     <formulas>
@@ -430,7 +507,7 @@
       <arc head="P2" kind="OUTPUT" tail="T2"/>
     </edges>
   </gspn>
-  <measures gspn-name="DSPN1" log-uuid="5d027d8e-e415-4839-accb-a6e96337c613" name="DSPN1-Measures">
+  <measures gspn-name="DSPN1" log-uuid="5d027d8e-e415-4839-accb-a6e96337c613" name="DSPN1-Measures" simplified-UI="false">
     <assignments/>
     <mc4cslta/>
     <formulas>
@@ -456,7 +533,7 @@
       </formula>
     </formulas>
   </measures>
-  <measures gspn-name="DSPN1" name="DSPN1-MeasuresNS">
+  <measures gspn-name="DSPN1" name="DSPN1-MeasuresNS" simplified-UI="false">
     <assignments/>
     <nsolve/>
     <formulas>
@@ -500,7 +577,7 @@
       </arc>
     </edges>
   </gspn>
-  <measures gspn-name="MRNP4" log-uuid="533bc56a-d279-4612-bcea-05f7e6aa808e" name="MRNP4-MeasuresNS">
+  <measures gspn-name="MRNP4" log-uuid="533bc56a-d279-4612-bcea-05f7e6aa808e" name="MRNP4-MeasuresNS" simplified-UI="false">
     <assignments/>
     <nsolve method="HSTR_GMRES"/>
     <formulas>
@@ -526,7 +603,7 @@
       <formula language="STAT"/>
     </formulas>
   </measures>
-  <measures gspn-name="MRNP4" log-uuid="4bd9ca4d-e3d9-48c4-8361-6ce695fac29a" name="MRNP4-Measures">
+  <measures gspn-name="MRNP4" log-uuid="4bd9ca4d-e3d9-48c4-8361-6ce695fac29a" name="MRNP4-Measures" simplified-UI="false">
     <assignments/>
     <mc4cslta/>
     <formulas>
@@ -598,7 +675,7 @@
       <arc head="P4" kind="OUTPUT" tail="T4"/>
     </edges>
   </gspn>
-  <measures gspn-name="MRNP4bis" log-uuid="7e6712d4-74d7-415a-8489-be08391b02ed" name="MRNP4bis-MeasuresNS">
+  <measures gspn-name="MRNP4bis" log-uuid="7e6712d4-74d7-415a-8489-be08391b02ed" name="MRNP4bis-MeasuresNS" simplified-UI="false">
     <assignments/>
     <nsolve/>
     <formulas>
@@ -669,7 +746,7 @@
       <arc head="P4" kind="OUTPUT" tail="T8"/>
     </edges>
   </gspn>
-  <measures gspn-name="MRNP4tris" name="MRNP4tris-MeasuresNS">
+  <measures gspn-name="MRNP4tris" name="MRNP4tris-MeasuresNS" simplified-UI="false">
     <assignments/>
     <nsolve/>
     <formulas>
@@ -677,7 +754,7 @@
       <formula language="STAT"/>
     </formulas>
   </measures>
-  <measures gspn-name="MRNP4tris" name="MRNP4tris-Measures">
+  <measures gspn-name="MRNP4tris" name="MRNP4tris-Measures" simplified-UI="false">
     <assignments/>
     <mc4cslta/>
     <formulas>
@@ -729,7 +806,7 @@
       </arc>
     </edges>
   </gspn>
-  <measures gspn-name="MRNP4quater" log-uuid="b5791878-9ffe-4ce6-8dd0-670600e93497" name="MRNP4quater-MeasuresNS">
+  <measures gspn-name="MRNP4quater" log-uuid="b5791878-9ffe-4ce6-8dd0-670600e93497" name="MRNP4quater-MeasuresNS" simplified-UI="false">
     <assignments/>
     <nsolve/>
     <formulas>
@@ -761,7 +838,7 @@
       </formula>
     </formulas>
   </measures>
-  <measures gspn-name="MRNP4quater" name="MRNP4quater-Measures">
+  <measures gspn-name="MRNP4quater" name="MRNP4quater-Measures" simplified-UI="false">
     <assignments/>
     <mc4cslta/>
     <formulas>
@@ -813,7 +890,7 @@
       <arc head="T8" kind="INHIBITOR" tail="P5"/>
     </edges>
   </gspn>
-  <measures gspn-name="MRNP5" log-uuid="e82b65a0-42e7-44d6-b9e4-36fac91fdea7" name="MRNP5-MeasuresNS">
+  <measures gspn-name="MRNP5" log-uuid="e82b65a0-42e7-44d6-b9e4-36fac91fdea7" name="MRNP5-MeasuresNS" simplified-UI="false">
     <assignments/>
     <nsolve/>
     <formulas>
@@ -845,7 +922,7 @@
       </formula>
     </formulas>
   </measures>
-  <measures gspn-name="MRNP5" name="MRNP5-Measures">
+  <measures gspn-name="MRNP5" name="MRNP5-Measures" simplified-UI="false">
     <assignments/>
     <greatspn/>
     <formulas>
@@ -905,7 +982,7 @@
       <arc head="P0" kind="OUTPUT" tail="t1"/>
     </edges>
   </gspn>
-  <measures gspn-name="MRNP5-7giugno" name="MRNP5-7giugno-MeasuresNS">
+  <measures gspn-name="MRNP5-7giugno" name="MRNP5-7giugno-MeasuresNS" simplified-UI="false">
     <assignments/>
     <nsolve/>
     <formulas>
@@ -913,7 +990,7 @@
       <formula language="ALL"/>
     </formulas>
   </measures>
-  <measures gspn-name="MRNP5-7giugno" name="MRNP5-7giugno-Measures">
+  <measures gspn-name="MRNP5-7giugno" name="MRNP5-7giugno-Measures" simplified-UI="false">
     <assignments/>
     <mc4cslta/>
     <formulas>
@@ -983,7 +1060,7 @@
       </arc>
     </edges>
   </gspn>
-  <measures gspn-name="MRNP6" name="MRNP6-MeasuresNS">
+  <measures gspn-name="MRNP6" name="MRNP6-MeasuresNS" simplified-UI="false">
     <assignments/>
     <nsolve/>
     <formulas>
