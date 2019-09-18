@@ -271,6 +271,15 @@ namespace SDE
     inline int getSizeP(void){return PSemiflow.size();};
     //!It returns IncDec of the ith component
     inline int getIncDec(int i){return LElem[i].getIncDec();};
+    inline int getIncDecTran(int tran){
+    int N=LElem.size();
+    for(int i=0;i<N; ++i){
+        if(LElem[i].getIdTran()==tran)
+            return LElem[i].getIncDec();
+    }
+    return 0;
+    }
+
     //!It returns IdTran of the ith component
     inline int  getIdTrans(int i){ return LElem[i].getIdTran();};
     inline void getPsemflw(int i, int& place, double& coff) {place=PSemiflow[i].Id; coff=PSemiflow[i].Card;};
@@ -389,7 +398,7 @@ namespace SDE
     //!It computes the Tau taking as input the list of descrete transitions and the next time point. It returns a possible transition firing otherwise  -1. It requires that  getValTranFire() must be called before.
     int getComputeTau(int SetTran[], double& nextTimePoint,double t);
     //!It computes the Tau according to Gillespie algorithm. It takes as input the list of descrete transitions and the next time point. It returns a possible transition firing otherwise  -1. It requires that  getValTranFire() must be called before.
-    double getComputeTauGillespie(int SetTran[], double& nextTimePoint,double t);
+    double getComputeTauGillespie(int SetTran[],double t);
     //! It is a pure virtual function which must be implemented
     virtual void getValTranFire()=0;
     virtual void getValTranFire(double*)=0;
