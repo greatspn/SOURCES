@@ -37,10 +37,10 @@ namespace SDE {
 
 
 
-long int seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+//long int seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 
-std::mt19937_64 generator(seed);
-std::normal_distribution<double> distribution(0.0,1.0);
+std::mt19937_64 generator;//(seed);
+std::normal_distribution<double> distribution;//(0.0,1.0);
 
 
 #ifdef AUTOMATON
@@ -244,10 +244,11 @@ inline void SystEqMas::getValTranFire()
 						EnabledTransValueDis[t]=0.0;
 
 					EnabledTransValueCon[t]*=valC/fatt;
-			//		cout<<"\t"<<valC/fatt<<" Tot:"<<EnabledTransValueCon[t]<<endl;
+
 				}
 			}
 		}
+		cout<<"\t"<< NameTrans[t]<<" "<<" Tot:"<<EnabledTransValueCon[t]<<endl;
 	}
 }
 
@@ -359,7 +360,7 @@ inline void SystEqMas::getValTranFire()
 /* DESCRIPTION : Constructor taking in input  the total number of transitions and places, and two vector with the names of places and transitions */
 /**************************************************************/
 
-SystEq::SystEq(int nPlaces,int nTrans, string NamePlaces[],  string NameTrans[]){
+SystEq::SystEq(int nPlaces,int nTrans, string NamePlaces[],  string NameTrans[], long int seed){
 
 	this->nTrans=nTrans;
 	this->nPlaces=nPlaces;
@@ -394,6 +395,15 @@ SystEq::SystEq(int nPlaces,int nTrans, string NamePlaces[],  string NameTrans[])
 		++i;
 	}
 	headDirc=headDerv=DEFAULT;
+	if (seed==0L)
+        this->seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+    else
+        this->seed=seed;
+
+    generator.seed(this->seed);
+    distribution.param(std::normal_distribution<double>::param_type(0.0, 1.0));
+    //distribution=&std::normal_distribution<double> (0.0,1.0);
+   // =std::mt19937_64 generator(seed);
 }
 
 /**************************************************************/
@@ -421,6 +431,7 @@ SystEq::~SystEq(){
 			delete[] FinalValueXRun[i];
 		delete[] FinalValueXRun;
 	}
+
 }
 
 /**************************************************************/
@@ -429,7 +440,6 @@ SystEq::~SystEq(){
 /**************************************************************/
 
 inline bool SystEq::NotEnable(int Tran){
-
 
 	if (!Trans[Tran].enable) return true;
 
@@ -2448,7 +2458,7 @@ double SystEq::getComputeTauGillespie(int SetTran[],double t){
 
 	bool first=true; //boolean value if it is the first time we call this function -> this allow the computation only one single time of the total propensity a_0
 	double a_0=0;
-	double eps =0.1;
+	//double eps =0.1;
 	double tau=t;
 	//oggi double f=0;//
 	if (SetTran[0]!=0){
@@ -2459,7 +2469,13 @@ double SystEq::getComputeTauGillespie(int SetTran[],double t){
 
         if(first==true){
             for(int h=1;h<=size;h++){
-                a_0+=EnabledTransValueDis[SetTran[h]]*Trans[SetTran[h]].rate;
+            if (Trans[SetTran[h]].GenFun==""){
+                    a_0+=EnabledTransValueDis[SetTran[h]]*Trans[SetTran[h]].rate;
+                }
+           else
+                {
+                    a_0+=EnabledTransValueDis[SetTran[h]];
+                }
 		//oggi
 		//a_0+=EnabledTransValueDis[SetTran[h]];
             }
@@ -2485,15 +2501,35 @@ double SystEq::getComputeTauGillespie(int SetTran[],double t){
 					//oggi
 					//if(ValuePrv[Trans[j].InPlaces[i].Id]!=0){
 						//oggi////f+=(EnabledTransValueDis[j]*Trans[j].rate)*(Trans[j].InPlaces[i].Card/ValuePrv[Trans[j].InPlaces[i].Id])*VEq[i].getIncDec(jp);	//non memorizzare
-                            f+=(EnabledTransValueDis[j]*Trans[j].rate)*(Trans[j].InPlaces[i].Card/ValuePrv[Trans[j].InPlaces[i].Id])*VEq[Trans[j].InPlaces[i].Id].getIncDecTran(jp);
+
+					//*	  double valueSpeed;
+					//*	  if (Trans[j].GenFun==""){
+                    //*            valueSpeed=(EnabledTransValueDis[j]*Trans[j].rate);
+					//*	  }
+					//*	  else{
+                    //*            valueSpeed=EnabledTransValueDis[j];
+					//*	  }
+
+                    //*       f+=valueSpeed*(Trans[j].InPlaces[i].Card/ValuePrv[Trans[j].InPlaces[i].Id])*VEq[Trans[j].InPlaces[i].Id].getIncDecTran(jp);
+                              f+=(EnabledTransValueDis[j]*Trans[j].rate)*(Trans[j].InPlaces[i].Card/ValuePrv[Trans[j].InPlaces[i].Id])*VEq[Trans[j].InPlaces[i].Id].getIncDecTran(jp);
 					//}
                         }
-                    mu+=f*EnabledTransValueDis[jp]*Trans[jp].rate; //
+                    //*double valueSpeed;
+                    //*if (Trans[jp].GenFun==""){
+                    //*        valueSpeed=(EnabledTransValueDis[jp]*Trans[jp].rate);
+                    //*}
+                    //*else{
+                    //*        valueSpeed=EnabledTransValueDis[jp];
+                    //*}
+
+                    //*mu+=f*valueSpeed; //
+                    //*sigma2+=f*f*valueSpeed;
+                    mu+=f*EnabledTransValueDis[jp]*Trans[jp].rate;
                     sigma2+=f*f*EnabledTransValueDis[jp]*Trans[jp].rate;
                    // }
 
                 }
-                tmp=min(eps*a_0/fabs(mu),eps*a_0*eps*a_0/sigma2);//}
+                tmp=min(epsTAU*a_0/fabs(mu),epsTAU*a_0*epsTAU*a_0/sigma2);//}
             if (tmp<tau){
                 tau=tmp;
                 }
@@ -2775,7 +2811,7 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 		}
 
 		for (int j=0;j<nPlaces;j++){
-			ValuePrv[j]=ValueInit[j];
+			Value[j]=ValuePrv[j]=ValueInit[j];
 			if(Info){
 				out<<" "<<ValuePrv[j];
 			}
@@ -2851,10 +2887,12 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 
 	//double ValuePrev[nPlaces] {0.0};
 
+
 	double ValueInit[nPlaces];
 
 	int firing[nTrans] {0};
-	cout<<endl<<"Seed value: "<<seed<<endl<<endl;
+	cout<<endl<<"Seed value: "<<seed;
+	cout<<endl<<"Epsilon TAU-leaping: "<<epsTAU<<endl<<endl;
 
 	ofstream out;
 
@@ -3547,12 +3585,15 @@ inline void Elem::Print(vector <string>& NamePlaces, vector <string>& NameTrans,
 				if (typeTfunction!="Prod")
 					cout<<"/"<<it->Card;
 				else{
+				/*
 					int fatt=1;
 					for (int i=2;i<=it->Card;i++){
 						fatt*=i;
 						cout<<"*("<<NamePlaces[it->Id]<<"-"<<i-1<<")";
 					}
 					cout<<"/"<<fatt;
+					*/
+					cout<<"^"<<it->Card;
 				}
 			}
 			++it;

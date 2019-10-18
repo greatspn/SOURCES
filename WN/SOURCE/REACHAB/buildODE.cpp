@@ -438,9 +438,10 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     out << " time_t time_1,time_4;\n";
     out<<  " int who = RUSAGE_SELF;\n struct rusage usage;\n";
     out << " int SOLVE = 7, runs=1;\n";
+    out << " long int seed = 0;\n";
     out << " bool OUTPUT=false;\n";
     out << " std::string fbound=\"\", finit=\"\";\n";
-    out << " double hini = 1e-6, atol = 1e-6, rtol=1e-6, ftime=1.0, stime=0.0;\n\n";
+    out << " double hini = 1e-6, atolODE = 1e-6, rtolODE=1e-6, ftime=1.0, stime=0.0, epsTAU=0.1;\n\n";
     out << " cout<<\"\\n\\n =========================================================\\n\";\n";
     out << " cout<<\"|	              ODE/SDE Solver                       |\\n\";\n";
     out << " cout<<\" =========================================================\\n\";\n";
@@ -466,10 +467,12 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     out << " std::cerr<<\"\\n\\t -hini <double>:\\t Initial step size. Default: 1e-6\";\n\t";
     out << " std::cerr<<\"\\n\\t -atol <double>:\\t Absolute error tolerance. Dafault: 1e-6\";\n\t";
     out << " std::cerr<<\"\\n\\t -rtol <double>:\\t Relative error tolerance. Dafault: 1e-6\";\n\t";
-    out << " std::cerr<<\"\\n\\t -runs <int>:\\t\\t Integer number corresponding to runs (only used in SIM, HODE,HLSODA). Default: 1\";\n\t";
+    out << " std::cerr<<\"\\n\\t -taueps <double>:\\t Epsilon value for Tau-leaping algorithm. Dafault: 0.1\";\n\t";
+    out << " std::cerr<<\"\\n\\t -runs <int>:\\t\\t Integer number corresponding to runs (only used in SSA,TAUG, HODE,HLSODA). Default: 1\";\n\t";
     out << " std::cerr<<\"\\n\\t -ftime <double>:\\t Double number used to set the upper bound of the evolution time. Dafault: 1\";\n\t";
     out << " std::cerr<<\"\\n\\t -stime <double>:\\t Double number used to set the step in the output. Default: 0.0 (no output)\";\n\t";
     out << " std::cerr<<\"\\n\\t -b <bound_file>:\\t Soft bound are defined in the file <bound_file>\";\n\t";
+    out << " std::cerr<<\"\\n\\t -seed <double>:\\t Seed of random number generator\";\n\t";
     out << " std::cerr<<\"\\n\\t -init <init_file>:\\t The file <initial_file> contains the initial marking. Default:  initial marking in the orginal net\";\n\t";
     //automaton
     if (AUTOMATON)
@@ -514,7 +517,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
  //atol code
         out<<"\t if (strcmp(\"-atol\", argv[ii])==0){\n";
             out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t atol=atof(argv[ii]);\n\t\t }\n";
+                out<<"\t\t\t atolODE=atof(argv[ii]);\n\t\t }\n";
             out<<"\t\t else{\n";
                 out<< "\t\t\t std::cerr<<\"\\nError:  -atol  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
         out<<"\t\t continue;\n";
@@ -522,7 +525,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
  //rtol code
         out<<"\t if (strcmp(\"-rtol\", argv[ii])==0){\n";
             out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t rtol=atof(argv[ii]);\n\t\t }\n";
+                out<<"\t\t\t rtolODE=atof(argv[ii]);\n\t\t }\n";
             out<<"\t\t else{\n";
                 out<< "\t\t\t std::cerr<<\"\\nError:  -rtol  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
         out<<"\t\t continue;\n";
@@ -562,6 +565,23 @@ void build_ODE(ofstream &out, std::string path, std::string net)
                 out<< "\t\t\t std::cerr<<\"\\nError:  -b  <file_name>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
         out<<"\t\t continue;\n";
         out<<"\t }\n";
+//epsilon TAUleaping
+        out<<"\t if (strcmp(\"-taueps\", argv[ii])==0){\n";
+            out<<"\t\t if (++ii<argc){\n";
+                out<<"\t\t\t epsTAU=atof(argv[ii]);\n\t\t }\n";
+            out<<"\t\t else{\n";
+                out<< "\t\t\t std::cerr<<\"\\nError:  -taueps  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+        out<<"\t\t continue;\n";
+        out<<"\t }\n";
+
+//seed of random number generator
+        out<<"\t if (strcmp(\"-seed\", argv[ii])==0){\n";
+            out<<"\t\t if (++ii<argc){\n";
+                out<<"\t\t\t seed=atol(argv[ii]);\n\t\t }\n";
+            out<<"\t\t else{\n";
+                out<< "\t\t\t std::cerr<<\"\\nError:  -seed  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+        out<<"\t\t continue;\n";
+        out<<"\t }\n";
 
 
 //initial file code
@@ -588,9 +608,10 @@ void build_ODE(ofstream &out, std::string path, std::string net)
         out << " cout<<\"\\tTransition policy: Minimum\\n\";\n";
     out << " cout<<\"\\tSolution final time: \"<<ftime<<\"\\n\";\n";
     out << " cout<<\"\\tInitial size step: \"<<hini<<\"\\n\";\n";
-    out << " cout<<\"\\tAbosolute tolerance: \"<<atol<<\"\\n\";\n";
-    out << " cout<<\"\\tRelative tolerance: \"<<rtol<<\"\\n\";\n";
+    out << " cout<<\"\\tAbosolute tolerance: \"<<atolODE<<\"\\n\";\n";
+    out << " cout<<\"\\tRelative tolerance: \"<<rtolODE<<\"\\n\";\n";
     //out << " if ((strcmp(argv[2],\"ODE\")!=0)&&(strcmp(argv[2],\"ode\")!=0)){\n";
+    out << " cout<<\"\\tEpsilon value for TAU-leaping: \"<<epsTAU<<\"\\n\";\n";
     out << " cout<<\"\\tSolution runs: \"<<runs<<\"\\n\";\n";
     out << " if (fbound!=\"\") cout<<\"\\tBound file: \"<<fbound<<\"\\n\";\n";
     out << " if (finit!=\"\") cout<<\"\\tInitial marking file: \"<<finit<<\"\\n\";\n";
@@ -607,9 +628,9 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     out << " struct InfTr t;\n";
     out << " Equation eq;\n Elem el;\n";
     if (MASSACTION)
-        out << " SystEqMas se(" << npl << "," << ntr << ",places,transitions);\n";
+        out << " SystEqMas se(" << npl << "," << ntr << ",places,transitions,seed);\n";
     else
-        out << " SystEqMin se(" << npl << "," << ntr << ",places,transitions);\n";
+        out << " SystEqMin se(" << npl << "," << ntr << ",places,transitions,seed);\n";
     out << " vector< struct InfPlace> Vpl;\n\n";
     for (int tt = 0; tt < ntr; tt++)
     {
@@ -733,7 +754,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
 
     //automaton
     cout << "\tDone.\n" << endl;
-
+    out << "\n se.setEpsTAU(epsTAU);\n";
     out << "\n se.Print();\n";
     //automaton
     if (AUTOMATON)
@@ -744,11 +765,11 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     }
     //automaton
     out << "\n\ntry\t{";
-    out << "\n\tif (SOLVE==-1) \{\n\t\t cerr<< \"\\n\\nError: solution methods is not implemented\\nYou should use:  ODE-E or ODE-RKF or ODE45 or LSODA or SDE or HODE or HSDE or SIM or STEP\\n\"; \n\t\t exit(EXIT_FAILURE);\n\t}\n\n ";
+    out << "\n\tif (SOLVE==-1) \{\n\t\t cerr<< \"\\n\\nError: solution methods is not implemented\\nYou should use:  ODE-E or ODE-RKF or ODE45 or LSODA or SDE or HODE or HSDE or TAUG or SSA or STEP\\n\"; \n\t\t exit(EXIT_FAILURE);\n\t}\n\n ";
 
 
 
-    out << "\n\tif (SOLVE == 1)\n\t\t se.SolveODEEuler(hini,atol,rtol,ftime,OUTPUT,stime,argv[1]);\n\t else\n\t\t if (SOLVE == 0)\n\t\t\t se.SolveSDEEuler(hini,atol,rtol,ftime,runs,OUTPUT,stime,argv[1]);\n\t\t else \n\t\t\tif (SOLVE == 3)\n\t\t\t\t se.SolveSSA(hini,atol,rtol,ftime,runs,OUTPUT,stime,argv[1]); \n\t\t\t else \n\t\t\t\t if (SOLVE == 4)\n\t\t\t\t\t  se.HeuristicStep(hini,atol,rtol,ftime,OUTPUT,stime,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\t if (SOLVE == 5)\n\t\t\t\t\t  se.SolveODERKF(hini,atol,ftime,OUTPUT,stime,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\tif (SOLVE == 6)\n\t\t\t\t\t\t se.SolveODE45(hini,atol,ftime,OUTPUT,stime,argv[1]);\n\t\t\t\t else\n\t\t\t\t\t if (SOLVE == 8)\n\t\t\t\t\t\t\t se.SolveHLSODE(hini,atol,rtol,ftime,runs,OUTPUT,stime,argv[1]);\n\t\t\t\t\t else \n\t\t\t\t\t\t\t if (SOLVE == 7) \n\t\t\t\t\t\t\t\t se.SolveLSODE(hini,atol,rtol,ftime,OUTPUT,stime,argv[1]);\n\t\t\t\t\t\t\t else  \n\t\t\t\t\t\t\t\t se.SolveTAUG(ftime,runs,OUTPUT,stime,argv[1]);";
+    out << "\n\tif (SOLVE == 1)\n\t\t se.SolveODEEuler(hini,atolODE,rtolODE,ftime,OUTPUT,stime,argv[1]);\n\t else\n\t\t if (SOLVE == 0)\n\t\t\t se.SolveSDEEuler(hini,atolODE,rtolODE,ftime,runs,OUTPUT,stime,argv[1]);\n\t\t else \n\t\t\tif (SOLVE == 3)\n\t\t\t\t se.SolveSSA(hini,atolODE,rtolODE,ftime,runs,OUTPUT,stime,argv[1]); \n\t\t\t else \n\t\t\t\t if (SOLVE == 4)\n\t\t\t\t\t  se.HeuristicStep(hini,atolODE,rtolODE,ftime,OUTPUT,stime,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\t if (SOLVE == 5)\n\t\t\t\t\t  se.SolveODERKF(hini,atolODE,ftime,OUTPUT,stime,argv[1]);   \n\t\t\t\t else\n\t\t\t\t\tif (SOLVE == 6)\n\t\t\t\t\t\t se.SolveODE45(hini,atolODE,ftime,OUTPUT,stime,argv[1]);\n\t\t\t\t else\n\t\t\t\t\t if (SOLVE == 8)\n\t\t\t\t\t\t\t se.SolveHLSODE(hini,atolODE,rtolODE,ftime,runs,OUTPUT,stime,argv[1]);\n\t\t\t\t\t else \n\t\t\t\t\t\t\t if (SOLVE == 7) \n\t\t\t\t\t\t\t\t se.SolveLSODE(hini,atolODE,rtolODE,ftime,OUTPUT,stime,argv[1]);\n\t\t\t\t\t\t\t else  \n\t\t\t\t\t\t\t\t se.SolveTAUG(ftime,runs,OUTPUT,stime,argv[1]);";
     out << "\n\tse.PrintStatistic(argv[1]);\n\t}\n catch(Exception obj)\n\t{\n\tcerr<<endl<<obj.get()<<endl;\n\t}\n\n";
     out << " time(&time_4);\n\n cout<<\"\\n\\nEND EXECUTION\"<<endl;\n cout<<\"\\nResults are saved in: \"<<argv[1]<<endl;\n";
     out << " cout<<\"\\n=========================== TIME ===========================\\n\\n\\t\";\n";
