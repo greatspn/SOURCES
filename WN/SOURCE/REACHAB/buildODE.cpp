@@ -1060,10 +1060,30 @@ void build_ODER(ofstream &out, std::string net)
         }
         //Encoding transition rates
         if (tabt[tt].rate_par_id>=0)
-            out<<tabt[tt].trans_name << " = "<<tabrp[tabt[tt].rate_par_id].rate_name<<"\n";
+            out<<tabt[tt].trans_name << " = "<<tabrp[tabt[tt].rate_par_id].rate_name;
         else
             if (tabt[tt].mean_t!=0)
-                out<<tabt[tt].trans_name << " = "<<tabt[tt].mean_t<< "\n";
+                out<<tabt[tt].trans_name << " = "<<tabt[tt].mean_t;
+
+        if (MASSACTION)
+            {
+            int elem=0;
+            for (int pp1 = 0; pp1 < npl; pp1++){
+                if (TPI[tt][pp1] < - 1){
+                    if (elem>1){
+                        out<<" + factorial("<<abs(TPI[tt][pp1])<<")";
+                    }
+                    else{
+                        out<<" / ( factorial("<<abs(TPI[tt][pp1])<<")";
+                    }
+                    elem++;
+                }
+                if (elem>0)
+                out<<" )";
+            }
+        }
+        out<<"\n";
+
 #if DEBUG
         for (int i = 0; i < npl; i++)
             cout << "\t" << TP[tt][i];
