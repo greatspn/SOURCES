@@ -77,8 +77,8 @@ ifeq ($(UNAME_S),Darwin)
    UIL := /usr/OpenMotif/bin/uil
    FLEX-LIB := -lfl -L/usr/local/opt/flex/lib
    OPENGL-LIB := -lgl -lglu -lglut
-   CC := gcc -g -c -std=c99
-   CPP := g++ -g -c -std=c++14 -Wno-unused-local-typedef
+   CC := gcc -g -c -std=c99 -Wdeprecated-register
+   CPP := g++ -g -c -std=c++14 -Wno-unused-local-typedef -Wdeprecated-register
    LD := gcc -g 
    LDPP := g++ -g 
    CFLAGS += -I/usr/include/malloc -I/usr/local/include/
