@@ -248,7 +248,7 @@ inline void SystEqMas::getValTranFire()
 				}
 			}
 		}
-		cout<<"\t"<< NameTrans[t]<<" "<<" Tot:"<<EnabledTransValueCon[t]<<endl;
+		//cout<<"\t"<< NameTrans[t]<<" "<<" Tot:"<<EnabledTransValueCon[t]<<endl;
 	}
 }
 
@@ -3593,7 +3593,7 @@ inline void Elem::Print(vector <string>& NamePlaces, vector <string>& NameTrans,
 					}
 					cout<<"/"<<fatt;
 					*/
-					cout<<"^"<<it->Card;
+					cout<<"^"<<it->Card<<"/"<<it->Card<<"!";
 				}
 			}
 			++it;
