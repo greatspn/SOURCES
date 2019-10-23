@@ -136,11 +136,11 @@ extern void CTLParser(RSRG *r);
 int open_file(const char * filename) {
 #ifdef __APPLE__
     ostringstream cmd;
-    cmd << "open " << filename << " > /dev/null 2>&1";
+    cmd << "open \"" << filename << "\" > /dev/null 2>&1";
     return system(cmd.str().c_str());
 #elif defined __linux__
     ostringstream cmd;
-    cmd << "xdg-open " << filename << " > /dev/null 2>&1";
+    cmd << "xdg-open \"" << filename << "\" > /dev/null 2>&1";
     return system(cmd.str().c_str());
 #else
     // Windows should use the START command
@@ -400,7 +400,7 @@ void build_graph(class RSRG &rs) {
         write_dd_as_dot(&rs, rs.getRS(), dot_name.c_str(), true);
         ostringstream cmd1, cmd2;
         cout << "Generating PDF with Graphviz ..." << endl;
-        cmd1 << "dot -Tpdf "<<net_name<<"dot > "<<net_name<<"pdf";
+        cmd1 << "dot -Tpdf \""<<net_name<<"dot\" > \""<<net_name<<"pdf\"";
         if (0 == system(cmd1.str().c_str())) {
             if (g_dot_open_RS) 
                 open_file((std::string(net_name) + "pdf").c_str());

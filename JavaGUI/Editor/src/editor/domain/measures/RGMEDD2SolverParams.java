@@ -24,10 +24,11 @@ public class RGMEDD2SolverParams extends SolverParams {
         NO_ORDER("No variable ordering.", "", false),
         FROM_FILE("Read the variable order from the <netname>.place file. ", "-F", false),
         META_HEURISTIC("Meta-heuristic.", "-META", true),
+        RANDOM("Random order (usually bad)", "-RND", false),
         HEURISTIC_P("Derive order using P-semiflows.", "-P", true),
         HEURISTIC_FORCE("Use FORCE algorithm point spans metric.", "-FORCE", false),
-        HEURISTIC_FORCE_NES("Use FORCE algorithm with NES metric.", "-FORCE-NES", false),
-        HEURISTIC_FORCE_WES1("Use FORCE algorithm with WES(1) metric.", "-FORCE-WES1", false),
+        // HEURISTIC_FORCE_NES("Use FORCE algorithm with NES metric.", "-FORCE-NES", false),
+        // HEURISTIC_FORCE_WES1("Use FORCE algorithm with WES(1) metric.", "-FORCE-WES1", false),
         HEURISTIC_FORCE_P("Use FORCE weighted by P-semiflows.", "-FORCE-P", true),
         HEURISTIC_CM("Use Cuthill-McKee method.", "-CM", false),
         HEURISTIC_KING("Use King ordering method.", "-KING", false),
@@ -36,8 +37,11 @@ public class RGMEDD2SolverParams extends SolverParams {
         HEURISTIC_NOACK("Use Noack ordering.", "-NOACK", false),
         HEURISTIC_TOVCHIGRECHKO("Use Tovchigrechko ordering.", "-TOV", false),
         HEURISTIC_GRADIENT_P("Use Gradient-P ordering.", "-GP", true),
-        HEURISTIC_MCL("Use Markov Clustering ordering.", "-MCL", true);
-
+        HEURISTIC_MCL("Use Markov Clustering ordering.", "-MCL", true),
+        HEURISTIC_CM2("Use VCL Cuthill-McKee method.", "-CM2", false),
+        HEURISTIC_ACM("Use Advanced Cuthill-McKee method.", "-ACM", false),
+        HEURISTIC_GPS("Use Gibbs-Poole-Stockmeier method.", "-GPS", false);
+        
         private VariableOrder(String description, String cmdOption, boolean usesPinvars) {
             this.description = description;
             this.cmdOption = cmdOption;
@@ -84,6 +88,8 @@ public class RGMEDD2SolverParams extends SolverParams {
     public String isLanguageSupported(FormulaLanguage lang) {
         switch (lang) {
             case CTL:
+            case LTL:
+            case CTLSTAR:
             case STAT:
             case DD:
             case INC:

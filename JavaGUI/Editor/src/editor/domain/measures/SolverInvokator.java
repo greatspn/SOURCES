@@ -213,7 +213,7 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
     }
     
     // Create the argument array from a single command line String
-    private String[] splitCommandLine(String str) {
+    private static String[] splitCommandLine(String str) {
         boolean runFromBash = true;
         
         // Indirectly invoke the command using bash
@@ -224,22 +224,32 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         
         str += " "; // To detect last token when not quoted...
         ArrayList<String> strings = new ArrayList<>();
-        boolean inQuote = false;
+        char inQuote = 0;
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < str.length(); i++) {
             char c = str.charAt(i);
-            if (c == '\"' || c == ' ' && !inQuote) {
-                if (c == '\"')
-                    inQuote = !inQuote;
-                if (!inQuote && sb.length() > 0) {
+            if (((c == '\"' || c == '\'') && inQuote==0) || // opening quote
+                    (c == inQuote) || // closing quote
+                    (c == ' ' && inQuote==0)) // closing non-quoted argument
+            {
+                if (c == inQuote)
+                    inQuote = 0;
+                else if (inQuote == 0 && (c == '\"' || c == '\''))
+                    inQuote = c;
+                if (inQuote == 0 && sb.length() > 0) {
                     strings.add(sb.toString());
                     sb.delete(0, sb.length());
                 }
-            } else
+            } 
+            else
                 sb.append(c);
         }
         return strings.toArray(new String[strings.size()]);
     }
+    
+//    public static void main(String[] args) {
+//        splitCommandLine("start start 'in in \" inside \" in  ' end end");
+//    }
     
     // The invokation thread that runs in parallel to the GUI thread
     // when the application is calling the solvers
@@ -557,12 +567,15 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
     //==========================================================================
     
     // Print a quoted net filename with the specified extension
-    protected String quotedFn(String ext) {
-        String fn = "\"" + getGspnFile().getAbsolutePath() + (ext==null ? "" : ext) + "\"";
+    protected String quotedFn(String ext, String quote) {
+        String fn = quote + getGspnFile().getAbsolutePath() + (ext==null ? "" : ext) + quote;
         if (Util.isWindows()) {
             fn = fn.replace("\\", "/").replace("C:", "/mnt/c");
         }
         return fn;
+    }
+    protected String quotedFn(String ext) {
+        return quotedFn(ext, "\"");
     }
 
     // Compose the argument list with the parametric mark/rate parameters

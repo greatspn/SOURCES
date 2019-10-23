@@ -12,7 +12,6 @@ import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.VarListMultiAssignment;
 import editor.domain.io.XmlExchangeDirection;
 import editor.domain.io.XmlExchangeException;
-import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;

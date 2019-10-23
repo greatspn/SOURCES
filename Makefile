@@ -21,9 +21,9 @@ AR := ar rcs
 ### The following variables can be overridden 
 ### by defining them as environment variables.
 # CFLAGS ?= -g -DGLIBCXX_DEBUG
-CFLAGS ?= -O2
+CFLAGS ?= -g
 CPPFLAGS ?= $(CFLAGS)
-LDFLAGS ?= -O2
+LDFLAGS ?= -g
 
 ifdef STATIC_LINK
 	LDFLAGS += -static

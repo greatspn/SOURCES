@@ -37,6 +37,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	T visitRealConstLiteral(@NotNull ExprLangParser.RealConstLiteralContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#ComposTempOpAG}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComposTempOpAG(@NotNull ExprLangParser.ComposTempOpAGContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#IntExprConst}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -93,6 +100,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	T visitColorSetSubClass(@NotNull ExprLangParser.ColorSetSubClassContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#ComposTempOpAX}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComposTempOpAX(@NotNull ExprLangParser.ComposTempOpAXContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#IntExprCond2}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -105,6 +119,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitMainStatePropExpr(@NotNull ExprLangParser.MainStatePropExprContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#BoolExprCTLStarQuantif}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBoolExprCTLStarQuantif(@NotNull ExprLangParser.BoolExprCTLStarQuantifContext ctx);
 
 	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#BoolExprImply}.
@@ -261,6 +282,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	T visitBoolConst(@NotNull ExprLangParser.BoolConstContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#BoolExprCTLStarUntil2}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBoolExprCTLStarUntil2(@NotNull ExprLangParser.BoolExprCTLStarUntil2Context ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#RealExprClockVar}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -359,6 +387,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	T visitMainCsltaExpr(@NotNull ExprLangParser.MainCsltaExprContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#BoolExprCTLStarUntil}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBoolExprCTLStarUntil(@NotNull ExprLangParser.BoolExprCTLStarUntilContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#IntExprUnaryFn}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -392,6 +427,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitIntExprPlaceMarking(@NotNull ExprLangParser.IntExprPlaceMarkingContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#BoolExprCTLStar}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBoolExprCTLStar(@NotNull ExprLangParser.BoolExprCTLStarContext ctx);
 
 	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#RealExprUnaryFn}.
@@ -576,6 +618,27 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	T visitRealTemplateId(@NotNull ExprLangParser.RealTemplateIdContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#ComposTempOpEG}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComposTempOpEG(@NotNull ExprLangParser.ComposTempOpEGContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#ComposTempOpF}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComposTempOpF(@NotNull ExprLangParser.ComposTempOpFContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#ComposTempOpEF}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComposTempOpEF(@NotNull ExprLangParser.ComposTempOpEFContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#ClockConstrBetween}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -644,6 +707,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitIntExprNegate(@NotNull ExprLangParser.IntExprNegateContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#ComposTempOpEX}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComposTempOpEX(@NotNull ExprLangParser.ComposTempOpEXContext ctx);
 
 	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#ColorSubclassNameDef}.
@@ -903,6 +973,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitClockConstrIdCmpReal(@NotNull ExprLangParser.ClockConstrIdCmpRealContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#BoolExprCTLStar2}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBoolExprCTLStar2(@NotNull ExprLangParser.BoolExprCTLStar2Context ctx);
 
 	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#BoolExprCTL}.

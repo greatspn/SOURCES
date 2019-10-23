@@ -45,11 +45,13 @@ public class ParserContext implements NodeNamespace {
     public static final int PF_NO_STATIC_SUBCLASS_ID = 4;
     // Consider CTL/LTL keywords (A, E, X, F, G)
     public static final int PF_CTL_KEYWORDS = 8;
+    public static final int PF_LTL_KEYWORDS = 16;
+    public static final int PF_CTLSTAR_KEYWORDS = 32;
     // Consider special function for the description of probability
     // distribution functions of general events
-    public static final int PF_GENERAL_FUNCTION_KEYWORDS = 16;
+    public static final int PF_GENERAL_FUNCTION_KEYWORDS = 64;
     // Clock variables may appear in a realExpr
-    public static final int PF_CLOCK_VARS_IN_EXPR = 32;
+    public static final int PF_CLOCK_VARS_IN_EXPR = 128;
     
     // Verbatim text starts with this prefix
     public static final String VERBATIM_PREFIX = "FN:";
