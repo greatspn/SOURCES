@@ -6,7 +6,6 @@
 
 package editor.domain.measures;
 
-import common.Util;
 import editor.domain.grammar.EvaluatedBinding;
 import editor.domain.grammar.EvaluationArguments;
 import editor.domain.grammar.TemplateBinding;

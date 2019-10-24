@@ -95,7 +95,7 @@ public class RGMEDD2Solver extends SolverInvokator {
                         break;
                         
                     case DD: {
-                        String f = getGspnFile().getAbsoluteFile().toString();//+"-DD-"+step.stepNum;
+                        String f = getGspnFile().getAbsoluteFile().toString()+"-DD-"+step.stepNum;
                         entry = new PdfResultEntry("DD", evalBind, new File(f+".pdf"));
                         ddCmd = " -dot-F " + quotedFn("-DD-"+step.stepNum)+" ";
                         step.entries.add(entry);
