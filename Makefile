@@ -68,6 +68,7 @@ PKGDIR = /usr/local/GreatSPN
 
 ### - Platform-specific variations - ###
 UNAME_S := $(shell uname -s)
+UNAME_R := $(shell uname -r)
 ifeq ($(UNAME_S),Darwin)
    # MacOSX specific variables
    X11-INCLUDE := -I/opt/X11/include
@@ -106,6 +107,13 @@ ifeq ($(UNAME_S),Darwin)
 endif
 INCLUDE_ELVIO_CPP_SOLVER := 0
 
+### - Platform-specific variations - ###
+ifneq (,$(findstring $(UNAME_R),Microsoft))
+  ifeq ($(UNAME_S),Linux)
+    $(info "Running on WSL.")
+  endif
+endif
+###
 
 # # REMOVE THESE LINES
 # ifeq "Linux" "$(shell uname)"
