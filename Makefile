@@ -110,7 +110,8 @@ INCLUDE_ELVIO_CPP_SOLVER := 0
 ### - Platform-specific variations - ###
 ifneq (,$(findstring Microsoft,$(UNAME_R)))
   ifeq ($(UNAME_S),Linux)
-    $(info "Running on WSL.")
+    IS_WSL := 1
+    #$(info "Running on WSL.")
   endif
 endif
 ###
@@ -2029,7 +2030,9 @@ first_CFLAGS := $(GreatSPN_CFLAGS)
 first_LDFLAGS := $(GreatSPN_LDFLAGS)
 
 ifdef HAS_OPENMOTIF_LIB
+  ifndef IS_WSL
 TARGETS += GreatSPN first
+  endif
 endif
 
 PrintCommand_SOURCEFILE := $(GREATSRC)/PrintCommand.csh
