@@ -108,7 +108,7 @@ endif
 INCLUDE_ELVIO_CPP_SOLVER := 0
 
 ### - Platform-specific variations - ###
-ifneq (,$(findstring $(UNAME_R),Microsoft))
+ifneq (,$(findstring Microsoft,$(UNAME_R)))
   ifeq ($(UNAME_S),Linux)
     $(info "Running on WSL.")
   endif
