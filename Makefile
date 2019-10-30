@@ -252,7 +252,9 @@ endif
 ifeq ($(wildcard JavaGUI/launch4j-macosx/launch4j.jar), )
   #$(warning "Boost C++ is not installed. Some packages will not be compiled.")
 else
-  HAVE_LAUNCH4J := 1
+  ifdef LAUNCH4J
+    HAVE_LAUNCH4J := 1
+  endif
 endif
 
 
