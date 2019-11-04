@@ -78,8 +78,8 @@ ifeq ($(UNAME_S),Darwin)
    UIL := /usr/OpenMotif/bin/uil
    FLEX-LIB := -lfl -L/usr/local/opt/flex/lib
    OPENGL-LIB := -lgl -lglu -lglut
-   CC := gcc -g -c -std=c99 -Wdeprecated-register
-   CPP := g++ -g -c -std=c++14 -Wno-unused-local-typedef -Wdeprecated-register
+   CC := gcc -g -c -std=c99 -Wno-deprecated-register
+   CPP := g++ -g -c -std=c++14 -Wno-unused-local-typedef -Wno-deprecated-register
    LD := gcc -g 
    LDPP := g++ -g 
    CFLAGS += -I/usr/include/malloc -I/usr/local/include/
@@ -980,6 +980,8 @@ RGMEDD3_CPPFLAGS := $(RGMEDD3_CPPFLAGS) -I.
 $(OBJDIR)/RGMEDD3/WN/SOURCE/RGMEDD3/CTLParser.yy.o: $(OBJDIR)/RGMEDD3/WN/SOURCE/RGMEDD3/CTLLexer.ll.cpp
 
 $(OBJDIR)/RGMEDD3/WN/SOURCE/RGMEDD3/CTLLexer.ll.o: $(OBJDIR)/RGMEDD3/WN/SOURCE/RGMEDD3/CTLParser.yy.cpp
+
+# $(OBJDIR)/RGMEDD3/WN/SOURCE/RGMEDD3/CTLLexer.h: $(OBJDIR)/RGMEDD3/WN/SOURCE/RGMEDD3/CTLLexer.ll.cpp
 
 
 ifdef HAS_LP_SOLVE_LIB
@@ -2181,10 +2183,12 @@ CPPOBJECTS := $(foreach target, $(TARGETS) $(LIBRARIES), $(call src2obj, \
 LEXOBJECTS := $(foreach target, $(TARGETS) $(LIBRARIES), $(call src2obj, \
 				$(filter %.l, $($(target)_SOURCES)),$(target)))
 LEXDERIVEDSOURCES := $(foreach obj, $(LEXOBJECTS), $(obj:.o=.c))
+LEXDERIVEDHEADERS := $(foreach obj, $(LEXOBJECTS), $(obj:.o=.h))
 
 LEXPPOBJECTS := $(foreach target, $(TARGETS) $(LIBRARIES), $(call src2obj, \
 				$(filter %.ll, $($(target)_SOURCES)),$(target)))
 LEXPPDERIVEDSOURCES := $(foreach obj, $(LEXPPOBJECTS), $(obj:.o=.cpp))
+LEXPPDERIVEDHEADERS := $(foreach obj, $(LEXPPOBJECTS), $(obj:.o=.h))
 
 ### Source and object files generated from .y and .yy sources
 YACCOBJECTS := $(foreach target, $(TARGETS) $(LIBRARIES), $(call src2obj, \
@@ -2421,6 +2425,10 @@ $(LEXDERIVEDSOURCES): $(OBJDIR)/%.l.c: $$(call rmprefix,%.l)
 	@$(MKDIR) $(dir $@)
 	@$($@_LEX) $($@_LEXFLAGS) -o $@ $^
 
+.SECONDEXPANSION:
+$(LEXDERIVEDHEADERS): $(OBJDIR)/%.l.h: $$(call rmprefix,%.l)
+	@
+
 ### Generation of the C/H files from a .y grammar ###
 .SECONDEXPANSION:
 $(YACCDERIVEDSOURCES): $(OBJDIR)/%.y.c: $$(call rmprefix,%.y)
@@ -2458,6 +2466,10 @@ $(LEXPPDERIVEDSOURCES): $(OBJDIR)/%.ll.cpp: $$(call rmprefix,%.ll)
 	@echo "  [LEX] " $<
 	@$(MKDIR) $(dir $@)
 	@$($@_LEXPP) $($@_LEXPPFLAGS) -o $@ $^
+
+.SECONDEXPANSION:
+$(LEXPPDERIVEDHEADERS): $(OBJDIR)/%.ll.h: $$(call rmprefix,%.ll)
+	@
 
 ### Generation of the CPP/H files from a Yacc++ grammar ###
 .SECONDEXPANSION:
