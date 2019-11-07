@@ -10,7 +10,6 @@ B1=""
 B0=""
 C1=""
 C0=""
-echo "VAR TERM='${TERM}'"
 if [[ ! -z ${TERM} ]] ; then
 	if [ "${TERM}" != "dumb" ] ; then
 	    B1=$(tput bold)
