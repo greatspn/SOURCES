@@ -6,6 +6,7 @@
 # the required packages on some supported platforms.
 
 
+echo "TERM=${TERM}"
 if [[ ! -z ${TERM} ]] ; then
     B1=$(tput bold)
     B0=$(tput sgr0)
