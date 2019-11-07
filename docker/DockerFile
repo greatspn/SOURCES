@@ -5,7 +5,7 @@ RUN dnf -y install git
 # Install dependencies
 RUN (curl -H 'Cache-Control: no-cache' \
 	      https://raw.githubusercontent.com/greatspn/SOURCES/master/download.sh | \
-	 iconv -f latin1 | bash -s -- -Fedora  -only-deps)
+	 iconv -f latin1 | bash -s -- -Fedora  -only-deps -dont-install)
 
 
 
