@@ -103,7 +103,7 @@ case ${PLATFORM} in
 		dnf -y install gcc gcc-c++ gmp-devel gmp-c++ gmp boost-devel flex-devel \
 					   ant glib2-devel patch python libxml-devel glpk-devel lpsolve-devel \
 					   autoconf automake libtool zip flex git \
-					   byacc time graphviz  motif-devel \
+					   byacc time graphviz  motif-devel make \
 					   libxml++-devel glibmm24-devel lpsolve-devel \
 			|| fail "Could not install the required dependencies using dnf."
 		# Dependencies for the Virtual Box image.
