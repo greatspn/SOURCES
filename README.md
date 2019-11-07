@@ -26,6 +26,7 @@ First, install the following dependencies (using the developer packages with the
  * ant and Java 1.8+ (Oracle JDK)
  * graphviz
  * libxml++ (devel), glibmm24 (devel) and glib2 (devel)
+ * libcolamd2, on fedora platform provided by suitesparse (devel)
  * glpk (devel) and lpsolve (devel)
 
 Once all dependencies are installed, create a `GreatSPN` directory using:

@@ -516,7 +516,7 @@ IntFormula::IntFormula() {
 }
 
 IntFormula::~IntFormula() {
-    clearMTMDD();
+    // clearMTMDD();
 }
 
 void IntFormula::addOwner() {
@@ -540,7 +540,7 @@ const dd_edge& IntFormula::getMTMDD() {
 }
 
 void IntFormula::clearMTMDD() {
-    MTMDD = dd_edge();
+    MTMDD.clear();
     computedMTMDD = false;
 }
 
@@ -1691,7 +1691,7 @@ void StateFormula::setMDD(dd_edge newMDD) {
     computedMDD = true; 
 }
 void StateFormula::clearMDD() {
-    SatMDD = dd_edge();
+    SatMDD.clear();
     computedMDD = false;
 }
 void StateFormula::addOwner() {

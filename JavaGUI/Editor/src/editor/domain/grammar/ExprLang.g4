@@ -29,6 +29,11 @@ tokens {
     FORALL_NEXT, FORALL_FUTURE, FORALL_GLOBALLY,
     POSSIBLY, IMPOSSIBLY, INVARIANTLY, ENABLED, BOUNDS, DEADLOCK, NO_DEADLOCK,
 
+    CTLSTAR_NEXT, CTLSTAR_FUTURE, CTLSTAR_GLOBALLY, CTLSTAR_UNTIL,
+    CTLSTAR_EXISTS, CTLSTAR_FORALL,
+    CTLSTAR_EXISTS_NEXT, CTLSTAR_EXISTS_FUTURE, CTLSTAR_EXISTS_GLOBALLY, 
+    CTLSTAR_FORALL_NEXT, CTLSTAR_FORALL_FUTURE, CTLSTAR_FORALL_GLOBALLY, 
+
     PDF_X_VAR, RECT_FN, UNIFORM_FN, TRIANGULAR_FN, ERLANG_FN, 
     TRUNCATED_EXP_FN, PARETO_FN, DIRAC_DELTA_FN
 }
@@ -147,8 +152,13 @@ boolExpr : '!' boolExpr                                          # BoolExprNot
          | pin=(POSSIBLY|IMPOSSIBLY|INVARIANTLY) boolExpr        # BoolExprCTLpin
          | ENABLED '(' TRANSITION_ID ')'                         # BoolExprCTLenabled
          | (DEADLOCK|NO_DEADLOCK)                                # BoolExprCTLdeadlocks
+         /* LTL/CTL* language */
+         | (CTLSTAR_NEXT | CTLSTAR_FUTURE | CTLSTAR_GLOBALLY) boolExpr  # BoolExprCTLStar
+         | '(' boolExpr CTLSTAR_UNTIL boolExpr ')'               # BoolExprCTLStarUntil
+         | '[' boolExpr CTLSTAR_UNTIL boolExpr ']'               # BoolExprCTLStarUntil2
+         | (CTLSTAR_EXISTS | CTLSTAR_FORALL) boolExpr            # BoolExprCTLStarQuantif
+         | composite_temporal_op_ctlstar boolExpr                # BoolExprCTLStar2
          ;
-
 
 unaryIntFn : fn=(ABS_FN | FACTORIAL_FN);
 
@@ -318,6 +328,16 @@ temporal_op : (EXISTS | FORALL) (NEXT | FUTURE | GLOBALLY)   # TemporalOp2T
             | (EXISTS_NEXT|EXISTS_FUTURE|EXISTS_GLOBALLY)    # TemporalOpExistX
             | (FORALL_NEXT|FORALL_FUTURE|FORALL_GLOBALLY)    # TemporalOpForallX
             ;
+
+composite_temporal_op_ctlstar : CTLSTAR_EXISTS_NEXT          # ComposTempOpEX 
+                              | CTLSTAR_EXISTS_FUTURE        # ComposTempOpEF
+                              | CTLSTAR_EXISTS_GLOBALLY      # ComposTempOpEG
+                              | CTLSTAR_FORALL_NEXT          # ComposTempOpAX
+                              | CTLSTAR_FORALL_FUTURE        # ComposTempOpF
+                              | CTLSTAR_FORALL_GLOBALLY      # ComposTempOpAG
+                              ;
+
+
 
 //--------------------------------------------------------------------------
 //       Lexer rules:
@@ -547,8 +567,10 @@ ID : ID_LETTER (ID_LETTER | DIGIT)* {
         }
     }
     // Language-dependent tokens
-    boolean isCTLorLTL = 0!=(parseFlags & ParserContext.PF_CTL_KEYWORDS);
-    if (isCTLorLTL) {
+    boolean isCTL = 0!=(parseFlags & ParserContext.PF_CTL_KEYWORDS);
+    boolean isLTL = 0!=(parseFlags & ParserContext.PF_LTL_KEYWORDS);
+    boolean isCTLSTAR = 0!=(parseFlags & ParserContext.PF_CTLSTAR_KEYWORDS);
+    if (isCTL) {
         switch (getText()) {
             case "E":   setType(ExprLangParser.EXISTS);           return;
             case "A":   setType(ExprLangParser.FORALL);           return;
@@ -562,6 +584,32 @@ ID : ID_LETTER (ID_LETTER | DIGIT)* {
             case "AX":  setType(ExprLangParser.FORALL_NEXT);      return;
             case "AF":  setType(ExprLangParser.FORALL_FUTURE);    return;
             case "AG":  setType(ExprLangParser.FORALL_GLOBALLY);  return;
+            // If new context-dependent keywords are added to this list,
+            // they must also be added in NetObject.extraKeyWords[].
+        }
+    }
+    if (isLTL || isCTLSTAR) {
+        switch (getText()) {
+            case "X":   setType(ExprLangParser.CTLSTAR_NEXT);             return;
+            case "F":   setType(ExprLangParser.CTLSTAR_FUTURE);           return;
+            case "G":   setType(ExprLangParser.CTLSTAR_GLOBALLY);         return;
+            case "U":   setType(ExprLangParser.CTLSTAR_UNTIL);            return;
+        }
+    }
+    if (isCTLSTAR) {
+        switch (getText()) {
+            case "E":   setType(ExprLangParser.CTLSTAR_EXISTS);           return;
+            case "A":   setType(ExprLangParser.CTLSTAR_FORALL);           return;
+            case "EX":  setType(ExprLangParser.CTLSTAR_EXISTS_NEXT);      return;
+            case "EF":  setType(ExprLangParser.CTLSTAR_EXISTS_FUTURE);    return;
+            case "EG":  setType(ExprLangParser.CTLSTAR_EXISTS_GLOBALLY);  return;
+            case "AX":  setType(ExprLangParser.CTLSTAR_FORALL_NEXT);      return;
+            case "AF":  setType(ExprLangParser.CTLSTAR_FORALL_FUTURE);    return;
+            case "AG":  setType(ExprLangParser.CTLSTAR_FORALL_GLOBALLY);  return;
+        }
+    }
+    if (isCTL || isLTL || isCTLSTAR) {
+        switch (getText()) {
             case "possibly":     setType(ExprLangParser.POSSIBLY);    return;
             case "impossibly":   setType(ExprLangParser.IMPOSSIBLY);  return;
             case "invariantly":  setType(ExprLangParser.INVARIANTLY); return;
@@ -573,6 +621,7 @@ ID : ID_LETTER (ID_LETTER | DIGIT)* {
             // they must also be added in NetObject.extraKeyWords[].
         }
     }
+
     boolean isGenFn = 0!=(parseFlags & ParserContext.PF_GENERAL_FUNCTION_KEYWORDS);
     if (isGenFn) {
         switch (getText()) {

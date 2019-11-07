@@ -41,13 +41,18 @@ public class RGMEDD2Solver extends SolverInvokator {
         
         // Generate the P-basis, the P-semiflows and the bounds
         step.addOptionalCmd(useGreatSPN_binary("DSPN-Tool") + " -load "+ quotedFn(null) + 
+                            getParamBindingCmd(currBind, true, true) +
                             " -pbasis -detect-exp -psfl -bnd ");
         
         // Generate the bounds from the ILP
-        step.addOptionalCmd("timeout 5s "+useGreatSPN_binary("DSPN-Tool") + " -load "+ quotedFn(null) + 
-                            " -load-bnd -ilp-bnd ");
+        step.addOptionalCmd("perl -e 'alarm 5 ; exec \""+useGreatSPN_binary("DSPN-Tool") +
+                            " -load "+ quotedFn(null, "\\\"") + 
+                            getParamBindingCmd(currBind, true, true) +
+                            " -load-bnd -ilp-bnd\" '");
+//        step.addOptionalCmd("timeout 5s "+useGreatSPN_binary("DSPN-Tool") + " -load "+ quotedFn(null) + 
+//                            " -load-bnd -ilp-bnd ");
         
-        String rgmeddCmd = useGreatSPN_binary("RGMEDD2") + " " + quotedFn(null);
+        String rgmeddCmd = useGreatSPN_binary("RGMEDD3") + " " + quotedFn(null);
         rgmeddCmd += " " + varOrder.getCmdOption() + " ";
         if (params.genCounterExamples)
             rgmeddCmd += " -c";
@@ -68,6 +73,8 @@ public class RGMEDD2Solver extends SolverInvokator {
                 FormulaMeasure fm = (FormulaMeasure)meas;
                 switch (fm.getLanguage()) {
                     case CTL:
+                    case LTL:
+                    case CTLSTAR:
                         if (ctlWriter == null) {
                             ctlWriter = new BufferedWriter(new FileWriter(ctlFilename));
                         }
@@ -88,7 +95,7 @@ public class RGMEDD2Solver extends SolverInvokator {
                         break;
                         
                     case DD: {
-                        String f = getGspnFile().getAbsoluteFile()+"-DD-"+step.stepNum;
+                        String f = getGspnFile().getAbsoluteFile().toString()+"-DD-"+step.stepNum;
                         entry = new PdfResultEntry("DD", evalBind, new File(f+".pdf"));
                         ddCmd = " -dot-F " + quotedFn("-DD-"+step.stepNum)+" ";
                         step.entries.add(entry);

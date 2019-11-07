@@ -11,6 +11,7 @@ import editor.domain.io.XmlExchangeDirection;
 import editor.domain.io.XmlExchangeException;
 import static editor.domain.io.XmlExchangeUtils.bindXMLContent;
 import java.io.Serializable;
+import java.util.Base64;
 import org.w3c.dom.Element;
 
 /** A serialized text document (log of a tool-chain computation).
@@ -29,10 +30,12 @@ public class DocumentResource extends ProjectResource implements Serializable {
     
     
     public String getDocumentDataBase64() {
-        return javax.xml.bind.DatatypeConverter.printBase64Binary(docData);
+        return Base64.getEncoder().withoutPadding().encodeToString(docData);
+//        return javax.xml.bind.DatatypeConverter.printBase64Binary(docData);
     }
     public void setDocumentDataBase64(String base64data) {
-        docData = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64data);
+        docData = Base64.getDecoder().decode(base64data);
+//        docData = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64data);
     }
 
     @Override

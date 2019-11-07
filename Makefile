@@ -21,9 +21,9 @@ AR := ar rcs
 ### The following variables can be overridden 
 ### by defining them as environment variables.
 # CFLAGS ?= -g -DGLIBCXX_DEBUG
-CFLAGS ?= -O2
+CFLAGS ?= -g
 CPPFLAGS ?= $(CFLAGS)
-LDFLAGS ?= -O2
+LDFLAGS ?= -g
 
 ifdef STATIC_LINK
 	LDFLAGS += -static
@@ -68,6 +68,7 @@ PKGDIR = /usr/local/GreatSPN
 
 ### - Platform-specific variations - ###
 UNAME_S := $(shell uname -s)
+UNAME_R := $(shell uname -r)
 ifeq ($(UNAME_S),Darwin)
    # MacOSX specific variables
    X11-INCLUDE := -I/opt/X11/include
@@ -77,8 +78,8 @@ ifeq ($(UNAME_S),Darwin)
    UIL := /usr/OpenMotif/bin/uil
    FLEX-LIB := -lfl -L/usr/local/opt/flex/lib
    OPENGL-LIB := -lgl -lglu -lglut
-   CC := gcc -g -c -std=c99
-   CPP := g++ -g -c -std=c++14 -Wno-unused-local-typedef
+   CC := gcc -g -c -std=c99 -Wno-deprecated-register
+   CPP := g++ -g -c -std=c++14 -Wno-unused-local-typedef -Wno-deprecated-register
    LD := gcc -g 
    LDPP := g++ -g 
    CFLAGS += -I/usr/include/malloc -I/usr/local/include/
@@ -106,6 +107,14 @@ ifeq ($(UNAME_S),Darwin)
 endif
 INCLUDE_ELVIO_CPP_SOLVER := 0
 
+### - Platform-specific variations - ###
+ifneq (,$(findstring Microsoft,$(UNAME_R)))
+  ifeq ($(UNAME_S),Linux)
+    IS_WSL := 1
+    #$(info "Running on WSL.")
+  endif
+endif
+###
 
 # # REMOVE THESE LINES
 # ifeq "Linux" "$(shell uname)"
@@ -243,7 +252,9 @@ endif
 ifeq ($(wildcard JavaGUI/launch4j-macosx/launch4j.jar), )
   #$(warning "Boost C++ is not installed. Some packages will not be compiled.")
 else
-  HAVE_LAUNCH4J := 1
+  ifdef LAUNCH4J
+    HAVE_LAUNCH4J := 1
+  endif
 endif
 
 
@@ -969,6 +980,8 @@ RGMEDD3_CPPFLAGS := $(RGMEDD3_CPPFLAGS) -I.
 $(OBJDIR)/RGMEDD3/WN/SOURCE/RGMEDD3/CTLParser.yy.o: $(OBJDIR)/RGMEDD3/WN/SOURCE/RGMEDD3/CTLLexer.ll.cpp
 
 $(OBJDIR)/RGMEDD3/WN/SOURCE/RGMEDD3/CTLLexer.ll.o: $(OBJDIR)/RGMEDD3/WN/SOURCE/RGMEDD3/CTLParser.yy.cpp
+
+# $(OBJDIR)/RGMEDD3/WN/SOURCE/RGMEDD3/CTLLexer.h: $(OBJDIR)/RGMEDD3/WN/SOURCE/RGMEDD3/CTLLexer.ll.cpp
 
 
 ifdef HAS_LP_SOLVE_LIB
@@ -2021,7 +2034,9 @@ first_CFLAGS := $(GreatSPN_CFLAGS)
 first_LDFLAGS := $(GreatSPN_LDFLAGS)
 
 ifdef HAS_OPENMOTIF_LIB
+  ifndef IS_WSL
 TARGETS += GreatSPN first
+  endif
 endif
 
 PrintCommand_SOURCEFILE := $(GREATSRC)/PrintCommand.csh
@@ -2168,10 +2183,12 @@ CPPOBJECTS := $(foreach target, $(TARGETS) $(LIBRARIES), $(call src2obj, \
 LEXOBJECTS := $(foreach target, $(TARGETS) $(LIBRARIES), $(call src2obj, \
 				$(filter %.l, $($(target)_SOURCES)),$(target)))
 LEXDERIVEDSOURCES := $(foreach obj, $(LEXOBJECTS), $(obj:.o=.c))
+LEXDERIVEDHEADERS := $(foreach obj, $(LEXOBJECTS), $(obj:.o=.h))
 
 LEXPPOBJECTS := $(foreach target, $(TARGETS) $(LIBRARIES), $(call src2obj, \
 				$(filter %.ll, $($(target)_SOURCES)),$(target)))
 LEXPPDERIVEDSOURCES := $(foreach obj, $(LEXPPOBJECTS), $(obj:.o=.cpp))
+LEXPPDERIVEDHEADERS := $(foreach obj, $(LEXPPOBJECTS), $(obj:.o=.h))
 
 ### Source and object files generated from .y and .yy sources
 YACCOBJECTS := $(foreach target, $(TARGETS) $(LIBRARIES), $(call src2obj, \
@@ -2408,6 +2425,10 @@ $(LEXDERIVEDSOURCES): $(OBJDIR)/%.l.c: $$(call rmprefix,%.l)
 	@$(MKDIR) $(dir $@)
 	@$($@_LEX) $($@_LEXFLAGS) -o $@ $^
 
+.SECONDEXPANSION:
+$(LEXDERIVEDHEADERS): $(OBJDIR)/%.l.h: $$(call rmprefix,%.l)
+	@
+
 ### Generation of the C/H files from a .y grammar ###
 .SECONDEXPANSION:
 $(YACCDERIVEDSOURCES): $(OBJDIR)/%.y.c: $$(call rmprefix,%.y)
@@ -2445,6 +2466,10 @@ $(LEXPPDERIVEDSOURCES): $(OBJDIR)/%.ll.cpp: $$(call rmprefix,%.ll)
 	@echo "  [LEX] " $<
 	@$(MKDIR) $(dir $@)
 	@$($@_LEXPP) $($@_LEXPPFLAGS) -o $@ $^
+
+.SECONDEXPANSION:
+$(LEXPPDERIVEDHEADERS): $(OBJDIR)/%.ll.h: $$(call rmprefix,%.ll)
+	@
 
 ### Generation of the CPP/H files from a Yacc++ grammar ###
 .SECONDEXPANSION:

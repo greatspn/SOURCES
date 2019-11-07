@@ -183,8 +183,10 @@ public class ExprLangLexer extends Lexer {
 		        }
 		    }
 		    // Language-dependent tokens
-		    boolean isCTLorLTL = 0!=(parseFlags & ParserContext.PF_CTL_KEYWORDS);
-		    if (isCTLorLTL) {
+		    boolean isCTL = 0!=(parseFlags & ParserContext.PF_CTL_KEYWORDS);
+		    boolean isLTL = 0!=(parseFlags & ParserContext.PF_LTL_KEYWORDS);
+		    boolean isCTLSTAR = 0!=(parseFlags & ParserContext.PF_CTLSTAR_KEYWORDS);
+		    if (isCTL) {
 		        switch (getText()) {
 		            case "E":   setType(ExprLangParser.EXISTS);           return;
 		            case "A":   setType(ExprLangParser.FORALL);           return;
@@ -198,6 +200,32 @@ public class ExprLangLexer extends Lexer {
 		            case "AX":  setType(ExprLangParser.FORALL_NEXT);      return;
 		            case "AF":  setType(ExprLangParser.FORALL_FUTURE);    return;
 		            case "AG":  setType(ExprLangParser.FORALL_GLOBALLY);  return;
+		            // If new context-dependent keywords are added to this list,
+		            // they must also be added in NetObject.extraKeyWords[].
+		        }
+		    }
+		    if (isLTL || isCTLSTAR) {
+		        switch (getText()) {
+		            case "X":   setType(ExprLangParser.CTLSTAR_NEXT);             return;
+		            case "F":   setType(ExprLangParser.CTLSTAR_FUTURE);           return;
+		            case "G":   setType(ExprLangParser.CTLSTAR_GLOBALLY);         return;
+		            case "U":   setType(ExprLangParser.CTLSTAR_UNTIL);            return;
+		        }
+		    }
+		    if (isCTLSTAR) {
+		        switch (getText()) {
+		            case "E":   setType(ExprLangParser.CTLSTAR_EXISTS);           return;
+		            case "A":   setType(ExprLangParser.CTLSTAR_FORALL);           return;
+		            case "EX":  setType(ExprLangParser.CTLSTAR_EXISTS_NEXT);      return;
+		            case "EF":  setType(ExprLangParser.CTLSTAR_EXISTS_FUTURE);    return;
+		            case "EG":  setType(ExprLangParser.CTLSTAR_EXISTS_GLOBALLY);  return;
+		            case "AX":  setType(ExprLangParser.CTLSTAR_FORALL_NEXT);      return;
+		            case "AF":  setType(ExprLangParser.CTLSTAR_FORALL_FUTURE);    return;
+		            case "AG":  setType(ExprLangParser.CTLSTAR_FORALL_GLOBALLY);  return;
+		        }
+		    }
+		    if (isCTL || isLTL || isCTLSTAR) {
+		        switch (getText()) {
 		            case "possibly":     setType(ExprLangParser.POSSIBLY);    return;
 		            case "impossibly":   setType(ExprLangParser.IMPOSSIBLY);  return;
 		            case "invariantly":  setType(ExprLangParser.INVARIANTLY); return;
@@ -209,6 +237,7 @@ public class ExprLangLexer extends Lexer {
 		            // they must also be added in NetObject.extraKeyWords[].
 		        }
 		    }
+
 		    boolean isGenFn = 0!=(parseFlags & ParserContext.PF_GENERAL_FUNCTION_KEYWORDS);
 		    if (isGenFn) {
 		        switch (getText()) {

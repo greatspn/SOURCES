@@ -46,6 +46,14 @@ public class ExprLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitComposTempOpAG(@NotNull ExprLangParser.ComposTempOpAGContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitIntExprConst(@NotNull ExprLangParser.IntExprConstContext ctx) { return visitChildren(ctx); }
 
 	/**
@@ -110,6 +118,14 @@ public class ExprLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitComposTempOpAX(@NotNull ExprLangParser.ComposTempOpAXContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitIntExprCond2(@NotNull ExprLangParser.IntExprCond2Context ctx) { return visitChildren(ctx); }
 
 	/**
@@ -119,6 +135,14 @@ public class ExprLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitMainStatePropExpr(@NotNull ExprLangParser.MainStatePropExprContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitBoolExprCTLStarQuantif(@NotNull ExprLangParser.BoolExprCTLStarQuantifContext ctx) { return visitChildren(ctx); }
 
 	/**
 	 * {@inheritDoc}
@@ -302,6 +326,14 @@ public class ExprLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitBoolExprCTLStarUntil2(@NotNull ExprLangParser.BoolExprCTLStarUntil2Context ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitRealExprClockVar(@NotNull ExprLangParser.RealExprClockVarContext ctx) { return visitChildren(ctx); }
 
 	/**
@@ -414,6 +446,14 @@ public class ExprLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitBoolExprCTLStarUntil(@NotNull ExprLangParser.BoolExprCTLStarUntilContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitIntExprUnaryFn(@NotNull ExprLangParser.IntExprUnaryFnContext ctx) { return visitChildren(ctx); }
 
 	/**
@@ -447,6 +487,14 @@ public class ExprLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitIntExprPlaceMarking(@NotNull ExprLangParser.IntExprPlaceMarkingContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitBoolExprCTLStar(@NotNull ExprLangParser.BoolExprCTLStarContext ctx) { return visitChildren(ctx); }
 
 	/**
 	 * {@inheritDoc}
@@ -662,6 +710,30 @@ public class ExprLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitComposTempOpEG(@NotNull ExprLangParser.ComposTempOpEGContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitComposTempOpF(@NotNull ExprLangParser.ComposTempOpFContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitComposTempOpEF(@NotNull ExprLangParser.ComposTempOpEFContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitClockConstrBetween(@NotNull ExprLangParser.ClockConstrBetweenContext ctx) { return visitChildren(ctx); }
 
 	/**
@@ -735,6 +807,14 @@ public class ExprLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitIntExprNegate(@NotNull ExprLangParser.IntExprNegateContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitComposTempOpEX(@NotNull ExprLangParser.ComposTempOpEXContext ctx) { return visitChildren(ctx); }
 
 	/**
 	 * {@inheritDoc}
@@ -1031,6 +1111,14 @@ public class ExprLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitClockConstrIdCmpReal(@NotNull ExprLangParser.ClockConstrIdCmpRealContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitBoolExprCTLStar2(@NotNull ExprLangParser.BoolExprCTLStar2Context ctx) { return visitChildren(ctx); }
 
 	/**
 	 * {@inheritDoc}

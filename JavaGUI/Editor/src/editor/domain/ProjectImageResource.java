@@ -15,6 +15,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Base64;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import org.w3c.dom.Element;
@@ -65,10 +66,12 @@ public class ProjectImageResource extends ProjectResource implements Serializabl
     }
     
     public String getImageDataBase64() {
-        return javax.xml.bind.DatatypeConverter.printBase64Binary(imageData);
+        return Base64.getEncoder().withoutPadding().encodeToString(imageData);
+//        return javax.xml.bind.DatatypeConverter.printBase64Binary(imageData);
     }
     public void setImageDataBase64(String base64data) {
-        imageData = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64data);
+        imageData = Base64.getDecoder().decode(base64data);
+//        imageData = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64data);
     }
 
     @Override

@@ -52,6 +52,8 @@ public class RGMEDD2SolverPanel extends SolverPanel {
                 FormulaMeasure fm = (FormulaMeasure)am;
                 switch (fm.getLanguage()) {
                     case CTL:
+                    case LTL:
+                    case CTLSTAR:
                         hasCTL = true;
                         break;
                 }

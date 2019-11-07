@@ -136,11 +136,11 @@ extern void CTLParser(RSRG *r);
 int open_file(const char * filename) {
 #ifdef __APPLE__
     ostringstream cmd;
-    cmd << "open " << filename << " > /dev/null 2>&1";
+    cmd << "open \"" << filename << "\" > /dev/null 2>&1";
     return system(cmd.str().c_str());
 #elif defined __linux__
     ostringstream cmd;
-    cmd << "xdg-open " << filename << " > /dev/null 2>&1";
+    cmd << "xdg-open \"" << filename << "\" > /dev/null 2>&1";
     return system(cmd.str().c_str());
 #else
     // Windows should use the START command
@@ -394,16 +394,22 @@ void build_graph(class RSRG &rs) {
         //             "Could not call Graphviz' dot command." << endl;
         // }
 
-        std::string dot_name = net_name;
+        std::string rsdd_name = net_name;
+        if (g_dot_file != nullptr) {
+            rsdd_name = g_dot_file;
+            rsdd_name += ".";
+        }
+        std::string dot_name = rsdd_name, pdf_name = rsdd_name;
         dot_name += "dot";
+        pdf_name += "pdf";
         cout << "Writing dot file "<<dot_name<<" ..." << endl;
         write_dd_as_dot(&rs, rs.getRS(), dot_name.c_str(), true);
         ostringstream cmd1, cmd2;
         cout << "Generating PDF with Graphviz ..." << endl;
-        cmd1 << "dot -Tpdf "<<net_name<<"dot > "<<net_name<<"pdf";
+        cmd1 << "dot -Tpdf \""<<dot_name<<"\" > \""<<pdf_name<<"\"";
         if (0 == system(cmd1.str().c_str())) {
             if (g_dot_open_RS) 
-                open_file((std::string(net_name) + "pdf").c_str());
+                open_file(pdf_name.c_str());
             if (invoked_from_gui())
                 cout << "#{GUI}# RESULT DD" << endl;
         }

@@ -103,7 +103,7 @@ public class OSXAdapter implements InvocationHandler {
             enableAboutMethod.invoke(macOSXApplication, new Object[] { Boolean.valueOf(enableAboutMenu) });
         } catch (Exception ex) {
             System.err.println("OSXAdapter could not access the About Menu");
-            Main.logException(ex, true);
+//            Main.logException(ex, true);
         }
     }
     
@@ -121,7 +121,7 @@ public class OSXAdapter implements InvocationHandler {
             enablePrefsMethod.invoke(macOSXApplication, new Object[] { Boolean.valueOf(enablePrefsMenu) });
         } catch (Exception ex) {
             System.err.println("OSXAdapter could not access the About Menu");
-            Main.logException(ex, true);
+//            Main.logException(ex, true);
         }
     }
     
