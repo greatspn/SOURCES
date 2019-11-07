@@ -12,7 +12,7 @@ C1=""
 C0=""
 echo "TERM='${TERM}'"
 if [[ ! -z ${TERM} ]] ; then
-	if [[ "${TERM}" != "dumb" ]] ; then
+	if [ "${TERM}" != "dumb" ] ; then
 	    B1=$(tput bold)
 	    B0=$(tput sgr0)
 	    C1=$(tput setaf 1)
