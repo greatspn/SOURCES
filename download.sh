@@ -255,8 +255,8 @@ if [[ $BUILD_GREATSPN == "Y" ]] ; then
 	(
 		cd SOURCES
 		CFLAGS="-O2 ${CFLAGS}" CPPFLAGS="-O2 ${CPPFLAGS}" LDFLAGS="-O2 ${LDFLAGS}" make -k ${MKFLAGS} derived_objects
-		CFLAGS="-O2 ${CFLAGS}" CPPFLAGS="-O2 ${CPPFLAGS}" LDFLAGS="-O2 ${LDFLAGS}" make -k ${MKFLAGS} derived_objects
-		CFLAGS="-O2 ${CFLAGS}" CPPFLAGS="-O2 ${CPPFLAGS}" LDFLAGS="-O2 ${LDFLAGS}" make -k ${MKFLAGS} 
+		# CFLAGS="-O2 ${CFLAGS}" CPPFLAGS="-O2 ${CPPFLAGS}" LDFLAGS="-O2 ${LDFLAGS}" make -k ${MKFLAGS} derived_objects
+		# CFLAGS="-O2 ${CFLAGS}" CPPFLAGS="-O2 ${CPPFLAGS}" LDFLAGS="-O2 ${LDFLAGS}" make -k ${MKFLAGS} 
 		CFLAGS="-O2 ${CFLAGS}" CPPFLAGS="-O2 ${CPPFLAGS}" LDFLAGS="-O2 ${LDFLAGS}" make -k ${MKFLAGS} \
 			|| fail "Could not compile GreatSPN. Check the log for errors."
 		# make install 
