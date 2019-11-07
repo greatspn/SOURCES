@@ -11,11 +11,13 @@ B0=""
 C1=""
 C0=""
 echo "TERM=${TERM}"
-if [[ ! -z ${TERM} && ${TERM} != "dumb" ]] ; then
-    B1=$(tput bold)
-    B0=$(tput sgr0)
-    C1=$(tput setaf 1)
-    C0=$(tput setaf 9)
+if [[ ! -z ${TERM} ]] ; then
+	if [[ ${TERM} != "dumb" ]] ; then
+	    B1=$(tput bold)
+	    B0=$(tput sgr0)
+	    C1=$(tput setaf 1)
+	    C0=$(tput setaf 9)
+	fi
 fi
 LN="==============================================================================="
 
