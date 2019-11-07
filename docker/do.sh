@@ -2,7 +2,7 @@
 
 case $1 in
 build)
-	docker build -t greatspn:1.0 --build-arg update_version="`date`" .
+	docker build -t greatspn:1.0 --build-arg update_version="`date`" -f `pwd`/Dockerfile .
 	;;
 
 run)
