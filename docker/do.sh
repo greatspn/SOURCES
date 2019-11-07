@@ -2,15 +2,15 @@
 
 case $1 in
 build)
-	docker build -t greatspn:1.0 --build-arg update_version="`date`" -f `pwd`/Dockerfile .
+	docker build -t greatspn --build-arg update_version="`date`" -f Dockerfile .
 	;;
 
 run)
-	docker run --rm -it --name=greatspn_image greatspn:1.0 --cap-add=SYS_PTRACE bash
+	docker run --rm -it --name=greatspn_image greatspn --cap-add=SYS_PTRACE bash
 	;;
 
 start)
-	docker run --rm -d --name=greatspn_image greatspn:1.0
+	docker run --rm -d --name=greatspn_image greatspn
 	;;
 
 stop)
