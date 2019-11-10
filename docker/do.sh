@@ -6,6 +6,10 @@ build)
 	;;
 
 run)
+	docker run --rm -it --name=greatspn_image greatspn bash
+	;;
+
+run-ptrace)
 	docker run --rm -it --name=greatspn_image greatspn --cap-add=SYS_PTRACE bash
 	;;
 

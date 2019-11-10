@@ -160,7 +160,7 @@ else
 	HAS_GLIB_LIB := 1
 endif
 
-$(call search_file,GRAPHMDP_LIB,/usr/local/lib/libgraphmdp.a)
+$(call search_file,GRAPHMDP_LIB,/usr/local/lib/libgraphmdp.*,-lgraphmdp)
 $(call warn_missing,GRAPHMDP_LIB,GraphMDP library)
 # GRAPHMDP_LIB := /usr/local/lib/libgraphmdp.a
 # ifeq ($(wildcard $(GRAPHMDP_LIB)),)
@@ -198,9 +198,9 @@ $(call warn_missing,GLIBMM2-4_LIB,glibmm-2.4 library)
 #   $(warning "The glibmm-2.4 library is not installed. Some packages will not be compiled.")
 # endif
 
-$(call search_lib,GLPK_LIB,/usr/local/lib/libglpk.*)
-$(call search_lib,GLPK_LIB,/usr/lib/libglpk.*)
-$(call search_lib,GLPK_LIB,/usr/lib64/libglpk.*)
+$(call search_lib,GLPK_LIB,/usr/local/lib/libglpk.*,-lglpk)
+$(call search_lib,GLPK_LIB,/usr/lib/libglpk.*,-lglpk)
+$(call search_lib,GLPK_LIB,/usr/lib64/libglpk.*,-lglpk)
 $(call warn_missing,GLPK_LIB,GLPK library)
 # $(info GLPK_LIB  $(HAS_GLPK_LIB)  $(LINK_GLPK_LIB))
 # GLPK_LIB := /usr/local/lib/libglpk.a
@@ -1562,7 +1562,7 @@ MDP_includes := $(CPPFLAGS) `pkg-config --static --cflags glib-2.0 libxml++-2.6 
 MDP_SOURCES := WN/SOURCE/MDWN/mdp_main.cc WN/SOURCE/MDWN/general.cpp 
 MDP_CPPFLAGS := $(MDP_includes)
 MDP_LD := $(LDPP)
-MDP_LDFLAGS := $(LDFLAGS) $(X11-LIB) -lgraphmdp $(OPENGL-LIB) -lglpk \
+MDP_LDFLAGS := $(LDFLAGS) $(X11-LIB) $(LINK_GRAPHMDP_LIB) $(OPENGL-LIB) $(LINK_GLPK_LIB) \
 	`pkg-config --static --libs glib-2.0 libxml++-2.6 glibmm-2.4`
 
 ifdef HAS_GRAPHMDP_LIB
@@ -1581,7 +1581,7 @@ RG2RRG_SOURCES := WN/SOURCE/MDWN/rg2rrg.cpp \
 RG2RRG_CPPFLAGS := $(MDP_includes) 
 RG2RRG_LD := $(LDPP)
 RG2RRG_DEPENDS := $(LIBDIR)/libgspnMCESRG.a
-RG2RRG_LDFLAGS := $(LDFLAGS) -L$(LIBDIR) -lgspnMCESRG -lm -lglpk $(FLEX-LIB)
+RG2RRG_LDFLAGS := $(LDFLAGS) -L$(LIBDIR) -lgspnMCESRG -lm $(LINK_GLPK_LIB) $(FLEX-LIB)
 
 
 MDWN2WN_SOURCES := WN/SOURCE/MDWN/mdwn2wn.cpp \
@@ -1590,7 +1590,7 @@ MDWN2WN_SOURCES := WN/SOURCE/MDWN/mdwn2wn.cpp \
 MDWN2WN_CPPFLAGS := $(MDP_includes)
 MDWN2WN_LD := $(LDPP)
 MDWN2WN_DEPENDS := $(LIBDIR)/libgspnMCESRG.a
-MDWN2WN_LDFLAGS := $(LDFLAGS) -L$(LIBDIR) -lgspnMCESRG -lm -lglpk $(FLEX-LIB)
+MDWN2WN_LDFLAGS := $(LDFLAGS) -L$(LIBDIR) -lgspnMCESRG -lm $(LINK_GLPK_LIB) $(FLEX-LIB)
 
 GDTMC_SOURCES := WN/SOURCE/MDWN/GenDTMC.cpp \
 				 WN/SOURCE/MDWN/functionGenDTMC.cpp \
@@ -1598,14 +1598,14 @@ GDTMC_SOURCES := WN/SOURCE/MDWN/GenDTMC.cpp \
 GDTMC_CPPFLAGS := $(MDP_includes)
 GDTMC_LD := $(LDPP)
 GDTMC_DEPENDS := $(LIBDIR)/libgspnMCESRG.a
-GDTMC_LDFLAGS := $(LDFLAGS) -L$(LIBDIR) -lgspnMCESRG -lm -lglpk $(FLEX-LIB)
+GDTMC_LDFLAGS := $(LDFLAGS) -L$(LIBDIR) -lgspnMCESRG -lm $(LINK_GLPK_LIB) $(FLEX-LIB)
 
 PARSER_SOURCES := WN/SOURCE/MDWN/parser.cpp \
 				  WN/SOURCE/MDWN/general.cpp
 PARSER_CPPFLAGS := $(MDP_includes)
 PARSER_LD := $(LDPP)
 PARSER_DEPENDS := $(LIBDIR)/libgspnMCESRG.a
-PARSER_LDFLAGS := $(LDFLAGS) -L$(LIBDIR) -lgspnMCESRG -lm -lglpk $(FLEX-LIB)
+PARSER_LDFLAGS := $(LDFLAGS) -L$(LIBDIR) -lgspnMCESRG -lm $(LINK_GLPK_LIB) $(FLEX-LIB)
 
 mdwn2mdp_SOURCEFILE := WN/SOURCE/MDWN/MDWN2MDP.sh
 mdwnsolve_SOURCEFILE := WN/SOURCE/MDWN/MDWNSolve.sh
