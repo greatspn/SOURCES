@@ -198,9 +198,9 @@ $(call warn_missing,GLIBMM2-4_LIB,glibmm-2.4 library)
 #   $(warning "The glibmm-2.4 library is not installed. Some packages will not be compiled.")
 # endif
 
-$(call search_lib,GLPK_LIB,/usr/local/lib/libglpk.a)
-$(call search_lib,GLPK_LIB,/usr/lib/libglpk.a)
-$(call search_lib,GLPK_LIB,/usr/lib64/libglpk.a)
+$(call search_lib,GLPK_LIB,/usr/local/lib/libglpk.*)
+$(call search_lib,GLPK_LIB,/usr/lib/libglpk.*)
+$(call search_lib,GLPK_LIB,/usr/lib64/libglpk.*)
 $(call warn_missing,GLPK_LIB,GLPK library)
 # $(info GLPK_LIB  $(HAS_GLPK_LIB)  $(LINK_GLPK_LIB))
 # GLPK_LIB := /usr/local/lib/libglpk.a
@@ -221,9 +221,9 @@ $(call warn_missing,GLPK_LIB,GLPK library)
 #   HAS_LP_SOLVE_LIB := 1
 # endif
 
-$(call search_lib,LP_SOLVE_LIB,/usr/local/lib/liblpsolve55.a,-llpsolve55 -ldl -lcolamd)
-$(call search_lib,LP_SOLVE_LIB,/usr/lib/liblpsolve55.a,-llpsolve55 -ldl -lcolamd)
-$(call search_lib,LP_SOLVE_LIB,/usr/lib64/liblpsolve55.a,-llpsolve55 -ldl -lcolamd)
+$(call search_lib,LP_SOLVE_LIB,/usr/local/lib/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
+$(call search_lib,LP_SOLVE_LIB,/usr/lib/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
+$(call search_lib,LP_SOLVE_LIB,/usr/lib64/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
 $(call warn_missing,LP_SOLVE_LIB,lp_solve55 library)
 ifdef HAS_LP_SOLVE_LIB
 	INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I/usr/local/include/lpsolve/ -I/usr/include/lpsolve/
@@ -253,9 +253,9 @@ endif
 #   INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I/usr/include/lpsolve/
 # endif
 
-$(call search_lib,GMP_LIB,/usr/local/lib/libgmpxx.a,-lgmpxx -lgmp)
-$(call search_lib,GMP_LIB,/usr/lib/libgmpxx.a,-lgmpxx -lgmp)
-$(call search_lib,GMP_LIB,/usr/lib64/libgmpxx.a,-lgmpxx -lgmp)
+$(call search_lib,GMP_LIB,/usr/local/lib/libgmpxx.*,-lgmpxx -lgmp)
+$(call search_lib,GMP_LIB,/usr/lib/libgmpxx.*,-lgmpxx -lgmp)
+$(call search_lib,GMP_LIB,/usr/lib64/libgmpxx.*,-lgmpxx -lgmp)
 $(call warn_missing,GMP_LIB,GMP library)
 ifdef HAS_GMP_LIB
 	INCLUDE_GMP_LIB := -DHAS_GMP_LIB=1
@@ -303,9 +303,9 @@ $(call warn_missing,APACHE_ANT,Apache ANT)
 #   # endif
 # endif
 
-$(call search_lib,BOOST_CXX_LIB,/usr/local/lib/libboost_context.a)
-$(call search_lib,BOOST_CXX_LIB,/usr/lib/libboost_context.a)
-$(call search_lib,BOOST_CXX_LIB,/usr/lib64/libboost_context.a)
+$(call search_lib,BOOST_CXX_LIB,/usr/local/lib/libboost_context.*)
+$(call search_lib,BOOST_CXX_LIB,/usr/lib/libboost_context.*)
+$(call search_lib,BOOST_CXX_LIB,/usr/lib64/libboost_context.*)
 $(call warn_missing,BOOST_CXX_LIB,Boost C++ library)
 # $(info BOOST_CXX_LIB  $(HAS_BOOST_CXX_LIB)  $(LINK_BOOST_CXX_LIB)  $(INCLUDE_BOOST_CXX_LIB))
 
