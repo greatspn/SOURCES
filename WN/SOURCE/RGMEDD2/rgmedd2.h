@@ -25,7 +25,7 @@
 #include <sys/resource.h>
 
 // Optionally include <gmpxx.h> (if available on the platform)
-#ifdef HAS_GMP_LIBRARY
+#ifdef HAS_GMP_LIB
 #include <gmpxx.h>
 // The cardinality type is a multi-precision integer
 typedef mpz_class cardinality_t;
