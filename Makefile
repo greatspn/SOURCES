@@ -41,7 +41,8 @@ ENABLE_Cxx14 ?= -std=c++17
 
 # External libraries
 FLEX-INCLUDE :=
-FLEX-LIB := -lfl
+FLEX-LIB := 
+#-lfl
 
 GLIB-INCLUDE := $(shell pkg-config --static --silence-errors --cflags glib-2.0)
 GLIB-LIB := $(shell pkg-config --static --silence-errors --libs glib-2.0)
@@ -73,7 +74,7 @@ ifeq ($(UNAME_S),Darwin)
    MOTIF-INCLUDE := -I/usr/OpenMotif/include
    MOTIF-LIB := -L/usr/OpenMotif/lib
    UIL := /usr/OpenMotif/bin/uil
-   FLEX-LIB := -lfl -L/usr/local/opt/flex/lib
+#    FLEX-LIB := -lfl -L/usr/local/opt/flex/lib
    OPENGL-LIB := -lgl -lglu -lglut
    CC := gcc -g -c -std=c99 -Wno-deprecated-register
    CPP := g++ -g -c -std=c++14 -Wno-unused-local-typedef -Wno-deprecated-register
@@ -961,7 +962,7 @@ RGMEDD2_SOURCES := WN/SOURCE/SHARED/service.c \
 # RGMEDD2_LEX_WN/SOURCE/AUTOMA/AutoLexer.l = $(LEX) -P kk --header-file=$(@:.c=.h)
 # RGMEDD2_YACCPP_WN/SOURCE/AUTOMA/AutoParser.yy := byacc -v -p kk -d
 RGMEDD2_YACCPP_WN/SOURCE/RGMEDD2/CTLParser.yy := byacc -p mm -v -d
-RGMEDD2_LEXPP_WN/SOURCE/RGMEDD2/CTLLexer.ll = $(LEXPP) -+ --header-file=$(@:.cpp=.h)
+RGMEDD2_LEXPP_WN/SOURCE/RGMEDD2/CTLLexer.ll = $(LEXPP) -+ -P mm --header-file=$(@:.cpp=.h)
 RGMEDD2_LD := $(LDPP) -shared-libgcc
 
 $(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLParser.yy.o: $(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLLexer.ll.cpp
