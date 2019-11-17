@@ -2263,7 +2263,7 @@ void SystEq::fex(double t, double *y, double *ydot, void *data){
 		    double val=0.0;
 			if ((!NotEnable(VEq[i].getIdTrans(j)))&&((val=EnabledTransValueCon[VEq[i].getIdTrans(j)])>0))//if transition is not disable by inhibitor arc
 			{
-				ydot[i]+=VEq[i].getIncDec(j)*Trans[VEq[i].getIdTrans(j)].rate*val;
+				ydot[i]+=VEq[i].getIncDec(j)*Trans[VEq[i].getIdTrans(j)].rate*val;//observe that rate==1 for general transition
 			}
 				}
 		i=VEq[i].getNext();//next place that is computed directly
@@ -2472,10 +2472,11 @@ double SystEq::getComputeTauGillespie(int SetTran[],double t){
             if (Trans[SetTran[h]].GenFun==""){
                     a_0+=EnabledTransValueDis[SetTran[h]]*Trans[SetTran[h]].rate;
                 }
-           else
+            else
                 {
                     a_0+=EnabledTransValueDis[SetTran[h]];
                 }
+
 		//oggi
 		//a_0+=EnabledTransValueDis[SetTran[h]];
             }
@@ -2485,7 +2486,7 @@ double SystEq::getComputeTauGillespie(int SetTran[],double t){
 
 		for (int k=1;k<=size;k++){//identifica la transizione
             int j=SetTran[k];
-            if (EnabledTransValueDis[j]!=0){
+            if ((EnabledTransValueDis[j]!=0)){
 
                 int N=Trans[j].InPlaces.size();// numero specie coinvolte nella reazione j-esima
                 double mu=0;
@@ -2526,6 +2527,7 @@ double SystEq::getComputeTauGillespie(int SetTran[],double t){
                     //*sigma2+=f*f*valueSpeed;
                     mu+=f*EnabledTransValueDis[jp]*Trans[jp].rate;
                     sigma2+=f*f*EnabledTransValueDis[jp]*Trans[jp].rate;
+
                    // }
 
                 }
@@ -2664,8 +2666,13 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
             neg=false;
         //compute tau
             int Tran=getComputeTau(SetTran,nextTimePoint,t);
-            //cout<<"TIME:"<<nextTimePoint<<endl;
-
+/*
+            cout<<"TIME:"<<nextTimePoint<<" ";
+            if (Tran!=-1)
+            cout<<NameTrans[Tran]<<endl;
+            else
+            cout<<endl;
+*/
 
 
         //tmpt=t;
@@ -2994,9 +3001,14 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 				//oggi if(EnabledTransValueDis[i]!=0){
 				if(EnabledTransValueDis[i]!=0){
 					//oggi std::poisson_distribution<>PoisD(tau*EnabledTransValueDis[i]*Trans[i].rate);
-					std::poisson_distribution<>PoisD(tau*EnabledTransValueDis[i]*Trans[i].rate);
-
-					firing[i]=PoisD(generator);//oggi
+					 if (Trans[i].GenFun==""){
+                          std::poisson_distribution<>PoisD(tau*EnabledTransValueDis[i]*Trans[i].rate);
+                          firing[i]=PoisD(generator);
+                          }
+                     else{
+                          std::poisson_distribution<>PoisD(tau*EnabledTransValueDis[i]);
+                          firing[i]=PoisD(generator);//oggi
+                          }
 				}
 				else
 					firing[i]=0;//oggi

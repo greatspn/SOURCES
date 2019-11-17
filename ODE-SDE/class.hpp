@@ -71,6 +71,7 @@
 #ifndef __MAP_H__
 #define __MAP_H__
 #include <map>
+#include <unordered_map>
 #endif
 
 #ifndef __TLT_H__
@@ -363,7 +364,7 @@ namespace SDE
     //!It encodes the percentage of previous value used to determine h when the model is close to a bound
     double perc2 {0.01};
     //!It encodes the epsilon used in the TAU leap algorithm
-    double epsTAU {0.1};
+    double epsTAU {0.01};
     //!It derived the place which are not directly computed (for ODE and SDE)
     void derived();
     //!It derived the place which are not directly computed from its input vector Value* (for ODE and SDE)
