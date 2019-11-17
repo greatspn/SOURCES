@@ -2660,6 +2660,7 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
         while(nextTimePoint<=Max_Time){
 
             if (!neg){
+                time=nextTimePoint;
                 getValTranFire(y+1);
 
             }
@@ -2836,6 +2837,7 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 
 		while(nextTimePoint<=Max_Time){
 
+            time=nextTimePoint;
             getValTranFire(Value);
             int Tran=getComputeTau(SetTran,nextTimePoint,t);
 
@@ -2971,6 +2973,7 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 		while(nextTimePoint<=Max_Time){
 
 			if(!neg){
+                time=nextTimePoint;
 				getValTranFire();
 			}
 
