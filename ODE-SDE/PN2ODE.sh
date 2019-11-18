@@ -172,10 +172,10 @@ then
 	exit 1
 fi
 
-NET_PATH="$(readlink $NET_PATH -m)"
+# NET_PATH="$(readlink $NET_PATH -m)"
+name_file=`perl -e "use File::Spec; print(File::Spec->rel2abs('${NET_PATH}'));"`
 
-
-export name_file=$NET_PATH;
+export name_file=${name_file}
 
 echo $name_file
 

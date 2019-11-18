@@ -389,7 +389,7 @@ namespace SDE
     //! Constructor it takes in input the total number of transitions and places, two vector with the names of places and transitions and  a seed  of random number generator. Moreover the input parameter usedMin is true if transition infinity server policy is used, otherwise mass-product policy is used.
     SystEq(int nPlaces,int nTrans, string NameTrans[], string NamePlaces[],long int seed);
     //! Deconstruct
-    ~SystEq();
+    virtual ~SystEq();
     //! It stores the transition information. It takes in input the transition id and its information encodes on ``struct InfTr''
     void InsertTran(int num, struct InfTr T);
     //! It stores an equation. It takes in input the equation/place id, its information encodes on class Equation, its initial value and its bounds.
@@ -470,22 +470,22 @@ namespace SDE
   {
     public:
     SystEqMin(int nPlaces, int nTrans, string NameTrans[], string NamePlaces[],long int seed):SystEq(nPlaces,nTrans,NameTrans,NamePlaces,seed){typeTfunction="Min";};
-    ~SystEqMin(){};
+    virtual ~SystEqMin();
     //! For each transition it returns  the min of the values of its input places
-     void getValTranFire();
+     virtual void getValTranFire() override;
      //! For each transition it returns  the min of the values of its input places considering its input vector ValuePrv as marking
-     void getValTranFire(double* ValuePrv);
+     virtual void getValTranFire(double* ValuePrv) override;
   };
 
   class SystEqMas:public SystEq
   {
     public:
     SystEqMas(int nPlaces, int nTrans, string NameTrans[], string NamePlaces[],long int seed):SystEq(nPlaces,nTrans,NameTrans,NamePlaces,seed){typeTfunction="Prod";};
-    //~SystEqMas():~SystEq(){};
+    virtual ~SystEqMas();
     //! For each transition it returns the product  of the values of its input places
-     void getValTranFire();
+    virtual void getValTranFire() override;
     //! For each transition it returns  the min of the values of its input places considering its input vector ValuePrv as marking
-    void getValTranFire(double* ValuePrv);
+    virtual void getValTranFire(double* ValuePrv) override;
   };
 
 //  double Fg(double *Value, vector <string>& NameTrans, vector <string>& NamePlaces);

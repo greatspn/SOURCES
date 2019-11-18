@@ -1,5 +1,5 @@
 
-OPTION = -O3 -std=c++11 -lfl  -lm
+OPTION = -O3 -std=c++11 -lm
 OPTIONW = -Wall
 
 CC = gcc
@@ -18,7 +18,7 @@ automa:	y.tab.o lex.yy.o $(name_file).cpp ./lsode.cpp ./automa.cpp
 	$(C++) -D AUTOMATON -I./ -o $(name_file).solver lex.yy.o y.tab.o $(name_file).cpp ./class.cpp  ./lsode.cpp ./automa.cpp   $(OPTION) $(OPTIONW)
 
 lex.yy.o:	readingAutomaton.ll
-	$(LEX)  -+ readingAutomaton.ll
+	$(LEX)  -+ -P mm readingAutomaton.ll
 
 y.tab.o:	 readingAutomaton.yy
 	$(YACC) -v -d readingAutomaton.yy

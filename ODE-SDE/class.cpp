@@ -164,6 +164,8 @@ bool SystEq::readInitialMarking(const string& file){
 /* DESCRIPTION : getMin returns the minimum value among the places*/
 /**************************************************************/
 
+SystEqMin::~SystEqMin() {}
+
 inline void SystEqMin::getValTranFire()
 {
 	for(int t=0; t<nTrans; t++)
@@ -210,6 +212,8 @@ inline void SystEqMin::getValTranFire()
 /* NAME :  Class SystEqMas*/
 /* DESCRIPTION : getProd returns the producd value among the places*/
 /**************************************************************/
+
+SystEqMas::~SystEqMas() {}
 
 inline void SystEqMas::getValTranFire()
 {
@@ -1533,7 +1537,7 @@ void  SystEq::SolveODEEuler(double h,double perc1,double perc2,double Max_Time,b
 	this->fh=h;
 	this->perc1=perc1;
 	this->perc2=perc2;
-	this->Max_Run=Max_Run;
+	this->Max_Run=1;
 	//For statistic
 	FinalValueXRun=new double*[nPlaces];
 	for (int i=0;i<nPlaces;i++)
@@ -1729,7 +1733,7 @@ void  SystEq::SolveODE45(double h, double perc1,double Max_Time,bool Info,double
 	const double C187d2100 =187.0/2100.0;
 
 	this->fh=h;
-	this->Max_Run=Max_Run;
+	this->Max_Run=1;
 	//For statistic
 	FinalValueXRun=new double*[nPlaces];
 	for (int i=0;i<nPlaces;i++)
@@ -1868,7 +1872,7 @@ void  SystEq::SolveODE45(double h, double perc1,double Max_Time,bool Info,double
 			}
 
 
-			if((time==NextPrintTime)){
+			if(time==NextPrintTime){
 				cout<<"\tTime:"<<time<<"(Step: "<<Print_Step<<", Last_Step:"<<h<<")"<<endl;
 				NextPrintTime+=Print_Step;
 				if (Info)
@@ -1989,7 +1993,7 @@ void  SystEq::SolveODERKF(double h, double perc1,double Max_Time,bool Info,doubl
 	const double C1d50=1/50;
 
 	this->fh=h;
-	this->Max_Run=Max_Run;
+	this->Max_Run=1;
 	//For statistic
 	FinalValueXRun=new double*[nPlaces];
 	for (int i=0;i<nPlaces;i++)
@@ -2138,7 +2142,7 @@ void  SystEq::SolveODERKF(double h, double perc1,double Max_Time,bool Info,doubl
 					out<<" "<<Value[i];
 				ValuePrv[i]=Value[i];
 			}
-			if((time==NextPrintTime)){
+			if(time==NextPrintTime){
 				cout<<"\tTime:"<<time<<"(Step: "<<Print_Step<<", Last_Step:"<<h<<")"<<endl;
 				NextPrintTime+=Print_Step;
 				if (Info)
@@ -2572,9 +2576,12 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 	this->Max_Run=Max_Run;
 	//For statistic
 	FinalValueXRun=new double*[nPlaces];
-    double Mean[nPlaces] {0.0};
+    double Mean[nPlaces];
+    std::fill(Mean, Mean+nPlaces, 0.0);
+
 	//For negative marking
-	double ValuePrev[nPlaces+1] {0.0};
+	double ValuePrev[nPlaces+1];
+	std::fill(ValuePrev, ValuePrev+nPlaces+1, 0.0);
 
 
     cout<<endl<<"Seed value: "<<seed<<endl<<endl;
@@ -2610,7 +2617,10 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
     rtol[nPlaces]=perc2;
 
 
-   int SetTran[nTrans+1] {0};
+   int SetTran[nTrans+1];
+   std::fill(SetTran, SetTran + nTrans + 1, 0);
+
+
 //disable discrite transition from fluid computation
     for (int i=0;i<nTrans;i++)
 	{
@@ -2759,7 +2769,8 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 
 	this-> Max_Run=Max_Run;
 	FinalValueXRun = new double*[nPlaces];
-	double Mean[nPlaces] {0.0};
+	double Mean[nPlaces];
+	std::fill(Mean, Mean + nPlaces, 0.0);
 	double tout;
 
 	//double ValuePrev[nPlaces] {0.0};
@@ -2793,7 +2804,8 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 	}
 
 
-	int SetTran[nTrans+1] {0};
+	int SetTran[nTrans+1];
+	std::fill(SetTran, SetTran + nTrans + 1, 0);
 	//disable discrete transition from fluid computation
 	for(int i=0;i<nTrans;i++)
 	{
@@ -2891,7 +2903,8 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 
 	this-> Max_Run=Max_Run;
 	FinalValueXRun = new double*[nPlaces];
-	double Mean[nPlaces] {0.0};
+	double Mean[nPlaces];
+	std::fill(Mean, Mean + nPlaces, 0.0);
 	//double tout;
 
 	//double ValuePrev[nPlaces] {0.0};
@@ -2899,7 +2912,8 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 
 	double ValueInit[nPlaces];
 
-	int firing[nTrans] {0};
+	int firing[nTrans];
+	std::fill(firing, firing + nTrans, 0);
 	cout<<endl<<"Seed value: "<<seed;
 	cout<<endl<<"Epsilon TAU-leaping: "<<epsTAU<<endl<<endl;
 
@@ -2928,7 +2942,8 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 	}
 
 
-	int SetTran[nTrans+1] {0};
+	int SetTran[nTrans+1];
+	std::fill(SetTran, SetTran + nTrans + 1, 0);
 	//disable discrete transition from fluid computation
 	for(int i=0;i<nTrans;i++)
 	{
@@ -3103,7 +3118,7 @@ void  SystEq::HeuristicStep(double h,double perc1,double perc2,double Max_Time,b
 	this->fh=h;
 	this->perc1=perc1;
 	this->perc2=perc2;
-	this->Max_Run=Max_Run;
+	this->Max_Run=1;
 	//For statistic
 	FinalValueXRun=new  double*[nPlaces];
 	double* ValueInit=(double*)malloc(sizeof(double)*nPlaces);
