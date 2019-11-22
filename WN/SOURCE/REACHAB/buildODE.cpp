@@ -1066,22 +1066,24 @@ void build_ODER(ofstream &out, std::string net)
                 out<<tabt[tt].trans_name << " = "<<tabt[tt].mean_t;
 
         if (MASSACTION)
-            {
-            int elem=0;
-            for (int pp1 = 0; pp1 < npl; pp1++){
-                if (TPI[tt][pp1] < - 1){
-                    if (elem>1){
-                        out<<" + factorial("<<abs(TPI[tt][pp1])<<")";
+                    {
+                    int elem=0;
+                    for (int pp1 = 0; pp1 < npl; pp1++){
+                //cout << "trans " << tabt[tt].trans_name << "-> " <<TPI[tt][pp1]<<"\n" ;
+                        if (TPI[tt][pp1] < - 1){
+                            if (elem>0){
+                                out<<" * factorial("<<abs(TPI[tt][pp1])<<")";
+                            }
+                            else{
+                                out<<" / ( factorial("<<abs(TPI[tt][pp1])<<")";
+                            }
+                            elem++;
+                        }
+                    
                     }
-                    else{
-                        out<<" / ( factorial("<<abs(TPI[tt][pp1])<<")";
-                    }
-                    elem++;
+                    if (elem>0)
+                        out<<" )";
                 }
-                if (elem>0)
-                out<<" )";
-            }
-        }
         out<<"\n";
 
 #if DEBUG
@@ -1826,7 +1828,28 @@ void build_ODEM(ofstream &out, std::string net)
             l_ptr = NEXT_NODE(l_ptr);
         }
         //Encoding transition rates
-        out << tabt[tt].trans_name << " = " << tabt[tt].mean_t << ";\n";
+        out << tabt[tt].trans_name << " = " << tabt[tt].mean_t;
+        
+        if (MASSACTION)
+            {
+            int elem=0;
+            for (int pp1 = 0; pp1 < npl; pp1++){
+                cout << "trans " << tabt[tt].trans_name << "-> " <<TPI[tt][pp1]<<"\n" ;
+                if (TPI[tt][pp1] < - 1){
+                    if (elem>0){
+                        out<<" * factorial("<<abs(TPI[tt][pp1])<<")";
+                    }
+                    else{
+                        out<<" / ( factorial("<<abs(TPI[tt][pp1])<<")";
+                    }
+                    elem++;
+                }
+               
+            }
+            if (elem>0)
+                out<<" )";
+        }
+        out<<";\n";
 
 #if DEBUG
         for (int i = 0; i < npl; i++)
@@ -1835,7 +1858,7 @@ void build_ODEM(ofstream &out, std::string net)
 #endif
     }
 
-    out << "%Transition rates\n\n";
+    out << "%End Transition rates\n\n";
 
 
     out << "%Place mapping\n";
@@ -1865,7 +1888,7 @@ void build_ODEM(ofstream &out, std::string net)
                     {
                         if (TPI[tt][pp1] < 0)
                         {
-                            out << " * " << tabp[pp1].place_name << "/" << abs(TPI[tt][pp1]);
+                            out << " * " << tabp[pp1].place_name << "^" << abs(TPI[tt][pp1]);
                         }
                     }
                 }
