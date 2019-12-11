@@ -429,12 +429,14 @@ namespace SDE
 #endif
 //automaton
 
-    //It returns the brown noise value for the input transition.
+    //!It returns the brown noise value for the input transition.
     inline double getBNoiseTran(int Tran) {return Trans[Tran].BrownNoise;};
-    //It reads from a file the softh lower and upper bounds.
+    //!It reads from a file the softh lower and upper bounds.
     bool readSLUBounds(const string& file);
-    //It reads from a file the initial marking.
+    //!It reads from a file the initial marking.
     bool readInitialMarking(const string& file);
+    //!It reads from a file new place markings and new transition rates
+    bool readParameter(const string& file);
     //! It resets the list of enable transition
     void resetTrans();
     //! It solves the ODE system using Euler method. It takes in input the step size and the Max_Time

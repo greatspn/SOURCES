@@ -440,7 +440,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     out << " int SOLVE = 7, runs=1;\n";
     out << " long int seed = 0;\n";
     out << " bool OUTPUT=false;\n";
-    out << " std::string fbound=\"\", finit=\"\";\n";
+    out << " std::string fbound=\"\", finit=\"\", fparm=\"\";\n";
     out << " double hini = 1e-6, atolODE = 1e-6, rtolODE=1e-6, ftime=1.0, stime=0.0, epsTAU=0.1;\n\n";
     out << " cout<<\"\\n\\n =========================================================\\n\";\n";
     out << " cout<<\"|	              ODE/SDE Solver                       |\\n\";\n";
@@ -474,6 +474,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     out << " std::cerr<<\"\\n\\t -b <bound_file>:\\t Soft bound are defined in the file <bound_file>\";\n\t";
     out << " std::cerr<<\"\\n\\t -seed <double>:\\t Seed of random number generator\";\n\t";
     out << " std::cerr<<\"\\n\\t -init <init_file>:\\t The file <initial_file> contains the initial marking. Default:  initial marking in the orginal net\";\n\t";
+    out << " std::cerr<<\"\\n\\t -parm <parm_file>:\\t The file <parm_file> contains a set of pairs with format <transition name> <value> or <place name> <value>.\\n\\t\\t\\t\\t For transition  the value is used to set a new rate value, while for place  it is used to set a new initial marking.\";\n\t";
     //automaton
     if (AUTOMATON)
         out << " std::cerr<<\"\\n\\t <automaton_file>:\\t automaton is defined in the file <automaton>\\n\";";
@@ -592,6 +593,15 @@ void build_ODE(ofstream &out, std::string path, std::string net)
                 out<< "\t\t\t std::cerr<<\"\\nError:  -init  <file_name>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
         out<<"\t\t continue;\n";
         out<<"\t }\n";
+
+        out<<"\t if (strcmp(\"-parm\", argv[ii])==0){\n";
+            out<<"\t\t if (++ii<argc){\n";
+                out<<"\t\t\t fparm=string(argv[ii]);\n\t\t }\n";
+            out<<"\t\t else{\n";
+                out<< "\t\t\t std::cerr<<\"\\nError:  -parm  <file_name>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+        out<<"\t\t continue;\n";
+        out<<"\t }\n";
+
         out<< "\t\t\t std::cerr<<\"\\nError:  unknown parameter \"<<argv[ii]<<\"\\n\\n\";\n\t\t\t exit(EXIT_FAILURE);\n";
     out<<" }\n\n\n";
 
@@ -615,6 +625,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     out << " cout<<\"\\tSolution runs: \"<<runs<<\"\\n\";\n";
     out << " if (fbound!=\"\") cout<<\"\\tBound file: \"<<fbound<<\"\\n\";\n";
     out << " if (finit!=\"\") cout<<\"\\tInitial marking file: \"<<finit<<\"\\n\";\n";
+    out << " if (fparm!=\"\") cout<<\"\\tInitial parameter file: \"<<fparm<<\"\\n\";\n";
     //automaton
     if (AUTOMATON)
         out << " cout<<\"\\tAutomaton input: \"<<argv[2]<<\"\\n\";\n";
@@ -750,7 +761,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
 
  //if soft init file is specified
     out << "\n if (finit!=\"\") {\n\t if (!(se.readInitialMarking(finit))) exit(EXIT_FAILURE);\n }";
-
+    out << "\n if (fparm!=\"\") {\n\t if (!(se.readParameter(fparm))) exit(EXIT_FAILURE);\n }";
 
     //automaton
     cout << "\tDone.\n" << endl;
@@ -1079,7 +1090,7 @@ void build_ODER(ofstream &out, std::string net)
                             }
                             elem++;
                         }
-                    
+
                     }
                     if (elem>0)
                         out<<" )";
@@ -1829,7 +1840,7 @@ void build_ODEM(ofstream &out, std::string net)
         }
         //Encoding transition rates
         out << tabt[tt].trans_name << " = " << tabt[tt].mean_t;
-        
+
         if (MASSACTION)
             {
             int elem=0;
@@ -1844,7 +1855,7 @@ void build_ODEM(ofstream &out, std::string net)
                     }
                     elem++;
                 }
-               
+
             }
             if (elem>0)
                 out<<" )";

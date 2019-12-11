@@ -159,6 +159,84 @@ bool SystEq::readInitialMarking(const string& file){
 }
 
 
+
+
+
+
+
+
+/**************************************************************/
+/* NAME :  Class SystEq*/
+/* DESCRIPTION : readInitialMarking reads initial marking from a file*/
+/**************************************************************/
+bool SystEq::readParameter(const string& file){
+	ifstream in(file.c_str(), std::ifstream::in);
+	if (!in)
+	{
+		cerr<<"\nError:  it is not possible to open the parameter file "<<file<< "\n\n";
+		return false;
+	}
+
+	std::string name;
+	cout<<"\n\n-----------------------------------------------------------\n";
+	cout<<"\t\t  Reading Parameter"<<endl;
+	cout<<"-----------------------------------------------------------\n";
+
+
+	try{
+        string name="";
+        double value=0.0;
+        while(!in.eof()){
+
+            in>>name>>value;
+            if ((name!="")&& (value!=-1)){
+                map<std::string,int>::iterator it;
+                if ((it=NumTrans.find(name))!=NumTrans.end()){
+                    cout<<"New rate of transition "<<name<<" is "<<value<<endl;
+                    Trans[it->second].rate=value;
+                    }
+                else{
+                    if ((it=NumPlaces.find(name))!=NumPlaces.end()){
+                        cout<<"New marking of place "<<name<<" is "<<value<<endl;
+                        Value[it->second]=value;
+                        }
+                    else{
+                        cout<<"Warning: "<<name<<" is not a valid  transition or place name"<<endl;
+                        }
+                    }
+                name="";
+                value=-1.0;
+                }
+        }
+
+	}catch (exception& e){
+        cout << "Exception: " << e.what() << endl;
+        return false;
+    }
+
+    //updating p-semiflow
+    unsigned int i=headDerv;
+	while (i!=DEFAULT){
+		double value =0.0, coff=0.0;
+		int place=-1;
+		for (int j=0;j<VEq[i].getSizeP()-1;j++){
+			VEq[i].getPsemflw(j,place,coff);
+			value+=Value[place]*coff;
+		}
+		value+=Value[i];
+        VEq[i].setPsemflw(VEq[i].getSizeP()-1,value);
+        i=VEq[i].getNext();
+	}
+	cout<<"-----------------------------------------------------------\n";
+	return true;
+}
+
+
+
+
+
+
+
 /**************************************************************/
 /* NAME :  Class SystEqMin*/
 /* DESCRIPTION : getMin returns the minimum value among the places*/
