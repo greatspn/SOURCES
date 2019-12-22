@@ -2842,11 +2842,11 @@ void load_expected_results(RSRG& rs) {
             //     cout << r << " ";
             // cout << endl;
 
-            if (rs.expected_ctl.size() == 16) { // Move entries to fix order bug
-                std::vector<CTLResult> s27(rs.expected_ctl.begin() + 2, rs.expected_ctl.begin() + 8);
-                rs.expected_ctl.erase(rs.expected_ctl.begin() + 2, rs.expected_ctl.begin() + 8);
-                rs.expected_ctl.insert(rs.expected_ctl.end(), s27.begin(), s27.end());
-            }
+            //if (rs.expected_ctl.size() == 16) { // Move entries to fix order bug
+                //std::vector<CTLResult> s27(rs.expected_ctl.begin() + 2, rs.expected_ctl.begin() + 8);
+                //rs.expected_ctl.erase(rs.expected_ctl.begin() + 2, rs.expected_ctl.begin() + 8);
+                //rs.expected_ctl.insert(rs.expected_ctl.end(), s27.begin(), s27.end());
+            //}
 
             // for (auto&& r : rs.expected_ctl)
             //     cout << r << " ";
