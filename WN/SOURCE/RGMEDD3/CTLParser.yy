@@ -353,6 +353,7 @@ BaseFormula *parse_formula(const std::string& formula, CTLResult *out_result) {
                  << (parsedFrm->isIntFormula()?"int":"bool") << endl;
         }
 
+        parsedFrm->addOwner();
         if (parsedFrm->isIntFormula()) { 
             IntLiteral* intFrm = dynamic_cast<IntLiteral*>(parsedFrm);
             out_result->set_int(intFrm->getConstant());
@@ -362,7 +363,7 @@ BaseFormula *parse_formula(const std::string& formula, CTLResult *out_result) {
             dd_edge dd = boolFrm->getMDD();
             assert(dd.getForest() != nullptr);
             endMDD = clock();
-            boolFrm->addOwner();
+            // boolFrm->addOwner();
 
             // Evaluate the CTL expression:  s0 |= formula
             dd_edge r(rsrg->getForestMDD());

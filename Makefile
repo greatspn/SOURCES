@@ -402,8 +402,8 @@ all: libraries binaries scripts
 ### Common definitions ###
 
 # generate_WN_FLAGS = '-DCONST_H="$(1)"' '-DCONST1_H="../INCLUDE/$(1)"' \
-					'-DCONST2_H="../../INCLUDE/$(1)"' '-DCONST3_H="../../../INCLUDE/$(1)"' \
-					'-DWN_GRAMMAR_H="../../objects/$(2)/WN/TRANSL/wn_grammar.y.h"' $(CFLAGS)
+# 					'-DCONST2_H="../../INCLUDE/$(1)"' '-DCONST3_H="../../../INCLUDE/$(1)"' \
+# 					'-DWN_GRAMMAR_H="../../objects/$(2)/WN/TRANSL/wn_grammar.y.h"' $(CFLAGS)
 # generate_GSPN_FLAGS = '-DCONST_H="$(1)"' '-DCONST1_H="../INCLUDE/$(1)"' \
 # 					  '-DCONST2_H="../../INCLUDE/$(1)"' '-DCONST3_H="../../../INCLUDE/$(1)"' \
 # 					  '-DWN_GRAMMAR_H="../../objects/$(2)/WN/TRANSL/gspn_grammar.y.h"' $(CFLAGS)

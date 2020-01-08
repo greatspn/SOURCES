@@ -170,6 +170,30 @@ struct FormulaPrinter {
         cout << "  card = " << f->getMDD().getCardinality();
         if (f->getMDD().getNode() == rsrg->getRS().getNode())
             cout << " (RS)";
+
+        // cout << endl;
+        // const dd_edge& dd = f->getMDD();
+        // // dd_edge dd(f->getMDD());
+        // // apply(INTERSECTION, rsrg->getRS(), dd, dd);
+        // enumerator i(dd);
+        // int nvar = dd.getForest()->getDomain()->getNumVariables();
+        // for (enumerator i(dd); i != 0; ++i) {
+        //     cout << "     ";
+        //     for(int j=1; j <= nvar; j++) { // for each variable
+        //         int val = *(i.getAssignments() + j);
+        //         const char* s = dd.getForest()->getDomain()->getVar(j)->getName();
+        //         if(val==1) 
+        //             cout << s << " ";
+        //         else if(val!=0) 
+        //             cout << s << "(" << val << ") ";
+        //     }
+        //     cout << endl;
+        // }
+        // cout << endl;
+
+        // // ostream_output meddout(cout);
+        // // dd.show(meddout, 2);
+        // // cout << endl;
     }
     void stat(IntFormula *e) {
         if (running_for_MCC() || CTL_quiet)
@@ -639,7 +663,8 @@ void Inequality::createMDD() {
         dd_edge boole(rsrg->getForestMDD());
         dd_edge tmp_complete(rsrg->getForestMDD());
         int **m = ctl->getIns();
-        memset(m[0], -1, (rsrg->getDomain()->getNumVariables())*sizeof(int));
+        std::fill(m[0], m[0] + rsrg->getDomain()->getNumVariables() + 1, DONT_CARE);
+        // memset(m[0], -1, (rsrg->getDomain()->getNumVariables())*sizeof(int));
         int variable_bound1 = rsrg->getMaxValueOfPlaceRS(((PlaceTerm *)expr1)->getPlace());
         int variable_bound2 = rsrg->getMaxValueOfPlaceRS(((PlaceTerm *)expr2)->getPlace());
         // n*expr1 == m*expr2  ->  expr1 == (m/n)*expr2
@@ -658,8 +683,9 @@ void Inequality::createMDD() {
                 m[0][((PlaceTerm *)expr2)->getVariable()] = int(i / div * mult);
                 rsrg->getForestMDD()->createEdge(m, 1, tmp_complete);
                 apply(UNION, tmp_complete, boole, boole);
-                m[0][((PlaceTerm *)expr2)->getVariable()] = -1;
+                m[0][((PlaceTerm *)expr2)->getVariable()] = DONT_CARE;
             }
+            m[0][((PlaceTerm *)expr1)->getVariable()] = DONT_CARE;
         }
 
         switch (op) {
