@@ -37,7 +37,7 @@ LEXPPFLAGS ?=
 YACCPPFLAGS ?=
 ARFLAGS :=
 UIL ?= /usr/bin/uil
-ENABLE_Cxx14 ?= -std=c++17
+ENABLE_Cxx17 ?= -std=c++17
 
 # External libraries
 FLEX-INCLUDE :=
@@ -77,12 +77,12 @@ ifeq ($(UNAME_S),Darwin)
 #    FLEX-LIB := -lfl -L/usr/local/opt/flex/lib
    OPENGL-LIB := -lgl -lglu -lglut
    CC := gcc -g -c -std=c99 -Wno-deprecated-register
-   CPP := g++ -g -c -std=c++14 -Wno-unused-local-typedef -Wno-deprecated-register
+   CPP := g++ -g -c -std=c++17 -Wno-unused-local-typedef -Wno-deprecated-register
    LD := gcc -g 
    LDPP := g++ -g 
    CFLAGS += -I/usr/include/malloc -I/usr/local/include/
    LDFLAGS += -L/usr/local/lib/
-   ENABLE_Cxx14 := -std=c++14 -stdlib=libc++ -U__STRICT_ANSI__
+   ENABLE_Cxx17 := -std=c++17 -stdlib=libc++ -U__STRICT_ANSI__
    LAUNCH4J := java -jar JavaGUI/launch4j-macosx/launch4j.jar
 
    
@@ -910,7 +910,7 @@ $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoParser.yy.o: $(OBJDIR)/RGMEDD/WN/SOURCE/AU
 
 RGMEDD2_CFLAGS := $(CFLAGS) $(call generate_WN_FLAGS,TOOL_RGMEDD2,RGMEDD2) \
 				          $(FLEX-INCLUDE) 
-RGMEDD2_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx14) -Wno-deprecated-register \
+RGMEDD2_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx17) -Wno-deprecated-register \
                     -I/usr/local/include $(INCLUDE_GMP_LIB) \
                     $(RGMEDD2_CFLAGS) -I/usr/local/include 
                     
@@ -997,7 +997,7 @@ TARGETS += RGMEDD2
 
 RGMEDD3_CFLAGS := $(CFLAGS) $(call generate_WN_FLAGS,TOOL_RGMEDD3,RGMEDD3) \
                   $(FLEX-INCLUDE) 
-RGMEDD3_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx14) \
+RGMEDD3_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx17) \
                     -I/usr/local/include $(INCLUDE_GMP_LIB) \
                     $(RGMEDD3_CFLAGS) -I/usr/local/include 
                     
@@ -1174,7 +1174,7 @@ swn-translator_SOURCES := WN/SOURCE/UNFOLDING/alloc.c \
 					 	  
 PN2ODE_LDFLAGS := $(LDFLAGS) $(FLEX-LIB)
 PN2ODE_CFLAGS := $(call generate_WN_FLAGS,TOOL_PN2ODE,PN2ODE)
-PN2ODE_CPPFLAGS := $(PN2ODE_CFLAGS) $(ENABLE_Cxx14) -I.
+PN2ODE_CPPFLAGS := $(PN2ODE_CFLAGS) $(ENABLE_Cxx17) -I.
 PN2ODE_LD := $(LDPP)
 PN2ODE_SOURCES := WN/SOURCE/SHARED/service.c \
 				  WN/SOURCE/SHARED/ealloc.c \
@@ -1989,7 +1989,7 @@ CSLTA_SOURCES := NSRC/CSLTA-solver/asmc.cpp \
                  NSRC/CSLTA-solver/parser.y \
                  NSRC/CSLTA-solver/lexer.l
 
-CSLTA_CPPFLAGS := $(CPPFLAGS) -Wall $(ENABLE_Cxx14)
+CSLTA_CPPFLAGS := $(CPPFLAGS) -Wall $(ENABLE_Cxx17)
 CSLTA_LEX := flex
 CSLTA_YACC := bison -d
 CSLTA_LD := $(LDPP)
@@ -2038,7 +2038,7 @@ $(OBJDIR)/DSPN-Tool/NSRC/DSPN-Tool/CSLTA.o: $(OBJDIR)/DSPN-Tool/NSRC/DSPN-Tool/n
 
 NSRC/DSPN-Tool/lexer.ll: $(OBJDIR)/DSPN-Tool/NSRC/DSPN-Tool/newparser.lyy.o bin/lemon
 
-DSPN-Tool_CPPFLAGS := -O2 -Wall $(ENABLE_Cxx14) \
+DSPN-Tool_CPPFLAGS := -O2 -Wall $(ENABLE_Cxx17) \
                       -Iobjects/DSPN-Tool/NSRC/DSPN-Tool/ \
                       -Wno-unused-function \
                       -DNDEBUG=1 
@@ -2057,7 +2057,7 @@ $(OBJDIR)/DSPN-Tool-Debug/NSRC/DSPN-Tool/CSLTA.o: $(OBJDIR)/DSPN-Tool-Debug/NSRC
 NSRC/DSPN-Tool/lexer.ll: $(OBJDIR)/DSPN-Tool-Debug/NSRC/DSPN-Tool/newparser.lyy.o bin/lemon
 
 DSPN-Tool-Debug_SOURCES := $(DSPN-Tool_SOURCES)
-DSPN-Tool-Debug_CPPFLAGS := -Wall $(ENABLE_Cxx14) \
+DSPN-Tool-Debug_CPPFLAGS := -Wall $(ENABLE_Cxx17) \
                       		-Iobjects/DSPN-Tool-Debug/NSRC/DSPN-Tool/ \
                       		-g -Wall -Wextra -Wno-unused-parameter \
                       		-Wno-unused-function \
@@ -2074,7 +2074,7 @@ endif
 
 alphaFactory_SOURCES := NSRC/alphaFactory/alphaFactory.cpp
 
-alphaFactory_CPPFLAGS := $(CPPFLAGS) -Wall $(ENABLE_Cxx14) \
+alphaFactory_CPPFLAGS := $(CPPFLAGS) -Wall $(ENABLE_Cxx17) \
                          -Wno-unused-function 
 alphaFactory_LD := $(LDPP)
 
