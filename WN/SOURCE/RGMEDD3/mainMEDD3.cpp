@@ -177,6 +177,7 @@ const char* g_dot_file = nullptr;
 
 bool CTL = false;
 bool CTL_quiet = false;
+bool CTL_print_intermediate_sat_sets = false;
 bool CTMC = false;
 bool g_count_firings = true;
 bool g_show_var_order = false;
@@ -1439,6 +1440,9 @@ int initialize(int  argc,  char  *argv[]) {
         // }
         else if (0 == strcmp(argv[ii], "-C")) {
             CTL = true;
+        }
+        else if (0 == strcmp(argv[ii], "-CTL-satsets")) {
+            CTL_print_intermediate_sat_sets = true;
         }
         else if (0 == strcmp(argv[ii], "-Cv")) {
             CTL_quiet = false;

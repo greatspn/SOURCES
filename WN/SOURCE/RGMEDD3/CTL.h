@@ -25,6 +25,7 @@
 
 extern RSRG *rsrg;
 extern bool CTL_quiet;
+extern bool CTL_print_intermediate_sat_sets;
 
 #ifndef CTL_ASSERT
 inline void AssertFailed(const char *f, int l) {

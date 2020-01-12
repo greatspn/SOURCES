@@ -4,6 +4,8 @@
 using namespace ctlmdd;
 #include "CTLParser.yy.h"
 
+#define register
+
 extern RSRG *rsrg;
 int yyFlexLexer::yywrap(void){
 	return 1;

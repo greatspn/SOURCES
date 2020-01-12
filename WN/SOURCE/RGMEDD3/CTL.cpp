@@ -171,29 +171,32 @@ struct FormulaPrinter {
         if (f->getMDD().getNode() == rsrg->getRS().getNode())
             cout << " (RS)";
 
-        // cout << endl;
-        // const dd_edge& dd = f->getMDD();
-        // // dd_edge dd(f->getMDD());
-        // // apply(INTERSECTION, rsrg->getRS(), dd, dd);
-        // enumerator i(dd);
-        // int nvar = dd.getForest()->getDomain()->getNumVariables();
-        // for (enumerator i(dd); i != 0; ++i) {
-        //     cout << "     ";
-        //     for(int j=1; j <= nvar; j++) { // for each variable
-        //         int val = *(i.getAssignments() + j);
-        //         const char* s = dd.getForest()->getDomain()->getVar(j)->getName();
-        //         if(val==1) 
-        //             cout << s << " ";
-        //         else if(val!=0) 
-        //             cout << s << "(" << val << ") ";
-        //     }
-        //     cout << endl;
-        // }
-        // cout << endl;
+        if (CTL_print_intermediate_sat_sets) {
+            cout << endl;
+            // const dd_edge& dd = f->getMDD();
+            dd_edge dd(f->getMDD());
+            apply(INTERSECTION, rsrg->getRS(), dd, dd);
+            enumerator i(dd);
+            int nvar = dd.getForest()->getDomain()->getNumVariables();
+            cout << "     " << dd.getCardinality() << endl;
+            for (enumerator i(dd); i != 0; ++i) {
+                cout << "     ";
+                for(int j=1; j <= nvar; j++) { // for each variable
+                    int val = *(i.getAssignments() + j);
+                    const char* s = dd.getForest()->getDomain()->getVar(j)->getName();
+                    if(val==1) 
+                        cout << s << " ";
+                    else if(val!=0) 
+                        cout << s << "(" << val << ") ";
+                }
+                cout << endl;
+            }
+            cout << endl;
 
-        // // ostream_output meddout(cout);
-        // // dd.show(meddout, 2);
-        // // cout << endl;
+            // // ostream_output meddout(cout);
+            // // dd.show(meddout, 2);
+            // // cout << endl;
+        }
     }
     void stat(IntFormula *e) {
         if (running_for_MCC() || CTL_quiet)
