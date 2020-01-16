@@ -2252,6 +2252,7 @@ public class ExprLangParser extends Parser {
 		}
 	}
 	public static class BoolExprCTLStarQuantifContext extends BoolExprContext {
+		public Token q;
 		public TerminalNode CTLSTAR_EXISTS() { return getToken(ExprLangParser.CTLSTAR_EXISTS, 0); }
 		public BoolExprContext boolExpr() {
 			return getRuleContext(BoolExprContext.class,0);
@@ -2328,6 +2329,7 @@ public class ExprLangParser extends Parser {
 		}
 	}
 	public static class BoolExprCTLStarContext extends BoolExprContext {
+		public Token op;
 		public TerminalNode CTLSTAR_GLOBALLY() { return getToken(ExprLangParser.CTLSTAR_GLOBALLY, 0); }
 		public BoolExprContext boolExpr() {
 			return getRuleContext(BoolExprContext.class,0);
@@ -2475,9 +2477,10 @@ public class ExprLangParser extends Parser {
 				_ctx = _localctx;
 				_prevctx = _localctx;
 				setState(367);
+				((BoolExprCTLStarContext)_localctx).op = _input.LT(1);
 				_la = _input.LA(1);
 				if ( !(((((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & ((1L << (CTLSTAR_NEXT - 128)) | (1L << (CTLSTAR_FUTURE - 128)) | (1L << (CTLSTAR_GLOBALLY - 128)))) != 0)) ) {
-				_errHandler.recoverInline(this);
+					((BoolExprCTLStarContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 				}
 				consume();
 				setState(368); boolExpr(5);
@@ -2490,9 +2493,10 @@ public class ExprLangParser extends Parser {
 				_ctx = _localctx;
 				_prevctx = _localctx;
 				setState(369);
+				((BoolExprCTLStarQuantifContext)_localctx).q = _input.LT(1);
 				_la = _input.LA(1);
 				if ( !(_la==CTLSTAR_EXISTS || _la==CTLSTAR_FORALL) ) {
-				_errHandler.recoverInline(this);
+					((BoolExprCTLStarQuantifContext)_localctx).q = (Token)_errHandler.recoverInline(this);
 				}
 				consume();
 				setState(370); boolExpr(2);

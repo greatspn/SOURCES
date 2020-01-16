@@ -153,11 +153,11 @@ boolExpr : '!' boolExpr                                          # BoolExprNot
          | ENABLED '(' TRANSITION_ID ')'                         # BoolExprCTLenabled
          | (DEADLOCK|NO_DEADLOCK)                                # BoolExprCTLdeadlocks
          /* LTL/CTL* language */
-         | (CTLSTAR_NEXT | CTLSTAR_FUTURE | CTLSTAR_GLOBALLY) boolExpr  # BoolExprCTLStar
+         | op=(CTLSTAR_NEXT | CTLSTAR_FUTURE | CTLSTAR_GLOBALLY) boolExpr  # BoolExprCTLStar
          | '(' boolExpr CTLSTAR_UNTIL boolExpr ')'               # BoolExprCTLStarUntil
          | '[' boolExpr CTLSTAR_UNTIL boolExpr ']'               # BoolExprCTLStarUntil2
-         | (CTLSTAR_EXISTS | CTLSTAR_FORALL) boolExpr            # BoolExprCTLStarQuantif
-         | composite_temporal_op_ctlstar boolExpr                # BoolExprCTLStar2
+         | q=(CTLSTAR_EXISTS | CTLSTAR_FORALL) boolExpr          # BoolExprCTLStarQuantif
+         | composite_temporal_op_ctlstar boolExpr             # BoolExprCTLStar2
          ;
 
 unaryIntFn : fn=(ABS_FN | FACTORIAL_FN);
@@ -613,10 +613,10 @@ ID : ID_LETTER (ID_LETTER | DIGIT)* {
             case "possibly":     setType(ExprLangParser.POSSIBLY);    return;
             case "impossibly":   setType(ExprLangParser.IMPOSSIBLY);  return;
             case "invariantly":  setType(ExprLangParser.INVARIANTLY); return;
-            case "en":  setType(ExprLangParser.ENABLED);              return;
-            case "bounds":    setType(ExprLangParser.BOUNDS);         return;
-            case "deadlock":  setType(ExprLangParser.DEADLOCK);       return;
-            case "ndeadlock": setType(ExprLangParser.NO_DEADLOCK);    return;
+            case "en":           setType(ExprLangParser.ENABLED);     return;
+            case "bounds":       setType(ExprLangParser.BOUNDS);      return;
+            case "deadlock":     setType(ExprLangParser.DEADLOCK);    return;
+            case "ndeadlock":    setType(ExprLangParser.NO_DEADLOCK); return;
             // If new context-dependent keywords are added to this list,
             // they must also be added in NetObject.extraKeyWords[].
         }

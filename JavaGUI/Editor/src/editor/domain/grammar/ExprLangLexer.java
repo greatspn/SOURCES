@@ -229,10 +229,10 @@ public class ExprLangLexer extends Lexer {
 		            case "possibly":     setType(ExprLangParser.POSSIBLY);    return;
 		            case "impossibly":   setType(ExprLangParser.IMPOSSIBLY);  return;
 		            case "invariantly":  setType(ExprLangParser.INVARIANTLY); return;
-		            case "en":  setType(ExprLangParser.ENABLED);              return;
-		            case "bounds":    setType(ExprLangParser.BOUNDS);         return;
-		            case "deadlock":  setType(ExprLangParser.DEADLOCK);       return;
-		            case "ndeadlock": setType(ExprLangParser.NO_DEADLOCK);    return;
+		            case "en":           setType(ExprLangParser.ENABLED);     return;
+		            case "bounds":       setType(ExprLangParser.BOUNDS);      return;
+		            case "deadlock":     setType(ExprLangParser.DEADLOCK);    return;
+		            case "ndeadlock":    setType(ExprLangParser.NO_DEADLOCK); return;
 		            // If new context-dependent keywords are added to this list,
 		            // they must also be added in NetObject.extraKeyWords[].
 		        }
