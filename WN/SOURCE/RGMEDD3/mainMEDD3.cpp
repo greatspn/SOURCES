@@ -177,6 +177,7 @@ const char* g_dot_file = nullptr;
 
 bool CTL = false;
 bool CTL_quiet = false;
+bool CTL_print_intermediate_sat_sets = false;
 bool CTMC = false;
 bool g_count_firings = true;
 bool g_show_var_order = false;
@@ -1439,6 +1440,9 @@ int initialize(int  argc,  char  *argv[]) {
         // }
         else if (0 == strcmp(argv[ii], "-C")) {
             CTL = true;
+        }
+        else if (0 == strcmp(argv[ii], "-CTL-satsets")) {
+            CTL_print_intermediate_sat_sets = true;
         }
         else if (0 == strcmp(argv[ii], "-Cv")) {
             CTL_quiet = false;
@@ -2842,11 +2846,11 @@ void load_expected_results(RSRG& rs) {
             //     cout << r << " ";
             // cout << endl;
 
-            if (rs.expected_ctl.size() == 16) { // Move entries to fix order bug
-                std::vector<CTLResult> s27(rs.expected_ctl.begin() + 2, rs.expected_ctl.begin() + 8);
-                rs.expected_ctl.erase(rs.expected_ctl.begin() + 2, rs.expected_ctl.begin() + 8);
-                rs.expected_ctl.insert(rs.expected_ctl.end(), s27.begin(), s27.end());
-            }
+            //if (rs.expected_ctl.size() == 16) { // Move entries to fix order bug
+                //std::vector<CTLResult> s27(rs.expected_ctl.begin() + 2, rs.expected_ctl.begin() + 8);
+                //rs.expected_ctl.erase(rs.expected_ctl.begin() + 2, rs.expected_ctl.begin() + 8);
+                //rs.expected_ctl.insert(rs.expected_ctl.end(), s27.begin(), s27.end());
+            //}
 
             // for (auto&& r : rs.expected_ctl)
             //     cout << r << " ";

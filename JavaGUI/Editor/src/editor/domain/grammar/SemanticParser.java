@@ -1071,6 +1071,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         }
     }
     
+
     @Override
     public FormattedFormula visitRealExprNegate(ExprLangParser.RealExprNegateContext ctx) {
         return formatUnaryFn(ExprLangParser.SUB, visit(ctx.realExpr()));
@@ -1357,6 +1358,42 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 throw new UnsupportedOperationException();
         }
     }
+    
+    //==========================================================================
+    //  CTLSTAR terms:
+    //==========================================================================
+    
+    @Override 
+    public FormattedFormula visitBoolExprCTLStarQuantif(ExprLangParser.BoolExprCTLStarQuantifContext ctx) { 
+        return format(true, ctx.q.getText(), " ", visit(ctx.boolExpr()));
+    }
+    @Override 
+    public FormattedFormula visitBoolExprCTLStarUntil2(ExprLangParser.BoolExprCTLStarUntil2Context ctx) { 
+        switch (lang) {
+            case LATEX:     return format(true, "(", visit(ctx.boolExpr(0)), "~\\mathrm{U}~", visit(ctx.boolExpr(1)), ")");
+            case GREATSPN:
+            case PNPRO:     return format(true, "[", visit(ctx.boolExpr(0)), " U ", visit(ctx.boolExpr(1)), "]");
+            default:        throw new UnsupportedOperationException();
+        }
+    }
+    @Override 
+    public FormattedFormula visitBoolExprCTLStarUntil(ExprLangParser.BoolExprCTLStarUntilContext ctx) { 
+        switch (lang) {
+            case LATEX:     return format(true, "(", visit(ctx.boolExpr(0)), "~\\mathrm{U}~", visit(ctx.boolExpr(1)), ")");
+            case GREATSPN:
+            case PNPRO:     return format(true, "[", visit(ctx.boolExpr(0)), " U ", visit(ctx.boolExpr(1)), "]");
+            default:        throw new UnsupportedOperationException();
+        }
+    }
+    @Override 
+    public FormattedFormula visitBoolExprCTLStar(ExprLangParser.BoolExprCTLStarContext ctx) { 
+        return format(true, ctx.op.getText(), " ", visit(ctx.boolExpr()));
+    }
+    @Override 
+    public FormattedFormula visitBoolExprCTLStar2(ExprLangParser.BoolExprCTLStar2Context ctx) { 
+        return format(true, visit(ctx.composite_temporal_op_ctlstar()), " ", visit(ctx.boolExpr()));
+    }
+
     
     //==========================================================================
     //  Multiset terms:
