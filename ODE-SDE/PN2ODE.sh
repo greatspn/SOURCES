@@ -77,7 +77,7 @@ case "$1" in
 
     -F)
     if [ $# -gt 1 ]
-    then 
+    then
 	FUN_PATH="$2"
     else
         printf "**ERROR** You must specify a legal objective function file path after -F. \n\n"
@@ -162,8 +162,8 @@ fi
 
 if   [ "$EXPORT_FORMAT" == "-G" ]
 then
-	echo "Output files:" 
-	echo "	$NET_PATH.left_side"   
+	echo "Output files:"
+	echo "	$NET_PATH.left_side"
 	echo "	$NET_PATH.right_side"
 	echo "	$NET_PATH.M_0"
         echo "	$NET_PATH.M_feed "
@@ -232,14 +232,22 @@ else
 	echo
   fi
   cp ./lsode.* ${MyTempDir}
-  cp ./makefile ${MyTempDir} 
+  cp ./makefile ${MyTempDir}
    cd ${MyTempDir}
   echo "#cd ${MyTempDir}"
   echo
   echo "#Compiling ... "
   make  normal
+
+  if [ ?$ != 0 ]; then
+    echo -e "\n\n Error during compilation!!\n"
+    exit 1
+  fi
+
 fi
 
 echo
 echo "#Executable file: $NET_PATH.solver"
 echo
+
+exit 0
