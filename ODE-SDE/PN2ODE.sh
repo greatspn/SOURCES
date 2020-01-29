@@ -238,11 +238,12 @@ else
   echo
   echo "#Compiling ... "
   make  normal
-
-  if [ ?$ != 0 ]; then
-    echo -e "\n\n Error during compilation!!\n"
-    exit 1
+  if [ "$?" -ne 0 ]
+  then
+	echo -e "#Error during compilation. \n\n"
+	exit 1
   fi
+ 
 
 fi
 
