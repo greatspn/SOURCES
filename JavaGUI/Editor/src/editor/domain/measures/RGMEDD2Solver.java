@@ -79,7 +79,8 @@ public class RGMEDD2Solver extends SolverInvokator {
                             ctlWriter = new BufferedWriter(new FileWriter(ctlFilename));
                         }
                         entry = new ModelCheckingResultEntry(measName, evalBind);
-                        ctlWriter.append("% \"").append(measName).append("\"\n");
+//                        ctlWriter.append("% \"").append(measName).append("\"\n");
+                        ctlWriter.append("% ").append(measName).append("\n");
 //                        String exCTL = fm.getFormula().convertLang(getContext(), EvaluationArguments.NO_ARGS, 
 //                                        ExpressionLanguage.GREATSPN);
                         ctlWriter.append(fm.getFormula().getExpr()).append("\n");
