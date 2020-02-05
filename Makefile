@@ -998,7 +998,7 @@ TARGETS += RGMEDD2
 
 RGMEDD3_CFLAGS := $(CFLAGS) $(call generate_WN_FLAGS,TOOL_RGMEDD3,RGMEDD3) \
                   $(FLEX-INCLUDE) 
-RGMEDD3_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx17) \
+RGMEDD3_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx14) \
                     -I/usr/local/include $(INCLUDE_GMP_LIB) \
                     $(RGMEDD3_CFLAGS) -I/usr/local/include 
                     
