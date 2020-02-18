@@ -3282,8 +3282,12 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             String log = PNMLFormat.importPNML(gspn, pnmlFile, id2name, null);
             if (log != null)
                 new ModalLogDialog(this, log).setVisible(true);
+            // check that a project is open
+            if (activeProject == null) {
+                throw new InvalidOperationException("Import of PNML files is only available inside a project. Please create one.");
+
             // Avoid duplicate page names
-            if (activeProject.getCurrent().findPageByName(gspn.getPageName()) != null)
+            } else if (activeProject.getCurrent().findPageByName(gspn.getPageName()) != null)
                 gspn.setPageName(generateUniquePageName(activeProject, gspn.getPageName()));
             
             executeUndoableCommand("import GSPN from PNML format.", new UndoableCommand() {
