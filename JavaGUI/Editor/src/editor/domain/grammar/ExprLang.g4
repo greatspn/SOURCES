@@ -157,7 +157,7 @@ boolExpr : '!' boolExpr                                          # BoolExprNot
          | '(' boolExpr CTLSTAR_UNTIL boolExpr ')'               # BoolExprCTLStarUntil
          | '[' boolExpr CTLSTAR_UNTIL boolExpr ']'               # BoolExprCTLStarUntil2
          | q=(CTLSTAR_EXISTS | CTLSTAR_FORALL) boolExpr          # BoolExprCTLStarQuantif
-         | composite_temporal_op_ctlstar boolExpr             # BoolExprCTLStar2
+         | composite_temporal_op_ctlstar boolExpr                # BoolExprCTLStar2
          ;
 
 unaryIntFn : fn=(ABS_FN | FACTORIAL_FN);

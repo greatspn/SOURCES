@@ -201,6 +201,19 @@ void handle_sigusr1_finished_statespace(int) {
 }
 
 //---------------------------------------------------------------------------------------
+
+template<class RandomIt, class RandomFunc>
+void my_random_shuffle(RandomIt first, RandomIt last, RandomFunc&& r)
+{
+    typename std::iterator_traits<RandomIt>::difference_type i, n;
+    n = last - first;
+    for (i = n-1; i > 0; --i) {
+        using std::swap;
+        swap(first[i], first[r(i+1)]);
+    }
+}
+
+//---------------------------------------------------------------------------------------
 // Entry point - apply a variable order heuristics, with optional refinements
 //---------------------------------------------------------------------------------------
 
@@ -239,8 +252,8 @@ void determine_var_order(const var_order_selector& sel,
 	        for (size_t i = 0; i < npl; i++)
 	            net_to_mddLevel[i] = i;
             if (sel.heuristics == VOC_RANDOM) { // reshuffle
-                std::random_shuffle(net_to_mddLevel.begin(), net_to_mddLevel.end(),
-                                    [](int n){ return genrand64_int63() % n; });
+                my_random_shuffle(net_to_mddLevel.begin(), net_to_mddLevel.end(),
+                                  [](int n){ return genrand64_int63() % n; });
                 // for (size_t i = 0; i < npl; i++)
                 //     std::swap(net_to_mddLevel[genrand64_int63() % npl],
                 //               net_to_mddLevel[genrand64_int63() % npl]);
