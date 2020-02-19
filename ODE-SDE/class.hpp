@@ -323,8 +323,10 @@ namespace SDE
     class Equation* VEq {nullptr};
     //!it stores the current equation values (at time variable "time")
     double* Value {nullptr};
-    //!it stores the previous equation values (at time variable time")
+    //!it stores the previous equation values (at time variable "time")
     double* ValuePrv {nullptr};
+    //!it stores the derivative values for a fixed transition (at time variable "time")
+    double* DerivTAUG {nullptr};
     //!it stores the current enabling degree for continuous transition fire
     double* EnabledTransValueCon {nullptr};
     //!it stores the current enabling degree for discrete transition fire
@@ -402,7 +404,7 @@ namespace SDE
     //!It computes the Tau taking as input the list of descrete transitions and the next time point. It returns a possible transition firing otherwise  -1. It requires that  getValTranFire() must be called before.
     int getComputeTau(int SetTran[], double& nextTimePoint,double t);
     //!It computes the Tau according to Gillespie algorithm. It takes as input the list of descrete transitions and the next time point. It returns a possible transition firing otherwise  -1. It requires that  getValTranFire() must be called before.
-    double getComputeTauGillespie(int SetTran[],double t);
+    double getComputeTauGillespie(int SetTran[],double t, double hstep);
     //! It is a pure virtual function which must be implemented.
     virtual void getValTranFire()=0;
     virtual void getValTranFire(double*)=0;
@@ -459,8 +461,16 @@ namespace SDE
     void SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int Max_Run,bool Info,double Print_Step,char *argv);
     //! It solves the  system using SSA method.It takes in input the step size, the Max_Time and Max_Run. To print the trace of each run -> Info = true
     void SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max_Run,bool Info,double Print_Step,char *argv);
-     //! It solves the ODE system using  tau-leaping method  method. It returns tthe computed tau.
+     //! It solves the ODE system using  tau-leaping method  method. It returns the computed tau.
     void SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,char *argv);
+    //! It computes the sixth-order approximation of the derivative according to the Richardson's Extrapolation formula.
+    double DerivApproximation(double *ValuePrv, map <string,int>& NumTrans, map <string,int>& NumPlaces,const vector<string> & NameTrans, const struct InfTr* Trans, const int T, const double& time, double hstep, int ider);
+    //! They need for the sixth-order approximation of the derivative according to the Richardson's Extrapolation formula.
+    double RichardsonExtrap(double *ValuePrv, map <string,int>& NumTrans, map <string,int>& NumPlaces,const vector<string> & NameTrans, const struct InfTr* Trans, const int T, const double& time, double hstep, int ider);
+    /*
+    double L(double *ValuePrv, map <string,int>& NumTrans, map <string,int>& NumPlaces,const vector<string> & NameTrans, const struct InfTr* Trans, const int T, const double& time, int hstep, int ider );
+    double S(double *ValuePrv, map <string,int>& NumTrans, map <string,int>& NumPlaces,const vector<string> & NameTrans, const struct InfTr* Trans, const int T, const double& time, int hstep, int ider );
+    */
     //! It computes an estimation for the Euler step
     void HeuristicStep(double h,double perc1,double perc2,double Max_Time,bool Info,double Print_Step,char *argv);
     //! It prints a matrix PlacesXRuns with the final computed values
