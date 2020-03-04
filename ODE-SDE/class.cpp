@@ -2485,6 +2485,7 @@ if (SetTran[0]!=0)
 
 		for (int i=1;i<=size;++i){
 		if (EnabledTransValueDis[SetTran[i]]!=0){
+            /*It is not necessary since rate of generic transition is one by default!!!
             if (Trans[SetTran[i]].GenFun==""){
                 sumRate+=EnabledTransValueDis[SetTran[i]]*Trans[SetTran[i]].rate;
 
@@ -2495,6 +2496,9 @@ if (SetTran[0]!=0)
                 }
 
            /// cout<<NameTrans[i]<<" "<<sumRate<<endl;
+
+                   */
+             sumRate+=EnabledTransValueDis[SetTran[i]]*Trans[SetTran[i]].rate;
             }
 
 		TransRate[i-1]=sumRate;
@@ -2529,28 +2533,90 @@ if (SetTran[0]!=0)
 return -1;
 }
 
+/**************************************************************/
+/* NAME :  Class SystEq*/
+/* DESCRIPTION : It computes the sixth-order approximation of the derivative according to the Richardson's Extrapolation formula.*/
+/**************************************************************/
+
+double SystEq::RichardsonExtrap(double *ValuePrv, map <string,int>& NumTrans, map <string,int>& NumPlaces,const vector<string> & NameTrans, const struct InfTr* Trans, const int T, const double& time, double hstep, int ider )
+{	
+	double ValuePrv_tmp =  ValuePrv[ider];
+
+    // let's calculate the first part of the formula with h
+    ValuePrv[ider] =  ValuePrv[ider] + hstep;
+	// cout << "hstep = " << hstep << " ValuePrv_tmp = " << ValuePrv_tmp <<"; ValuePrv = " << ValuePrv[ider] <<"\n";
+	double fh = Trans[T].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+	ValuePrv[ider] = ValuePrv[ider] + hstep ;
+	// cout << "hstep = " << hstep << " ValuePrv_tmp = " << ValuePrv_tmp <<"; ValuePrv = " << ValuePrv[ider] <<"\n";
+	double f2h = Trans[T].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+    ValuePrv[ider] = ValuePrv_tmp - hstep;
+	double fmh = Trans[T].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+	ValuePrv[ider] = ValuePrv[ider] - hstep;
+	double fm2h = Trans[T].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+	double s1 = (- f2h + 8*fh - 8*fmh + fm2h) / (12*hstep) ;
+
+	// let's calculate the second part of the formula with 2h
+	ValuePrv[ider] = ValuePrv_tmp + hstep + hstep + hstep + hstep;
+	double f4h = Trans[T].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+    ValuePrv[ider] = ValuePrv_tmp - hstep - hstep - hstep - hstep; 
+	double fm4h = Trans[T].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+	double s2 = (- f4h + 8*f2h - 8*fm2h + fm4h) / (12*(hstep + hstep)) ;
+
+	// Set the value of ValuePrv as at the beginning
+	ValuePrv[ider] = ValuePrv_tmp;
+/* cout << " fh = " << fh << "; f2h= " << f2h << "; f4h= " << f4h <<"\n";
+cout << " fmh = " << fmh << "; fm2h= " << fm2h  << "; fm4h= " << fm4h  <<"\n";
+cout << " s1 = " << s1 << "; s2= " << s2 <<"\n";*/
+	return (16*s1 - s2 ) / 15 ;
+
+}
+/*
+double SystEq::S(double *ValuePrv, map <string,int>& NumTrans, map <string,int>& NumPlaces,const vector<string> & NameTrans, const struct InfTr* Trans, const int T, const double& time, int hstep, int ider)
+{	
+
+	double fh = f(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time,hstep,ider);
+	double f2h =f(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time,hstep+hstep,ider);
+	double fmh =f(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time,hstep,ider, true);
+	double fm2h =f(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time,hstep+hstep,ider, true);
+
+	return (- f2h + 8*fh - 8*fmh + fm2h) / 12*hstep ;
+}
+
+double SystEq::L(double *ValuePrv, map <string,int>& NumTrans, map <string,int>& NumPlaces,const vector<string> & NameTrans, const struct InfTr* Trans, const int T, const double& time, int hstep, int ider)
+{	
+	return (16*S(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time,hstep,ider) - S(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time,hstep+hstep,ider) ) / 15 ;
+}
+
+
+double SystEq::DerivApproximation(double *ValuePrv, map <string,int>& NumTrans, map <string,int>& NumPlaces,const vector<string> & NameTrans, const struct InfTr* Trans, const int T, const double& time, int hstep, int ider)
+{
+	// I will write the while here;
+
+	return RichardsonExtrap(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time,hstep,ider);
+}
+*/
 
 /**************************************************************/
 /* NAME :  Class SystEq*/
 /* DESCRIPTION : It computes the Tau according to Gillespie algorithm. It requires that  getValTranFire() must be called before.*/
 /**************************************************************/
 
-double SystEq::getComputeTauGillespie(int SetTran[],double t){
-
+double SystEq::getComputeTauGillespie(int SetTran[],double t, double hstep){
 
 	bool first=true; //boolean value if it is the first time we call this function -> this allow the computation only one single time of the total propensity a_0
 	double a_0=0;
 	//double eps =0.1;
 	double tau=t;
-	//oggi double f=0;//
+	//double f=0;//
 	if (SetTran[0]!=0){
-
-		int size= SetTran[0];//dice quante transizioni vengono gestite in maniera stocastica
-		//double f=0;//oggi
-		//double tau=MAX_DOUBLE;//massimo double possibile
+		
+		int size= SetTran[0];//number of stochastic transitions
 
         if(first==true){
             for(int h=1;h<=size;h++){
+
+            /*It is not necessary since rate of generic transition is one by default!!!
+            
             if (Trans[SetTran[h]].GenFun==""){
                     a_0+=EnabledTransValueDis[SetTran[h]]*Trans[SetTran[h]].rate;
                 }
@@ -2558,76 +2624,58 @@ double SystEq::getComputeTauGillespie(int SetTran[],double t){
                 {
                     a_0+=EnabledTransValueDis[SetTran[h]];
                 }
-
-		//oggi
-		//a_0+=EnabledTransValueDis[SetTran[h]];
+            */
+             a_0+=EnabledTransValueDis[SetTran[h]]*Trans[SetTran[h]].rate;
             }
             first=false;
         }
 
 
-		for (int k=1;k<=size;k++){//identifica la transizione
+		for (int k=1;k<=size;k++){// fixing a specific transition j among the stochastic ones (SetTran)
             int j=SetTran[k];
             if ((EnabledTransValueDis[j]!=0)){
+                //if (Trans[j].FuncT==nullptr){
+                    int N=Trans[j].InPlaces.size();// numero specie coinvolte nella reazione j-esima
+                    double mu=0;
+                    double sigma2=0;
+                    double tmp;
+					int idp =0;
+					for(int i=0;i<N;i++){
+						idp=Trans[j].InPlaces[i].Id;
+                        if(Trans[j].GenFun!=""){// check if j is a generic transition
+							DerivTAUG[idp]=RichardsonExtrap(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,j,time,hstep,idp);
+						// cout << "time = " << t << " Val= "<< ValuePrv[idp] << " DerivGen = " << DerivTAUG[idp] << "\n";
+						}
+						else{
+							DerivTAUG[idp]=(EnabledTransValueDis[j]*Trans[j].rate)*(Trans[j].InPlaces[i].Card/ValuePrv[idp]);
+						// cout << "time = " << t << " Val= "<< ValuePrv[idp] << " Deriv = " << DerivTAUG[idp] << "\n";
+						}
+						
+					}
 
-                int N=Trans[j].InPlaces.size();// numero specie coinvolte nella reazione j-esima
-                double mu=0;
-                double sigma2=0;
-                double tmp;
-
-                for (int kk=1;kk<=size;kk++)
-                {
-                    int jp=SetTran[kk];
-                    //if (EnabledTransValueDis[jp]!=0){
-                        double f=0;//oggi
-                        for(int i=0;i<N;i++){
-					//oggi
-					//if(ValuePrv[Trans[j].InPlaces[i].Id]!=0){
-						//oggi////f+=(EnabledTransValueDis[j]*Trans[j].rate)*(Trans[j].InPlaces[i].Card/ValuePrv[Trans[j].InPlaces[i].Id])*VEq[i].getIncDec(jp);	//non memorizzare
-
-					//*	  double valueSpeed;
-					//*	  if (Trans[j].GenFun==""){
-                    //*            valueSpeed=(EnabledTransValueDis[j]*Trans[j].rate);
-					//*	  }
-					//*	  else{
-                    //*            valueSpeed=EnabledTransValueDis[j];
-					//*	  }
-
-                    //*       f+=valueSpeed*(Trans[j].InPlaces[i].Card/ValuePrv[Trans[j].InPlaces[i].Id])*VEq[Trans[j].InPlaces[i].Id].getIncDecTran(jp);
-                              f+=(EnabledTransValueDis[j]*Trans[j].rate)*(Trans[j].InPlaces[i].Card/ValuePrv[Trans[j].InPlaces[i].Id])*VEq[Trans[j].InPlaces[i].Id].getIncDecTran(jp);
-					//}
+                    for (int kk=1;kk<=size;kk++)//all the transitions
+                        {
+                        int jp=SetTran[kk];
+                        double f=0;
+                        if (EnabledTransValueDis[jp]!=0){
+                                for(int i=0;i<N;i++){
+									idp=Trans[j].InPlaces[i].Id;
+                                    f+=DerivTAUG[idp]*VEq[idp].getIncDecTran(jp);
+                                }
+                                mu+=f*EnabledTransValueDis[jp]*Trans[jp].rate;
+                                sigma2+=f*f*EnabledTransValueDis[jp]*Trans[jp].rate;
+                            }
                         }
-                    //*double valueSpeed;
-                    //*if (Trans[jp].GenFun==""){
-                    //*        valueSpeed=(EnabledTransValueDis[jp]*Trans[jp].rate);
-                    //*}
-                    //*else{
-                    //*        valueSpeed=EnabledTransValueDis[jp];
-                    //*}
-
-                    //*mu+=f*valueSpeed; //
-                    //*sigma2+=f*f*valueSpeed;
-                    mu+=f*EnabledTransValueDis[jp]*Trans[jp].rate;
-                    sigma2+=f*f*EnabledTransValueDis[jp]*Trans[jp].rate;
-
-                   // }
-
-                }
-                tmp=min(epsTAU*a_0/fabs(mu),epsTAU*a_0*epsTAU*a_0/sigma2);//}
-            if (tmp<tau){
-                tau=tmp;
-                }
-            }
+                    tmp=min(epsTAU*a_0/fabs(mu),epsTAU*a_0*epsTAU*a_0/sigma2);//}
+                if (tmp<tau){
+                    tau=tmp;
+                } 
+			}
         }
 	}
-//
-//MB: qui devi riabilitare la throw
-/*	return -1;
-		*/
 	else{
 		 throw Exception("*****There are no possible reactions, hence the time step is null*****\n\n");
 		 tau=0;
-		//return 0.1;
 	}
 		return tau;
 }
@@ -3033,7 +3081,7 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 	}
 
 	int run=0;
-
+	double hstep = 0.00001;
 
 	while (run<Max_Run){
 
@@ -3061,7 +3109,7 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 		double t=MAX_DOUBLE,tmpt=0.0;
 
 		bool neg=false;
-
+		DerivTAUG = new double[nPlaces];
 
 		while(nextTimePoint<=Max_Time){
 
@@ -3074,7 +3122,7 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 
 		//compute tau
 
-			double tau=getComputeTauGillespie(SetTran,t);
+			double tau=getComputeTauGillespie(SetTran,t, hstep);
 
 			nextTimePoint+=tau;
 			if (nextTimePoint>tout){
