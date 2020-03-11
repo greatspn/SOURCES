@@ -727,7 +727,7 @@ void init() {
         trans_p->noecs = ecs;
         trans_p->endep = jj;
         trans_p->rate = rw;
-        fprintf(stderr, "gmt_stndrd: transition %d has rate %.15lf\n", nt, trans_p->rate);
+        // fprintf(stderr, "gmt_stndrd: transition %d has rate %.15lf\n", nt, trans_p->rate);
         if (ecs) {
             trans_p->md_p.prob = (double *)ecalloc(aecs[ecs].num + 1,
                                                    sizeof(double));
