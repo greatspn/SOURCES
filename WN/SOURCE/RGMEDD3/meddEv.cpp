@@ -47,7 +47,7 @@ static bool print_stat_for_gui_flag = false;
 extern "C" int print_stat_for_gui() {
     return (invoked_from_gui() && print_stat_for_gui_flag);
 }
-bool set_print_stat_for_gui() { print_stat_for_gui_flag = true; }
+void set_print_stat_for_gui() { print_stat_for_gui_flag = true; }
 
 
 const char* rgmedd_exception::what() const noexcept { 
