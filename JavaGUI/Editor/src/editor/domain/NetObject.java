@@ -358,7 +358,5 @@ public class NetObject implements Serializable {
     public static final int STYLE_ITALIC = 1;
     public static final int STYLE_BOLD = 2;
     public static final int STYLE_BOLD_ITALIC = 3;
-    public static final int NUM_STYLES = 4;
-    
-    
+    public static final int NUM_STYLES = 4;    
 }

@@ -199,7 +199,7 @@ struct net_object {
 #define         CMMOBJ_SIZE (unsigned)sizeof(struct com_object)
 #define         NETOBJ_SIZE (unsigned)sizeof(struct net_object)
 
-#define         TAG_SIZE    (unsigned)32
+#define         TAG_SIZE    (unsigned)128
 
 /**********************  Generic object code  **********************/
 

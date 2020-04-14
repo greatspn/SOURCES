@@ -7,8 +7,8 @@
 /* #define MAX_MARKS 262144 */  /*  2**15 <= MAX_MARKS < 2**22  */
 #define MAX_MARKS 4194304
 
-#define MAX_ITEMS 65767 /*  10*MAX_TRANS < MAX_ITEMS < 2**16  */
-#define L2_MAX_ITEMS 64 /*  2**L2_MAX_ITEMS > MAX_ITEMS */
+#define MAX_ITEMS 4194305 /*  10*MAX_TRANS < MAX_ITEMS < 2**16  */
+#define L2_MAX_ITEMS 256 /*  2**L2_MAX_ITEMS > MAX_ITEMS */
 
 #define MRKSLOT 1024
 /*#define MAX_ARR 256    MAX_ARR * MRKSLOT == MAX_MARKS  */
