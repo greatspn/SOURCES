@@ -5,6 +5,7 @@
  */
 package editor.domain.io;
 
+import common.Tuple;
 import editor.domain.Edge;
 import editor.domain.LabelDecor;
 import editor.domain.NetObject;
@@ -761,6 +762,40 @@ public class PNMLFormat {
         for (int i=0; i<allDeclarations.getLength(); i++) {
             Element declStruct = getSingleSubElementByTagName((Element)allDeclarations.item(i), "structure");
             if (declStruct != null) {
+                
+                // Read partitions first
+                Map<String, ArrayList<Tuple<String, ArrayList<String>>>> staticSubClasses;
+                staticSubClasses = new TreeMap<>();
+                NodeList allPartitions = declStruct.getElementsByTagName("partition");
+                for (int j=0; j<allPartitions.getLength(); j++) {
+                    Element partition = (Element)allPartitions.item(j);
+                    Element usDecl = getSingleSubElementByTagName(partition, "usersort");
+                    if (usDecl != null) {
+                        String clrClassId = usDecl.getAttribute("declaration");
+//                        System.out.println("partition "+clrClassId);
+                        NodeList partitionElems = partition.getElementsByTagName("partitionelement");
+                        ArrayList<Tuple<String, ArrayList<String>>> subclasses = new ArrayList<>();
+                        for (int el=0; el<partitionElems.getLength(); el++) {
+                            Element partitionElem = (Element)partitionElems.item(el);
+                            String partId = partitionElem.getAttribute("id");
+                            String partName = saveIdName(partId, partitionElem.getAttribute("name"), 
+                                                         id2name, knownNames);
+//                            System.out.println("  partitionElem "+partId);
+                            ArrayList<String> colors = new ArrayList<>();
+                            NodeList colorList = partitionElem.getElementsByTagName("useroperator");
+                            for (int c=0; c<colorList.getLength(); c++) {
+                                Element colorDecl = (Element)colorList.item(c);
+                                String colorId = colorDecl.getAttribute("declaration");
+//                                System.out.println("    colorId "+colorId);
+                                colors.add(colorId);
+                            }
+                            Tuple<String, ArrayList<String>> subclass = new Tuple<>(partId, colors);
+                            subclasses.add(subclass);
+                        }
+                        staticSubClasses.put(clrClassId, subclasses);
+                    }
+                }
+                
                 // Read named sorts (i.e. color classes)
                 NodeList allNamedSorts = declStruct.getElementsByTagName("namedsort");
                 for (int j=0; j<allNamedSorts.getLength(); j++) {
@@ -787,9 +822,9 @@ public class PNMLFormat {
                     
                     if (feDecl != null || ceDecl != null) {
                         Element decl = (feDecl != null) ? feDecl : ceDecl;
-                        String def = (feDecl != null) ? "enum" : "circular";
                         // Read the <feconstants>
                         NodeList allColors = decl.getElementsByTagName("feconstant");
+                        ArrayList<String> allClrNames = new ArrayList<>();
                         for (int k=0; k<allColors.getLength(); k++) {
                             Element color = (Element)allColors.item(k);
                             String clrId = color.getAttribute("id");
@@ -797,9 +832,42 @@ public class PNMLFormat {
                             if (clrName0 != null && Character.isDigit(clrName0.charAt(0)))
                                 clrName0 = clrClassName + clrName0;
                             String clrName = saveIdName(clrId, clrName0, id2name, knownNames);
-                            def += (k==0 ? " {" : ", ") + clrName;
+                            allClrNames.add(clrName);
                         }
-                        ColorClass cc = new ColorClass(clrClassName, new Point2D.Double(20, 3+numExtraColDef++), def+"}");
+                        // generate color definition
+                        boolean makeSimpleDef = true;
+                        String def = (feDecl != null) ? "enum" : "circular";
+                        if (staticSubClasses.containsKey(clrClassId)) {
+                            ArrayList<Tuple<String, ArrayList<String>>> subclasses = staticSubClasses.get(clrClassId);
+                            int numClrs = 0;
+                            for (Tuple<String, ArrayList<String>> t : subclasses)
+                                numClrs += t.y.size();
+                            if (numClrs != allClrNames.size()) {
+                                log.add("Only fully partitioned color classes are supported. "
+                                        + "Cannot import definition of "+clrClassName);
+                            }
+                            else {
+                                for (int s=0; s<subclasses.size(); s++) {
+                                    def += (s==0 ? "" : " + ") ;
+                                    ArrayList<String> clrsInSubclass = subclasses.get(s).y;
+                                    for (int k=0; k<clrsInSubclass.size(); k++) {
+                                        String clrName = convertId2Name(clrsInSubclass.get(k), id2name);
+                                        def += (k==0 ? " {" : ", ") + clrName;
+                                    }
+                                    String subclassName = convertId2Name(subclasses.get(s).x, id2name);
+                                    def += "} is " + subclassName;
+                                }
+                                makeSimpleDef = false;
+                            }
+                        }
+                        if (makeSimpleDef) {
+                            for (int k=0; k<allClrNames.size(); k++)
+                                def += (k==0 ? " {" : ", ") + allClrNames.get(k);
+                            def += "}";
+                        }
+//                        System.out.println(clrClassName+" = "+def);
+                        
+                        ColorClass cc = new ColorClass(clrClassName, new Point2D.Double(20, 3+numExtraColDef++), def);
                         gspn.nodes.add(cc);
                     }
                     else if (firDecl != null) { // colors are a range of integers
@@ -909,6 +977,7 @@ public class PNMLFormat {
                     if (structElem != null) {
                         // convert XML tree into PNPRO/GreatSPN expression
                         initMarkExpr = parseExpr(structElem, id2name, log, "initial marking", name);
+//                        System.out.println(id+" "+initMarkExpr);
                     }
                 }
                                 
