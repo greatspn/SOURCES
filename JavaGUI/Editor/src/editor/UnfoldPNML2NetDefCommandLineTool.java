@@ -66,6 +66,7 @@ public class UnfoldPNML2NetDefCommandLineTool {
         boolean anonimize = false;
         boolean useLongNames = false;
         boolean doUnfolding = true;
+        boolean useEvaluationCache = false;
         SemanticParser.strictColorExpressionChecks = false;
         
         // Read command line arguments
@@ -113,6 +114,10 @@ public class UnfoldPNML2NetDefCommandLineTool {
                     doUnfolding = false;
                     break;
 
+                case "-eval-cache":
+                    useEvaluationCache = true;
+                    break;
+                    
                 default:
                     System.out.println("Unknown option: "+args[c]);
                     System.exit(1);
@@ -201,6 +206,7 @@ public class UnfoldPNML2NetDefCommandLineTool {
             System.out.println("UNFOLDING COLORS...");
             unf = new Unfolding(gspn);
             unf.useLongUnfoldedNames = useLongNames;
+            unf.useEvaluationCache = useEvaluationCache;
             unf.unfold();
             unf.unfolded.setPageName(gspn.getPageName()+"_unfolded");
             gspn = unf.unfolded;

@@ -3,12 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/play/GspnDtaPlayEngine.java</file>
             <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/unfolding/Unfolding.java</file>
-            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/grammar/ExprLang.g4</file>
-            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/grammar/FormulaEvaluator.java</file>
-            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/play/FirableWithBindings.java</file>
-            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/play/JointFiring.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/io/PNMLFormat.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/UnfoldPNML2NetDefCommandLineTool.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/grammar/ParserContext.java</file>
         </group>
     </open-files>
 </project-private>

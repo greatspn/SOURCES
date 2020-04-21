@@ -13,6 +13,7 @@ if [[ $# == 0 ]] ; then
 	echo "             -long-names    Unfold using long names, like 'move_x_c1_y_s2'."
 	echo "             -short-names   Unfold using short names, like 'move_1_2'. [default]"
 	echo "             -no-unfolding  Do not unfold, just load and save."
+	echo "             -eval-cache    Use expr. evaluation cache (speeds up unfolding)."
 	
 	exit
 fi
