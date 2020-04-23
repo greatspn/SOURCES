@@ -115,6 +115,7 @@ public class UnfoldPNML2NetDefCommandLineTool {
                     break;
 
                 case "-eval-cache":
+                    System.out.println("Evaluation cache is bugged and does not work reliably!");
                     useEvaluationCache = true;
                     break;
                     
