@@ -982,7 +982,7 @@ $(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLLexer.ll.o: $(OBJDIR)/RGMEDD2/WN/SOURCE/R
 # endif
 
 # ifdef USE_RGMEDD2
-TARGETS += RGMEDD2
+# TARGETS += RGMEDD2
  #  ifneq ("$(wildcard ~/.elvio-temporary-hack)","")
  #  	 $(warning "Using both RGMEDD & RGMEDD2.")
  #  	RGMEDD2_CPPFLAGS := -I/Users/elvio/Desktop/meddly2015/src/ $(RGMEDD2_CPPFLAGS) 

@@ -113,7 +113,9 @@ public:
 private:
     inline void _init() {
         nthSel.resize((size_t)std::count_if(classes->begin(), classes->end(),
-                                            bind2nd(comp, selClass)));
+                                            [this](const T& x) -> bool
+                                            {return comp(x, selClass);}));
+                                            // bind2nd(comp, selClass)));
         size_t nth = 0;
         for (size_t k = 0; k < classes->size(); k++)
             if (comp((*classes)[k], selClass))

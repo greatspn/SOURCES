@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "readingObjectiveFunction.yy.h"
-
+#define register // allow c++17 to compile (register not allowd any longer)
 %}
 
 using namespace std;
