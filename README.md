@@ -71,7 +71,7 @@ and Oracle Java (version 8 or greater).
 Then install all the required dependencies using a software like [Homebrew](https://brew.sh/), e.g. 
 by running the command:
 ```
-brew install gmp boost flex byacc ant graphviz libxml++ autoconf automake libtool lp_solve
+brew install gmp boost flex byacc ant graphviz libxml++ autoconf automake libtool suitesparse lp_solve
 ```
 In the last Homebrew version, the lp_solve package could require to be built from sources.
 In that case, download the lp_solve sources from Sourceforge and follow the instructions
