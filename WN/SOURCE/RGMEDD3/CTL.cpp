@@ -1444,10 +1444,10 @@ TreeTraceNode *CTLStateFormula::generateTrace(const vector<int> &state0, TraceTy
                     const int *vlist = state.data();
                     mdd_forest->createEdge(&vlist, 1, dd_of_state);
                     apply(POST_IMAGE, dd_of_state, rsrg->getNSF(), dd_of_state);
-                    if (step > 0)
-                        apply(INTERSECTION, intermDD[step], dd_of_state, dd_of_state);
-                    else
-                        apply(DIFFERENCE, dd_of_state, intermDD[step], dd_of_state); // Modif. 5 may 2014
+                    // if (step > 0)
+                    apply(INTERSECTION, intermDD[step], dd_of_state, dd_of_state);
+                    // else
+                        // apply(DIFFERENCE, dd_of_state, intermDD[step], dd_of_state); // Modif. 5 may 2014
                     // Now take a sample state from dd_of_state
                     enumerator it(dd_of_state);
                     CTL_ASSERT(it);
