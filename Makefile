@@ -29,6 +29,10 @@ ifdef STATIC_LINK
 	LDFLAGS += -static
 endif
 
+ifdef SELF_CONTAINED
+	LDFLAGS += -Wl,-rpath=./sclib/ -Wl,-dynamic-linker,./sclib/ld-linux-x86-64.so.2
+endif
+
 # LDFLAGS ?= -g
 INCLUDES ?= 
 LEXFLAGS ?=
