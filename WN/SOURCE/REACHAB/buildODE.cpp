@@ -441,7 +441,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     out << " long int seed = 0;\n";
     out << " bool OUTPUT=false;\n";
     out << " std::string fbound=\"\", finit=\"\", fparm=\"\";\n";
-    out << " double hini = 1e-6, atolODE = 1e-6, rtolODE=1e-6, ftime=1.0, stime=0.0, epsTAU=0.1;\n\n";
+    out << " double hini = 1e-6, atolODE = 1e-6, rtolODE=1e-6, ftime=1.0, stime=0.0, itime=0.0, epsTAU=0.1;\n\n";
     out << " cout<<\"\\n\\n =========================================================\\n\";\n";
     out << " cout<<\"|	              ODE/SDE Solver                       |\\n\";\n";
     out << " cout<<\" =========================================================\\n\";\n";
@@ -471,6 +471,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     out << " std::cerr<<\"\\n\\t -runs <int>:\\t\\t Integer number corresponding to runs (only used in SSA,TAUG, HODE,HLSODA). Default: 1\";\n\t";
     out << " std::cerr<<\"\\n\\t -ftime <double>:\\t Double number used to set the upper bound of the evolution time. Dafault: 1\";\n\t";
     out << " std::cerr<<\"\\n\\t -stime <double>:\\t Double number used to set the step in the output. Default: 0.0 (no output)\";\n\t";
+    out << " std::cerr<<\"\\n\\t -itime <double>:\\t Double number used to set the initial simulation time. Default: 0.0 \";\n\t";
     out << " std::cerr<<\"\\n\\t -b <bound_file>:\\t Soft bound are defined in the file <bound_file>\";\n\t";
     out << " std::cerr<<\"\\n\\t -seed <double>:\\t Seed of random number generator\";\n\t";
     out << " std::cerr<<\"\\n\\t -init <init_file>:\\t The file <initial_file> contains the initial marking. Default:  initial marking in the orginal net\";\n\t";
@@ -558,6 +559,15 @@ void build_ODE(ofstream &out, std::string path, std::string net)
         out<<"\t\t continue;\n";
         out<<"\t }\n";
 
+//itime code
+        out<<"\t if (strcmp(\"-itime\", argv[ii])==0){\n";
+            out<<"\t\t if (++ii<argc){\n";
+                out<<"\t\t\t itime=atof(argv[ii]);\n\t\t }\n";
+            out<<"\t\t else{\n";
+                out<< "\t\t\t std::cerr<<\"\\nError:  -itime <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+        out<<"\t\t continue;\n";
+        out<<"\t }\n";
+
 //bound file code
         out<<"\t if (strcmp(\"-b\", argv[ii])==0){\n";
             out<<"\t\t if (++ii<argc){\n";
@@ -618,6 +628,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
         out << " cout<<\"\\tTransition policy: Minimum\\n\";\n";
     out << " cout<<\"\\tSolution final time: \"<<ftime<<\"\\n\";\n";
     out << " cout<<\"\\tInitial size step: \"<<hini<<\"\\n\";\n";
+    out << " cout<<\"\\tInitial  time: \"<<itime<<\"\\n\";\n";
     out << " cout<<\"\\tAbosolute tolerance: \"<<atolODE<<\"\\n\";\n";
     out << " cout<<\"\\tRelative tolerance: \"<<rtolODE<<\"\\n\";\n";
     //out << " if ((strcmp(argv[2],\"ODE\")!=0)&&(strcmp(argv[2],\"ode\")!=0)){\n";
@@ -639,9 +650,9 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     out << " struct InfTr t;\n";
     out << " Equation eq;\n Elem el;\n";
     if (MASSACTION)
-        out << " SystEqMas se(" << npl << "," << ntr << ",places,transitions,seed);\n";
+        out << " SystEqMas se(" << npl << "," << ntr << ",places,transitions,itime,seed);\n";
     else
-        out << " SystEqMin se(" << npl << "," << ntr << ",places,transitions,seed);\n";
+        out << " SystEqMin se(" << npl << "," << ntr << ",places,transitions,itime,seed);\n";
     out << " vector< struct InfPlace> Vpl;\n\n";
     for (int tt = 0; tt < ntr; tt++)
     {
@@ -815,6 +826,26 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     timeGlobal = ((double)(endGlobal - startGlobal)) / CLOCKS_PER_SEC;
 
 
+ //To mapping places and transitions
+    std::string filenamePT=path+".PlaceTransition";
+    ofstream PTout(filenamePT.c_str());
+
+    if (!PTout)
+    {
+        cerr << "Error: it is not possible to output file "<<filename<<"\n\n";
+        exit(EXIT_FAILURE);
+    }
+    PTout<<"#PLACE  ID\n";
+    for (int pp = 0; pp < npl; pp++)
+    {
+       PTout<<tabp[pp].place_name<<"\t"<<pp<<endl;
+    }
+    PTout<<"#TRANSITION  ID\n";
+    for (int tt = 0; tt < ntr; tt++)
+    {
+       PTout<<tabt[tt].trans_name<<"\t"<<tt<<endl;
+    }
+    PTout.close();
 
     cout << "===================== INFO =====================" << endl;
     cout << " Total Time: " << setprecision(7) << timeGlobal << " sec" << endl;

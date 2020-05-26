@@ -337,7 +337,9 @@ namespace SDE
     double* TransRate {nullptr};
     int Max_Run {1};
     //!it stores the current time for which the equation values are computed
-    double time;
+    double time {0.0};
+    //!it stores the initial time for which the equation values are computed
+    double itime {0.0};
     //!it stores the number of equation/places
     int nPlaces;
     //!it stores the number of transition
@@ -388,8 +390,8 @@ namespace SDE
   public:
     //! Empty Constructor
     SystEq(void){};
-    //! Constructor it takes in input the total number of transitions and places, two vector with the names of places and transitions and  a seed  of random number generator. Moreover the input parameter usedMin is true if transition infinity server policy is used, otherwise mass-product policy is used.
-    SystEq(int nPlaces,int nTrans, string NameTrans[], string NamePlaces[],long int seed);
+    //! Constructor it takes in input the total number of transitions and places, two vector with the names of places and transitions, initial simulation time,  and  a seed  of random number generator. Moreover the input parameter usedMin is true if transition infinity server policy is used, otherwise mass-product policy is used.
+    SystEq(int nPlaces,int nTrans, string NameTrans[], string NamePlaces[],double itime,long int seed);
     //! Deconstruct
     virtual ~SystEq();
     //! It stores the transition information. It takes in input the transition id and its information encodes on ``struct InfTr''
@@ -481,7 +483,7 @@ namespace SDE
   class SystEqMin:public SystEq
   {
     public:
-    SystEqMin(int nPlaces, int nTrans, string NameTrans[], string NamePlaces[],long int seed):SystEq(nPlaces,nTrans,NameTrans,NamePlaces,seed){typeTfunction="Min";};
+    SystEqMin(int nPlaces, int nTrans, string NameTrans[], string NamePlaces[],double itime,long int seed):SystEq(nPlaces,nTrans,NameTrans,NamePlaces,itime,seed){typeTfunction="Min";};
     virtual ~SystEqMin();
     //! For each transition it returns  the min of the values of its input places
      virtual void getValTranFire() override;
@@ -492,7 +494,7 @@ namespace SDE
   class SystEqMas:public SystEq
   {
     public:
-    SystEqMas(int nPlaces, int nTrans, string NameTrans[], string NamePlaces[],long int seed):SystEq(nPlaces,nTrans,NameTrans,NamePlaces,seed){typeTfunction="Prod";};
+    SystEqMas(int nPlaces, int nTrans, string NameTrans[], string NamePlaces[],double itime,long int seed):SystEq(nPlaces,nTrans,NameTrans,NamePlaces,itime,seed){typeTfunction="Prod";};
     virtual ~SystEqMas();
     //! For each transition it returns the product  of the values of its input places
     virtual void getValTranFire() override;

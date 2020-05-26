@@ -442,7 +442,7 @@ inline void SystEqMas::getValTranFire()
 /* DESCRIPTION : Constructor taking in input  the total number of transitions and places, and two vector with the names of places and transitions */
 /**************************************************************/
 
-SystEq::SystEq(int nPlaces,int nTrans, string NamePlaces[],  string NameTrans[], long int seed){
+SystEq::SystEq(int nPlaces,int nTrans, string NamePlaces[],  string NameTrans[], double itime, long int seed){
 
 	this->nTrans=nTrans;
 	this->nPlaces=nPlaces;
@@ -459,7 +459,7 @@ SystEq::SystEq(int nPlaces,int nTrans, string NamePlaces[],  string NameTrans[],
 	EnabledTransValueDis=(double*)malloc(sizeof(double)*nTrans);
 	TransRate=(double*)malloc(sizeof(double)*(nTrans+1));
 
-	time=0.0;
+	time=this->itime=itime;
 	int i=0;
 	while(i<nTrans)
 	{
@@ -811,8 +811,8 @@ while(run<Max_Run){
 		cout<<"\r\t START RUN..."<<run<<" ";
 		cout.flush();
 	}
-	time=0;
-	double NextPrintTime=0.0;
+	time=itime;
+	double NextPrintTime=itime;
 	trace_step=0;
 	for (int i=0;(i<nPlaces);i++)//return to the initial state
 	{
@@ -1014,7 +1014,7 @@ cout<<endl;
 		}
 		out<<endl;
 		for (int i=0;i<sizeMT&&(Print_Step*i<=Max_Time);i++){
-			out<<Print_Step*i;
+			out<<Print_Step*i+itime;
 			for (int j=0;j<nPlaces;j++){
 #ifdef AUTOMATON
 				out<<" "<<MeanTrace[i][j]/tot_accepted_traces;
@@ -1171,8 +1171,8 @@ while(run<Max_Run){
 		cout<<"\r\t START RUN..."<<run<<" ";
 		cout.flush();
 	}
-	time=0;
-	double NextPrintTime=0.0;
+	time=itime;
+	double NextPrintTime=itime;
 	trace_step=0;
 	for (int i=0;(i<nPlaces);i++)//return to the initial state
 	{
@@ -1431,7 +1431,7 @@ cout<<endl;
 
 
 		for (int i=0;i<sizeMT&&Print_Step*i<=Max_Time;i++){
-			out<<Print_Step*i;
+			out<<Print_Step*i+itime;
 			for (int j=0;j<nPlaces;j++){
 #ifdef AUTOMATON
 				out<<" "<<MeanTrace[i][j]/tot_accepted_traces;
@@ -1626,7 +1626,7 @@ void  SystEq::SolveODEEuler(double h,double perc1,double perc2,double Max_Time,b
 	}
 
 
-	double NextPrintTime=0.0;
+	double NextPrintTime=itime;
 	ofstream out;
 
 	if (Info)
@@ -1822,7 +1822,7 @@ void  SystEq::SolveODE45(double h, double perc1,double Max_Time,bool Info,double
 	}
 
 
-	double NextPrintTime=0.0;
+	double NextPrintTime=itime;
 	ofstream out;
 
 	if (Info)
@@ -2082,7 +2082,7 @@ void  SystEq::SolveODERKF(double h, double perc1,double Max_Time,bool Info,doubl
 	}
 
 
-	double NextPrintTime=0.0;
+	double NextPrintTime=itime;
 	ofstream out;
 
 	if (Info)
@@ -2362,7 +2362,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 
 
 	double          rwork1, rwork5, rwork6, rwork7;
-	double          atol[nPlaces+1], rtol[nPlaces+1], y[nPlaces+1], t=0.0E0, tout=Print_Step;
+	double          atol[nPlaces+1], rtol[nPlaces+1], y[nPlaces+1], t, tout=Print_Step+itime;
 	int             iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9;
 	int             neq = nPlaces;
 	int             itol=2, itask=1, istate=1, iopt=0, jt=2;
@@ -2396,10 +2396,12 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 		out<<"Time";
 		for (int i=0;i<nPlaces;i++)
 			out<<" "<<NamePlaces[i];
-		out<<endl<<"0.0 ";
+		out<<endl<<itime<<" ";
 	}
 	cout.precision(16);
 
+	//initialize time
+    t=itime;
 
 	y[0]=0.0;
 
@@ -2539,7 +2541,7 @@ return -1;
 /**************************************************************/
 
 double SystEq::RichardsonExtrap(double *ValuePrv, map <string,int>& NumTrans, map <string,int>& NumPlaces,const vector<string> & NameTrans, const struct InfTr* Trans, const int T, const double& time, double hstep, int ider )
-{	
+{
 	double ValuePrv_tmp =  ValuePrv[ider];
 
     // let's calculate the first part of the formula with h
@@ -2558,7 +2560,7 @@ double SystEq::RichardsonExtrap(double *ValuePrv, map <string,int>& NumTrans, ma
 	// let's calculate the second part of the formula with 2h
 	ValuePrv[ider] = ValuePrv_tmp + hstep + hstep + hstep + hstep;
 	double f4h = Trans[T].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time);
-    ValuePrv[ider] = ValuePrv_tmp - hstep - hstep - hstep - hstep; 
+    ValuePrv[ider] = ValuePrv_tmp - hstep - hstep - hstep - hstep;
 	double fm4h = Trans[T].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time);
 	double s2 = (- f4h + 8*f2h - 8*fm2h + fm4h) / (12*(hstep + hstep)) ;
 
@@ -2572,7 +2574,7 @@ cout << " s1 = " << s1 << "; s2= " << s2 <<"\n";*/
 }
 /*
 double SystEq::S(double *ValuePrv, map <string,int>& NumTrans, map <string,int>& NumPlaces,const vector<string> & NameTrans, const struct InfTr* Trans, const int T, const double& time, int hstep, int ider)
-{	
+{
 
 	double fh = f(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time,hstep,ider);
 	double f2h =f(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time,hstep+hstep,ider);
@@ -2583,7 +2585,7 @@ double SystEq::S(double *ValuePrv, map <string,int>& NumTrans, map <string,int>&
 }
 
 double SystEq::L(double *ValuePrv, map <string,int>& NumTrans, map <string,int>& NumPlaces,const vector<string> & NameTrans, const struct InfTr* Trans, const int T, const double& time, int hstep, int ider)
-{	
+{
 	return (16*S(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time,hstep,ider) - S(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time,hstep+hstep,ider) ) / 15 ;
 }
 
@@ -2609,14 +2611,14 @@ double SystEq::getComputeTauGillespie(int SetTran[],double t, double hstep){
 	double tau=t;
 	//double f=0;//
 	if (SetTran[0]!=0){
-		
+
 		int size= SetTran[0];//number of stochastic transitions
 
         if(first==true){
             for(int h=1;h<=size;h++){
 
             /*It is not necessary since rate of generic transition is one by default!!!
-            
+
             if (Trans[SetTran[h]].GenFun==""){
                     a_0+=EnabledTransValueDis[SetTran[h]]*Trans[SetTran[h]].rate;
                 }
@@ -2650,7 +2652,7 @@ double SystEq::getComputeTauGillespie(int SetTran[],double t, double hstep){
 							DerivTAUG[idp]=(EnabledTransValueDis[j]*Trans[j].rate)*(Trans[j].InPlaces[i].Card/ValuePrv[idp]);
 						// cout << "time = " << t << " Val= "<< ValuePrv[idp] << " Deriv = " << DerivTAUG[idp] << "\n";
 						}
-						
+
 					}
 
                     for (int kk=1;kk<=size;kk++)//all the transitions
@@ -2669,7 +2671,7 @@ double SystEq::getComputeTauGillespie(int SetTran[],double t, double hstep){
                     tmp=min(epsTAU*a_0/fabs(mu),epsTAU*a_0*epsTAU*a_0/sigma2);//}
                 if (tmp<tau){
                     tau=tmp;
-                } 
+                }
 			}
         }
 	}
@@ -2690,7 +2692,7 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 
 
 	double          rwork1, rwork5, rwork6, rwork7;
-	double          atol[nPlaces+1], rtol[nPlaces+1], y[nPlaces+1], t=0.0E0, tout=Print_Step;
+	double          atol[nPlaces+1], rtol[nPlaces+1], y[nPlaces+1], t, tout=Print_Step+itime;
 	int             iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9;
 	int             neq = nPlaces;
 	int             itol=2, itask=1, istate=1, iopt=0, jt=2;
@@ -2774,7 +2776,7 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 		ValuePrev[0]=y[0]=0.0;
 
         if (Info){
-            out<<"0.0";
+            out<<itime;
         }
         for (int j=1;j<=nPlaces;j++){
             y[j]=ValuePrev[j]=Value[j-1];
@@ -2786,15 +2788,14 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
             out<<endl;;
         }
 
-        double nextTimePoint=tout=Print_Step;
+        double nextTimePoint=tout=Print_Step+itime;
         istate=1;
-        t=0.0E0;
+        t=itime;
 
         bool neg=false;
         double tmpt=t;
 
-        while(nextTimePoint<=Max_Time){
-
+        while(t<=Max_Time){
             if (!neg){
                 time=nextTimePoint;
                 getValTranFire(y+1);
@@ -2953,7 +2954,7 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 	}
 		//Initialization for each run
 		if(Info){
-			out<<"0.0";
+			out<<itime;
 		}
 
 		for (int j=0;j<nPlaces;j++){
@@ -2966,18 +2967,17 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 			out<<endl;;
 		}
 
-		double nextTimePoint=tout=Print_Step;
+		double nextTimePoint=tout=Print_Step+itime;
 		//istate=1;
-		double t=0.0E0;;
+		time=itime;
 
 
 
 
-		while(nextTimePoint<=Max_Time){
-
-            time=nextTimePoint;
+		while(time<=Max_Time){
+            //time=nextTimePoint;
             getValTranFire(Value);
-            int Tran=getComputeTau(SetTran,nextTimePoint,t);
+            int Tran=getComputeTau(SetTran,nextTimePoint,time);
 
             //cout<<Tran<<" "<<endl;
             if (Tran!=-1){
@@ -2987,7 +2987,7 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
                 }
             }
 
-            t=nextTimePoint;
+            time=nextTimePoint;
             if(tout==nextTimePoint){
 					if(Info){
 
@@ -3091,7 +3091,7 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 	}
 		//Initialization for each run
 		if(Info){
-			out<<"0.0";
+			out<<itime;
 		}
 
 		for (int j=0;j<nPlaces;j++){
@@ -3104,9 +3104,9 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 			out<<endl;;
 		}
 
-		double nextTimePoint=0,tout=Print_Step;
+		double nextTimePoint=itime,tout=Print_Step+itime;
 		//istate=1;
-		double t=MAX_DOUBLE,tmpt=0.0;
+		double t=MAX_DOUBLE,tmpt=itime;
 
 		bool neg=false;
 		DerivTAUG = new double[nPlaces];
@@ -3258,7 +3258,7 @@ void  SystEq::HeuristicStep(double h,double perc1,double perc2,double Max_Time,b
 	}
 
 
-	double NextPrintTime=0.0;
+	double NextPrintTime=itime;
 	ofstream out;
 
 	if (Info)
@@ -3280,7 +3280,7 @@ void  SystEq::HeuristicStep(double h,double perc1,double perc2,double Max_Time,b
 	{
 		cout<<"Euler Step: "<<this->perc1<<endl;
 		Max_error=-1;
-		time=0.0;
+		time=itime;
 		for (int i=0;(i<nPlaces);i++)//return to the initial state
 		{
 			Value[i]=ValueInit[i];
