@@ -2419,6 +2419,9 @@ print:
 	@echo "SCRIPT_FILES = " $(SCRIPT_FILES)
 	@echo "SCRIPT_SOURCES = " $(SCRIPT_SOURCES)
 
+print_binaries:
+	@echo "BINARIES = " $(BINARIES)
+
 print2:
 	@echo "DERIVEDSOURCES = " $(DERIVEDSOURCES)
 	@echo "DERIVEDHEADERS = " $(DERIVEDHEADERS)
