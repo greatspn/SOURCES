@@ -1,4 +1,5 @@
 #!/bin/bash
+# contributed by millergarym
 set -x
 set +o history
 groupadd -g $U_GID $U_USER
