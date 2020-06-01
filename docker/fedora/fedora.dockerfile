@@ -65,6 +65,8 @@ RUN make scripts
 
 RUN make install
 
+RUN dnf -y install terminus-fonts evince cups-pdf
+
 RUN echo 'PATH=$PATH:/SOURCES/scripts' >> /etc/profile.d/greatspn.path.sh
 # RUN echo 'unset HISTFILE' >> /etc/profile.d/disable.history.sh
 
@@ -72,7 +74,7 @@ ENV DISPLAY :0
 RUN set +o history
 
 # CMD [ "/SOURCE/greatspn_in_docker.sh" ]
-CMD [ "/SOURCES/launch_in_docker.sh" ]
+CMD [ "/SOURCES/docker/fedora/launch_in_docker.sh" ]
 
 
 # XSOCK=/tmp/.X11-unix
