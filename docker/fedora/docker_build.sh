@@ -1,2 +1,7 @@
+#!/bin/bash
+
 # contributed by millergarym
-docker build -t gspn . -f fedora.dockerfile
+
+ROOT="$(cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )"
+
+docker build -t gspn $ROOT -f $ROOT/docker/fedora/fedora.dockerfile
