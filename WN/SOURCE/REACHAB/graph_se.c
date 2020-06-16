@@ -33,8 +33,8 @@ static int treenode_pop_tot = 0;
 #endif
 // extern char cache_string[MAX_CACHE];
 char *get_cache_string();
-unsigned long d_ptr;
-unsigned long length;
+extern unsigned long d_ptr;
+extern unsigned long length;
 
 
 static Result_p result_free = NULL;   /* Free list per le result */

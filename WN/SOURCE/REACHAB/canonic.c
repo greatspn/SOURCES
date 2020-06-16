@@ -59,7 +59,7 @@ extern FILE *min_value_fp;
 #define RIP 2
 
 #ifdef SYMBOLIC
-double mark_ordinarie;      /* num. marc. ord. per marc. simbolica  */
+extern double mark_ordinarie;      /* num. marc. ord. per marc. simbolica  */
 #endif
 
 /**************************************************************/

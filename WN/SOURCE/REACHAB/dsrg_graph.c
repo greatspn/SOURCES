@@ -121,7 +121,7 @@ static int    NB_SR = 0;
 static int    NOT_YET = true;
 TO_MERGEP    *MERG_ALL  = NULL;
 STORE_STATICS_ARRAY Sym_StaticConf = NULL;
-int                 stop = false;
+static int                 stop = false;
 double             *tab_corr = NULL;
 int                 nb_tab_corr = 0;
 State               d_srg_top = NULL;
@@ -836,7 +836,7 @@ extern int initial_state(pState M0) {
         insert_tree(&root, &h, f_mark, length, d_ptr);
 
         /******* Compute the eventuality, *******************/
-        /******* corresponding to the asymétric marking *****/
+        /******* corresponding to the asymï¿½tric marking *****/
         GET_EVENT_FROM_MARKING(tabc, tot, num, card, MERGING_MAPPE,
                                initial_statics, STORED_CARD, MERG);
         /******************************************************/
@@ -2137,7 +2137,7 @@ d_srg_asym_succ_arc(State s,
                         AFTER_CANONISATION(sfl_h->min, &MERGING_MAPPE);
 
                         /******* Compute the eventuality,      ********************/
-                        /*******  corresponding to the asymétric marking *****/
+                        /*******  corresponding to the asymï¿½tric marking *****/
                         GET_EVENT_FROM_MARKING(tabc, tot, num, card, MERGING_MAPPE,
                                                s_prop_StaticConf, STORED_CARD, MERG);
                         /**********************************************************/
@@ -2305,7 +2305,7 @@ d_srg_sym_succ_arc(State s, MarkSym **TAB_SYM, int *NbTAB_SYM) {
                 /*** end compute symetrical representation ******************/
 
                 /************** Compute the eventuality,             *******/
-                /************** corresponding to the asymétric marking *****/
+                /************** corresponding to the asymï¿½tric marking *****/
                 GET_EVENT_FROM_MARKING(tabc, tot, num, card, MERGING_MAPPE,
                                        old_StaticConf, STORED_CARD, MERG);
                 /**********************************************************/
