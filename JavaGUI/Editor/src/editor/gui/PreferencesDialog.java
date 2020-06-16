@@ -57,6 +57,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
         filenameNSolve.setText(NSolve.getPathToNSolve());
         filenameNSolve.setDirPrefKey("nsolve-dir-pref");
         
+        textField_rgmeddVer.setText(RGMEDD2Solver.getRGMEDDName());
+        
         textFiledAdditionalPaths.setText(SolverInvokator.getAdditionalPathDir());
         
         filenameModelLibrary.setText(Main.getModelLibraryDirectory());
@@ -102,7 +104,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         jButtonCheckUpdates = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        comboBoxUiSizes = new javax.swing.JComboBox<Main.UiSize>();
+        comboBoxUiSizes = new javax.swing.JComboBox<>();
         labelUiNote = new javax.swing.JLabel();
         tabSolverPath = new javax.swing.JPanel();
         jLabelGreatSPN = new javax.swing.JLabel();
@@ -118,6 +120,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
         filenameNSolve = new common.JFilenameField();
         jLabelCosmos = new javax.swing.JLabel();
         filenameCosmos = new common.JFilenameField();
+        textField_rgmeddVer = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
 
         setTitle("Preferences");
         setResizable(false);
@@ -269,7 +273,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
                     .add(jLabel3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 27, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(labelUiNote, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(0, 10, Short.MAX_VALUE))
+                .add(0, 21, Short.MAX_VALUE))
         );
 
         org.jdesktop.layout.GroupLayout tabGeneralLayout = new org.jdesktop.layout.GroupLayout(tabGeneral);
@@ -327,18 +331,26 @@ public class PreferencesDialog extends javax.swing.JDialog {
             }
         });
 
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel8.setText("RGMEDD version:");
+
         org.jdesktop.layout.GroupLayout tabSolverPathLayout = new org.jdesktop.layout.GroupLayout(tabSolverPath);
         tabSolverPath.setLayout(tabSolverPathLayout);
         tabSolverPathLayout.setHorizontalGroup(
             tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(tabSolverPathLayout.createSequentialGroup()
+                .add(15, 15, 15)
+                .add(checkBox_allowGreatSPNExt)
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .add(tabSolverPathLayout.createSequentialGroup()
                 .add(28, 28, 28)
-                .add(tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabelGreatSPN)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabelNSolve)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabel5)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabel4)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabelCosmos))
+                .add(tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+                    .add(jLabelGreatSPN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(jLabelNSolve)
+                    .add(jLabel5)
+                    .add(jLabel4)
+                    .add(jLabelCosmos)
+                    .add(jLabel8, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(filenameGreatSPN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 495, Short.MAX_VALUE)
@@ -347,12 +359,9 @@ public class PreferencesDialog extends javax.swing.JDialog {
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabel6, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .add(textFiledAdditionalPaths)
                     .add(filenameNSolve, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, filenameCosmos, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, filenameCosmos, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(textField_rgmeddVer))
                 .addContainerGap())
-            .add(tabSolverPathLayout.createSequentialGroup()
-                .add(15, 15, 15)
-                .add(checkBox_allowGreatSPNExt)
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         tabSolverPathLayout.setVerticalGroup(
             tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -381,9 +390,13 @@ public class PreferencesDialog extends javax.swing.JDialog {
                     .add(jLabel5, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 28, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jLabel7, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(textField_rgmeddVer, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(jLabel8))
+                .add(25, 25, 25)
                 .add(checkBox_allowGreatSPNExt)
-                .addContainerGap(50, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("Solvers", tabSolverPath);
@@ -414,6 +427,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         NSolve.setPathToNSolve(filenameNSolve.getText());
         Main.setGreatSPNExtAllowed(checkBox_allowGreatSPNExt.isSelected());
         Main.setModelLibraryDirectory(filenameModelLibrary.getText());
+        RGMEDD2Solver.setRGMEDDName(textField_rgmeddVer.getText());
         
         SolverInvokator.setAdditionalPathDir(textFiledAdditionalPaths.getText());
         
@@ -461,6 +475,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabelCosmos;
     private javax.swing.JLabel jLabelGreatSPN;
     private javax.swing.JLabel jLabelNSolve;
@@ -475,6 +490,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JLabel labelUiNote;
     private javax.swing.JPanel tabGeneral;
     private javax.swing.JPanel tabSolverPath;
+    private javax.swing.JTextField textField_rgmeddVer;
     private javax.swing.JTextField textFiledAdditionalPaths;
     // End of variables declaration//GEN-END:variables
 }

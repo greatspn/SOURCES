@@ -52,7 +52,7 @@ public class RGMEDD2Solver extends SolverInvokator {
 //        step.addOptionalCmd("timeout 5s "+useGreatSPN_binary("DSPN-Tool") + " -load "+ quotedFn(null) + 
 //                            " -load-bnd -ilp-bnd ");
         
-        String rgmeddCmd = useGreatSPN_binary("RGMEDD3") + " " + quotedFn(null);
+        String rgmeddCmd = useGreatSPN_binary(getRGMEDDName()) + " " + quotedFn(null);
         rgmeddCmd += " " + varOrder.getCmdOption() + " ";
         if (params.genCounterExamples)
             rgmeddCmd += " -c";

@@ -778,6 +778,13 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         return envp;
     }
     
+    private static final String RGMEDD_EXECNAME = "rgmedd_exec_name";
+    public static void setRGMEDDName(String path) {
+        Util.getPreferences().put(RGMEDD_EXECNAME, path);
+    }
+    public static String getRGMEDDName() {
+        return Util.getPreferences().get(RGMEDD_EXECNAME, "RGMEDD3");
+    }
     
     //==========================================================================
     // Cosmos tool installation directory finder
