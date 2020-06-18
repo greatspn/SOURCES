@@ -52,6 +52,7 @@ public class RGMEDD2Solver extends SolverInvokator {
 //        step.addOptionalCmd("timeout 5s "+useGreatSPN_binary("DSPN-Tool") + " -load "+ quotedFn(null) + 
 //                            " -load-bnd -ilp-bnd ");
         
+        boolean isV3 = getRGMEDDName().equals("RGMEDD3");
         String rgmeddCmd = useGreatSPN_binary(getRGMEDDName()) + " " + quotedFn(null);
         rgmeddCmd += " " + varOrder.getCmdOption() + " ";
         if (params.genCounterExamples)
@@ -79,8 +80,10 @@ public class RGMEDD2Solver extends SolverInvokator {
                             ctlWriter = new BufferedWriter(new FileWriter(ctlFilename));
                         }
                         entry = new ModelCheckingResultEntry(measName, evalBind);
-//                        ctlWriter.append("% \"").append(measName).append("\"\n");
-                        ctlWriter.append("% ").append(measName).append("\n");
+                        if (isV3)
+                            ctlWriter.append("% ").append(measName).append("\n");
+                        else
+                            ctlWriter.append("% \"").append(measName).append("\"\n");
 //                        String exCTL = fm.getFormula().convertLang(getContext(), EvaluationArguments.NO_ARGS, 
 //                                        ExpressionLanguage.GREATSPN);
                         ctlWriter.append(fm.getFormula().getExpr()).append("\n");
