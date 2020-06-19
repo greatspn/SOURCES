@@ -57,6 +57,8 @@ public class RGMEDD2Solver extends SolverInvokator {
         rgmeddCmd += " " + varOrder.getCmdOption() + " ";
         if (params.genCounterExamples)
             rgmeddCmd += " -c";
+        if (!isV3)
+            rgmeddCmd += " -satsets";
         
         // Add the command for parameter bindings
         rgmeddCmd += getParamBindingCmd(currBind, true, true);
