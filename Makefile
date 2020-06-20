@@ -147,18 +147,10 @@ endef
 $(call search_file,OPENMOTIF,$(UIL))
 $(call warn_missing,OPENMOTIF,OpenMotif)
 
-# ifneq ($(shell which $(UIL)),$(UIL))
-#   $(warning "OpenMotif is not installed. Some packages will not compile properly.")
-# else
-#   HAS_OPENMOTIF_LIB := 1
-# endif
 
 $(call search_file,PKGCONFIG,$(shell which pkg-config))
 $(call warn_missing,PKGCONFIG,pkg-config tool)
 
-# ifeq ($(shell which pkg-config),)
-#   $(warning "The pkg-config tool is not installed. Some packages will not compile properly.")
-# endif
 
 ifeq ($(GLIB-INCLUDE),)
   $(warning "The glib-2.0 library is not installed. Some packages will not compile properly.")
@@ -168,64 +160,25 @@ endif
 
 $(call search_file,GRAPHMDP_LIB,/usr/local/lib/libgraphmdp.*,-lgraphmdp)
 $(call warn_missing,GRAPHMDP_LIB,GraphMDP library)
-# GRAPHMDP_LIB := /usr/local/lib/libgraphmdp.a
-# ifeq ($(wildcard $(GRAPHMDP_LIB)),)
-#   $(warning "The GraphMDP library is not installed. Some packages will not be compiled.")
-# else
-#   HAS_GRAPHMDP_LIB := 1
-# endif
 
 
 $(call search_lib,LIBXMLPP2-6_LIB,/usr/local/lib/libxml++-2.6)
 $(call search_lib,LIBXMLPP2-6_LIB,/usr/lib/libxml++-2.6)
 $(call search_lib,LIBXMLPP2-6_LIB,/usr/lib64/libxml++-2.6)
 $(call warn_missing,LIBXMLPP2-6_LIB,libXML++-2.6 library)
-# LIBXMLPP2-6_LIB := /usr/local/lib/libxml++-2.6
-# LIBXMLPP2-6_LIB_2 := /usr/lib/libxml++-2.6
-# ifneq ($(wildcard $(LIBXMLPP2-6_LIB)),)
-#   HAS_LIBXMLPP2-6_LIB := 1
-# else ifneq ($(wildcard $(LIBXMLPP2-6_LIB_2)),)
-#   HAS_LIBXMLPP2-6_LIB := 1
-# else
-#   $(warning "The libXML++-2.6 library is not installed. Some packages will not be compiled.")
-# endif
+
 
 $(call search_lib,GLIBMM2-4_LIB,/usr/local/lib/libglibmm-2.4.*)
 $(call search_lib,GLIBMM2-4_LIB,/usr/lib/libglibmm-2.4.*)
 $(call search_lib,GLIBMM2-4_LIB,/usr/lib64/libglibmm-2.4.*)
 $(call warn_missing,GLIBMM2-4_LIB,glibmm-2.4 library)
-# GLIBMM2-4_LIB := /usr/local/lib/libglibmm-2.4.*
-# GLIBMM2-4_LIB_2 := /usr/lib/libglibmm-2.4.*
-# ifneq ($(wildcard $(GLIBMM2-4_LIB)),)
-#   HAS_GLIBMM2-4_LIB := 1
-# else ifneq ($(wildcard $(GLIBMM2-4_LIB_2)),)
-#   HAS_GLIBMM2-4_LIB := 1
-# else
-#   $(warning "The glibmm-2.4 library is not installed. Some packages will not be compiled.")
-# endif
+
 
 $(call search_lib,GLPK_LIB,/usr/local/lib/libglpk.*,-lglpk)
 $(call search_lib,GLPK_LIB,/usr/lib/libglpk.*,-lglpk)
 $(call search_lib,GLPK_LIB,/usr/lib64/libglpk.*,-lglpk)
 $(call warn_missing,GLPK_LIB,GLPK library)
-# $(info GLPK_LIB  $(HAS_GLPK_LIB)  $(LINK_GLPK_LIB))
-# GLPK_LIB := /usr/local/lib/libglpk.a
-# GLPK_LIB_2 := /usr/lib/libglpk.a
-# ifneq ($(wildcard $(GLPK_LIB)),)
-#   HAS_GLPK_LIB := 1
-# else ifneq ($(wildcard $(GLPK_LIB)),)
-#   HAS_GLPK_LIB := 1
-# else
-#   $(warning "The GLPJ library is not installed. Some packages will not be compiled.")
-# endif
 
-
-# LP_SOLVE_LIB := /usr/local/lib/liblpsolve55.a
-# ifeq ($(wildcard $(LP_SOLVE_LIB)),)
-#   $(warning "The lp_solve dynamic library is not installed. Some packages will not be compiled.")
-# else
-#   HAS_LP_SOLVE_LIB := 1
-# endif
 
 $(call search_lib,LP_SOLVE_LIB,/usr/local/lib/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
 $(call search_lib,LP_SOLVE_LIB,/usr/lib/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
@@ -234,30 +187,7 @@ $(call warn_missing,LP_SOLVE_LIB,lp_solve55 library)
 ifdef HAS_LP_SOLVE_LIB
 	INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I/usr/local/include/lpsolve/ -I/usr/include/lpsolve/
 endif
-# $(info LP_SOLVE_LIB  $(HAS_LP_SOLVE_LIB)  $(LINK_LP_SOLVE_LIB)  $(INCLUDE_LP_SOLVE_LIB))
 
-# LP_SOLVE_LIB_1 := /usr/include/lpsolve/lp_lib.h
-# LP_SOLVE_LIB_2 := /usr/local/include/lp_lib.h
-# LP_SOLVE_LIB_3 := /usr/local/include/lpsolve/lp_lib.h
-# ifeq ($(wildcard $(LP_SOLVE_LIB_1)),)
-#   ifeq ($(wildcard $(LP_SOLVE_LIB_2)),)
-#     ifeq ($(wildcard $(LP_SOLVE_LIB_3)),)
-#       $(warning "The lp-solve package is not installed. Some packages will not be compiled.")
-#     else
-#       HAS_LP_SOLVE_LIB := 1
-#       LINK_LP_SOLVE_LIB := -L/usr/local/lib -llpsolve55
-#       INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I/usr/local/include/lpsolve/
-#     endif
-#   else
-#     HAS_LP_SOLVE_LIB := 1
-#     LINK_LP_SOLVE_LIB := -L/usr/local/lib -llpsolve55 -lcolamd
-#     INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1
-#   endif
-# else
-#   HAS_LP_SOLVE_LIB := 1
-#   LINK_LP_SOLVE_LIB := -L/usr/lib64 -L/usr/lib/lp_solve/ -llpsolve55 -ldl -lcolamd
-#   INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I/usr/include/lpsolve/
-# endif
 
 $(call search_lib,GMP_LIB,/usr/local/lib/libgmpxx.*,-lgmpxx -lgmp)
 $(call search_lib,GMP_LIB,/usr/lib/libgmpxx.*,-lgmpxx -lgmp)
@@ -266,68 +196,32 @@ $(call warn_missing,GMP_LIB,GMP library)
 ifdef HAS_GMP_LIB
 	INCLUDE_GMP_LIB := -DHAS_GMP_LIB=1
 endif
-# $(info GMP_LIB  $(HAS_GMP_LIB)  $(LINK_GMP_LIB)  $(INCLUDE_GMP_LIB))
 
-
-# GMP_LIB_1 := /usr/include/gmpxx.h
-# GMP_LIB_2 := /usr/local/include/gmpxx.h
-# ifeq ($(wildcard $(GMP_LIB_1)),)
-#   ifeq ($(wildcard $(GMP_LIB_2)),)
-#     $(warning "The GMP library is not installed. Some packages will not be compiled.")
-#   else
-#     HAS_GMP_LIB := 1
-#     LINK_GMP_LIB := -L/usr/local/lib -lgmpxx -lgmp
-#     INCLUDE_GMP_LIB := -DHAS_GMP_LIB=1
-#   endif
-# else
-#   HAS_GMP_LIB := 1
-#   LINK_GMP_LIB := -L/usr/lib64 -lgmpxx -lgmp
-#   INCLUDE_GMP_LIB := -DHAS_GMP_LIB=1
-# endif
 
 $(call search_file,JAVA_DEVELOPMENT_KIT,$(shell which javac))
 $(call warn_missing,JAVA_DEVELOPMENT_KIT,Java JDK)
 
+
 $(call search_file,APACHE_ANT,$(shell which ant))
 $(call warn_missing,APACHE_ANT,Apache ANT)
 
-# ifeq ($(shell which javac),)
-#   $(warning "Java JDK is not installed. Some packages will not compile properly.")
-# else
-#   HAS_JAVA_DEVELOPMENT_KIT := 1
-#   # Test for Apache ANT
-#   ifeq ($(shell which ant),)
-#     $(warning "Apache ANT build system is not installed. Some packages will not compile properly.")
-#   else
-#     HAS_APACHE_ANT := 1
-#   endif
-#   # Test for ANTLR version 4
-#   # ifeq ($(shell which antlr4),)
-#   #   $(warning "ANTLRv4 is not installed. Some packages will not compile properly.")
-#   # else
-#   #   HAS_ANTLRv4 := 1
-#   # endif
-# endif
 
 $(call search_lib,BOOST_CXX_LIB,/usr/local/lib/libboost_context.*)
 $(call search_lib,BOOST_CXX_LIB,/usr/lib/libboost_context.*)
 $(call search_lib,BOOST_CXX_LIB,/usr/lib64/libboost_context.*)
 $(call warn_missing,BOOST_CXX_LIB,Boost C++ library)
-# $(info BOOST_CXX_LIB  $(HAS_BOOST_CXX_LIB)  $(LINK_BOOST_CXX_LIB)  $(INCLUDE_BOOST_CXX_LIB))
 
-# ifeq ($(wildcard $(BOOST_Cxx)/boost/config.hpp), )
-#   $(warning "Boost C++ is not installed. Some packages will not be compiled.")
-# else
-#   HAS_BOOST_CXX_LIB := 1
-# endif
 
-# ifeq ($(wildcard JavaGUI/launch4j-macosx/launch4j.jar), )
-#   #$(warning ".")
-# else
-#   ifdef LAUNCH4J
-#     HAVE_LAUNCH4J := 1
-#   endif
-# endif
+$(call search_lib,SPOT_LIB,/usr/local/lib/libspot.*)
+$(call search_lib,SPOT_LIB,/usr/lib/libspot.*)
+$(call search_lib,SPOT_LIB,/usr/lib64/libspot.*)
+$(call warn_missing,SPOT_LIB,Spot library(spot.lrde.epita.fr/))
+
+
+$(call search_lib,MEDDLY_LIB,/usr/local/lib/libmeddly.*)
+$(call search_lib,MEDDLY_LIB,/usr/lib/libmeddly.*)
+$(call search_lib,MEDDLY_LIB,/usr/lib64/libmeddly.*)
+$(call warn_missing,MEDDLY_LIB,Meddly library(github.com/asminer/meddly))
 
 
 ifneq ("$(wildcard /home/user/Desktop/HowToODE-SDE)","")
@@ -852,162 +746,161 @@ WNESRG_SOURCES := WN/SOURCE/SHARED/service.c \
 				  WN/TRANSL/wn_grammar.y \
 				  WN/TRANSL/wn.l
 
-RGMEDD_CFLAGS := $(call generate_WN_FLAGS,TOOL_RGMEDD,RGMEDD) \
-				 $(FLEX-INCLUDE) 
-RGMEDD_CPPFLAGS := $(RGMEDD_CFLAGS) -I/usr/local/include
-RGMEDD_LDFLAGS := $(LDFLAGS) -L/usr/local/lib -lmeddly $(FLEX-LIB)
-RGMEDD_SOURCES := WN/SOURCE/SHARED/service.c \
-				  WN/SOURCE/SHARED/ealloc.c \
-				  WN/SOURCE/SHARED/token.c \
-				  WN/SOURCE/SHARED/dimensio.c \
-				  WN/SOURCE/SHARED/errors.c \
-				  WN/SOLVE/compact.c \
-				  WN/SOURCE/SHARED/common.c \
-				  WN/SOURCE/SHARED/enabling.c \
-				  WN/SOURCE/SHARED/fire.c \
-				  WN/SOURCE/SHARED/shared1.c \
-				  WN/SOURCE/SHARED/shared2.c \
-				  WN/SOURCE/SHARED/outdom.c \
-				  WN/SOURCE/SHARED/report.c \
-				  WN/SOURCE/SHARED/precheck.c \
-				  WN/SOURCE/SHARED/flush.c \
-				  WN/SOURCE/SHARED/degree.c \
-				  WN/SOURCE/SHARED/mainMEDD.cpp \
-				  WN/SOURCE/SHARED/meddEv.cpp \
-				  WN/SOURCE/SHARED/general.cpp \
-				  WN/SOURCE/REACHAB/graph_se.c \
-				  WN/SOURCE/REACHAB/graphMEDD.cpp \
-				  WN/SOURCE/REACHAB/stack.c \
-				  WN/SOURCE/REACHAB/convert.c \
-				  WN/SOURCE/REACHAB/rg_files.c \
-				  WN/SOURCE/REACHAB/rgengwn.c \
-				  WN/SOURCE/READNET/read_arc.c \
-				  WN/SOURCE/READNET/read_t_c.c \
-				  WN/SOURCE/READNET/read_DEF.c \
-				  WN/SOURCE/READNET/read_NET.c \
-				  WN/SOURCE/READNET/read_PIN.c \
-				  WN/SOURCE/READNET/read_t_s.c \
-				  WN/SOURCE/READNET/wn_yac.c \
-				  WN/TRANSL/wn_grammar.y \
-				  WN/TRANSL/wn.l \
-				  WN/SOURCE/CTL/CTL.cpp \
-				  WN/SOURCE/CTL/CTLParser.yy \
-				  WN/SOURCE/CTL/CTLLexer.ll 
-				  # WN/SOURCE/AUTOMA/AutoParser.yy \
-				  # WN/SOURCE/AUTOMA/AutoLexer.l
+# RGMEDD_CFLAGS := $(call generate_WN_FLAGS,TOOL_RGMEDD,RGMEDD) \
+# 				 $(FLEX-INCLUDE) 
+# RGMEDD_CPPFLAGS := $(RGMEDD_CFLAGS) -I/usr/local/include
+# RGMEDD_LDFLAGS := $(LDFLAGS) -L/usr/local/lib -lmeddly $(FLEX-LIB)
+# RGMEDD_SOURCES := WN/SOURCE/SHARED/service.c \
+# 				  WN/SOURCE/SHARED/ealloc.c \
+# 				  WN/SOURCE/SHARED/token.c \
+# 				  WN/SOURCE/SHARED/dimensio.c \
+# 				  WN/SOURCE/SHARED/errors.c \
+# 				  WN/SOLVE/compact.c \
+# 				  WN/SOURCE/SHARED/common.c \
+# 				  WN/SOURCE/SHARED/enabling.c \
+# 				  WN/SOURCE/SHARED/fire.c \
+# 				  WN/SOURCE/SHARED/shared1.c \
+# 				  WN/SOURCE/SHARED/shared2.c \
+# 				  WN/SOURCE/SHARED/outdom.c \
+# 				  WN/SOURCE/SHARED/report.c \
+# 				  WN/SOURCE/SHARED/precheck.c \
+# 				  WN/SOURCE/SHARED/flush.c \
+# 				  WN/SOURCE/SHARED/degree.c \
+# 				  WN/SOURCE/SHARED/mainMEDD.cpp \
+# 				  WN/SOURCE/SHARED/meddEv.cpp \
+# 				  WN/SOURCE/SHARED/general.cpp \
+# 				  WN/SOURCE/REACHAB/graph_se.c \
+# 				  WN/SOURCE/REACHAB/graphMEDD.cpp \
+# 				  WN/SOURCE/REACHAB/stack.c \
+# 				  WN/SOURCE/REACHAB/convert.c \
+# 				  WN/SOURCE/REACHAB/rg_files.c \
+# 				  WN/SOURCE/REACHAB/rgengwn.c \
+# 				  WN/SOURCE/READNET/read_arc.c \
+# 				  WN/SOURCE/READNET/read_t_c.c \
+# 				  WN/SOURCE/READNET/read_DEF.c \
+# 				  WN/SOURCE/READNET/read_NET.c \
+# 				  WN/SOURCE/READNET/read_PIN.c \
+# 				  WN/SOURCE/READNET/read_t_s.c \
+# 				  WN/SOURCE/READNET/wn_yac.c \
+# 				  WN/TRANSL/wn_grammar.y \
+# 				  WN/TRANSL/wn.l \
+# 				  WN/SOURCE/CTL/CTL.cpp \
+# 				  WN/SOURCE/CTL/CTLParser.yy \
+# 				  WN/SOURCE/CTL/CTLLexer.ll 
+# 				  # WN/SOURCE/AUTOMA/AutoParser.yy \
+# 				  # WN/SOURCE/AUTOMA/AutoLexer.l
 
-# Modify the lexer and the parser generators used by the
-RGMEDD_LEX_WN/SOURCE/AUTOMA/AutoLexer.l = $(LEX) -P kk --header-file=$(@:.c=.h)
-RGMEDD_YACCPP_WN/SOURCE/AUTOMA/AutoParser.yy := byacc -v -p kk -d
-RGMEDD_YACCPP_WN/SOURCE/CTL/CTLParser.yy := byacc -p mm -v -d
-RGMEDD_LEXPP_WN/SOURCE/CTL/CTLLexer.ll = $(LEXPP) -+ --header-file=$(@:.cpp=.h)
-RGMEDD_LD := $(LDPP)
+# # Modify the lexer and the parser generators used by the
+# RGMEDD_LEX_WN/SOURCE/AUTOMA/AutoLexer.l = $(LEX) -P kk --header-file=$(@:.c=.h)
+# RGMEDD_YACCPP_WN/SOURCE/AUTOMA/AutoParser.yy := byacc -v -p kk -d
+# RGMEDD_YACCPP_WN/SOURCE/CTL/CTLParser.yy := byacc -p mm -v -d
+# RGMEDD_LEXPP_WN/SOURCE/CTL/CTLLexer.ll = $(LEXPP) -+ --header-file=$(@:.cpp=.h)
+# RGMEDD_LD := $(LDPP)
 
-$(OBJDIR)/RGMEDD/WN/SOURCE/CTL/CTLParser.yy.o: $(OBJDIR)/RGMEDD/WN/SOURCE/CTL/CTLLexer.ll.cpp
+# $(OBJDIR)/RGMEDD/WN/SOURCE/CTL/CTLParser.yy.o: $(OBJDIR)/RGMEDD/WN/SOURCE/CTL/CTLLexer.ll.cpp
 
-$(OBJDIR)/RGMEDD/WN/SOURCE/CTL/CTLLexer.ll.o: $(OBJDIR)/RGMEDD/WN/SOURCE/CTL/CTLParser.yy.cpp
+# $(OBJDIR)/RGMEDD/WN/SOURCE/CTL/CTLLexer.ll.o: $(OBJDIR)/RGMEDD/WN/SOURCE/CTL/CTLParser.yy.cpp
 
-$(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoLexer.l.o: $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoParser.yy.cpp
+# $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoLexer.l.o: $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoParser.yy.cpp
 
-$(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoParser.yy.o: $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoLexer.l.c
+# $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoParser.yy.o: $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoLexer.l.c
 
 #### RGMEDD version 2 ########################################
 
-RGMEDD2_CFLAGS := $(CFLAGS) $(call generate_WN_FLAGS,TOOL_RGMEDD2,RGMEDD2) \
-				          $(FLEX-INCLUDE) 
-RGMEDD2_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx17) -Wno-deprecated-register \
-                    -I/usr/local/include $(INCLUDE_GMP_LIB) \
-                    $(RGMEDD2_CFLAGS) -I/usr/local/include 
+# RGMEDD2_CFLAGS := $(CFLAGS) $(call generate_WN_FLAGS,TOOL_RGMEDD2,RGMEDD2) \
+# 				          $(FLEX-INCLUDE) 
+# RGMEDD2_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx17) -Wno-deprecated-register \
+#                     -I/usr/local/include $(INCLUDE_GMP_LIB) \
+#                     $(RGMEDD2_CFLAGS) -I/usr/local/include 
                     
-                    # -D_GLIBCXX_DEBUG=1
-RGMEDD2_LDFLAGS := -L/usr/local/lib $(LDFLAGS) $(FLEX-LIB) -lmeddly $(LINK_GMP_LIB)
-RGMEDD2_SOURCES := WN/SOURCE/SHARED/service.c \
-				   WN/SOURCE/SHARED/ealloc.c \
-				   WN/SOURCE/SHARED/token.c \
-				   WN/SOURCE/SHARED/dimensio.c \
-				   WN/SOURCE/SHARED/errors.c \
-				   WN/SOLVE/compact.c \
-				   WN/SOURCE/SHARED/common.c \
-				   WN/SOURCE/SHARED/enabling.c \
-				   WN/SOURCE/SHARED/fire.c \
-				   WN/SOURCE/SHARED/shared1.c \
-				   WN/SOURCE/SHARED/shared2.c \
-				   WN/SOURCE/SHARED/outdom.c \
-				   WN/SOURCE/SHARED/report.c \
-				   WN/SOURCE/SHARED/precheck.c \
-				   WN/SOURCE/SHARED/flush.c \
-				   WN/SOURCE/SHARED/degree.c \
-				   WN/SOURCE/REACHAB/graph_se.c \
-				   WN/SOURCE/REACHAB/stack.c \
-				   WN/SOURCE/REACHAB/convert.c \
-				   WN/SOURCE/REACHAB/rg_files.c \
-				   WN/SOURCE/REACHAB/rgengwn.c \
-				   WN/SOURCE/READNET/read_arc.c \
-				   WN/SOURCE/READNET/read_t_c.c \
-				   WN/SOURCE/READNET/read_DEF.c \
-				   WN/SOURCE/READNET/read_NET.c \
-				   WN/SOURCE/READNET/read_PIN.c \
-				   WN/SOURCE/READNET/read_t_s.c \
-				   WN/SOURCE/READNET/wn_yac.c \
-				   WN/TRANSL/wn_grammar.y \
-				   WN/TRANSL/wn.l \
-				   WN/SOURCE/SHARED/mainMEDD2.cpp \
-				   WN/SOURCE/RGMEDD2/nsf_subtree.cpp \
-				   WN/SOURCE/RGMEDD2/varorders.cpp \
-				   WN/SOURCE/RGMEDD2/varorders_bgl.cpp \
-				   WN/SOURCE/RGMEDD2/varorders_meta.cpp \
-				   WN/SOURCE/RGMEDD2/meddEv.cpp \
-				   WN/SOURCE/RGMEDD2/general.cpp \
-				   WN/SOURCE/RGMEDD2/graphMEDD.cpp \
-				   WN/SOURCE/RGMEDD2/CTL.cpp \
-				   WN/SOURCE/RGMEDD2/CTLParser.yy \
-				   WN/SOURCE/RGMEDD2/CTLLexer.ll 
+#                     # -D_GLIBCXX_DEBUG=1
+# RGMEDD2_LDFLAGS := -L/usr/local/lib $(LDFLAGS) $(FLEX-LIB) -lmeddly $(LINK_GMP_LIB)
+# RGMEDD2_SOURCES := WN/SOURCE/SHARED/service.c \
+# 				   WN/SOURCE/SHARED/ealloc.c \
+# 				   WN/SOURCE/SHARED/token.c \
+# 				   WN/SOURCE/SHARED/dimensio.c \
+# 				   WN/SOURCE/SHARED/errors.c \
+# 				   WN/SOLVE/compact.c \
+# 				   WN/SOURCE/SHARED/common.c \
+# 				   WN/SOURCE/SHARED/enabling.c \
+# 				   WN/SOURCE/SHARED/fire.c \
+# 				   WN/SOURCE/SHARED/shared1.c \
+# 				   WN/SOURCE/SHARED/shared2.c \
+# 				   WN/SOURCE/SHARED/outdom.c \
+# 				   WN/SOURCE/SHARED/report.c \
+# 				   WN/SOURCE/SHARED/precheck.c \
+# 				   WN/SOURCE/SHARED/flush.c \
+# 				   WN/SOURCE/SHARED/degree.c \
+# 				   WN/SOURCE/REACHAB/graph_se.c \
+# 				   WN/SOURCE/REACHAB/stack.c \
+# 				   WN/SOURCE/REACHAB/convert.c \
+# 				   WN/SOURCE/REACHAB/rg_files.c \
+# 				   WN/SOURCE/REACHAB/rgengwn.c \
+# 				   WN/SOURCE/READNET/read_arc.c \
+# 				   WN/SOURCE/READNET/read_t_c.c \
+# 				   WN/SOURCE/READNET/read_DEF.c \
+# 				   WN/SOURCE/READNET/read_NET.c \
+# 				   WN/SOURCE/READNET/read_PIN.c \
+# 				   WN/SOURCE/READNET/read_t_s.c \
+# 				   WN/SOURCE/READNET/wn_yac.c \
+# 				   WN/TRANSL/wn_grammar.y \
+# 				   WN/TRANSL/wn.l \
+# 				   WN/SOURCE/SHARED/mainMEDD2.cpp \
+# 				   WN/SOURCE/RGMEDD2/nsf_subtree.cpp \
+# 				   WN/SOURCE/RGMEDD2/varorders.cpp \
+# 				   WN/SOURCE/RGMEDD2/varorders_bgl.cpp \
+# 				   WN/SOURCE/RGMEDD2/varorders_meta.cpp \
+# 				   WN/SOURCE/RGMEDD2/meddEv.cpp \
+# 				   WN/SOURCE/RGMEDD2/general.cpp \
+# 				   WN/SOURCE/RGMEDD2/graphMEDD.cpp \
+# 				   WN/SOURCE/RGMEDD2/CTL.cpp \
+# 				   WN/SOURCE/RGMEDD2/CTLParser.yy \
+# 				   WN/SOURCE/RGMEDD2/CTLLexer.ll 
 
-# Modify the lexer and the parser generators used by the
-# RGMEDD2_LEX_WN/SOURCE/AUTOMA/AutoLexer.l = $(LEX) -P kk --header-file=$(@:.c=.h)
-# RGMEDD2_YACCPP_WN/SOURCE/AUTOMA/AutoParser.yy := byacc -v -p kk -d
-RGMEDD2_YACCPP_WN/SOURCE/RGMEDD2/CTLParser.yy := byacc -p mm -v -d
-RGMEDD2_LEXPP_WN/SOURCE/RGMEDD2/CTLLexer.ll = $(LEXPP) -+ -P mm --header-file=$(@:.cpp=.h)
-RGMEDD2_LD := $(LDPP) -shared-libgcc
+# # Modify the lexer and the parser generators used by the
+# # RGMEDD2_LEX_WN/SOURCE/AUTOMA/AutoLexer.l = $(LEX) -P kk --header-file=$(@:.c=.h)
+# # RGMEDD2_YACCPP_WN/SOURCE/AUTOMA/AutoParser.yy := byacc -v -p kk -d
+# RGMEDD2_YACCPP_WN/SOURCE/RGMEDD2/CTLParser.yy := byacc -p mm -v -d
+# RGMEDD2_LEXPP_WN/SOURCE/RGMEDD2/CTLLexer.ll = $(LEXPP) -+ -P mm --header-file=$(@:.cpp=.h)
+# RGMEDD2_LD := $(LDPP) -shared-libgcc
 
-$(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLParser.yy.o: $(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLLexer.ll.cpp
+# $(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLParser.yy.o: $(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLLexer.ll.cpp
 
-$(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLLexer.ll.o: $(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLParser.yy.cpp
+# $(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLLexer.ll.o: $(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLParser.yy.cpp
 
-# $(OBJDIR)/RGMEDD2/WN/SOURCE/CTL/CTLLexer.ll.o: $(OBJDIR)/RGMEDD2/WN/SOURCE/CTL/CTLParser.yy.cpp
+# # $(OBJDIR)/RGMEDD2/WN/SOURCE/CTL/CTLLexer.ll.o: $(OBJDIR)/RGMEDD2/WN/SOURCE/CTL/CTLParser.yy.cpp
 
-# $(OBJDIR)/RGMEDD2/WN/SOURCE/AUTOMA/AutoLexer.l.o: $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoParser.yy.cpp
+# # $(OBJDIR)/RGMEDD2/WN/SOURCE/AUTOMA/AutoLexer.l.o: $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoParser.yy.cpp
 
-# $(OBJDIR)/RGMEDD2/WN/SOURCE/AUTOMA/AutoParser.yy.o: $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoLexer.l.c
+# # $(OBJDIR)/RGMEDD2/WN/SOURCE/AUTOMA/AutoParser.yy.o: $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoLexer.l.c
 
-# ifdef HAS_LP_SOLVE_LIB
-#   RGMEDD2_CPPFLAGS := $(RGMEDD2_CPPFLAGS) $(INCLUDE_LP_SOLVE_LIB)
-#   RGMEDD2_LDFLAGS := $(RGMEDD2_LDFLAGS) $(LINK_LP_SOLVE_LIB) 
-# endif
+# # ifdef HAS_LP_SOLVE_LIB
+# #   RGMEDD2_CPPFLAGS := $(RGMEDD2_CPPFLAGS) $(INCLUDE_LP_SOLVE_LIB)
+# #   RGMEDD2_LDFLAGS := $(RGMEDD2_LDFLAGS) $(LINK_LP_SOLVE_LIB) 
+# # endif
 
-# ifdef USE_RGMEDD2
-# TARGETS += RGMEDD2
- #  ifneq ("$(wildcard ~/.elvio-temporary-hack)","")
- #  	 $(warning "Using both RGMEDD & RGMEDD2.")
- #  	RGMEDD2_CPPFLAGS := -I/Users/elvio/Desktop/meddly2015/src/ $(RGMEDD2_CPPFLAGS) 
-	# RGMEDD2_LDFLAGS := -L/Users/elvio/Desktop/meddly2015/src/.libs/ $(RGMEDD2_LDFLAGS) 
+# # ifdef USE_RGMEDD2
+# # TARGETS += RGMEDD2
+#  #  ifneq ("$(wildcard ~/.elvio-temporary-hack)","")
+#  #  	 $(warning "Using both RGMEDD & RGMEDD2.")
+#  #  	RGMEDD2_CPPFLAGS := -I/Users/elvio/Desktop/meddly2015/src/ $(RGMEDD2_CPPFLAGS) 
+# 	# RGMEDD2_LDFLAGS := -L/Users/elvio/Desktop/meddly2015/src/.libs/ $(RGMEDD2_LDFLAGS) 
 
- #  	TARGETS += RGMEDD
- #  endif
-# else
-#   TARGETS += RGMEDD
-# endif
+#  #  	TARGETS += RGMEDD
+#  #  endif
+# # else
+# #   TARGETS += RGMEDD
+# # endif
 
 #### RGMEDD version 3 ########################################
 
 RGMEDD3_CFLAGS := $(CFLAGS) $(call generate_WN_FLAGS,TOOL_RGMEDD3,RGMEDD3) \
                   $(FLEX-INCLUDE) 
-RGMEDD3_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx14) \
-                    -I/usr/local/include $(INCLUDE_GMP_LIB) \
-                    $(RGMEDD3_CFLAGS) -I/usr/local/include 
+RGMEDD3_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx14) $(INCLUDE_GMP_LIB) \
+                    $(RGMEDD3_CFLAGS) $(INCLUDE_MEDDLY_LIB)
                     
                     # -D_GLIBCXX_DEBUG=1 /usr/local/lib/libmeddly.a
-RGMEDD3_LDFLAGS := -L/usr/local/lib $(LDFLAGS) $(FLEX-LIB) -lmeddly $(LINK_GMP_LIB)
+RGMEDD3_LDFLAGS := $(LDFLAGS) $(FLEX-LIB) $(LINK_MEDDLY_LIB) -lmeddly $(LINK_GMP_LIB)
           #-lmeddly 
 RGMEDD3_SOURCES := WN/SOURCE/SHARED/service.c \
            WN/SOURCE/SHARED/ealloc.c \
@@ -1070,12 +963,94 @@ $(OBJDIR)/RGMEDD3/WN/SOURCE/RGMEDD3/CTLLexer.ll.o: $(OBJDIR)/RGMEDD3/WN/SOURCE/R
 
 ifdef HAS_LP_SOLVE_LIB
   RGMEDD3_CPPFLAGS := $(RGMEDD3_CPPFLAGS) $(INCLUDE_LP_SOLVE_LIB)
-  RGMEDD3_LDFLAGS := $(RGMEDD3_LDFLAGS) $(LINK_LP_SOLVE_LIB) 
+  RGMEDD3_LDFLAGS := $(RGMEDD3_LDFLAGS) $(LINK_LP_SOLVE_LIB)
 endif
 
-# ifdef USE_RGMEDD3
-TARGETS += RGMEDD3
-# endif
+ifdef HAS_MEDDLY_LIB
+  TARGETS += RGMEDD3
+endif
+
+#### RGMEDD version 4 ########################################
+
+# -DDEBUG_BUILD enables verbose logging, MDD.show() methods, dumping svg / pdf
+RGMEDD4_CFLAGS := $(CFLAGS) $(call generate_WN_FLAGS,TOOL_RGMEDD4,RGMEDD4) \
+          $(FLEX-INCLUDE) #-g #-DDEBUG_BUILD
+
+RGMEDD4_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx17) $(INCLUDE_GMP_LIB) \
+          $(RGMEDD4_CFLAGS) $(INCLUDE_MEDDLY_LIB) $(INCLUDE_SPOT_LIB)
+
+RGMEDD4_LDFLAGS := $(LDFLAGS) $(FLEX-LIB) $(LINK_GMP_LIB) \
+          $(LINK_MEDDLY_LIB) $(LINK_SPOT_LIB) -lmeddly -lspot
+
+RGMEDD4_SOURCES := WN/SOURCE/SHARED/service.c \
+           WN/SOURCE/SHARED/ealloc.c \
+           WN/SOURCE/SHARED/token.c \
+           WN/SOURCE/SHARED/dimensio.c \
+           WN/SOURCE/SHARED/errors.c \
+           WN/SOLVE/compact.c \
+           WN/SOURCE/SHARED/common.c \
+           WN/SOURCE/SHARED/enabling.c \
+           WN/SOURCE/SHARED/fire.c \
+           WN/SOURCE/SHARED/shared1.c \
+           WN/SOURCE/SHARED/shared2.c \
+           WN/SOURCE/SHARED/outdom.c \
+           WN/SOURCE/SHARED/report.c \
+           WN/SOURCE/SHARED/precheck.c \
+           WN/SOURCE/SHARED/flush.c \
+           WN/SOURCE/SHARED/degree.c \
+           WN/SOURCE/REACHAB/graph_se.c \
+           WN/SOURCE/REACHAB/stack.c \
+           WN/SOURCE/REACHAB/convert.c \
+           WN/SOURCE/REACHAB/rg_files.c \
+           WN/SOURCE/REACHAB/rgengwn.c \
+           WN/SOURCE/READNET/read_arc.c \
+           WN/SOURCE/READNET/read_t_c.c \
+           WN/SOURCE/READNET/read_DEF.c \
+           WN/SOURCE/READNET/read_NET.c \
+           WN/SOURCE/READNET/read_PIN.c \
+           WN/SOURCE/READNET/read_t_s.c \
+           WN/SOURCE/READNET/wn_yac.c \
+           WN/TRANSL/wn_grammar.y \
+           WN/TRANSL/wn.l \
+           WN/SOURCE/RGMEDD4/parallel.cpp \
+           WN/SOURCE/RGMEDD4/mainMEDD4.cpp \
+           WN/SOURCE/RGMEDD4/utils/mt19937-64.c \
+           WN/SOURCE/RGMEDD4/varorders.cpp \
+           WN/SOURCE/RGMEDD4/varorders_bgl.cpp \
+           WN/SOURCE/RGMEDD4/varorders_meta.cpp \
+           WN/SOURCE/RGMEDD4/varorders_soups.cpp \
+           WN/SOURCE/RGMEDD4/varorders_pbasis.cpp \
+           WN/SOURCE/RGMEDD4/meddEv.cpp \
+           WN/SOURCE/RGMEDD4/general.cpp \
+           WN/SOURCE/RGMEDD4/graphMEDD.cpp \
+           WN/SOURCE/RGMEDD4/CTL.cpp \
+           WN/SOURCE/RGMEDD4/LTL.cpp \
+           WN/SOURCE/RGMEDD4/CTLParser.yy \
+           WN/SOURCE/RGMEDD4/CTLLexer.ll
+
+# Modify the lexer and the parser generators used by the
+# RGMEDD4_LEX_WN/SOURCE/AUTOMA/AutoLexer.l = $(LEX) -P kk --header-file=$(@:.c=.h)
+# RGMEDD4_YACCPP_WN/SOURCE/AUTOMA/AutoParser.yy := byacc -v -p kk -d
+RGMEDD4_YACCPP_WN/SOURCE/RGMEDD4/CTLParser.yy := byacc -p mm -v -d
+RGMEDD4_LEXPP_WN/SOURCE/RGMEDD4/CTLLexer.ll = $(LEXPP) -+ -P mm --header-file=$(@:.cpp=.h)
+RGMEDD4_LD := $(LDPP) -shared-libgcc
+RGMEDD4_CPPFLAGS := $(RGMEDD4_CPPFLAGS) -I.
+
+$(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/CTLParser.yy.o: $(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/CTLLexer.ll.cpp
+
+$(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/CTLLexer.ll.o: $(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/CTLParser.yy.cpp
+
+
+ifdef HAS_LP_SOLVE_LIB
+  RGMEDD4_CPPFLAGS := $(RGMEDD4_CPPFLAGS) $(INCLUDE_LP_SOLVE_LIB)
+  RGMEDD4_LDFLAGS := $(RGMEDD4_LDFLAGS) $(LINK_LP_SOLVE_LIB) 
+endif
+
+ifdef HAS_MEDDLY_LIB
+  ifdef HAS_SPOT_LIB
+    TARGETS += RGMEDD4
+  endif
+endif
 
 ###################################################################################
 
