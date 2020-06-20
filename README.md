@@ -28,16 +28,19 @@ First, install the following dependencies (using the developer packages with the
  * libxml++ (devel), glibmm24 (devel) and glib2 (devel)
  * libcolamd2, on fedora platform provided by suitesparse (devel)
  * glpk (devel) and lpsolve (devel)
+ 
+For Fedora 32, you can install the dependencies with this command:
 
-Once all dependencies are installed, create a `GreatSPN` directory using:
 ```
-mkdir ~/GreatSPN
+sudo dnf -y install gcc gcc-c++ gmp-devel gmp-c++ gmp boost-devel flex-devel ant glib2-devel \
+ patch python glpk-devel lpsolve-devel autoconf automake libtool zip flex git byacc time \
+ graphviz suitesparse-devel motif-devel make libxml++-devel glibmm24-devel lpsolve
 ```
-Inside this directory you will need to setup two different repositories: 
-one for the Meddly library, and another for the GreatSPN framework.
-To download the Meddly library, type:
+
+Parts of GreatSPN use the [Meddly library](https://github.com/asminer/meddly). 
+To download and install the Meddly library, type:
+
 ```
-cd ~/GreatSPN
 git clone  https://github.com/asminer/meddly.git meddly
 cd meddly
 ./autogen.sh
@@ -45,22 +48,24 @@ cd meddly
 make
 sudo make install
 ```
-Please, refer to the [Meddly site](https://github.com/asminer/meddly) for all the
-informations on how to download, compile and install it.
 
-Once Meddly is downloaded, compiled and installed, go back to the `GreatSPN`
-directory, and type:
+Please, refer to the Meddly site for further information on how to download, compile and install it.
+
+
+To compile the CTL* model checker, the [Spot library](https://spot.lrde.epita.fr/) is required. Download and install it from the Spot website.
+
+Once Meddly and Spot are both compiled and installed, create the main `GreatSPN` source directory with this command:
+
 ```
+mkdir ~/GreatSPN
 cd ~/GreatSPN
 git clone https://github.com/greatspn/SOURCES.git SOURCES
-```
-to download the sources. The `SOURCES` directory *must* be at the same level of the `meddly` directory.
-To compile the sources, type:
-```
 cd ~/GreatSPN/SOURCES
 make
 sudo make install
 ```
+
+to download, compile and install the sources. 
 
 
 #### macOS installation instructions:
@@ -123,6 +128,7 @@ For macOS users, a compiled app is generated in the `SOURCES/JavaGUI/Editor/dist
 ### Citing GreatSPN:
 
 To cite the GreatSPN framework, please use this reference [PDF](https://iris.unito.it/retrieve/handle/2318/1624717/295450/Amparore-trivedi-chapter.pdf):
+
 ```
 @incollection{bib:30YearsOfGreatSPN,
   title={30 years of {GreatSPN}},
@@ -136,19 +142,19 @@ To cite the GreatSPN framework, please use this reference [PDF](https://iris.uni
 ```
 
 
-
 ### Recent Awards (Model Checking Context 2018 edition):
 
-GreatSPN participated to the Model Checking Context (MCC) 2018 edition, receiving these awards:
+GreatSPN partecipated to several Model Checking Context (MCC) editions:
 
- * ![MCC2018 Award StateSpace Gold](/contrib/gold-StateSpace-2018.png)
-   Gold medal in StateSpace category;
- * ![MCC2018 Award UpperBound Bronze](/contrib/bronze-UpperBounds-2018.png)
-   Bronze medal in UpperBounds category;
- * ![MCC2018 100% accuracy](/contrib/conf100-GreatSPN-Meddly-2018.png)
-   100% accuracy of the results.
+ * 2018 Edition [MCC2018](https://mcc.lip6.fr/2018/results.php):
+    - 🥇 Gold medal in StateSpace category;
+    - 🥉 Bronze medal in UpperBounds category;
+    - ✔️ 100% accuracy of the results.
+ * 2019 Edition [MCC2019](https://mcc.lip6.fr/2019/results.php):
+    - 🥈 Silver medal in StateSpace category;
+    - ✔️ 100% accuracy of the results.
 
-See the [MCC2018 site](https://mcc.lip6.fr/results.php) for further details.
+See the [MCC site](https://mcc.lip6.fr) for further details.
 
 
 
@@ -156,13 +162,14 @@ See the [MCC2018 site](https://mcc.lip6.fr/results.php) for further details.
 
 When GreatSPN is installed on your PC, it will (by default) place itself 
 in the: `/usr/local/GreatSPN` directory. The following sub-directory will be created:
- * ${GREATSPN_HOME}/scripts:  the scripts that invoke the solver pipelines.
- * ${GREATSPN_HOME}/bin:  the individual solver binaries.
- * ${GREATSPN_HOME}/models:  the default model library available from the GUI.
+
+ * `${GREATSPN_HOME}/scripts`:  the scripts that invoke the solver pipelines.
+ * `${GREATSPN_HOME}/bin`:  the individual solver binaries.
+ * `${GREATSPN_HOME}/models`:  the default model library available from the GUI.
 
 Typically, most tools are accessed through a script in the first directory.
 
-TBD: description of the core tools.
+**TBD**: description of the core tools.
 
 
 
