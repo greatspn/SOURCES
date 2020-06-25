@@ -155,29 +155,69 @@ int open_file(const char * filename) {
 #endif
 }
 
+
 // Verify that the found value corresponds to the expected value, with a
 // margin of error due to approximations in the MCC format of the expected values
 const char* 
-regression_test_eps(double expected, cardinality_t& found, const char* what) {
-    if (expected < 0 && expected != INFINITE_CARD)
+regression_test_eps(const RSRG& rs, cardinality_t& found, const char* what) {
+    std::string key = std::string("StateSpace_") + what;
+    auto kv = rs.expected_results.find(key);
+    if (kv == rs.expected_results.end()) {
         return ""; // No value to test
-    double f = get_double(found);
-    if (std::abs(expected - f) / expected > 0.0001) {
-        cerr << "\n\nExpected "<<what<<" was " << expected <<", found "<<found<<endl;
-        throw rgmedd_exception("Regression test failed.");
     }
-    return "  [[OK]]";
+    else if (std::holds_alternative<double>(kv->second)) {
+        double expected = std::get<double>(kv->second);
+        cardinality_t diff = expected - found;
+        if (std::abs(get_double(diff)) / expected > 0.0001) {
+            cerr << "\n\nExpected "<<what<<" was " << expected <<", found "<<found<<endl;
+            throw rgmedd_exception("Regression test failed.");
+        }
+        return "  [[OK]]";
+    }
+    else return "  [[??]]";
 }
 const char*
-regression_test(ssize_t expected, ssize_t found, const char* what) {
-    if (expected < 0 && expected != INFINITE_CARD)
+regression_test(const RSRG& rs, ssize_t found, const char* what) {
+    std::string key = std::string("StateSpace_") + what;
+    auto kv = rs.expected_results.find(key);
+    if (kv == rs.expected_results.end()) {
         return ""; // No value to test
-    if (expected != found) {
-        cerr << "\n\nExpected "<<what<<" was " << expected <<", found "<<found<<endl;
-        throw rgmedd_exception("Regression test failed.");
     }
-    return "  [[OK]]";
+    else if (std::holds_alternative<ssize_t>(kv->second)) {
+        ssize_t expected = std::get<ssize_t>(kv->second);
+        if (expected != found) {
+            cerr << "\n\nExpected "<<what<<" was " << expected <<", found "<<found<<endl;
+            throw rgmedd_exception("Regression test failed.");
+        }
+        return "  [[OK]]";
+    }
+    else return "  [[??]]";
 }
+
+
+// // Verify that the found value corresponds to the expected value, with a
+// // margin of error due to approximations in the MCC format of the expected values
+// const char* 
+// regression_test_eps(double expected, cardinality_t& found, const char* what) {
+//     if (expected < 0 && expected != INFINITE_CARD)
+//         return ""; // No value to test
+//     double f = get_double(found);
+//     if (std::abs(expected - f) / expected > 0.0001) {
+//         cerr << "\n\nExpected "<<what<<" was " << expected <<", found "<<found<<endl;
+//         throw rgmedd_exception("Regression test failed.");
+//     }
+//     return "  [[OK]]";
+// }
+// const char*
+// regression_test(ssize_t expected, ssize_t found, const char* what) {
+//     if (expected < 0 && expected != INFINITE_CARD)
+//         return ""; // No value to test
+//     if (expected != found) {
+//         cerr << "\n\nExpected "<<what<<" was " << expected <<", found "<<found<<endl;
+//         throw rgmedd_exception("Regression test failed.");
+//     }
+//     return "  [[OK]]";
+// }
 
 template<typename T>
 std::string out_card(T& card) {
@@ -367,13 +407,13 @@ void build_graph(class RSRG &rs) {
         cout << endl;
         print_banner(" MEMORY ");
         if (has_LRS && !CTL) {
-            const char* rtest = regression_test_eps(rs.expected_lrs_card, lrs_card, "LRSCARD");
+            const char* rtest = regression_test_eps(rs, lrs_card, "LRS_STATES");
             cout << " Cardinality(LRS):        " << left << setw(15) << out_card(lrs_card) << rtest << endl;
             cout << " LRS nodes:               " << rs.getLRS().getNodeCount() << endl;
             cout << " LRS edges:               " << rs.getLRS().getEdgeCount() << endl;
         }
         if (has_RS && !CTL) {
-            const char* rtest = regression_test_eps(rs.expected_rs_card, rs_card, "RSCARD");
+            const char* rtest = regression_test_eps(rs, rs_card, "STATES");
             cout << " Cardinality(RS):         " << left << setw(15) << out_card(rs_card) << rtest << endl;
         }
     }
@@ -483,12 +523,12 @@ void build_graph(class RSRG &rs) {
         if (!CTL) {
             if (rg_edges != UNKNOWN_CARD) {
                 cout << " # fired transitions:     " << left << setw(15) << out_card(rg_edges)
-                     << regression_test_eps(rs.expected_rg_edges, rg_edges, "RGEDGES") << endl;
+                     << regression_test_eps(rs, rg_edges, "TRANSITIONS") << endl;
             }
             const char *rtest_max_place_bound = "", *rtest_token_sum_bound = "";
             if (has_RS) {
-                rtest_max_place_bound = regression_test(rs.expected_max_tokens_place, max_place_bound, "MAXPLCBOUND");
-                rtest_token_sum_bound = regression_test(rs.expected_max_tokens_marking, token_sum_bound, "MAXTOKMARK");
+                rtest_max_place_bound = regression_test(rs, max_place_bound, "MAX_TOKEN_IN_PLACE");
+                rtest_token_sum_bound = regression_test(rs, token_sum_bound, "MAX_TOKEN_PER_MARKING");
                 cout << " Max tokens x marking:    " << left << setw(15) << out_card(token_sum_bound) 
                      << rtest_token_sum_bound << endl;
                 cout << " Max tokens in place:     " << left << setw(15) << out_card(max_place_bound)

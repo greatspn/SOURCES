@@ -19,12 +19,17 @@
 #include <iomanip>
 #include <map>
 #include <list>
+#include <variant>
 #include <time.h>
 #include <functional>
 #include <iostream>
 #include <sys/resource.h>
 #include "utils/union_find.h"
 #include "utils/mt64.h"
+
+// Allow std::variant visitors to be written as lambda functions.
+template<class... Ts> struct overload : Ts... { using Ts::operator()...; };
+template<class... Ts> overload(Ts...) -> overload<Ts...>;
 
 // Optionally include <gmpxx.h> (if available on the platform)
 #ifdef HAS_GMP_LIB
@@ -361,36 +366,10 @@ ostream& operator<< (ostream& os, const trans_span_set_t& x);
 
 //---------------------------------------------------------------------------------------
 
-class CTLResult {
-    bool _is_int = false;
-    bool _is_bool = false;
+// Type of results (also for regression tests and expected values)
+typedef std::variant<ssize_t, bool, double> result_t;
 
-    bool b = false;
-    int i = 0;
-public:
-    CTLResult() {}
-    CTLResult(bool x) { set_bool(x); }
-    CTLResult(int x) { set_int(x); }
-
-    inline void set_bool(bool x) { b=x; _is_bool=true; }
-    inline void set_int(int x) { i=x; _is_int=true; }
-    inline bool is_int() const { return _is_int; }
-    inline bool is_bool() const { return _is_bool; }
-    inline bool is_undef() const { return !is_int() && !is_bool(); }
-
-    inline bool get_bool() const { return b; }
-    inline int get_int() const { return i; }
-
-    inline bool operator==(const CTLResult& r) const {
-        return _is_int == r._is_int && _is_bool == r._is_bool && b == r.b && i == r.i;
-    }
-};
-
-inline ostream& operator << (ostream& os, const CTLResult& r) {
-    if (r.is_bool())  return os << (r.get_bool() ? "TRUE" : "FALSE");
-    if (r.is_int())  return os << r.get_int();
-    return os << "?";
-}
+std::ostream& operator<<(std::ostream& os, const result_t& r);
 
 //-----------------------------------------------------------------------------
 
@@ -703,18 +682,20 @@ public:
     clock_t init_time;     // Clock time when RSRG was initialized
     clock_t varorder_time; // Time to generate the variable order
 
-    // Expected values for regression control
-    double expected_rs_card = -1.0;
-    double expected_rg_edges = -1.0;
-    double expected_lrs_card = -1.0;
-    ssize_t expected_max_tokens_place = -1;
-    ssize_t expected_max_tokens_marking = -1;
+    // // Expected values for regression control
+    // double expected_rs_card = -1.0;
+    // double expected_rg_edges = -1.0;
+    // double expected_lrs_card = -1.0;
+    // ssize_t expected_max_tokens_place = -1;
+    // ssize_t expected_max_tokens_marking = -1;
 
-    std::vector<CTLResult> expected_ctl;
+    // std::vector<CTLResult> expected_ctl;
 
-    const CTLResult* get_expected_ctl(size_t index) const {
-        return (index < expected_ctl.size()) ? &expected_ctl[index] : nullptr;
-    }
+    std::map<std::string, result_t> expected_results;
+
+    // const CTLResult* get_expected_ctl(size_t index) const {
+    //     return (index < expected_ctl.size()) ? &expected_ctl[index] : nullptr;
+    // }
 
 protected:
     // unfolding relation

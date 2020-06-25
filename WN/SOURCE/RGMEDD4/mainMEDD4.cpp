@@ -2851,91 +2851,44 @@ void load_expected_results(RSRG& rs) {
     char fname[MAXSTRING], buf[MAXSTRING];
     snprintf(fname, MAXSTRING, "%sexpected", net_name);
 
-    // cout << fname << endl;
-    FILE* fex = fopen(fname, "r");
-    if (fex != nullptr) { // expected results for statespace
-        size_t num = 0;
-        for (int i=0; i<4; i++) {
-            if (0 == fscanf(fex, "%32s", buf)) 
-                break;
+    ifstream ifs(fname);
+    if (ifs) { // expected results for statespace
+        // read line by line
+        std::string line;
+        while (std::getline(ifs, line)) {
+            if (line.size() < MAXSTRING) {
+                char name[MAXSTRING], type, value[MAXSTRING];
+                if (3 == sscanf(line.c_str(), "%s %c %s", name, &type, value)) {
+                    // cout << name << " " << type << " " << value << endl;
 
-            switch (i) {
-                case 0: // RS cardinality
-                    if (0 == strcmp(buf, "inf")) { rs.expected_rs_card = INFINITE_CARD; num++; }
-                    else num += sscanf(buf, "%lf", &rs.expected_rs_card);
-                    break;
-                case 1: // RG firings
-                    if (0 == strcmp(buf, "inf")) { rs.expected_rg_edges = INFINITE_CARD; num++; }
-                    else num += sscanf(buf, "%lf", &rs.expected_rg_edges);
-                    break;
-                case 2: // Max tokens per place
-                    if (0 == strcmp(buf, "inf")) { rs.expected_max_tokens_place = INFINITE_CARD; num++; }
-                    else num += sscanf(buf, "%ld", &rs.expected_max_tokens_place);
-                    break;
-                case 3: // Max tokens per marking
-                    if (0 == strcmp(buf, "inf")) { rs.expected_max_tokens_marking = INFINITE_CARD; num++; }
-                    else num += sscanf(buf, "%ld", &rs.expected_max_tokens_marking);
-                    break;
-            }
-        }
-        fclose(fex);
-        if (!running_for_MCC())
-            cout << "Found "<<num<<" values for regression test." << endl;
-    }
-
-    // expected results for CTL
-    if (!rs.getPropName().empty()) {
-        const std::string& ctl = rs.getPropName();
-        if (ctl.size() > 4 && ctl[ctl.size() - 4] == '.') {
-            std::string ctlexp = ctl;
-            ctlexp.resize(ctlexp.size() - 3);
-            ctlexp += "expected";
-            int cnt, num;
-
-            if (nullptr != (fex = fopen(ctlexp.c_str(), "r"))) {
-                if (nullptr != fgets(buf, MAXSTRING, fex)) {
-                    // cout << buf << endl;
-                    char *p = &buf[0];
-
-                    while (*p) {
-                        // skip whitespaces
-                        while (isspace(*p))
-                            p++;
-
-                        if (isdigit(*p)) {
-                            if (sscanf(p, "%d%n", &num, &cnt)) {
-                                rs.expected_ctl.push_back(CTLResult(num));
-                                p += cnt;
-                            }
-                            else 
-                                break;
-                        }
-                        else if (*p=='F' || *p=='T') 
-                            rs.expected_ctl.push_back(CTLResult(bool(*p++ == 'T')));
-                        else if (*p == '?') {
-                            rs.expected_ctl.push_back(CTLResult());
-                            p++;
-                        }
-                        else 
+                    result_t r;
+                    switch (type) {
+                        case 'I':
+                            if (0==strcmp(value, "inf"))
+                                r = result_t{(ssize_t)INFINITE_CARD};
+                            else
+                                r = result_t{(ssize_t)atoi(value)};
                             break;
+
+                        case 'D':
+                            if (0==strcmp(value, "inf"))
+                                r = result_t{(double)INFINITE_CARD};
+                            else
+                                r = result_t{atof(value)};
+                            break;
+
+                        case 'B':
+                            r = result_t{value[0]=='T'};
+                            break;
+
+                        default:
+                            throw rgmedd_exception("Unknown expected result type.");
                     }
+
+                    // cout << "EXPECTED: " << r << " for " << name << endl;
+                    rs.expected_results.insert(make_pair(name, r));
                 }
-                fclose(fex);
             }
-            // cout << rs.expected_ctl.size() << endl;
-            // for (auto&& r : rs.expected_ctl)
-            //     cout << r << " ";
-            // cout << endl;
-
-            // if (rs.expected_ctl.size() == 16) { // Move entries to fix order bug
-            //     std::vector<CTLResult> s27(rs.expected_ctl.begin() + 2, rs.expected_ctl.begin() + 8);
-            //     rs.expected_ctl.erase(rs.expected_ctl.begin() + 2, rs.expected_ctl.begin() + 8);
-            //     rs.expected_ctl.insert(rs.expected_ctl.end(), s27.begin(), s27.end());
-            // }
-
-            // for (auto&& r : rs.expected_ctl)
-            //     cout << r << " ";
-            // cout << endl;
         }
     }
 }

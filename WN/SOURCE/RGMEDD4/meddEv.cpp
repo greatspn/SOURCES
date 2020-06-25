@@ -2890,6 +2890,26 @@ const unfolding_map_t& RSRG::get_unfolding_map() const {
 
 
 
+//-----------------------------------------------------------------------------
+
+std::ostream& operator<<(std::ostream& os, const result_t& r) {
+    std::visit(overload{
+        [&os](ssize_t i)  { if (i==INFINITE_CARD) os << "inf"; else os << i; },
+        [&os](bool b)     { os << (b ? "TRUE" : "FALSE"); },
+        [&os](double d)   { if (d==INFINITE_CARD) os << "inf"; else os << d; },
+    }, r);
+    return os;
+}
+
+//-----------------------------------------------------------------------------
+
+
+
+
+
+
+
+
 
 
 

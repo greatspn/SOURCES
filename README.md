@@ -146,15 +146,15 @@ To cite the GreatSPN framework, please use this reference [PDF](https://iris.uni
 
 GreatSPN partecipated to several Model Checking Context (MCC) editions:
 
- * 2018 Edition [MCC2018](https://mcc.lip6.fr/2018/results.php):
+ * MCC 2018 Edition [(link)](https://mcc.lip6.fr/2018/results.php):
     - 🥇 Gold medal in StateSpace category;
     - 🥉 Bronze medal in UpperBounds category;
     - ✔️ 100% accuracy of the results.
- * 2019 Edition [MCC2019](https://mcc.lip6.fr/2019/results.php):
+ * MCC 2019 Edition [(link)](https://mcc.lip6.fr/2019/results.php):
     - 🥈 Silver medal in StateSpace category;
     - ✔️ 100% accuracy of the results.
 
-See the [MCC site](https://mcc.lip6.fr) for further details.
+See the [Model Checking Context site](https://mcc.lip6.fr) for further details.
 
 
 

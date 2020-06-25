@@ -82,13 +82,18 @@ public class RGMEDD2Solver extends SolverInvokator {
                             ctlWriter = new BufferedWriter(new FileWriter(ctlFilename));
                         }
                         entry = new ModelCheckingResultEntry(measName, evalBind);
-                        if (isV3)
+                        if (isV3) {
                             ctlWriter.append("% ").append(measName).append("\n");
-                        else
-                            ctlWriter.append("% \"").append(measName).append("\"\n");
+                            ctlWriter.append(fm.getFormula().getExpr()).append("\n");
+                        }
+                        else {
+                            ctlWriter.append("FORMULA: ").append(measName).append("\n");
+                            ctlWriter.append("LANGUAGE: ").append(fm.getLanguage().toString()).append("\n");
+                            ctlWriter.append(fm.getFormula().getExpr()).append("\n\n");
+                        }
 //                        String exCTL = fm.getFormula().convertLang(getContext(), EvaluationArguments.NO_ARGS, 
 //                                        ExpressionLanguage.GREATSPN);
-                        ctlWriter.append(fm.getFormula().getExpr()).append("\n");
+//                        ctlWriter.append(fm.getFormula().getExpr()).append("\n");
                         step.entries.add(entry);
                         break;
                         

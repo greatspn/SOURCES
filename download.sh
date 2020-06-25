@@ -189,7 +189,7 @@ if [[ $BUILD_MEDDLY == "Y" ]] ; then
 			git pull || fail "Cannot pull from the Meddly repository" 
 		else 
 			print_header "Downloading the Meddly repository..." 
-			git clone git://git.code.sf.net/p/meddly/code-git meddly \
+			git clone https://github.com/asminer/meddly.git meddly \
 						|| fail "Cannot clone the Meddly repository."  
 		fi
 	) || fail "Could not download the Meddly repository."

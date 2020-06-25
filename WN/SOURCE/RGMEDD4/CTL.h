@@ -49,6 +49,12 @@ namespace std {
   };
 }
 
+// parser/lexer interface
+void initialize_lexer(istringstream *p_iss);
+void deinitialize_lexer();
+ctlmdd::BaseFormula* parse_formula();
+
+
 namespace ctlmdd {
 
 using namespace MEDDLY;
@@ -76,6 +82,14 @@ class IntExpression;
 class PlaceTerm ;
 class IntLiteral;
 class BoundOfPlaces;
+
+//----------------------------------------------------------------------------
+
+enum Language {
+    CTL, LTL, CTLSTAR,
+    NUM_LANGUAGES
+};
+extern const char* s_languageName[3];
 
 //----------------------------------------------------------------------------
 

@@ -1023,6 +1023,7 @@ RGMEDD4_SOURCES := WN/SOURCE/SHARED/service.c \
            WN/SOURCE/RGMEDD4/meddEv.cpp \
            WN/SOURCE/RGMEDD4/general.cpp \
            WN/SOURCE/RGMEDD4/graphMEDD.cpp \
+           WN/SOURCE/RGMEDD4/FormulaEval.cpp \
            WN/SOURCE/RGMEDD4/CTL.cpp \
            WN/SOURCE/RGMEDD4/LTL.cpp \
            WN/SOURCE/RGMEDD4/CTLParser.yy \
@@ -1035,6 +1036,8 @@ RGMEDD4_YACCPP_WN/SOURCE/RGMEDD4/CTLParser.yy := byacc -p mm -v -d
 RGMEDD4_LEXPP_WN/SOURCE/RGMEDD4/CTLLexer.ll = $(LEXPP) -+ -P mm --header-file=$(@:.cpp=.h)
 RGMEDD4_LD := $(LDPP) -shared-libgcc
 RGMEDD4_CPPFLAGS := $(RGMEDD4_CPPFLAGS) -I.
+
+$(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/FormulaEval.o: $(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/CTLLexer.ll.cpp
 
 $(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/CTLParser.yy.o: $(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/CTLLexer.ll.cpp
 
