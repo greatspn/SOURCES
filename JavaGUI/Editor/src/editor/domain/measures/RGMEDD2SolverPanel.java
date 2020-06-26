@@ -54,6 +54,7 @@ public class RGMEDD2SolverPanel extends SolverPanel {
                     case CTL:
                     case LTL:
                     case CTLSTAR:
+                    case FAIRNESS:
                         hasCTL = true;
                         break;
                 }

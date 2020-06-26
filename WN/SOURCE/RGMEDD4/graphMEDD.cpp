@@ -17,10 +17,9 @@
 #include "rgmedd4.h"
 #include "parallel.h"
 
-extern bool CTL_as_CTLstar;
-
 extern "C" {
 
+extern bool eval_CTL_using_SatELTL;
 
 // #include "../../INCLUDE/const.h"
 // #include "../../INCLUDE/struct.h"
@@ -599,9 +598,12 @@ void build_graph(class RSRG &rs) {
             clock_t nsf_ctl_start = clock();
 
             // prepare monolithic NSF (LTL/CTL*)
-            if(rs.useMonolithicNSF() || CTL_as_CTLstar) rs.prepareNSFforCTL();
+            // if(rs.useMonolithicNSF() || CTL_as_CTLstar) 
+            // if (!eval_CTL_using_SatELTL)
+            rs.prepareNSFforCTL();
+
             // use event-based NSF (CTL)
-            else rs.prepareEventMxDsForCTL();
+            // else rs.prepareEventMxDsForCTL();
 
             timeNSFAccum += clock() - nsf_ctl_start;
 

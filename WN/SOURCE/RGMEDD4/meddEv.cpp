@@ -23,7 +23,6 @@ extern int _iter;
 extern int out_mc;
 
 extern bool CTMC;
-extern bool CTL_as_CTLstar;
 MEDDLY::forest::policies::node_deletion mdd_node_del_policy = 
 /**/ MEDDLY::forest::policies::node_deletion::OPTIMISTIC_DELETION;
 MEDDLY::forest::policies::node_deletion mxd_node_del_policy = 
@@ -1388,7 +1387,7 @@ void RSRG::prepareEventMxDsForCTL() {
 //-----------------------------------------------------------------------------
 
 void RSRG::prepareNSFforCTL() {
-    assert(RSRG::useMonolithicNSF() || CTL_as_CTLstar);
+    //assert(RSRG::useMonolithicNSF());
     buildMonolithicNSF();
 }
 
@@ -1890,7 +1889,8 @@ const dd_edge& RSRG::getNSF() const {
 
 // build NSF if not already built (required by CTL context, printStatistics)
 void RSRG::buildMonolithicNSF() {
-    assert(useMonolithicNSF() || CTL_as_CTLstar);
+    cout << "Building monolithic NSF..." << endl;
+    // assert(useMonolithicNSF());
     // cout << " Using monolithic NSF." << endl;
 
     // check if empty, if not return

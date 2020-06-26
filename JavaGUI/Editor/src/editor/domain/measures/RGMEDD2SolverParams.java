@@ -93,6 +93,7 @@ public class RGMEDD2SolverParams extends SolverParams {
             case STAT:
             case DD:
             case INC:
+            case FAIRNESS:
                 return null; // Supported
                 
             default:

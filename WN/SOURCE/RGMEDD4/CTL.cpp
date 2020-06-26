@@ -558,13 +558,13 @@ dd_edge EG(dd_edge f1, Context& ctx) {
     result = f1;
 
     dd_edge deadlock_f1;
-    if(!CTL_as_CTLstar) deadlock_f1 = f1 - NON_DEAD(ctx);
+    if(!ctx.stutter_EG) deadlock_f1 = f1 - NON_DEAD(ctx);
 
     size_t n_iters = 0;
     do {
         prev_r = result; // previous iteration result
         result = AND(result, EX(prev_r, ctx), ctx);
-        if(!CTL_as_CTLstar) result = OR(result, deadlock_f1, ctx);
+        if(!ctx.stutter_EG) result = OR(result, deadlock_f1, ctx);
 
         n_iters++;
         if (print_intermediate_expr()) {
@@ -1337,7 +1337,7 @@ bool AtomicProposition::isPathFormula() const {
 bool AtomicProposition::isAtomicPropos() const {
     return true;
 }
-void AtomicProposition::maximal_path_subformula(std::ostream& os, quant_type quantifier,
+void AtomicProposition::maximal_path_subformula(Context& ctx, std::ostream& os, quant_type quantifier,
                                                 std::vector<Formula*>& subformulas) {
     // add the AP as a new subformula and output a new AP identifier
     add_this_as_subformula(os, subformulas);
@@ -1580,27 +1580,27 @@ void LogicalFormula::print(std::ostream &os) const {
     }
 }
 
-void LogicalFormula::maximal_path_subformula(std::ostream& os, quant_type quantifier,
+void LogicalFormula::maximal_path_subformula(Context& ctx, std::ostream& os, quant_type quantifier,
                                              std::vector<Formula*>& subformulas) {
     if (isPathFormula()) {
         if (op == CBF_NOT) {
             os << "(!";
-            formula1->maximal_path_subformula(os, quantifier, subformulas);
+            formula1->maximal_path_subformula(ctx, os, quantifier, subformulas);
             os << ")";
         }
         else {
             if (op == CBF_IMPLY) {
                 os << "(!";
-                formula1->maximal_path_subformula(os, quantifier, subformulas);
+                formula1->maximal_path_subformula(ctx, os, quantifier, subformulas);
                 os << " | ";
-                formula2->maximal_path_subformula(os, quantifier, subformulas);
+                formula2->maximal_path_subformula(ctx, os, quantifier, subformulas);
                 os << ")";
             }
             else {
                 os << "(";
-                formula1->maximal_path_subformula(os, quantifier, subformulas);
+                formula1->maximal_path_subformula(ctx, os, quantifier, subformulas);
                 os << ((op == CBF_AND) ? " & " : " | ");
-                formula2->maximal_path_subformula(os, quantifier, subformulas);
+                formula2->maximal_path_subformula(ctx, os, quantifier, subformulas);
                 os << ")";
             }
         }
@@ -1768,7 +1768,7 @@ size_t QuantifiedFormula::compute_hash() const {
 void QuantifiedFormula::print(std::ostream &os) const {
 	os << "(" << g_quant_type_str[quantifier] << " " << *formula << ")";
 }
-void QuantifiedFormula::maximal_path_subformula(std::ostream& os, quant_type quantifier,
+void QuantifiedFormula::maximal_path_subformula(Context& ctx, std::ostream& os, quant_type quantifier,
                                                 std::vector<Formula*>& subformulas) {
     // add the Quantified formula as a new atomic proposition.
     add_this_as_subformula(os, subformulas);
@@ -1890,16 +1890,17 @@ void QuantifiedFormula::createMDD(Context& ctx) {
 
     // If the formula is a pure CTL formula, and rgmedd is running in CTL mode,
     // perform standard CTL model checking instead of CTL* model checking
-    if (!CTL_as_CTLstar) {
+    if (!eval_CTL_using_SatELTL) {
         if (do_CTL_model_checking(ctx))
             return; // model checked as CTL instead of CTL*
-        throw rgmedd_exception("not a CTL formula.");
+        // fallthrough using SatELTL
+        //throw rgmedd_exception("not a CTL formula.");
     }
 
     // Get the maximal path subformula and the list of subformula pointers
     std::stringstream path_formula;
     std::vector<Formula*> subformulas;
-    formula->maximal_path_subformula(path_formula, quantifier, subformulas);
+    formula->maximal_path_subformula(ctx, path_formula, quantifier, subformulas);
 
     // Negate LTL formula for universally quantified LTL
     std::string ltl_formula = path_formula.str();
@@ -2092,23 +2093,23 @@ void TemporalFormula::print(std::ostream &os) const {
     }
     os << ")";
 }
-void TemporalFormula::maximal_path_subformula(std::ostream& os, quant_type quantifier,
+void TemporalFormula::maximal_path_subformula(Context& ctx, std::ostream& os, quant_type quantifier,
                                               std::vector<Formula*>& subformulas) {
     os << "(";
     if (op == POT_UNTIL) {
-        formula1->maximal_path_subformula(os, quantifier, subformulas);
+        formula1->maximal_path_subformula(ctx, os, quantifier, subformulas);
         os << " U ";
-        formula2->maximal_path_subformula(os, quantifier, subformulas);
+        formula2->maximal_path_subformula(ctx, os, quantifier, subformulas);
     }
     else {
-        if (CTL_as_CTLstar && LTL_weak_next && op == POT_NEXT){
+        if (ctx.stutter_EG && LTL_weak_next && op == POT_NEXT){
             if (quantifier == QOP_ALWAYS) {
                 // X a  ==>  deadlock | X a
                 Formula* fdead = ctlnew<Deadlock>(true);
                 os << "(";
-                fdead->maximal_path_subformula(os, quantifier, subformulas);
+                fdead->maximal_path_subformula(ctx, os, quantifier, subformulas);
                 os << " | X ";
-                formula1->maximal_path_subformula(os, quantifier, subformulas);
+                formula1->maximal_path_subformula(ctx, os, quantifier, subformulas);
                 os << ")";
                 safe_removeOwner(fdead); // clear the newly created expression
             }
@@ -2116,9 +2117,9 @@ void TemporalFormula::maximal_path_subformula(std::ostream& os, quant_type quant
                 // X a  ==>  !deadlock & X a
                 Formula* fndead = ctlnew<Deadlock>(false);
                 os << "(";
-                fndead->maximal_path_subformula(os, quantifier, subformulas);
+                fndead->maximal_path_subformula(ctx, os, quantifier, subformulas);
                 os << " & X ";
-                formula1->maximal_path_subformula(os, quantifier, subformulas);
+                formula1->maximal_path_subformula(ctx, os, quantifier, subformulas);
                 os << ")";
                 safe_removeOwner(fndead); // clear the newly created expression
             }
@@ -2129,13 +2130,13 @@ void TemporalFormula::maximal_path_subformula(std::ostream& os, quant_type quant
             // //                                      LogicalFormula::op_type::CBF_AND);
             // Formula* fd = ctlnew<Deadlock>(true);
             // Formula* fnd = ctlnew<Deadlock>(false);
-            // // fnd->maximal_path_subformula(os, quantifier, subformulas);
+            // // fnd->maximal_path_subformula(ctx, os, quantifier, subformulas);
             // // os << "(";
-            // // fnd->maximal_path_subformula(os, quantifier, subformulas);
+            // // fnd->maximal_path_subformula(ctx, os, quantifier, subformulas);
             // os << "X (";
-            // formula1->maximal_path_subformula(os, quantifier, subformulas);
+            // formula1->maximal_path_subformula(ctx, os, quantifier, subformulas);
             // os << " & ";
-            // fnd->maximal_path_subformula(os, quantifier, subformulas);
+            // fnd->maximal_path_subformula(ctx, os, quantifier, subformulas);
             // os << ")";
 
             // safe_removeOwner(fd); // clear the newly created expression
@@ -2143,7 +2144,7 @@ void TemporalFormula::maximal_path_subformula(std::ostream& os, quant_type quant
         }
         else {
             os << g_path_op_type[op] << " ";
-            formula1->maximal_path_subformula(os, quantifier, subformulas);
+            formula1->maximal_path_subformula(ctx, os, quantifier, subformulas);
         }
     }
     os << ")";

@@ -78,6 +78,7 @@ public class RGMEDD2Solver extends SolverInvokator {
                     case CTL:
                     case LTL:
                     case CTLSTAR:
+                    case FAIRNESS:
                         if (ctlWriter == null) {
                             ctlWriter = new BufferedWriter(new FileWriter(ctlFilename));
                         }

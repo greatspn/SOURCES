@@ -206,22 +206,28 @@ void model_check_query(const ctl_query_t& query, int sem_id)
     // Prepare the CTL evaluation context
     /* if(!(CTL_as_CTLstar || rsrg->useMonolithicNSF())) rsrg->buildMonolithicNSF(); */
     unique_ptr<PreImage> pre_image;
-    if (rsrg->useMonolithicNSF() || CTL_as_CTLstar)
+    if (rsrg->useMonolithicNSF())
         pre_image = make_unique<MonoPreImage>(rsrg->getNSF());
     else
         pre_image = make_unique<ByEventPreImage>(rsrg);
-    Context ctx(rsrg->getRS(), std::move(pre_image), true, query.lang, true);
+    Context ctx(rsrg->getRS(), std::move(pre_image), 
+                query.lang!=Language::CTL, // stuttering
+                query.lang, true);
+
+    // cout << s_languageName[query.lang] << "   Stutter EG = " << ctx.stutter_EG << endl;
 
     // Compute the result
     result_t result;
     BaseFormula *formula = parse_formula(ctx, query.line, &result);
 
     // Compute the cardinality
-    cardinality_t satset_card = -1;
-    if (formula && formula->isBoolFormula() && CTL_print_sat_sets) {
+    cardinality_t satset_card = -1, rs_card = -1;
+    bool compute_card = CTL_print_sat_sets || invoked_from_gui();
+    if (formula && formula->isBoolFormula() && (query.lang!=Language::LTL) && compute_card) {
         dd_edge dd(dynamic_cast<Formula*>(formula)->getMDD(ctx));
         apply(INTERSECTION, rsrg->getRS(), dd, dd);
         apply(CARDINALITY, dd, cardinality_ref(satset_card));
+        apply(CARDINALITY, rsrg->getRS(), cardinality_ref(rs_card));
     }
 
     // stop the killing timer after query evaluation
@@ -352,7 +358,11 @@ void model_check_query(const ctl_query_t& query, int sem_id)
 
         if (invoked_from_gui()) {
             cout << "#{GUI}# RESULT " << query.name << " " 
-                 << format_result(result, true) << endl;
+                 << format_result(result, true);
+            if (satset_card >= 0) {
+                cout << " "<<satset_card<<"/"<<rs_card; // single additional string
+            }
+            cout  << endl;
         }
 
         // Release the memory occupied by the CTL formula tree
@@ -408,6 +418,7 @@ Language language_from_string(const char* str) {
     else if (0==strcmp(str, "LTL"))  return Language::LTL;
     else if (0==strcmp(str, "CTL*"))  return Language::CTLSTAR;
     else if (0==strcmp(str, "CTLSTAR"))  return Language::CTLSTAR;
+    else if (0==strcmp(str, "FAIRNESS"))  return Language::CTLSTAR;
     return Language::NUM_LANGUAGES; // unknown
 }
 

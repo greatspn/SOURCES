@@ -177,7 +177,7 @@ bool g_dot_open_RS = false;
 const char* g_dot_file = nullptr;
 
 bool CTL = false;
-bool CTL_as_CTLstar = true; // model check CTL operators as CTL* operators
+bool eval_CTL_using_SatELTL = false; // model check CTL operators as CTL* operators
 bool CTL_quiet = false;
 bool CTL_print_intermediate_sat_sets = false;
 bool CTL_print_sat_sets = false;
@@ -1447,11 +1447,11 @@ int initialize(int  argc,  char  *argv[]) {
         else if (0 == strcmp(argv[ii], "-C")) {
             CTL = true;
         }
-        else if (0 == strcmp(argv[ii], "-CTL-as-CTLstar")) {
-            CTL_as_CTLstar = true;
+        else if (0 == strcmp(argv[ii], "-CTL-with-SatELTL")) {
+            eval_CTL_using_SatELTL = true;
         }
-        else if (0 == strcmp(argv[ii], "-no-CTL-as-CTLstar")) {
-            CTL_as_CTLstar = false;
+        else if (0 == strcmp(argv[ii], "-CTL-pure")) {
+            eval_CTL_using_SatELTL = false;
         }
         else if (0 == strcmp(argv[ii], "-satsets")) {
             CTL_print_sat_sets = true;

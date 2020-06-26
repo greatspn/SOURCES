@@ -29,7 +29,7 @@
 extern RSRG *rsrg;
 extern bool CTL_quiet;
 // Model check CTL formulas using CTL operators or CTL* operators
-extern bool CTL_as_CTLstar;
+extern bool eval_CTL_using_SatELTL;
 extern bool CTL_print_intermediate_sat_sets;
 extern bool CTL_print_sat_sets;
 extern bool LTL_weak_next;
@@ -336,7 +336,7 @@ public:
 
     // Generate a string representation of the maximal path subformula,
     // and collect all the atomic propositions below such subformula
-    virtual void maximal_path_subformula(std::ostream &os, quant_type quantifier,
+    virtual void maximal_path_subformula(Context& ctx, std::ostream &os, quant_type quantifier,
                                          std::vector<Formula*>& subformulas) = 0;
     void add_this_as_subformula(std::ostream &os, 
                                 std::vector<Formula*>& subformulas);
@@ -421,7 +421,7 @@ private:
     op_type op;
     virtual void createMDD(Context& ctx) override;
     virtual void print(std::ostream &os) const override;
-    virtual void maximal_path_subformula(std::ostream&, quant_type,
+    virtual void maximal_path_subformula(Context& ctx, std::ostream&, quant_type,
                                          std::vector<Formula*>&) override;
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
@@ -477,7 +477,7 @@ private:
     bool is_CTL() const;
     virtual void createMDD(Context& ctx) override;
     virtual void print(std::ostream &os) const override;
-    virtual void maximal_path_subformula(std::ostream&, quant_type,
+    virtual void maximal_path_subformula(Context& ctx, std::ostream&, quant_type,
                                          std::vector<Formula*>&) override;
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
@@ -508,7 +508,7 @@ private:
 
     virtual void createMDD(Context& ctx) override;
     virtual void print(std::ostream &os) const override;
-    virtual void maximal_path_subformula(std::ostream&, quant_type,
+    virtual void maximal_path_subformula(Context& ctx, std::ostream&, quant_type,
                                          std::vector<Formula*>&) override;
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
@@ -625,7 +625,7 @@ public:
     virtual bool isStateFormula() const override;
     virtual bool isPathFormula() const override;
     virtual bool isAtomicPropos() const override;
-    virtual void maximal_path_subformula(std::ostream&, quant_type,
+    virtual void maximal_path_subformula(Context& ctx, std::ostream&, quant_type,
                                          std::vector<Formula*>&) override;
 };
 

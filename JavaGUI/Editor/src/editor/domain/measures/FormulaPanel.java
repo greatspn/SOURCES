@@ -40,6 +40,7 @@ public abstract class FormulaPanel extends javax.swing.JPanel implements ExprFie
         exprField_formula.setExprListener(this);
         
         Dimension dim = jButtonViewResults.getPreferredSize();
+        dim.width = (int)(dim.width * 1.5);
         dim.height = jTextField_result.getPreferredSize().height;
         jTextField_result.setMinimumSize(dim);
         jTextField_result.setMaximumSize(dim);
