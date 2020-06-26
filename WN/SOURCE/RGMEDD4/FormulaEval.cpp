@@ -50,6 +50,7 @@ struct ctl_query_t {
     std::optional<result_t> expected;   // expected result (if available)
     Language lang;       // sublanguage
     int score;           // complexity score
+    bool is_fairness_constraint; // is this query a new fairness constraint?
 };
 
 //-----------------------------------------------------------------------------
@@ -201,18 +202,17 @@ unsigned int num_path_ops(const std::string prop)
 
 //-----------------------------------------------------------------------------
 
-void model_check_query(const ctl_query_t& query, int sem_id) 
+void model_check_query(Context& ctx, const ctl_query_t& query, int sem_id) 
 {
-    // Prepare the CTL evaluation context
-    /* if(!(CTL_as_CTLstar || rsrg->useMonolithicNSF())) rsrg->buildMonolithicNSF(); */
-    unique_ptr<PreImage> pre_image;
-    if (rsrg->useMonolithicNSF())
-        pre_image = make_unique<MonoPreImage>(rsrg->getNSF());
-    else
-        pre_image = make_unique<ByEventPreImage>(rsrg);
-    Context ctx(rsrg->getRS(), std::move(pre_image), 
-                query.lang!=Language::CTL, // stuttering
-                query.lang, true);
+    // Modify the evaluation context for the current query
+    ctx.stutter_EG = query.lang!=Language::CTL;
+    ctx.language   = query.lang;
+
+    std::list<dd_edge> ctx_fair_sets = ctx.fair_sets;
+    if (query.is_fairness_constraint) {
+        // Fairness constraints are evaluated without other fairness constraints active
+        ctx.fair_sets.clear();
+    }
 
     // cout << s_languageName[query.lang] << "   Stutter EG = " << ctx.stutter_EG << endl;
 
@@ -365,6 +365,13 @@ void model_check_query(const ctl_query_t& query, int sem_id)
             cout  << endl;
         }
 
+        ctx.fair_sets = ctx_fair_sets; // restore fairness constraints
+        if (!is_int_formula && query.is_fairness_constraint) {
+            Formula* state_formula = dynamic_cast<Formula*>(formula);
+            // Add the sat-set as a new fairness constraint in the global evaluation context
+            ctx.add_fairness_constraint(state_formula->getStoredMDD());
+        }
+
         // Release the memory occupied by the CTL formula tree
         formula->removeOwner();
         formula = nullptr;
@@ -460,6 +467,7 @@ void CTLParser(RSRG *r) {
     {
         std::string name, line;
         Language lang = Language::CTL;
+        bool is_fair = true;
         while(!in.eof()) {
             getline(in, line);
 
@@ -478,6 +486,7 @@ void CTLParser(RSRG *r) {
                     line = std::string(line, 9);
                     trim(line);
                     lang = language_from_string(line.c_str());
+                    is_fair = (0 == strcmp(line.c_str(), "FAIRNESS"));
                     if (lang == NUM_LANGUAGES) {
                         cerr << "Unknown language:" << line<< endl;
                     }
@@ -488,10 +497,12 @@ void CTLParser(RSRG *r) {
                     q.line  = line;
                     q.score = 0;
                     q.lang  = lang;
+                    q.is_fairness_constraint = is_fair;
 
                     // cout << s_languageName[q.lang]<<" " << q.name<<":    "<<q.line<<endl;
                     queries.emplace_back(std::move(q));
                     name = "";
+                    is_fair = false;
                 } 
             }
         }
@@ -518,7 +529,7 @@ void CTLParser(RSRG *r) {
         //     cout << "--- Sorted " << queries.size() << " queries ---" << endl;
     }
 
-    // carica i risultati attesi delle query
+    // carica i risultati attesi per le query
     for (size_t i=0; i<queries.size(); i++) {
         auto kv = rsrg->expected_results.find(queries[i].name);
         if (kv != rsrg->expected_results.end())
@@ -534,6 +545,17 @@ void CTLParser(RSRG *r) {
         }
     }
 
+    // Prepare the shared evaluation context
+    /* if(!(CTL_as_CTLstar || rsrg->useMonolithicNSF())) rsrg->buildMonolithicNSF(); */
+    unique_ptr<PreImage> pre_image;
+    if (rsrg->useMonolithicNSF())
+        pre_image = make_unique<MonoPreImage>(rsrg->getNSF());
+    else
+        pre_image = make_unique<ByEventPreImage>(rsrg);
+    Context ctx(rsrg->getRS(), std::move(pre_image), 
+                false, /* stuttering is by-query */ 
+                Language::NUM_LANGUAGES, true);
+
 
     // Query evaluation
     int sem_id = -1;
@@ -541,9 +563,12 @@ void CTLParser(RSRG *r) {
         //=================================
         // Sequential query evaluation
         //=================================
-        for(const ctl_query_t& q: queries) {
-            model_check_query(q, sem_id);
-        } 
+        for (size_t step=0; step<2; step++) { // step 0=fairness constraints, step 1=queries
+            for(const ctl_query_t& q: queries) {
+                if (q.is_fairness_constraint == (step==0))
+                    model_check_query(ctx, q, sem_id);
+            } 
+        }
         if (!running_for_MCC()) {
             cout << "CTL cache size: " << CTLMDD::getInstance()->cache_size() << endl;
         }
@@ -568,7 +593,7 @@ void CTLParser(RSRG *r) {
             if (g_par_mc_max_MB_statespace > 0)
                 constraint_address_space(g_par_mc_max_MB_statespace);
 
-            model_check_query(queries[qid], sem_id);
+            model_check_query(ctx, queries[qid], sem_id);
             exit(EXIT_SUCCESS);
         }
         // cout << "\n\nPHASE 2\n\n" << endl;
@@ -598,7 +623,7 @@ void CTLParser(RSRG *r) {
                 if (g_par_mc_max_MB_statespace > 0)
                     constraint_address_space(g_par_mc_max_MB_statespace);
 
-                model_check_query(queries[qid], sem_id);
+                model_check_query(ctx, queries[qid], sem_id);
                 exit(EXIT_SUCCESS);
             }
 

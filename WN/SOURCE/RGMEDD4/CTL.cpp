@@ -491,6 +491,7 @@ dd_edge DEAD(Context& ctx) {
 //----------------------------------------------------------------------------
 
 dd_edge EX(dd_edge f1, Context& ctx) {
+
     // Note: for non-ergodic RS, the E X true is only valid
     // for non-dead states. Therefore, the E X true case
     // is not different from the general case.
@@ -616,44 +617,12 @@ dd_edge EU(dd_edge f1, dd_edge f2, Context& ctx) {
 }
 
 //----------------------------------------------------------------------------
-
-dd_edge AX(dd_edge f1, Context& ctx) {
-    // not EX not f1 
-    return NOT(EX(NOT(f1, ctx), ctx), ctx);
-}
-
-//----------------------------------------------------------------------------
-
-dd_edge AF(dd_edge f1, Context& ctx) {
-    // not EG not f1
-    return NOT(EG(NOT(f1, ctx), ctx), ctx);
-}
-
-//----------------------------------------------------------------------------
-
-dd_edge AG(dd_edge f1, Context& ctx) {
-    // not (E true U not f1 )  =  not EF not f1
-    return NOT(EF(NOT(f1, ctx), ctx), ctx);
-}
-
-//----------------------------------------------------------------------------
-
-dd_edge AU(dd_edge f1, dd_edge f2, Context& ctx) {
-    //not (E not f2 U (not f1 and not f2) ) and not EG not f2
-    dd_edge not_f1 = NOT(f1, ctx);
-    dd_edge not_f2 = NOT(f2, ctx);
-
-    return AND(NOT(EU(not_f2, AND(not_f1, not_f2, ctx), ctx), ctx),
-               NOT(EG(not_f2, ctx), ctx), ctx);
-}
-
-//----------------------------------------------------------------------------
-// Fair ECTL
+// Fair ECTL (explicit)
 //----------------------------------------------------------------------------
 
 dd_edge EGfair(dd_edge f1, Context& ctx) 
 {
-    if (ctx.fair_sets.empty())
+    if (!ctx.has_fairness_constraints())
         return EG(f1, ctx); // use non-fair EG
 
     dd_edge result(ctx.RS.getForest());
@@ -678,8 +647,11 @@ dd_edge EGfair(dd_edge f1, Context& ctx)
 
 dd_edge EXfair(dd_edge f1, Context& ctx) 
 {
+    if (!ctx.has_fairness_constraints())
+        return EX(f1, ctx);
+
     // fair = EGfair(true)
-    dd_edge fair = EGfair(ctx.RS, ctx);
+    dd_edge fair = ctx.get_fair_states(); //EGfair(ctx.RS, ctx);
     // EXfair f = EX(f AND fair)
     return EX(AND(f1, fair, ctx), ctx);
 }
@@ -688,8 +660,11 @@ dd_edge EXfair(dd_edge f1, Context& ctx)
 
 dd_edge EUfair(dd_edge f1, dd_edge f2, Context& ctx) 
 {
+    if (!ctx.has_fairness_constraints())
+        return EU(f1, f2, ctx);
+
     // fair = EGfair(true)
-    dd_edge fair = EGfair(ctx.RS, ctx);
+    dd_edge fair = ctx.get_fair_states(); //EGfair(ctx.RS, ctx);
     // EUfair(f1, f2) = EU(f1, f2 AND fair)
     return EU(f1, AND(f2, fair, ctx), ctx);
 }
@@ -698,7 +673,65 @@ dd_edge EUfair(dd_edge f1, dd_edge f2, Context& ctx)
 
 dd_edge EFfair(dd_edge f1, Context& ctx) 
 {
+    if (!ctx.has_fairness_constraints())
+        return EF(f1, ctx);
+
     return EUfair(ctx.RS, f1, ctx); // true Ufair f1
+}
+
+//----------------------------------------------------------------------------
+// ForAll-quantified CTL
+//----------------------------------------------------------------------------
+
+dd_edge AXfair(dd_edge f1, Context& ctx) {
+    // not EX not f1 
+    return NOT(EX(NOT(f1, ctx), ctx), ctx);
+}
+
+//----------------------------------------------------------------------------
+
+dd_edge AFfair(dd_edge f1, Context& ctx) {
+    // not EG not f1
+    return NOT(EGfair(NOT(f1, ctx), ctx), ctx);
+}
+
+//----------------------------------------------------------------------------
+
+dd_edge AGfair(dd_edge f1, Context& ctx) {
+    // not (E true U not f1 )  =  not EF not f1
+    return NOT(EFfair(NOT(f1, ctx), ctx), ctx);
+}
+
+//----------------------------------------------------------------------------
+
+dd_edge AUfair(dd_edge f1, dd_edge f2, Context& ctx) {
+    //not (E not f2 U (not f1 and not f2) ) and not EG not f2
+    dd_edge not_f1 = NOT(f1, ctx);
+    dd_edge not_f2 = NOT(f2, ctx);
+
+    return AND(NOT(EUfair(not_f2, AND(not_f1, not_f2, ctx), ctx), ctx),
+               NOT(EGfair(not_f2, ctx), ctx), ctx);
+}
+
+//----------------------------------------------------------------------------
+
+
+
+
+//----------------------------------------------------------------------------
+
+// add a new fairness constraint and update fair_states
+void Context::add_fairness_constraint(dd_edge fair_set) {
+    fair_sets.push_back(fair_set);
+    fair_states = empty_set(RS);
+}
+
+// get the set of fair states
+dd_edge Context::get_fair_states() {
+    if (isEmptySet(fair_states)) {
+        fair_states = EGfair(RS, *this);
+    }
+    return fair_states;
 }
 
 //----------------------------------------------------------------------------
@@ -1809,9 +1842,9 @@ bool QuantifiedFormula::do_CTL_model_checking(Context& ctx)
                 if (!f1->isPathFormula()) { // EX/AX
                     FormulaPrinter<QuantifiedFormula> fp(this);
                     if (quantifier == QOP_EXISTS)
-                        result = EX(f1->getMDD(ctx), ctx);
+                        result = EXfair(f1->getMDD(ctx), ctx);
                     else // QOP_ALWAYS
-                        result = AX(f1->getMDD(ctx), ctx);
+                        result = AXfair(f1->getMDD(ctx), ctx);
                     setMDD(result);
                     return true;
                 }
@@ -1820,9 +1853,9 @@ bool QuantifiedFormula::do_CTL_model_checking(Context& ctx)
                 if (!f1->isPathFormula()) { // EF/AF
                     FormulaPrinter<QuantifiedFormula> fp(this);
                     if (quantifier == QOP_EXISTS)
-                        result = EF(f1->getMDD(ctx), ctx);
+                        result = EFfair(f1->getMDD(ctx), ctx);
                     else // QOP_ALWAYS
-                        result = AF(f1->getMDD(ctx), ctx);
+                        result = AFfair(f1->getMDD(ctx), ctx);
                     setMDD(result);
                     return true;
                 }
@@ -1831,9 +1864,9 @@ bool QuantifiedFormula::do_CTL_model_checking(Context& ctx)
                 if (!f1->isPathFormula()) { // EG/AG
                     FormulaPrinter<QuantifiedFormula> fp(this);
                     if (quantifier == QOP_EXISTS)
-                        result = EG(f1->getMDD(ctx), ctx);
+                        result = EGfair(f1->getMDD(ctx), ctx);
                     else // QOP_ALWAYS
-                        result = AG(f1->getMDD(ctx), ctx);
+                        result = AGfair(f1->getMDD(ctx), ctx);
                     setMDD(result);
                     return true;
                 }
@@ -1842,9 +1875,9 @@ bool QuantifiedFormula::do_CTL_model_checking(Context& ctx)
                 if (!f1->isPathFormula() && !f2->isPathFormula()) { // EU/AU
                     FormulaPrinter<QuantifiedFormula> fp(this);
                     if (quantifier == QOP_EXISTS)
-                        result = EU(f1->getMDD(ctx), f2->getMDD(ctx), ctx);
+                        result = EUfair(f1->getMDD(ctx), f2->getMDD(ctx), ctx);
                     else // QOP_ALWAYS
-                        result = AU(f1->getMDD(ctx), f2->getMDD(ctx), ctx);
+                        result = AUfair(f1->getMDD(ctx), f2->getMDD(ctx), ctx);
                     setMDD(result);
                     return true;
                 }
@@ -2268,7 +2301,7 @@ void GlobalProperty::createMDD(Context& ctx) {
                 dd_edge enab_tr = f->getMDD(ctx);
                 safe_removeOwner(f);
 
-                dd_edge dd = AG(EF(enab_tr, ctx), ctx);
+                dd_edge dd = AGfair(EF(enab_tr, ctx), ctx);
                 // m0 |= AG EF firable(tr)
                 apply(INTERSECTION, rsrg->getInitMark(), dd, dd);
                 if (isEmptySet(dd)) {

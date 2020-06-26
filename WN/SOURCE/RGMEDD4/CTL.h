@@ -173,6 +173,7 @@ public:
  --- CTL Evaluation Context
  -----------------------*/
 class Context {
+    dd_edge               fair_states; // set of fair states (that satisfy all fairness constraints)
 public:
     dd_edge               RS;         // the reference RS
     unique_ptr<PreImage>  pre_image;  // pre image operator with the NSF
@@ -190,6 +191,13 @@ public:
     Context& operator=(const Context&) = delete;
     Context(Context&&) = default;
     Context& operator=(Context&&) = default;
+
+    // add a new fairness constraint and update fair_states
+    void add_fairness_constraint(dd_edge fair_set);
+    // get the set of fair states
+    dd_edge get_fair_states();
+    // has fairness constraints?
+    inline bool has_fairness_constraints() const { return !fair_sets.empty(); }
 };
 
 
