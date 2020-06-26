@@ -993,11 +993,7 @@ public:
         // return tabp[mddLevel_to_net.at(var)].place_name; 
     }
 
-    // compute the pre-image of the monolithic/event-based NSF
-    // const dd_edge preImg(const dd_edge set) const;
-    const dd_edge preImg(const dd_edge& set, const dd_edge& NSF) const; // debug
-    const dd_edge preImg(const dd_edge& set) const; // debug
-    const dd_edge preImg() const;
+    friend class ByEventPreImage;
 };
 
 //---------------------------------------------------------------------------------------
@@ -1010,6 +1006,30 @@ void write_dd_as_dot(const RSRG* rs, const dd_edge& e,
                      const char* dot_name, bool level_labels);
 void write_dd_as_pdf(const RSRG* rs, const dd_edge& e, 
                      const char* dot_name, bool level_labels);
+
+//-----------------------------------------------------------------------------
+
+// Interface for the PreImage operator
+class PreImage {
+public:
+    virtual dd_edge apply(const dd_edge& set) const = 0;
+};
+
+class MonoPreImage : public PreImage {
+    dd_edge NSF;
+public:
+    MonoPreImage(dd_edge _NSF) : NSF(_NSF) { }
+
+    dd_edge apply(const dd_edge& set) const override;
+};
+
+class ByEventPreImage : public PreImage {
+    RSRG* rsrg;
+public:
+    ByEventPreImage(RSRG* _rsrg) : rsrg(_rsrg) { }
+
+    dd_edge apply(const dd_edge& set) const override;
+};
 
 //---------------------------------------------------------------------------------------
 

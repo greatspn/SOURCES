@@ -234,7 +234,14 @@ struct FormulaPrinter {
         if (running_for_MCC() || CTL_quiet)
             return;
         start = clock();
-        cout << "Eval: " << (*e) << endl << flush;
+        cout << "Eval: " << (*e);
+        cout << (e->is_top_level() ? "  TOP" : "");
+        if constexpr (std::is_base_of<Formula, Printable>::value) {
+            cout << (e->isStateFormula() ? "  STATE" : "");
+            cout << (e->isPathFormula() ? "  PATH" : "");
+            cout << (e->isAtomicPropos() ? "  AP" : "");
+        }
+        cout << endl << flush;
     }
     ~FormulaPrinter() {
         if (running_for_MCC() || CTL_quiet)
@@ -253,14 +260,14 @@ struct FormulaPrinter {
     void stat(Formula *f) {
         if (running_for_MCC() || CTL_quiet)
             return;
-        cout << "  potential card = " << f->getMDD().getCardinality();
-        if (f->getMDD().getNode() == rsrg->getRS().getNode())
+        cout << "  potential card = " << f->getStoredMDD().getCardinality();
+        if (f->getStoredMDD().getNode() == rsrg->getRS().getNode())
             cout << " (RS)";
 
         if (CTL_print_intermediate_sat_sets) {            
             cout << endl;
-            // const dd_edge& dd = f->getMDD();
-            dd_edge dd(f->getMDD());
+            // const dd_edge& dd = f->getMDD(ctx);
+            dd_edge dd(f->getStoredMDD());
             apply(INTERSECTION, rsrg->getRS(), dd, dd);
             enumerator i(dd);
             int nvar = dd.getForest()->getDomain()->getNumVariables();
@@ -290,7 +297,7 @@ struct FormulaPrinter {
     void stat(IntFormula *e) {
         if (running_for_MCC() || CTL_quiet)
             return;
-        //cout << "  card = " << e->getMTMDD()->getCardinality();
+        //cout << "  card = " << e->getMTMDD(ctx)->getCardinality();
     }
     void optimized(const char *m) { optMsg = m; }
 };
@@ -385,28 +392,28 @@ dd_edge MDD_INTERSECT(dd_edge f1, dd_edge f2) {
 
 //----------------------------------------------------------------------------
 
-dd_edge NOT(dd_edge f1, const dd_edge& RS) {
+dd_edge NOT(dd_edge f1, Context& ctx) {
     bool f1_empty = isEmptySet(f1);
-    bool f1_allRS = (f1.getNode() == RS.getNode());
+    bool f1_allRS = (f1.getNode() == ctx.RS.getNode());
 
     if (f1_allRS) // NOT TRUE -> FALSE
-        return empty_set(RS);
+        return empty_set(ctx.RS);
     else if (f1_empty) // NOT FALSE -> TRUE
-        return RS;
+        return ctx.RS;
     // NOT f1
-    dd_edge result(RS.getForest());
-    apply(DIFFERENCE, RS, f1, result);
+    dd_edge result(ctx.RS.getForest());
+    apply(DIFFERENCE, ctx.RS, f1, result);
     return result;
 }
 
 //----------------------------------------------------------------------------
 
-dd_edge AND(dd_edge f1, dd_edge f2, const dd_edge& RS) {
+dd_edge AND(dd_edge f1, dd_edge f2, Context& ctx) {
     bool f2_empty = isEmptySet(f2);
-    bool f2_allRS = (f2.getNode() == RS.getNode());
+    bool f2_allRS = (f2.getNode() == ctx.RS.getNode());
 
     bool f1_empty = isEmptySet(f1);
-    bool f1_allRS = (f1.getNode() == RS.getNode());
+    bool f1_allRS = (f1.getNode() == ctx.RS.getNode());
 
     // cout << "AND: f1.getNode()="<<f1.getNode()
     //      << "  f2.getNode()="<<f2.getNode()
@@ -418,96 +425,96 @@ dd_edge AND(dd_edge f1, dd_edge f2, const dd_edge& RS) {
     if (f1_allRS) // TRUE and f2 -> f2
         return f2;
     else if (f1_empty) // FALSE AND f2 -> FALSE
-        return empty_set(RS);
+        return empty_set(ctx.RS);
     if (f2_allRS) // f1 and TRUE -> f1
         return f1;
     else if (f2_empty) // f1 AND FALSE -> FALSE
-        return empty_set(RS);
+        return empty_set(ctx.RS);
     
     // f1 AND f2
-    dd_edge result(RS.getForest());
+    dd_edge result(ctx.RS.getForest());
     apply(INTERSECTION, f1, f2, result);
     return result;
 }
 
 //----------------------------------------------------------------------------
 
-dd_edge AND_NOT(dd_edge f1, dd_edge f2, const dd_edge& RS) {
+dd_edge AND_NOT(dd_edge f1, dd_edge f2, Context& ctx) {
     bool f1_empty = isEmptySet(f1);
 
     if (f1_empty) // FALSE AND (NOT f2) -> FALSE
-        return empty_set(RS);
+        return empty_set(ctx.RS);
     
     // f1 AND (NOT f2)  computed as a SETDIFF: f1 \ f2
-    dd_edge result(RS.getForest());
+    dd_edge result(ctx.RS.getForest());
     apply(DIFFERENCE, f1, f2, result);
     return result;
 }
 
 //----------------------------------------------------------------------------
 
-dd_edge OR(dd_edge f1, dd_edge f2, const dd_edge& RS) {
+dd_edge OR(dd_edge f1, dd_edge f2, Context& ctx) {
     bool f2_empty = isEmptySet(f2);
-    bool f2_allRS = (f2.getNode() == RS.getNode());
+    bool f2_allRS = (f2.getNode() == ctx.RS.getNode());
 
     bool f1_empty = isEmptySet(f1);
-    bool f1_allRS = (f1.getNode() == RS.getNode());
+    bool f1_allRS = (f1.getNode() == ctx.RS.getNode());
 
     if (f1_allRS) // TRUE OR f2 -> TRUE
-        return RS;
+        return ctx.RS;
     else if (f1_empty) // FALSE OR f2 -> f2
         return f2;
     if (f2_allRS) // f1 OR TRUE -> TRUE
-        return RS;
+        return ctx.RS;
     else if (f2_empty) // f1 OR FALSE -> f1
         return f1;
 
     // f1 OR f2
-    dd_edge result(RS.getForest());
+    dd_edge result(ctx.RS.getForest());
     apply(UNION, f1, f2, result);
     return result;
 }
 
 //----------------------------------------------------------------------------
 
-dd_edge NON_DEAD() {
-    dd_edge non_deadlock_states = rsrg->preImg();
+dd_edge NON_DEAD(Context& ctx) {
+    dd_edge non_deadlock_states = ctx.pre_image->apply(ctx.RS);
 	return non_deadlock_states;
 }
 
-dd_edge DEAD() {
-    return NOT(NON_DEAD(), rsrg->getRS());
+dd_edge DEAD(Context& ctx) {
+    return NOT(NON_DEAD(ctx), ctx);
 }
 
 //----------------------------------------------------------------------------
 // --- CTL Core Algorithms ---
 //----------------------------------------------------------------------------
 
-dd_edge EX(dd_edge f1, const dd_edge& RS, const dd_edge& NSF) {
+dd_edge EX(dd_edge f1, Context& ctx) {
     // Note: for non-ergodic RS, the E X true is only valid
     // for non-dead states. Therefore, the E X true case
     // is not different from the general case.
 
     bool f1_empty = isEmptySet(f1);
     if (f1_empty) // E X False -> false
-        return empty_set(RS);
+        return empty_set(ctx.RS);
 
-    dd_edge result = rsrg->preImg(f1, NSF);
+    dd_edge result = ctx.pre_image->apply(f1);
     return result;
 }
 
 //----------------------------------------------------------------------------
 
-dd_edge EF(dd_edge f1, const dd_edge& RS, const dd_edge& NSF) {
+dd_edge EF(dd_edge f1, Context& ctx) {
     bool f1_empty = isEmptySet(f1);
-    bool f1_allRS = (f1.getNode() == RS.getNode());
+    bool f1_allRS = (f1.getNode() == ctx.RS.getNode());
 
     if (f1_allRS) // E F true  ->  true
-        return RS;
+        return ctx.RS;
     if (f1_empty) // E F false  ->  false
-        return empty_set(RS);
+        return empty_set(ctx.RS);
 
-    dd_edge result(RS.getForest());
+    dd_edge result(ctx.RS.getForest());
 
     // Number of steps of pre-image before switching to saturation
     const int NUM_PRESTEPS = 0;
@@ -515,7 +522,7 @@ dd_edge EF(dd_edge f1, const dd_edge& RS, const dd_edge& NSF) {
     for (int i = 0; /*i < NUM_PRESTEPS*/true; i++) {
         dd_edge prev_r(result);
         // Y' = Y union (Y * N^-1)
-        result = OR(result, EX(result, RS, NSF), RS);
+        result = OR(result, EX(result, ctx), ctx);
         if (result == prev_r) {
             // if (print_intermediate_expr()) {
             //     cout << "      " << i << " steps: ";
@@ -523,41 +530,41 @@ dd_edge EF(dd_edge f1, const dd_edge& RS, const dd_edge& NSF) {
             return result;
         }
     }
-    // Solve using backward reachability with saturation
-    // (slightly more costly than PRE IMAGE + UNION)
-    apply(REVERSE_REACHABLE_DFS, result, NSF, result);
-    if (print_intermediate_expr()) {
-        cout << "      saturation: ";
-    }
+    // // Solve using backward reachability with saturation
+    // // (slightly more costly than PRE IMAGE + UNION)
+    // apply(REVERSE_REACHABLE_DFS, result, NSF, result);
+    // if (print_intermediate_expr()) {
+    //     cout << "      saturation: ";
+    // }
     return result;
 }
 
 //----------------------------------------------------------------------------
 
-dd_edge EG(dd_edge f1, const dd_edge& RS, const dd_edge& NSF) {
+dd_edge EG(dd_edge f1, Context& ctx) {
     bool f1_empty = isEmptySet(f1);
     // bool f1_allRS = (f1.getNode() == RS.getNode());
 
     if (f1_empty) // E G false -> false
-        return empty_set(RS);
+        return empty_set(ctx.RS);
 
     // NOTE: the case E G true is not trivial for non-ergodic RS.
     // Therefore, we leave it with the general case and do not
     // treat it separately.
 
-    dd_edge result(RS.getForest());
-    dd_edge prev_r(RS.getForest());
+    dd_edge result(ctx.RS.getForest());
+    dd_edge prev_r(ctx.RS.getForest());
     // dd_edge pred_of_r(RS.getForest());
     result = f1;
 
     dd_edge deadlock_f1;
-    if(!CTL_as_CTLstar) deadlock_f1 = f1 - NON_DEAD();
+    if(!CTL_as_CTLstar) deadlock_f1 = f1 - NON_DEAD(ctx);
 
     size_t n_iters = 0;
     do {
         prev_r = result; // previous iteration result
-        result = AND(result, EX(prev_r, RS, NSF), RS);
-        if(!CTL_as_CTLstar) result = OR(result, deadlock_f1, RS);
+        result = AND(result, EX(prev_r, ctx), ctx);
+        if(!CTL_as_CTLstar) result = OR(result, deadlock_f1, ctx);
 
         n_iters++;
         if (print_intermediate_expr()) {
@@ -577,31 +584,31 @@ dd_edge EG(dd_edge f1, const dd_edge& RS, const dd_edge& NSF) {
 
 //----------------------------------------------------------------------------
 
-dd_edge EU(dd_edge f1, dd_edge f2, const dd_edge& RS, const dd_edge& NSF) {
+dd_edge EU(dd_edge f1, dd_edge f2, Context& ctx) {
     bool f2_empty = isEmptySet(f2);
-    bool f2_allRS = (f2.getNode() == RS.getNode());
+    bool f2_allRS = (f2.getNode() == ctx.RS.getNode());
 
     if (f2_empty) // E f1 U false  ->  false
-        return empty_set(RS);
+        return empty_set(ctx.RS);
     else if (f2_allRS) // E f1 U true  ->  true
-        return RS;
+        return ctx.RS;
 
     bool f1_empty = isEmptySet(f1);
-    bool f1_allRS = (f1.getNode() == RS.getNode());
+    bool f1_allRS = (f1.getNode() == ctx.RS.getNode());
 
     if (f1_allRS) // E true U f2  ->  E F f2
-        return EF(f2, RS, NSF);
+        return EF(f2, ctx);
     else if (f1_empty) // E false U f2  ->  f2
         return f2;
 
     
-    dd_edge result(RS.getForest());
-    dd_edge prev_r(RS.getForest());
+    dd_edge result(ctx.RS.getForest());
+    dd_edge prev_r(ctx.RS.getForest());
     result = f2;
     do {
         prev_r = result;
         // R' = R union (F1 intersect (R * N^-1))
-        result = OR(result, AND(f1, EX(result, RS, NSF), RS), RS);
+        result = OR(result, AND(f1, EX(result, ctx), ctx), ctx);
     }
     while (result != prev_r);
 
@@ -610,58 +617,57 @@ dd_edge EU(dd_edge f1, dd_edge f2, const dd_edge& RS, const dd_edge& NSF) {
 
 //----------------------------------------------------------------------------
 
-dd_edge AX(dd_edge f1, const dd_edge& RS, const dd_edge& NSF) {
+dd_edge AX(dd_edge f1, Context& ctx) {
     // not EX not f1 
-    return NOT(EX(NOT(f1, RS), RS,NSF), RS);
+    return NOT(EX(NOT(f1, ctx), ctx), ctx);
 }
 
 //----------------------------------------------------------------------------
 
-dd_edge AF(dd_edge f1, const dd_edge& RS, const dd_edge& NSF) {
+dd_edge AF(dd_edge f1, Context& ctx) {
     // not EG not f1
-    return NOT(EG(NOT(f1, RS), RS,NSF), RS);
+    return NOT(EG(NOT(f1, ctx), ctx), ctx);
 }
 
 //----------------------------------------------------------------------------
 
-dd_edge AG(dd_edge f1, const dd_edge& RS, const dd_edge& NSF) {
+dd_edge AG(dd_edge f1, Context& ctx) {
     // not (E true U not f1 )  =  not EF not f1
-    return NOT(EF(NOT(f1, RS), RS,NSF), RS);
+    return NOT(EF(NOT(f1, ctx), ctx), ctx);
 }
 
 //----------------------------------------------------------------------------
 
-dd_edge AU(dd_edge f1, dd_edge f2, const dd_edge& RS, const dd_edge& NSF) {
+dd_edge AU(dd_edge f1, dd_edge f2, Context& ctx) {
     //not (E not f2 U (not f1 and not f2) ) and not EG not f2
-    dd_edge not_f1 = NOT(f1, RS);
-    dd_edge not_f2 = NOT(f2, RS);
+    dd_edge not_f1 = NOT(f1, ctx);
+    dd_edge not_f2 = NOT(f2, ctx);
 
-    return AND(NOT(EU(not_f2, AND(not_f1, not_f2, RS), RS,NSF), RS),
-               NOT(EG(not_f2, RS,NSF), RS), RS);
+    return AND(NOT(EU(not_f2, AND(not_f1, not_f2, ctx), ctx), ctx),
+               NOT(EG(not_f2, ctx), ctx), ctx);
 }
 
 //----------------------------------------------------------------------------
 // Fair ECTL
 //----------------------------------------------------------------------------
 
-dd_edge EGfair(dd_edge f1, const std::list<dd_edge>& fair_sets,
-               const dd_edge& RS, const dd_edge& NSF) 
+dd_edge EGfair(dd_edge f1, Context& ctx) 
 {
-    if (fair_sets.empty())
-        return EG(f1, RS, NSF); // use non-fair EG
+    if (ctx.fair_sets.empty())
+        return EG(f1, ctx); // use non-fair EG
 
-    dd_edge result(RS.getForest());
-    dd_edge prev_r(RS.getForest());
-    // dd_edge deadlock_f1 = f1 - NON_DEAD(RS, NSF);
+    dd_edge result(ctx.RS.getForest());
+    dd_edge prev_r(ctx.RS.getForest());
+    // dd_edge deadlock_f1 = f1 - NON_DEAD(ctx);
 
     result = f1;
     do {
         prev_r = result; // previous iteration result
-        for (auto&& F : fair_sets) {
-            dd_edge Y = EU(result, AND(F, result, RS), RS, NSF);
-            result = AND(result, EX(Y, RS, NSF), RS);
+        for (auto&& F : ctx.fair_sets) {
+            dd_edge Y = EU(result, AND(F, result, ctx), ctx);
+            result = AND(result, EX(Y, ctx), ctx);
         }
-        // result = OR(result, deadlock_f1, RS);
+        // result = OR(result, deadlock_f1, ctx);
     }
     while (prev_r.getNode() != result.getNode());
 
@@ -670,32 +676,29 @@ dd_edge EGfair(dd_edge f1, const std::list<dd_edge>& fair_sets,
 
 //----------------------------------------------------------------------------
 
-dd_edge EXfair(dd_edge f1, const std::list<dd_edge>& fair_sets,
-               const dd_edge& RS, const dd_edge& NSF) 
+dd_edge EXfair(dd_edge f1, Context& ctx) 
 {
     // fair = EGfair(true)
-    dd_edge fair = EGfair(RS, fair_sets, RS, NSF);
+    dd_edge fair = EGfair(ctx.RS, ctx);
     // EXfair f = EX(f AND fair)
-    return EX(AND(f1, fair, RS), RS, NSF);
+    return EX(AND(f1, fair, ctx), ctx);
 }
 
 //----------------------------------------------------------------------------
 
-dd_edge EUfair(dd_edge f1, dd_edge f2, const std::list<dd_edge>& fair_sets,
-               const dd_edge& RS, const dd_edge& NSF) 
+dd_edge EUfair(dd_edge f1, dd_edge f2, Context& ctx) 
 {
     // fair = EGfair(true)
-    dd_edge fair = EGfair(RS, fair_sets, RS, NSF);
+    dd_edge fair = EGfair(ctx.RS, ctx);
     // EUfair(f1, f2) = EU(f1, f2 AND fair)
-    return EU(f1, AND(f2, fair, RS), RS, NSF);
+    return EU(f1, AND(f2, fair, ctx), ctx);
 }
 
 //----------------------------------------------------------------------------
 
-dd_edge EFfair(dd_edge f1, const std::list<dd_edge>& fair_sets,
-               const dd_edge& RS, const dd_edge& NSF) 
+dd_edge EFfair(dd_edge f1, Context& ctx) 
 {
-    return EUfair(RS, f1, fair_sets, RS, NSF); // true Ufair f1
+    return EUfair(ctx.RS, f1, ctx); // true Ufair f1
 }
 
 //----------------------------------------------------------------------------
@@ -706,7 +709,7 @@ dd_edge EFfair(dd_edge f1, const std::list<dd_edge>& fair_sets,
 /*-------------------------
  ---	IntLiteral	---
  ---------------------------*/
-void IntLiteral::createMTMDD() {
+void IntLiteral::createMTMDD(Context& ctx) {
     CTLMDD *ctl = CTLMDD::getInstance();
     forest *mtmdd_forest = ctl->getMTMDDForest();
     dd_edge complete(ctl->getMTMDDForest());
@@ -886,7 +889,7 @@ void PlaceTerm::print(std::ostream &os) const {
     os << tabp[place].place_name;
 }
 
-void PlaceTerm::createMTMDD() {
+void PlaceTerm::createMTMDD(Context& ctx) {
     CTLMDD *ctl = CTLMDD::getInstance();
     forest *mtmdd_forest = ctl->getMTMDDForest();
     dd_edge tmp_mdd(ctl->getMTMDDForest());
@@ -995,10 +998,10 @@ void IntExpression::print(std::ostream &os) const {
     os << "(" << *expr1 << " " << IntFormula::OP_Names[op] << " " << *expr2 << ")";
 }
 
-void IntExpression::createMTMDD() {
+void IntExpression::createMTMDD(Context& ctx) {
     CTLMDD *ctl = CTLMDD::getInstance();
-    dd_edge e1 = expr1->getMTMDD();
-    dd_edge e2 = expr2->getMTMDD();
+    dd_edge e1 = expr1->getMTMDD(ctx);
+    dd_edge e2 = expr2->getMTMDD(ctx);
     dd_edge r(ctl->getMTMDDForest());
     FormulaPrinter<IntExpression> fp(this);
     switch (op) {
@@ -1032,11 +1035,11 @@ IntFormula::~IntFormula() {
     // clearMTMDD();
 }
 
-const dd_edge& IntFormula::getMTMDD() {
+const dd_edge& IntFormula::getMTMDD(Context& ctx) {
     if (!hasStoredMTMDD()) {
         // Setting computedMTMDD here avoids infinite recursions when Meddly ends the memory
         computedMTMDD = true; 
-        createMTMDD();
+        createMTMDD(ctx);
     }
     CTL_ASSERT(hasStoredMTMDD());
     return MTMDD;
@@ -1131,7 +1134,7 @@ void Inequality::print(std::ostream &os) const {
     os << ")";
 }
 
-void Inequality::createMDD() {
+void Inequality::createMDD(Context& ctx) {
     //se minore di const positiva devo fare complemento
     //se maggiore di const negativa devo fare complemento
     //se <= >= o = 0
@@ -1190,16 +1193,16 @@ void Inequality::createMDD() {
              (op == IOP_MAJEQ && constant <= 0) ||
              (op == IOP_MINEQ && constant >= 0) ||
              (op == IOP_EQ && constant == 0))) {
-        createMDDByComplement();
+        createMDDByComplement(ctx);
         return;
     }
 
     forest *mtmdd_forest = ctl->getMTMDDForest();
     dd_edge exp2MDD;
-    dd_edge exp1MDD = expr1->getMTMDD();
+    dd_edge exp1MDD = expr1->getMTMDD(ctx);
     dd_edge q(mtmdd_forest);
     if (expr2 != NULL) { //case exp <op> exp
-        exp2MDD = expr2->getMTMDD();
+        exp2MDD = expr2->getMTMDD(ctx);
     }
     else { //case exp <op> term
         int **m = ctl->getIns();
@@ -1229,7 +1232,7 @@ void Inequality::createMDD() {
     setMDD(boole);
 }
 
-void Inequality::createMDDByComplement() {
+void Inequality::createMDDByComplement(Context& ctx) {
     CTLMDD *ctl = CTLMDD::getInstance();
     forest *mtmdd_forest = ctl->getMTMDDForest();
     dd_edge complete(mtmdd_forest);
@@ -1240,7 +1243,7 @@ void Inequality::createMDDByComplement() {
     else
         mtmdd_forest->createEdge(m, &t, 1, complete);
 
-    dd_edge r(expr1->getMTMDD());
+    dd_edge r(expr1->getMTMDD(ctx));
     dd_edge complement(mtmdd_forest);
     FormulaPrinter<Inequality> fp(this);
 
@@ -1264,13 +1267,14 @@ void Inequality::createMDDByComplement() {
 }
 
 TreeTraceNode *Inequality::generateTrace(const vector<int> &state, TraceType traceTy) {
-    CTLMDD *ctl = CTLMDD::getInstance();
-    bool isSat = ctl->SatSetContains(getMDD(), state.data());
+    // CTLMDD *ctl = CTLMDD::getInstance();
+    // bool isSat = ctl->SatSetContains(getMDD(ctx), state.data());
 
-    // cout << "isSat="<<isSat<<" traceTy == TT_WITNESS is " << (traceTy == TT_WITNESS) << endl;
-    CTL_ASSERT(isSat == (traceTy == TT_WITNESS));
+    // // cout << "isSat="<<isSat<<" traceTy == TT_WITNESS is " << (traceTy == TT_WITNESS) << endl;
+    // CTL_ASSERT(isSat == (traceTy == TT_WITNESS));
 
-    return new TreeTraceNode(state, this, traceTy);
+    // return new TreeTraceNode(state, this, traceTy);
+    return nullptr;
 }
 
 /*---------------------
@@ -1295,7 +1299,7 @@ size_t Fireability::compute_hash() const {
     return seed;
 }
 
-void Fireability::createMDD() {
+void Fireability::createMDD(Context& ctx) {
     dd_edge sat(rsrg->getForestMDD());
     // Generate the MDD corresponding to the union of the enabling conditions of the transitions
     for (int tr : transitions) {
@@ -1375,7 +1379,7 @@ void BoolLiteral::print(std::ostream &os) const {
     os << (value ? "true" : "false");
 }
 
-void BoolLiteral::createMDD() {
+void BoolLiteral::createMDD(Context& ctx) {
     FormulaPrinter<BoolLiteral> fp(this);
     CTLMDD *ctl = CTLMDD::getInstance();
     if (value) { // TRUE
@@ -1428,27 +1432,28 @@ void Deadlock::print(std::ostream &os) const {
     os << (value ? "deadlock" : "ndeadlock");
 }
 
-void Deadlock::createMDD() {
+void Deadlock::createMDD(Context& ctx) {
     FormulaPrinter<Deadlock> fp(this);
 
     if (value) // DEADLOCK
-        setMDD(DEAD());
+        setMDD(DEAD(ctx));
     else // NDEADLOCK
-        setMDD(NON_DEAD());
+        setMDD(NON_DEAD(ctx));
 }
 
 TreeTraceNode *Deadlock::generateTrace(const vector<int> &state, TraceType traceTy) {
-    CTLMDD *ctl = CTLMDD::getInstance();
-    bool isSat = ctl->SatSetContains(getMDD(), state.data());
+    // CTLMDD *ctl = CTLMDD::getInstance();
+    // bool isSat = ctl->SatSetContains(getMDD(), state.data());
 
-    if (value) { // deadlock
-        CTL_ASSERT(isSat == (traceTy == TT_WITNESS));
-    }
-    else { // not deadlock
-        CTL_ASSERT(isSat == (traceTy == TT_WITNESS));
-    }
+    // if (value) { // deadlock
+    //     CTL_ASSERT(isSat == (traceTy == TT_WITNESS));
+    // }
+    // else { // not deadlock
+    //     CTL_ASSERT(isSat == (traceTy == TT_WITNESS));
+    // }
 
-    return new TreeTraceNode(state, this, traceTy);
+    // return new TreeTraceNode(state, this, traceTy);
+    return nullptr;
 }
 
 /*-------------------------
@@ -1477,9 +1482,9 @@ size_t Reachability::compute_hash() const {
     return hash_combine(0xa86df651fe8d5b6b, type, subf->hash());
 }
 
-void Reachability::createMDD() {
+void Reachability::createMDD(Context& ctx) {
     CTLMDD *ctl = CTLMDD::getInstance();
-    dd_edge f1 = subf->getMDD();
+    dd_edge f1 = subf->getMDD(ctx);
     bool f1_empty = isEmptySet(f1);
     bool f1_allRS = (f1.getNode() == rsrg->getRS().getNode());
     bool result;
@@ -1606,7 +1611,7 @@ void LogicalFormula::maximal_path_subformula(std::ostream& os, quant_type quanti
     }
 }
 
-void LogicalFormula::createMDD() {
+void LogicalFormula::createMDD(Context& ctx) {
     // This implementation is only used when the logical formula is
     // a state formula. For logical formulas that are inside path formulas,
     // they should be treated as a single maximal path formula.
@@ -1618,13 +1623,13 @@ void LogicalFormula::createMDD() {
 
     // CTLMDD *ctl = CTLMDD::getInstance();
     dd_edge result(rsrg->getForestMDD());
-    dd_edge f1 = formula1->getMDD();
-    dd_edge f2 = formula2 ? formula2->getMDD() : dd_edge();
+    dd_edge f1 = formula1->getMDD(ctx);
+    dd_edge f2 = formula2 ? formula2->getMDD(ctx) : dd_edge();
 
     FormulaPrinter<LogicalFormula> fp(this);
     switch (op) {
         case CBF_NOT:
-            result = NOT(f1, rsrg->getRS());
+            result = NOT(f1, ctx);
             break;
 
         case CBF_AND: {
@@ -1632,22 +1637,22 @@ void LogicalFormula::createMDD() {
                 LogicalFormula *logic_f2 = dynamic_cast<LogicalFormula *>(formula2);
                 if (logic_f2->getOp() == LogicalFormula::CBF_NOT) {
                     // f1 AND NOT f2 can be computed more efficiently using AND_NOT
-                    dd_edge not_f2 = logic_f2->getFormula1()->getMDD();
-                    result = AND_NOT(f1, not_f2, rsrg->getRS());
+                    dd_edge not_f2 = logic_f2->getFormula1()->getMDD(ctx);
+                    result = AND_NOT(f1, not_f2, ctx);
                     break;
                 }
             }
-            result = AND(f1, f2, rsrg->getRS());
+            result = AND(f1, f2, ctx);
             break;
         }
 
         case CBF_OR: {
-            result = OR(f1, f2, rsrg->getRS());
+            result = OR(f1, f2, ctx);
             break;
         }
 
         case CBF_IMPLY: {
-            result = OR(NOT(f1, rsrg->getRS()), f2, rsrg->getRS());
+            result = OR(NOT(f1, ctx), f2, ctx);
             break;
         }
     }
@@ -1677,36 +1682,36 @@ TreeTraceNode *LogicalFormula::generateTrace(const vector<int> &state0, TraceTyp
     // TreeTraceNode *ttn = new TreeTraceNode(state0, this, traceTy);
     // if (traceTy == TT_WITNESS) {
     //     if (op == CBF_AND) {
-    //         // cout << "ctl->SatSetContains(getFormula1()->getMDD(), state0.data()) = " << ctl->SatSetContains(getFormula1()->getMDD(), state0.data()) << endl;
-    //         // cout << "ctl->SatSetContains(getFormula2()->getMDD(), state0.data()) = " << ctl->SatSetContains(getFormula2()->getMDD(), state0.data()) << endl;
-    //         CTL_ASSERT(ctl->SatSetContains(getFormula1()->getMDD(), state0.data()));
-    //         CTL_ASSERT(ctl->SatSetContains(getFormula2()->getMDD(), state0.data()));
+    //         // cout << "ctl->SatSetContains(getFormula1()->getMDD(ctx), state0.data()) = " << ctl->SatSetContains(getFormula1()->getMDD(ctx), state0.data()) << endl;
+    //         // cout << "ctl->SatSetContains(getFormula2()->getMDD(ctx), state0.data()) = " << ctl->SatSetContains(getFormula2()->getMDD(ctx), state0.data()) << endl;
+    //         CTL_ASSERT(ctl->SatSetContains(getFormula1()->getMDD(ctx), state0.data()));
+    //         CTL_ASSERT(ctl->SatSetContains(getFormula2()->getMDD(ctx), state0.data()));
     //         ttn->set_sub_trace1(getFormula1()->generateTrace(state0, traceTy));
     //         ttn->set_sub_trace2(getFormula2()->generateTrace(state0, traceTy));
     //     }
     //     else { // (op == CBF_OR)
-    //         bool isSat1 = ctl->SatSetContains(getFormula1()->getMDD(), state0.data());
+    //         bool isSat1 = ctl->SatSetContains(getFormula1()->getMDD(ctx), state0.data());
     //         if (isSat1)
     //             ttn->set_sub_trace1(getFormula1()->generateTrace(state0, traceTy));
     //         else {
-    //             CTL_ASSERT(ctl->SatSetContains(getFormula2()->getMDD(), state0.data()));
+    //             CTL_ASSERT(ctl->SatSetContains(getFormula2()->getMDD(ctx), state0.data()));
     //             ttn->set_sub_trace1(getFormula2()->generateTrace(state0, traceTy));
     //         }
     //     }
     // }
     // else { // traceTy == TT_COUNTEREXAMPLE
     //     if (op == CBF_AND) {
-    //         bool isSat1 = ctl->SatSetContains(getFormula1()->getMDD(), state0.data());
+    //         bool isSat1 = ctl->SatSetContains(getFormula1()->getMDD(ctx), state0.data());
     //         if (!isSat1)
     //             ttn->set_sub_trace1(getFormula1()->generateTrace(state0, traceTy));
     //         else {
-    //             CTL_ASSERT(!ctl->SatSetContains(getFormula2()->getMDD(), state0.data()));
+    //             CTL_ASSERT(!ctl->SatSetContains(getFormula2()->getMDD(ctx), state0.data()));
     //             ttn->set_sub_trace1(getFormula2()->generateTrace(state0, traceTy));
     //         }
     //     }
     //     else { // (op == CBF_OR)
-    //         CTL_ASSERT(!ctl->SatSetContains(getFormula1()->getMDD(), state0.data()));
-    //         CTL_ASSERT(!ctl->SatSetContains(getFormula2()->getMDD(), state0.data()));
+    //         CTL_ASSERT(!ctl->SatSetContains(getFormula1()->getMDD(ctx), state0.data()));
+    //         CTL_ASSERT(!ctl->SatSetContains(getFormula2()->getMDD(ctx), state0.data()));
     //         ttn->set_sub_trace1(getFormula1()->generateTrace(state0, traceTy));
     //         ttn->set_sub_trace2(getFormula2()->generateTrace(state0, traceTy));
     //     }
@@ -1769,8 +1774,28 @@ void QuantifiedFormula::maximal_path_subformula(std::ostream& os, quant_type qua
     add_this_as_subformula(os, subformulas);
 }
 
-/* Perform CTL model checking if the sub-formula is a valid CTL formula */
-bool QuantifiedFormula::do_CTL_model_checking() 
+// verify if a quantified path formula is aCTL formula
+bool QuantifiedFormula::is_CTL() const {
+    if (typeid(*formula) == typeid(TemporalFormula)) {
+        TemporalFormula* ptf = dynamic_cast<TemporalFormula*>(formula);
+        Formula* f1 = ptf->getFormula1();
+        Formula* f2 = ptf->getFormula2();
+
+        switch (ptf->getOp()) {
+            case POT_GLOBALLY: // EG/AG
+            case POT_FUTURE:   // EF/AF
+            case POT_NEXT:     // EX/AX
+                return !f1->isPathFormula();
+
+            case POT_UNTIL:
+                return (!f1->isPathFormula() && !f2->isPathFormula()); // EU/AU
+        }
+    }
+    return false;
+}
+
+// Perform CTL model checking if the sub-formula is a valid CTL formula
+bool QuantifiedFormula::do_CTL_model_checking(Context& ctx) 
 {
     dd_edge result(rsrg->getForestMDD());
 
@@ -1784,9 +1809,9 @@ bool QuantifiedFormula::do_CTL_model_checking()
                 if (!f1->isPathFormula()) { // EX/AX
                     FormulaPrinter<QuantifiedFormula> fp(this);
                     if (quantifier == QOP_EXISTS)
-                        result = EX(f1->getMDD(), rsrg->getRS(), rsrg->getNSF());
+                        result = EX(f1->getMDD(ctx), ctx);
                     else // QOP_ALWAYS
-                        result = AX(f1->getMDD(), rsrg->getRS(), rsrg->getNSF());
+                        result = AX(f1->getMDD(ctx), ctx);
                     setMDD(result);
                     return true;
                 }
@@ -1795,9 +1820,9 @@ bool QuantifiedFormula::do_CTL_model_checking()
                 if (!f1->isPathFormula()) { // EF/AF
                     FormulaPrinter<QuantifiedFormula> fp(this);
                     if (quantifier == QOP_EXISTS)
-                        result = EF(f1->getMDD(), rsrg->getRS(), rsrg->getNSF());
+                        result = EF(f1->getMDD(ctx), ctx);
                     else // QOP_ALWAYS
-                        result = AF(f1->getMDD(), rsrg->getRS(), rsrg->getNSF());
+                        result = AF(f1->getMDD(ctx), ctx);
                     setMDD(result);
                     return true;
                 }
@@ -1806,9 +1831,9 @@ bool QuantifiedFormula::do_CTL_model_checking()
                 if (!f1->isPathFormula()) { // EG/AG
                     FormulaPrinter<QuantifiedFormula> fp(this);
                     if (quantifier == QOP_EXISTS)
-                        result = EG(f1->getMDD(), rsrg->getRS(), rsrg->getNSF());
+                        result = EG(f1->getMDD(ctx), ctx);
                     else // QOP_ALWAYS
-                        result = AG(f1->getMDD(), rsrg->getRS(), rsrg->getNSF());
+                        result = AG(f1->getMDD(ctx), ctx);
                     setMDD(result);
                     return true;
                 }
@@ -1817,9 +1842,9 @@ bool QuantifiedFormula::do_CTL_model_checking()
                 if (!f1->isPathFormula() && !f2->isPathFormula()) { // EU/AU
                     FormulaPrinter<QuantifiedFormula> fp(this);
                     if (quantifier == QOP_EXISTS)
-                        result = EU(f1->getMDD(), f2->getMDD(), rsrg->getRS(), rsrg->getNSF());
+                        result = EU(f1->getMDD(ctx), f2->getMDD(ctx), ctx);
                     else // QOP_ALWAYS
-                        result = AU(f1->getMDD(), f2->getMDD(), rsrg->getRS(), rsrg->getNSF());
+                        result = AU(f1->getMDD(ctx), f2->getMDD(ctx), ctx);
                     setMDD(result);
                     return true;
                 }
@@ -1842,16 +1867,31 @@ bool QuantifiedFormula::do_CTL_model_checking()
  * between the model RS and the LTL sat-set
  * --------------------------------------------
  */
-void QuantifiedFormula::createMDD() {
+void QuantifiedFormula::createMDD(Context& ctx) {
     if(!formula->isPathFormula()) { // accept quantified non-path formulas
-        setMDD(formula->getMDD());
+        setMDD(formula->getMDD(ctx));
         return;
+    }
+
+    // Validate language constraints
+    if (ctx.language==Language::CTL && !is_CTL()) {
+        cerr << *this;
+        throw rgmedd_exception("Not a CTL formula");
+    }
+    if (ctx.language==Language::LTL && !is_top_level()) {
+        cerr << *this;
+        // cout << (this->is_top_level() ? "  TOP" : "");
+        // cout << (this->isStateFormula() ? "  STATE" : "");
+        // cout << (this->isPathFormula() ? "  PATH" : "");
+        // cout << (this->isAtomicPropos() ? "  AP" : "");
+        // cout << endl;
+        throw rgmedd_exception("Not a LTL formula");
     }
 
     // If the formula is a pure CTL formula, and rgmedd is running in CTL mode,
     // perform standard CTL model checking instead of CTL* model checking
     if (!CTL_as_CTLstar) {
-        if (do_CTL_model_checking())
+        if (do_CTL_model_checking(ctx))
             return; // model checked as CTL instead of CTL*
         throw rgmedd_exception("not a CTL formula.");
     }
@@ -1878,18 +1918,23 @@ void QuantifiedFormula::createMDD() {
     dd_edge result(rsrg->getForestMDD());
     if (!ba.accept_loc_sets.empty()) {
         // Evaluate all subformulas and atomic propositions
-        ba.pre_compute_subformula_MDDs();
+        ba.pre_compute_subformula_MDDs(ctx);
 
         // Get all deadlock states of the RS from the deadlock atomic proposition
         // Deadlock* dead_ap = ctlnew<Deadlock>(true);
-        // dd_edge deadlock = dead_ap->getMDD();
+        // dd_edge deadlock = dead_ap->getMDD(ctx);
         // safe_removeOwner(dead_ap);
 
         ref_ptr<Deadlock> dead_ap = ctlnew<Deadlock>(true);
-        dd_edge deadlock = dead_ap->getMDD();
+        dd_edge deadlock = dead_ap->getMDD(ctx);
 
         // Build the Transition System of RS (x) BA
-        RS_times_BA TS = build_RS_times_BA(rsrg, ba, deadlock);
+        RS_times_BA TS = build_RS_times_BA(ctx, rsrg, ba, deadlock);
+
+        // Create the evaluation context for the TX
+        Context ctxTS(TS.RS, make_unique<MonoPreImage>(TS.NSF), true, 
+                      Language::LTL, // language is irrelevant since it used only for TS evaluation.
+                      ctx.verbose);
 
         // Compute the reachability set of the Transition System using saturation
         apply(REACHABLE_STATES_DFS, TS.S0, TS.NSF, TS.RS);
@@ -1901,20 +1946,21 @@ void QuantifiedFormula::createMDD() {
         // cout << g_str_BAType[ba.type] << endl;
         switch (ba.type) {
             case STRONG_BA: // Emerson-Lei algorithm
+                // define the fair set
+                ctxTS.fair_sets = TS.accept_loc_sets; 
                 // Compute EGfair(true) using the Buchi acceptance sets as fair sets
-                fair_states = EGfair(TS.RS, TS.accept_loc_sets, TS.RS, TS.NSF);
+                fair_states = EGfair(TS.RS, ctxTS);
                 break;
 
             case WEAK_BA:
             case VERY_WEAK_BA:
                 CTL_ASSERT(ba.accept_loc_sets.size() == 1);
-                fair_states = EF(EG(TS.accept_loc_sets.front(), TS.RS, TS.NSF),
-                                 TS.RS, TS.NSF);
+                fair_states = EF(EG(TS.accept_loc_sets.front(), ctxTS), ctxTS);
                 break;
 
             case TERMINAL_BA:
                 CTL_ASSERT(ba.accept_loc_sets.size() == 1);
-                fair_states = EF(TS.accept_loc_sets.front(), TS.RS, TS.NSF);
+                fair_states = EF(TS.accept_loc_sets.front(), ctxTS);
 
                 break;
 
@@ -1940,7 +1986,7 @@ void QuantifiedFormula::createMDD() {
 
     // Invert the satisfiability set for universally quantified formulas
     if (quantifier == QOP_ALWAYS) 
-        result = NOT(result, rsrg->getRS()); // A phi = not E (not phi)
+        result = NOT(result, ctx); // A phi = not E (not phi)
 
     // release subformulas
     for (Formula* f : subformulas)
@@ -2032,8 +2078,8 @@ void dumpDD(const std::string msg1, dd_edge& dd)
 }
 #endif
 
-void TemporalFormula::createMDD() {
-    throw rgmedd_exception("TemporalFormula::createMDD() cannot be called.");
+void TemporalFormula::createMDD(Context& ctx) {
+    throw rgmedd_exception("TemporalFormula::createMDD cannot be called.");
 }
 
 void TemporalFormula::print(std::ostream &os) const {
@@ -2142,7 +2188,7 @@ size_t GlobalProperty::compute_hash() const {
     return hash_combine(0x5a4f1e3110433b15, type);
 }
 
-void GlobalProperty::createMDD() {
+void GlobalProperty::createMDD(Context& ctx) {
     const bool is_unfolded = rsrg->has_unfolding_map();
 
     // CTLMDD *ctl = CTLMDD::getInstance();
@@ -2152,7 +2198,7 @@ void GlobalProperty::createMDD() {
             // EF deadlock
             // computing non-deadlock states is faster
             Formula* fnd = ctlnew<Deadlock>(false); // non-dead states
-            dd_edge dd = fnd->getMDD();
+            dd_edge dd = fnd->getMDD(ctx);
             safe_removeOwner(fnd);
             apply(INTERSECTION, rsrg->getRS(), dd, dd); // remove potential states
             result = (dd.getNode() != rsrg->getRS().getNode());
@@ -2187,7 +2233,7 @@ void GlobalProperty::createMDD() {
                 }
                 // f = ctlnew<TemporalFormula>(f, POT_FUTURE);
                 // f = ctlnew<QuantifiedFormula>(f, QOP_EXISTS);
-                dd_edge enab_tr = f->getMDD();
+                dd_edge enab_tr = f->getMDD(ctx);
                 safe_removeOwner(f);
 
                 // apply(INTERSECTION, rsrg->getInitMark(), dd, dd);
@@ -2218,11 +2264,10 @@ void GlobalProperty::createMDD() {
                     v1[0] = tr;
                     f = ctlnew<Fireability>(&v1);
                 }
-                dd_edge enab_tr = f->getMDD();
+                dd_edge enab_tr = f->getMDD(ctx);
                 safe_removeOwner(f);
 
-                dd_edge dd = AG(EF(enab_tr, rsrg->getRS(),rsrg->getNSF()), 
-                                rsrg->getRS(), rsrg->getNSF());
+                dd_edge dd = AG(EF(enab_tr, ctx), ctx);
                 // m0 |= AG EF firable(tr)
                 apply(INTERSECTION, rsrg->getInitMark(), dd, dd);
                 if (isEmptySet(dd)) {
@@ -2312,11 +2357,11 @@ Formula::Formula() : SatMDD(rsrg->getRS()) {
 }
 Formula::~Formula() {
 }
-const dd_edge &Formula::getMDD() {
+const dd_edge &Formula::getMDD(Context& ctx) {
     if (!hasStoredMDD()) {
         // Setting computedMDD here avoids infinite recursions when Meddly ends the memory
         computedMDD = true;
-        createMDD();
+        createMDD(ctx);
         // rsrg->show_markings(cout, SatMDD);
     }
     CTL_ASSERT(hasStoredMDD());
@@ -2324,6 +2369,10 @@ const dd_edge &Formula::getMDD() {
 }
 bool Formula::hasStoredMDD() const {
     return computedMDD;
+}
+const dd_edge& Formula::getStoredMDD() const {
+    CTL_ASSERT(hasStoredMDD());
+    return SatMDD;
 }
 void Formula::setMDD(dd_edge newMDD) {
     SatMDD = newMDD;

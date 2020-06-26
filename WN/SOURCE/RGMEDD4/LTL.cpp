@@ -68,9 +68,9 @@ BuchiAutomaton::BuchiAutomaton() { }
 
 BuchiAutomaton::~BuchiAutomaton() { }
 
-void BuchiAutomaton::pre_compute_subformula_MDDs() {
+void BuchiAutomaton::pre_compute_subformula_MDDs(Context& ctx) {
     for (auto&& edge : edges)
-        edge.state_formula->getMDD();
+        edge.state_formula->getMDD(ctx);
 }
 
 ostream& operator<<(ostream& os, const BuchiAutomaton& ba) {
@@ -418,7 +418,7 @@ RS_times_BA::RS_times_BA(RSRG* rsrg)
 //-----------------------------------------------------------------------------
 
 RS_times_BA 
-build_RS_times_BA(RSRG* rsrg, BuchiAutomaton& ba, dd_edge deadlock)
+build_RS_times_BA(Context& ctx, RSRG* rsrg, BuchiAutomaton& ba, dd_edge deadlock)
 {
     forest* forestMDD = rsrg->getForestMDD();
     forest* forestMxD = rsrg->getForestMxD();
@@ -448,7 +448,7 @@ build_RS_times_BA(RSRG* rsrg, BuchiAutomaton& ba, dd_edge deadlock)
     for (ba_edge_t& edge : ba.edges) {
         // create the MxD for the edge: src --(s)--> dst
         // relabel(Sat(s), )
-        dd_edge sat_s = edge.state_formula->getMDD();
+        dd_edge sat_s = edge.state_formula->getMDD(ctx);
         sat_s = mdd_relabel(sat_s, DONT_CARE, DONT_CARE, forestMxD);
 
         // edgeMxD = NSF intersect (RS x Sat(s))
@@ -492,7 +492,7 @@ build_RS_times_BA(RSRG* rsrg, BuchiAutomaton& ba, dd_edge deadlock)
     for (ba_edge_t& edge : ba.edges) {
         if(edge.is_initial) { // edge:  0 --(s)--> dst 
             // Move all Sat(s) states in the dst location, and add them to S0
-            dd_edge sat_s = edge.state_formula->getMDD();
+            dd_edge sat_s = edge.state_formula->getMDD(ctx);
             dd_edge init_dst = mdd_relabel(sat_s, 0, edge.dst_loc, forestMxD);
 
             TS.S0 += init_dst;

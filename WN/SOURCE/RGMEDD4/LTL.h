@@ -14,6 +14,7 @@
 
 
 namespace ctlmdd {
+class Context;
 class Formula;
 
 //-----------------------------------------------------------------------------
@@ -68,7 +69,7 @@ struct BuchiAutomaton {
     BuchiAutomaton& operator=(BuchiAutomaton&&) = default;
 
     // Create all the MDDs labeling the Buchi Automata edges
-    void pre_compute_subformula_MDDs();
+    void pre_compute_subformula_MDDs(Context& ctx);
 };
 
 ostream& operator<<(ostream& os, const BuchiAutomaton& ba);
@@ -92,7 +93,7 @@ struct RS_times_BA {
 //-----------------------------------------------------------------------------
 
 RS_times_BA 
-build_RS_times_BA(RSRG* rsrg, BuchiAutomaton& ba, dd_edge deadlock);
+build_RS_times_BA(Context& ctx, RSRG* rsrg, BuchiAutomaton& ba, dd_edge deadlock);
 
 //-----------------------------------------------------------------------------
 

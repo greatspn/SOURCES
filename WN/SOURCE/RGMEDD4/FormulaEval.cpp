@@ -73,7 +73,7 @@ const char* format_result(const result_t& result, bool uppercase) {
 //-----------------------------------------------------------------------------
 
 // Parse and evaluate a CTL formula
-BaseFormula *parse_formula(const std::string& formula, result_t *out_result) {
+BaseFormula *parse_formula(Context& ctx, const std::string& formula, result_t *out_result) {
     istringstream *p_buffer = new istringstream(formula);
     initialize_lexer(p_buffer);
     BaseFormula *parsedFrm = parse_formula();
@@ -98,12 +98,8 @@ BaseFormula *parse_formula(const std::string& formula, result_t *out_result) {
         else { // boolean formula
             Formula* boolFrm = dynamic_cast<Formula*>(parsedFrm);
 
-            // Prepare the CTL evaluation context
-            /* if(!(CTL_as_CTLstar || rsrg->useMonolithicNSF())) rsrg->buildMonolithicNSF(); */
-            Context ctx(rsrg->getRS(), /* rsrg->getNSF(),  */true, true);
-
             // Get the Sat-set of the formula
-            dd_edge dd = boolFrm->getMDD();
+            dd_edge dd = boolFrm->getMDD(ctx);
             assert(dd.getForest() != nullptr);
             endMDD = clock();
 
@@ -207,14 +203,23 @@ unsigned int num_path_ops(const std::string prop)
 
 void model_check_query(const ctl_query_t& query, int sem_id) 
 {
+    // Prepare the CTL evaluation context
+    /* if(!(CTL_as_CTLstar || rsrg->useMonolithicNSF())) rsrg->buildMonolithicNSF(); */
+    unique_ptr<PreImage> pre_image;
+    if (rsrg->useMonolithicNSF() || CTL_as_CTLstar)
+        pre_image = make_unique<MonoPreImage>(rsrg->getNSF());
+    else
+        pre_image = make_unique<ByEventPreImage>(rsrg);
+    Context ctx(rsrg->getRS(), std::move(pre_image), true, query.lang, true);
+
     // Compute the result
     result_t result;
-    BaseFormula *formula = parse_formula(query.line, &result);
+    BaseFormula *formula = parse_formula(ctx, query.line, &result);
 
     // Compute the cardinality
     cardinality_t satset_card = -1;
     if (formula && formula->isBoolFormula() && CTL_print_sat_sets) {
-        dd_edge dd(dynamic_cast<Formula*>(formula)->getMDD());
+        dd_edge dd(dynamic_cast<Formula*>(formula)->getMDD(ctx));
         apply(INTERSECTION, rsrg->getRS(), dd, dd);
         apply(CARDINALITY, dd, cardinality_ref(satset_card));
     }

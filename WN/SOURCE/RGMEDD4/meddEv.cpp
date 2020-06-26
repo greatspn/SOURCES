@@ -1943,30 +1943,23 @@ void RSRG::buildMonolithicNSF() {
     }
 }
 
-// const dd_edge RSRG::preImg(const dd_edge set) const {
-const dd_edge RSRG::preImg(const dd_edge& set, const dd_edge& NSF) const {
-    dd_edge pre_img(getForestMDD());
-    if(useMonolithicNSF() || CTL_as_CTLstar) {
-        // monolithic pre image on NSF
-        apply(PRE_IMAGE, set, NSF, pre_img);
-    } else {
-        // pre-image as union of all pre-images of MxD events
-        for (const dd_edge e: events) {
-            assert(getNSF() == NSF);
-            dd_edge pre_e(getForestMDD());
-            apply(PRE_IMAGE, set, e, pre_e);
-            pre_img += pre_e;
-        }
-    }
+//-----------------------------------------------------------------------------
+
+dd_edge MonoPreImage::apply(const dd_edge& set) const {
+    dd_edge pre_img(set.getForest());
+    MEDDLY::apply(PRE_IMAGE, set, NSF, pre_img);
     return pre_img;
 }
 
-const dd_edge RSRG::preImg(const dd_edge& set) const {
-    return RSRG::preImg(set, getNSF());
-}
-
-const dd_edge RSRG::preImg() const {
-    return RSRG::preImg(getRS());
+dd_edge ByEventPreImage::apply(const dd_edge& set) const {
+    dd_edge pre_img(set.getForest());
+    // pre-image as union of all pre-images of MxD events
+    for (const dd_edge e: rsrg->events) {
+        dd_edge pre_e(set.getForest());
+        MEDDLY::apply(PRE_IMAGE, set, e, pre_e);
+        pre_img += pre_e;
+    }
+    return pre_img;
 }
 
 //-----------------------------------------------------------------------------

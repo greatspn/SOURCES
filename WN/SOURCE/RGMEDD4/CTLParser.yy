@@ -323,6 +323,7 @@ BaseFormula* parse_formula() {
     yyparse();
     BaseFormula* f = g_parser_result;
     g_parser_result = nullptr;
+    f->set_top_level(true);
     return f;
 }
 

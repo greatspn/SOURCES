@@ -174,15 +174,16 @@ public:
  -----------------------*/
 class Context {
 public:
-    dd_edge             RS;         // the reference RS
-    // dd_edge             NSF;        // next-state function
-    std::list<dd_edge>  fair_sets;  // fair sets for fair CTL evaluation
-    bool                stutter_EG; // EG phi should be true on dead phi-states
-    bool                verbose;    // should print intermediate steps
+    dd_edge               RS;         // the reference RS
+    unique_ptr<PreImage>  pre_image;  // pre image operator with the NSF
+    std::list<dd_edge>    fair_sets;  // fair sets for fair CTL evaluation
+    bool                  stutter_EG; // EG phi should be true on dead phi-states
+    Language              language;   // sub-language used
+    bool                  verbose;    // should print intermediate steps
 
     inline Context() {} 
-    inline Context(dd_edge _RS, bool _stutter_EG, bool _verbose)
-    /**/: RS(_RS), stutter_EG(_stutter_EG), verbose(_verbose) { }
+    inline Context(dd_edge _RS, unique_ptr<PreImage>&& p, bool _stutter_EG, Language l, bool _verbose)
+    /**/: RS(_RS), pre_image(std::move(p)), stutter_EG(_stutter_EG), language(l), verbose(_verbose) { }
 
     // Avoid accidental copies of this object
     Context(const Context&) = delete;
@@ -201,6 +202,8 @@ private:
     int countOwner;
     mutable size_t computed_hash;
     mutable bool _is_cached;
+    // is this a root/top-level node in the AST? (modifiable, not hashed)
+    bool top_level = false;
 protected:
     BaseFormula();
     virtual ~BaseFormula();
@@ -223,6 +226,8 @@ public:
     void set_cached(bool);
     inline bool is_cached() const { return _is_cached; }
 
+    inline bool is_top_level() const { return top_level; };
+    inline void set_top_level(bool t) { top_level = t; }
 private:
     virtual bool equals(const BaseFormula* pf) const = 0;
     virtual size_t compute_hash() const = 0;
@@ -315,15 +320,12 @@ extern const char* g_path_op_type[4];
  -----------------------*/
 // Base for all Boolean formulae
 class Formula : public BaseFormula {
-    /**
-     * proposition MDD (boolean)
-     * */
+    // sat-set of the formula
     dd_edge SatMDD;
     bool computedMDD = false;
-    /**
-     * create proposition MDD (boolean)
-     * */
-    virtual void createMDD() = 0;
+    
+    // create the sat-set by evaluating the formula and its sub-formulas
+    virtual void createMDD(Context& ctx) = 0;
 protected:
     void setMDD(dd_edge newMDD);
     void clearMDD();
@@ -354,8 +356,9 @@ public:
      * Create, if not yet, and return a MDD representation of the term.
      * @return MDD representation of the term
      * */
-    const dd_edge& getMDD();
+    const dd_edge& getMDD(Context& ctx);
     bool hasStoredMDD() const;
+    const dd_edge& getStoredMDD() const;
 
     virtual TreeTraceNode *generateTrace(const vector<int> &state, TraceType traceTy) = 0;
 };
@@ -416,7 +419,7 @@ private:
     Formula *formula1;
     Formula *formula2; // if op = NOT this value is null
     op_type op;
-    virtual void createMDD() override;
+    virtual void createMDD(Context& ctx) override;
     virtual void print(std::ostream &os) const override;
     virtual void maximal_path_subformula(std::ostream&, quant_type,
                                          std::vector<Formula*>&) override;
@@ -470,8 +473,9 @@ private:
     Formula *formula;
     quant_type quantifier;
 
-    bool do_CTL_model_checking();
-    virtual void createMDD() override;
+    bool do_CTL_model_checking(Context& ctx);
+    bool is_CTL() const;
+    virtual void createMDD(Context& ctx) override;
     virtual void print(std::ostream &os) const override;
     virtual void maximal_path_subformula(std::ostream&, quant_type,
                                          std::vector<Formula*>&) override;
@@ -502,7 +506,7 @@ private:
     path_op_type op;
 
 
-    virtual void createMDD() override;
+    virtual void createMDD(Context& ctx) override;
     virtual void print(std::ostream &os) const override;
     virtual void maximal_path_subformula(std::ostream&, quant_type,
                                          std::vector<Formula*>&) override;
@@ -552,7 +556,7 @@ public:
 //     Formula *formula1;
 //     Formula *formula2;
 //     op_type op;
-//     virtual void createMDD() override;
+//     virtual void createMDD(Context& ctx) override;
 //     virtual void print(std::ostream &os) const override;
 
 //     void createEXMDD();
@@ -636,7 +640,7 @@ class BoolLiteral: public AtomicProposition {
     DECLARE_CTL_CLASS;
 private:
     bool value;
-    virtual void createMDD() override;
+    virtual void createMDD(Context& ctx) override;
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
 protected:
@@ -668,7 +672,7 @@ class Deadlock: public AtomicProposition {
     DECLARE_CTL_CLASS;
 private:
     bool value;
-    virtual void createMDD() override;
+    virtual void createMDD(Context& ctx) override;
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
 protected:
@@ -704,7 +708,7 @@ class GlobalProperty: public AtomicProposition {
     DECLARE_CTL_CLASS;
 private:
     global_property_type type;
-    virtual void createMDD() override;
+    virtual void createMDD(Context& ctx) override;
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
 protected:
@@ -743,7 +747,7 @@ public:
 private:
     Formula *subf;
     prop_type   type;
-    virtual void createMDD() override;
+    virtual void createMDD(Context& ctx) override;
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
 protected:
@@ -765,7 +769,7 @@ private:
     std::vector<int> transitions;
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
-    virtual void createMDD() override;
+    virtual void createMDD(Context& ctx) override;
 protected:
     inline Fireability(const std::vector<int>* t) : transitions(*t)  { }
     virtual ~Fireability();
@@ -799,8 +803,8 @@ private:
     IntFormula *expr1;
     IntFormula *expr2;
     float constant;
-    virtual void createMDD() override;
-    void createMDDByComplement();
+    virtual void createMDD(Context& ctx) override;
+    void createMDDByComplement(Context& ctx);
     virtual void print(std::ostream &os) const override;
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
@@ -867,7 +871,7 @@ private:
     /**
      * create expression MTMDD (real)
      * */
-    virtual void createMTMDD() = 0;
+    virtual void createMTMDD(Context& ctx) = 0;
 
 protected:
     IntFormula();
@@ -878,7 +882,7 @@ public:
      * Create, if not yet, and return a MDD representation of the term.
      * @return MTMDD representation of the term
      * */
-    const dd_edge& getMTMDD();
+    const dd_edge& getMTMDD(Context& ctx);
     void setMTMDD(dd_edge newMTMDD);
     void clearMTMDD();
     bool hasStoredMTMDD() const;
@@ -903,7 +907,7 @@ private:
     IntFormula *expr1;
     IntFormula *expr2;
     IntFormula::op_type op;
-    virtual void createMTMDD() override;
+    virtual void createMTMDD(Context& ctx) override;
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
 protected:
@@ -949,7 +953,7 @@ private:
     int place; // place index, not MDD variable level
     float coeff;
     IntFormula::op_type op;
-    virtual void createMTMDD() override;
+    virtual void createMTMDD(Context& ctx) override;
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
 protected:
@@ -991,7 +995,7 @@ class IntLiteral: public IntFormula {
     DECLARE_CTL_CLASS;
 private:
     mutable float _constant;
-    virtual void createMTMDD() override;
+    virtual void createMTMDD(Context& ctx) override;
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
 protected:
