@@ -10,7 +10,6 @@
 #include <numeric>
 #include <iterator>
 #include <unistd.h>
-// #include "CTLLexer.ll.h"
 #include "CTL.h"
 #include "rgmedd4.h"
 #include "parallel.h"
@@ -22,7 +21,6 @@ using namespace std;
 using namespace ctlmdd;
 
 extern const char* MCC_TECHNIQUES;
-// CTLMDD *ctl = CTLMDD::getInstance();
 // Are we parsing a boolean expression of HOA edges?
 bool parsing_HOA_edge = false;
 RSRG *rsrg;
@@ -456,15 +454,12 @@ void CTLParser(RSRG *r) {
 
             if (!line.empty()) {
                 if (line.rfind("FORMULA:", 0) == 0) { // formula identifier
-                    auto end = to_iterator(line, line.find_first_of("%"));
-                    line = std::string(line.cbegin() + 8, end);
+                    line = std::string(line, 8);
                     trim(line);
                     name = line;
                 }
                 else if (line.rfind("LANGUAGE:", 0) == 0) { // language name
-                    size_t i;
-                    auto end = to_iterator(line, line.find_first_of("%"));
-                    line = std::string(line.cbegin() + 9, end);
+                    line = std::string(line, 9);
                     trim(line);
                     lang = language_from_string(line.c_str());
                     if (lang == NUM_LANGUAGES) {
@@ -473,10 +468,10 @@ void CTLParser(RSRG *r) {
                 }
                 else { // query line
                     ctl_query_t q;
-                    q.name = name;
-                    q.line = line;
+                    q.name  = name;
+                    q.line  = line;
                     q.score = 0;
-                    q.lang = lang;
+                    q.lang  = lang;
 
                     // cout << s_languageName[q.lang]<<" " << q.name<<":    "<<q.line<<endl;
                     queries.emplace_back(std::move(q));
