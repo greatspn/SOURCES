@@ -91,6 +91,7 @@ GreatSPN is known to compile and run successfully using the WSL (Windows 10 64bi
 
 TBD.
 
+
 #### Pre-installed VirtualBox machine:
 
 We offer a pre-installed VirtualBox machine image, based on Fedora Core, that ships with

@@ -39,6 +39,8 @@
   #include "const.MDDrg"
 #elif defined TOOL_RGMEDD4
   #include "const.MDDrg"
+#elif defined TOOL_RGMEDD5
+  #include "const.MDDrg"
 #elif defined TOOL_PN2ODE  
   #include "const.PN2ODE"
 #elif defined TOOL_LIBGSPNSSP

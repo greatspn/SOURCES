@@ -680,7 +680,7 @@ dd_edge EFfair(dd_edge f1, Context& ctx)
 }
 
 //----------------------------------------------------------------------------
-// ForAll-quantified CTL
+// ForAll-quantified CTL (fair-version only)
 //----------------------------------------------------------------------------
 
 dd_edge AXfair(dd_edge f1, Context& ctx) {
@@ -725,6 +725,8 @@ void Context::add_fairness_constraint(dd_edge fair_set) {
     fair_sets.push_back(fair_set);
     fair_states = empty_set(RS);
 }
+
+//----------------------------------------------------------------------------
 
 // get the set of fair states
 dd_edge Context::get_fair_states() {

@@ -223,6 +223,16 @@ struct ioh_t {
         assert(i >= 0);
         return i;
     }
+    // Pre-image: what i value produces a j. Returns true if j can be produced.
+    inline bool pre_image(int j, int& i) const {
+        assert(j>=0);
+        i = j;
+        if (has_input())   i += input;
+        if (has_output())  i -= output;
+        if (has_input() && i < input) return false;
+        if (has_inhib() && i >= inhib) return false;
+        return true;
+    }
 };
 //static const ioh_t DO_NOTHING_IOH = ioh_t();
 

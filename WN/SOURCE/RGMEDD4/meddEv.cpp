@@ -161,7 +161,6 @@ void RSRG::initialize(RsMethod _rsMethod, LrsMethod _lrsMethod,
         }
     }
     MEDDLY::initialize(L);
-    
     initializeGuessedBounds();
 
     // cout << "DOMAIN BND: ";
@@ -957,10 +956,8 @@ public:
 //---------------------------------------------------------------------------------------
 
 void RSRG::buildImplicitRelation() {
-	// changed function declaration in https://github.com/asminer/meddly/commit/ee76a3bec8ea9feca6f2151ed01af8c0c4a4e7b6
-	// the second argument is expected to be a forest* relmxd, but is not used in function body
-	// (meddly/src/ops.cc:1521)
     impl_rel = new satimpl_opname::implicit_relation(forestMDD, forestMDD, forestMDD);
+    impl_rel->setAutoDestroy(false);
     // Associate all unique IOH nodes to the registered rel_node_handles
     std::vector<rel_node_handle> registered_handles(trns_set.signatures, -1);
     impl_trn_handle.resize(ntr);
@@ -1209,13 +1206,6 @@ bool RSRG::buildRS() {
 
         case RSM_SAT_IMPLICIT: {
             buildImplicitRelation();
-			// changed function declaration in https://github.com/asminer/meddly/commit/ee76a3bec8ea9feca6f2151ed01af8c0c4a4e7b6
-			// the second argument is expected to be a forest* relmxd, but is not used in function body
-			// (meddly/src/ops.cc:1521)
-            impl_rel = new satimpl_opname::implicit_relation(forestMDD, forestMDD, forestMDD);
-
-            // impl_rel->show();
-
             impl_sat->compute(initMark, rs);
 
             // dd_edge mxd = impl_rel->buildMxdForest();
@@ -1664,7 +1654,7 @@ int RSRG::visitXBounds(const node_handle node, int visit_level,
         return nodeMaxSumTokens.at(node);
 
     nodeMaxSumTokens.at(node) = VBP_GOES_TO_ZERO_TERMINAL;
-    // cout << "Visit " << node << endl;
+    //  cout << "Visit " << node << " at level " << forest->getNodeLevel(node) << endl;
     unpacked_node *rnode = unpacked_node::newFromNode(forest, node, unpacked_node::storage_style::AS_STORED);
     assert(rnode->getLevel() >= 1 && rnode->getLevel() <= realBounds.size());
 

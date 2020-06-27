@@ -479,12 +479,12 @@ void CTLParser(RSRG *r) {
             if (!line.empty()) {
                 if (line.rfind("FORMULA:", 0) == 0) { // formula identifier
                     line = std::string(line, 8);
-                    trim(line);
+                    ltrim(line);
                     name = line;
                 }
                 else if (line.rfind("LANGUAGE:", 0) == 0) { // language name
                     line = std::string(line, 9);
-                    trim(line);
+                    ltrim(line);
                     lang = language_from_string(line.c_str());
                     is_fair = (0 == strcmp(line.c_str(), "FAIRNESS"));
                     if (lang == NUM_LANGUAGES) {

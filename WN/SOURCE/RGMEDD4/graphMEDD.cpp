@@ -526,7 +526,7 @@ void build_graph(class RSRG &rs) {
             }
             const char *rtest_max_place_bound = "", *rtest_token_sum_bound = "";
             if (has_RS) {
-                rtest_max_place_bound = regression_test(rs, max_place_bound, "MAX_TOKEN_IN_PLACE");
+                rtest_max_place_bound = regression_test(rs, max_count_pl_levels, "MAX_TOKEN_IN_PLACE");
                 rtest_token_sum_bound = regression_test(rs, token_sum_bound, "MAX_TOKEN_PER_MARKING");
                 cout << " Max tokens x marking:    " << left << setw(15) << out_card(token_sum_bound) 
                      << rtest_token_sum_bound << endl;
