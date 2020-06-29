@@ -11,8 +11,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/bin/RGMEDD5",
             "args": [ 
-                "/home/elvio/MCC/2019/MODELS/Philosophers-PT-000005/model",
-                "-sat-impl"
+                "/home/elvio/MCC/2020/MODELS/Philosophers-PT-000005/model",
+                "-bfs-impl"
              ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

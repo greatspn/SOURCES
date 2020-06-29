@@ -154,6 +154,10 @@ GreatSPN partecipated to several Model Checking Context (MCC) editions:
  * MCC 2019 Edition [(link)](https://mcc.lip6.fr/2019/results.php):
     - 🥈 Silver medal in StateSpace category;
     - ✔️ 100% accuracy of the results.
+ * MCC 2020 Edition [(link)](https://mcc.lip6.fr/2020/results.php):
+    - 🥈 Silver medal in StateSpace category;
+    - 🥈 Silver medal in GlobalProperties category;
+    - 🥉 Bronze medal in UpperBounds category;
 
 See the [Model Checking Context site](https://mcc.lip6.fr) for further details.
 
