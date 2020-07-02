@@ -142,6 +142,22 @@ To cite the GreatSPN framework, please use this reference [PDF](https://iris.uni
 }
 ```
 
+Recent papers referencing GreatSPN:
+
+```
+@inproceedings{bib:ctlstar:greatspn,
+  author="Amparore, Elvio Gilberto and Donatelli, Susanna and Gall{\`a}, Francesco",
+  title="A CTL* Model Checker for Petri Nets",
+  booktitle="Application and Theory of Petri Nets and Concurrency",
+  year="2020",
+  publisher="Springer International Publishing",
+  address="Cham",
+  pages="403--413",
+  isbn="978-3-030-51831-8"
+}
+
+```
+
 
 ### Recent Awards (Model Checking Context 2018 edition):
 

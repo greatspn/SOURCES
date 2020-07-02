@@ -1523,7 +1523,6 @@
                                   <TreeModel code="JTree&#xa; project 1&#xa;  page1&#xa;  page2&#xa; project 2&#xa;  page1&#xa;  page2&#xa; project 3&#xa;  page1&#xa;  page2"/>
                                 </Property>
                                 <Property name="rootVisible" type="boolean" value="false"/>
-                                <Property name="showsRootHandles" type="boolean" value="true"/>
                               </Properties>
                             </Component>
                           </SubComponents>

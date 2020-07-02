@@ -27,6 +27,7 @@ import javax.swing.JFrame;
 import javax.swing.JScrollBar;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
@@ -48,7 +49,7 @@ public class SolverDialog extends javax.swing.JDialog {
 
     private final SimpleAttributeSet styles[][][]; // bold * underline * foregrounds
     private static final Color[] foregrounds = {
-        Color.BLACK, new Color(128,0,0),
+        UIManager.getColor("TextPane.foreground"), new Color(128,0,0),
         new Color(0,128,0), new Color(128,128,0),
         new Color(0,0,128), new Color(128,0,128),
         new Color(0,128,128), new Color(128,128,128),

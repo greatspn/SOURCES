@@ -1967,13 +1967,13 @@ void QuantifiedFormula::createMDD(Context& ctx) {
         // Build the Transition System of RS (x) BA
         RS_times_BA TS = build_RS_times_BA(ctx, rsrg, ba, deadlock);
 
+        // Compute the reachability set of the Transition System using saturation
+        apply(REACHABLE_STATES_DFS, TS.S0, TS.NSF, TS.RS);
+
         // Create the evaluation context for the TX
         Context ctxTS(TS.RS, make_unique<MonoPreImage>(TS.NSF), true, 
                       Language::LTL, // language is irrelevant since it used only for TS evaluation.
                       ctx.verbose);
-
-        // Compute the reachability set of the Transition System using saturation
-        apply(REACHABLE_STATES_DFS, TS.S0, TS.NSF, TS.RS);
 
         // Find the states of the TS that visit infinitely often at least 
         // a location of each acceptance sets of the Buchi automaton

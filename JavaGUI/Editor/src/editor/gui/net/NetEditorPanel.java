@@ -73,6 +73,7 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.PopupMenuEvent;
@@ -645,22 +646,30 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
     @Override
     public boolean isZoomPanelUsed() { return true; }
     
-    public static final Color OUTSIDE_PAGE_COLOR = new Color(230,230,230);
+    public static final Color OUTSIDE_PAGE_COLOR = Util.mix(UIManager.getColor("Panel.background"), Color.gray, 0.90f);
+    public static final Color PAGE_SHADOW_COLOR = new Color(140, 140, 140);
     public static final Color[] PAGE_BORDER = new Color[] {
-        new Color(140, 140, 140),
+        PAGE_SHADOW_COLOR,
         // fade progressively to OUTSIDE_PAGE_COLOR
-        new Color(190, 190, 190),
-        new Color(200, 200, 200),
-        new Color(210, 210, 210),
-        new Color(220, 220, 220),
+//        new Color(190, 190, 190),
+//        new Color(200, 200, 200),
+//        new Color(210, 210, 210),
+//        new Color(220, 220, 220),
+        Util.mix(PAGE_SHADOW_COLOR, OUTSIDE_PAGE_COLOR, 0.80f),
+        Util.mix(PAGE_SHADOW_COLOR, OUTSIDE_PAGE_COLOR, 0.60f),
+        Util.mix(PAGE_SHADOW_COLOR, OUTSIDE_PAGE_COLOR, 0.40f),
+        Util.mix(PAGE_SHADOW_COLOR, OUTSIDE_PAGE_COLOR, 0.20f),
     };
+    
+    public static final Color PAGE_BACKGROUND_COLOR = Util.mix(UIManager.getColor("TextField.background"), Color.WHITE, 0.20f);
+    
 
     class JNetPanel extends JPanel implements Scrollable, 
             CutCopyPasteEngine.CutCopyPasteActivation,
             CutCopyPasteEngine.CutCopyPasteActuator
     {
         public JNetPanel() {
-            setBackground(Color.WHITE);
+            setBackground(PAGE_BACKGROUND_COLOR);
             setFocusable(true);
             setAutoscrolls(true); // Enable syntetic scroll events
             setOpaque(false);
@@ -807,7 +816,7 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
             int pX = dh.logicToScreen(currPage.getPageWidthForEditor());
             int pY = dh.logicToScreen(currPage.getPageHeightForEditor());
             int rX = (getWidth() - pX), rY = (getHeight() - pY);
-            g.setColor(Color.WHITE);
+            g.setColor(PAGE_BACKGROUND_COLOR);
             g.fillRect(0, 0, pX, pY);
             g.setColor(OUTSIDE_PAGE_COLOR);
             g.fillRect(pX, 0, rX, pY);

@@ -38,6 +38,8 @@ public abstract class FormulaPanel extends javax.swing.JPanel implements ExprFie
         jTextField_result.setText("---");
         exprField_comment.setExprListener(this);
         exprField_formula.setExprListener(this);
+        jLabel_num.setForeground(Color.BLACK);
+        jLabelAltText.setForeground(Color.BLACK);
         
         Dimension dim = jButtonViewResults.getPreferredSize();
         dim.width = (int)(dim.width * 1.5);

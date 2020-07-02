@@ -341,6 +341,12 @@ public final class Util {
         grayscale = 255 - (int)((255 - grayscale) * coeff);
         return new Color(grayscale, grayscale, grayscale);
     }
+    // mix colors
+    public static Color mix(Color clr1, Color clr2, float coeff) {
+        return new Color((int)(clr1.getRed() * coeff   + clr2.getRed() * (1-coeff)),
+                         (int)(clr1.getGreen() * coeff + clr2.getGreen() * (1-coeff)),
+                         (int)(clr1.getBlue() * coeff  + clr2.getBlue() * (1-coeff)));
+    }
     
     // Deep copy of objects through serialization
     public static Object deepCopy(Object obj) {

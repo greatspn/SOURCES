@@ -13,6 +13,7 @@ import java.awt.Insets;
 import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.UIManager;
 
 /**
  *
@@ -39,6 +40,8 @@ public class FormulaListPanel extends javax.swing.JPanel {
         initComponents();
         setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY));
         setBackground(Color.WHITE);
+        jLabel1.setForeground(Color.BLACK);
+        jLabel2.setForeground(Color.BLACK);
     }
     
     public void setFormulaLisListener(FormulaListListener listener) {
