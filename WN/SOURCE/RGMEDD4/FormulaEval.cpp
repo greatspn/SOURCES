@@ -282,21 +282,49 @@ void model_check_query(Context& ctx, const ctl_query_t& query, int sem_id)
         }
 
         if (!running_for_MCC()) {
-            if (!query.name.empty())
-                cout << "Formula name: " << query.name << ctl_endl;
-            cout << "  \tEvaluation: " << left << setw(8) 
-                 << format_result(result, false) << regression_res << ctl_endl;
+            if (CTL_quiet) {
+                // compact single-line result
+                cout << s_languageName[query.lang] << ": ";
+                if (!query.name.empty())
+                    cout << query.name;
+                cout << "  is  " << left << setw(8) 
+                    << format_result(result, false) << regression_res;
+                cout << "  Time: "<<std::fixed<<setprecision(3)<<(double(endMDD2-startMDD))/CLOCKS_PER_SEC;
+                if (satset_card >= 0)
+                    cout << "  SAT=" << satset_card;
+                cout << endl;
+            }
+            else {
+                // multiline result descriptor
+                cout << "\n-------------------------------------------------------------------------------\n";
+                if (!query.name.empty())
+                    cout << "Formula: " << query.name << "\n";
+                cout << "  " << *formula << endl;
+                cout << "Language: " << s_languageName[query.lang] << "\n";
+                cout << "Evaluation: " << left << setw(8) 
+                     << format_result(result, false) << regression_res << endl;
+                if (satset_card >= 0)
+                    cout << "SAT=" << satset_card << endl;
+                if (!is_int_formula)
+                    cout<<"Sat-set generation time: "<<std::fixed<<setprecision(3)<<(double(endMDD-startMDD))/CLOCKS_PER_SEC<<" sec"<<endl;
+                cout<<"Evaluation time: "<<std::fixed<<setprecision(3)<<(double(endMDD2-startMDD))/CLOCKS_PER_SEC<<" sec"<<endl;
+                cout << "-------------------------------------------------------------------------------\n";
+            }
+            // if (!query.name.empty())
+            //     cout << s_languageName[query.lang] << ": " << query.name << ctl_endl;
+            // cout << "  is  " << left << setw(8) 
+            //      << format_result(result, false) << regression_res << ctl_endl;
             // if (output_flag) {
             //     if (!query.name.empty())
             //         fout << "Formula name: " << query.name << endl;
             //     fout <<  "Evaluation: " << format_result(result, false) << endl;
             // }
-            if (satset_card >= 0) {
-                if (CTL_quiet)
-                    cout << "  SAT=" << satset_card;
-                else
-                    cout << "\tSAT[ " << *formula <<" ] = " << satset_card << endl;
-            }
+            // if (satset_card >= 0) {
+            //     if (CTL_quiet)
+            //         cout << "  SAT=" << satset_card;
+            //     else
+            //         cout << "\tSAT[ " << *formula <<" ] = " << satset_card << endl;
+            // }
 
             // // Print all the satisfying markings
             // if(output_flag && !is_int_formula) {
@@ -305,40 +333,40 @@ void model_check_query(Context& ctx, const ctl_query_t& query, int sem_id)
             //     rsrg->show_markings(fout, dd);
             // }
         
-            if (!CTL_quiet) {
-#if PERFORMANCECTL
-                if (!is_int_formula)
-                    cout<<"\tSat-set generation time: "<<setprecision(7)<<(double(endMDD-startMDD))/CLOCKS_PER_SEC<<" sec"<<endl;
-                cout<<"\tEvaluation time: "<<setprecision(7)<<(double(endMDD2-startMDD))/CLOCKS_PER_SEC<<" sec"<<endl;
-#endif
-                // Counter-example/witness generation
-                if (print_CTL_counterexamples && !is_int_formula) {
-                    Formula* state_formula = dynamic_cast<Formula*>(formula);
-                    cout << "\nGenerated " << (std::get<bool>(result) ? "witness: " : "counter-example: ") << endl;
-                    vector<int> state0(npl + 1);
-                    enumerator it0(rsrg->getInitMark());
-                    const int* tmp =it0.getAssignments();
-                    std::copy(tmp, tmp+npl + 1, state0.begin());
-                    
-                    TraceType traceTy = (std::get<bool>(result) ? TT_WITNESS : TT_COUNTEREXAMPLE);
-                    TreeTraceNode *ttn = state_formula->generateTrace(state0, traceTy);
-                    print_banner(" Trace ");
-                    cout << "Initial state is: ";
-                    CTLMDD::getInstance()->print_state(state0.data());
-                    cout << endl;
-                    ttn->print_trace();
-                    cout << endl;
-                    delete ttn;
-                }
+            // if (!CTL_quiet) {
+// #if PERFORMANCECTL
+                // if (!is_int_formula)
+                //     cout<<"\tSat-set generation time: "<<std::fixed<<setprecision(3)<<(double(endMDD-startMDD))/CLOCKS_PER_SEC<<" sec"<<endl;
+                // cout<<"\tEvaluation time: "<<std::fixed<<setprecision(3)<<(double(endMDD2-startMDD))/CLOCKS_PER_SEC<<" sec"<<endl;
+// #endif
+            // Counter-example/witness generation
+            if (print_CTL_counterexamples && !is_int_formula) {
+                Formula* state_formula = dynamic_cast<Formula*>(formula);
+                cout << "\nGenerated " << (std::get<bool>(result) ? "witness: " : "counter-example: ") << endl;
+                vector<int> state0(npl + 1);
+                enumerator it0(rsrg->getInitMark());
+                const int* tmp =it0.getAssignments();
+                std::copy(tmp, tmp+npl + 1, state0.begin());
+                
+                TraceType traceTy = (std::get<bool>(result) ? TT_WITNESS : TT_COUNTEREXAMPLE);
+                TreeTraceNode *ttn = state_formula->generateTrace(state0, traceTy);
+                print_banner(" Trace ");
+                cout << "Initial state is: ";
+                CTLMDD::getInstance()->print_state(state0.data());
+                cout << endl;
+                ttn->print_trace();
+                cout << endl;
+                delete ttn;
             }
-            else {
-#if PERFORMANCECTL
-                if (!is_int_formula)
-                    cout<<"  Sat-set gen.: "<<setprecision(7)<<(double(endMDD-startMDD))/CLOCKS_PER_SEC<<" sec. ";
-                cout<<" Eval: "<<setprecision(7)<<(double(endMDD2-startMDD))/CLOCKS_PER_SEC<<" sec. ";
-#endif
-            }
-            cout << endl;
+            // }
+            // else {
+// #if PERFORMANCECTL
+                // if (!is_int_formula)
+                //     cout<<"  Sat-set gen.: "<<std::fixed<<setprecision(3)<<(double(endMDD-startMDD))/CLOCKS_PER_SEC<<" sec. ";
+                // cout<<"  Time: "<<std::fixed<<setprecision(3)<<(double(endMDD2-startMDD))/CLOCKS_PER_SEC;
+// #endif
+            // }
+            // cout << endl;
         }
         else { 
             cout << "FORMULA " << query.name << " "
