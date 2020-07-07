@@ -80,7 +80,8 @@
 			"cinttypes": "cpp",
 			"typeindex": "cpp",
 			"typeinfo": "cpp",
-			"*.ipp": "cpp"
+			"*.ipp": "cpp",
+			"cassert": "cpp"
 		}
 	},
 	// "C_Cpp.default.includePath": [

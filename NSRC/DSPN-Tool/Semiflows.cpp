@@ -14,6 +14,7 @@
 #include <string>
 #include <cstring>
 #include <cfloat>
+#include <cassert>
 #include <vector>
 #include <map>
 #include <list>
@@ -1368,7 +1369,7 @@ ComputeFlows(const PN& pn, InvariantKind inv_kind, FlowMatrixKind mat_kind,
     // Initialize generator
     flows_generator_t sf_gen(*pfm, printer, verboseLvl);
     if (detect_exp_growth)
-        sf_gen.max_peak_rows = 5 * pn.plcs.size();
+        sf_gen.max_peak_rows = 5 * pfm->N; // N=pn.plcs.size() for psfl
 
     // Start the computation of the P/T semiflows/basis/flows
     switch (mat_kind) {
