@@ -24,12 +24,19 @@
 #include <functional>
 #include <iostream>
 #include <sys/resource.h>
+#include "boost/variant.hpp"
 #include "utils/union_find.h"
 #include "utils/mt64.h"
 
 // Allow std::variant visitors to be written as lambda functions.
 template<class... Ts> struct overload : Ts... { using Ts::operator()...; };
 template<class... Ts> overload(Ts...) -> overload<Ts...>;
+
+namespace std {
+    template <typename T, typename... Ts>
+    inline bool holds_alternative(const boost::variant<Ts...>& v) noexcept
+    { return boost::get<T>(&v) != nullptr; }
+};
 
 // Optionally include <gmpxx.h> (if available on the platform)
 #ifdef HAS_GMP_LIB
@@ -377,7 +384,7 @@ ostream& operator<< (ostream& os, const trans_span_set_t& x);
 //---------------------------------------------------------------------------------------
 
 // Type of results (also for regression tests and expected values)
-typedef std::variant<ssize_t, bool, double> result_t;
+typedef boost::variant<ssize_t, bool, double> result_t;
 
 std::ostream& operator<<(std::ostream& os, const result_t& r);
 
@@ -1022,6 +1029,7 @@ void write_dd_as_pdf(const RSRG* rs, const dd_edge& e,
 // Interface for the PreImage operator
 class PreImage {
 public:
+    virtual ~PreImage();
     virtual dd_edge apply(const dd_edge& set) const = 0;
 };
 

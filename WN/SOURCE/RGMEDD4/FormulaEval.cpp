@@ -57,7 +57,7 @@ struct ctl_query_t {
 
 char ctl_result_buffer[32];
 const char* format_result(const result_t& result, bool uppercase) {
-    return std::visit(overload{
+    return boost::apply_visitor(overload{
         [](ssize_t i)  { 
             sprintf(ctl_result_buffer, "%d", i); 
             return (const char*)ctl_result_buffer;
@@ -270,7 +270,7 @@ void model_check_query(Context& ctx, const ctl_query_t& query, int sem_id)
         // Regression test
         const char *regression_res = "";
         bool failed_regression = false;
-        if (query.expected && (*query.expected).index() == result.index()) { // Regression test
+        if (query.expected && (*query.expected).which() == result.which()) { // Regression test
             // if (query.expected->is_undef())
             //     regression_res = "   [[??]]";
             if ((*query.expected) == result)
@@ -342,13 +342,13 @@ void model_check_query(Context& ctx, const ctl_query_t& query, int sem_id)
             // Counter-example/witness generation
             if (print_CTL_counterexamples && !is_int_formula) {
                 Formula* state_formula = dynamic_cast<Formula*>(formula);
-                cout << "\nGenerated " << (std::get<bool>(result) ? "witness: " : "counter-example: ") << endl;
+                cout << "\nGenerated " << (boost::get<bool>(result) ? "witness: " : "counter-example: ") << endl;
                 vector<int> state0(npl + 1);
                 enumerator it0(rsrg->getInitMark());
                 const int* tmp =it0.getAssignments();
                 std::copy(tmp, tmp+npl + 1, state0.begin());
                 
-                TraceType traceTy = (std::get<bool>(result) ? TT_WITNESS : TT_COUNTEREXAMPLE);
+                TraceType traceTy = (boost::get<bool>(result) ? TT_WITNESS : TT_COUNTEREXAMPLE);
                 TreeTraceNode *ttn = state_formula->generateTrace(state0, traceTy);
                 print_banner(" Trace ");
                 cout << "Initial state is: ";

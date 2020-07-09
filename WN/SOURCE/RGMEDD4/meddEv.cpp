@@ -1,4 +1,4 @@
-
+#define _LIBCPP_DISABLE_AVAILABILITY
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1935,6 +1935,8 @@ void RSRG::buildMonolithicNSF() {
 
 //-----------------------------------------------------------------------------
 
+PreImage::~PreImage() { }
+
 dd_edge MonoPreImage::apply(const dd_edge& set) const {
     dd_edge pre_img(set.getForest());
     MEDDLY::apply(PRE_IMAGE, set, NSF, pre_img);
@@ -2876,7 +2878,7 @@ const unfolding_map_t& RSRG::get_unfolding_map() const {
 //-----------------------------------------------------------------------------
 
 std::ostream& operator<<(std::ostream& os, const result_t& r) {
-    std::visit(overload{
+    boost::apply_visitor(overload{
         [&os](ssize_t i)  { if (i==INFINITE_CARD) os << "inf"; else os << i; },
         [&os](bool b)     { os << (b ? "TRUE" : "FALSE"); },
         [&os](double d)   { if (d==INFINITE_CARD) os << "inf"; else os << d; },

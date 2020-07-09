@@ -165,7 +165,7 @@ regression_test_eps(const RSRG& rs, cardinality_t& found, const char* what) {
         return ""; // No value to test
     }
     else if (std::holds_alternative<double>(kv->second)) {
-        double expected = std::get<double>(kv->second);
+        double expected = boost::get<double>(kv->second);
         cardinality_t diff = expected - found;
         if (std::abs(get_double(diff)) / expected > 0.0001) {
             cerr << "\n\nExpected "<<what<<" was " << expected <<", found "<<found<<endl;
@@ -183,7 +183,7 @@ regression_test(const RSRG& rs, ssize_t found, const char* what) {
         return ""; // No value to test
     }
     else if (std::holds_alternative<ssize_t>(kv->second)) {
-        ssize_t expected = std::get<ssize_t>(kv->second);
+        ssize_t expected = boost::get<ssize_t>(kv->second);
         if (expected != found) {
             cerr << "\n\nExpected "<<what<<" was " << expected <<", found "<<found<<endl;
             throw rgmedd_exception("Regression test failed.");
