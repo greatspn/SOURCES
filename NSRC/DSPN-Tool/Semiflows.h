@@ -312,6 +312,9 @@ void SaveFlows(const flow_matrix_t& msa, ofstream& file);
 
 void PrintFlows(const PN& pn, const flow_matrix_t& msa, const char* cmd, VerboseLevel verboseLvl);
 
+// are all places of a net covered by at least one flow?
+bool IsNetCoveredByFlows(const PN& pn, const flow_matrix_t& flows);
+
 //-----------------------------------------------------------------------------
 
 // Compute place bounds using the P-semiflows
@@ -324,6 +327,17 @@ void SaveBounds(const place_bounds_t& bounds, ofstream& file);
 void LoadBounds(const PN& pn, place_bounds_t& bounds, ifstream& file);
 
 void PrintBounds(const PN& pn, const place_bounds_t& bounds, VerboseLevel verboseLvl);
+
+//-----------------------------------------------------------------------------
+
+// Compute the minimal number of tokens to satisfy each (semi)flow
+void ComputeMinimalTokensFromFlows(const PN& pn, 
+                                   const flow_matrix_t& semiflows, 
+                                   std::vector<int>& m0min);
+
+void SaveMinimalTokens(const std::vector<int>& m0min, ofstream& file);
+
+void PrintMinimalTokens(const PN& pn, const std::vector<int>& m0min, VerboseLevel verboseLvl);
 
 //=============================================================================
 #endif // __SEMIFLOWS_H__

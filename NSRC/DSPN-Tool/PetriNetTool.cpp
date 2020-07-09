@@ -1129,6 +1129,17 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
                 LoadBounds(*pn, *pbounds, bnd_is);
                 PrintBounds(*pn, *pbounds, verboseLvl);
             }
+            else if (cmdArg == "-m0min") {
+                cout << "COMPUTING MINIMAL TOKEN COUNTS FROM P-SEMIFLOWS ..." << endl;
+                RequirePSemiflows();
+                std::vector<int> m0min;
+                // pbounds = make_shared<place_bounds_t>();
+                ComputeMinimalTokensFromFlows(*pn, *pinv, m0min);
+                string m0minFile = *netName + ".m0min";
+                ofstream m0min_os(m0minFile.c_str());
+                SaveMinimalTokens(m0min, m0min_os);
+                PrintMinimalTokens(*pn, m0min, verboseLvl);
+            }
 #ifdef HAS_LP_SOLVE_LIB
             // Commands that use the ILP solver
             else if (cmdArg == "-ilp-bnd") {

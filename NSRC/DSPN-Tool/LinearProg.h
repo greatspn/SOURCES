@@ -1,5 +1,5 @@
 /*
- *  Semiflows.h
+ *  LinearProg.h
  *
  *  Computation of minimal P/T-semiflows
  *

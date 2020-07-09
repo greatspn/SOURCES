@@ -70,6 +70,12 @@ inline int gcd(int a, int b) {
 
 //-----------------------------------------------------------------------------
 
+inline int lcm(int a, int b) {
+    return (a * b) / gcd(a, b);
+}
+
+//-----------------------------------------------------------------------------
+
 inline int sign(int num) {
     if (num > 0)
         return +1;
@@ -1537,11 +1543,31 @@ void PrintFlows(const PN& pn, const flow_matrix_t& psfm,
 
 //-----------------------------------------------------------------------------
 
+// are all places of a net covered by at least one flow?
+bool IsNetCoveredByFlows(const PN& pn, const flow_matrix_t& flows) {
+    assert(flows.inv_kind == InvariantKind::PLACE);
+    std::vector<bool> covered(pn.plcs.size(), false);
+
+    for (const auto &f : flows) {
+        for (auto& elem : f) {
+            if (elem.index < pn.plcs.size()) {
+                covered[elem.index] = true;
+            }
+        }
+    }
+    for (bool is_cov : covered)
+        if (!is_cov)
+        return false;
+    return true;
+}
+
+//-----------------------------------------------------------------------------
+
 // Compute place bounds using the P-semiflows
 void ComputeBoundsFromSemiflows(const PN& pn, const flow_matrix_t& semiflows, 
                                 place_bounds_t& bounds) 
 {
-    assert(semiflows.mat_kind == FlowMatrixKind::SEMIFLOWS);
+    // assert(semiflows.mat_kind == FlowMatrixKind::SEMIFLOWS);
     assert(semiflows.inv_kind == InvariantKind::PLACE);
     bounds.resize(pn.plcs.size());
     std::fill(bounds.begin(), bounds.end(), PlaceBounds{ 0, numeric_limits<int>::max() });
@@ -1550,13 +1576,16 @@ void ComputeBoundsFromSemiflows(const PN& pn, const flow_matrix_t& semiflows,
         // Get the amount of tokens circulating in semiflow @sf
         int tokenCnt = 0;
         for (auto& elem : sf)
-            tokenCnt += elem.value * int(pn.plcs[elem.index].getInitTokenCount());
+            if (elem.index < pn.plcs.size()) // not a support variable
+                tokenCnt += elem.value * int(pn.plcs[elem.index].getInitTokenCount());
 
         int kk = -1;
         // Set upper bounds for all the places in semiflow @sf
         for (auto& elem : sf) {
-            kk = tokenCnt / elem.value;
-            bounds[elem.index].upper = std::min(bounds[elem.index].upper, kk);
+            if (elem.index < pn.plcs.size()) {// not a support variable
+                kk = tokenCnt / elem.value;
+                bounds[elem.index].upper = std::min(bounds[elem.index].upper, kk);
+            }
         }
         // Set lower bounds for all the places in @sf
         if (sf.nonzeros() == 1 && kk > bounds[sf.front_nonzero().index].lower)
@@ -1611,6 +1640,80 @@ void PrintBounds(const PN& pn, const place_bounds_t& bounds, VerboseLevel verbos
             else
                 cout << "inf";
             cout << "]" << endl;
+        }
+    }
+}
+
+//-----------------------------------------------------------------------------
+// minimal marking that satisfies a set of flows
+//-----------------------------------------------------------------------------
+
+// Compute the minimal number of tokens to satisfy each semiflow
+void ComputeMinimalTokensFromFlows(const PN& pn, 
+                                   const flow_matrix_t& semiflows, 
+                                   std::vector<int>& m0min)
+{
+    // assert(semiflows.mat_kind == FlowMatrixKind::SEMIFLOWS);
+    assert(semiflows.inv_kind == InvariantKind::PLACE);
+    m0min.resize(pn.plcs.size());
+    std::fill(m0min.begin(), m0min.end(), -1);
+
+    for (const auto& sf : semiflows) {
+        // get the lcm of the semiflow
+        int lcm_sf = 1;
+        for (auto& elem : sf) {
+            // if (elem.index < pn.plcs.size()) {
+            // cout << "    " << lcm_sf << " " << elem.value << endl;
+            lcm_sf = lcm(lcm_sf, elem.value);
+            // }
+        }
+
+        // Set the minimum token count of m0 that satisies the semiflow.
+        for (auto& elem : sf) {
+            if (elem.index < pn.plcs.size()) {
+                int tc = lcm_sf / elem.value;
+                int m0 = int(pn.plcs[elem.index].getInitTokenCount());
+                tc = std::min(tc, m0);
+                if (m0min[elem.index] < 0)
+                    m0min[elem.index] = tc;
+                else
+                    m0min[elem.index] = std::min(m0min[elem.index], tc);
+            }
+        }
+    }
+}
+
+//-----------------------------------------------------------------------------
+
+void SaveMinimalTokens(const std::vector<int>& m0min, ofstream& file) {
+    if (m0min.empty()) {
+    }
+    else {
+        for (auto& b : m0min) {
+            file << b << " ";
+        }
+        file << "\n" << flush;
+    }
+}
+
+//-----------------------------------------------------------------------------
+
+void PrintMinimalTokens(const PN& pn, const std::vector<int>& m0min, VerboseLevel verboseLvl) {
+    if (verboseLvl > VL_BASIC) {
+        if (m0min.empty()) {
+            cout << "COULD NOT COMPUTE MINIMAL M0: net does not meet all the requirements." << endl;
+        }
+        else {
+            cout << "MINIMAL M0:" << endl;
+            size_t max_plc_len = 0;
+            for (auto& plc : pn.plcs)
+                max_plc_len = std::max(max_plc_len, plc.name.size());
+
+            for (size_t p = 0; p<pn.plcs.size(); p++) {
+                cout << setw(max_plc_len) << pn.plcs[p].name 
+                    << ": " << m0min[p] << endl;
+            }
+            cout << endl;
         }
     }
 }
