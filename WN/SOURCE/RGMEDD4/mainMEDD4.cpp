@@ -1628,9 +1628,9 @@ int initialize(int  argc,  char  *argv[]) {
         else if (0 == strcmp(argv[ii], "-GP")) {
             g_var_order_sel.heuristics = VOC_GRADIENT_P;
         }
-        else if (0 == strcmp(argv[ii], "-MCL")) {
-            g_var_order_sel.heuristics = VOC_MARKOV_CLUSTER;
-        }
+        // else if (0 == strcmp(argv[ii], "-MCL")) {
+        //     g_var_order_sel.heuristics = VOC_MARKOV_CLUSTER;
+        // }
         else if (0 == strcmp(argv[ii], "-TS")) {
             g_var_order_sel.heuristics = VOC_TOPOLOGICAL;
         }

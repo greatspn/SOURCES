@@ -439,7 +439,7 @@ enum VariableOrderCriteria {
     VOC_NOACK2,                // Use Noack method. (new implementation)
     VOC_TOVCHIGRECHKO2,        // Use Tovchigrechko method. (new implementation)
     VOC_GRADIENT_P,
-    VOC_MARKOV_CLUSTER,
+    // VOC_MARKOV_CLUSTER,
     VOC_GRADIENT_NU,
     VOC_VCL_CUTHILL_MCKEE,
     VOC_VCL_ADVANCED_CUTHILL_MCKEE,

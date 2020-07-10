@@ -343,10 +343,10 @@ void determine_var_order(const var_order_selector& sel,
             invert_mapping = true;
             break;
 
-        case VOC_MARKOV_CLUSTER:
-	    	var_order_gradient_P(sel.heuristics, mcl_cluster_net(), net_to_mddLevel);
-	    	invert_mapping = true;
-	    	break;
+        // case VOC_MARKOV_CLUSTER:
+	    	// var_order_gradient_P(sel.heuristics, mcl_cluster_net(), net_to_mddLevel);
+	    	// invert_mapping = true;
+	    	// break;
 
         case VOC_VCL_CUTHILL_MCKEE:
         case VOC_VCL_ADVANCED_CUTHILL_MCKEE:
@@ -371,10 +371,10 @@ void determine_var_order(const var_order_selector& sel,
                     .S2Ipl = S2Ipl
                 };
                 metaheuristic(mhctx, varorders, sel.num_tested_varorders);
-                if (varorders.size() == 1 && 
-                    ann_metric == VariableOrderMetric::METRIC_SWIR && 
-                    varorders[0].voc == VOC_MARKOV_CLUSTER)
-                    ann_metric = VariableOrderMetric::METRIC_SWIR_X;
+                // if (varorders.size() == 1 && 
+                //     ann_metric == VariableOrderMetric::METRIC_SWIR && 
+                //     // varorders[0].voc == VOC_MARKOV_CLUSTER)
+                //     ann_metric = VariableOrderMetric::METRIC_SWIR_X;
 
 
                 is_meta = true;
@@ -976,7 +976,7 @@ std::pair<const char*, const char*> var_order_name(VariableOrderCriteria voc) {
         case VOC_NOACK2:                      return std::make_pair("NOACK2",     "Noack method (new)");
         case VOC_TOVCHIGRECHKO2:              return std::make_pair("TOV2",       "Tovchigrechko method (new)");
         case VOC_GRADIENT_P:                  return std::make_pair("GP",         "Gradient P-invariants");
-        case VOC_MARKOV_CLUSTER:              return std::make_pair("MCL",        "Markov Cluster Algorithm");
+        // case VOC_MARKOV_CLUSTER:              return std::make_pair("MCL",        "Markov Cluster Algorithm");
     	case VOC_GRADIENT_NU:                 return std::make_pair("GNU",        "Gradient Nested Units");
         case VOC_VCL_CUTHILL_MCKEE:           return std::make_pair("CM2",        "VCL Cuthill-Mckee method");
         case VOC_VCL_ADVANCED_CUTHILL_MCKEE:  return std::make_pair("ACM",        "VCL Advanced Cuthill-Mckee method");
@@ -1011,7 +1011,7 @@ bool method_uses_pinvs(VariableOrderCriteria voc) {
         case VOC_TOVCHIGRECHKO:
         case VOC_NOACK2:
         case VOC_TOVCHIGRECHKO2:
-        case VOC_MARKOV_CLUSTER:
+        // case VOC_MARKOV_CLUSTER:
     	case VOC_GRADIENT_NU:
         case VOC_VCL_CUTHILL_MCKEE:
         case VOC_VCL_ADVANCED_CUTHILL_MCKEE:
@@ -1058,7 +1058,7 @@ bool method_uses_nested_units(VariableOrderCriteria voc) {
         case VOC_PINV:
         case VOC_PCHAINING:
         case VOC_GRADIENT_P:
-        case VOC_MARKOV_CLUSTER:
+        // case VOC_MARKOV_CLUSTER:
         case VOC_VCL_CUTHILL_MCKEE:
         case VOC_VCL_ADVANCED_CUTHILL_MCKEE:
         case VOC_VCL_GIBBS_POOLE_STOCKMEYER:

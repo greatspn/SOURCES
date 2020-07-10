@@ -552,9 +552,9 @@ bool model_has_nested_units();
 const std::vector<PSemiflow>& convert_nested_units_as_semiflows();
 bool method_uses_nested_units(VariableOrderCriteria voc);
 
-// On-the-fly clustering of places using MCL
-const std::vector<PSemiflow>&
-mcl_cluster_net(size_t timeout = 1000, double inflation = 6.0);
+// // On-the-fly clustering of places using MCL
+// const std::vector<PSemiflow>&
+// mcl_cluster_net(size_t timeout = 1000, double inflation = 6.0);
 
 // Get a measure fo the clustering level obtained by MCL
 // double get_cluster_isolation_coeff(const std::vector<PSemiflow>& mcl_psf);

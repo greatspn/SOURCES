@@ -20,14 +20,14 @@ int g_par_vo_num_parallel_procs = -1;
 
 const size_t MCL_TIMEOUT_SECONDS = 5;
 
-static bool is_clusterable() {   
-    try { // Generate the place clustering using the command line mcl tool
-        return !mcl_cluster_net(MCL_TIMEOUT_SECONDS).empty(); // use a timeout
-    }
-    catch (rgmedd_exception e) { // Timeout or mcl crash
-        return false;
-    }
-}
+// static bool is_clusterable() {   
+//     try { // Generate the place clustering using the command line mcl tool
+//         return !mcl_cluster_net(MCL_TIMEOUT_SECONDS).empty(); // use a timeout
+//     }
+//     catch (rgmedd_exception e) { // Timeout or mcl crash
+//         return false;
+//     }
+// }
 
 //---------------------------------------------------------------------------------------
 
@@ -459,7 +459,7 @@ void metaheuristic(metaheuristic_context_t& mhctx,
         { VOC_VCL_GIBBS_POOLE_STOCKMEYER,  1, 0, (npl<5000) && mhctx.is_multi }, // NEW ENTRY 2020
         { VOC_CUTHILL_MCKEE,               1, 0, (npl<5000) && mhctx.is_multi }, // NEW ENTRY 2020
         { VOC_GRADIENT_NU,                 1, 0, mhctx.has_nu },
-        { VOC_MARKOV_CLUSTER,              0, 0, is_clusterable() },
+        // { VOC_MARKOV_CLUSTER,              0, 0, is_clusterable() },
         { VOC_PCHAINING,                   0, 0, mhctx.has_psf && (npl < 1000) }, // P-INV does not scale well
         { VOC_GRADIENT_P,                  1, 0, mhctx.has_psf },
         { VOC_TOPOLOGICAL,                 1, 0, mhctx.has_scc },
