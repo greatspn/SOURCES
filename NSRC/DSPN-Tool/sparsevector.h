@@ -102,7 +102,7 @@ public:
     typedef typename storage_type::const_iterator const_iterator;
 
     // comparator for  index_value_pair <> index_type
-    struct less_by_index : binary_function <index_value_pair, index_type, bool> {
+    struct less_by_index : std::binary_function <index_value_pair, index_type, bool> {
         inline bool operator()(const index_value_pair &x, const index_type &y) const
         { return x.index < y; }
         inline bool operator()(const index_type &x, const index_value_pair &y) const

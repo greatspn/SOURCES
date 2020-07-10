@@ -13,12 +13,13 @@
             "request": "launch",
             "program": "${workspaceFolder}/bin/RGMEDD5",
             "args": [ 
-                "/home/elvio/MCC/2020/MODELS/Angiogenesis-PT-01/model",
+                "/home/elvio/MCC/2020/MODELS/RobotManipulation-PT-00020/model",
                 // "-sat-impl",
                 // "-sat-impl",
                 // "-old-nsf-gen",
                 // "-h", "100000"
-                "-Cv", "-f", "/home/elvio/MCC/2020/MODELS/Angiogenesis-PT-01/LTLCardinality.formulas"
+                // "-lrs",
+                // "-Cv", "-f", "/home/elvio/MCC/2020/MODELS/Angiogenesis-PT-01/LTLCardinality.formulas"
              ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
