@@ -1667,6 +1667,7 @@ void ComputeMinimalTokensFromFlows(const PN& pn,
             lcm_sf = lcm(lcm_sf, elem.value);
             // }
         }
+        // cout << "LCM: " << lcm_sf << endl;
 
         // Set the minimum token count of m0 that satisies the semiflow.
         for (auto& elem : sf) {
@@ -1711,7 +1712,9 @@ void PrintMinimalTokens(const PN& pn, const std::vector<int>& m0min, VerboseLeve
 
             for (size_t p = 0; p<pn.plcs.size(); p++) {
                 cout << setw(max_plc_len) << pn.plcs[p].name 
-                    << ": " << m0min[p] << endl;
+                     << ": " << left << setw(3) << m0min[p] 
+                     << " (" << pn.plcs[p].getInitTokenCount() << ")"
+                     << endl;
             }
             cout << endl;
         }
