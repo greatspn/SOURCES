@@ -139,6 +139,7 @@ public:
 
     inline sparsevector() : maxIndex(0) {}
     inline sparsevector(size_t mi) : maxIndex(mi) {}
+    inline sparsevector(size_t mi, storage_type&& s) : maxIndex(mi), spvec(s) {}
     inline ~sparsevector() {}
     inline sparsevector(const sparsevector&) = default;
     inline sparsevector(sparsevector&&) = default;

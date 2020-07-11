@@ -9,7 +9,6 @@
                 "${workspaceFolder}/Makefile",
                 "RGMEDD5",
                 "CFLAGS='-O0 -g'",
-                "CXXFLAGS='-O0 -g'",
                 "LDFLAGS='-O0 -g'",
                 "-j10"
             ],

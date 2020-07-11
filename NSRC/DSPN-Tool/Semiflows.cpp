@@ -1695,9 +1695,13 @@ void ComputeMinimalTokensFromFlows(const PN& pn,
         all_m0_Y.insert(m0_Y);
     }
     // renumber the token counts to find the optimal reduced token counts
+    // the optimal reduced token count is the smallest renumbering that preserves 
+    // the partial order between the token counts in each circuit.
     std::map<int, int> reducer;
-    for (auto m0_Y : all_m0_Y)
+    for (auto m0_Y : all_m0_Y) {
         reducer.insert(make_pair(m0_Y, reducer.size() + 1));
+        // cout << "reducer "<<m0_Y<<" -> "<<reducer[m0_Y]<<endl;
+    }
     
     // Assign the reduced token count to each place
     std::fill(m0min.begin(), m0min.end(), -1);
@@ -1708,17 +1712,23 @@ void ComputeMinimalTokensFromFlows(const PN& pn,
                 m0_Y += elem.value * int(pn.plcs[elem.index].getInitTokenCount());
             }
         }
-        m0_Y = reducer[m0_Y];
-        // // get the lcm of the semiflow
-        // int lcm_sf = 1;
-        // for (auto& elem : sf)
-        //     lcm_sf = lcm(lcm_sf, elem.value);
+        int reduced_m0_Y = reducer[m0_Y];
+        // get the lcm of the semiflow
+        int lcm_sf = 1;
+        for (auto& elem : sf)
+            lcm_sf = lcm(lcm_sf, elem.value);
 
-        // Set the minimum token count of m0 that satisies the semiflow.
+        // Set the minimum token count of m0 that satisfies the semiflow.
         for (auto& elem : sf) {
             if (elem.index < pn.plcs.size()) {
-                int tc = m0_Y / elem.value;
+                int mult = lcm_sf / elem.value;
+                // int tc = m0_Y / elem.value;
+                int tc = mult * reduced_m0_Y;
                 int m0 = int(pn.plcs[elem.index].getInitTokenCount());
+                // if (elem.index==0) {
+                //     cout << "P"<<elem.index<<"  m0="<<m0<<" tc="<<tc
+                //          <<"   reduced_m0_Y="<<reduced_m0_Y<<" elem.value="<<elem.value<<endl;
+                // }
                 tc = std::min(tc, m0);
                 if (m0min[elem.index] < 0)
                     m0min[elem.index] = tc;
@@ -1728,7 +1738,7 @@ void ComputeMinimalTokensFromFlows(const PN& pn,
         }
     }
 
-    ///////////
+    /*//////////
     std::vector<std::set<int>> bounds;
     bounds.resize(pn.plcs.size());
 
