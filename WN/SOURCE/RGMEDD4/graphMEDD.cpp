@@ -134,8 +134,7 @@ void handle_sigalarm_try_next_varorder(int) {
 extern ofstream fout;
 int steps = 0, maxsteps = 0;
 
-/*MDD*/
-extern void CTLParser(RSRG *r);
+extern bool do_model_checking(RSRG *r);
 
 // Open a file with the default application/browser
 int open_file(const char * filename) {
@@ -154,11 +153,12 @@ int open_file(const char * filename) {
 #endif
 }
 
+//-----------------------------------------------------------------------------
 
 // Verify that the found value corresponds to the expected value, with a
 // margin of error due to approximations in the MCC format of the expected values
 const char* 
-regression_test_eps(const RSRG& rs, cardinality_t& found, const char* what) {
+regression_test_eps(const RSRG& rs, cardinality_t& found, const char* what, bool *set_failed) {
     std::string key = std::string("StateSpace_") + what;
     auto kv = rs.expected_results.find(key);
     if (kv == rs.expected_results.end()) {
@@ -169,14 +169,19 @@ regression_test_eps(const RSRG& rs, cardinality_t& found, const char* what) {
         cardinality_t diff = expected - found;
         if (std::abs(get_double(diff)) / expected > 0.0001) {
             cerr << "\n\nExpected "<<what<<" was " << expected <<", found "<<found<<endl;
-            throw rgmedd_exception("Regression test failed.");
+            // throw rgmedd_exception("Regression test failed.");
+            *set_failed = true;
+            return "  [[FAILED]]";
         }
         return "  [[OK]]";
     }
     else return "  [[??]]";
 }
+
+//-----------------------------------------------------------------------------
+
 const char*
-regression_test(const RSRG& rs, ssize_t found, const char* what) {
+regression_test(const RSRG& rs, ssize_t found, const char* what, bool *set_failed) {
     std::string key = std::string("StateSpace_") + what;
     auto kv = rs.expected_results.find(key);
     if (kv == rs.expected_results.end()) {
@@ -186,37 +191,16 @@ regression_test(const RSRG& rs, ssize_t found, const char* what) {
         ssize_t expected = boost::get<ssize_t>(kv->second);
         if (expected != found) {
             cerr << "\n\nExpected "<<what<<" was " << expected <<", found "<<found<<endl;
-            throw rgmedd_exception("Regression test failed.");
+            // throw rgmedd_exception("Regression test failed.");
+            *set_failed = true;
+            return "  [[FAILED]]";
         }
         return "  [[OK]]";
     }
     else return "  [[??]]";
 }
 
-
-// // Verify that the found value corresponds to the expected value, with a
-// // margin of error due to approximations in the MCC format of the expected values
-// const char* 
-// regression_test_eps(double expected, cardinality_t& found, const char* what) {
-//     if (expected < 0 && expected != INFINITE_CARD)
-//         return ""; // No value to test
-//     double f = get_double(found);
-//     if (std::abs(expected - f) / expected > 0.0001) {
-//         cerr << "\n\nExpected "<<what<<" was " << expected <<", found "<<found<<endl;
-//         throw rgmedd_exception("Regression test failed.");
-//     }
-//     return "  [[OK]]";
-// }
-// const char*
-// regression_test(ssize_t expected, ssize_t found, const char* what) {
-//     if (expected < 0 && expected != INFINITE_CARD)
-//         return ""; // No value to test
-//     if (expected != found) {
-//         cerr << "\n\nExpected "<<what<<" was " << expected <<", found "<<found<<endl;
-//         throw rgmedd_exception("Regression test failed.");
-//     }
-//     return "  [[OK]]";
-// }
+//-----------------------------------------------------------------------------
 
 template<typename T>
 std::string out_card(T& card) {
@@ -242,10 +226,11 @@ std::string out_card(T& card) {
 /* PARAMETERS : */
 /* RETURN VALUE : */
 /**************************************************************/
-void build_graph(class RSRG &rs) {
+bool build_graph(class RSRG &rs) {
     /* Init build_graph */    
     clock_t timeLRS, timeRS, timeStats, timeCTL, timeFirings;
     clock_t timeNSFAccum = 0, timeStateSpace = 0, timeStatsAccum = 0;
+    bool failed_regression = false;
 
     if (g_max_seconds_statespace) {
         // Start the timer
@@ -406,13 +391,13 @@ void build_graph(class RSRG &rs) {
         cout << endl;
         print_banner(" MEMORY ");
         if (has_LRS && !CTL) {
-            const char* rtest = regression_test_eps(rs, lrs_card, "LRS_STATES");
+            const char* rtest = regression_test_eps(rs, lrs_card, "LRS_STATES", &failed_regression);
             cout << " Cardinality(LRS):        " << left << setw(15) << out_card(lrs_card) << rtest << endl;
             cout << " LRS nodes:               " << rs.getLRS().getNodeCount() << endl;
             cout << " LRS edges:               " << rs.getLRS().getEdgeCount() << endl;
         }
         if (has_RS && !CTL) {
-            const char* rtest = regression_test_eps(rs, rs_card, "STATES");
+            const char* rtest = regression_test_eps(rs, rs_card, "STATES", &failed_regression);
             cout << " Cardinality(RS):         " << left << setw(15) << out_card(rs_card) << rtest << endl;
         }
     }
@@ -522,12 +507,12 @@ void build_graph(class RSRG &rs) {
         if (!CTL) {
             if (rg_edges != UNKNOWN_CARD) {
                 cout << " # fired transitions:     " << left << setw(15) << out_card(rg_edges)
-                     << regression_test_eps(rs, rg_edges, "TRANSITIONS") << endl;
+                     << regression_test_eps(rs, rg_edges, "TRANSITIONS", &failed_regression) << endl;
             }
             const char *rtest_max_place_bound = "", *rtest_token_sum_bound = "";
             if (has_RS) {
-                rtest_max_place_bound = regression_test(rs, max_count_pl_levels, "MAX_TOKEN_IN_PLACE");
-                rtest_token_sum_bound = regression_test(rs, token_sum_bound, "MAX_TOKEN_PER_MARKING");
+                rtest_max_place_bound = regression_test(rs, max_count_pl_levels, "MAX_TOKEN_IN_PLACE", &failed_regression);
+                rtest_token_sum_bound = regression_test(rs, token_sum_bound, "MAX_TOKEN_PER_MARKING", &failed_regression);
                 cout << " Max tokens x marking:    " << left << setw(15) << out_card(token_sum_bound) 
                      << rtest_token_sum_bound << endl;
                 cout << " Max tokens in place:     " << left << setw(15) << out_card(max_place_bound)
@@ -612,7 +597,8 @@ void build_graph(class RSRG &rs) {
                 print_banner(" CTL EVALUATION ");
             }
             timeCTL = clock();
-            CTLParser(&rs);
+            if (do_model_checking(&rs))
+                failed_regression = true;
             timeCTL = clock() - timeCTL;
             if (print_stat_for_gui()) {
                 const double CLKDIV = double(CLOCKS_PER_SEC);
@@ -699,7 +685,7 @@ void build_graph(class RSRG &rs) {
         print_banner("");
     }
 
-
+    return failed_regression;
 }/* End build_graph */
 
 

@@ -1656,23 +1656,68 @@ void ComputeMinimalTokensFromFlows(const PN& pn,
     // assert(semiflows.mat_kind == FlowMatrixKind::SEMIFLOWS);
     assert(semiflows.inv_kind == InvariantKind::PLACE);
     m0min.resize(pn.plcs.size());
-    std::fill(m0min.begin(), m0min.end(), -1);
 
+    // std::fill(m0min.begin(), m0min.end(), -1);
+    // for (const auto& sf : semiflows) {
+    //     // get the lcm of the semiflow
+    //     int lcm_sf = 1;
+    //     for (auto& elem : sf) {
+    //         // if (elem.index < pn.plcs.size()) {
+    //         // cout << "    " << lcm_sf << " " << elem.value << endl;
+    //         lcm_sf = lcm(lcm_sf, elem.value);
+    //         // }
+    //     }
+    //     // cout << "LCM: " << lcm_sf << endl;
+
+    //     // Set the minimum token count of m0 that satisies the semiflow.
+    //     for (auto& elem : sf) {
+    //         if (elem.index < pn.plcs.size()) {
+    //             int tc = lcm_sf / elem.value;
+    //             int m0 = int(pn.plcs[elem.index].getInitTokenCount());
+    //             tc = std::min(tc, m0);
+    //             if (m0min[elem.index] < 0)
+    //                 m0min[elem.index] = tc;
+    //             else
+    //                 m0min[elem.index] = std::min(m0min[elem.index], tc);
+    //         }
+    //     }
+    // }
+
+    // Extract all the m0*Y of all semiflows in the net
+    std::set<int> all_m0_Y;
     for (const auto& sf : semiflows) {
-        // get the lcm of the semiflow
-        int lcm_sf = 1;
+        int m0_Y = 0;
         for (auto& elem : sf) {
-            // if (elem.index < pn.plcs.size()) {
-            // cout << "    " << lcm_sf << " " << elem.value << endl;
-            lcm_sf = lcm(lcm_sf, elem.value);
-            // }
+            if (elem.index < pn.plcs.size()) { // not a support variable
+                m0_Y += elem.value * int(pn.plcs[elem.index].getInitTokenCount());
+            }
         }
-        // cout << "LCM: " << lcm_sf << endl;
+        all_m0_Y.insert(m0_Y);
+    }
+    // renumber the token counts to find the optimal reduced token counts
+    std::map<int, int> reducer;
+    for (auto m0_Y : all_m0_Y)
+        reducer.insert(make_pair(m0_Y, reducer.size() + 1));
+    
+    // Assign the reduced token count to each place
+    std::fill(m0min.begin(), m0min.end(), -1);
+    for (const auto& sf : semiflows) {
+        int m0_Y = 0;
+        for (auto& elem : sf) {
+            if (elem.index < pn.plcs.size()) { // not a support variable
+                m0_Y += elem.value * int(pn.plcs[elem.index].getInitTokenCount());
+            }
+        }
+        m0_Y = reducer[m0_Y];
+        // // get the lcm of the semiflow
+        // int lcm_sf = 1;
+        // for (auto& elem : sf)
+        //     lcm_sf = lcm(lcm_sf, elem.value);
 
         // Set the minimum token count of m0 that satisies the semiflow.
         for (auto& elem : sf) {
             if (elem.index < pn.plcs.size()) {
-                int tc = lcm_sf / elem.value;
+                int tc = m0_Y / elem.value;
                 int m0 = int(pn.plcs[elem.index].getInitTokenCount());
                 tc = std::min(tc, m0);
                 if (m0min[elem.index] < 0)
@@ -1682,6 +1727,54 @@ void ComputeMinimalTokensFromFlows(const PN& pn,
             }
         }
     }
+
+    ///////////
+    std::vector<std::set<int>> bounds;
+    bounds.resize(pn.plcs.size());
+
+    for (const auto& sf : semiflows) {
+        // get the lcm of the semiflow
+        int lcm_sf = 1;
+        for (auto& elem : sf)
+            lcm_sf = lcm(lcm_sf, elem.value);
+
+        // Get the amount of tokens circulating in semiflow @sf
+        int tokenCnt = 0;
+        for (auto& elem : sf) {
+            if (elem.index < pn.plcs.size()) { // not a support variable
+                tokenCnt += elem.value * int(pn.plcs[elem.index].getInitTokenCount());
+            }
+        }
+        cout << "lcm_sf="<<lcm_sf<<" tokenCnt="<<tokenCnt<<endl;
+
+        int kk = -1;
+        // Set upper bounds for all the places in semiflow @sf
+        for (auto& elem : sf) {
+            if (elem.index < pn.plcs.size()) {// not a support variable
+                kk = tokenCnt / elem.value;
+                bounds[elem.index].insert(kk);// = std::min(bounds[elem.index].upper, kk);
+            }
+        }
+        // Set lower bounds for all the places in @sf
+        // if (sf.nonzeros() == 1 && kk > bounds[sf.front_nonzero().index].lower)
+        //     bounds[sf.front_nonzero().index].lower = kk;
+    }
+
+    cout << "MINIMAL M0:" << endl;
+    size_t max_plc_len = 0;
+    for (auto& plc : pn.plcs)
+        max_plc_len = std::max(max_plc_len, plc.name.size());
+
+    for (size_t p = 0; p<pn.plcs.size(); p++) {
+        cout << right << setw(max_plc_len) << pn.plcs[p].name 
+                << ": " << left << setw(3) << m0min[p] 
+                << " (" << pn.plcs[p].getInitTokenCount() << ")   ";
+
+        for (auto k : bounds[p])
+            cout << k <<  " ";
+        cout << endl;
+    }
+    cout << endl;//*/
 }
 
 //-----------------------------------------------------------------------------
@@ -1711,7 +1804,7 @@ void PrintMinimalTokens(const PN& pn, const std::vector<int>& m0min, VerboseLeve
                 max_plc_len = std::max(max_plc_len, plc.name.size());
 
             for (size_t p = 0; p<pn.plcs.size(); p++) {
-                cout << setw(max_plc_len) << pn.plcs[p].name 
+                cout << right << setw(max_plc_len) << pn.plcs[p].name 
                      << ": " << left << setw(3) << m0min[p] 
                      << " (" << pn.plcs[p].getInitTokenCount() << ")"
                      << endl;

@@ -168,7 +168,7 @@ extern "C" {
 
 void print_banner(const char* title);
 /*MDD*/
-extern void build_graph(RSRG &);
+extern bool build_graph(RSRG &);
 
 bool print_CTL_counterexamples = false;
 bool sort_CTL_queries = false;
@@ -2925,60 +2925,49 @@ int main(int argc, char **argv) {
             return 0;
         }
     }
-    /*MDD*/
-    if (AUTOMA) {
-//         //RSxAUTOMA
-//         RSRGAuto rs(npl, std::string(argv[1]));
-// #ifdef REACHABILITY
-//         try {
-//             build_graphAutoma(rs);                                 OPERAZIONI 
-//         }
-//         catch (rgmedd_exception obj) {
-//             cerr << obj.get() << endl << endl;
-//             exit(EXIT_FAILURE);
-//         }
-// #endif
-    }//RSxAUTOMA
-    else {
-// #ifdef REACHABILITY
-        RSRG rs;
-        try {
-            rs.setFastNSFGen(fast_NSF_gen);
-            rs.printGuessedBounds(print_guessed_bounds);
-            rs.initialize(initRsMethod, initLrsMethod, g_var_order_sel, 
-                          meddly_cache_size, bound_policy);
-            if (ctl_name > 0)
-                rs.setPropName(std::string(argv[ctl_name]));
 
-            load_expected_results(rs);
-            save_variable_order(rs);
-            build_graph(rs);
-        }
-        catch (std::exception& obj) {
-            cerr << "ERROR: " << obj.what() << endl << endl;
-            if (running_for_MCC() && !is_child_subprocess() && !CTL)
-                cout << "CANNOT_COMPUTE" << endl;
-            exit(EXIT_FAILURE_RGMEDD);
-        }
-        catch (MEDDLY::error& obj) {
-            cerr << "MEDDLY ERROR: " << obj.getName() << endl << endl;
-            if (running_for_MCC() && !is_child_subprocess() && !CTL)
-                cout << "CANNOT_COMPUTE" << endl;
-            exit(EXIT_FAILURE_MEDDLY);
-        }
-        catch (...) {
-            cerr << "INTERNAL ERROR." << endl << endl;
-            if (running_for_MCC() && !is_child_subprocess() && !CTL)
-                cout << "CANNOT_COMPUTE" << endl;
-            exit(EXIT_FAILURE_GENERIC);            
-        }
+    bool failed_regressions = false;
+    RSRG rs;
+    try {
+        rs.setFastNSFGen(fast_NSF_gen);
+        rs.printGuessedBounds(print_guessed_bounds);
+        rs.initialize(initRsMethod, initLrsMethod, g_var_order_sel, 
+                        meddly_cache_size, bound_policy);
+        if (ctl_name > 0)
+            rs.setPropName(std::string(argv[ctl_name]));
+
+        load_expected_results(rs);
+        save_variable_order(rs);
+        failed_regressions = build_graph(rs);
+    }
+    catch (std::exception& obj) {
+        cerr << "ERROR: " << obj.what() << endl << endl;
+        if (running_for_MCC() && !is_child_subprocess() && !CTL)
+            cout << "CANNOT_COMPUTE" << endl;
+        exit(EXIT_FAILURE_RGMEDD);
+    }
+    catch (MEDDLY::error& obj) {
+        cerr << "MEDDLY ERROR: " << obj.getName() << endl << endl;
+        if (running_for_MCC() && !is_child_subprocess() && !CTL)
+            cout << "CANNOT_COMPUTE" << endl;
+        exit(EXIT_FAILURE_MEDDLY);
+    }
+    catch (...) {
+        cerr << "INTERNAL ERROR." << endl << endl;
+        if (running_for_MCC() && !is_child_subprocess() && !CTL)
+            cout << "CANNOT_COMPUTE" << endl;
+        exit(EXIT_FAILURE_GENERIC);            
+    }
 #if DEBUG
         rs.statistic();
 #endif
-// #endif
-    }
     finalize();
-    return 0;
+
+    if (failed_regressions) {
+        cout << "Some regression test failed." << endl;
+        return EXIT_FAILURE_REGRESSION;
+    }
+    return EXIT_SUCCESS;
 }
 
 

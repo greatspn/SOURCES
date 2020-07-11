@@ -79,13 +79,14 @@ extern "C" {
 #include "WN/INCLUDE/macros.h"
 }
 
-#define EXIT_FAILURE_MEDDLY    80
-#define EXIT_FAILURE_RGMEDD    81
-#define EXIT_FAILURE_GENERIC   81
-#define EXIT_FAILURE_GMP       82
-#define EXIT_FAILURE_SIGABRT   83
-#define EXIT_TIMEOUT_VARORDER  84
-#define EXIT_TIMEOUT_MC_QUERY  85
+#define EXIT_FAILURE_MEDDLY        80
+#define EXIT_FAILURE_RGMEDD        81
+#define EXIT_FAILURE_GENERIC       81
+#define EXIT_FAILURE_GMP           82
+#define EXIT_FAILURE_SIGABRT       83
+#define EXIT_TIMEOUT_VARORDER      84
+#define EXIT_TIMEOUT_MC_QUERY      85
+#define EXIT_FAILURE_REGRESSION    86
 
 
 // #ifndef __PRS_H__

@@ -202,7 +202,7 @@ unsigned int num_path_ops(const std::string prop)
 
 //-----------------------------------------------------------------------------
 
-void model_check_query(Context& ctx, const ctl_query_t& query, int sem_id) 
+void model_check_query(Context& ctx, const ctl_query_t& query, int sem_id, bool *set_regr_failed) 
 {
     // Modify the evaluation context for the current query
     ctx.stutter_EG = query.lang!=Language::CTL;
@@ -278,6 +278,7 @@ void model_check_query(Context& ctx, const ctl_query_t& query, int sem_id)
             else {
                 regression_res = "  [[FAILED]]";
                 failed_regression = true;
+                *set_regr_failed = true;
             }
         }
 
@@ -381,7 +382,7 @@ void model_check_query(Context& ctx, const ctl_query_t& query, int sem_id)
             else
                 cerr << "Expected CTL value";
             cerr << " is " << *query.expected << ", found "<<result<<endl;
-            throw rgmedd_exception("Regression test failed.");
+            // throw rgmedd_exception("Regression test failed.");
         }
 
         if (invoked_from_gui()) {
@@ -460,7 +461,7 @@ Language language_from_string(const char* str) {
 //-----------------------------------------------------------------------------
 
 // Parse input ctl queries read from file. Print the formula result on screen.
-void CTLParser(RSRG *r) {
+bool do_model_checking(RSRG *r) {
     rsrg = r;
     std::string filename = rsrg->getPropName();
     ifstream in;
@@ -587,6 +588,7 @@ void CTLParser(RSRG *r) {
 
     // Query evaluation
     int sem_id = -1;
+    bool failed_regressions = false;
     if (!is_mc_parallel()) {
         //=================================
         // Sequential query evaluation
@@ -594,7 +596,7 @@ void CTLParser(RSRG *r) {
         for (size_t step=0; step<2; step++) { // step 0=fairness constraints, step 1=queries
             for(const ctl_query_t& q: queries) {
                 if (q.is_fairness_constraint == (step==0))
-                    model_check_query(ctx, q, sem_id);
+                    model_check_query(ctx, q, sem_id, &failed_regressions);
             } 
         }
         if (!running_for_MCC()) {
@@ -621,8 +623,8 @@ void CTLParser(RSRG *r) {
             if (g_par_mc_max_MB_statespace > 0)
                 constraint_address_space(g_par_mc_max_MB_statespace);
 
-            model_check_query(ctx, queries[qid], sem_id);
-            exit(EXIT_SUCCESS);
+            model_check_query(ctx, queries[qid], sem_id, &failed_regressions);
+            exit(failed_regressions ? EXIT_FAILURE_REGRESSION : EXIT_SUCCESS);
         }
         // cout << "\n\nPHASE 2\n\n" << endl;
 
@@ -636,6 +638,8 @@ void CTLParser(RSRG *r) {
                 cout << "FORMULA " << queries[i].name 
                      << " CANNOT_COMPUTE " << endl;
             }
+            if (WEXITSTATUS(exitcodes[i]) == EXIT_FAILURE_REGRESSION )
+                failed_regressions = true;
         }
 
         if (n_timedout > 0) {
@@ -651,8 +655,8 @@ void CTLParser(RSRG *r) {
                 if (g_par_mc_max_MB_statespace > 0)
                     constraint_address_space(g_par_mc_max_MB_statespace);
 
-                model_check_query(ctx, queries[qid], sem_id);
-                exit(EXIT_SUCCESS);
+                model_check_query(ctx, queries[qid], sem_id, &failed_regressions);
+                exit(failed_regressions ? EXIT_FAILURE_REGRESSION : EXIT_SUCCESS);
             }
 
             // PHASE 3: notify unevaluated queries
@@ -664,7 +668,9 @@ void CTLParser(RSRG *r) {
                         cout << "FORMULA " << queries[i].name 
                              << " CANNOT_COMPUTE " << endl;
                 }
-            }
+                if (WEXITSTATUS(exitcodes_ph2[i]) == EXIT_FAILURE_REGRESSION)
+                    failed_regressions = true;
+             }
         }
 
         semaphore_close(sem_id);
@@ -673,6 +679,7 @@ void CTLParser(RSRG *r) {
     // if (fout)
     //     fout.close();
     cout << "Ok." << endl;
+    return failed_regressions;
 }
 
 //-----------------------------------------------------------------------------
