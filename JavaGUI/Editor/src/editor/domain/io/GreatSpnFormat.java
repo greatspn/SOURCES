@@ -600,6 +600,7 @@ public class GreatSpnFormat {
                         }
                     }
                     else {
+                        System.out.println(plc.getUniqueName()+" "+plc.getInitMarkingEditable().getValue());
                         initMarkExpr = intOrMpar(plc.getInitMarkingEditable().getValue().toString(),
                                                  "initial marking", gspn, log);
                     }
@@ -1051,7 +1052,8 @@ public class GreatSpnFormat {
                 name = name.substring(0, pos);
             }
             name = sanitizeName(name);
-            int initMark = net.nextInt();
+            String initMarkStr = net.next();
+            int initMark = Integer.parseInt(ensureInt(initMarkStr, "Initial Marking cannot be parsed as INT.", log));
             Point2D pos = readPos(net);
             Point2D label = readPos(net);
             skip_layers(net);

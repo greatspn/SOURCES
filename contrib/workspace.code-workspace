@@ -81,7 +81,8 @@
 			"typeindex": "cpp",
 			"typeinfo": "cpp",
 			"*.ipp": "cpp",
-			"cassert": "cpp"
+			"cassert": "cpp",
+			"*.mddrg": "cpp"
 		}
 	},
 	// "C_Cpp.default.includePath": [
