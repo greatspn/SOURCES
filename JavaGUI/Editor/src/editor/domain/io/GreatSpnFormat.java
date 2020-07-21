@@ -600,7 +600,6 @@ public class GreatSpnFormat {
                         }
                     }
                     else {
-                        System.out.println(plc.getUniqueName()+" "+plc.getInitMarkingEditable().getValue());
                         initMarkExpr = intOrMpar(plc.getInitMarkingEditable().getValue().toString(),
                                                  "initial marking", gspn, log);
                     }

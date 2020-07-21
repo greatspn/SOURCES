@@ -865,17 +865,17 @@ void determine_var_order(const var_order_selector& sel,
 
 
 
-        metric_t all_metrics[NUM_METRICS];
-        metric_t *ptrs[NUM_METRICS];
-        for (int m=0; m<NUM_METRICS; m++)
-            ptrs[m] = &all_metrics[m];
+        // metric_t all_metrics[NUM_METRICS];
+        // metric_t *ptrs[NUM_METRICS];
+        // for (int m=0; m<NUM_METRICS; m++)
+        //     ptrs[m] = &all_metrics[m];
 
-        metric_compute(net_to_mddLevel, trns_set, &fbm, ptrs);
-        for (int m=0; m<NUM_METRICS; m++) {
-            const char* name = metric_name(VariableOrderMetric(m));
-            cout << "  metric[" << name << "]: " << setw(13 - strlen(name)) << " ";
-            cout << all_metrics[m] << endl;
-        }
+        // metric_compute(net_to_mddLevel, trns_set, &fbm, ptrs);
+        // for (int m=0; m<NUM_METRICS; m++) {
+        //     const char* name = metric_name(VariableOrderMetric(m));
+        //     cout << "  metric[" << name << "]: " << setw(13 - strlen(name)) << " ";
+        //     cout << all_metrics[m] << endl;
+        // }
 
 
 
