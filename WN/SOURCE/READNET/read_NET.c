@@ -841,8 +841,10 @@ void read_NET_file(int read_postproc) {
 
 #ifdef SWN
         occ = (struct FUNBUF **)ecalloc(el[4], sizeof(struct FUNBUF *));
-        for (item = 0; item < el[4]; item++)
+        for (item = 0; item < el[4]; item++) {
             occ[item] = (struct FUNBUF *)ecalloc(MAX_DOMAIN, sizeof(struct FUNBUF));
+            occ[item]->p_fun_name = "";
+        }
 #endif
 
         init_transitions(el[4]);

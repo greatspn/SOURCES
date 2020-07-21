@@ -393,7 +393,7 @@ int cl_name;
     tr = (parse_DEF == MDRATE) ? nmd : ntr;
     for (index = 0; index < comp_check; index++) {
         if (occ[tr][index].cclass == cl_name)
-            if (strcmp(occ[tr][index].fun_name, fun_name) == 0)
+            if (strcmp(occ[tr][index].p_fun_name, fun_name) == 0)
                 return (TRUE);
     }
     return (FALSE);
@@ -417,18 +417,18 @@ int cl_name;
     tr = (parse_DEF == MDRATE) ? nmd : ntr;
 
     for (index = 0; index < comp_check; index++) {
-        if ((occ[tr][index].cclass != cl_name) && (strcmp(occ[tr][index].fun_name, fun_name) == 0)) {
+        if ((occ[tr][index].cclass != cl_name) && (strcmp(occ[tr][index].p_fun_name, fun_name) == 0)) {
             if (strcmp(fun_name, "?") != 0) {
                 proj = ERROR_SHARED_NAME;
                 break;
             }
         }
-        else if ((occ[tr][index].cclass == cl_name) && (strcmp(occ[tr][index].fun_name, fun_name) == 0)) {
+        else if ((occ[tr][index].cclass == cl_name) && (strcmp(occ[tr][index].p_fun_name, fun_name) == 0)) {
             proj = occ[tr][index].occ_num;
             break;
         }
-        else if ((occ[tr][index].cclass == cl_name) && (strcmp(occ[tr][index].fun_name, fun_name) != 0)) {
-            if (strcmp(fun_name, "?") != 0 && strcmp(occ[tr][index].fun_name, "?") == 0) {
+        else if ((occ[tr][index].cclass == cl_name) && (strcmp(occ[tr][index].p_fun_name, fun_name) != 0)) {
+            if (strcmp(fun_name, "?") != 0 && strcmp(occ[tr][index].p_fun_name, "?") == 0) {
                 proj = ERROR_AMBIGUITY_IN_ARC;
                 break;
             }
@@ -439,7 +439,8 @@ int cl_name;
         if (comp_check == MAX_DOMAIN)
             out_error(ERROR_LOW_MAX_DOMAIN, 0, ntr, 0, 0, NULL, NULL);
         occ[tr][comp_check].cclass = cl_name;
-        strcpy(occ[tr][comp_check].fun_name, fun_name);
+        // strcpy(occ[tr][comp_check].fun_name, fun_name);
+        occ[tr][comp_check].p_fun_name = strdup(fun_name);
         occ[tr][comp_check].occ_num = max_occ + 1;
         proj = max_occ + 1;
         comp_check++;
