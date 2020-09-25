@@ -1438,8 +1438,12 @@ load_Psemiflows() {
         if (pif) {
             int num_pinv;
             pif >> num_pinv;
-            if (!pif || num_pinv < 0)
-        		throw rgmedd_exception("Bad P-invariants file. [1]");
+            if (!pif || num_pinv < 0) {
+                if (num_pinv == -1)
+                    num_pinv = 0; // P-semiflows were not computed (exponential growth), cannot load
+                else
+        		    throw rgmedd_exception("Bad P-invariants file. [1]");
+            }
             net_psf.resize(num_pinv);
             for (int i = 0; i < num_pinv; i++) {
                 int len;
