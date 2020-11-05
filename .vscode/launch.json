@@ -13,8 +13,9 @@
             "request": "launch",
             "program": "${workspaceFolder}/bin/RGMEDD5",
             "args": [ 
-                "/home/elvio/MCC/2020/MODELS/NeoElection-PT-3/model",
-                "-ACM", "-refine-psf", "-metrics", "-no-rs"
+                "~/nets/ATPN2020", "-NR", "-C", "-f", "/home/elvio/ownCloud/ICATPN2020/NuovoEsempioJournal/query.ctl"
+                // "/home/elvio/MCC/2020/MODELS/NeoElection-PT-3/model",
+                // "-ACM", "-refine-psf", "-metrics", "-no-rs"
                 // "-sat-impl",
                 // "-sat-impl",
                 // "-old-nsf-gen",

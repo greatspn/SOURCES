@@ -925,7 +925,8 @@ public:
                          RSRG *_rs,                 // RGMEDD object
                          int _trn,                  // GreatSPN transition index
                          const var_ioh_t *_ioh)     // Encoded IOH
-    : relation_node(signature, level + 1 /* meddly levels are 1-based */, down), rs(_rs), trn(_trn), ioh(_ioh)
+    : relation_node(signature, _rs->getForestMxD(), level + 1 /* meddly levels are 1-based */, down, 0, 0, 0), 
+      rs(_rs), trn(_trn), ioh(_ioh)
     { assert(level == ioh->level); }
 
     // If the variable at this level has value i, what should the new value be?
