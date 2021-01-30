@@ -85,8 +85,9 @@ ifeq ($(UNAME_S),Darwin)
    CPP := g++ -g -c -std=c++17 -Wno-unused-local-typedef -Wno-deprecated-register
    LD := gcc -g 
    LDPP := g++ -g 
-   CFLAGS += -I/usr/include/malloc -I/usr/local/include/
-   LDFLAGS += -L/usr/local/lib/
+   CFLAGS += -I/usr/include/malloc -I/usr/local/include/ -I/opt/homebrew/include
+   CPPFLAGS += -I/usr/include/malloc -I/usr/local/include/ -I/opt/homebrew/include
+   LDFLAGS += -L/usr/local/lib/ -L/opt/homebrew/lib
    ENABLE_Cxx17 := -std=c++17 -stdlib=libc++ -U__STRICT_ANSI__
    LAUNCH4J := java -jar JavaGUI/launch4j-macosx/launch4j.jar
 
@@ -165,24 +166,28 @@ $(call warn_missing,GRAPHMDP_LIB,GraphMDP library)
 $(call search_lib,LIBXMLPP2-6_LIB,/usr/local/lib/libxml++-2.6)
 $(call search_lib,LIBXMLPP2-6_LIB,/usr/lib/libxml++-2.6)
 $(call search_lib,LIBXMLPP2-6_LIB,/usr/lib64/libxml++-2.6)
+$(call search_lib,LIBXMLPP2-6_LIB,/opt/homebrew/lib/libxml++-2.6)
 $(call warn_missing,LIBXMLPP2-6_LIB,libXML++-2.6 library)
 
 
 $(call search_lib,GLIBMM2-4_LIB,/usr/local/lib/libglibmm-2.4.*)
 $(call search_lib,GLIBMM2-4_LIB,/usr/lib/libglibmm-2.4.*)
 $(call search_lib,GLIBMM2-4_LIB,/usr/lib64/libglibmm-2.4.*)
+$(call search_lib,GLIBMM2-4_LIB,/opt/homebrew/lib/libglibmm-2.4.*)
 $(call warn_missing,GLIBMM2-4_LIB,glibmm-2.4 library)
 
 
 $(call search_lib,GLPK_LIB,/usr/local/lib/libglpk.*,-lglpk)
 $(call search_lib,GLPK_LIB,/usr/lib/libglpk.*,-lglpk)
 $(call search_lib,GLPK_LIB,/usr/lib64/libglpk.*,-lglpk)
+$(call search_lib,GLPK_LIB,/opt/homebrew/lib/libglpk.*,-lglpk)
 $(call warn_missing,GLPK_LIB,GLPK library)
 
 
 $(call search_lib,LP_SOLVE_LIB,/usr/local/lib/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
 $(call search_lib,LP_SOLVE_LIB,/usr/lib/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
 $(call search_lib,LP_SOLVE_LIB,/usr/lib64/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
+$(call search_lib,LP_SOLVE_LIB,/opt/homebrew/lib/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
 $(call warn_missing,LP_SOLVE_LIB,lp_solve55 library)
 ifdef HAS_LP_SOLVE_LIB
 	INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I/usr/local/include/lpsolve/ -I/usr/include/lpsolve/
@@ -192,6 +197,7 @@ endif
 $(call search_lib,GMP_LIB,/usr/local/lib/libgmpxx.*,-lgmpxx -lgmp)
 $(call search_lib,GMP_LIB,/usr/lib/libgmpxx.*,-lgmpxx -lgmp)
 $(call search_lib,GMP_LIB,/usr/lib64/libgmpxx.*,-lgmpxx -lgmp)
+$(call search_lib,GMP_LIB,/opt/homebrew/lib/libgmpxx.*,-lgmpxx -lgmp)
 $(call warn_missing,GMP_LIB,GMP library)
 ifdef HAS_GMP_LIB
 	INCLUDE_GMP_LIB := -DHAS_GMP_LIB=1
@@ -206,21 +212,24 @@ $(call search_file,APACHE_ANT,$(shell which ant))
 $(call warn_missing,APACHE_ANT,Apache ANT)
 
 
-$(call search_lib,BOOST_CXX_LIB,/usr/local/lib/libboost_context.*)
-$(call search_lib,BOOST_CXX_LIB,/usr/lib/libboost_context.*)
-$(call search_lib,BOOST_CXX_LIB,/usr/lib64/libboost_context.*)
+$(call search_lib,BOOST_CXX_LIB,/usr/local/lib/libboost_context*)
+$(call search_lib,BOOST_CXX_LIB,/usr/lib/libboost_context*)
+$(call search_lib,BOOST_CXX_LIB,/usr/lib64/libboost_context*)
+$(call search_lib,BOOST_CXX_LIB,/opt/homebrew/lib/libboost_context*)
 $(call warn_missing,BOOST_CXX_LIB,Boost C++ library)
 
 
 $(call search_lib,SPOT_LIB,/usr/local/lib/libspot.*)
 $(call search_lib,SPOT_LIB,/usr/lib/libspot.*)
 $(call search_lib,SPOT_LIB,/usr/lib64/libspot.*)
+$(call search_lib,SPOT_LIB,/opt/homebrew/lib/libspot.*)
 $(call warn_missing,SPOT_LIB,Spot library(spot.lrde.epita.fr/))
 
 
 $(call search_lib,MEDDLY_LIB,/usr/local/lib/libmeddly.*)
 $(call search_lib,MEDDLY_LIB,/usr/lib/libmeddly.*)
 $(call search_lib,MEDDLY_LIB,/usr/lib64/libmeddly.*)
+$(call search_lib,MEDDLY_LIB,/opt/homebrew/lib/libmeddly.*)
 $(call warn_missing,MEDDLY_LIB,Meddly library(github.com/asminer/meddly))
 
 
@@ -2024,7 +2033,7 @@ NSRC/DSPN-Tool/lexer.ll: $(OBJDIR)/DSPN-Tool/NSRC/DSPN-Tool/newparser.lyy.o bin/
 DSPN-Tool_CPPFLAGS := -O2 -Wall $(ENABLE_Cxx17) \
                       -Iobjects/DSPN-Tool/NSRC/DSPN-Tool/ \
                       -Wno-unused-function \
-                      -DNDEBUG=1 
+                      -DNDEBUG=1 $(CPPFLAGS)
 DSPN-Tool_LD := $(LDPP)
 DSPN-Tool_LEXPP := $(LEX)
 
@@ -2044,7 +2053,7 @@ DSPN-Tool-Debug_CPPFLAGS := -Wall $(ENABLE_Cxx17) \
                       		-Iobjects/DSPN-Tool-Debug/NSRC/DSPN-Tool/ \
                       		-g -Wall -Wextra -Wno-unused-parameter \
                       		-Wno-unused-function \
-                       		-DUSE_PRIVATE_TYPES=1 -D_GLIBCXX_DEBUG=1
+                       		-DUSE_PRIVATE_TYPES=1 -D_GLIBCXX_DEBUG=1 $(CPPFLAGS)
 DSPN-Tool-Debug_LD := $(DSPN-Tool_LD) -g
 DSPN-Tool-Debug_LEXPP := $(LEX)
 
