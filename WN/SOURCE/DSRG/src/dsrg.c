@@ -5,6 +5,7 @@ extern int finalize();
 extern void dsrg_graph();
 extern void mc_dsrg_graph();
 extern void reach_dsrg_graph();
+extern void mc_dsrg_partial_graph(int comp);
 
 void dsrg_usage(void) {
 

@@ -39,6 +39,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <signal.h>
+#include <sys/ioctl.h>
 
 #include "engine_control.h"
 #include "engine_pn.h"

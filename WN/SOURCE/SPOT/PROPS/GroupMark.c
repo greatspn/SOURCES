@@ -14,6 +14,8 @@ extern int GET_NB_SOLUTIONS_SYS_EQUA();
 extern int get_max_cardinality();
 extern int GetStaticInd();
 extern void TreatOrdredClasses();
+extern int GetIndObj(char *id, char *** MTCL, int *Cl);
+
 #ifdef LIBMCDSRG
 extern double probability();
 #endif

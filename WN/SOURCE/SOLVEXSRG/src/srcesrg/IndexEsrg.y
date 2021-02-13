@@ -9,6 +9,7 @@
 #include "var_ext.h"
 #include "SVAR_EXTSPOT.h"
 #include "macros.h"
+#include "../../../../INCLUDE/ealloc.h"
 
 /***************** Variables *******************/
 

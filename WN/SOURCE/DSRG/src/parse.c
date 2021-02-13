@@ -18,6 +18,19 @@ extern TO_MERGEP           *MERG_ALL;
 extern STORE_STATICS_ARRAY  Sym_StaticConf;
 extern char   *strtok();
 extern double probs_for_a_node(pDtmcN nd, pDtmcA *p, int nb);
+extern void local_free_temp_ord(Tree_Esrg_p  sr_ordinary, int sr_size_ordinary);
+extern int get_index_from_group(pDtmcN nd, int gr);
+extern void create_canonical_data_structure();
+extern void get_canonical_marking();
+extern TO_MERGEP   *TO_MERGE();
+extern void   GROUPING_ALL_STATICS();
+extern STORE_STATICS_ARRAY CREATE_STORE_STATIC_STRUCTURE();
+extern void   NEW_SIM_STATIC_CONF();
+extern void       FREE_ALL_LMS_ELEMS();
+extern void compose_name(char  *name,  const char  *path,  const char  *postfix);
+extern unsigned long load_event(FILE *fd, int pos, unsigned long fpos, unsigned long *sr, 
+                    unsigned long *llength, unsigned long *ld_ptr, TYPE_P *** PM, TYPE_P   *NB_PM);
+extern char * load_symbolic_marking(FILE *STD, FILE *fsr, FILE *fev, pDtmcN nd);
 
 // adding a new event.
 pDtmcA

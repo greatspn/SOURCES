@@ -8,6 +8,8 @@
 #include "global.h"
 #include "layer.h"
 
+extern int TestLayer(int , LayerPun);
+
 //#define DEBUG
 
 /*********************** local variables **************************************/

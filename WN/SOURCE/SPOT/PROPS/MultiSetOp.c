@@ -14,6 +14,7 @@ extern void SymRepOfToken();
 extern int TestSymRepWtToken();
 extern void DynDistOfObjects();
 extern int get_static_subclass();
+extern int INCLUDE(TYPE_P CONJ1, TYPE_P CONJ2);
 
 void Free(CToken_p tk) {
     free(tk->tok_dom.Domain);

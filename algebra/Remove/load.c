@@ -13,6 +13,8 @@
 
 #include "global.h"
 
+#include "../../WN/SOURCE/UNFOLDING/layer.h"
+
 struct net_object merge_net;
 struct net_object *merge_netobj = &merge_net;
 int merging;

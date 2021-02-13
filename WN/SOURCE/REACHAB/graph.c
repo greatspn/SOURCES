@@ -22,6 +22,7 @@ extern  void store_compact();
 extern  void load_compact();
 extern  void store_double();
 extern  void load_double();
+extern void reset_to_M0();
 
 extern void initialize_en_list();
 extern void update_en_list();
