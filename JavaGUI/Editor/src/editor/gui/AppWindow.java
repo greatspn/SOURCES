@@ -300,22 +300,16 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     public JFrame getWindowFrame() { return this; }
     
     // observer for the "Project has changed" event
-    Observer projectChangedObs = new Observer() {
-        @Override
-        public void update(Observable o, Object project) {
-            //System.out.println("Observer: project has changed!");
-            // This assertion is not true anymore when moving pages between projects.
-            //assert hasActiveProject() && activeProject == project;
-            invalidateGUI();
-        }
+    Observer projectChangedObs = (Observable o, Object project) -> {
+        //System.out.println("Observer: project has changed!");
+        // This assertion is not true anymore when moving pages between projects.
+        //assert hasActiveProject() && activeProject == project;
+        invalidateGUI();
     };
     
-    ActionListener openFileListener = new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent evt) {
-            System.out.println("openFileListener "+evt.getActionCommand()+" "+evt.paramString());
-            openFile(new File(evt.getActionCommand()));
-        }
+    ActionListener openFileListener = (ActionEvent evt) -> {
+        System.out.println("openFileListener "+evt.getActionCommand()+" "+evt.paramString());
+        openFile(new File(evt.getActionCommand()));
     };
 
     /**
@@ -324,6 +318,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     public AppWindow() {
         if (Util.useUnifiedToolbar()) {
             getRootPane().putClientProperty("apple.awt.brushMetalLook", true);
+            getRootPane().putClientProperty("apple.awt.application.appearance", "system");
         }
         initComponents();
         if (Util.useUnifiedToolbar()) {
@@ -1067,37 +1062,34 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     }
     
     private void onRapidMeasureSelected(final RapidMeasureCmd rmc) {
-        executeUndoableCommand("new rapid measure.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage elem) throws Exception {
-                MeasurePage mPage = rmc.createRapidMeasureFor((GspnPage)elem);
-                if (mPage == null)
-                    throw new NoOpException();
-                
-                // Add or replace the measure page
-                boolean replaced = false;
-                for (int i=0; i<activeProject.getCurrent().getPageCount(); i++) {
-                    ProjectPage p = activeProject.getCurrent().getPageAt(i);
-                    if (p instanceof MeasurePage) {
-                        MeasurePage mp = (MeasurePage)p;
-                        if (mp.rapidMeasureType.equals(rmc.name()) && 
-                            mp.targetGspnName.equals(elem.getPageName())) 
-                        {
-                            // Replace the (already existing) rapid measure page
-                            activeProject.getCurrent().deletePage(i);
-                            mPage.setPageName(generateUniquePageName(activeProject, mPage.getPageName()));
-                            activeProject.getCurrent().addPageAt(mPage, i);
-                            replaced = true;
-                            break;
-                        }
+        executeUndoableCommand("new rapid measure.", (ProjectData proj, ProjectPage elem) -> {
+            MeasurePage mPage = rmc.createRapidMeasureFor((GspnPage)elem);
+            if (mPage == null)
+                throw new NoOpException();
+            
+            // Add or replace the measure page
+            boolean replaced = false;
+            for (int i=0; i<activeProject.getCurrent().getPageCount(); i++) {
+                ProjectPage p = activeProject.getCurrent().getPageAt(i);
+                if (p instanceof MeasurePage) {
+                    MeasurePage mp = (MeasurePage)p;
+                    if (mp.rapidMeasureType.equals(rmc.name()) &&
+                            mp.targetGspnName.equals(elem.getPageName()))
+                    {
+                        // Replace the (already existing) rapid measure page
+                        activeProject.getCurrent().deletePage(i);
+                        mPage.setPageName(generateUniquePageName(activeProject, mPage.getPageName()));
+                        activeProject.getCurrent().addPageAt(mPage, i);
+                        replaced = true;
+                        break;
                     }
                 }
-                if (!replaced) {
-                    mPage.setPageName(generateUniquePageName(activeProject, mPage.getPageName()));
-                    activeProject.getCurrent().addPage(mPage);
-                }
-                switchToProjectPage(activeProject, mPage, null);
             }
+            if (!replaced) {
+                mPage.setPageName(generateUniquePageName(activeProject, mPage.getPageName()));
+                activeProject.getCurrent().addPage(mPage);
+            }
+            switchToProjectPage(activeProject, mPage, null);
         });
     }
 
@@ -1257,27 +1249,24 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     
     private void renameActivePage(Object cellEditorValue) {
         final String newName = cellEditorValue.toString();
-        executeUndoableCommand("page renaming.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                if (page == null) {
-                    proj.projName = newName;
-                }
-                else {
-                    // Pages should have a unique name
-                    for (int i=0; i<proj.getPageCount(); i++)
-                        if (proj.getActivePage() != proj.getPageAt(i) &&
+        executeUndoableCommand("page renaming.", (ProjectData proj, ProjectPage page) -> {
+            if (page == null) {
+                proj.projName = newName;
+            }
+            else {
+                // Pages should have a unique name
+                for (int i=0; i<proj.getPageCount(); i++)
+                    if (proj.getActivePage() != proj.getPageAt(i) &&
                             proj.getPageAt(i).getPageName().equals(newName)) {
-                            throw new InvalidOperationException("Page name \""+newName+"\" is already in use.");
-                        }
-                    // Rename
-                    if (proj.getActivePage().getPageName().equals(newName))
-                        throw new NoOpException();
-                    String oldName = proj.getActivePage().getPageName();
-                    proj.getActivePage().setPageName(newName);
-                    for (int i=0; i<proj.getPageCount(); i++)
-                        proj.getPageAt(i).onAnotherPageRenaming(oldName, newName);
-                }
+                        throw new InvalidOperationException("Page name \""+newName+"\" is already in use.");
+                    }
+                // Rename
+                if (proj.getActivePage().getPageName().equals(newName))
+                    throw new NoOpException();
+                String oldName = proj.getActivePage().getPageName();
+                proj.getActivePage().setPageName(newName);
+                for (int i=0; i<proj.getPageCount(); i++)
+                    proj.getPageAt(i).onAnotherPageRenaming(oldName, newName);
             }
         });
     }
@@ -2809,17 +2798,14 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     }//GEN-LAST:event_actionMoveDownActionPerformed
 
     private void actionDeletePageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionDeletePageActionPerformed
-        executeUndoableCommand("delete page.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage elem) throws Exception {
-                assert elem != null;
-                int pos = proj.findPagePosition(elem);
-                proj.deletePage(pos);
-                if (proj.getPageCount() == 0)
-                    switchToProjectPage(activeProject, null, null);
-                else
-                    switchToProjectPage(activeProject, proj.getPageAt(Math.max(0,pos-1)), null);
-            }
+        executeUndoableCommand("delete page.", (ProjectData proj, ProjectPage elem) -> {
+            assert elem != null;
+            int pos = proj.findPagePosition(elem);
+            proj.deletePage(pos);
+            if (proj.getPageCount() == 0)
+                switchToProjectPage(activeProject, null, null);
+            else
+                switchToProjectPage(activeProject, proj.getPageAt(Math.max(0,pos-1)), null);
         });
     }//GEN-LAST:event_actionDeletePageActionPerformed
 
@@ -2828,26 +2814,20 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     }//GEN-LAST:event_actionRenamePageActionPerformed
 
     private void actionNewNetPage_FullGSPNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewNetPage_FullGSPNActionPerformed
-        executeUndoableCommand("new Petri net.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage elem) throws Exception {
-                ProjectPage newPage = newGspnPageOfType(activeProject, NewProjectDialog.PetriNetType.FullPN);
-                activeProject.getCurrent().addPage(newPage);
-                switchToProjectPage(activeProject, newPage, null);
-            }
+        executeUndoableCommand("new Petri net.", (ProjectData proj, ProjectPage elem) -> {
+            ProjectPage newPage = newGspnPageOfType(activeProject, NewProjectDialog.PetriNetType.FullPN);
+            activeProject.getCurrent().addPage(newPage);
+            switchToProjectPage(activeProject, newPage, null);
         });
     };//GEN-LAST:event_actionNewNetPage_FullGSPNActionPerformed
 
     private void actionNewDtaPageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewDtaPageActionPerformed
-        executeUndoableCommand("new DTA.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage elem) throws Exception {
-                DtaPage newPage = new DtaPage();
-                newPage.setPageName(generateUniquePageName(activeProject, "DTA"));
-                newPage.nodes.add(new ClockVar("x", new Point2D.Double(2, 2)));
-                activeProject.getCurrent().addPage(newPage);
-                switchToProjectPage(activeProject, newPage, null);
-            }
+        executeUndoableCommand("new DTA.", (ProjectData proj, ProjectPage elem) -> {
+            DtaPage newPage = new DtaPage();
+            newPage.setPageName(generateUniquePageName(activeProject, "DTA"));
+            newPage.nodes.add(new ClockVar("x", new Point2D.Double(2, 2)));
+            activeProject.getCurrent().addPage(newPage);
+            switchToProjectPage(activeProject, newPage, null);
         });
     }//GEN-LAST:event_actionNewDtaPageActionPerformed
 
@@ -3006,12 +2986,9 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             if (log != null)
                 new ModalLogDialog(this, log).setVisible(true);
             
-            executeUndoableCommand("import GSPN from GreatSPN format.", new UndoableCommand() {
-                @Override
-                public void Execute(ProjectData proj, ProjectPage elem) throws Exception {
-                    activeProject.getCurrent().addPage(gspn);
-                    switchToProjectPage(activeProject, gspn, null);
-                }
+            executeUndoableCommand("import GSPN from GreatSPN format.", (ProjectData proj, ProjectPage elem) -> {
+                activeProject.getCurrent().addPage(gspn);
+                switchToProjectPage(activeProject, gspn, null);
             });
             setStatus(netFile.getAbsolutePath()+" imported.", true);
         }
@@ -3027,14 +3004,11 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     }//GEN-LAST:event_actionImportGreatSpnActionPerformed
 
     private void actionNewMeasurePageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewMeasurePageActionPerformed
-        executeUndoableCommand("new list of measures.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage elem) throws Exception {
-                ProjectPage newPage = new MeasurePage();
-                newPage.setPageName(generateUniquePageName(activeProject, "Measures"));
-                activeProject.getCurrent().addPage(newPage);
-                switchToProjectPage(activeProject, newPage, null);
-            }
+        executeUndoableCommand("new list of measures.", (ProjectData proj, ProjectPage elem) -> {
+            ProjectPage newPage = new MeasurePage();
+            newPage.setPageName(generateUniquePageName(activeProject, "Measures"));
+            activeProject.getCurrent().addPage(newPage);
+            switchToProjectPage(activeProject, newPage, null);
         });
     }//GEN-LAST:event_actionNewMeasurePageActionPerformed
 
@@ -3087,46 +3061,34 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     }//GEN-LAST:event_actionClearMeasureDirActionPerformed
 
     private void actionNewNetPage_PTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewNetPage_PTActionPerformed
-        executeUndoableCommand("new Place/Transition Petri net.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage elem) throws Exception {
-                ProjectPage newPage = newGspnPageOfType(activeProject, NewProjectDialog.PetriNetType.PT);
-                activeProject.getCurrent().addPage(newPage);
-                switchToProjectPage(activeProject, newPage, null);
-            }
+        executeUndoableCommand("new Place/Transition Petri net.", (ProjectData proj, ProjectPage elem) -> {
+            ProjectPage newPage = newGspnPageOfType(activeProject, NewProjectDialog.PetriNetType.PT);
+            activeProject.getCurrent().addPage(newPage);
+            switchToProjectPage(activeProject, newPage, null);
         });
     }//GEN-LAST:event_actionNewNetPage_PTActionPerformed
 
     private void actionNewNetPage_SWNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewNetPage_SWNActionPerformed
-        executeUndoableCommand("new Stochastic Colored (Well-Formed) Petri net.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage elem) throws Exception {
-                ProjectPage newPage = newGspnPageOfType(activeProject, NewProjectDialog.PetriNetType.SWN);
-                activeProject.getCurrent().addPage(newPage);
-                switchToProjectPage(activeProject, newPage, null);
-            }
+        executeUndoableCommand("new Stochastic Colored (Well-Formed) Petri net.", (ProjectData proj, ProjectPage elem) -> {
+            ProjectPage newPage = newGspnPageOfType(activeProject, NewProjectDialog.PetriNetType.SWN);
+            activeProject.getCurrent().addPage(newPage);
+            switchToProjectPage(activeProject, newPage, null);
         });
     }//GEN-LAST:event_actionNewNetPage_SWNActionPerformed
 
     private void actionNewNetPage_GSPNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewNetPage_GSPNActionPerformed
-        executeUndoableCommand("new Generalized Stochastic Petri net.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage elem) throws Exception {
-                ProjectPage newPage = newGspnPageOfType(activeProject, NewProjectDialog.PetriNetType.GSPN);
-                activeProject.getCurrent().addPage(newPage);
-                switchToProjectPage(activeProject, newPage, null);
-            }
+        executeUndoableCommand("new Generalized Stochastic Petri net.", (ProjectData proj, ProjectPage elem) -> {
+            ProjectPage newPage = newGspnPageOfType(activeProject, NewProjectDialog.PetriNetType.GSPN);
+            activeProject.getCurrent().addPage(newPage);
+            switchToProjectPage(activeProject, newPage, null);
         });
     }//GEN-LAST:event_actionNewNetPage_GSPNActionPerformed
 
     private void actionNewNetPage_CPNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewNetPage_CPNActionPerformed
-        executeUndoableCommand("new Colored (Well-Formed) Petri net.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage elem) throws Exception {
-                ProjectPage newPage = newGspnPageOfType(activeProject, NewProjectDialog.PetriNetType.CPN);
-                activeProject.getCurrent().addPage(newPage);
-                switchToProjectPage(activeProject, newPage, null);
-            }
+        executeUndoableCommand("new Colored (Well-Formed) Petri net.", (ProjectData proj, ProjectPage elem) -> {
+            ProjectPage newPage = newGspnPageOfType(activeProject, NewProjectDialog.PetriNetType.CPN);
+            activeProject.getCurrent().addPage(newPage);
+            switchToProjectPage(activeProject, newPage, null);
         });
     }//GEN-LAST:event_actionNewNetPage_CPNActionPerformed
 
@@ -3135,17 +3097,14 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 //        final TemplateBinding binding = ParameterAssignmentDialog.askParamAssignment(this, 
 //                (GspnPage)activeProject.getCurrent().getActivePage());
         
-        executeUndoableCommand("Unfold Petri net.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage elem) throws Exception {
-                assert elem != null && elem.canBeUnfolded();
-                final Unfolding u = new Unfolding((GspnPage)elem);
-                u.unfold();
-                String uniqueName = generateUniquePageName(activeProject, "Unfolding of "+elem.getPageName());
-                u.unfolded.setPageName(uniqueName);
-                activeProject.getCurrent().addPage(u.unfolded);
-                switchToProjectPage(activeProject, u.unfolded, null);
-            }
+        executeUndoableCommand("Unfold Petri net.", (ProjectData proj, ProjectPage elem) -> {
+            assert elem != null && elem.canBeUnfolded();
+            final Unfolding u = new Unfolding((GspnPage)elem);
+            u.unfold();
+            String uniqueName = generateUniquePageName(activeProject, "Unfolding of "+elem.getPageName());
+            u.unfolded.setPageName(uniqueName);
+            activeProject.getCurrent().addPage(u.unfolded);
+            switchToProjectPage(activeProject, u.unfolded, null);
         });
 //        catch (CouldNotUnfoldException e) {
 //            Main.logException(e, true);
@@ -3153,36 +3112,30 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     }//GEN-LAST:event_actionStartUnfoldingActionPerformed
 
     private void actionNewMultiPageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewMultiPageActionPerformed
-        executeUndoableCommand("new Multi net page.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage elem) throws Exception {
-                MultiNetPage newPage = new MultiNetPage();
-                newPage.viewProfile.setProfileForNetType(NewProjectDialog.PetriNetType.FullPN);
-                newPage.setPageName(generateUniquePageName(activeProject, "MultiNet"));
-                newPage.netsDescr.add(new NetInstanceDescriptor());
-                newPage.netsDescr.add(new NetInstanceDescriptor());
-                newPage.netsDescr.get(0).targetNetName = "PN1";
-                newPage.netsDescr.get(1).targetNetName = "PN2";
-                activeProject.getCurrent().addPage(newPage);
-                switchToProjectPage(activeProject, newPage, null);
-            }
+        executeUndoableCommand("new Multi net page.", (ProjectData proj, ProjectPage elem) -> {
+            MultiNetPage newPage = new MultiNetPage();
+            newPage.viewProfile.setProfileForNetType(NewProjectDialog.PetriNetType.FullPN);
+            newPage.setPageName(generateUniquePageName(activeProject, "MultiNet"));
+            newPage.netsDescr.add(new NetInstanceDescriptor());
+            newPage.netsDescr.add(new NetInstanceDescriptor());
+            newPage.netsDescr.get(0).targetNetName = "PN1";
+            newPage.netsDescr.get(1).targetNetName = "PN2";
+            activeProject.getCurrent().addPage(newPage);
+            switchToProjectPage(activeProject, newPage, null);
         });
     }//GEN-LAST:event_actionNewMultiPageActionPerformed
 
     private void actionDuplicatePageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionDuplicatePageActionPerformed
-        executeUndoableCommand("duplicate page.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                // Duplicate the page and make it different (new UUID)
-                ProjectPage dupPage = (ProjectPage)Util.deepCopyRelink(page);
-                dupPage.generateNewUUID();
-                // Rename the page.
-                while (proj.findPageByName(dupPage.getPageName()) != null) {
-                    dupPage.setPageName("copy of "+dupPage.getPageName());
-                }
-                proj.addPageAt(dupPage, proj.findPagePosition(page)+1);
-                switchToProjectPage(activeProject, dupPage, null);
+        executeUndoableCommand("duplicate page.", (ProjectData proj, ProjectPage page) -> {
+            // Duplicate the page and make it different (new UUID)
+            ProjectPage dupPage = (ProjectPage)Util.deepCopyRelink(page);
+            dupPage.generateNewUUID();
+            // Rename the page.
+            while (proj.findPageByName(dupPage.getPageName()) != null) {
+                dupPage.setPageName("copy of "+dupPage.getPageName());
             }
+            proj.addPageAt(dupPage, proj.findPagePosition(page)+1);
+            switchToProjectPage(activeProject, dupPage, null);
         });
     }//GEN-LAST:event_actionDuplicatePageActionPerformed
 
@@ -3207,45 +3160,39 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         for (final File model : models) {
             final String modelName = model.getName().replace("."+ProjectFile.PNPRO_EXT, "");
             JMenuItem item = new JMenuItem(modelName);
-            item.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent event) {
-                    try {
-                        final ProjectFile newProj = PnProFormat.readXML(model);
-                        
-                        executeUndoableCommand("add "+modelName, new UndoableCommand() {
-                            @Override
-                            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                                boolean first = true;
-                                for (int p = 0; p < newProj.getCurrent().getPageCount(); p++) {
-                                    ProjectPage newPage = newProj.getCurrent().getPageAt(p);
-                                    String newPageName = newPage.getPageName();
-                                    newPageName = generateUniquePageName(activeProject, newPageName);
-                                    if (!newPageName.equals(newPage.getPageName())) {
-                                        for (int p2 = 0; p2 < newProj.getCurrent().getPageCount(); p2++)
-                                            if (p != p2)
-                                                newProj.getCurrent().getPageAt(p2).onAnotherPageRenaming(newPage.getPageName(), newPageName);
-                                    }
-                                    newPage.setPageName(newPageName);
-                                    proj.addPage(newPage);
-                                    if (first) {
-                                        switchToProjectPage(activeProject, newPage, null);
-                                        first = false;
-                                    }
-                                }
+            item.addActionListener((ActionEvent event) -> {
+                try {
+                    final ProjectFile newProj = PnProFormat.readXML(model);
+                    
+                    executeUndoableCommand("add "+modelName, (ProjectData proj, ProjectPage page) -> {
+                        boolean first = true;
+                        for (int p = 0; p < newProj.getCurrent().getPageCount(); p++) {
+                            ProjectPage newPage = newProj.getCurrent().getPageAt(p);
+                            String newPageName = newPage.getPageName();
+                            newPageName = generateUniquePageName(activeProject, newPageName);
+                            if (!newPageName.equals(newPage.getPageName())) {
+                                for (int p2 = 0; p2 < newProj.getCurrent().getPageCount(); p2++)
+                                    if (p != p2)
+                                        newProj.getCurrent().getPageAt(p2).onAnotherPageRenaming(newPage.getPageName(), newPageName);
                             }
-                        });
-                        setStatus("Library model "+modelName+" added.", true);
-                    }
-                    catch (Exception e) {
-                        Main.logException(e, true);
-                        JOptionPane.showMessageDialog(AppWindow.this, 
-                                                      "Could not open the Library model "+modelName+".\n"+
-                                                      "Reason: "+e.getMessage(), 
-                                                      "Could not open file.",
-                                                      JOptionPane.ERROR_MESSAGE);
-                        setStatus("could not open library model "+modelName, true);
-                    }    
+                            newPage.setPageName(newPageName);
+                            proj.addPage(newPage);
+                            if (first) {
+                                switchToProjectPage(activeProject, newPage, null);
+                                first = false;
+                            }
+                        }
+                    });
+                    setStatus("Library model "+modelName+" added.", true);
+                }
+                catch (Exception e) {
+                    Main.logException(e, true);
+                    JOptionPane.showMessageDialog(AppWindow.this,
+                            "Could not open the Library model "+modelName+".\n"+
+                                    "Reason: "+e.getMessage(),
+                            "Could not open file.",
+                            JOptionPane.ERROR_MESSAGE);
+                    setStatus("could not open library model "+modelName, true);    
                 }
             });
             jMenuLibraryModels.add(item);
@@ -3258,14 +3205,11 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
                 (GspnPage)activeProject.getCurrent().getActivePage(),
                 activeProject.getCurrent());
         if (newPage != null) {
-            executeUndoableCommand("net composition.", new UndoableCommand() {
-                @Override
-                public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                    newPage.setPageName(generateUniquePageName(activeProject, newPage.getPageName()));
-                    activeProject.getCurrent().addPage(newPage);
-                    switchToProjectPage(activeProject, newPage, null);
-                    setStatus("Net \""+newPage.getPageName()+"\" composed with algebra.", true);
-                }
+            executeUndoableCommand("net composition.", (ProjectData proj, ProjectPage page) -> {
+                newPage.setPageName(generateUniquePageName(activeProject, newPage.getPageName()));
+                activeProject.getCurrent().addPage(newPage);
+                switchToProjectPage(activeProject, newPage, null);
+                setStatus("Net \""+newPage.getPageName()+"\" composed with algebra.", true);
             });
         }
     }//GEN-LAST:event_actionStartAlgebraActionPerformed
@@ -3319,12 +3263,9 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             } else if (activeProject.getCurrent().findPageByName(gspn.getPageName()) != null)
                 gspn.setPageName(generateUniquePageName(activeProject, gspn.getPageName()));
             
-            executeUndoableCommand("import GSPN from PNML format.", new UndoableCommand() {
-                @Override
-                public void Execute(ProjectData proj, ProjectPage elem) throws Exception {
-                    activeProject.getCurrent().addPage(gspn);
-                    switchToProjectPage(activeProject, gspn, null);
-                }
+            executeUndoableCommand("import GSPN from PNML format.", (ProjectData proj, ProjectPage elem) -> {
+                activeProject.getCurrent().addPage(gspn);
+                switchToProjectPage(activeProject, gspn, null);
             });
             setStatus(pnmlFile.getAbsolutePath()+" imported.", true);
         }
@@ -3427,11 +3368,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         LogWindow.closeLogWindow();
         
         // Ensure that other windowClose() listeners are called before exiting.
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override public void run() {
-                System.exit(0);
-            }
-        });
+        SwingUtilities.invokeLater(() -> System.exit(0) );
         return true;
     }
     
@@ -3450,12 +3387,9 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     }
     
     private void moveSelectedPage(final int incr, String descr) {
-        executeUndoableCommand(descr, new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage elem) throws Exception {
-                int pos = proj.findPagePosition(elem);
-                proj.movePage(pos, pos + incr);
-            }
+        executeUndoableCommand(descr, (ProjectData proj, ProjectPage elem) -> {
+            int pos = proj.findPagePosition(elem);
+            proj.movePage(pos, pos + incr);
         });
     }
     

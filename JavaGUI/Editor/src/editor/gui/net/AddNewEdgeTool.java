@@ -175,13 +175,10 @@ class AddNewEdgeTool extends NetToolBase {
             if (!hitNodeIsConnectible)
                 return;
             newEdge.connectToNode(hitNode, hitMagnet, appendEndPoint);
-            editor.mainInterface.executeUndoableCommand("edge added.", new UndoableCommand() {
-                @Override
-                public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                    editor.currPage.edges.add(newEdge);
-                    newEdge = null;
-                    editor.toolEnds(false);
-                }
+            editor.mainInterface.executeUndoableCommand("edge added.", (ProjectData proj, ProjectPage page) -> {
+                editor.currPage.edges.add(newEdge);
+                newEdge = null;
+                editor.toolEnds(false);
             });
         }
     }

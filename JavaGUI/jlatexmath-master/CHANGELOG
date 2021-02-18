@@ -1,3 +1,35 @@
+jlatexmath (1.0.8)
+        * Fix javadoc so that project builds with Java 11 and 12
+
+jlatexmath (1.0.7)
+	* Fix °C
+
+	* Fix deformed characters in SVG output by changing font scaling
+
+jlatexmath (1.0.6)
+	* Add TeX style macros \bangle, \brace and \brack.
+
+	* Add the macro \questeq.
+
+	* Add the macro \longdiv.
+
+	* Add \qquad as a Java macro rather than a String definition
+
+	* Fix an issue with predefined string commands with a RowAtom (\qquad used two times)
+
+jlatexmath (1.0.5)
+	* Remove ligatures info for cyrillic
+
+	* Add italic correction only in math mode.
+
+	* Add a command \mathnormal.
+
+	* Float.MIN_VALUE is not -Float.MAX_VALUE !
+
+	* Italic correction was not taken into account when making box for a CharSymbol.
+
+	* Support ~ as non breakable space.
+
 jlatexmath (1.0.4)
 	* Fix color displayed with the command bgcolor.
 

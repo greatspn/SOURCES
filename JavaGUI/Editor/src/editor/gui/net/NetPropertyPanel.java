@@ -1845,26 +1845,20 @@ public class NetPropertyPanel extends javax.swing.JPanel {
         if (currValue != null && currValue.equals(newValue))
             return; // No changes
         
-        mainInterface.executeUndoableCommand(descr, new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) {
-                editable.setValue(proj, (NetPage)page, newValue);
-            }
+        mainInterface.executeUndoableCommand(descr, (ProjectData proj, ProjectPage page) -> {
+            editable.setValue(proj, (NetPage)page, newValue);
         });
     }
         
     private void textField_UniqueNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textField_UniqueNameActionPerformed
         if (!textField_UniqueName.isValueValid())
             return;
-        mainInterface.executeUndoableCommand("change unique ID", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                NetPage currPage = (NetPage)page;
-                for (Node n : currPage.nodes) {
-                    if (n.isSelected()) {
-                        n.getUniqueNameEditable().setValue(proj, page, textField_UniqueName.getText());
-                        return;
-                    }
+        mainInterface.executeUndoableCommand("change unique ID", (ProjectData proj, ProjectPage page) -> {
+            NetPage currPage1 = (NetPage)page;
+            for (Node n : currPage1.nodes) {
+                if (n.isSelected()) {
+                    n.getUniqueNameEditable().setValue(proj, page, textField_UniqueName.getText());
+                    return;
                 }
             }
         });
@@ -2094,32 +2088,26 @@ public class NetPropertyPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_comboBox_placePartitionActionPerformed
 
     private void buttonConstantsToTemplatesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonConstantsToTemplatesActionPerformed
-        mainInterface.executeUndoableCommand("constants to parameters.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                NetPage np = (NetPage)page;
-                for (int i=0; i<np.nodes.size(); i++) {
-                    if (np.nodes.get(i).isSelected() && np.nodes.get(i) instanceof ConstantID) {
-                        TemplateVariable tvar = new TemplateVariable((ConstantID)np.nodes.get(i));
-                        tvar.setSelected(true);
-                        np.nodes.set(i, tvar);
-                    }
+        mainInterface.executeUndoableCommand("constants to parameters.", (ProjectData proj, ProjectPage page) -> {
+            NetPage np = (NetPage)page;
+            for (int i=0; i<np.nodes.size(); i++) {
+                if (np.nodes.get(i).isSelected() && np.nodes.get(i) instanceof ConstantID) {
+                    TemplateVariable tvar = new TemplateVariable((ConstantID)np.nodes.get(i));
+                    tvar.setSelected(true);
+                    np.nodes.set(i, tvar);
                 }
             }
         });
     }//GEN-LAST:event_buttonConstantsToTemplatesActionPerformed
 
     private void buttonTemplatesToConstantsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonTemplatesToConstantsActionPerformed
-        mainInterface.executeUndoableCommand("parameters to constants.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                NetPage np = (NetPage)page;
-                for (int i=0; i<np.nodes.size(); i++) {
-                    if (np.nodes.get(i).isSelected() && np.nodes.get(i) instanceof TemplateVariable) {
-                        ConstantID con = new ConstantID((TemplateVariable)np.nodes.get(i));
-                        con.setSelected(true);
-                        np.nodes.set(i, con);
-                    }
+        mainInterface.executeUndoableCommand("parameters to constants.", (ProjectData proj, ProjectPage page) -> {
+            NetPage np = (NetPage)page;
+            for (int i=0; i<np.nodes.size(); i++) {
+                if (np.nodes.get(i).isSelected() && np.nodes.get(i) instanceof TemplateVariable) {
+                    ConstantID con = new ConstantID((TemplateVariable)np.nodes.get(i));
+                    con.setSelected(true);
+                    np.nodes.set(i, con);
                 }
             }
         });

@@ -303,15 +303,12 @@ public class MeasureEditorPanel extends javax.swing.JPanel
     }
 
     private void deleteSelected() {
-        mainInterface.executeUndoableCommand("delete selected.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                MeasurePage mp = (MeasurePage)page;
-                Iterator<AbstractMeasure> it = mp.measures.iterator();
-                while (it.hasNext())
-                    if (it.next().isSelected())
-                        it.remove();
-            }
+        mainInterface.executeUndoableCommand("delete selected.", (ProjectData proj, ProjectPage page) -> {
+            MeasurePage mp = (MeasurePage)page;
+            Iterator<AbstractMeasure> it = mp.measures.iterator();
+            while (it.hasNext())
+                if (it.next().isSelected())
+                    it.remove();
         });
     }
 
@@ -322,13 +319,10 @@ public class MeasureEditorPanel extends javax.swing.JPanel
     
     @Override
     public void onNewMeasureList(final ArrayList<AbstractMeasure> newList) {
-        mainInterface.executeUndoableCommand("measure changed.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                //System.out.println("onNewMeasureList!");
-                MeasurePage mpage = (MeasurePage) page;
-                mpage.measures = newList;
-            }
+        mainInterface.executeUndoableCommand("measure changed.", (ProjectData proj, ProjectPage page) -> {
+            //System.out.println("onNewMeasureList!");
+            MeasurePage mpage = (MeasurePage) page;
+            mpage.measures = newList;
         });
     }
 
@@ -342,23 +336,17 @@ public class MeasureEditorPanel extends javax.swing.JPanel
 
     @Override
     public void onNewListAssignment(final VarListMultiAssignment newList) {
-        mainInterface.executeUndoableCommand("variable assignment changed.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                MeasurePage mpage = (MeasurePage)page;
-                mpage.varListAssignments = newList;
-            }
+        mainInterface.executeUndoableCommand("variable assignment changed.", (ProjectData proj, ProjectPage page) -> {
+            MeasurePage mpage = (MeasurePage)page;
+            mpage.varListAssignments = newList;
         });
     }
 
     @Override
     public void onSolverParamsModified(final SolverParams newParams) {
-        mainInterface.executeUndoableCommand("solver parameters changed.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                MeasurePage mpage = (MeasurePage)page;
-                mpage.solverParams = newParams;
-            }
+        mainInterface.executeUndoableCommand("solver parameters changed.", (ProjectData proj, ProjectPage page) -> {
+            MeasurePage mpage = (MeasurePage)page;
+            mpage.solverParams = newParams;
         });
     }
 
@@ -405,32 +393,29 @@ public class MeasureEditorPanel extends javax.swing.JPanel
     
     private void computeMeasures(final AbstractMeasure[] measures) {
         assert currPage.targetGspn != null;
-        mainInterface.executeUndoableCommand("compute results.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                try {
-                    // Reset the result tables of the measures
-                    for (AbstractMeasure m : measures)
-                        m.setResults(new ResultTable());
-                    // Prepare the evaluation context
-                    ParserContext context = new ParserContext(currPage.targetGspn);
-                    context.templateVarsBinding = new TemplateBinding();
-                    context.bindingContext = context; // Ask itself for var bindings
-                    
-                    // Prepare the tool invokation
-                    SolverDialog dlg = new SolverDialog(mainInterface.getWindowFrame(), true);
-                    SolverInvokator solver = currPage.solverParams.makeNewSolver();
-                    solver.invoke(currPage, measures, context, currProject.getFilename(), dlg);
-                    dlg.setVisible(true);
-                    currPage.lastLog.setRef(new DocumentResource(dlg.getComputationLog()));
-                }
-                catch (MeasureEvaluationException mee) {
-                    JOptionPane.showMessageDialog(mainInterface.getWindowFrame(),
-                                                  mee, "Error during measure evaluation.",
-                                                  JOptionPane.ERROR_MESSAGE);
-                    mee.printStackTrace();
-                    throw new NoOpException();
-                }
+        mainInterface.executeUndoableCommand("compute results.", (ProjectData proj, ProjectPage page) -> {
+            try {
+                // Reset the result tables of the measures
+                for (AbstractMeasure m : measures)
+                    m.setResults(new ResultTable());
+                // Prepare the evaluation context
+                ParserContext context = new ParserContext(currPage.targetGspn);
+                context.templateVarsBinding = new TemplateBinding();
+                context.bindingContext = context; // Ask itself for var bindings
+                
+                // Prepare the tool invokation
+                SolverDialog dlg = new SolverDialog(mainInterface.getWindowFrame(), true);
+                SolverInvokator solver = currPage.solverParams.makeNewSolver();
+                solver.invoke(currPage, measures, context, currProject.getFilename(), dlg);
+                dlg.setVisible(true);
+                currPage.lastLog.setRef(new DocumentResource(dlg.getComputationLog()));
+            }
+            catch (MeasureEvaluationException mee) {
+                JOptionPane.showMessageDialog(mainInterface.getWindowFrame(),
+                        mee, "Error during measure evaluation.",
+                        JOptionPane.ERROR_MESSAGE);
+                mee.printStackTrace();
+                throw new NoOpException();
             }
         });
     }
@@ -905,28 +890,22 @@ public class MeasureEditorPanel extends javax.swing.JPanel
         if (currPage.targetGspnName!=null && newGspn.equals(currPage.targetGspnName))
             return; // nothing changed
         
-        mainInterface.executeUndoableCommand("change measured GSPN.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                currPage.targetGspnName = newGspn;
-            }
+        mainInterface.executeUndoableCommand("change measured GSPN.", (ProjectData proj, ProjectPage page) -> {
+            currPage.targetGspnName = newGspn;
         });
     }//GEN-LAST:event_jComboBox_gspnActionPerformed
 
     private void actionCommentMeasureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionCommentMeasureActionPerformed
-        mainInterface.executeUndoableCommand("toggle measure comments.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                MeasurePage mpage = (MeasurePage)page;
-                boolean allShown = true;
-                for (AbstractMeasure m : mpage.measures)
-                    if (m.isSelected())
-                        allShown = allShown && m.isCommentShown();
-                // Toggle comment flag
-                for (AbstractMeasure m : mpage.measures)
-                    if (m.isSelected())
-                        m.setCommentShown(!allShown);
-            }
+        mainInterface.executeUndoableCommand("toggle measure comments.", (ProjectData proj, ProjectPage page) -> {
+            MeasurePage mpage = (MeasurePage)page;
+            boolean allShown = true;
+            for (AbstractMeasure m : mpage.measures)
+                if (m.isSelected())
+                    allShown = allShown && m.isCommentShown();
+            // Toggle comment flag
+            for (AbstractMeasure m : mpage.measures)
+                if (m.isSelected())
+                    m.setCommentShown(!allShown);
         });
     }//GEN-LAST:event_actionCommentMeasureActionPerformed
 
@@ -937,42 +916,33 @@ public class MeasureEditorPanel extends javax.swing.JPanel
         final SolverParams.Solvers sol = (SolverParams.Solvers)selObj;
         if (sol == currPage.solverParams.getSolver())
             return; // nothing changed
-        mainInterface.executeUndoableCommand("solver changed.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                MeasurePage mpage = (MeasurePage)page;
-                mpage.solverParams = (SolverParams)sol.getParamsClass().newInstance();
-            }
+        mainInterface.executeUndoableCommand("solver changed.", (ProjectData proj, ProjectPage page) -> {
+            MeasurePage mpage = (MeasurePage)page;
+            mpage.solverParams = (SolverParams)sol.getParamsClass().newInstance();
         });
     }//GEN-LAST:event_jComboBox_solverActionPerformed
 
     private void actionMoveUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionMoveUpActionPerformed
-        mainInterface.executeUndoableCommand("move up selection.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                MeasurePage mpage = (MeasurePage)page;
-                for (int i=1; i<mpage.measures.size(); i++)
-                    if (mpage.measures.get(i).isSelected()) {
-                        AbstractMeasure am = mpage.measures.get(i-1);
-                        mpage.measures.set(i-1, mpage.measures.get(i));
-                        mpage.measures.set(i, am);
-                    }
-            }
+        mainInterface.executeUndoableCommand("move up selection.", (ProjectData proj, ProjectPage page) -> {
+            MeasurePage mpage = (MeasurePage)page;
+            for (int i=1; i<mpage.measures.size(); i++)
+                if (mpage.measures.get(i).isSelected()) {
+                    AbstractMeasure am = mpage.measures.get(i-1);
+                    mpage.measures.set(i-1, mpage.measures.get(i));
+                    mpage.measures.set(i, am);
+                }
         });
     }//GEN-LAST:event_actionMoveUpActionPerformed
 
     private void actionMoveDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionMoveDownActionPerformed
-        mainInterface.executeUndoableCommand("move down selection.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                MeasurePage mpage = (MeasurePage)page;
-                for (int i=mpage.measures.size()-2; i>=0; i--)
-                    if (mpage.measures.get(i).isSelected()) {
-                        AbstractMeasure am = mpage.measures.get(i+1);
-                        mpage.measures.set(i+1, mpage.measures.get(i));
-                        mpage.measures.set(i, am);
-                    }
-            }
+        mainInterface.executeUndoableCommand("move down selection.", (ProjectData proj, ProjectPage page) -> {
+            MeasurePage mpage = (MeasurePage)page;
+            for (int i=mpage.measures.size()-2; i>=0; i--)
+                if (mpage.measures.get(i).isSelected()) {
+                    AbstractMeasure am = mpage.measures.get(i+1);
+                    mpage.measures.set(i+1, mpage.measures.get(i));
+                    mpage.measures.set(i, am);
+                }
         });
     }//GEN-LAST:event_actionMoveDownActionPerformed
 
@@ -984,11 +954,8 @@ public class MeasureEditorPanel extends javax.swing.JPanel
             item.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    mainInterface.executeUndoableCommand("new measure", new UndoableCommand() {
-                        @Override
-                        public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                            ((MeasurePage)page).measures.add(new FormulaMeasure("", false, "", fl));
-                        }
+                    mainInterface.executeUndoableCommand("new measure", (ProjectData proj, ProjectPage page) -> {
+                        ((MeasurePage)page).measures.add(new FormulaMeasure("", false, "", fl));
                     });
                 }
             });

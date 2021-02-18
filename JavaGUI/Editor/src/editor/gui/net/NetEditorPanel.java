@@ -1853,27 +1853,24 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
     }//GEN-LAST:event_actionAddGspnInhibArcActionPerformed
 
     private void deleteSelected() {
-        mainInterface.executeUndoableCommand("delete selected.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                Set<Node> deletedNodes = new HashSet<>();
-                Iterator<Node> nodeIt = currPage.nodes.iterator();
-                while (nodeIt.hasNext()) {
-                    Node n = nodeIt.next();
-                    if (n.isSelected()) {
-                        // Remove the node
-                        deletedNodes.add(n);
-                        nodeIt.remove();
-                    }
+        mainInterface.executeUndoableCommand("delete selected.", (ProjectData proj, ProjectPage page) -> {
+            Set<Node> deletedNodes = new HashSet<>();
+            Iterator<Node> nodeIt = currPage.nodes.iterator();
+            while (nodeIt.hasNext()) {
+                Node n = nodeIt.next();
+                if (n.isSelected()) {
+                    // Remove the node
+                    deletedNodes.add(n);
+                    nodeIt.remove();
                 }
-                Iterator<Edge> edgeIt = currPage.edges.iterator();
-                while (edgeIt.hasNext()) {
-                    Edge e  = edgeIt.next();
-                    if (e.isSelected() || 
-                        deletedNodes.contains(e.getHeadNode()) || 
+            }
+            Iterator<Edge> edgeIt = currPage.edges.iterator();
+            while (edgeIt.hasNext()) {
+                Edge e  = edgeIt.next();
+                if (e.isSelected() || 
+                        deletedNodes.contains(e.getHeadNode()) ||
                         deletedNodes.contains(e.getTailNode()))
-                        edgeIt.remove();
-                }
+                    edgeIt.remove();
             }
         });
     }
@@ -1903,36 +1900,33 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
         Selectable selEdge = currPage.getSingleSelectedObject();
         assert selEdge != null && selEdge instanceof Edge;
         final Edge edge = (Edge)selEdge;
-        mainInterface.executeUndoableCommand("add intermediate edge points.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                // Save decor positions
-                Point2D[] decorAnchors = new Point2D[edge.getNumDecors()];
-                for (int d=0; d<edge.getNumDecors(); d++)
-                    decorAnchors[d] = edge.getPointAlongTheLine(new Point2D.Double(), 
-                                                                edge.getDecor(d).getEdgeK());
-                // create a new set of points
-                ArrayList<Point2D> npoints = new ArrayList<>();
-                npoints.add((Point2D)edge.points.get(0).clone());
-                Point2D.Double p1 = new Point2D.Double(), p2 = new Point2D.Double();
-                for (int i=1; i<edge.numPoints(); i++) {
-                    if (edge.isSubObjectSelected(i-1) && 
+        mainInterface.executeUndoableCommand("add intermediate edge points.", (ProjectData proj, ProjectPage page) -> {
+            // Save decor positions
+            Point2D[] decorAnchors = new Point2D[edge.getNumDecors()];
+            for (int d=0; d<edge.getNumDecors(); d++)
+                decorAnchors[d] = edge.getPointAlongTheLine(new Point2D.Double(),
+                        edge.getDecor(d).getEdgeK());
+            // create a new set of points
+            ArrayList<Point2D> npoints = new ArrayList<>();
+            npoints.add((Point2D)edge.points.get(0).clone());
+            Point2D.Double p1 = new Point2D.Double(), p2 = new Point2D.Double();
+            for (int i=1; i<edge.numPoints(); i++) {
+                if (edge.isSubObjectSelected(i-1) && 
                         edge.isSubObjectSelected(i))
-                    {
-                        // Add a new point
-                        edge.getPoint(p1, i-1);
-                        edge.getPoint(p2, i);
-                        npoints.add(NetObject.linearInterp(p1, p2, new Point2D.Double(), 0.5)); 
-                    }
-                    npoints.add((Point2D)edge.points.get(i).clone());
+                {
+                    // Add a new point
+                    edge.getPoint(p1, i-1);
+                    edge.getPoint(p2, i);
+                    npoints.add(NetObject.linearInterp(p1, p2, new Point2D.Double(), 0.5));
                 }
-                edge.points = npoints;
-                edge.setSubObjectSelection(false);
-                edge.invalidateEffectiveEdgePath();
-                // Compute new anchor points (near the old anchors)
-                for (int d=0; d<edge.getNumDecors(); d++)
-                    edge.getDecor(d).setEdgeK(edge.getNearestK(decorAnchors[d]));
+                npoints.add((Point2D)edge.points.get(i).clone());
             }
+            edge.points = npoints;
+            edge.setSubObjectSelection(false);
+            edge.invalidateEffectiveEdgePath();
+            // Compute new anchor points (near the old anchors)
+            for (int d=0; d<edge.getNumDecors(); d++)
+                edge.getDecor(d).setEdgeK(edge.getNearestK(decorAnchors[d]));
         });
     }//GEN-LAST:event_actionNewEdgePointActionPerformed
 
@@ -1940,27 +1934,24 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
         Selectable selEdge = currPage.getSingleSelectedObject();
         assert selEdge != null && selEdge instanceof Edge;
         final Edge edge = (Edge)selEdge;
-        mainInterface.executeUndoableCommand("delete edge points.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                // Save decor positions
-                Point2D[] decorAnchors = new Point2D[edge.getNumDecors()];
-                for (int d=0; d<edge.getNumDecors(); d++)
-                    decorAnchors[d] = edge.getPointAlongTheLine(new Point2D.Double(), 
-                                                                edge.getDecor(d).getEdgeK());
-                // make a new point by deleting the selected points
-                ArrayList<Point2D> npoints = new ArrayList<>();
-                for (int i=0; i<edge.numPoints(); i++) {
-                    if (i == 0 || i == edge.numPoints()-1 || !edge.isSubObjectSelected(i))
-                        npoints.add(edge.points.get(i));
-                }
-                edge.points = npoints;
-                edge.setSubObjectSelection(false);
-                edge.invalidateEffectiveEdgePath();
-                // Compute new anchor points (near the old anchors)
-                for (int d=0; d<edge.getNumDecors(); d++)
-                    edge.getDecor(d).setEdgeK(edge.getNearestK(decorAnchors[d]));
+        mainInterface.executeUndoableCommand("delete edge points.", (ProjectData proj, ProjectPage page) -> {
+            // Save decor positions
+            Point2D[] decorAnchors = new Point2D[edge.getNumDecors()];
+            for (int d=0; d<edge.getNumDecors(); d++)
+                decorAnchors[d] = edge.getPointAlongTheLine(new Point2D.Double(),
+                        edge.getDecor(d).getEdgeK());
+            // make a new point by deleting the selected points
+            ArrayList<Point2D> npoints = new ArrayList<>();
+            for (int i=0; i<edge.numPoints(); i++) {
+                if (i == 0 || i == edge.numPoints()-1 || !edge.isSubObjectSelected(i))
+                    npoints.add(edge.points.get(i));
             }
+            edge.points = npoints;
+            edge.setSubObjectSelection(false);
+            edge.invalidateEffectiveEdgePath();
+            // Compute new anchor points (near the old anchors)
+            for (int d=0; d<edge.getNumDecors(); d++)
+                edge.getDecor(d).setEdgeK(edge.getNearestK(decorAnchors[d]));
         });
     }//GEN-LAST:event_actionDeleteEdgePointActionPerformed
 
@@ -1992,20 +1983,17 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
 //        Selectable selEdge = currPage.getSingleSelectedObject();
 //        assert selEdge != null && selEdge instanceof Edge;
 //        final Edge edge = (Edge)selEdge;
-        mainInterface.executeUndoableCommand("set edge broken state.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                for (Edge edge : currPage.edges) {
-                    if (!edge.isSelected())
-                        continue;
-                    assert edge.canBeBroken();
-                    edge.isBroken = jToggleButtonBrokenEdge.isSelected();
-                    edge.invalidateEffectiveEdgePath();
-                    if (edge.isBroken) {
-                        for (int d=0; d<edge.getNumDecors(); d++) {
-                            Decor decor = edge.getDecor(d);
-                            decor.setEdgeK(edge.sanitizeK_ForBrokenEdges(decor.getEdgeK()));
-                        }
+        mainInterface.executeUndoableCommand("set edge broken state.", (ProjectData proj, ProjectPage page) -> {
+            for (Edge edge : currPage.edges) {
+                if (!edge.isSelected())
+                    continue;
+                assert edge.canBeBroken();
+                edge.isBroken = jToggleButtonBrokenEdge.isSelected();
+                edge.invalidateEffectiveEdgePath();
+                if (edge.isBroken) {
+                    for (int d=0; d<edge.getNumDecors(); d++) {
+                        Decor decor = edge.getDecor(d);
+                        decor.setEdgeK(edge.sanitizeK_ForBrokenEdges(decor.getEdgeK()));
                     }
                 }
             }
@@ -2143,34 +2131,31 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
     }//GEN-LAST:event_showFluidCmdMenuItemActionPerformed
 
     private void actionClearAllEdgePointsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionClearAllEdgePointsActionPerformed
-        mainInterface.executeUndoableCommand("delete intermediate edge points.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                assert page == currPage;
-                for (Edge edge : currPage.edges) {
-                    if (!edge.isSelected())
-                        continue; // not selected
-                    if (edge.numPoints() <= 2)
-                        continue; // nothing to delete
-                    boolean isSelfLoop = (edge.getHeadNode() == edge.getTailNode());
-                    // Save decor positions
-                    Point2D[] decorAnchors = new Point2D[edge.getNumDecors()];
-                    for (int d=0; d<edge.getNumDecors(); d++)
-                        decorAnchors[d] = edge.getPointAlongTheLine(new Point2D.Double(), 
-                                                                    edge.getDecor(d).getEdgeK());
-                    // make a new pointList by deleting the selected points
-                    ArrayList<Point2D> npoints = new ArrayList<>(isSelfLoop ? 3 : 2);
-                    npoints.add(edge.points.get(0));
-                    if (isSelfLoop)
-                        npoints.add(edge.points.get(1));
-                    npoints.add(edge.points.get(edge.numPoints() - 1));
-                    edge.points = npoints;
-                    edge.setSubObjectSelection(false);
-                    edge.invalidateEffectiveEdgePath();
-                    // Compute new anchor points (near the old anchors)
-                    for (int d=0; d<edge.getNumDecors(); d++)
-                        edge.getDecor(d).setEdgeK(edge.getNearestK(decorAnchors[d]));
-                }
+        mainInterface.executeUndoableCommand("delete intermediate edge points.", (ProjectData proj, ProjectPage page) -> {
+            assert page == currPage;
+            for (Edge edge : currPage.edges) {
+                if (!edge.isSelected())
+                    continue; // not selected
+                if (edge.numPoints() <= 2)
+                    continue; // nothing to delete
+                boolean isSelfLoop = (edge.getHeadNode() == edge.getTailNode());
+                // Save decor positions
+                Point2D[] decorAnchors = new Point2D[edge.getNumDecors()];
+                for (int d=0; d<edge.getNumDecors(); d++)
+                    decorAnchors[d] = edge.getPointAlongTheLine(new Point2D.Double(),
+                            edge.getDecor(d).getEdgeK());
+                // make a new pointList by deleting the selected points
+                ArrayList<Point2D> npoints = new ArrayList<>(isSelfLoop ? 3 : 2);
+                npoints.add(edge.points.get(0));
+                if (isSelfLoop)
+                    npoints.add(edge.points.get(1));
+                npoints.add(edge.points.get(edge.numPoints() - 1));
+                edge.points = npoints;
+                edge.setSubObjectSelection(false);
+                edge.invalidateEffectiveEdgePath();
+                // Compute new anchor points (near the old anchors)
+                for (int d=0; d<edge.getNumDecors(); d++)
+                    edge.getDecor(d).setEdgeK(edge.getNearestK(decorAnchors[d]));
             }
         });
     }//GEN-LAST:event_actionClearAllEdgePointsActionPerformed

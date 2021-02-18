@@ -118,7 +118,7 @@
        </tstamp>
         <manifest file="MANIFEST.MF" mode="update">
             <attribute name="Build-Date" value="${NOW}" />
-            <attribute name="Class-Path" value="lib/AbsoluteLayout.jar lib/antlr-runtime-4.2.1.jar lib/jlatexmath-1.0.4.jar lib/swing-layout-1.0.4.jar"/>
+            <attribute name="Class-Path" value="lib/AbsoluteLayout.jar lib/antlr-runtime-4.2.1.jar lib/jlatexmath-1.0.8-SNAPSHOT.jar lib/swing-layout-1.0.4.jar"/>
         </manifest>
     </target>
     

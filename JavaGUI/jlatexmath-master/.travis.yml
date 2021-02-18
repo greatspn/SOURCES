@@ -1,10 +1,24 @@
 sudo: required
+services:
+  - xvfb
 language: java
 
 jdk:
-  - oraclejdk8
-  - openjdk7
+  - oraclejdk11
+  - openjdk8
+  - openjdk11
 
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get build-dep libjlatexmath-java
+
+before_script:
+  - "export DISPLAY=:99.0"
+
+after_success:
+  - mvn cobertura:cobertura coveralls:report
+
+addons:
+  hosts:
+    - jlmhost
+  hostname: jlmhost

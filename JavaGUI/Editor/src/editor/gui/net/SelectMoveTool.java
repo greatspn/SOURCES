@@ -214,11 +214,8 @@ class SelectMoveTool extends NetToolBase {
             @Override
             public void editingStopped(ChangeEvent ce) {
                 // Modify the edited value
-                editor.mainInterface.executeUndoableCommand("change value.", new UndoableCommand() {
-                    @Override
-                    public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                        editable.setValue(editor.currProject.getCurrent(), (NetPage)page, cellEditor.getEditedString());
-                    }
+                editor.mainInterface.executeUndoableCommand("change value.", (ProjectData proj, ProjectPage page1) -> {
+                    editable.setValue(editor.currProject.getCurrent(), (NetPage) page1, cellEditor.getEditedString());
                 });
 
                 // Disable the cell editor
@@ -269,14 +266,12 @@ class SelectMoveTool extends NetToolBase {
             // End handle movement
             isDragHandle = false;
             editor.mainInterface.executeUndoableCommand("move selected object(s).", 
-                                                        new UndoableCommand() {
-                @Override
-                public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                    double deltaX = currDragPos.getX() - startDragPos.getX();
-                    double deltaY = currDragPos.getY() - startDragPos.getY();
-                    if (!moveDraggedHandles(deltaX, deltaY))
-                        throw new NoOpException();
-                }
+                    (ProjectData proj, ProjectPage page1) -> 
+            {
+                double deltaX = currDragPos.getX() - startDragPos.getX();
+                double deltaY = currDragPos.getY() - startDragPos.getY();
+                if (!moveDraggedHandles(deltaX, deltaY))
+                    throw new NoOpException();
             });
         }
     }
@@ -457,24 +452,21 @@ class SelectMoveTool extends NetToolBase {
             if (newPtPos.distance(edge.points.get(i)) < MIN_DISTANCE)
                 return false;
         
-        editor.mainInterface.executeUndoableCommand("add new edge point.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                // Save decor positions
-                Point2D[] decorAnchors = new Point2D[edge.getNumDecors()];
-                for (int d=0; d<edge.getNumDecors(); d++)
-                    decorAnchors[d] = edge.getPointAlongTheLine(new Point2D.Double(), 
-                                                                edge.getDecor(d).getEdgeK());
-                // Add the new point
-                int ptPos = (int)Math.ceil(nearK);
-                edge.points.add(ptPos, newPtPos);
-                edge.setSubObjectSelection(false);
-                edge.setSelectedSubObject(ptPos, true);
-                edge.invalidateEffectiveEdgePath();
-                // Compute new anchor points (near the old anchors)
-                for (int d=0; d<edge.getNumDecors(); d++)
-                    edge.getDecor(d).setEdgeK(edge.getNearestK(decorAnchors[d]));
-            }
+        editor.mainInterface.executeUndoableCommand("add new edge point.", (ProjectData proj, ProjectPage page) -> {
+            // Save decor positions
+            Point2D[] decorAnchors = new Point2D[edge.getNumDecors()];
+            for (int d=0; d<edge.getNumDecors(); d++)
+                decorAnchors[d] = edge.getPointAlongTheLine(new Point2D.Double(),
+                        edge.getDecor(d).getEdgeK());
+            // Add the new point
+            int ptPos = (int)Math.ceil(nearK);
+            edge.points.add(ptPos, newPtPos);
+            edge.setSubObjectSelection(false);
+            edge.setSelectedSubObject(ptPos, true);
+            edge.invalidateEffectiveEdgePath();
+            // Compute new anchor points (near the old anchors)
+            for (int d=0; d<edge.getNumDecors(); d++)
+                edge.getDecor(d).setEdgeK(edge.getNearestK(decorAnchors[d]));
         });
         return true;
     }

@@ -135,11 +135,8 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel impleme
 
     @Override
     public void onExprModified() {
-        mainInterface.executeUndoableCommand("change replica count.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                descr.numReplicas.setExpr(numReplicaExprCopy.getExpr());
-            }
+        mainInterface.executeUndoableCommand("change replica count.", (ProjectData proj, ProjectPage page) -> {
+            descr.numReplicas.setExpr(numReplicaExprCopy.getExpr());
         });
     }
 
@@ -310,11 +307,8 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel impleme
         final String newNetName = (String)comboBox_model.getSelectedItem();
         if (newNetName.equals(descr.targetNetName))
             return;
-        mainInterface.executeUndoableCommand("change net reference.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                descr.targetNetName = newNetName;
-            }
+        mainInterface.executeUndoableCommand("change net reference.", (ProjectData proj, ProjectPage page) -> {
+            descr.targetNetName = newNetName;
         });
     }//GEN-LAST:event_comboBox_modelActionPerformed
 
@@ -324,26 +318,20 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel impleme
     }//GEN-LAST:event_checkBox_selectedActionPerformed
 
     private void button_upActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_upActionPerformed
-        mainInterface.executeUndoableCommand("move descriptor up.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                MultiNetPage mnp = (MultiNetPage)page;
-                NetInstanceDescriptor nd = mnp.netsDescr.get(numInst);
-                mnp.netsDescr.set(numInst, mnp.netsDescr.get(numInst-1));
-                mnp.netsDescr.set(numInst-1, nd);
-            }
+        mainInterface.executeUndoableCommand("move descriptor up.", (ProjectData proj, ProjectPage page) -> {
+            MultiNetPage mnp = (MultiNetPage)page;
+            NetInstanceDescriptor nd = mnp.netsDescr.get(numInst);
+            mnp.netsDescr.set(numInst, mnp.netsDescr.get(numInst-1));
+            mnp.netsDescr.set(numInst-1, nd);
         });
     }//GEN-LAST:event_button_upActionPerformed
 
     private void button_downActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_downActionPerformed
-        mainInterface.executeUndoableCommand("move descriptor down.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                MultiNetPage mnp = (MultiNetPage)page;
-                NetInstanceDescriptor nd = mnp.netsDescr.get(numInst);
-                mnp.netsDescr.set(numInst, mnp.netsDescr.get(numInst+1));
-                mnp.netsDescr.set(numInst+1, nd);
-            }
+        mainInterface.executeUndoableCommand("move descriptor down.", (ProjectData proj, ProjectPage page) -> {
+            MultiNetPage mnp = (MultiNetPage)page;
+            NetInstanceDescriptor nd = mnp.netsDescr.get(numInst);
+            mnp.netsDescr.set(numInst, mnp.netsDescr.get(numInst+1));
+            mnp.netsDescr.set(numInst+1, nd);
         });
     }//GEN-LAST:event_button_downActionPerformed
 
@@ -356,13 +344,10 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel impleme
             bindCmd.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    mainInterface.executeUndoableCommand("bind parameter "+var, new UndoableCommand() {
-                        @Override
-                        public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                            NetInstanceDescriptor d = ((MultiNetPage)page).netsDescr.get(numInst);
-                            d.unboundParams.remove(var);
-                            d.instParams.bindSingleValue(var, tvar.getLastBindingExpr());
-                        }
+                    mainInterface.executeUndoableCommand("bind parameter "+var, (ProjectData proj, ProjectPage page) -> {
+                        NetInstanceDescriptor d = ((MultiNetPage)page).netsDescr.get(numInst);
+                        d.unboundParams.remove(var);
+                        d.instParams.bindSingleValue(var, tvar.getLastBindingExpr());
                     });
                 }
             });
@@ -375,13 +360,10 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel impleme
             unbindCmd.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    mainInterface.executeUndoableCommand("unbind parameter "+var, new UndoableCommand() {
-                        @Override
-                        public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                            NetInstanceDescriptor d = ((MultiNetPage)page).netsDescr.get(numInst);
-                            d.instParams.unbind(var);
-                            d.unboundParams.add(var);
-                        }
+                    mainInterface.executeUndoableCommand("unbind parameter "+var, (ProjectData proj, ProjectPage page) -> {
+                        NetInstanceDescriptor d = ((MultiNetPage)page).netsDescr.get(numInst);
+                        d.instParams.unbind(var);
+                        d.unboundParams.add(var);
                     });
                 }
             });

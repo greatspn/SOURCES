@@ -269,15 +269,12 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
     }
 
     private void deleteSelected() {
-        mainInterface.executeUndoableCommand("delete selected.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                MultiNetPage mnp = (MultiNetPage)page;
-                Iterator<NetInstanceDescriptor> it = mnp.netsDescr.iterator();
-                while (it.hasNext())
-                    if (it.next().isSelected())
-                        it.remove();
-            }
+        mainInterface.executeUndoableCommand("delete selected.", (ProjectData proj, ProjectPage page) -> {
+            MultiNetPage mnp = (MultiNetPage)page;
+            Iterator<NetInstanceDescriptor> it = mnp.netsDescr.iterator();
+            while (it.hasNext())
+                if (it.next().isSelected())
+                    it.remove();
         });
     }
     
@@ -478,13 +475,10 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
                 item.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        mainInterface.executeUndoableCommand("add subnet.", new UndoableCommand() {
-                            @Override
-                            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                                NetInstanceDescriptor inst = new NetInstanceDescriptor();
-                                inst.targetNetName = itemPage.getPageName();
-                                ((MultiNetPage)page).netsDescr.add(inst);
-                            }
+                        mainInterface.executeUndoableCommand("add subnet.", (ProjectData proj, ProjectPage page) -> {
+                            NetInstanceDescriptor inst = new NetInstanceDescriptor();
+                            inst.targetNetName = itemPage.getPageName();
+                            ((MultiNetPage)page).netsDescr.add(inst);
                         });
                     }
                 });

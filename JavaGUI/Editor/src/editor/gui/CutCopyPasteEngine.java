@@ -221,11 +221,8 @@ public class CutCopyPasteEngine implements /*PropertyChangeListener,*/ FlavorLis
                 try {
                     final Object data = transferable.getTransferData(df);
                     // Paste the data in a new Undo record
-                    ccpe.getMainInterface().executeUndoableCommand("paste.", new UndoableCommand() {
-                        @Override
-                        public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                            ccpe.getCurrPage().pasteData(data);
-                        }
+                    ccpe.getMainInterface().executeUndoableCommand("paste.", (ProjectData proj, ProjectPage page) -> {
+                        ccpe.getCurrPage().pasteData(data);
                     });
                 }
                 catch (UnsupportedFlavorException ufe) { Main.logException(ufe, true); }
@@ -256,13 +253,10 @@ public class CutCopyPasteEngine implements /*PropertyChangeListener,*/ FlavorLis
                 if (action == MOVE) {
                     // Delete the cut data
                     try {
-                        ccpe.getMainInterface().executeUndoableCommand("cut.", new UndoableCommand() {
-                        @Override
-                        public void Execute(ProjectData proj, ProjectPage page) throws Exception {
+                        ccpe.getMainInterface().executeUndoableCommand("cut.", (ProjectData proj, ProjectPage page) -> {
                             Object eraseData = data.getTransferData(ccpe.getCurrPage().getDataFlavour());
                             ccpe.getCurrPage().eraseCutData(eraseData);
-                        }
-                    });
+                        });
                     }
                     catch (Exception e) { }
 

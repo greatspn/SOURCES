@@ -236,13 +236,10 @@ class AddNodeTool extends NetToolBase {
         handle.moveTo(pt.getX(), pt.getY(), false);
         if (nodeHitTestFailed())
             return;
-        editor.mainInterface.executeUndoableCommand("node added.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                editor.currPage.nodes.add(newNode);
-                newNode = null;
-                editor.toolEnds(false);
-            }
+        editor.mainInterface.executeUndoableCommand("node added.", (ProjectData proj, ProjectPage page) -> {
+            editor.currPage.nodes.add(newNode);
+            newNode = null;
+            editor.toolEnds(false);
         });
     }
 
