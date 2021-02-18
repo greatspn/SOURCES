@@ -62,6 +62,7 @@ public abstract class BaseID extends Node implements Serializable {
         public Object getValue() { return labelText; }
         @Override
         public boolean isCurrentValueValid() { return true; }
+        @Override public boolean editAsMultiline() { return false; }
         @Override
         public boolean isValueValid(ProjectData proj, ProjectPage page, Object value) {
             throw new UnsupportedOperationException("Not supported yet."); 
@@ -140,6 +141,7 @@ public abstract class BaseID extends Node implements Serializable {
             shownFormula = null;
         }
         @Override public final boolean isEditable() { return true; }
+        @Override public boolean editAsMultiline() { return false; }
       }
     
     

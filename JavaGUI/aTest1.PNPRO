@@ -9,7 +9,8 @@
       <place marking="1" name="P2" x="24.0" y="13.0"/>
       <transition name="T2" nservers-x="0.5" type="EXP" x="21.55" y="8.0"/>
       <transition name="T3" nservers-x="0.5" type="EXP" x="18.55" y="13.0"/>
-      <text-box border-color="none" fill-color="none" height="3.25" horiz-pos="2" name="__textBox0" shadow="true" shape="ROUND_RECTANGLE" text-color="#000000" width="13.75" x="2.125" y="19.375">Simple Petri Net\\3 places and 4 transitions</text-box>
+      <text-box border-color="none" fill-color="none" height="2.625" horiz-pos="2" name="__textBox0" shadow="true" shape="ROUND_RECTANGLE" text-color="#000000" width="12.375" x="2.125" y="16.375">\textbf{Simple Petri Net.}
+3 places and 4 transitions.</text-box>
     </nodes>
     <edges>
       <arc head="T0" kind="INPUT" mult="3" tail="P0"/>

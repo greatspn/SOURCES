@@ -202,7 +202,14 @@ class SelectMoveTool extends NetToolBase {
         Point2D ec = editable.getEditorCenter();
         Point p = new Point(NetObject.logicToScreen(ec.getX(), page.viewProfile.zoom),
                             NetObject.logicToScreen(ec.getY(), page.viewProfile.zoom));
-        final BaseCellEditor cellEditor = new TextCellEditor(editor.currProject.getCurrent(), editor.currPage, editable, p);
+        
+        BaseCellEditor bcEditor;
+        if (editable.editAsMultiline())
+            bcEditor = new MultilineTextCellEditor(editor.currProject.getCurrent(), editor.currPage, editable, p);
+        else
+            bcEditor = new TextCellEditor(editor.currProject.getCurrent(), editor.currPage, editable, p);
+        final BaseCellEditor cellEditor = bcEditor;
+        
         cellEditor.addCellEditorListener(new CellEditorListener() {
             @Override
             public void editingStopped(ChangeEvent ce) {

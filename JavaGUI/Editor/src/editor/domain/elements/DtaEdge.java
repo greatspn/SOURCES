@@ -112,6 +112,7 @@ public class DtaEdge extends Edge implements Serializable, Firable {
         }
         @Override public boolean drawLineBetweenDecorAndEdge() { return false; }
         @Override public boolean isEditable() { return isInner(); }
+        @Override public boolean editAsMultiline() { return false; }
     }
     
     class ClockGuardLabel extends Edge.EdgeLabelDecor {
@@ -145,6 +146,7 @@ public class DtaEdge extends Edge implements Serializable, Firable {
         }
         @Override public boolean drawLineBetweenDecorAndEdge() { return false; }
         @Override public boolean isEditable() { return true; }
+        @Override public boolean editAsMultiline() { return false; }
     }
 
     public DtaEdge(Node tail, int tailMagnet, Node head, int headMagnet, ArrayList<Point2D> points, 

@@ -219,6 +219,7 @@ public class Transition extends Node implements Serializable, Firable {
         @Override public boolean isVisible(ViewProfile vp)  { 
             return vp.viewRatesDelays && hasDelay(); 
         }
+        @Override public boolean editAsMultiline() { return false; }
     }
 
     class PriorityLabel extends NodeLabelDecor {
@@ -240,6 +241,7 @@ public class Transition extends Node implements Serializable, Firable {
         @Override public boolean isVisible(ViewProfile vp)  { 
             return vp.viewPriorities && hasPriority() && !priorityExpr.getExpr().equals("1");
         }
+        @Override public boolean editAsMultiline() { return false; }
     }
     
     class WeightLabel extends NodeLabelDecor {
@@ -261,6 +263,7 @@ public class Transition extends Node implements Serializable, Firable {
         @Override public boolean isVisible(ViewProfile vp)  { 
             return vp.viewRatesDelays && hasWeight() && !(weightExpr.getExpr().equals("1.0") || weightExpr.getExpr().equals("1"));
         }
+        @Override public boolean editAsMultiline() { return false; }
     }
     
     class NumServersLabel extends NodeLabelDecor {
@@ -290,6 +293,7 @@ public class Transition extends Node implements Serializable, Firable {
         @Override public boolean isVisible(ViewProfile vp)  { 
             return vp.viewRatesDelays && hasNumServers() && !isInfiniteServers();
         }
+        @Override public boolean editAsMultiline() { return false; }
     }
     
     class GuardLabel extends NodeLabelDecor {
@@ -313,6 +317,7 @@ public class Transition extends Node implements Serializable, Firable {
         @Override public boolean isVisible(ViewProfile vp)  { 
             return vp.viewGuards && hasGuard() && !getGuard().equals("True"); 
         }
+        @Override public boolean editAsMultiline() { return false; }
     }
 
     public static final Point2D.Double DEFAULT_UNIQUE_NAME_POS = new Point2D.Double(0.0, -1.5);

@@ -251,6 +251,7 @@ public abstract class Node extends SelectableObject
         }
         @Override public boolean isEditable() { return true; }
         @Override public boolean isCurrentValueValid() { return true; }
+        @Override public boolean editAsMultiline() { return false; }
 
         @Override 
         public boolean isVisible(ViewProfile vp) {
@@ -320,6 +321,7 @@ public abstract class Node extends SelectableObject
         }
         @Override public boolean isCurrentValueValid() { return true; }
         @Override public boolean isEditable() { return true; }
+        @Override public boolean editAsMultiline() { return false; }
 
         @Override
         public boolean isVisible(ViewProfile vp) { 
