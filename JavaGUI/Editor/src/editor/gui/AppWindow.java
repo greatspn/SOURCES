@@ -347,8 +347,10 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         iconList.add(Main.loadImage("icon32.png"));
         iconList.add(Main.loadImage("icon64.png"));
         setIconImages(iconList);
-        Taskbar taskbar = Taskbar.getTaskbar();
-        taskbar.setIconImage(Main.loadImage("icon64.png"));
+        if (Util.isOSX()) {
+            Taskbar taskbar = Taskbar.getTaskbar();
+            taskbar.setIconImage(Main.loadImage("icon64.png"));
+        }
         
         // MacOS integration
         if (isOSX()) {
