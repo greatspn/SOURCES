@@ -13,6 +13,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.Icon;
+import javax.swing.UIManager;
 import javax.swing.event.EventListenerList;
 
 /**
@@ -62,7 +63,7 @@ public class JValidatedTextField extends javax.swing.JPanel {
             if (validText != (reason==null)) {
                 validText = (reason==null);
                 jLabelIcon.setIcon(validText ? EMPTY : WARN);
-                jTextField.setForeground(validText ? Color.BLACK : Color.RED);
+                jTextField.setForeground(validText ? UIManager.getColor("TextField.foreground") : Color.RED);
             }
             if (reason == null)
                 jLabelIcon.setToolTipText(null);

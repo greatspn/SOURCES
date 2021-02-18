@@ -14,6 +14,7 @@ import java.awt.event.FocusListener;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
@@ -122,7 +123,7 @@ public class ComboBoxForEditable<E> extends JComboBox<E> {
             Object obj = getSelectedItem();
             isValueValid = editable.isValueValid(project, page, obj);
             if (isValueValid || (obj == null || obj.equals("---"))) {
-                setForeground(Color.BLACK);
+                setForeground(UIManager.getColor("ComboBox.foreground"));
             }
             else {
                 setForeground(Color.RED);

@@ -18,6 +18,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.DocumentEvent;
@@ -127,7 +128,7 @@ public class TextCellEditor extends JTextField implements BaseCellEditor {
     public void onTextChange() {
         isTextValid = editable.isValueValid(proj, page, getText());
         if (isTextValid) {
-            setForeground(Color.BLACK);
+            setForeground(UIManager.getColor("TextField.foreground"));
         }
         else {
             setForeground(Color.RED);
