@@ -7,10 +7,11 @@ package common;
 import editor.Main;
 import editor.domain.ProjectResource;
 import editor.domain.ResourceHolder;
-import editor.gui.OSXAdapter;
+import editor.gui.AppWindow;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Desktop;
 import java.awt.Font;
 import static java.awt.Frame.MAXIMIZED_BOTH;
 import java.awt.Graphics2D;
@@ -21,6 +22,10 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.desktop.QuitEvent;
+import java.awt.desktop.QuitHandler;
+import java.awt.desktop.QuitResponse;
+import java.awt.desktop.QuitStrategy;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -145,18 +150,38 @@ public final class Util {
             platformOSX = System.getProperty("os.name").equals("Mac OS X"); 
         return platformOSX;
     }
-    public static void setupOSXIntegration(JFrame mainWnd) {
+    public static void setupOSXIntegration(AppWindow mainWnd) {
         if (isOSX()) {
-            System.setProperty("com.apple.mrj.application.apple.menu.about.name", Main.APP_NAME);
-            try {
-                OSXAdapter.setAboutHandler(mainWnd, mainWnd.getClass().getMethod("showAboutDialog"));
-                OSXAdapter.setFileHandler(mainWnd, mainWnd.getClass().getMethod("openFileHandler", String.class));
-                OSXAdapter.setPreferencesHandler(mainWnd, mainWnd.getClass().getMethod("openPreferences"));
-                OSXAdapter.setQuitHandler(mainWnd, mainWnd.getClass().getMethod("quitHandler"));
-            }
-            catch (Exception e) { Main.logException(e, true); }
+//            System.setProperty("com.apple.mrj.application.apple.menu.about.name", Main.APP_NAME);
+//            try {
+////                OSXAdapter.setAboutHandler(mainWnd, mainWnd.getClass().getMethod("showAboutDialog"));
+////                OSXAdapter.setFileHandler(mainWnd, mainWnd.getClass().getMethod("openFileHandler", String.class));
+//                OSXAdapter.setPreferencesHandler(mainWnd, mainWnd.getClass().getMethod("openPreferences"));
+////                OSXAdapter.setQuitHandler(mainWnd, mainWnd.getClass().getMethod("quitHandler"));
+//            }
+//            catch (Exception e) { Main.logException(e, true); }
+            
+            java.awt.Desktop desktop = Desktop.getDesktop();
+            
+            desktop.setAboutHandler(e -> mainWnd.showAboutDialog());
+            desktop.setOpenFileHandler(e -> mainWnd.openFileHandler(e.getSearchTerm()));
+            desktop.setOpenURIHandler(e -> mainWnd.openFileHandler(e.getURI().getPath()));
+            desktop.setQuitHandler(new MyQuitHandler(mainWnd));
+            desktop.setPreferencesHandler(e -> mainWnd.openPreferences());
+            desktop.setQuitStrategy(QuitStrategy.NORMAL_EXIT);
         }
     }
+    private static class MyQuitHandler implements QuitHandler {
+        AppWindow wnd;
+        public MyQuitHandler(AppWindow wnd) {
+            this.wnd = wnd;
+        }
+        @Override public void handleQuitRequestWith(QuitEvent e, QuitResponse response) {
+            wnd.quitHandler();
+        }
+    }
+    
+    
     public static final Color UNIFIED_GRAY_PANEL_BKGND = new Color(237, 237, 237);
     private static final boolean unifiedToolbar = true;
     public static boolean useUnifiedToolbar() {

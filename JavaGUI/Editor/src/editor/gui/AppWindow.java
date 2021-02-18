@@ -306,6 +306,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     ActionListener openFileListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent evt) {
+            System.out.println("openFileListener "+evt.getActionCommand()+" "+evt.paramString());
             openFile(new File(evt.getActionCommand()));
         }
     };
@@ -447,6 +448,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jMenuFile.addMenuListener(new MenuListener() {
             @Override
             public void menuSelected(MenuEvent me) {
+                jMenuItem_FileOpenRecent.removeAll();
                 boolean isModalPanelActive = (activeEditor != null && activeEditor.isModalEditor());
                 boolean canEdit = (!isModalPanelActive) && (!isGuiSuspended);
                 jMenuItem_FileOpenRecent.setEnabled(canEdit && recentFilesList.size() > 0);
@@ -459,12 +461,12 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
             @Override
             public void menuDeselected(MenuEvent me) {
-                jMenuItem_FileOpenRecent.removeAll();
+//                jMenuItem_FileOpenRecent.removeAll();
             }
 
             @Override
             public void menuCanceled(MenuEvent me) {
-                jMenuItem_FileOpenRecent.removeAll();
+//                jMenuItem_FileOpenRecent.removeAll();
             }
         });
 

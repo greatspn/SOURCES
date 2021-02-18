@@ -1023,7 +1023,6 @@ public class FormulaEvaluator extends ExprLangBaseVisitor<EvaluatedFormula> {
                 context.filterThisDomain = null;
                 context.filterThisValue = null;
 
-//                System.out.println("eval ed="+ed+" ev="+ev+"   keep="+keep);
                 if (keep)
                     newSet.put(ed, ev);
             }

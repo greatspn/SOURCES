@@ -1872,6 +1872,7 @@ JavaGUI-jar: $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Jar.zip
 
 JAVA_GUI_ARCHIVES := $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Mac.zip \
 				     $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Linux.tgz \
+				     $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Win.zip \
 				     $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Jar.zip
 
 # Windows exe generation requires the launch4j tool to be installed.

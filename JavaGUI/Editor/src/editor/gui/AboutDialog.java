@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.swing.JFrame;
 
 /**
@@ -28,7 +28,7 @@ public class AboutDialog extends javax.swing.JDialog {
         getRootPane().setDefaultButton(jButtonCloseDialog);
         
         jLabelVersion.setText("Build date: "+getBuildData());
-    }
+    } 
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -170,16 +170,29 @@ public class AboutDialog extends javax.swing.JDialog {
             if (url == null)
                 return "<<Not running from a JAR file.>>";
             URLConnection urlConn = url.openConnection();
+            
+            long epoch = 0;
             if (urlConn instanceof JarURLConnection) {
-                JarURLConnection conn = (JarURLConnection)urlConn;
-                Manifest mf = conn.getManifest();
-                Attributes atts = mf.getMainAttributes();
-                for (Object key : atts.keySet())
-                    System.out.println(key + " = " + atts.get(key));
-                return atts.getValue("Build-Date");
+                // Is it a JAR file? Get manifest time
+                epoch = ((JarURLConnection) urlConn).getJarFile().getEntry("META-INF/MANIFEST.MF").getTime();
+            } else {
+                // Regular file? Get file compile time
+                epoch = urlConn.getLastModified();
             }
-            else
-                return "<<Cannot retrieve JAR Manifest>>";
+            // Format as timestamp
+            Date epochDate = new Date(epoch);
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            return df.format(epochDate);
+//            if (urlConn instanceof JarURLConnection) {
+//                JarURLConnection conn = (JarURLConnection)urlConn;
+//                Manifest mf = conn.getManifest();
+//                Attributes atts = mf.getMainAttributes();
+//                for (Object key : atts.keySet())
+//                    System.out.println(key + " = " + atts.get(key));
+//                return atts.getValue("Build-Date");
+//            }
+//            else
+//                return "<<Cannot retrieve JAR Manifest>>";
         }
         catch (IOException e) {
             return "---";
