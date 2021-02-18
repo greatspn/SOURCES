@@ -23,7 +23,7 @@ First, install the following dependencies (using the developer packages with the
  * libgmp (GNU multiprecision library) (devel)
  * boost-c++ version 1.64+
  * flex (devel) and byacc
- * ant and Java 1.8+ (Oracle JDK)
+ * ant and Java 11+
  * graphviz
  * libxml++ (devel), glibmm24 (devel) and glib2 (devel)
  * libcolamd2, on fedora platform provided by suitesparse (devel)
