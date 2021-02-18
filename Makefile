@@ -89,7 +89,7 @@ ifeq ($(UNAME_S),Darwin)
    CPPFLAGS += -I/usr/include/malloc -I/usr/local/include/ -I/opt/homebrew/include
    LDFLAGS += -L/usr/local/lib/ -L/opt/homebrew/lib
    ENABLE_Cxx17 := -std=c++17 -stdlib=libc++ -U__STRICT_ANSI__
-   LAUNCH4J := java -jar JavaGUI/launch4j-macosx/launch4j.jar
+   LAUNCH4J := java -jar JavaGUI/launch4j-3.13-macosx/launch4j.jar
 
    
 	# CFLAGS += -Wno-implicit-function-declaration \
