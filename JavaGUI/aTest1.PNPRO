@@ -9,6 +9,7 @@
       <place marking="1" name="P2" x="24.0" y="13.0"/>
       <transition name="T2" nservers-x="0.5" type="EXP" x="21.55" y="8.0"/>
       <transition name="T3" nservers-x="0.5" type="EXP" x="18.55" y="13.0"/>
+      <text-box border-color="none" fill-color="none" height="3.25" horiz-pos="2" name="__textBox0" shadow="true" shape="ROUND_RECTANGLE" text-color="#000000" width="13.75" x="2.125" y="19.375">Simple Petri Net\\3 places and 4 transitions</text-box>
     </nodes>
     <edges>
       <arc head="T0" kind="INPUT" mult="3" tail="P0"/>
@@ -1907,31 +1908,6 @@
       <arc head="sell_steel" kind="INPUT" mult="10" mult-x="0.0" mult-y="-0.5" tail="steel"/>
       <arc head="tons_sold_slag" kind="OUTPUT" mult-k="0.37509765625" mult-x="-3.906250000014211E-4" mult-y="0.5" tail="sell_slag"/>
       <arc head="tons_sold_steel" kind="OUTPUT" mult-x="-0.5" mult-y="-0.5" tail="sell_steel"/>
-    </edges>
-  </gspn>
-  <gspn name="FilteredSymCPN">
-    <nodes>
-      <color-class definition="circular c{1..3} " name="C" x="1.125" y="2.0"/>
-      <color-var domain="C" name="x" x="1.25" y="4.0"/>
-      <color-var domain="C" name="y" x="6.25" y="4.0"/>
-      <place domain="C" name="P0" x="29.0" y="10.0"/>
-      <transition name="T0" nservers-x="0.5" type="EXP" x="36.55" y="10.0"/>
-      <place domain="C" name="P1" x="43.0" y="10.0"/>
-      <transition name="T1" nservers-x="0.5" type="EXP" x="36.55" y="16.0"/>
-      <place domain="C" marking="&lt;All&gt;" name="P2" x="2.0" y="10.0"/>
-      <transition name="T2" nservers-x="0.5" type="EXP" x="22.55" y="10.0"/>
-    </nodes>
-    <edges>
-      <arc head="T0" kind="INPUT" mult="&lt;x&gt;" tail="P0"/>
-      <arc head="P1" kind="OUTPUT" mult="&lt;x&gt;" tail="T0"/>
-      <arc head="T1" kind="INPUT" mult="&lt;x&gt;" tail="P1">
-        <point x="44.0" y="17.0"/>
-      </arc>
-      <arc head="P0" kind="OUTPUT" mult="&lt;x&gt;" tail="T1">
-        <point x="30.0" y="17.0"/>
-      </arc>
-      <arc head="T2" kind="INPUT" mult="&lt;x&gt;[@[0] !=c1]" mult-x="0.0" mult-y="-1.0" tail="P2"/>
-      <arc head="P0" kind="OUTPUT" mult="&lt;x&gt;" tail="T2"/>
     </edges>
   </gspn>
   <resource-list>

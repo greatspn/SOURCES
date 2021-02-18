@@ -27,7 +27,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import latex.LatexProvider;
 import latex.LatexProviderImpl;
 
 /**
