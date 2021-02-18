@@ -112,13 +112,25 @@ ifeq ($(UNAME_S),Linux)
 endif
 
 ### - Platform-specific variations - ###
-ifneq (,$(findstring Microsoft,$(UNAME_R)))
+ifneq (,$(findstring Microsoft,$(UNAME_R))) 
   ifeq ($(UNAME_S),Linux)
     IS_WSL := 1
-    #$(info "Running on WSL.")
+    $(info "Running on WSL-1.")
   endif
 endif
 ###
+ifneq (,$(findstring microsoft-standard,$(UNAME_R))) 
+  ifeq ($(UNAME_S),Linux)
+    IS_WSL := 2
+    $(info "Running on WSL-2.")
+  endif
+endif
+###
+
+ifdef IS_WSL
+	LAUNCH4J := 
+endif
+
 
 # # REMOVE THESE LINES
 # ifeq "Linux" "$(shell uname)"
@@ -274,7 +286,7 @@ endif
 # ifeq ($(INCLUDE_ELVIO_CPP_SOLVER),1)
 # ifneq ($(wildcard JavaGUI/launch4j-macosx/launch4j.jar), )
 ifdef LAUNCH4J
-  $(info Have Launch4j)
+#   $(info Have Launch4j)
   HAVE_LAUNCH4J := 1
 endif
 # endif
