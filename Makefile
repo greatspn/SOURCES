@@ -107,6 +107,10 @@ ifeq ($(UNAME_S),Darwin)
 
 endif
 
+ifeq ($(UNAME_S),Linux)
+	LAUNCH4J := java -jar JavaGUI/launch4j-3.13-linux-x64/launch4j.jar
+endif
+
 ### - Platform-specific variations - ###
 ifneq (,$(findstring Microsoft,$(UNAME_R)))
   ifeq ($(UNAME_S),Linux)
@@ -259,14 +263,14 @@ ifneq ("$(wildcard ~/.extra-greatspn-solvers)","")
   INCLUDE_ELVIO_CPP_SOLVER := 1
 endif
 
-ifeq ($(INCLUDE_ELVIO_CPP_SOLVER),1)
-  ifneq ($(wildcard JavaGUI/launch4j-macosx/launch4j.jar), )
-    ifdef LAUNCH4J
-      $(info Have Launch4j)
-      HAVE_LAUNCH4J := 1
-    endif
-  endif
+# ifeq ($(INCLUDE_ELVIO_CPP_SOLVER),1)
+# ifneq ($(wildcard JavaGUI/launch4j-macosx/launch4j.jar), )
+ifdef LAUNCH4J
+  $(info Have Launch4j)
+  HAVE_LAUNCH4J := 1
 endif
+# endif
+# endif
 
 ifneq ("$(wildcard ../PRIVATE)","")
   ifeq ("$(wildcard PRIV)","")
@@ -1872,7 +1876,6 @@ JavaGUI-jar: $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Jar.zip
 
 JAVA_GUI_ARCHIVES := $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Mac.zip \
 				     $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Linux.tgz \
-				     $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Win.zip \
 				     $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Jar.zip
 
 # Windows exe generation requires the launch4j tool to be installed.
