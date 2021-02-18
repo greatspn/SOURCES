@@ -9,6 +9,7 @@ import common.LogWindow;
 import common.ModalLogDialog;
 import editor.Main;
 import common.Util;
+import static common.Util.isOSX;
 import static editor.Main.logException;
 import editor.domain.PageErrorWarning;
 import editor.domain.ProjectData;
@@ -39,12 +40,18 @@ import editor.gui.net.ParameterAssignmentDialog;
 import editor.gui.net.ShowRgDialog;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.Taskbar;
+import java.awt.desktop.QuitEvent;
+import java.awt.desktop.QuitHandler;
+import java.awt.desktop.QuitResponse;
+import java.awt.desktop.QuitStrategy;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -115,7 +122,7 @@ import latex.LatexProvider;
  *
  * @author Elvio
  */
-public final class AppWindow extends javax.swing.JFrame implements MainWindowInterface {
+public final class AppWindow extends javax.swing.JFrame implements MainWindowInterface, QuitHandler {
 
     protected ZoomPanel jZoomPanel;
     // The list of open projects
@@ -345,6 +352,20 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         iconList.add(Main.loadImage("icon32.png"));
         iconList.add(Main.loadImage("icon64.png"));
         setIconImages(iconList);
+        Taskbar taskbar = Taskbar.getTaskbar();
+        taskbar.setIconImage(Main.loadImage("icon64.png"));
+        
+        // MacOS integration
+        if (isOSX()) {
+            java.awt.Desktop desktop = Desktop.getDesktop();
+            
+            desktop.setAboutHandler(e -> showAboutDialog());
+            desktop.setOpenFileHandler(e -> openFileHandler(e.getSearchTerm()));
+            desktop.setOpenURIHandler(e -> openFileHandler(e.getURI().getPath()));
+            desktop.setQuitHandler(this);
+            desktop.setPreferencesHandler(e -> openPreferences());
+            desktop.setQuitStrategy(QuitStrategy.NORMAL_EXIT);
+        }
         
         ccpEngine = new CutCopyPasteEngine(actionCut, actionCopy, actionPaste);
         
@@ -1117,9 +1138,13 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         actionAboutActionPerformed(null);
     }
     
-    // Used by the OSX Adapter
-    public boolean quitHandler() {
-        return quitApplication();
+//    // Used by the OSX Adapter
+//    public boolean quitHandler() {
+//        return quitApplication();
+//    }
+    
+    @Override public void handleQuitRequestWith(QuitEvent e, QuitResponse response) {
+        quitApplication();
     }
     
     // Used by the OSX Adapter

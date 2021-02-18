@@ -150,36 +150,6 @@ public final class Util {
             platformOSX = System.getProperty("os.name").equals("Mac OS X"); 
         return platformOSX;
     }
-    public static void setupOSXIntegration(AppWindow mainWnd) {
-        if (isOSX()) {
-//            System.setProperty("com.apple.mrj.application.apple.menu.about.name", Main.APP_NAME);
-//            try {
-////                OSXAdapter.setAboutHandler(mainWnd, mainWnd.getClass().getMethod("showAboutDialog"));
-////                OSXAdapter.setFileHandler(mainWnd, mainWnd.getClass().getMethod("openFileHandler", String.class));
-//                OSXAdapter.setPreferencesHandler(mainWnd, mainWnd.getClass().getMethod("openPreferences"));
-////                OSXAdapter.setQuitHandler(mainWnd, mainWnd.getClass().getMethod("quitHandler"));
-//            }
-//            catch (Exception e) { Main.logException(e, true); }
-            
-            java.awt.Desktop desktop = Desktop.getDesktop();
-            
-            desktop.setAboutHandler(e -> mainWnd.showAboutDialog());
-            desktop.setOpenFileHandler(e -> mainWnd.openFileHandler(e.getSearchTerm()));
-            desktop.setOpenURIHandler(e -> mainWnd.openFileHandler(e.getURI().getPath()));
-            desktop.setQuitHandler(new MyQuitHandler(mainWnd));
-            desktop.setPreferencesHandler(e -> mainWnd.openPreferences());
-            desktop.setQuitStrategy(QuitStrategy.NORMAL_EXIT);
-        }
-    }
-    private static class MyQuitHandler implements QuitHandler {
-        AppWindow wnd;
-        public MyQuitHandler(AppWindow wnd) {
-            this.wnd = wnd;
-        }
-        @Override public void handleQuitRequestWith(QuitEvent e, QuitResponse response) {
-            wnd.quitHandler();
-        }
-    }
     
     
     public static final Color UNIFIED_GRAY_PANEL_BKGND = new Color(237, 237, 237);

@@ -52,13 +52,13 @@ public class AboutDialog extends javax.swing.JDialog {
 
         setResizable(false);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("About"));
+        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/editor/gui/icons/icon64.png"))); // NOI18N
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/editor/gui/icons/app-banner.png"))); // NOI18N
 
-        jLabel3.setText("<html> Credits:<br/>   &nbsp;&nbsp;&nbsp;GreatSPN framework: &copy; 1985-2016 : Università di Torino, Italy.<br/>\n  &nbsp;&nbsp;&nbsp;New GreatSPN Editor: &copy; 2013-2016 : Università di Torino, Italy.<br/>\n  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Main developer of the GUI: <a href=\"amparore@di.unito.it\">Elvio G. Amparore</a> <br/>  </html>");
+        jLabel3.setText("<html> Credits:<br/>   &nbsp;&nbsp;&nbsp;GreatSPN framework: &copy; 1985-2021 : Università di Torino, Italy.<br/>\n  &nbsp;&nbsp;&nbsp;New GreatSPN Editor: &copy; 2013-2021 : Università di Torino, Italy.<br/>\n  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Main developer of the GUI: <a href=\"amparore@di.unito.it\">Elvio G. Amparore</a> <br/>  </html>");
         jLabel3.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
         jLabel4.setText("This software uses ");
