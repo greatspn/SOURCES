@@ -18,6 +18,7 @@ import editor.domain.values.IntScalarValue;
 import editor.domain.values.ListOfBounds;
 import editor.domain.values.ObjectValue;
 import editor.domain.values.RealScalarValue;
+import editor.domain.values.ValuedMultiSet;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -892,6 +893,27 @@ public class FormulaEvaluator extends ExprLangBaseVisitor<EvaluatedFormula> {
         nextElem.add(new DomainElement(value.getDomain(), nextColor));
         return MultiSet.makeNew(value.getDomain(), nextElem);
     }
+
+    @Override
+    public EvaluatedFormula visitColorTermFilterThis(ExprLangParser.ColorTermFilterThisContext ctx) {
+        if (context.filterThisDomain == null)
+            throw new EvaluationException("@[i] statement can only be used in filter predicates.");
+        DomainElement thisElem = context.filterThisDomain;
+        
+        int index = Integer.parseInt(ctx.INT().getText());
+        if (index < 0 || index >= thisElem.getDomain().getNumClassesInDomain())
+            throw new EvaluationException("Domain index "+index+" is outside its bounds.");
+        
+//        int mset = ((IntScalarValue)context.filterThisValue).value;
+        int[] colorIndex = new int[1];
+        colorIndex[0] = thisElem.getColor(index);
+        DomainElement singleCol = new DomainElement(thisElem.getDomain().getColorClass(index), 
+                                                    colorIndex);        
+        Set<DomainElement> cset = new TreeSet<>();
+        cset.add(singleCol);
+        EvaluatedFormula term = MultiSet.makeNew(thisElem.getDomain().getColorClass(index), cset);
+        return term;
+    }
     
     //==========================================================================
     //  Multiset predicate:
@@ -899,6 +921,11 @@ public class FormulaEvaluator extends ExprLangBaseVisitor<EvaluatedFormula> {
 
     @Override
     public EvaluatedFormula visitMSetBoolPredicate(ExprLangParser.MSetBoolPredicateContext ctx) {
+        return visit(ctx.boolExpr());
+    }
+
+    @Override
+    public EvaluatedFormula visitMSetElemBoolPredicate(ExprLangParser.MSetElemBoolPredicateContext ctx) {
         return visit(ctx.boolExpr());
     }
     
@@ -922,7 +949,30 @@ public class FormulaEvaluator extends ExprLangBaseVisitor<EvaluatedFormula> {
         EvaluatedFormula mult = (ctx.intExpr() != null ? visit(ctx.intExpr()) : IntScalarValue.ONE);
         if (!pred.getScalarBoolean())
             mult = IntScalarValue.ZERO; // Predicate evaluates to false.
-        return visitMsetExprElemProduct(mult, ctx.multiSetElem());
+        EvaluatedFormula resMset = visitMsetExprElemProduct(mult, ctx.multiSetElem());
+        
+        // Evaluate filter predicate
+        if (ctx.mSetElemPredicate() != null) {
+            ValuedMultiSet mset = (ValuedMultiSet)resMset;
+            Map<DomainElement, EvaluatedFormula> newSet = new TreeMap<>();
+            for (int i=0; i<mset.numElements(); i++) {
+                DomainElement ed = mset.getElement(i);
+                EvaluatedFormula ev = mset.getValue(i);
+                
+                context.filterThisDomain = ed;
+                context.filterThisValue = ev;
+                boolean keep = visit(ctx.mSetElemPredicate()).getScalarBoolean();
+                context.filterThisDomain = null;
+                context.filterThisValue = null;
+
+//                System.out.println("eval ed="+ed+" ev="+ev+"   keep="+keep);
+                if (keep)
+                    newSet.put(ed, ev);
+            }
+            resMset = ValuedMultiSet.makeNew(mset.getType(), mset.getDomain(), newSet);
+        }
+        
+        return resMset;
     }
 
     @Override
@@ -957,7 +1007,30 @@ public class FormulaEvaluator extends ExprLangBaseVisitor<EvaluatedFormula> {
         EvaluatedFormula mult = (ctx.realExpr() != null ? visit(ctx.realExpr()) : RealScalarValue.ONE);
         if (!pred.getScalarBoolean())
             mult = RealScalarValue.ZERO; // Predicate evaluates to false.
-        return visitMsetExprElemProduct(mult, ctx.multiSetElem());
+        EvaluatedFormula resMset = visitMsetExprElemProduct(mult, ctx.multiSetElem());
+        
+        // Evaluate filter predicate
+        if (ctx.mSetElemPredicate() != null) {
+            ValuedMultiSet mset = (ValuedMultiSet)resMset;
+            Map<DomainElement, EvaluatedFormula> newSet = new TreeMap<>();
+            for (int i=0; i<mset.numElements(); i++) {
+                DomainElement ed = mset.getElement(i);
+                EvaluatedFormula ev = mset.getValue(i);
+                
+                context.filterThisDomain = ed;
+                context.filterThisValue = ev;
+                boolean keep = visit(ctx.mSetElemPredicate()).getScalarBoolean();
+                context.filterThisDomain = null;
+                context.filterThisValue = null;
+
+//                System.out.println("eval ed="+ed+" ev="+ev+"   keep="+keep);
+                if (keep)
+                    newSet.put(ed, ev);
+            }
+            resMset = ValuedMultiSet.makeNew(mset.getType(), mset.getDomain(), newSet);
+        }
+        
+        return resMset;
     }
 
     @Override

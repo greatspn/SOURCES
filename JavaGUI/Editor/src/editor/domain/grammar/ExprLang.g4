@@ -184,16 +184,19 @@ unaryRealFn : fn=(SIN_FN | COS_FN | TAN_FN | EXP_FN | SQRT_FN | ARCSIN_FN | ARCC
 mSetPredicate : '[' boolExpr ']'                                 # MSetBoolPredicate
               ;
 
+mSetElemPredicate : '[' boolExpr ']'                             # MSetElemBoolPredicate
+                  ;
+
 realMSetExpr : '(' realMSetExpr ')'                                # RealMSetExprParen 
              | realMSetExpr op=('+'|'-') realMSetExpr              # RealMSetExprAddSub
-             | realExpr? mSetPredicate? '<' multiSetElem (',' multiSetElem)* '>'  # RealMSetExprElemProduct
+             | realExpr? mSetPredicate? '<' multiSetElem (',' multiSetElem)* '>' mSetElemPredicate?  # RealMSetExprElemProduct
              | '#' REAL_MSET_PLACE_ID                              # RealMsetExprPlaceMarking
              | REAL_MSET_CONST_ID                                  # RealMsetExprConst
              ;
 
 intMSetExpr :  '(' intMSetExpr ')'                               # IntMSetExprParen
             | intMSetExpr op=('+'|'-') intMSetExpr               # IntMSetExprAddSub
-            | intExpr? mSetPredicate? '<' multiSetElem (',' multiSetElem)* '>'  # IntMSetExprElemProduct
+            | intExpr? mSetPredicate? '<' multiSetElem (',' multiSetElem)* '>' mSetElemPredicate?  # IntMSetExprElemProduct
             | '#' INT_MSET_PLACE_ID                              # IntMsetExprPlaceMarking
             | INT_MSET_CONST_ID                                  # IntMSetExprConst
             ;
@@ -210,6 +213,7 @@ colorTerm : colorTerm op=('++'|'--')               # ColorTermNextPrev
           //| op=('!'|'^') colorTerm                 # ColorTermNextPrev2
           | colorVar                               # ColorTermVar
           | COLOR_ID                               # ColorTermColor
+          | '@' '[' INT ']'                        # ColorTermFilterThis
           ;
 
 colorSet : colorTerm                               # ColorSetTerm
