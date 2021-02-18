@@ -83,28 +83,33 @@ public class TestJLaTeXMath {
     }
 
     public static void main(String[] args) {
-//        String latex1 = "\\mathrm{If}\\left[34 \\geq \\sqrt{3.14 \\cdot 67}, 12, 34 + "
-//                + "\\left\\lceil \\binom{3}{2} \\right\\rceil\\right] + \\mathrm{Round}"
-//                + "\\left[ \\frac{{\\left({3 + 2}\\right)}^{5}}{5 \\cdot 6!} \\right]\n";
-//        String latex1 = "\\left\\lceil \\sin{3} + \\cos{\\left({3 \\cdot 5.6}\\right)} + "
-//                + "{\\left({\\arctan{\\left({3.14 \\cdot 78}\\right)}}\\right)}^{4} \\right\\rceil\n";
-//        String latex1 = "L = \\int_a^b \\sqrt{ \\left|\\sum_{i,j=1}^ng_{ij}(\\gamma(t))"
-//                + "\\left(\\frac{d}{dt}x^i\\circ\\gamma(t)\\right)\\left(\\frac{d}{dt}x^j\\circ"
-//                + "\\gamma(t)\\right)\\right|}\\,dt\\\\";
-//        String latex1 = "\\frac{\\mathrm{N}_{0}}{2} + 2";
-//        String latex1 = "A_0=\\left(\\begin{array}{rl}ax & b \\\\ c & dy\\end{array}\\right)\\cdot p \\text{STAT}";
-//        String latex1 = "\\mathrm{P}_{0}\\mathrm{M}_{0}\\mathrm{K}_{4}"
-//                + "\\hspace{1em} \\mathrm{p}_{1}\\hspace{1pt}\\mathrm{m}_{2}\\hspace{1pt}\\mathrm{k}_{3}"
-//                + "\\hspace{1em} \\mathrm{p}_{1}\\mathrm{m}_{2}\\mathrm{k}_{3}";
-//        String latex1 = "\\mathit{P}_{0}\\mathit{M}_{0}\\mathit{K}_{4}"
-//                + "\\hspace{1em} \\mathit{p}_{1}\\hspace{1pt}\\mathit{m}_{2}\\hspace{1pt}\\mathit{k}_{3}"
-//                + "\\hspace{1em} \\mathit{p}_{1}\\mathit{m}_{2}\\mathit{k}_{3}";
+        String[] latexStrings = {
+        "\\mathrm{If}\\left[34 \\geq \\sqrt{3.14 \\cdot 67}, 12, 34 + "
+                + "\\left\\lceil \\binom{3}{2} \\right\\rceil\\right] + \\mathrm{Round}"
+                + "\\left[ \\frac{{\\left({3 + 2}\\right)}^{5}}{5 \\cdot 6!} \\right]\n",
+        "\\left\\lceil \\sin{3} + \\cos{\\left({3 \\cdot 5.6}\\right)} + "
+                + "{\\left({\\arctan{\\left({3.14 \\cdot 78}\\right)}}\\right)}^{4} \\right\\rceil\n",
+        "L = \\int_a^b \\sqrt{ \\left|\\sum_{i,j=1}^ng_{ij}(\\gamma(t))"
+                + "\\left(\\frac{d}{dt}x^i\\circ\\gamma(t)\\right)\\left(\\frac{d}{dt}x^j\\circ"
+                + "\\gamma(t)\\right)\\right|}\\,dt\\\\",
+        "\\frac{\\mathrm{N}_{0}}{2} + 2",
+        "A_0=\\left(\\begin{array}{rl}ax & b \\\\ c & dy\\end{array}\\right)\\cdot p \\text{STAT}",
+        "\\mathrm{P}_{0}\\mathrm{M}_{0}\\mathrm{K}_{4}"
+                + "\\hspace{1em} \\mathrm{p}_{1}\\hspace{1pt}\\mathrm{m}_{2}\\hspace{1pt}\\mathrm{k}_{3}"
+                + "\\hspace{1em} \\mathrm{p}_{1}\\mathrm{m}_{2}\\mathrm{k}_{3}",
+        "\\mathit{P}_{0}\\mathit{M}_{0}\\mathit{K}_{4}"
+                + "\\hspace{1em} \\mathit{p}_{1}\\hspace{1pt}\\mathit{m}_{2}\\hspace{1pt}\\mathit{k}_{3}"
+                + "\\hspace{1em} \\mathit{p}_{1}\\mathit{m}_{2}\\mathit{k}_{3}",
+        "34\\_56\\underscore 56"
+        };
+        
         UnderscoreAtom.w = new SpaceAtom(TeXConstants.UNIT_EM, 0.4f, 0, 0);
         UnderscoreAtom.s = new SpaceAtom(TeXConstants.UNIT_EM, 0.06f, 0, 0);
 
-        String latex1 = "34\\_56\\underscore 56";
         try {
-            writeLatexFormulaAsImage(latex1, "jLatexMathTest_00.png", 16.0f);
+            for (int i=0; i<latexStrings.length; i++) {
+                writeLatexFormulaAsImage(latexStrings[i], "jLatexMathTest_"+i+".png", 32.0f);
+            }
 //            writeLatexFormulaAsImage("prova_0", "ExampleImg1.png", 100);
 //            writeLatexFormulaAsImage("Prova_0", "ExampleImg2.png", 100);
 //            writeLatexFormulaAsImage("x = \\frac{1}{N}", "ExampleImg3.png", 100);

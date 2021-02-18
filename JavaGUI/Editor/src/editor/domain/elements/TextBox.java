@@ -184,6 +184,7 @@ public class TextBox extends Node implements Serializable {
                 setText(value.toString());
             }
             @Override public boolean isCurrentValueValid() { return true; }
+            @Override public boolean editAsMultiline() { return true; }
         };
     }
 
@@ -226,7 +227,7 @@ public class TextBox extends Node implements Serializable {
                 fmt += "\\textbf{";
             if (italicText)
                 fmt += "\\textit{";
-            fmt += text;
+            fmt += text.replace("\n", "\\\\");
             fmt += "}";
             if (boldText)
                 fmt += "}";

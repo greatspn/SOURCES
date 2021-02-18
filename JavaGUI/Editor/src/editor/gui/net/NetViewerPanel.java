@@ -276,30 +276,28 @@ public abstract class NetViewerPanel extends JPanel implements Scrollable {
     
     public void saveBindingParameters(MainWindowInterface mainInterface, final GspnPage origGspn, final DtaPage origDta) {
         // Save the template bindings
-        mainInterface.executeUndoableCommand("Update template parameter assignments.", new UndoableCommand() {
-            @Override public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                boolean changed = false;
-                if (origGspn != null && getGspnBinding() != null) {
-                    for (Entry<String, Expr> entry : getGspnBinding().binding.entrySet()) {
-                        TemplateVariable tvar = (TemplateVariable)origGspn.getNodeByUniqueName(entry.getKey());
-                        if (!tvar.getLastBindingExpr().getExpr().equals(entry.getValue().getExpr())) {
-                            tvar.getLastBindingExpr().setExpr(entry.getValue().getExpr());
-                            changed = true;
-                        }
+        mainInterface.executeUndoableCommand("Update template parameter assignments.", (ProjectData proj, ProjectPage page) -> {
+            boolean changed = false;
+            if (origGspn != null && getGspnBinding() != null) {
+                for (Entry<String, Expr> entry : getGspnBinding().binding.entrySet()) {
+                    TemplateVariable tvar = (TemplateVariable)origGspn.getNodeByUniqueName(entry.getKey());
+                    if (!tvar.getLastBindingExpr().getExpr().equals(entry.getValue().getExpr())) {
+                        tvar.getLastBindingExpr().setExpr(entry.getValue().getExpr());
+                        changed = true;
                     }
                 }
-                if (origDta != null && getDtaBinding() != null) {
-                    for (Entry<String, Expr> entry : getDtaBinding().binding.entrySet()) {
-                        TemplateVariable tvar = (TemplateVariable)origDta.getNodeByUniqueName(entry.getKey());
-                        if (!tvar.getLastBindingExpr().getExpr().equals(entry.getValue().getExpr())) {
-                            tvar.getLastBindingExpr().setExpr(entry.getValue().getExpr());
-                            changed = true;
-                        }
-                    }
-                }
-                if (!changed)
-                    throw new NoOpException();
             }
+            if (origDta != null && getDtaBinding() != null) {
+                for (Entry<String, Expr> entry : getDtaBinding().binding.entrySet()) {
+                    TemplateVariable tvar = (TemplateVariable)origDta.getNodeByUniqueName(entry.getKey());
+                    if (!tvar.getLastBindingExpr().getExpr().equals(entry.getValue().getExpr())) {
+                        tvar.getLastBindingExpr().setExpr(entry.getValue().getExpr());
+                        changed = true;
+                    }
+                }
+            }
+            if (!changed)
+                throw new NoOpException();
         });
     }
     

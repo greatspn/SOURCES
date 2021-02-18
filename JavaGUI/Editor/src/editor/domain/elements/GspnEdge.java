@@ -161,6 +161,7 @@ public class GspnEdge extends Edge implements Serializable {
             }
             return super.getTextColorNormal(dh); 
         }
+        @Override public boolean editAsMultiline() { return false; }
     }
     
     public EditableCell getMultiplicityEditable() {

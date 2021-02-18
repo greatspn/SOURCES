@@ -11,8 +11,9 @@ import editor.domain.ProjectPage;
  *
  * @author elvio
  */
-public abstract class UndoableCommand {
+@FunctionalInterface
+public interface UndoableCommand {
     
     // Execute the command on the actual project/page pair
-    public abstract void Execute(ProjectData proj, ProjectPage page) throws Exception;
+    public void Execute(ProjectData proj, ProjectPage page) throws Exception;
 }

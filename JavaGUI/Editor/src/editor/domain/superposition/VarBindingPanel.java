@@ -57,12 +57,9 @@ public class VarBindingPanel extends javax.swing.JPanel implements ExprField.Exp
 
     @Override
     public void onExprModified() {
-        mainInterface.executeUndoableCommand("change bound value", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                NetInstanceDescriptor d = ((MultiNetPage)page).netsDescr.get(numInst);
-                d.instParams.bindSingleValue(tvar.getUniqueName(), exprCopy);
-            }
+        mainInterface.executeUndoableCommand("change bound value", (ProjectData proj, ProjectPage page) -> {
+            NetInstanceDescriptor d = ((MultiNetPage)page).netsDescr.get(numInst);
+            d.instParams.bindSingleValue(tvar.getUniqueName(), exprCopy);
         });
     }
 

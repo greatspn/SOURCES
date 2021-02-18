@@ -138,6 +138,7 @@ public class DtaLocation extends Node implements Serializable {
             spExpr.setExpr((String)value);
         }
         @Override public boolean isEditable() { return true; }
+        @Override public boolean editAsMultiline() { return false; }
     }
     
     class VarFlowLabel extends NodeLabelDecor {
@@ -172,6 +173,7 @@ public class DtaLocation extends Node implements Serializable {
             varFlow.setExpr(((String)value).trim());
         }
         @Override public boolean isEditable() { return true; }
+        @Override public boolean editAsMultiline() { return false; }
     }
     
     public class InitialArrowDecor extends Decor {
@@ -354,6 +356,7 @@ public class DtaLocation extends Node implements Serializable {
             {
                 return DtaLocation.this.intersectRectangle(rect, viewProfile, includeDecors);
             }
+            @Override public boolean editAsMultiline() { return false; }
         };
     }
 

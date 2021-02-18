@@ -27,7 +27,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import latex.LatexProvider;
 import latex.LatexProviderImpl;
 
 /**
@@ -74,7 +73,6 @@ public class Main {
                 //Util.loadFont("/editor/gui/icons/cmr10.ttf");
                 
                 wnd.setVisible(true);                
-                Util.setupOSXIntegration(wnd);
                 
                 // Open the files passed on the command line
                 for (String arg : args) {

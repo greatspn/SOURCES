@@ -1685,6 +1685,31 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         return formatUnaryFn(op, term).addPayload(term.getPayload());        
     }
 
+    @Override
+    public FormattedFormula visitColorTermFilterThis(ExprLangParser.ColorTermFilterThisContext ctx) {
+        switch (lang) {
+            case PNPRO:
+            case LATEX:
+            case GREATSPN: {
+                int index = Integer.parseInt(ctx.INT().getText());
+                MultiSetElemType ty = null;
+                if (index < 0 || index >= context.colorDomainOfExpr.getNumClassesInDomain()) {
+                    context.addNewError("Domain index "+index+" must be in range [0, "
+                                        +context.colorDomainOfExpr.getNumClassesInDomain()+").");
+                    ty = new MultiSetElemType(ALL_COLORS);
+                }
+                else {
+                    ty = new MultiSetElemType(context.colorDomainOfExpr.getColorClass(index));
+                }
+                return format(true, "@[", index, "]").addPayload(ty);
+            }
+            default:
+                throw new UnsupportedOperationException("Multiset Filter Predicates are not supported");
+        }
+
+        
+    }
+
     //==========================================================================
     //  Payloads of multiset expressions:
     //==========================================================================
@@ -1737,7 +1762,19 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 throw new UnsupportedOperationException("MultiSet predicates are not supported.");
         }
     }
-    
+
+    @Override
+    public FormattedFormula visitMSetElemBoolPredicate(ExprLangParser.MSetElemBoolPredicateContext ctx) {
+        switch (lang) {
+            case PNPRO:
+            case LATEX:
+            case GREATSPN:
+                return format(true, "\\bigl[", visit(ctx.boolExpr()), "\\bigr]");
+                
+            default:
+                throw new UnsupportedOperationException("MultiSet filter predicates are not supported.");
+        }
+    }
     
   
     //==========================================================================
@@ -1746,7 +1783,8 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     
     
     public FormattedFormula visitMultiSetDef(ParseTree mult, ParseTree pred, 
-                                             List<ExprLangParser.MultiSetElemContext> msetElemList) 
+                                             List<ExprLangParser.MultiSetElemContext> msetElemList,
+                                             ParseTree filterPred) 
     {
         final ColorClass fixedDomain = context.colorDomainOfExpr;
         StringBuilder buffer = new StringBuilder();
@@ -1865,11 +1903,18 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         switch (lang) {
             case LATEX:
                 buffer.append("\\rangle ");
+                if (filterPred != null) {
+                    FormattedFormula predFF = visit(filterPred);
+                    buffer.append(predFF.getFormula());
+                }
                 break;
             case PNML:
                 buffer.append("</tuple>");
                 if (mult != null)
                     buffer.append("</subterm></numberof>");
+                if (filterPred != null) {
+                    context.addNewError("Multiset filter predicates are not supported in PNML.");
+                }
                 break;
             case GRML:
                 buffer.append("</attribute></attribute>"); // tokenProfile, token
@@ -1931,7 +1976,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     
     @Override
     public FormattedFormula visitIntMSetExprElemProduct(ExprLangParser.IntMSetExprElemProductContext ctx) {
-        return visitMultiSetDef(ctx.intExpr(), ctx.mSetPredicate(), ctx.multiSetElem());
+        return visitMultiSetDef(ctx.intExpr(), ctx.mSetPredicate(), ctx.multiSetElem(), ctx.mSetElemPredicate());
     }
 
     @Override
@@ -1990,7 +2035,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 
     @Override
     public FormattedFormula visitRealMSetExprElemProduct(ExprLangParser.RealMSetExprElemProductContext ctx) {
-        return visitMultiSetDef(ctx.realExpr(), ctx.mSetPredicate(), ctx.multiSetElem());
+        return visitMultiSetDef(ctx.realExpr(), ctx.mSetPredicate(), ctx.multiSetElem(), ctx.mSetElemPredicate());
     }
     
     @Override

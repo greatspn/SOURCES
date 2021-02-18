@@ -359,6 +359,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	T visitBoolExprColorTermComp(@NotNull ExprLangParser.BoolExprColorTermCompContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#ColorTermFilterThis}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitColorTermFilterThis(@NotNull ExprLangParser.ColorTermFilterThisContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#ClockConstrAnd}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -455,6 +462,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitBoolExprRealComp(@NotNull ExprLangParser.BoolExprRealCompContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#MSetElemBoolPredicate}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMSetElemBoolPredicate(@NotNull ExprLangParser.MSetElemBoolPredicateContext ctx);
 
 	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#RealExprCond}.

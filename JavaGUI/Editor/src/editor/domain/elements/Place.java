@@ -265,6 +265,7 @@ public class Place extends Node implements Serializable, ColorClass.DomainHolder
         @Override public boolean isVisible(ViewProfile vp)  { 
             return vp.viewNames && isInColorDomain(); 
         }
+        @Override public boolean editAsMultiline() { return false; }
     }
         
     // A simple string that denotes the Kronecker partition (used in hierarchical PN)
@@ -295,6 +296,7 @@ public class Place extends Node implements Serializable, ColorClass.DomainHolder
         @Override public String getVisualizedValue() { 
             return AlternateNameFunction.NUMBERS_AS_SUBSCRIPTS.prepareLatexText(partitionName, null, STYLE_ROMAN);
         }
+        @Override public boolean editAsMultiline() { return false; }
     }
     
     // Return the domain name, or null if it is neutral
@@ -688,6 +690,7 @@ public class Place extends Node implements Serializable, ColorClass.DomainHolder
             {
                 return Place.this.intersectRectangle(rect, viewProfile, includeDecors);
             }
+            @Override public boolean editAsMultiline() { return false; }
         };
     }
     

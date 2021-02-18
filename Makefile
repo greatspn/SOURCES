@@ -89,7 +89,7 @@ ifeq ($(UNAME_S),Darwin)
    CPPFLAGS += -I/usr/include/malloc -I/usr/local/include/ -I/opt/homebrew/include
    LDFLAGS += -L/usr/local/lib/ -L/opt/homebrew/lib
    ENABLE_Cxx17 := -std=c++17 -stdlib=libc++ -U__STRICT_ANSI__
-   LAUNCH4J := java -jar JavaGUI/launch4j-macosx/launch4j.jar
+   LAUNCH4J := java -jar JavaGUI/launch4j-3.13-macosx/launch4j.jar
 
    
 	# CFLAGS += -Wno-implicit-function-declaration \
@@ -1872,6 +1872,7 @@ JavaGUI-jar: $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Jar.zip
 
 JAVA_GUI_ARCHIVES := $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Mac.zip \
 				     $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Linux.tgz \
+				     $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Win.zip \
 				     $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Jar.zip
 
 # Windows exe generation requires the launch4j tool to be installed.
