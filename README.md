@@ -34,16 +34,16 @@ For Fedora 32, you can install the dependencies with this command:
 ```
 sudo dnf -y install gcc gcc-c++ gmp-devel gmp-c++ gmp boost-devel flex-devel ant glib2-devel \
  patch python glpk-devel lpsolve-devel autoconf automake libtool zip flex git byacc time \
- graphviz suitesparse-devel motif-devel make libxml++-devel glibmm24-devel lpsolve
+ graphviz suitesparse-devel motif-devel make libxml++-devel glibmm24-devel lpsolve texlive-epstopdf
 ```
 
 For Debian/Ubuntu, the list of dependencies is installed with the command:
 ```
 sudo apt-get install -y gcc g++ libgmp-dev libgmpxx4ldbl libboost-all-dev flexc++ ant libglib2.0-dev \
  patch python3 libglpk-dev liblpsolve55-dev autoconf automake libtool zip flex byacc time graphviz \
- libsuitesparse-dev libmotif-dev make libxml++2.6-dev libglibmm-2.4-dev 
+ libsuitesparse-dev libmotif-dev make libxml++2.6-dev libglibmm-2.4-dev texlive-font-utils
 ```
-This list was last tested on Ubuntu 20.04LTS, and it applies also to WSL-2.
+This list was last tested on Ubuntu 20.04LTS, and it also applies to WSL-2 with Ubuntu.
 
 Parts of GreatSPN use the [Meddly library](https://github.com/asminer/meddly). 
 To download and install the Meddly library, type:
@@ -60,7 +60,7 @@ sudo make install
 Please, refer to the Meddly site for further information on how to download, compile and install it.
 
 
-To compile the CTL* model checker, the [Spot library](https://spot.lrde.epita.fr/) is required. Download and install it from the Spot website.
+To compile the CTL* model checker, the [Spot library](https://spot.lrde.epita.fr/) is required. Download and install it from the Spot website. **NOTE**: ensure that it is installed in a system directory, like `/usr/local/lib`.
 
 Once Meddly and Spot are both compiled and installed, create the main `GreatSPN` source directory with this command:
 
@@ -74,6 +74,7 @@ sudo make install
 ```
 
 to download, compile and install the sources. 
+Upon completion, the framework will be installed by default in the `/usr/local/GreatSPN/` directory.
 
 
 #### macOS installation instructions:
@@ -95,9 +96,11 @@ the Linux/Unix instructions to compile Meddly and GreatSPN.
 
 #### Windows installation instructions:
 
-GreatSPN is known to compile and run successfully using the WSL (Windows 10 64bit minimum).
+GreatSPN is known to compile and run successfully using the WSL-2 (Windows 10 64bit minimum) using Ubuntu 20.04LTS.
+WSL installation is slightly different, since the GUI will be a standard Windows application, while the command line tools will reside and run inside the WSL subsystem.
 
-TBD.
+Follow the above steps to compile all the command line tools inside the WSL subsystem, then download a precompiled GUI from [here](http://www.di.unito.it/~amparore/mc4cslta/editor.html). You can use either the Windows version, or the JAR version in case the Windows exe raises problems.
+The GUI for Windows is automatically configured to use the tools inside the WSL environment, so no additional step is needed.
 
 
 #### Pre-installed VirtualBox machine:
