@@ -30,6 +30,7 @@
 #include <unordered_set>
 #include <functional>
 #include <unistd.h>
+#include <signal.h>
 using namespace std;
 
 #include <boost/optional.hpp>
