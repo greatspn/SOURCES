@@ -3,16 +3,18 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/measures/FormulaListPanel.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/net/MultilineTextCellEditor.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/net/TextCellEditor.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/net/ComboBoxForEditable.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/measures/AllMeasuresResult.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/net/NetEditorPanel.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/LabelDecor.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/net/TextFieldForEditable.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/common/JValidatedTextField.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/AppWindow.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/net/AddNodeTool.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/UndoableCommand.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/superposition/MultiNetEditorPanel.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/measures/MeasureEditorPanel.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/superposition/NetInstanceDescriptorPanel.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/net/NetViewerPanel.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/AppWindow.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/superposition/VarBindingPanel.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/CutCopyPasteEngine.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/MainWindowInterface.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/net/AddNewEdgeTool.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/net/NetEditorPanel.java</file>
         </group>
     </open-files>
 </project-private>

@@ -129,6 +129,7 @@ endif
 
 ifdef IS_WSL
 	LAUNCH4J := 
+	EXCLUDE_GUI = 1
 endif
 
 
@@ -1088,6 +1089,93 @@ ifdef HAS_MEDDLY_LIB
   endif
 endif
 
+# #### RGMEDD version 5 ########################################
+
+# -DDEBUG_BUILD enables verbose logging, MDD.show() methods, dumping svg / pdf
+RGMEDD5_CFLAGS := $(CFLAGS) $(call generate_WN_FLAGS,TOOL_RGMEDD5,RGMEDD5) \
+					$(FLEX-INCLUDE) #-g #-DDEBUG_BUILD
+
+RGMEDD5_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx17) $(INCLUDE_GMP_LIB) \
+					$(RGMEDD5_CFLAGS) $(INCLUDE_MEDDLY_LIB) $(INCLUDE_SPOT_LIB)
+
+RGMEDD5_LDFLAGS := $(LDFLAGS) $(FLEX-LIB) $(LINK_GMP_LIB) \
+					$(LINK_MEDDLY_LIB) $(LINK_SPOT_LIB) -lmeddly -lspot
+
+RGMEDD5_SOURCES := WN/SOURCE/SHARED/service.c \
+				   WN/SOURCE/SHARED/ealloc.c \
+				   WN/SOURCE/SHARED/token.c \
+				   WN/SOURCE/SHARED/dimensio.c \
+				   WN/SOURCE/SHARED/errors.c \
+				   WN/SOLVE/compact.c \
+				   WN/SOURCE/SHARED/common.c \
+				   WN/SOURCE/SHARED/enabling.c \
+				   WN/SOURCE/SHARED/fire.c \
+				   WN/SOURCE/SHARED/shared1.c \
+				   WN/SOURCE/SHARED/shared2.c \
+				   WN/SOURCE/SHARED/outdom.c \
+				   WN/SOURCE/SHARED/report.c \
+				   WN/SOURCE/SHARED/precheck.c \
+				   WN/SOURCE/SHARED/flush.c \
+				   WN/SOURCE/SHARED/degree.c \
+				   WN/SOURCE/REACHAB/graph_se.c \
+				   WN/SOURCE/REACHAB/stack.c \
+				   WN/SOURCE/REACHAB/convert.c \
+				   WN/SOURCE/REACHAB/rg_files.c \
+				   WN/SOURCE/REACHAB/rgengwn.c \
+				   WN/SOURCE/READNET/read_arc.c \
+				   WN/SOURCE/READNET/read_t_c.c \
+				   WN/SOURCE/READNET/read_DEF.c \
+				   WN/SOURCE/READNET/read_NET.c \
+				   WN/SOURCE/READNET/read_PIN.c \
+				   WN/SOURCE/READNET/read_t_s.c \
+				   WN/SOURCE/READNET/wn_yac.c \
+				   WN/TRANSL/wn_grammar.y \
+				   WN/TRANSL/wn.l \
+				   WN/SOURCE/RGMEDD5/implicit_postimage.cpp \
+				   WN/SOURCE/RGMEDD5/parallel.cpp \
+				   WN/SOURCE/RGMEDD5/mainMEDD5.cpp \
+				   WN/SOURCE/RGMEDD5/mc_core.cpp \
+				   WN/SOURCE/RGMEDD5/utils/mt19937-64.c \
+				   WN/SOURCE/RGMEDD5/varorders.cpp \
+				   WN/SOURCE/RGMEDD5/varorders_bgl.cpp \
+				   WN/SOURCE/RGMEDD5/varorders_meta.cpp \
+				   WN/SOURCE/RGMEDD5/varorders_soups.cpp \
+				   WN/SOURCE/RGMEDD5/varorders_pbasis.cpp \
+				   WN/SOURCE/RGMEDD5/meddEv.cpp \
+				   WN/SOURCE/RGMEDD5/general.cpp \
+				   WN/SOURCE/RGMEDD5/graphMEDD.cpp \
+				   WN/SOURCE/RGMEDD5/FormulaEval.cpp \
+				   WN/SOURCE/RGMEDD5/CTL.cpp \
+				   WN/SOURCE/RGMEDD5/LTL.cpp \
+				   WN/SOURCE/RGMEDD5/CTLParser.yy \
+				   WN/SOURCE/RGMEDD5/CTLLexer.ll
+
+# Modify the lexer and the parser generators used by the
+# RGMEDD5_LEX_WN/SOURCE/AUTOMA/AutoLexer.l = $(LEX) -P kk --header-file=$(@:.c=.h)
+# RGMEDD5_YACCPP_WN/SOURCE/AUTOMA/AutoParser.yy := byacc -v -p kk -d
+RGMEDD5_YACCPP_WN/SOURCE/RGMEDD5/CTLParser.yy := byacc -p mm -v -d
+RGMEDD5_LEXPP_WN/SOURCE/RGMEDD5/CTLLexer.ll = $(LEXPP) -+ -P mm --header-file=$(@:.cpp=.h)
+RGMEDD5_LD := $(LDPP) -shared-libgcc
+RGMEDD5_CPPFLAGS := $(RGMEDD5_CPPFLAGS) -I.
+
+$(OBJDIR)/RGMEDD5/WN/SOURCE/RGMEDD5/CTLParser.yy.o: $(OBJDIR)/RGMEDD5/WN/SOURCE/RGMEDD5/CTLLexer.ll.cpp
+
+$(OBJDIR)/RGMEDD5/WN/SOURCE/RGMEDD5/CTLLexer.ll.o: $(OBJDIR)/RGMEDD5/WN/SOURCE/RGMEDD5/CTLParser.yy.cpp
+
+$(OBJDIR)/RGMEDD5/WN/SOURCE/RGMEDD5/FormulaEval.o: $(OBJDIR)/RGMEDD5/WN/SOURCE/RGMEDD5/CTLLexer.ll.cpp
+
+
+ifdef HAS_LP_SOLVE_LIB
+  RGMEDD5_CPPFLAGS := $(RGMEDD5_CPPFLAGS) $(INCLUDE_LP_SOLVE_LIB)
+  RGMEDD5_LDFLAGS := $(RGMEDD5_LDFLAGS) $(LINK_LP_SOLVE_LIB) 
+endif
+
+ifdef HAS_MEDDLY_LIB
+	ifdef HAS_SPOT_LIB
+		TARGETS += RGMEDD5
+	endif
+endif
+
 ###################################################################################
 
 GSPNRG_CFLAGS := $(call generate_WN_FLAGS,TOOL_GSPNRG,GSPNRG)
@@ -1764,8 +1852,10 @@ $(BINDIR)/GreatSPN.uid: UIL/Great.uil $(UIL_FILES)
 	@LANG=C $(UIL) -o $@ UIL/Great.uil
 
 ifdef HAS_OPENMOTIF_LIB
+ifndef EXCLUDE_GUI
 EXTRA_INSTALLED_BINARIES += $(BINDIR)/GreatSPN.uid
 EXTRA_INSTALLED_SCRIPTS += gsrc2/GreatConfig
+endif
 endif
 
 ######################################
@@ -1903,7 +1993,9 @@ ifdef HAVE_LAUNCH4J
   JAVA_GUI_ARCHIVES += $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Win.zip
 endif
 
-JavaGUI: java-jars $(JAVA_GUI_ARCHIVES)
+JavaGUI: java-jars
+
+JavaGUI-archives: $(JAVA_GUI_ARCHIVES)
 
 SCRIPTS += unfolding2 greatspn_editor
 
@@ -1911,7 +2003,7 @@ unfolding2_SOURCEFILE := JavaGUI/unfolding2.sh
 greatspn_editor_SOURCEFILE := JavaGUI/greatspn_editor.sh
 
 
-upload_JavaGUI: JavaGUI
+upload_JavaGUI: JavaGUI JavaGUI-archives
 	scp $(JAVA_GUI_ARCHIVES) amparore@pianeta.di.unito.it:/docsrv/amparore/public_html/mc4cslta/EditorBinaries/
 
 clean_JavaGUI_x:
@@ -1948,23 +2040,27 @@ install_JavaGUI_models:
 # On Linux, make install automatically re-installs the Java GUI
 ifeq ($(UNAME_S),Linux)
  ifdef HAS_APACHE_ANT
+  ifndef EXCLUDE_GUI
 install: linux-install-JavaGUI
 
+  endif
  endif
 endif
 
 ifdef HAS_JAVA_DEVELOPMENT_KIT
  ifdef HAS_APACHE_ANT
+  ifndef EXCLUDE_GUI
 all: JavaGUI
 
 clean: clean_JavaGUI
 
 install: install_JavaGUI_models install_JavaGUI_jars
 
+  endif
  endif
 endif
 
-.PHONY += JavaGUI clean_JavaGUI JavaGUI-antlr java-jars clean_java-gui linux-install-JavaGUI
+.PHONY += JavaGUI clean_JavaGUI JavaGUI-antlr java-jars clean_java-gui linux-install-JavaGUI JavaGUI-archives
 .PHONY += JavaGUI-win JavaGUI-macosx JavaGUI-linux JavaGUI-jar upload_JavaGUI install_JavaGUI_jars
 
 
