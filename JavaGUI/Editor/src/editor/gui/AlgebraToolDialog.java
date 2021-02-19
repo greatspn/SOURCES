@@ -18,6 +18,8 @@ import editor.domain.elements.Place;
 import editor.domain.elements.Transition;
 import editor.domain.io.GreatSpnFormat;
 import editor.domain.measures.SolverInvokator;
+import static editor.domain.measures.SolverInvokator.makeFilenameCmd;
+import static editor.domain.measures.SolverInvokator.startOfCommand;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -169,6 +171,8 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
 
                 try {
                     StringBuilder cmd = new StringBuilder();
+                    
+                    cmd.append(startOfCommand());
                     cmd.append(SolverInvokator.useGreatSPN_binary("algebra")).append(" ");
                     String transitionTags = "", placeTags = "";
 
@@ -218,11 +222,11 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                     // Compose the algebra command
                     if (!propBrokenEdges)
                         cmd.append("-no_ba ");
-                    cmd.append(tmpName1.getAbsolutePath()).append(" ");
-                    cmd.append(tmpName2.getAbsolutePath()).append(" ");
+                    cmd.append(makeFilenameCmd(tmpName1)).append(" ");
+                    cmd.append(makeFilenameCmd(tmpName2)).append(" ");
                     cmd.append(propOperator).append(" ");
-                    cmd.append(tmpRestfile.getAbsolutePath()).append(" ");
-                    cmd.append(tmpResult.getAbsolutePath()).append(" ");
+                    cmd.append(makeFilenameCmd(tmpRestfile)).append(" ");
+                    cmd.append(makeFilenameCmd(tmpResult)).append(" ");
                     cmd.append(propPlacement).append(" ");
                     if (propPlacement == 3) {
                         propDxShift = Integer.parseInt(textFieldDxShift.getText());
@@ -237,6 +241,7 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                     
                     // Run the tool
                     String[] envp = SolverInvokator.prepareRuntimeEnvironmentVars();
+                    System.out.println(cmd);
                     Process pr = Runtime.getRuntime().exec(cmd.toString(), envp);
                     int retVal = pr.waitFor();
                     if (retVal != 0)

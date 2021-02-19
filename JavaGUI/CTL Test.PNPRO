@@ -1,488 +1,503 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- This project file has been saved by 'New Editor' version 100 -->
-<project name="CTL Test" version="100">
+<!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="CTL Test" version="121">
   <gspn name="CTL2">
     <nodes>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="40" name="P0" x="6.0" y="7.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="P1" x="18.0" y="7.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T0" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="12.55" y="3.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T1" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="12.55" y="11.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T2" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="24.55" y="7.0"/>
+      <place marking="40" name="P0" x="6.0" y="7.0"/>
+      <place name="P1" x="18.0" y="7.0"/>
+      <transition name="T0" type="EXP" x="12.55" y="3.0"/>
+      <transition name="T1" type="EXP" x="12.55" y="11.0"/>
+      <transition name="T2" type="EXP" x="24.55" y="7.0"/>
     </nodes>
     <edges>
-      <arc broken="false" head="T0" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="P0" type="INPUT"/>
-      <arc broken="false" head="P1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T0" type="OUTPUT"/>
-      <arc broken="false" head="T1" multiplicity="40" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="P1" type="INPUT"/>
-      <arc broken="false" head="P0" multiplicity="40" multiplicity-k="0.5" multiplicity-x="-1.0" multiplicity-y="1.0" tail="T1" type="OUTPUT"/>
-      <arc broken="false" head="T2" multiplicity="5" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="P1" type="INPUT"/>
-      <arc broken="false" head="P0" multiplicity="5" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T2" type="OUTPUT">
+      <arc head="T0" kind="INPUT" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="T0"/>
+      <arc head="T1" kind="INPUT" mult="40" tail="P1"/>
+      <arc head="P0" kind="OUTPUT" mult="40" mult-x="-1.0" tail="T1"/>
+      <arc head="T2" kind="INPUT" mult="5" tail="P1"/>
+      <arc head="P0" kind="OUTPUT" mult="5" tail="T2">
         <point x="31.5" y="8.0"/>
         <point x="31.5" y="16.0"/>
         <point x="3.5" y="16.0"/>
         <point x="3.5" y="8.0"/>
       </arc>
-      <arc broken="false" head="T2" multiplicity="15" multiplicity-k="0.81396484375" multiplicity-x="-1.2098196044872616" multiplicity-y="-1.3601202636751584" tail="P1" type="INHIBITOR">
+      <arc head="T2" kind="INHIBITOR" mult="15" mult-k="0.81396484375" mult-x="-1.2098196044872616" mult-y="-1.3601202636751584" tail="P1">
         <point x="22.0" y="6.0"/>
       </arc>
     </edges>
   </gspn>
   <gspn name="CTL-nonerg">
     <nodes>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="3" name="P0" x="6.0" y="6.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="P1" x="16.0" y="6.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T0" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="11.55" y="3.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T1" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="11.55" y="10.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="P2" x="12.0" y="18.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="P3" x="17.0" y="18.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="P4" x="22.0" y="18.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T2" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="1.5707963267948966" type="EXP" x="12.55" y="14.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T3" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="1.5707963267948966" type="EXP" x="17.55" y="14.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T4" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="1.5707963267948966" type="EXP" x="22.55" y="14.0"/>
+      <place marking="3" name="P0" x="6.0" y="6.0"/>
+      <place name="P1" x="16.0" y="6.0"/>
+      <transition name="T0" type="EXP" x="11.55" y="3.0"/>
+      <transition name="T1" type="EXP" x="11.55" y="10.0"/>
+      <place name="P2" x="12.0" y="18.0"/>
+      <place name="P3" x="17.0" y="18.0"/>
+      <place name="P4" x="22.0" y="18.0"/>
+      <transition name="T2" rotation="1.5707963267948966" type="EXP" x="12.55" y="14.0"/>
+      <transition name="T3" rotation="1.5707963267948966" type="EXP" x="17.55" y="14.0"/>
+      <transition name="T4" rotation="1.5707963267948966" type="EXP" x="22.55" y="14.0"/>
     </nodes>
     <edges>
-      <arc broken="false" head="T0" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="P0" type="INPUT"/>
-      <arc broken="false" head="P1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T0" type="OUTPUT"/>
-      <arc broken="false" head="T1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="P1" type="INPUT"/>
-      <arc broken="false" head="P0" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T1" type="OUTPUT"/>
-      <arc broken="false" head="T2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="P1" type="INPUT"/>
-      <arc broken="false" head="P2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T2" type="OUTPUT"/>
-      <arc broken="false" head="T3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="P1" type="INPUT"/>
-      <arc broken="false" head="P3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T3" type="OUTPUT"/>
-      <arc broken="false" head="T4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="P1" type="INPUT"/>
-      <arc broken="false" head="P4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T4" type="OUTPUT"/>
+      <arc head="T0" kind="INPUT" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="T0"/>
+      <arc head="T1" kind="INPUT" tail="P1"/>
+      <arc head="P0" kind="OUTPUT" tail="T1"/>
+      <arc head="T2" kind="INPUT" tail="P1"/>
+      <arc head="P2" kind="OUTPUT" tail="T2"/>
+      <arc head="T3" kind="INPUT" tail="P1"/>
+      <arc head="P3" kind="OUTPUT" tail="T3"/>
+      <arc head="T4" kind="INPUT" tail="P1"/>
+      <arc head="P4" kind="OUTPUT" tail="T4"/>
     </edges>
   </gspn>
   <gspn name="CTL-nonerg2">
     <nodes>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="1" name="P0" x="5.0" y="6.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T0" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="10.55" y="6.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="P1" x="15.0" y="6.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T1" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="20.55" y="6.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="P2" x="25.0" y="6.0"/>
+      <place marking="1" name="P0" x="5.0" y="6.0"/>
+      <transition name="T0" type="EXP" x="10.55" y="6.0"/>
+      <place name="P1" x="15.0" y="6.0"/>
+      <transition name="T1" type="EXP" x="20.55" y="6.0"/>
+      <place name="P2" x="25.0" y="6.0"/>
     </nodes>
     <edges>
-      <arc broken="false" head="T0" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="P0" type="INPUT"/>
-      <arc broken="false" head="P1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T0" type="OUTPUT"/>
-      <arc broken="false" head="T1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="P1" type="INPUT"/>
-      <arc broken="false" head="P2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T1" type="OUTPUT"/>
+      <arc head="T0" kind="INPUT" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="T0"/>
+      <arc head="T1" kind="INPUT" tail="P1"/>
+      <arc head="P2" kind="OUTPUT" tail="T1"/>
     </edges>
   </gspn>
   <gspn name="tomacs1">
     <nodes>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="P0" x="11.0" y="6.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="T0" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="16.55" y="6.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="P1" x="21.0" y="6.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="3" name="P2" x="11.0" y="11.0"/>
-      <place label-x="0.5" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="P3" x="21.0" y="11.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="P4" x="11.0" y="16.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T2" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="6.55" y="11.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="T1" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="6.55" y="6.0"/>
-      <transition height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="t0" priority="1" priority-x="0.5" priority-y="1.0" rotation="0.0" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="16.85" y="11.0"/>
-      <transition height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="t1" priority="1" priority-x="0.5" priority-y="1.0" rotation="0.0" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="16.85" y="16.0"/>
+      <place name="P0" x="11.0" y="6.0"/>
+      <transition magnets="THREE_PER_SIDE" name="T0" type="EXP" x="16.55" y="6.0"/>
+      <place name="P1" x="21.0" y="6.0"/>
+      <place marking="3" name="P2" x="11.0" y="11.0"/>
+      <place label-x="0.5" name="P3" x="21.0" y="11.0"/>
+      <place name="P4" x="11.0" y="16.0"/>
+      <transition name="T2" type="EXP" x="6.55" y="11.0"/>
+      <transition name="T1" type="EXP" x="6.55" y="6.0"/>
+      <transition name="t0" type="IMM" x="16.85" y="11.0"/>
+      <transition name="t1" type="IMM" x="16.85" y="16.0"/>
     </nodes>
     <edges>
-      <arc broken="false" head="T0" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="P0" type="INPUT"/>
-      <arc broken="false" head="P1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T0" type="OUTPUT"/>
-      <arc broken="false" head="T1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="P1" type="INPUT">
+      <arc head="T0" kind="INPUT" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="T0"/>
+      <arc head="T1" kind="INPUT" tail="P1">
         <point x="26.5" y="7.0"/>
         <point x="26.5" y="3.5"/>
         <point x="25.5" y="3.5"/>
         <point x="4.0" y="3.5"/>
         <point x="4.0" y="7.0"/>
       </arc>
-      <arc broken="false" head="T0" head-magnet="11" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="P2" type="INPUT">
+      <arc head="T0" head-magnet="11" kind="INPUT" tail="P2">
         <point x="14.0" y="8.0"/>
       </arc>
-      <arc broken="false" head="P3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T0" tail-magnet="5" type="OUTPUT">
+      <arc head="P3" kind="OUTPUT" tail="T0" tail-magnet="5">
         <point x="20.0" y="8.5"/>
       </arc>
-      <arc broken="false" head="t0" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="P3" type="INPUT"/>
-      <arc broken="false" head="P2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="t0" type="OUTPUT">
+      <arc head="t0" kind="INPUT" tail="P3"/>
+      <arc head="P2" kind="OUTPUT" tail="t0">
         <point x="15.5" y="12.0"/>
       </arc>
-      <arc broken="false" head="t1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="P3" type="INPUT">
+      <arc head="t1" kind="INPUT" tail="P3">
         <point x="22.0" y="17.0"/>
       </arc>
-      <arc broken="false" head="P4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="t1" type="OUTPUT"/>
-      <arc broken="false" head="T2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="P4" type="INPUT">
+      <arc head="P4" kind="OUTPUT" tail="t1"/>
+      <arc head="T2" kind="INPUT" tail="P4">
         <point x="4.0" y="17.0"/>
         <point x="4.0" y="12.0"/>
       </arc>
-      <arc broken="false" head="P2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T2" type="OUTPUT"/>
-      <arc broken="false" head="P0" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="T1" type="OUTPUT"/>
+      <arc head="P2" kind="OUTPUT" tail="T2"/>
+      <arc head="P0" kind="OUTPUT" tail="T1"/>
     </edges>
   </gspn>
   <gspn name="FMS">
     <nodes>
-      <place label-x="2.5" label-y="1.0" magnets="CENTER_ONLY" marking="N" name="Pallets" x="3.0" y="5.0"/>
+      <place label-x="2.5" label-y="1.0" marking="N" name="Pallets" x="3.0" y="5.0"/>
       <constant consttype="INTEGER" name="N" value="4" x="3.0625" y="17.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="2.0" label-y="-0.5" magnets="CENTER_ONLY" name="load" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="1.5707963267948966" type="EXP" x="3.55" y="9.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M1buff" x="7.0" y="12.0"/>
-      <transition height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="sw1" priority="1" priority-x="0.5" priority-y="1.0" rotation="0.0" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="11.85" y="12.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M1on" x="15.0" y="12.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="1" name="M1" x="15.0" y="7.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="ew1" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="19.55" y="12.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M2buff" x="24.0" y="12.0"/>
-      <transition height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="sw2" priority="1" priority-x="0.5" priority-y="1.0" rotation="0.0" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="29.85" y="12.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M2on" x="33.0" y="12.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="1" name="M2" x="33.0" y="7.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="ew2" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="37.55" y="12.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M3buff" x="42.0" y="12.0"/>
-      <transition height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="sw3" priority="1" priority-x="0.5" priority-y="1.0" rotation="0.0" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="47.85" y="12.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M3on" x="51.0" y="12.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="1" name="M3" x="51.0" y="7.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="interm3" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="55.55" y="12.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M4buff" x="68.0" y="12.0"/>
-      <transition height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="sw4" priority="1" priority-x="0.5" priority-y="1.0" rotation="0.0" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="72.85" y="12.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M4on" x="76.0" y="12.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="1" name="M4" x="76.0" y="7.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="ew4" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="80.55" y="12.0"/>
-      <place label-x="1.5" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M2go" x="33.0" y="16.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="2.5" label-y="-0.5" magnets="CENTER_ONLY" name="failM2" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="1.5707963267948966" type="EXP" x="33.55" y="20.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M2ko" x="28.0" y="20.0"/>
-      <transition height="2.0" label-x="-1.5" label-y="-1.5" magnets="CENTER_ONLY" name="repM2" priority="1" priority-x="0.5" priority-y="1.0" rotation="0.0" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="23.85" y="24.0"/>
-      <place label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" marking="3" name="Spares" x="17.0" y="24.0"/>
-      <place label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" marking="0" name="SpareBroken" x="33.0" y="24.0"/>
-      <transition height="2.0" label-x="-3.0" label-y="-0.5" magnets="CENTER_ONLY" name="repSpares" priority="2" priority-x="-2.5" priority-y="1.0" rotation="1.5707963267948966" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="33.85" y="28.0"/>
-      <place label-x="-4.5" label-y="0.0" magnets="CENTER_ONLY" marking="0" name="SpareRepairing" x="33.0" y="32.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="-3.0" label-y="-1.0" magnets="CENTER_ONLY" name="repSpareE" rotation="1.5707963267948966" type="GEN" x="33.55" y="36.0"/>
-      <place label-x="-1.5" label-y="-1.5" magnets="CENTER_ONLY" marking="0" name="Ready" x="42.0" y="28.0"/>
-      <transition height="2.0" label-x="-2.5" label-y="-0.5" magnets="CENTER_ONLY" name="goIdle" priority="1" priority-x="0.5" priority-y="1.0" rotation="1.5707963267948966" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="42.85" y="24.0"/>
-      <transition delay="1.0" delay-x="0.0" delay-y="1.0" height="2.0" label-x="-2.0" label-y="-1.0" magnets="CENTER_ONLY" name="goReady" rotation="1.5707963267948966" type="GEN" x="46.55" y="24.0"/>
-      <place label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" marking="1" name="Idle" x="42.0" y="20.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="ended" x="42.0" y="38.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="-3.0" label-y="-0.5" magnets="CENTER_ONLY" name="goReady2" rotation="1.5707963267948966" type="GEN" x="42.55" y="34.0"/>
-      <place label-x="1.5" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M3go" x="51.0" y="16.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="2.5" label-y="-0.5" magnets="CENTER_ONLY" name="failM3" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="1.5707963267948966" type="EXP" x="51.55" y="20.0"/>
-      <place label-x="2.5" label-y="0.0" magnets="CENTER_ONLY" marking="0" name="M3ko" x="51.0" y="24.0"/>
-      <transition height="2.0" label-x="2.5" label-y="-0.5" magnets="CENTER_ONLY" name="repM3" priority="3" priority-x="0.5" priority-y="1.0" rotation="1.5707963267948966" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="51.85" y="28.0"/>
-      <place label-x="3.5" label-y="0.0" magnets="CENTER_ONLY" marking="0" name="M3repairing" x="51.0" y="32.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="2.5" label-y="-0.5" magnets="CENTER_ONLY" name="repM3E" rotation="1.5707963267948966" type="GEN" x="51.55" y="36.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M3bOn" x="59.0" y="12.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="ew3" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="63.55" y="12.0"/>
-      <transition height="2.0" label-x="-0.5" label-y="-1.5" magnets="THREE_PER_SIDE" name="swapM3M2" priority="1" priority-x="0.5" priority-y="1.0" rotation="0.0" shown-as="\mathit{rep M}_{3}\!\rightarrow\!\mathit{M}_{2}" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="45.85" y="32.0"/>
+      <transition label-x="2.0" label-y="-0.5" name="load" rotation="1.5707963267948966" type="EXP" x="3.55" y="9.0"/>
+      <place name="M1buff" x="7.0" y="12.0"/>
+      <transition magnets="THREE_PER_SIDE" name="sw1" type="IMM" x="11.85" y="12.0"/>
+      <place name="M1on" x="15.0" y="12.0"/>
+      <place marking="1" name="M1" x="15.0" y="7.0"/>
+      <transition magnets="THREE_PER_SIDE" name="ew1" type="EXP" x="19.55" y="12.0"/>
+      <place name="M2buff" x="24.0" y="12.0"/>
+      <transition magnets="THREE_PER_SIDE" name="sw2" type="IMM" x="29.85" y="12.0"/>
+      <place name="M2on" x="33.0" y="12.0"/>
+      <place marking="1" name="M2" x="33.0" y="7.0"/>
+      <transition magnets="THREE_PER_SIDE" name="ew2" type="EXP" x="37.55" y="12.0"/>
+      <place name="M3buff" x="42.0" y="12.0"/>
+      <transition magnets="THREE_PER_SIDE" name="sw3" type="IMM" x="47.85" y="12.0"/>
+      <place name="M3on" x="51.0" y="12.0"/>
+      <place marking="1" name="M3" x="51.0" y="7.0"/>
+      <transition magnets="THREE_PER_SIDE" name="interm3" type="EXP" x="55.55" y="12.0"/>
+      <place name="M4buff" x="68.0" y="12.0"/>
+      <transition magnets="THREE_PER_SIDE" name="sw4" type="IMM" x="72.85" y="12.0"/>
+      <place name="M4on" x="76.0" y="12.0"/>
+      <place marking="1" name="M4" x="76.0" y="7.0"/>
+      <transition magnets="THREE_PER_SIDE" name="ew4" type="EXP" x="80.55" y="12.0"/>
+      <place label-x="1.5" name="M2go" x="33.0" y="16.0"/>
+      <transition label-x="2.5" label-y="-0.5" name="failM2" rotation="1.5707963267948966" type="EXP" x="33.55" y="20.0"/>
+      <place name="M2ko" x="28.0" y="20.0"/>
+      <transition label-x="-1.5" name="repM2" type="IMM" x="23.85" y="24.0"/>
+      <place label-y="-1.5" marking="3" name="Spares" x="17.0" y="24.0"/>
+      <place label-y="-1.5" name="SpareBroken" x="33.0" y="24.0"/>
+      <transition label-x="-3.0" label-y="-0.5" name="repSpares" priority="2" priority-x="-2.5" rotation="1.5707963267948966" type="IMM" x="33.85" y="28.0"/>
+      <place label-x="-4.5" label-y="0.0" name="SpareRepairing" x="33.0" y="32.0"/>
+      <transition label-x="-3.0" label-y="-1.0" name="repSpareE" rotation="1.5707963267948966" type="GEN" x="33.55" y="36.0"/>
+      <place label-x="-1.5" label-y="-1.5" name="Ready" x="42.0" y="28.0"/>
+      <transition label-x="-2.5" label-y="-0.5" name="goIdle" rotation="1.5707963267948966" type="IMM" x="42.85" y="24.0"/>
+      <transition delay-x="0.0" label-x="-2.0" label-y="-1.0" name="goReady" rotation="1.5707963267948966" type="GEN" x="46.55" y="24.0"/>
+      <place label-y="-1.5" marking="1" name="Idle" x="42.0" y="20.0"/>
+      <place name="ended" x="42.0" y="38.0"/>
+      <transition label-x="-3.0" label-y="-0.5" name="goReady2" rotation="1.5707963267948966" type="GEN" x="42.55" y="34.0"/>
+      <place label-x="1.5" name="M3go" x="51.0" y="16.0"/>
+      <transition label-x="2.5" label-y="-0.5" name="failM3" rotation="1.5707963267948966" type="EXP" x="51.55" y="20.0"/>
+      <place label-x="2.5" label-y="0.0" name="M3ko" x="51.0" y="24.0"/>
+      <transition label-x="2.5" label-y="-0.5" name="repM3" priority="3" rotation="1.5707963267948966" type="IMM" x="51.85" y="28.0"/>
+      <place label-x="3.5" label-y="0.0" name="M3repairing" x="51.0" y="32.0"/>
+      <transition label-x="2.5" label-y="-0.5" name="repM3E" rotation="1.5707963267948966" type="GEN" x="51.55" y="36.0"/>
+      <place name="M3bOn" x="59.0" y="12.0"/>
+      <transition name="ew3" type="EXP" x="63.55" y="12.0"/>
+      <transition label-x="-0.5" magnets="THREE_PER_SIDE" name="swapM3M2" shown-as="\mathit{rep M}_{3}\!\rightarrow\!\mathit{M}_{2}" type="IMM" x="45.85" y="32.0"/>
     </nodes>
     <edges>
-      <arc broken="false" head="load" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="Pallets" type="INPUT"/>
-      <arc broken="false" head="M1buff" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="load" type="OUTPUT">
+      <arc head="load" kind="INPUT" tail="Pallets"/>
+      <arc head="M1buff" kind="OUTPUT" tail="load">
         <point x="4.0" y="13.0"/>
       </arc>
-      <arc broken="false" head="sw1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M1buff" type="INPUT"/>
-      <arc broken="false" head="M1on" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="sw1" type="OUTPUT"/>
-      <arc broken="false" head="ew1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M1on" type="INPUT"/>
-      <arc broken="false" head="M2buff" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ew1" type="OUTPUT"/>
-      <arc broken="false" head="sw1" head-magnet="9" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M1" type="INPUT">
+      <arc head="sw1" kind="INPUT" tail="M1buff"/>
+      <arc head="M1on" kind="OUTPUT" tail="sw1"/>
+      <arc head="ew1" kind="INPUT" tail="M1on"/>
+      <arc head="M2buff" kind="OUTPUT" tail="ew1"/>
+      <arc head="sw1" head-magnet="9" kind="INPUT" tail="M1">
         <point x="10.5" y="9.5"/>
         <point x="10.5" y="12.0"/>
       </arc>
-      <arc broken="false" head="M1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ew1" tail-magnet="3" type="OUTPUT">
+      <arc head="M1" kind="OUTPUT" tail="ew1" tail-magnet="3">
         <point x="22.0" y="12.0"/>
         <point x="22.0" y="9.5"/>
       </arc>
-      <arc broken="false" head="sw2" head-magnet="10" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M2buff" type="INPUT"/>
-      <arc broken="false" head="M2on" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="sw2" type="OUTPUT"/>
-      <arc broken="false" head="ew2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M2on" type="INPUT"/>
-      <arc broken="false" head="M3buff" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ew2" type="OUTPUT"/>
-      <arc broken="false" head="sw2" head-magnet="9" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M2" type="INPUT">
+      <arc head="sw2" head-magnet="10" kind="INPUT" tail="M2buff"/>
+      <arc head="M2on" kind="OUTPUT" tail="sw2"/>
+      <arc head="ew2" kind="INPUT" tail="M2on"/>
+      <arc head="M3buff" kind="OUTPUT" tail="ew2"/>
+      <arc head="sw2" head-magnet="9" kind="INPUT" tail="M2">
         <point x="28.5" y="9.5"/>
         <point x="28.5" y="12.0"/>
       </arc>
-      <arc broken="false" head="M2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ew2" tail-magnet="3" type="OUTPUT">
+      <arc head="M2" kind="OUTPUT" tail="ew2" tail-magnet="3">
         <point x="40.0" y="12.0"/>
         <point x="40.0" y="9.5"/>
       </arc>
-      <arc broken="false" head="sw3" head-magnet="10" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3buff" type="INPUT"/>
-      <arc broken="false" head="M3on" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="sw3" type="OUTPUT"/>
-      <arc broken="false" head="interm3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3on" type="INPUT"/>
-      <arc broken="false" head="M3bOn" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="interm3" type="OUTPUT"/>
-      <arc broken="false" head="sw3" head-magnet="9" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3" type="INPUT">
+      <arc head="sw3" head-magnet="10" kind="INPUT" tail="M3buff"/>
+      <arc head="M3on" kind="OUTPUT" tail="sw3"/>
+      <arc head="interm3" kind="INPUT" tail="M3on"/>
+      <arc head="M3bOn" kind="OUTPUT" tail="interm3"/>
+      <arc head="sw3" head-magnet="9" kind="INPUT" tail="M3">
         <point x="46.5" y="9.5"/>
         <point x="46.5" y="12.0"/>
       </arc>
-      <arc broken="false" head="M3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ew3" type="OUTPUT">
+      <arc head="M3" kind="OUTPUT" tail="ew3">
         <point x="66.0" y="12.0"/>
         <point x="66.0" y="9.5"/>
       </arc>
-      <arc broken="false" head="sw4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M4buff" type="INPUT"/>
-      <arc broken="false" head="M4on" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="sw4" type="OUTPUT"/>
-      <arc broken="false" head="ew4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M4on" type="INPUT"/>
-      <arc broken="false" head="sw4" head-magnet="9" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M4" type="INPUT">
+      <arc head="sw4" kind="INPUT" tail="M4buff"/>
+      <arc head="M4on" kind="OUTPUT" tail="sw4"/>
+      <arc head="ew4" kind="INPUT" tail="M4on"/>
+      <arc head="sw4" head-magnet="9" kind="INPUT" tail="M4">
         <point x="71.5" y="9.5"/>
         <point x="71.5" y="12.0"/>
       </arc>
-      <arc broken="false" head="M4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ew4" tail-magnet="3" type="OUTPUT">
+      <arc head="M4" kind="OUTPUT" tail="ew4" tail-magnet="3">
         <point x="83.0" y="12.0"/>
         <point x="83.0" y="9.5"/>
       </arc>
-      <arc broken="false" head="Pallets" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ew4" type="OUTPUT">
+      <arc head="Pallets" kind="OUTPUT" tail="ew4">
         <point x="85.0" y="13.0"/>
         <point x="85.0" y="6.0"/>
       </arc>
-      <arc broken="false" head="M2go" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="sw2" tail-magnet="5" type="OUTPUT">
+      <arc head="M2go" kind="OUTPUT" tail="sw2" tail-magnet="5">
         <point x="31.0" y="13.5"/>
       </arc>
-      <arc broken="false" head="ew2" head-magnet="11" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M2go" type="INPUT">
+      <arc head="ew2" head-magnet="11" kind="INPUT" tail="M2go">
         <point x="36.5" y="13.5"/>
       </arc>
-      <arc broken="false" head="failM2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M2go" type="INPUT"/>
-      <arc broken="false" head="M2ko" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="failM2" type="OUTPUT"/>
-      <arc broken="false" head="repM2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M2ko" type="INPUT"/>
-      <arc broken="false" head="M2go" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="repM2" type="OUTPUT">
+      <arc head="failM2" kind="INPUT" tail="M2go"/>
+      <arc head="M2ko" kind="OUTPUT" tail="failM2"/>
+      <arc head="repM2" kind="INPUT" tail="M2ko"/>
+      <arc head="M2go" kind="OUTPUT" tail="repM2">
         <point x="24.0" y="17.0"/>
       </arc>
-      <arc broken="false" head="repM2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="Spares" type="INPUT"/>
-      <arc broken="false" head="SpareBroken" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="repM2" type="OUTPUT"/>
-      <arc broken="false" head="repSpares" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="SpareBroken" type="INPUT"/>
-      <arc broken="false" head="SpareRepairing" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="repSpares" type="OUTPUT"/>
-      <arc broken="false" head="repSpareE" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="SpareRepairing" type="INPUT"/>
-      <arc broken="false" head="Spares" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="repSpareE" type="OUTPUT">
+      <arc head="repM2" kind="INPUT" tail="Spares"/>
+      <arc head="SpareBroken" kind="OUTPUT" tail="repM2"/>
+      <arc head="repSpares" kind="INPUT" tail="SpareBroken"/>
+      <arc head="SpareRepairing" kind="OUTPUT" tail="repSpares"/>
+      <arc head="repSpareE" kind="INPUT" tail="SpareRepairing"/>
+      <arc head="Spares" kind="OUTPUT" tail="repSpareE">
         <point x="32.5" y="39.0"/>
         <point x="18.0" y="39.0"/>
       </arc>
-      <arc broken="false" head="goIdle" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="Ready" type="INPUT"/>
-      <arc broken="false" head="Idle" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="goIdle" type="OUTPUT"/>
-      <arc broken="false" head="goReady" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="Idle" type="INPUT">
+      <arc head="goIdle" kind="INPUT" tail="Ready"/>
+      <arc head="Idle" kind="OUTPUT" tail="goIdle"/>
+      <arc head="goReady" kind="INPUT" tail="Idle">
         <point x="47.0" y="21.0"/>
       </arc>
-      <arc broken="false" head="Ready" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="goReady" type="OUTPUT">
+      <arc head="Ready" kind="OUTPUT" tail="goReady">
         <point x="47.0" y="27.5"/>
       </arc>
-      <arc broken="false" head="repSpares" multiplicity="1" multiplicity-k="0.37978515625" multiplicity-x="1.0" multiplicity-y="1.0" tail="Ready" type="INPUT"/>
-      <arc broken="false" head="goReady2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ended" type="INPUT"/>
-      <arc broken="false" head="Ready" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="goReady2" type="OUTPUT"/>
-      <arc broken="false" head="ended" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="repSpareE" type="OUTPUT">
+      <arc head="repSpares" kind="INPUT" mult-k="0.37978515625" tail="Ready"/>
+      <arc head="goReady2" kind="INPUT" tail="ended"/>
+      <arc head="Ready" kind="OUTPUT" tail="goReady2"/>
+      <arc head="ended" kind="OUTPUT" tail="repSpareE">
         <point x="35.5" y="39.0"/>
       </arc>
-      <arc broken="false" head="ew3" multiplicity="1" multiplicity-k="0.98818359375" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3go" type="INPUT">
+      <arc head="ew3" kind="INPUT" mult-k="0.98818359375" tail="M3go">
         <point x="56.0" y="15.5"/>
         <point x="61.5" y="15.5"/>
       </arc>
-      <arc broken="false" head="M3go" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="sw3" tail-magnet="5" type="OUTPUT">
+      <arc head="M3go" kind="OUTPUT" tail="sw3" tail-magnet="5">
         <point x="49.0" y="13.5"/>
       </arc>
-      <arc broken="false" head="failM3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3go" type="INPUT"/>
-      <arc broken="false" head="M3ko" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="failM3" type="OUTPUT"/>
-      <arc broken="false" head="repM3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3ko" type="INPUT"/>
-      <arc broken="false" head="repM3" multiplicity="1" multiplicity-k="0.37978515625" multiplicity-x="1.0" multiplicity-y="1.0" tail="Ready" type="INPUT"/>
-      <arc broken="false" head="M3repairing" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="repM3" type="OUTPUT"/>
-      <arc broken="false" head="repM3E" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3repairing" type="INPUT"/>
-      <arc broken="false" head="ended" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="repM3E" type="OUTPUT">
+      <arc head="failM3" kind="INPUT" tail="M3go"/>
+      <arc head="M3ko" kind="OUTPUT" tail="failM3"/>
+      <arc head="repM3" kind="INPUT" tail="M3ko"/>
+      <arc head="repM3" kind="INPUT" mult-k="0.37978515625" tail="Ready"/>
+      <arc head="M3repairing" kind="OUTPUT" tail="repM3"/>
+      <arc head="repM3E" kind="INPUT" tail="M3repairing"/>
+      <arc head="ended" kind="OUTPUT" tail="repM3E">
         <point x="50.5" y="39.0"/>
       </arc>
-      <arc broken="false" head="M3go" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="repM3E" type="OUTPUT">
+      <arc head="M3go" kind="OUTPUT" tail="repM3E">
         <point x="53.5" y="39.0"/>
         <point x="59.0" y="39.0"/>
         <point x="59.0" y="17.0"/>
       </arc>
-      <arc broken="false" head="ew3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3bOn" type="INPUT"/>
-      <arc broken="false" head="M4buff" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ew3" type="OUTPUT"/>
-      <arc broken="false" head="interm3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3go" type="INPUT"/>
-      <arc broken="false" head="M3go" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="interm3" type="OUTPUT"/>
-      <arc broken="false" head="swapM3M2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3repairing" type="INPUT"/>
-      <arc broken="false" head="M3ko" multiplicity="1" multiplicity-k="1.0280273437499998" multiplicity-x="1.0" multiplicity-y="1.0" tail="swapM3M2" tail-magnet="3" type="OUTPUT">
+      <arc head="ew3" kind="INPUT" tail="M3bOn"/>
+      <arc head="M4buff" kind="OUTPUT" tail="ew3"/>
+      <arc head="interm3" kind="INPUT" tail="M3go"/>
+      <arc head="M3go" kind="OUTPUT" tail="interm3"/>
+      <arc head="swapM3M2" kind="INPUT" tail="M3repairing"/>
+      <arc head="M3ko" kind="OUTPUT" mult-k="1.0280273437499998" tail="swapM3M2" tail-magnet="3">
         <point x="48.0" y="32.5"/>
       </arc>
-      <arc broken="false" head="swapM3M2" head-magnet="9" multiplicity="1" multiplicity-k="0.99228515625" multiplicity-x="1.0" multiplicity-y="1.0" tail="SpareBroken" type="INPUT">
+      <arc head="swapM3M2" head-magnet="9" kind="INPUT" mult-k="0.99228515625" tail="SpareBroken">
         <point x="39.5" y="32.5"/>
       </arc>
-      <arc broken="false" head="SpareRepairing" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="swapM3M2" type="OUTPUT"/>
+      <arc head="SpareRepairing" kind="OUTPUT" tail="swapM3M2"/>
     </edges>
   </gspn>
   <gspn name="FMS2">
     <nodes>
-      <place label-x="2.5" label-y="1.0" magnets="CENTER_ONLY" marking="N" name="Pallets" x="5.0" y="7.0"/>
+      <place label-x="2.5" label-y="1.0" marking="N" name="Pallets" x="5.0" y="7.0"/>
       <constant consttype="INTEGER" name="N" value="4" x="5.0625" y="19.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="2.0" label-y="-0.5" magnets="CENTER_ONLY" name="load" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="1.5707963267948966" type="EXP" x="5.55" y="11.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M1buff" x="9.0" y="14.0"/>
-      <transition height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="sw1" priority="1" priority-x="0.5" priority-y="1.0" rotation="0.0" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="13.85" y="14.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M1on" x="17.0" y="14.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="1" name="M1" x="17.0" y="9.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="ew1" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="21.55" y="14.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M2buff" x="26.0" y="14.0"/>
-      <transition height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="sw2" priority="1" priority-x="0.5" priority-y="1.0" rotation="0.0" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="31.85" y="14.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M2on" x="35.0" y="14.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="1" name="M2" x="35.0" y="9.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="ew2" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="39.55" y="14.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M3buff" x="44.0" y="14.0"/>
-      <transition height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="sw3" priority="1" priority-x="0.5" priority-y="1.0" rotation="0.0" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="49.85" y="14.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M3on" x="53.0" y="14.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="1" name="M3" x="53.0" y="9.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="interm3" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="57.55" y="14.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M4buff" x="70.0" y="14.0"/>
-      <transition height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="sw4" priority="1" priority-x="0.5" priority-y="1.0" rotation="0.0" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="74.85" y="14.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M4on" x="78.0" y="14.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="1" name="M4" x="78.0" y="9.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="THREE_PER_SIDE" name="ew4" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="82.55" y="14.0"/>
-      <place label-x="1.5" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M2go" x="35.0" y="18.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="2.5" label-y="-0.5" magnets="CENTER_ONLY" name="failM2" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="1.5707963267948966" type="EXP" x="35.55" y="22.0"/>
-      <transition height="2.0" label-x="-1.5" label-y="-1.5" magnets="THREE_PER_SIDE" name="repM2" priority="1" priority-x="0.5" priority-y="1.0" rotation="0.0" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="27.85" y="22.0"/>
-      <place label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" marking="3" name="Spares" x="21.0" y="22.0"/>
-      <place label-x="-4.0" label-y="0.0" magnets="CENTER_ONLY" marking="0" name="SpareBroken" x="35.0" y="26.0"/>
-      <transition height="2.0" label-x="-3.0" label-y="-0.5" magnets="CENTER_ONLY" name="repSpares" priority="1" priority-x="-2.5" priority-y="1.0" rotation="1.5707963267948966" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="35.85" y="30.0"/>
-      <place label-x="-4.5" label-y="0.0" magnets="CENTER_ONLY" marking="0" name="SpareRepairing" x="35.0" y="34.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="-3.0" label-y="-1.0" magnets="CENTER_ONLY" name="repSpareE" rotation="1.5707963267948966" type="GEN" x="35.55" y="38.0"/>
-      <place label-x="-2.0" label-y="-1.0" magnets="CENTER_ONLY" marking="0" name="Ready" x="44.0" y="30.0"/>
-      <transition height="2.0" label-x="-2.5" label-y="-0.5" magnets="CENTER_ONLY" name="goIdle" priority="1" priority-x="0.5" priority-y="1.0" rotation="1.5707963267948966" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="44.85" y="26.0"/>
-      <transition delay="1.0" delay-x="0.0" delay-y="1.0" height="2.0" label-x="2.0" label-y="-1.0" magnets="CENTER_ONLY" name="goReady" rotation="1.5707963267948966" type="GEN" x="48.55" y="26.0"/>
-      <place label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" marking="1" name="Idle" x="44.0" y="22.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="ended" x="44.0" y="40.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="-3.0" label-y="-0.5" magnets="CENTER_ONLY" name="goReady2" rotation="1.5707963267948966" type="GEN" x="44.55" y="36.0"/>
-      <place label-x="1.5" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M3go" x="53.0" y="18.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="2.5" label-y="-0.5" magnets="CENTER_ONLY" name="failM3" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="1.5707963267948966" type="EXP" x="53.55" y="22.0"/>
-      <place label-x="2.5" label-y="0.0" magnets="CENTER_ONLY" marking="0" name="M3ko" x="53.0" y="26.0"/>
-      <transition height="2.0" label-x="2.5" label-y="-0.5" magnets="CENTER_ONLY" name="repM3" priority="1" priority-x="0.5" priority-y="1.0" rotation="1.5707963267948966" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="53.85" y="30.0"/>
-      <place label-x="3.5" label-y="0.0" magnets="CENTER_ONLY" marking="0" name="M3repairing" x="53.0" y="34.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="2.5" label-y="-0.5" magnets="CENTER_ONLY" name="repM3E" rotation="1.5707963267948966" type="GEN" x="53.55" y="38.0"/>
-      <place label-x="0.0" label-y="1.5" magnets="CENTER_ONLY" marking="0" name="M3bOn" x="61.0" y="14.0"/>
-      <transition delay="1.0" delay-x="0.5" delay-y="1.0" height="2.0" label-x="0.0" label-y="-1.5" magnets="CENTER_ONLY" name="ew3" nservers="Infinite" nservers-x="-0.5" nservers-y="2.0" rotation="0.0" type="EXP" x="65.55" y="14.0"/>
-      <transition height="2.0" label-x="-0.5" label-y="-1.5" magnets="THREE_PER_SIDE" name="swapM3M2" priority="1" priority-x="0.5" priority-y="1.0" rotation="0.0" shown-as="\mathit{rep M}_{3}\!\rightarrow\!\mathit{M}_{2}" type="IMM" weight="1.0" weight-x="-0.5" weight-y="1.0" x="47.85" y="34.0"/>
+      <transition label-x="2.0" label-y="-0.5" name="load" rotation="1.5707963267948966" type="EXP" x="5.55" y="11.0"/>
+      <place name="M1buff" x="9.0" y="14.0"/>
+      <transition magnets="THREE_PER_SIDE" name="sw1" type="IMM" x="13.85" y="14.0"/>
+      <place name="M1on" x="17.0" y="14.0"/>
+      <place marking="1" name="M1" x="17.0" y="9.0"/>
+      <transition magnets="THREE_PER_SIDE" name="ew1" type="EXP" x="21.55" y="14.0"/>
+      <place name="M2buff" x="26.0" y="14.0"/>
+      <transition magnets="THREE_PER_SIDE" name="sw2" type="IMM" x="31.85" y="14.0"/>
+      <place name="M2on" x="35.0" y="14.0"/>
+      <place marking="1" name="M2" x="35.0" y="9.0"/>
+      <transition magnets="THREE_PER_SIDE" name="ew2" type="EXP" x="39.55" y="14.0"/>
+      <place name="M3buff" x="44.0" y="14.0"/>
+      <transition magnets="THREE_PER_SIDE" name="sw3" type="IMM" x="49.85" y="14.0"/>
+      <place name="M3on" x="53.0" y="14.0"/>
+      <place marking="1" name="M3" x="53.0" y="9.0"/>
+      <transition magnets="THREE_PER_SIDE" name="interm3" type="EXP" x="57.55" y="14.0"/>
+      <place name="M4buff" x="70.0" y="14.0"/>
+      <transition magnets="THREE_PER_SIDE" name="sw4" type="IMM" x="74.85" y="14.0"/>
+      <place name="M4on" x="78.0" y="14.0"/>
+      <place marking="1" name="M4" x="78.0" y="9.0"/>
+      <transition magnets="THREE_PER_SIDE" name="ew4" type="EXP" x="82.55" y="14.0"/>
+      <place label-x="1.5" name="M2go" x="35.0" y="18.0"/>
+      <transition label-x="2.5" label-y="-0.5" name="failM2" rotation="1.5707963267948966" type="EXP" x="35.55" y="22.0"/>
+      <transition label-x="-1.5" magnets="THREE_PER_SIDE" name="repM2" type="IMM" x="27.85" y="22.0"/>
+      <place label-y="-1.5" marking="3" name="Spares" x="21.0" y="22.0"/>
+      <place label-x="-4.0" label-y="0.0" name="SpareBroken" x="35.0" y="26.0"/>
+      <transition label-x="-3.0" label-y="-0.5" name="repSpares" priority-x="-2.5" rotation="1.5707963267948966" type="IMM" x="35.85" y="30.0"/>
+      <place label-x="-4.5" label-y="0.0" name="SpareRepairing" x="35.0" y="34.0"/>
+      <transition label-x="-3.0" label-y="-1.0" name="repSpareE" rotation="1.5707963267948966" type="GEN" x="35.55" y="38.0"/>
+      <place label-x="-2.0" label-y="-1.0" name="Ready" x="44.0" y="30.0"/>
+      <transition label-x="-2.5" label-y="-0.5" name="goIdle" rotation="1.5707963267948966" type="IMM" x="44.85" y="26.0"/>
+      <transition delay-x="0.0" label-x="2.0" label-y="-1.0" name="goReady" rotation="1.5707963267948966" type="GEN" x="48.55" y="26.0"/>
+      <place label-y="-1.5" marking="1" name="Idle" x="44.0" y="22.0"/>
+      <place name="ended" x="44.0" y="40.0"/>
+      <transition label-x="-3.0" label-y="-0.5" name="goReady2" rotation="1.5707963267948966" type="GEN" x="44.55" y="36.0"/>
+      <place label-x="1.5" name="M3go" x="53.0" y="18.0"/>
+      <transition label-x="2.5" label-y="-0.5" name="failM3" rotation="1.5707963267948966" type="EXP" x="53.55" y="22.0"/>
+      <place label-x="2.5" label-y="0.0" name="M3ko" x="53.0" y="26.0"/>
+      <transition label-x="2.5" label-y="-0.5" name="repM3" rotation="1.5707963267948966" type="IMM" x="53.85" y="30.0"/>
+      <place label-x="3.5" label-y="0.0" name="M3repairing" x="53.0" y="34.0"/>
+      <transition label-x="2.5" label-y="-0.5" name="repM3E" rotation="1.5707963267948966" type="GEN" x="53.55" y="38.0"/>
+      <place name="M3bOn" x="61.0" y="14.0"/>
+      <transition name="ew3" type="EXP" x="65.55" y="14.0"/>
+      <transition label-x="-0.5" magnets="THREE_PER_SIDE" name="swapM3M2" shown-as="\mathit{rep M}_{3}\!\rightarrow\!\mathit{M}_{2}" type="IMM" x="47.85" y="34.0"/>
     </nodes>
     <edges>
-      <arc broken="false" head="load" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="Pallets" type="INPUT"/>
-      <arc broken="false" head="M1buff" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="load" type="OUTPUT">
+      <arc head="load" kind="INPUT" tail="Pallets"/>
+      <arc head="M1buff" kind="OUTPUT" tail="load">
         <point x="6.0" y="15.0"/>
       </arc>
-      <arc broken="false" head="sw1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M1buff" type="INPUT"/>
-      <arc broken="false" head="M1on" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="sw1" type="OUTPUT"/>
-      <arc broken="false" head="ew1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M1on" type="INPUT"/>
-      <arc broken="false" head="M2buff" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ew1" type="OUTPUT"/>
-      <arc broken="false" head="sw1" head-magnet="9" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M1" type="INPUT">
+      <arc head="sw1" kind="INPUT" tail="M1buff"/>
+      <arc head="M1on" kind="OUTPUT" tail="sw1"/>
+      <arc head="ew1" kind="INPUT" tail="M1on"/>
+      <arc head="M2buff" kind="OUTPUT" tail="ew1"/>
+      <arc head="sw1" head-magnet="9" kind="INPUT" tail="M1">
         <point x="12.5" y="11.5"/>
         <point x="12.5" y="14.0"/>
       </arc>
-      <arc broken="false" head="M1" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ew1" tail-magnet="3" type="OUTPUT">
+      <arc head="M1" kind="OUTPUT" tail="ew1" tail-magnet="3">
         <point x="24.0" y="14.0"/>
         <point x="24.0" y="11.5"/>
       </arc>
-      <arc broken="false" head="sw2" head-magnet="10" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M2buff" type="INPUT"/>
-      <arc broken="false" head="M2on" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="sw2" type="OUTPUT"/>
-      <arc broken="false" head="ew2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M2on" type="INPUT"/>
-      <arc broken="false" head="M3buff" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ew2" type="OUTPUT"/>
-      <arc broken="false" head="sw2" head-magnet="9" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M2" type="INPUT">
+      <arc head="sw2" head-magnet="10" kind="INPUT" tail="M2buff"/>
+      <arc head="M2on" kind="OUTPUT" tail="sw2"/>
+      <arc head="ew2" kind="INPUT" tail="M2on"/>
+      <arc head="M3buff" kind="OUTPUT" tail="ew2"/>
+      <arc head="sw2" head-magnet="9" kind="INPUT" tail="M2">
         <point x="30.5" y="11.5"/>
         <point x="30.5" y="14.0"/>
       </arc>
-      <arc broken="false" head="M2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ew2" tail-magnet="3" type="OUTPUT">
+      <arc head="M2" kind="OUTPUT" tail="ew2" tail-magnet="3">
         <point x="42.0" y="14.0"/>
         <point x="42.0" y="11.5"/>
       </arc>
-      <arc broken="false" head="sw3" head-magnet="10" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3buff" type="INPUT"/>
-      <arc broken="false" head="M3on" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="sw3" type="OUTPUT"/>
-      <arc broken="false" head="interm3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3on" type="INPUT"/>
-      <arc broken="false" head="M3bOn" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="interm3" type="OUTPUT"/>
-      <arc broken="false" head="sw3" head-magnet="9" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3" type="INPUT">
+      <arc head="sw3" head-magnet="10" kind="INPUT" tail="M3buff"/>
+      <arc head="M3on" kind="OUTPUT" tail="sw3"/>
+      <arc head="interm3" kind="INPUT" tail="M3on"/>
+      <arc head="M3bOn" kind="OUTPUT" tail="interm3"/>
+      <arc head="sw3" head-magnet="9" kind="INPUT" tail="M3">
         <point x="48.5" y="11.5"/>
         <point x="48.5" y="14.0"/>
       </arc>
-      <arc broken="false" head="M3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ew3" type="OUTPUT">
+      <arc head="M3" kind="OUTPUT" tail="ew3">
         <point x="68.0" y="14.0"/>
         <point x="68.0" y="11.5"/>
       </arc>
-      <arc broken="false" head="sw4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M4buff" type="INPUT"/>
-      <arc broken="false" head="M4on" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="sw4" type="OUTPUT"/>
-      <arc broken="false" head="ew4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M4on" type="INPUT"/>
-      <arc broken="false" head="sw4" head-magnet="9" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M4" type="INPUT">
+      <arc head="sw4" kind="INPUT" tail="M4buff"/>
+      <arc head="M4on" kind="OUTPUT" tail="sw4"/>
+      <arc head="ew4" kind="INPUT" tail="M4on"/>
+      <arc head="sw4" head-magnet="9" kind="INPUT" tail="M4">
         <point x="73.5" y="11.5"/>
         <point x="73.5" y="14.0"/>
       </arc>
-      <arc broken="false" head="M4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ew4" tail-magnet="3" type="OUTPUT">
+      <arc head="M4" kind="OUTPUT" tail="ew4" tail-magnet="3">
         <point x="85.0" y="14.0"/>
         <point x="85.0" y="11.5"/>
       </arc>
-      <arc broken="false" head="Pallets" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ew4" type="OUTPUT">
+      <arc head="Pallets" kind="OUTPUT" tail="ew4">
         <point x="87.0" y="15.0"/>
         <point x="87.0" y="8.0"/>
       </arc>
-      <arc broken="false" head="M2go" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="sw2" tail-magnet="5" type="OUTPUT">
+      <arc head="M2go" kind="OUTPUT" tail="sw2" tail-magnet="5">
         <point x="33.0" y="15.5"/>
       </arc>
-      <arc broken="false" head="ew2" head-magnet="11" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M2go" type="INPUT">
+      <arc head="ew2" head-magnet="11" kind="INPUT" tail="M2go">
         <point x="38.5" y="15.5"/>
       </arc>
-      <arc broken="false" head="failM2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M2go" type="INPUT"/>
-      <arc broken="false" head="SpareBroken" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="failM2" type="OUTPUT"/>
-      <arc broken="false" head="M2go" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="repM2" tail-magnet="5" type="OUTPUT">
+      <arc head="failM2" kind="INPUT" tail="M2go"/>
+      <arc head="SpareBroken" kind="OUTPUT" tail="failM2"/>
+      <arc head="M2go" kind="OUTPUT" tail="repM2" tail-magnet="5">
         <point x="32.5" y="23.5"/>
       </arc>
-      <arc broken="false" head="repM2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="Spares" type="INPUT"/>
-      <arc broken="false" head="repSpares" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="SpareBroken" type="INPUT"/>
-      <arc broken="false" head="SpareRepairing" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="repSpares" type="OUTPUT"/>
-      <arc broken="false" head="repSpareE" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="SpareRepairing" type="INPUT"/>
-      <arc broken="false" head="Spares" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="repSpareE" type="OUTPUT">
+      <arc head="repM2" kind="INPUT" tail="Spares"/>
+      <arc head="repSpares" kind="INPUT" tail="SpareBroken"/>
+      <arc head="SpareRepairing" kind="OUTPUT" tail="repSpares"/>
+      <arc head="repSpareE" kind="INPUT" tail="SpareRepairing"/>
+      <arc head="Spares" kind="OUTPUT" tail="repSpareE">
         <point x="34.5" y="41.0"/>
         <point x="22.0" y="41.0"/>
       </arc>
-      <arc broken="false" head="goIdle" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="Ready" type="INPUT"/>
-      <arc broken="false" head="Idle" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="goIdle" type="OUTPUT"/>
-      <arc broken="false" head="goReady" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="Idle" type="INPUT">
+      <arc head="goIdle" kind="INPUT" tail="Ready"/>
+      <arc head="Idle" kind="OUTPUT" tail="goIdle"/>
+      <arc head="goReady" kind="INPUT" tail="Idle">
         <point x="49.0" y="23.0"/>
       </arc>
-      <arc broken="false" head="Ready" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="goReady" type="OUTPUT">
+      <arc head="Ready" kind="OUTPUT" tail="goReady">
         <point x="49.0" y="29.5"/>
       </arc>
-      <arc broken="false" head="repSpares" multiplicity="1" multiplicity-k="0.37978515625" multiplicity-x="1.0" multiplicity-y="1.0" tail="Ready" type="INPUT"/>
-      <arc broken="false" head="goReady2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ended" type="INPUT"/>
-      <arc broken="false" head="Ready" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="goReady2" type="OUTPUT"/>
-      <arc broken="false" head="ended" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="repSpareE" type="OUTPUT">
+      <arc head="repSpares" kind="INPUT" mult-k="0.37978515625" tail="Ready"/>
+      <arc head="goReady2" kind="INPUT" tail="ended"/>
+      <arc head="Ready" kind="OUTPUT" tail="goReady2"/>
+      <arc head="ended" kind="OUTPUT" tail="repSpareE">
         <point x="37.5" y="41.0"/>
       </arc>
-      <arc broken="false" head="ew3" multiplicity="1" multiplicity-k="0.98818359375" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3go" type="INPUT">
+      <arc head="ew3" kind="INPUT" mult-k="0.98818359375" tail="M3go">
         <point x="58.0" y="17.5"/>
         <point x="63.5" y="17.5"/>
       </arc>
-      <arc broken="false" head="M3go" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="sw3" tail-magnet="5" type="OUTPUT">
+      <arc head="M3go" kind="OUTPUT" tail="sw3" tail-magnet="5">
         <point x="51.0" y="15.5"/>
       </arc>
-      <arc broken="false" head="failM3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3go" type="INPUT"/>
-      <arc broken="false" head="M3ko" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="failM3" type="OUTPUT"/>
-      <arc broken="false" head="repM3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3ko" type="INPUT"/>
-      <arc broken="false" head="repM3" multiplicity="1" multiplicity-k="0.37978515625" multiplicity-x="1.0" multiplicity-y="1.0" tail="Ready" type="INPUT"/>
-      <arc broken="false" head="M3repairing" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="repM3" type="OUTPUT"/>
-      <arc broken="false" head="repM3E" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3repairing" type="INPUT"/>
-      <arc broken="false" head="ended" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="repM3E" type="OUTPUT">
+      <arc head="failM3" kind="INPUT" tail="M3go"/>
+      <arc head="M3ko" kind="OUTPUT" tail="failM3"/>
+      <arc head="repM3" kind="INPUT" tail="M3ko"/>
+      <arc head="repM3" kind="INPUT" mult-k="0.37978515625" tail="Ready"/>
+      <arc head="M3repairing" kind="OUTPUT" tail="repM3"/>
+      <arc head="repM3E" kind="INPUT" tail="M3repairing"/>
+      <arc head="ended" kind="OUTPUT" tail="repM3E">
         <point x="52.5" y="41.0"/>
       </arc>
-      <arc broken="false" head="M3go" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="repM3E" type="OUTPUT">
+      <arc head="M3go" kind="OUTPUT" tail="repM3E">
         <point x="55.5" y="41.0"/>
         <point x="61.0" y="41.0"/>
         <point x="61.0" y="19.0"/>
       </arc>
-      <arc broken="false" head="ew3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3bOn" type="INPUT"/>
-      <arc broken="false" head="M4buff" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="ew3" type="OUTPUT"/>
-      <arc broken="false" head="interm3" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3go" type="INPUT"/>
-      <arc broken="false" head="M3go" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="interm3" type="OUTPUT"/>
-      <arc broken="false" head="swapM3M2" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3repairing" type="INPUT"/>
-      <arc broken="false" head="M3ko" multiplicity="1" multiplicity-k="1.0280273437499998" multiplicity-x="1.0" multiplicity-y="1.0" tail="swapM3M2" tail-magnet="3" type="OUTPUT">
+      <arc head="ew3" kind="INPUT" tail="M3bOn"/>
+      <arc head="M4buff" kind="OUTPUT" tail="ew3"/>
+      <arc head="interm3" kind="INPUT" tail="M3go"/>
+      <arc head="M3go" kind="OUTPUT" tail="interm3"/>
+      <arc head="swapM3M2" kind="INPUT" tail="M3repairing"/>
+      <arc head="M3ko" kind="OUTPUT" mult-k="1.0280273437499998" tail="swapM3M2" tail-magnet="3">
         <point x="50.0" y="34.5"/>
       </arc>
-      <arc broken="false" head="swapM3M2" head-magnet="9" multiplicity="1" multiplicity-k="0.99228515625" multiplicity-x="1.0" multiplicity-y="1.0" tail="SpareBroken" type="INPUT">
+      <arc head="swapM3M2" head-magnet="9" kind="INPUT" mult-k="0.99228515625" tail="SpareBroken">
         <point x="41.5" y="34.5"/>
       </arc>
-      <arc broken="false" head="SpareRepairing" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="swapM3M2" type="OUTPUT"/>
-      <arc broken="false" head="repM2" head-magnet="4" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M2go" type="INHIBITOR">
+      <arc head="SpareRepairing" kind="OUTPUT" tail="swapM3M2"/>
+      <arc head="repM2" head-magnet="4" kind="INHIBITOR" tail="M2go">
         <point x="34.0" y="19.0"/>
         <point x="31.0" y="23.0"/>
       </arc>
-      <arc broken="false" head="repM2" head-magnet="3" multiplicity="1" multiplicity-k="1.8598632812499996" multiplicity-x="1.0" multiplicity-y="1.0" tail="M2on" type="INPUT">
+      <arc head="repM2" head-magnet="3" kind="INPUT" mult-k="1.8598632812499996" tail="M2on">
         <point x="34.0" y="16.0"/>
         <point x="29.5" y="22.5"/>
       </arc>
-      <arc broken="false" head="M2on" multiplicity="1" multiplicity-k="1.0969726562500002" multiplicity-x="1.0" multiplicity-y="1.0" tail="repM2" tail-magnet="3" type="OUTPUT">
+      <arc head="M2on" kind="OUTPUT" mult-k="1.0969726562500002" tail="repM2" tail-magnet="3">
         <point x="29.5" y="22.5"/>
         <point x="34.0" y="16.0"/>
       </arc>
-      <arc broken="false" head="repSpares" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3ko" type="INHIBITOR">
+      <arc head="repSpares" kind="INHIBITOR" tail="M3ko">
         <point x="50.5" y="29.0"/>
         <point x="39.5" y="29.0"/>
       </arc>
-      <arc broken="false" head="goIdle" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="SpareBroken" type="INHIBITOR">
+      <arc head="goIdle" kind="INHIBITOR" tail="SpareBroken">
         <point x="38.0" y="25.0"/>
         <point x="43.5" y="25.0"/>
       </arc>
-      <arc broken="false" head="goIdle" multiplicity="1" multiplicity-k="0.5" multiplicity-x="1.0" multiplicity-y="1.0" tail="M3ko" type="INHIBITOR">
+      <arc head="goIdle" kind="INHIBITOR" tail="M3ko">
         <point x="52.0" y="25.0"/>
         <point x="47.0" y="25.0"/>
       </arc>
     </edges>
   </gspn>
+  <measures gspn-name="CTL2" log-uuid="af8c7683-9507-434a-aea8-cd22d5ce0a3c" name="RS using DD of CTL2" rapid-type="BUILD_RS_MDD" simplified-UI="true">
+    <assignments/>
+    <rgmedd2/>
+    <formulas>
+      <formula language="STAT">
+        <result-table>
+          <stat-result failure_reason="&lt;not computed&gt;" name="STAT" state="FAIL_COMPUTE">
+            <bindings/>
+          </stat-result>
+        </result-table>
+      </formula>
+    </formulas>
+  </measures>
+  <resource-list>
+    <document-log uuid="af8c7683-9507-434a-aea8-cd22d5ce0a3c">rO0ABXNyABRqYXZhLnV0aWwuTGlua2VkTGlzdAwpU11KYIgiAwAAeHB3BAAAAD90ALIbWzBtRVhFQzogd3NsIC0tIC91c3IvbG9jYWwvR3JlYXRTUE4vYmluL0RTUE4tVG9vbCAtbG9hZCAiL21udC9jL1VzZXJzL0VsdmlvL0dyZWF0U1BOL1NPVVJDRVMvSmF2YUdVSS9DVEwgVGVzdC1SUyB1c2luZyBERCBvZiBDVEwyLnNvbHV0aW9uL0NUTDIiIC1wYmFzaXMgLWRldGVjdC1leHAgLXBzZmwgLWJuZCAKdACIG1sxbRtbNG1MT0FESU5HIFBFVFJJIE5FVCAvbW50L2MvVXNlcnMvRWx2aW8vR3JlYXRTUE4vU09VUkNFUy9KYXZhR1VJL0NUTCBUZXN0LVJTIHVzaW5nIEREIG9mIENUTDIuc29sdXRpb24vQ1RMMiAobmV0L2RlZikuLi4bWzIybRtbMjRtCnQAD01BUktJTkcgUEFSOiAwCnQAD1BMQUNFUzogICAgICAyCnQAD1JBVEUgUEFSOiAgICAwCnQAD1RSQU5TSVRJT05TOiAzCnQAD01FQVNVUkVTOiAgICAwCnQAKExPQURJTkcgVElNRTogW1VzZXIgMC4wMDBzLCBTeXMgMC4wMDBzXQp0AAEKdAABCnQAHkNPTVBVVElORyBQTEFDRSBGTE9XIEJBU0lTLi4uCnQAD009MywgTj0yLCBOMD0yCnQATkNvbXB1dGF0aW9uIG9mIEZsb3cgYmFzaXM6IGNvbXBsZXRlZCBpbiAxIHN0ZXBzLCB8S3w9MS4gICAgICAgICAgICAgICAgICAgICAgCnQAKUZPVU5EIDEgVkVDVE9SUyBJTiBUSEUgUExBQ0UgRkxPVyBCQVNJUy4KdAABCnQAAQp0ACdBbGwgcGxhY2VzIGFyZSBjb3ZlcmVkIGJ5IHNvbWUgUC1mbG93Lgp0AAEKdAAmVE9UQUwgVElNRTogW1VzZXIgMC4wMDBzLCBTeXMgMC4wMDBzXQp0ACdBVk9JRCBFWFBPTkVOVElBTCBHUk9XVEggT0YgU0VNSUZMT1dTLgp0AB1DT01QVVRJTkcgUExBQ0UgU0VNSUZMT1dTLi4uCnQAD009MywgTj0yLCBOMD0yCnQATEdlbmVyYXRpb24gb2YgU2VtaWZsb3dzOiBjb21wbGV0ZWQgaW4gMSBzdGVwcywgfEt8PTEuICAgICAgICAgICAgICAgICAgICAgIAp0ABlGT1VORCAxIFBMQUNFIFNFTUlGTE9XUy4KdAABCnQAAQp0ACtBbGwgcGxhY2VzIGFyZSBjb3ZlcmVkIGJ5IHNvbWUgUC1zZW1pZmxvdy4KdAABCnQAJlRPVEFMIFRJTUU6IFtVc2VyIDAuMDAwcywgU3lzIDAuMDAwc10KdAAsQ09NUFVUSU5HIFBMQUNFIEJPVU5EUyBGUk9NIFAtU0VNSUZMT1dTIC4uLgp0ACcbWzBYG1szMm0gUFJPQ0VTUyBFWElURUQgTk9STUFMTFkuG1swbQp0ALMbWzBtRVhFQzogd3NsIC0tIC91c3IvbG9jYWwvR3JlYXRTUE4vYmluL0RTUE4tVG9vbCAtbG9hZCAiL21udC9jL1VzZXJzL0VsdmlvL0dyZWF0U1BOL1NPVVJDRVMvSmF2YUdVSS9DVEwgVGVzdC1SUyB1c2luZyBERCBvZiBDVEwyLnNvbHV0aW9uL0NUTDIiIC1sb2FkLWJuZCAtdGltZW91dCA1IC1pbHAtYm5kIiAnCnQAiBtbMW0bWzRtTE9BRElORyBQRVRSSSBORVQgL21udC9jL1VzZXJzL0VsdmlvL0dyZWF0U1BOL1NPVVJDRVMvSmF2YUdVSS9DVEwgVGVzdC1SUyB1c2luZyBERCBvZiBDVEwyLnNvbHV0aW9uL0NUTDIgKG5ldC9kZWYpLi4uG1syMm0bWzI0bQp0AA9NQVJLSU5HIFBBUjogMAp0AA9QTEFDRVM6ICAgICAgMgp0AA9SQVRFIFBBUjogICAgMAp0AA9UUkFOU0lUSU9OUzogMwp0AA9NRUFTVVJFUzogICAgMAp0AChMT0FESU5HIFRJTUU6IFtVc2VyIDAuMDAwcywgU3lzIDAuMDAwc10KdAABCnQAAQp0ABVMT0FESU5HIEJORCBGSUxFIC4uLgp0ACBTY2hlZHVsZWQgdGltZW91dCBvZiA1IHNlY29uZHMuCnEAfgAgdACkG1swbUVYRUM6IHdzbCAtLSAvdXNyL2xvY2FsL0dyZWF0U1BOL2Jpbi9SR01FREQ1ICIvbW50L2MvVXNlcnMvRWx2aW8vR3JlYXRTUE4vU09VUkNFUy9KYXZhR1VJL0NUTCBUZXN0LVJTIHVzaW5nIEREIG9mIENUTDIuc29sdXRpb24vQ1RMMiIgLU1FVEEgIC1zYXRzZXRzIC1ndWktc3RhdAp0AE4bWzFtG1szMW1XQVJOSU5HOiAbWzIybRtbMG1QRVRSSSBORVQgSEFTIElOSElCSVRPUiBBUkNTIFRIQVQgV0lMTCBCRSBJR05PUkVELgp0AE4bWzFtG1szMW1XQVJOSU5HOiAbWzIybRtbMG1QRVRSSSBORVQgSEFTIElOSElCSVRPUiBBUkNTIFRIQVQgV0lMTCBCRSBJR05PUkVELgp0ACBSYW5kb20gc2VlZHM6IDE2MTM3NTU4NTQgNDc2NzA0CnQAUD09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KdAARR3JlYXRTUE4vTWVkZGx5Lgp0ADggIENvcHlyaWdodCAoQykgMTk4Ny0yMDIwLCBVbml2ZXJzaXR5IG9mIFRvcmlubywgSXRhbHkuCnQAMSAgU2VuZCBmaWxlcyBuZXRuYW1lLm5ldCwgLmRlZiB0byBlLW1haWwgYWRkcmVzcwp0AC8gIGFtcGFyb3JlKGF0KWRpLnVuaXRvLml0IGlmIHlvdSBmaW5kIGFueSBidWcuCnQAUD09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KdAAfQmFzZWQgb24gTUVERExZIHZlcnNpb24gMC4xNi4wCnQARiAgQ29weXJpZ2h0IChDKSAyMDA5LCBJb3dhIFN0YXRlIFVuaXZlcnNpdHkgUmVzZWFyY2ggRm91bmRhdGlvbiwgSW5jLgp0ACkgIHdlYnNpdGU6IGh0dHA6Ly9tZWRkbHkuc291cmNlZm9yZ2UubmV0CnQAUD09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KdAApVXNpbmcgcGVyLWV2ZW50IHNhdHVyYXRpb24gKHNhdC1wcmVnZW4pLgp0AAEKdABFRVJST1IgOiBjb2xvdXIgY2xhc3MgbmV0IGRvZXMgbm90IGV4aXN0IGluIGNvbG91ciBkb21haW4gb2YgcGxhY2UgUDAKdAArG1sxWBtbMzFtIFBST0NFU1MgRVhJVEVEIFdJVEggVkFMVUUgMS4bWzBtCnQALRtbMVgbWzMxbSBESUQgTk9UIENPTVBMRVRFIFRIRSBTT0xVVElPTi4bWzBtCnhzcQB+AAB3BAAAAD9zcgARamF2YS5sYW5nLkJvb2xlYW7NIHKA1Zz67gIAAVoABXZhbHVleHABcQB+AEJxAH4AQnEAfgBCcQB+AEJxAH4AQnEAfgBCcQB+AEJxAH4AQnEAfgBCcQB+AEJxAH4AQnEAfgBCcQB+AEJxAH4AQnEAfgBCcQB+AEJxAH4AQnEAfgBCcQB+AEJxAH4AQnEAfgBCcQB+AEJxAH4AQnEAfgBCcQB+AEJxAH4AQnEAfgBCcQB+AEJxAH4AQnEAfgBCcQB+AEJxAH4AQnEAfgBCcQB+AEJxAH4AQnEAfgBCcQB+AEJxAH4AQnEAfgBCcQB+AEJxAH4AQnEAfgBCcQB+AEJxAH4AQnEAfgBCcQB+AEJxAH4AQnEAfgBCcQB+AEJxAH4AQnEAfgBCcQB+AEJxAH4AQnEAfgBCcQB+AEJxAH4AQnEAfgBCcQB+AEJxAH4AQnEAfgBCcQB+AEJxAH4AQng</document-log>
+  </resource-list>
 </project>

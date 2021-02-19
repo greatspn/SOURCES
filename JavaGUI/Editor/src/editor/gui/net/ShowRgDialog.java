@@ -16,6 +16,8 @@ import editor.domain.elements.TemplateVariable;
 import editor.domain.grammar.TemplateBinding;
 import editor.domain.io.GreatSpnFormat;
 import editor.domain.measures.SolverInvokator;
+import static editor.domain.measures.SolverInvokator.makeFilenameCmd;
+import static editor.domain.measures.SolverInvokator.startOfCommand;
 import static editor.domain.measures.SolverInvokator.useGreatSPN_binary;
 import java.awt.Cursor;
 import java.io.File;
@@ -95,10 +97,11 @@ public class ShowRgDialog extends javax.swing.JDialog {
             
             GreatSpnFormat.exportGspn(gspn, tmpNet, tmpDef, true);
 
+            cmd.append(startOfCommand());
             cmd.append(useGreatSPN_binary(rgType==RgType.SRG ? "WNSRG" : "WNRG"));
-            cmd.append(" ").append(tmpRoot.getAbsolutePath());
+            cmd.append(" ").append(makeFilenameCmd(tmpRoot));
             cmd.append(" -max-markings 10000 -max-dot-markings 80");
-            cmd.append(" -dot-F ").append(tmpRoot.getAbsolutePath());
+            cmd.append(" -dot-F ").append(makeFilenameCmd(tmpRoot));
             if (rgType == RgType.CTMC)
                 cmd.append(" -m");
             

@@ -18,6 +18,8 @@ import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.TemplateBinding;
 import editor.domain.io.GreatSpnFormat;
 import editor.domain.measures.SolverInvokator;
+import static editor.domain.measures.SolverInvokator.makeFilenameCmd;
+import static editor.domain.measures.SolverInvokator.startOfCommand;
 import editor.domain.values.EvaluatedFormula;
 import java.awt.Window;
 import java.io.File;
@@ -82,6 +84,7 @@ public class StructInfo {
             }
             
             StringBuilder cmd = new StringBuilder();
+            cmd.append(startOfCommand());
             cmd.append(SolverInvokator.useGreatSPN_binary("pinvar")).append(" ");
             
             // Save the net to a temporary file
@@ -89,7 +92,7 @@ public class StructInfo {
             File tmpNet = new File(tmpName.getAbsolutePath()+".net");
             File tmpDef = new File(tmpName.getAbsolutePath()+".def");
             GreatSpnFormat.exportGspn(gspn, tmpNet, tmpDef, true);
-            cmd.append(tmpName.getAbsolutePath()).append(" ");
+            cmd.append(makeFilenameCmd(tmpName)).append(" ");
             cmd.append(mpars.toString());
             
             // Run the pinvar command
@@ -102,8 +105,9 @@ public class StructInfo {
             
             // Run the struct tool
             cmd.delete(0, cmd.length());
+            cmd.append(startOfCommand());
             cmd.append(SolverInvokator.useGreatSPN_binary("struct")).append(" ");
-            cmd.append(tmpName.getAbsolutePath()).append(" ");
+            cmd.append(makeFilenameCmd(tmpName)).append(" ");
             cmd.append(mpars.toString());
             System.out.println(cmd.toString());
             pr = Runtime.getRuntime().exec(cmd.toString(), envp);

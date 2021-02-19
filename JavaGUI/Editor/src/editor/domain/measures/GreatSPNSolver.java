@@ -95,7 +95,7 @@ public class GreatSPNSolver extends SolverInvokator {
                 case SWN_SYM:   rgBuildCmd = "WNSRG";    break;
                 default:        throw new IllegalStateException();
             }
-            rgBuildCmd = useGreatSPN_binary(rgBuildCmd) + " " + quotedFn(null);
+            rgBuildCmd = startOfCommand() + useGreatSPN_binary(rgBuildCmd) + " " + quotedFn(null);
             rgBuildCmd += getParamBindingCmd(currBind, true, true);
             rgBuildCmd += hasMeasures ? " -m" : " ";
             rgBuildCmd += hasStat ? " -gui-stat" : " ";
@@ -108,10 +108,10 @@ public class GreatSPNSolver extends SolverInvokator {
 
             if (hasMeasures) { // Solution of the Markov chain and measure computation
                 // Step 1: empty .gst file
-                step.addCmd("/bin/cp /dev/null "+quotedFn(".gst"));
+                step.addCmd(startOfCommand() + "/bin/cp /dev/null "+quotedFn(".gst"));
 
                 // Step 2: invoke swn_stndrd
-                step.addCmd(useGreatSPN_binary("swn_stndrd") + " " + quotedFn(null));
+                step.addCmd(startOfCommand() + useGreatSPN_binary("swn_stndrd") + " " + quotedFn(null));
 
                 // Step 3: numerical solution of the CTMC
                 params.epsilon.checkExprCorrectness(getContext(), getPage().targetGspn, null);
@@ -122,7 +122,7 @@ public class GreatSPNSolver extends SolverInvokator {
                         .getScalarInt();
                 if (params.solTime == SolutionTime.STEADY_STATE) {
                     // Use Gauss-Seidel
-                    step.addCmd(useGreatSPN_binary("swn_ggsc") + " " + quotedFn(null) +
+                    step.addCmd(startOfCommand() + useGreatSPN_binary("swn_ggsc") + " " + quotedFn(null) +
                                 " -e"+epsilon+ " -i"+maxIters);
                 }
                 else {
@@ -130,19 +130,19 @@ public class GreatSPNSolver extends SolverInvokator {
                     double timeT = params.timeT.evaluate(getContext(), EvaluationArguments.NO_ARGS)
                             .getScalarRealOrIntAsReal();
                     // Use transient uniformization at time params.timeT
-                    step.addCmd(useGreatSPN_binary("swn_ntrs") + " " + quotedFn(null) + 
+                    step.addCmd(startOfCommand() + useGreatSPN_binary("swn_ntrs") + " " + quotedFn(null) + 
                                 " " +timeT+ " -e"+epsilon+ " -i"+maxIters);
                 }
 
                 // Step 4: copy .epd into .mpd
-                step.addCmd("/bin/cp "+quotedFn(".epd")+" "+quotedFn(".mpd"));
+                step.addCmd(startOfCommand() + "/bin/cp "+quotedFn(".epd")+" "+quotedFn(".mpd"));
 
                 // Step 5: prepare measures (use modified mark/rate params and extra defs)
-                step.addCmd(useGreatSPN_binary("swn_gst_prep") + " " + quotedFn(null) +
+                step.addCmd(startOfCommand() + useGreatSPN_binary("swn_gst_prep") + " " + quotedFn(null) +
                             getParamBindingCmd(currBind, true, true) + measCmd);
 
                 // Step 6: compute measures
-                step.addCmd(useGreatSPN_binary("swn_gst_stndrd") + " " + quotedFn(null) +
+                step.addCmd(startOfCommand() + useGreatSPN_binary("swn_gst_stndrd") + " " + quotedFn(null) +
                             " -append " + quotedFn(".sta"));
             }
         }
@@ -157,7 +157,7 @@ public class GreatSPNSolver extends SolverInvokator {
                 case SWN_SYM_SIMUL:     rgBuildCmd = "WNSYMB";   break;
                 default:        throw new IllegalStateException();
             }
-            String cmd = useGreatSPN_binary(rgBuildCmd) + " " + quotedFn(null);
+            String cmd = startOfCommand() + useGreatSPN_binary(rgBuildCmd) + " " + quotedFn(null);
             cmd += getParamBindingCmd(currBind, true, true);
             cmd += hasStat ? " -gui-stat" : "";
             cmd += measCmd;

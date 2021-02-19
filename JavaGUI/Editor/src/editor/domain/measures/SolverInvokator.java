@@ -214,13 +214,13 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
     
     // Create the argument array from a single command line String
     private static String[] splitCommandLine(String str) {
-        boolean runFromBash = true;
+//        boolean runFromBash = true;
         
         // Indirectly invoke the command using bash
         // Only for Windows 10+ 64bit with Linux Subsystem installed.
-        if (Util.isWindows()) {
-            return new String[] { "bash", "-c", "FROM_GUI=1 "+str.replace("\"", "\\\"") };
-        }
+//        if (Util.isWindows()) {
+//            return new String[] { "bash", "-c", "FROM_GUI=1 "+str.replace("\"", "\\\"") };
+//        }
         
         str += " "; // To detect last token when not quoted...
         ArrayList<String> strings = new ArrayList<>();
@@ -563,20 +563,46 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
     }
     
     //==========================================================================
-    // Helper methods for derived solver classes
+    // Wrapping of filenames
     //==========================================================================
     
-    // Print a quoted net filename with the specified extension
-    protected String quotedFn(String ext, String quote) {
-        String fn = quote + getGspnFile().getAbsolutePath() + (ext==null ? "" : ext) + quote;
+    public static String makeFilenameCmd(String fname, String ext, String quote) {
+        String fn = quote + fname + (ext==null ? "" : ext) + quote;
         if (Util.isWindows()) {
+//            System.out.print("quotedFn: "+fn);
             fn = fn.replace("\\", "/").replace("C:", "/mnt/c");
+//            System.out.println(" -> "+fn);
         }
-        return fn;
+        return fn;        
     }
+    public static String makeFilenameCmd(String fname, String ext) {
+        return makeFilenameCmd(fname, ext, "\"");
+    }
+    public static String makeFilenameCmd(String fname) {
+        return makeFilenameCmd(fname, null, "\"");
+    }
+    public static String makeFilenameCmd(File fname) {
+        return makeFilenameCmd(fname.getAbsolutePath(), null, "\"");
+    }
+    
+    // Print a quoted net filename with the specified extension
+//    protected String quotedFn(String ext, String quote) {
+//        return makeFilenameCmd(getGspnFile().getAbsolutePath(), ext, quote);
+////        String fn = quote + getGspnFile().getAbsolutePath() + (ext==null ? "" : ext) + quote;
+////        if (Util.isWindows()) {
+////            System.out.print("quotedFn: "+fn);
+////            fn = fn.replace("\\", "/").replace("C:", "/mnt/c");
+////            System.out.println(" -> "+fn);
+////        }
+////        return fn;
+//    }
     protected String quotedFn(String ext) {
-        return quotedFn(ext, "\"");
+        return makeFilenameCmd(getGspnFile().getAbsolutePath(), ext, "\"");
     }
+
+    //==========================================================================
+    // Helper methods for derived solver classes
+    //==========================================================================
 
     // Compose the argument list with the parametric mark/rate parameters
     protected String getParamBindingCmd(TemplateBinding currBind, boolean writeMarkPars, boolean writeRatePars) {
@@ -673,7 +699,8 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
     private static boolean checkWSL() {
         try {
             Process p = Runtime.getRuntime().exec(new String[]{
-                "bash" ,"-c" ,"exit 25"
+                //"bash" ,"-c" ,"exit 25"
+                "wsl", "exit", "25"
             });
             int exitcode = p.waitFor();
 //            JOptionPane.showMessageDialog(null, "exit = "+exitcode);
@@ -689,7 +716,8 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
     private static boolean checkWSLcanExecute(String file) {
         try {
             Process p = Runtime.getRuntime().exec(new String[]{
-                "bash", "-c", "test -x \""+file+"\""
+//                "bash", "-c", "test -x \""+file+"\""
+                "wsl", "test", "-x", file
             });
             int exitcode = p.waitFor();
             return exitcode == 0; // 0 means it has the x flag, otherwise test returns 1
@@ -736,6 +764,12 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         return cmd;
     }
     
+    public static String startOfCommand() {
+        if (Util.isWindows())
+            return "wsl -- ";
+        return "";
+    }
+    
     //==========================================================================
     // ADDITIONAL PATHS for the toolchain invokation
     //==========================================================================
@@ -760,6 +794,11 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         nenv.put("TERM", "xterm");   // Accept VT-100 escape sequences
         nenv.put("FREQUENCY", "10"); // Frequency of terminal updates, in tenths of seconds
         nenv.put("FROM_GUI", "1");   // Tell the solver that is being called from the GUI
+        
+        if (Util.isWindows()) {
+            nenv.put("LD_LIBRARY_PATH", "/usr/local/lib");
+            nenv.put("WSLENV", "TERM:FREQUENCY:FROM_GUI:LD_LIBRARY_PATH");
+        }
         
         if (solver != null)
             solver.modifyEnvironmentVars(nenv);

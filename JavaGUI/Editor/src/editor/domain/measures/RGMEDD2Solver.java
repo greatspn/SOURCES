@@ -40,20 +40,22 @@ public class RGMEDD2Solver extends SolverInvokator {
 //        }
         
         // Generate the P-basis, the P-semiflows and the bounds
-        step.addOptionalCmd(useGreatSPN_binary("DSPN-Tool") + " -load "+ quotedFn(null) + 
+        step.addOptionalCmd(startOfCommand() + useGreatSPN_binary("DSPN-Tool") + 
+                            " -load "+ quotedFn(null) + 
                             getParamBindingCmd(currBind, true, true) +
                             " -pbasis -detect-exp -psfl -bnd ");
         
-        // Generate the bounds from the ILP
-        step.addOptionalCmd("perl -e 'alarm 5 ; exec \""+useGreatSPN_binary("DSPN-Tool") +
-                            " -load "+ quotedFn(null, "\\\"") + 
+        // Generate the bounds from the ILP with a 5-seconds timeout
+        step.addOptionalCmd(startOfCommand() + useGreatSPN_binary("DSPN-Tool") +
+                            " -load "+ quotedFn(null) + 
                             getParamBindingCmd(currBind, true, true) +
-                            " -load-bnd -ilp-bnd\" '");
+                            " -load-bnd -timeout 5 -ilp-bnd\" '");
 //        step.addOptionalCmd("timeout 5s "+useGreatSPN_binary("DSPN-Tool") + " -load "+ quotedFn(null) + 
 //                            " -load-bnd -ilp-bnd ");
         
         boolean isV3 = getRGMEDDName().equals("RGMEDD3");
-        String rgmeddCmd = useGreatSPN_binary(getRGMEDDName()) + " " + quotedFn(null);
+        String rgmeddCmd = (startOfCommand() + useGreatSPN_binary(getRGMEDDName()) + 
+                            " " + quotedFn(null));
         rgmeddCmd += " " + varOrder.getCmdOption() + " ";
         if (params.genCounterExamples)
             rgmeddCmd += " -c";
