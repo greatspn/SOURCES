@@ -170,7 +170,7 @@ Typically, most tools are accessed through a script in the first directory.
 
 ### Citing GreatSPN:
 
-To cite the GreatSPN framework, please use this reference [PDF](https://iris.unito.it/retrieve/handle/2318/1624717/295450/Amparore-trivedi-chapter.pdf):
+To cite the GreatSPN framework, please use this reference: [(PDF)](https://iris.unito.it/retrieve/handle/2318/1624717/295450/Amparore-trivedi-chapter.pdf)
 
 ```
 @incollection{bib:30YearsOfGreatSPN,
@@ -184,7 +184,7 @@ To cite the GreatSPN framework, please use this reference [PDF](https://iris.uni
 }
 ```
 
-To cite the decision-diagram based model checker RGMEDD, please use this reference [PDF](https://aperto.unito.it/retrieve/handle/2318/1764225/685722/Variable%20order%20metrics%20for%20decision%20diagrams%20in%20system%20verification%20-%20STTT.pdf):
+To cite the decision-diagram based model checker RGMEDD, please use this reference: [(PDF)](https://aperto.unito.it/retrieve/handle/2318/1764225/685722/Variable%20order%20metrics%20for%20decision%20diagrams%20in%20system%20verification%20-%20STTT.pdf)
 
 ```
 @article{bib:STTTvarordmetrics,
