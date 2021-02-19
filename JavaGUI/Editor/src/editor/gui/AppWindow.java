@@ -348,14 +348,11 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         iconList.add(Main.loadImage("icon64.png"));
         setIconImages(iconList);
         if (Util.isOSX()) {
+            // MacOS integration
             Taskbar taskbar = Taskbar.getTaskbar();
             taskbar.setIconImage(Main.loadImage("icon64.png"));
-        }
         
-        // MacOS integration
-        if (isOSX()) {
             java.awt.Desktop desktop = Desktop.getDesktop();
-            
             desktop.setAboutHandler(e -> showAboutDialog());
             desktop.setOpenFileHandler(e -> openFileHandler(e.getSearchTerm()));
             desktop.setOpenURIHandler(e -> openFileHandler(e.getURI().getPath()));

@@ -273,16 +273,16 @@ bool build_graph(class RSRG &rs) {
         timeLRS = clock() - timeLRS;
 
         // Print LRS statistics
-        if (!running_for_MCC() && !CTL) {
-            if (rs.has_LRS()) {
-                signal(SIGABRT, handle_sigabrt_gmp_exit);
-                apply(MEDDLY::CARDINALITY, rs.getLRS(), cardinality_ref(lrs_card));
-                signal(SIGABRT, SIG_DFL);
-            }
-            else {
-                lrs_card = INFINITE_CARD;
-            }
+        // if (!running_for_MCC() && !CTL) {
+        if (rs.has_LRS()) {
+            signal(SIGABRT, handle_sigabrt_gmp_exit);
+            apply(MEDDLY::CARDINALITY, rs.getLRS(), cardinality_ref(lrs_card));
+            signal(SIGABRT, SIG_DFL);
         }
+        else {
+            lrs_card = INFINITE_CARD;
+        }
+        // }
     }
 
     // Control variables for the RS generation loop
@@ -405,10 +405,26 @@ bool build_graph(class RSRG &rs) {
     }
     rs.buildRS_phaseEnd();
 
-
+    // // Show the markings in LRS but not in RS
     // dd_edge LRS_diff_RS(rs.getForestMDD());
     // apply(DIFFERENCE, rs.getLRS(), rs.getRS(), LRS_diff_RS);
+    // cout << "\n\nLRS \\ RS:" << endl;
     // rs.show_markings(cout, LRS_diff_RS, 1000);
+
+    // // Show all dead markings in RS (requires the NSF with -sat-mono)
+    // dd_edge dead_marks(rs.getForestMDD());
+    // apply(PRE_IMAGE, rs.getRS(), rs.getNSF(), dead_marks);
+    // apply(DIFFERENCE, rs.getRS(), dead_marks, dead_marks);
+    // cout << "\n\nDEAD MARKINGS:" << endl;
+    // rs.show_markings(cout, dead_marks, 1000);
+
+    if (rs.has_LRS() && rs.has_RS()) {
+        if (rs.getRS().getNode() == rs.getLRS().getNode())
+            cout << "LREP Test:  RS==LRS" << endl;
+        else
+            cout << "LREP Test:  RS!=LRS" << endl;
+    }
+
 
     // At this point, we can disable the timeout alarm and notify the parent process
     if (g_max_seconds_statespace) {

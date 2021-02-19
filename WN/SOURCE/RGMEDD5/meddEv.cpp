@@ -860,7 +860,7 @@ bool RSRG::verify_LRS_RS_equiv() {
 
     // Create the DD of the minimal marking
     vector<int> ins(npl + extraLvls + 1, 0);
-    for (int pl = 0 ; pl < npl; pl++) {
+    for (int pl = 0; pl < npl; pl++) {
         ins[net_to_mddLevel[pl] + 1] = m0min[pl];
     }
     const int *ins_ptr = ins.data();
@@ -883,6 +883,17 @@ bool RSRG::verify_LRS_RS_equiv() {
 
     // MEDDLY::ostream_output stdout_wrap(cout);
     // LRS->show(stdout_wrap, 2);
+
+    // cout << "|LRS| = " << LRS->getCardinality() << endl;
+    // cout << "|RS|  = " << RS.getCardinality() << endl;
+
+    // dd_edge diff(forestMDD);
+    // apply(DIFFERENCE, *LRS, RS, diff);
+    // show_markings(cout, m0min_mdd);
+    // cout << endl;
+    // show_markings(cout, diff);
+    // cout << endl;
+    // show_markings(cout, RS);
 
     return *LRS == RS;
 }
@@ -2442,7 +2453,7 @@ void RSRG::buildRS_phaseEnd() {
         //     }
         // } while (false);
     }
-    cout << "END TEST" << endl;
+    // cout << "END TEST" << endl;
 }
 
 //-----------------------------------------------------------------------------

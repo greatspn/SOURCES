@@ -814,6 +814,10 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
             }
             envp[pos++] = e.getKey()+"="+value;
         }
+        
+//        for (String envset : envp)
+//            System.out.println("  "+envset);
+        
         return envp;
     }
     
