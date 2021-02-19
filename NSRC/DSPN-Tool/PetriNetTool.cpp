@@ -29,6 +29,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <functional>
+#include <unistd.h>
 using namespace std;
 
 #include <boost/optional.hpp>
@@ -86,6 +87,13 @@ void Experiment1();
 void Experiment2(const char *arg);
 
 void Experiment3(const MRP &mrp, const SolverParams &spar);
+
+//=============================================================================
+
+void sig_alarm_handler(int signum) {
+    cout << "Timeout expired. Exit..." << endl;
+    exit(0);
+}
 
 //=============================================================================
 
@@ -1139,6 +1147,19 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
                 ofstream m0min_os(m0minFile.c_str());
                 SaveMinimalTokens(m0min, m0min_os);
                 PrintMinimalTokens(*pn, m0min, verboseLvl);
+            }
+            else if (cmdArg == "-timeout" && remainedArgs >= 1) {
+                int seconds = atoi(argv[argNum++]);
+                if (seconds > 0) {
+                    signal(SIGALRM, sig_alarm_handler);
+                    alarm(seconds);
+                    cout << "Scheduled timeout of " << seconds << " seconds." << endl;
+                }
+                else {
+                    alarm(seconds);
+                    signal(SIGALRM, SIG_DFL);
+                    cout << "Cancelling timeout." << endl;
+                }
             }
 #ifdef HAS_LP_SOLVE_LIB
             // Commands that use the ILP solver
