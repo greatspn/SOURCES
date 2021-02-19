@@ -35,7 +35,6 @@ import editor.domain.io.PNMLFormat;
 import editor.domain.struct.StructInfo;
 import editor.gui.CutCopyPasteEngine;
 import editor.gui.ResourceFactory;
-import editor.gui.UndoableCommand;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;

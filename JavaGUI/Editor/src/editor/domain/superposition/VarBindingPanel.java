@@ -14,7 +14,6 @@ import editor.domain.ProjectPage;
 import editor.domain.elements.TemplateVariable;
 import editor.domain.measures.ExprField;
 import editor.gui.MainWindowInterface;
-import editor.gui.UndoableCommand;
 
 /**
  *

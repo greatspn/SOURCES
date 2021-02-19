@@ -23,7 +23,6 @@ import editor.gui.CutCopyPasteEngine;
 import editor.gui.MainWindowInterface;
 import editor.gui.NoOpException;
 import editor.gui.SharedResourceProvider;
-import editor.gui.UndoableCommand;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Rectangle;

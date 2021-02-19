@@ -19,7 +19,6 @@ import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.TemplateBinding;
 import editor.gui.MainWindowInterface;
 import editor.gui.NoOpException;
-import editor.gui.UndoableCommand;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;

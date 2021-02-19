@@ -18,7 +18,6 @@ import editor.domain.elements.Place;
 import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
 import editor.domain.elements.Transition;
-import editor.gui.UndoableCommand;
 import static editor.gui.net.NetEditorPanel.Tool.NEW_GSPN_ARC;
 import static editor.gui.net.NetEditorPanel.Tool.NEW_GSPN_INHIB_ARC;
 import java.awt.Composite;

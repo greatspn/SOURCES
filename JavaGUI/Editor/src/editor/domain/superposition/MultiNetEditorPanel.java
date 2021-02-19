@@ -20,7 +20,6 @@ import editor.gui.AbstractPageEditor;
 import editor.gui.CutCopyPasteEngine;
 import editor.gui.MainWindowInterface;
 import editor.gui.SharedResourceProvider;
-import editor.gui.UndoableCommand;
 import editor.gui.net.NetViewerPanel;
 import java.awt.Color;
 import java.awt.GridBagConstraints;

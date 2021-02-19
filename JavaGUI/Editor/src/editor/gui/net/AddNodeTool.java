@@ -23,7 +23,6 @@ import editor.domain.elements.TemplateVariable;
 import editor.domain.elements.TextBox;
 import editor.domain.elements.TokenType;
 import editor.domain.grammar.ParserContext;
-import editor.gui.UndoableCommand;
 import static editor.gui.net.NetEditorPanel.Tool.NEW_EXP_TRN;
 import static editor.gui.net.NetEditorPanel.Tool.NEW_GEN_TRN;
 import static editor.gui.net.NetEditorPanel.Tool.NEW_IMM_TRN;

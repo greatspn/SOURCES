@@ -12,7 +12,6 @@ import editor.domain.elements.TemplateVariable;
 import editor.domain.measures.ExprField;
 import editor.domain.measures.SolverParams;
 import editor.gui.MainWindowInterface;
-import editor.gui.UndoableCommand;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
