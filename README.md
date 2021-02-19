@@ -117,6 +117,8 @@ Follow the Linux steps to compile all the command line tools inside the WSL subs
 The GUI for Windows is automatically configured to use the tools inside the WSL environment, so no additional step is needed.
 
 
+
+
 #### Pre-installed VirtualBox machine:
 
 We offer a pre-installed VirtualBox machine image, based on Fedora Core, that ships with
@@ -147,7 +149,22 @@ with this command:
 greatspn_editor
 ```
 For macOS users, a compiled app is generated in the `SOURCES/JavaGUI/Editor/dist` directory.
+A precompiled macOS app bundle can also be found [here](http://www.di.unito.it/~amparore/mc4cslta/editor.html).
 
+
+
+### How to run the command-line solvers.
+
+When GreatSPN is installed on your PC, it will (by default) place itself 
+in the: `/usr/local/GreatSPN` directory. The following sub-directory will be created:
+
+ * `${GREATSPN_HOME}/scripts`:  the scripts that invoke the solver pipelines.
+ * `${GREATSPN_HOME}/bin`:  the individual solver binaries.
+ * `${GREATSPN_HOME}/models`:  the default model library available from the GUI.
+
+Typically, most tools are accessed through a script in the first directory.
+
+**TBD**: description of the core tools.
 
 
 
@@ -214,21 +231,6 @@ GreatSPN partecipated to several Model Checking Context (MCC) editions:
     - 🥉 Bronze medal in UpperBounds category;
 
 See the [Model Checking Context site](https://mcc.lip6.fr) for further details.
-
-
-
-### How to run the command-line solvers.
-
-When GreatSPN is installed on your PC, it will (by default) place itself 
-in the: `/usr/local/GreatSPN` directory. The following sub-directory will be created:
-
- * `${GREATSPN_HOME}/scripts`:  the scripts that invoke the solver pipelines.
- * `${GREATSPN_HOME}/bin`:  the individual solver binaries.
- * `${GREATSPN_HOME}/models`:  the default model library available from the GUI.
-
-Typically, most tools are accessed through a script in the first directory.
-
-**TBD**: description of the core tools.
 
 
 
