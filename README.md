@@ -32,16 +32,18 @@ First, install the following dependencies (using the developer packages with the
 For Fedora 32, you can install the dependencies with this command:
 
 ```
-sudo dnf -y install gcc gcc-c++ gmp-devel gmp-c++ gmp boost-devel flex-devel ant glib2-devel \
- patch python glpk-devel lpsolve-devel autoconf automake libtool zip flex git byacc time \
- graphviz suitesparse-devel motif-devel make libxml++-devel glibmm24-devel lpsolve texlive-epstopdf
+sudo dnf -y install gcc gcc-c++ gmp-devel gmp-c++ gmp boost-devel flex-devel \
+ ant glib2-devel patch python glpk-devel lpsolve-devel autoconf automake \
+ libtool zip flex git byacc time graphviz suitesparse-devel motif-devel make 
+ libxml++-devel glibmm24-devel lpsolve texlive-epstopdf
 ```
 
 For Debian/Ubuntu, the list of dependencies is installed with the command:
 ```
-sudo apt-get install -y gcc g++ libgmp-dev libgmpxx4ldbl libboost-all-dev flexc++ ant libglib2.0-dev \
- patch python3 libglpk-dev liblpsolve55-dev autoconf automake libtool zip flex byacc time graphviz \
- libsuitesparse-dev libmotif-dev make libxml++2.6-dev libglibmm-2.4-dev texlive-font-utils
+sudo apt-get install -y gcc g++ libgmp-dev libgmpxx4ldbl libboost-all-dev \
+ flexc++ ant libglib2.0-dev patch python3 libglpk-dev liblpsolve55-dev \
+ autoconf automake libtool zip flex byacc time graphviz libsuitesparse-dev \
+ libmotif-dev make libxml++2.6-dev libglibmm-2.4-dev texlive-font-utils
 ```
 This list was last tested on Ubuntu 20.04LTS, and it also applies to WSL-2 with Ubuntu.
 
@@ -61,8 +63,19 @@ Please, refer to the Meddly site for further information on how to download, com
 
 
 To compile the CTL* model checker, the [Spot library](https://spot.lrde.epita.fr/) is required. Download and install it from the Spot website. **NOTE**: ensure that it is installed in a system directory, like `/usr/local/lib`.
+A sample installation procedure could be the following:
 
-Once Meddly and Spot are both compiled and installed, create the main `GreatSPN` source directory with this command:
+```
+wget http://www.lrde.epita.fr/dload/spot/spot-2.9.6.tar.gz  # The URL could be different
+tar xzf spot-2.9.6.tar.gz
+cd spot-2.9.6
+./configure
+make
+make install
+```
+
+Once Meddly and Spot are both compiled and installed, create the main `GreatSPN` source directory. 
+Download, compile and install the sources with these commands:
 
 ```
 mkdir ~/GreatSPN
@@ -72,8 +85,7 @@ cd ~/GreatSPN/SOURCES
 make
 sudo make install
 ```
-
-to download, compile and install the sources. 
+ 
 Upon completion, the framework will be installed by default in the `/usr/local/GreatSPN/` directory.
 
 
@@ -92,6 +104,8 @@ In that case, download the lp_solve sources from Sourceforge and follow the inst
 to compile the package.
 After you have installed Xcode, brew, and the required dependecies, follow
 the Linux/Unix instructions to compile Meddly and GreatSPN.
+You could also need to install MacTex to have the (optional) `epstopdf` command, 
+needed by some visualization functionalities.
 
 
 #### Windows installation instructions:
@@ -153,7 +167,20 @@ To cite the GreatSPN framework, please use this reference [PDF](https://iris.uni
 }
 ```
 
-Recent papers referencing GreatSPN:
+To cite the decision-diagram based model checker RGMEDD, please use this reference [PDF](https://aperto.unito.it/retrieve/handle/2318/1764225/685722/Variable%20order%20metrics%20for%20decision%20diagrams%20in%20system%20verification%20-%20STTT.pdf):
+
+```
+@article{bib:STTTvarordmetrics,
+  title={Variable order metrics for decision diagrams in system verification},
+  author={Amparore, Elvio Gilberto and Donatelli, Susanna and Ciardo, Gianfranco},
+  journal={International Journal on Software Tools for Technology Transfer},
+  pages={1--22},
+  year={2019},
+  publisher={Springer}
+}
+```
+
+Other recent papers referencing GreatSPN:
 
 ```
 @inproceedings{bib:ctlstar:greatspn,
@@ -166,8 +193,8 @@ Recent papers referencing GreatSPN:
   pages="403--413",
   isbn="978-3-030-51831-8"
 }
-
 ```
+PDF [here](https://iris.unito.it/retrieve/handle/2318/1764228/685729/A%20CTLstar%20model%20checker%20for%20Petri%20nets.pdf).
 
 
 ### Recent Awards (Model Checking Context 2018 edition):
