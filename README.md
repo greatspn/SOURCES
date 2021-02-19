@@ -37,6 +37,12 @@ sudo dnf -y install gcc gcc-c++ gmp-devel gmp-c++ gmp boost-devel flex-devel ant
  graphviz suitesparse-devel motif-devel make libxml++-devel glibmm24-devel lpsolve
 ```
 
+For Debian/Ubuntu, the list of dependencies is installed with the command:
+```
+sudo apt-get install -y gcc g++ libgmp-dev libgmpxx4ldbl libboost-all-dev flexc++ ant libglib2.0-dev patch python3 libglpk-dev liblpsolve55-dev autoconf automake libtool zip flex byacc time graphviz libsuitesparse-dev libmotif-dev make libxml++2.6-dev libglibmm-2.4-dev 
+```
+This list was last tested on Ubuntu 20.04LTS, and it is working also for WSL-2.
+
 Parts of GreatSPN use the [Meddly library](https://github.com/asminer/meddly). 
 To download and install the Meddly library, type:
 

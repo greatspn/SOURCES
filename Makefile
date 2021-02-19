@@ -115,14 +115,7 @@ endif
 ifneq (,$(findstring Microsoft,$(UNAME_R))) 
   ifeq ($(UNAME_S),Linux)
     IS_WSL := 1
-    $(info "Running on WSL-1.")
-  endif
-endif
-###
-ifneq (,$(findstring microsoft-standard,$(UNAME_R))) 
-  ifeq ($(UNAME_S),Linux)
-    IS_WSL := 2
-    $(info "Running on WSL-2.")
+    $(info "Running on WSL.")
   endif
 endif
 ###
@@ -1997,8 +1990,6 @@ JavaGUI: java-jars
 
 JavaGUI-archives: $(JAVA_GUI_ARCHIVES)
 
-SCRIPTS += unfolding2 greatspn_editor
-
 unfolding2_SOURCEFILE := JavaGUI/unfolding2.sh
 greatspn_editor_SOURCEFILE := JavaGUI/greatspn_editor.sh
 
@@ -2056,6 +2047,7 @@ clean: clean_JavaGUI
 
 install: install_JavaGUI_models install_JavaGUI_jars
 
+SCRIPTS += unfolding2 greatspn_editor
   endif
  endif
 endif
