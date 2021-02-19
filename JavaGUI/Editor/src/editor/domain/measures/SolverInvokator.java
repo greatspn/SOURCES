@@ -213,7 +213,7 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
     }
     
     // Create the argument array from a single command line String
-    private static String[] splitCommandLine(String str) {
+    public static String[] splitCommandLine(String str) {
 //        boolean runFromBash = true;
         
         // Indirectly invoke the command using bash
@@ -816,7 +816,7 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         }
         
 //        for (String envset : envp)
-//            System.out.println("  "+envset);
+//            System.out.println("export "+envset);
         
         return envp;
     }

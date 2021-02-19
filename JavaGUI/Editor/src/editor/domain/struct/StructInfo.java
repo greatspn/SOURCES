@@ -19,6 +19,7 @@ import editor.domain.grammar.TemplateBinding;
 import editor.domain.io.GreatSpnFormat;
 import editor.domain.measures.SolverInvokator;
 import static editor.domain.measures.SolverInvokator.makeFilenameCmd;
+import static editor.domain.measures.SolverInvokator.splitCommandLine;
 import static editor.domain.measures.SolverInvokator.startOfCommand;
 import editor.domain.values.EvaluatedFormula;
 import java.awt.Window;
@@ -98,7 +99,7 @@ public class StructInfo {
             // Run the pinvar command
             String[] envp = SolverInvokator.prepareRuntimeEnvironmentVars();
             System.out.println(cmd.toString());
-            Process pr = Runtime.getRuntime().exec(cmd.toString(), envp);
+            Process pr = Runtime.getRuntime().exec(splitCommandLine(cmd.toString()), envp);
             int retVal = pr.waitFor();
             if (retVal != 0)
                 throw new IllegalStateException("pinvar returned an exit code of "+retVal);
@@ -110,7 +111,7 @@ public class StructInfo {
             cmd.append(makeFilenameCmd(tmpName)).append(" ");
             cmd.append(mpars.toString());
             System.out.println(cmd.toString());
-            pr = Runtime.getRuntime().exec(cmd.toString(), envp);
+            pr = Runtime.getRuntime().exec(splitCommandLine(cmd.toString()), envp);
             retVal = pr.waitFor();
             if (retVal != 0)
                 throw new IllegalStateException("struct returned an exit code of "+retVal);

@@ -17,6 +17,7 @@ import editor.domain.grammar.TemplateBinding;
 import editor.domain.io.GreatSpnFormat;
 import editor.domain.measures.SolverInvokator;
 import static editor.domain.measures.SolverInvokator.makeFilenameCmd;
+import static editor.domain.measures.SolverInvokator.splitCommandLine;
 import static editor.domain.measures.SolverInvokator.startOfCommand;
 import static editor.domain.measures.SolverInvokator.useGreatSPN_binary;
 import java.awt.Cursor;
@@ -118,7 +119,7 @@ public class ShowRgDialog extends javax.swing.JDialog {
             
             System.out.println("cmd = "+cmd);
             String[] envp = SolverInvokator.prepareRuntimeEnvironmentVars();
-            Runtime.getRuntime().exec(cmd.toString(), envp).waitFor();
+            Runtime.getRuntime().exec(splitCommandLine(cmd.toString()), envp).waitFor();
             
             if (tmpPdf.exists()) {
                 Main.viewPDF(tmpPdf);

@@ -19,6 +19,7 @@ import editor.domain.elements.Transition;
 import editor.domain.io.GreatSpnFormat;
 import editor.domain.measures.SolverInvokator;
 import static editor.domain.measures.SolverInvokator.makeFilenameCmd;
+import static editor.domain.measures.SolverInvokator.splitCommandLine;
 import static editor.domain.measures.SolverInvokator.startOfCommand;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -242,7 +243,7 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                     // Run the tool
                     String[] envp = SolverInvokator.prepareRuntimeEnvironmentVars();
                     System.out.println(cmd);
-                    Process pr = Runtime.getRuntime().exec(cmd.toString(), envp);
+                    Process pr = Runtime.getRuntime().exec(splitCommandLine(cmd.toString()), envp);
                     int retVal = pr.waitFor();
                     if (retVal != 0)
                         throw new IllegalStateException("algebra returned an exit code of "+retVal);
