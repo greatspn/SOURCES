@@ -4,6 +4,7 @@
  */
 package editor.domain.io;
 
+import common.UnixPrintWriter;
 import editor.domain.elements.ConstantID;
 import editor.domain.Edge;
 import editor.domain.elements.GspnEdge;
@@ -435,8 +436,9 @@ public class GreatSpnFormat {
 
             ArrayList<String> log = new ArrayList<>();
 
-            PrintWriter net = new PrintWriter(new BufferedOutputStream(new FileOutputStream(netFile)));
-            PrintWriter def = new PrintWriter(new BufferedOutputStream(new FileOutputStream(defFile)));
+            // Always save the net/def files with Unix line endings using the UnixPrintWriter
+            PrintWriter net = new UnixPrintWriter(new BufferedOutputStream(new FileOutputStream(netFile)));
+            PrintWriter def = new UnixPrintWriter(new BufferedOutputStream(new FileOutputStream(defFile)));
 
             net.println("|0|\n|");
 

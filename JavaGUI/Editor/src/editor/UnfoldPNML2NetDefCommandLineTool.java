@@ -5,6 +5,7 @@
  */
 package editor;
 
+import common.UnixPrintWriter;
 import editor.domain.Node;
 import editor.domain.PageErrorWarning;
 import editor.domain.ProjectData;
@@ -298,7 +299,7 @@ public class UnfoldPNML2NetDefCommandLineTool {
             if (saveNameMap && pnmlId2name!=null) {
                 System.out.println("SAVING NAME MAP FILE "+baseName+".id2name ...");
                 File outNameMap = new File(baseName+".id2name");
-                PrintWriter map = new PrintWriter(new BufferedOutputStream(new FileOutputStream(outNameMap)));
+                PrintWriter map = new UnixPrintWriter(new BufferedOutputStream(new FileOutputStream(outNameMap)));
                 map.println(pnmlId2name.size());
                 for (Map.Entry<String, String> e : pnmlId2name.entrySet()) {
                     map.println(e.getKey());                
@@ -324,7 +325,7 @@ public class UnfoldPNML2NetDefCommandLineTool {
                 }
 
                 File outNameMap = new File(baseName+".nu");
-                PrintWriter nu = new PrintWriter(new BufferedOutputStream(new FileOutputStream(outNameMap)));
+                PrintWriter nu = new UnixPrintWriter(new BufferedOutputStream(new FileOutputStream(outNameMap)));
                 System.out.println("SAVING NUPN UNITS AS FILE "+baseName+".nu ...");
                 nu.println("NUPN units "+rootUnit[0].numUnits);
                 saveNuPNUnit(nu, rootUnit[0], 0, pnmlId2name, plc2Index);
@@ -338,7 +339,7 @@ public class UnfoldPNML2NetDefCommandLineTool {
     
     
     private static void saveUnfMap(File f, Unfolding unf) throws IOException {
-        PrintWriter unfmap = new PrintWriter(new BufferedOutputStream(new FileOutputStream(f)));
+        PrintWriter unfmap = new UnixPrintWriter(new BufferedOutputStream(new FileOutputStream(f)));
 
         // Save unfolded places
         unfmap.println(unf.placeUnfolding.size());
