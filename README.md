@@ -113,7 +113,7 @@ needed by some visualization functionalities.
 GreatSPN is known to compile and run successfully using the WSL-2 (Windows 10 64bit minimum) using Ubuntu 20.04LTS.
 WSL installation is slightly different, since the GUI will be a standard Windows application, while the command line tools will reside and run inside the WSL subsystem.
 
-Follow the above steps to compile all the command line tools inside the WSL subsystem, then download a precompiled GUI from [here](http://www.di.unito.it/~amparore/mc4cslta/editor.html). You can use either the Windows version, or the JAR version in case the Windows exe raises problems.
+Follow the Linux steps to compile all the command line tools inside the WSL subsystem, then download a precompiled GUI from [here](http://www.di.unito.it/~amparore/mc4cslta/editor.html). You can use either the Windows version, or the JAR version in case the Windows version raises problems.
 The GUI for Windows is automatically configured to use the tools inside the WSL environment, so no additional step is needed.
 
 
