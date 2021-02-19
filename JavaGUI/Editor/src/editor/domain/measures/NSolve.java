@@ -6,6 +6,7 @@
 
 package editor.domain.measures;
 
+import common.UnixPrintWriter;
 import common.Util;
 import editor.Main;
 import editor.domain.elements.GspnPage;
@@ -65,7 +66,7 @@ public class NSolve extends SolverInvokator {
         params.epsilon.checkExprCorrectness(getContext(), gspn, null);
         
         // Save the parameter file
-        PrintWriter paramOut = new PrintWriter(paramFile);
+        PrintWriter paramOut = new UnixPrintWriter(paramFile);
         paramOut.println("MODELFILE "+baseName);
         paramOut.println("TRS_EXPLORATION NO");
         paramOut.println("TRS_FORMAT NO");

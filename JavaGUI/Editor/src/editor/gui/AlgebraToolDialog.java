@@ -7,6 +7,7 @@
 package editor.gui;
 
 import common.EnabledJComboBoxRenderer;
+import common.UnixPrintWriter;
 import common.Util;
 import editor.Main;
 import editor.domain.Node;
@@ -211,7 +212,7 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                     GreatSpnFormat.exportGspn(net2, tmpNet2, tmpDef2, false);
 
                     File tmpRestfile = File.createTempFile("tags", ".restfile");
-                    PrintWriter restFileOut = new PrintWriter(new BufferedWriter(new FileWriter(tmpRestfile)));
+                    PrintWriter restFileOut = new UnixPrintWriter(new BufferedWriter(new FileWriter(tmpRestfile)));
                     restFileOut.print(transitionTags);
                     restFileOut.print(placeTags);
                     restFileOut.close();
