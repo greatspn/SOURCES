@@ -59,12 +59,12 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
     
     
     private static class StepCmd {
-        // The command line
-        public String cmd;
+        // The command line, split into separate arguments
+        public ArrayList<String> cmd;
         // Is it optional? (i.e. it may fail and the computation is not stopped)
         public boolean mayFail;
 
-        public StepCmd(String cmd, boolean mayFail) {
+        public StepCmd(ArrayList<String> cmd, boolean mayFail) {
             this.cmd = cmd;
             this.mayFail = mayFail;
         }
@@ -91,11 +91,11 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
             this.theInvokator = theInvokator;
         }
         
-        public void addCmd(String cmd) {
+        public void addCmd(ArrayList<String> cmd) {
             cmdLines.add(new StepCmd(cmd, false));
         }
 
-        public void addOptionalCmd(String cmd) {
+        public void addOptionalCmd(ArrayList<String> cmd) {
             cmdLines.add(new StepCmd(cmd, true));
         }
         
@@ -111,9 +111,9 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
             boolean interrupted = false;
             int numCompletedCmds = 0;
             for (StepCmd step : cmdLines) {
-                asyncLogStdout("\033[0mEXEC: "+step.cmd+"\n");
+                asyncLogStdout("\033[0mEXEC: "+cmdToString(step.cmd)+"\n");
 
-                proc = Runtime.getRuntime().exec(splitCommandLine(step.cmd), envp);
+                proc = Runtime.getRuntime().exec(step.cmd.toArray(new String[step.cmd.size()]), envp);
 
                 errStrm = new BufferedInputStream(proc.getErrorStream());
                 outStrm = new BufferedInputStream(proc.getInputStream());
@@ -212,40 +212,40 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         };
     }
     
-    // Create the argument array from a single command line String
-    public static String[] splitCommandLine(String str) {
-//        boolean runFromBash = true;
-        
-        // Indirectly invoke the command using bash
-        // Only for Windows 10+ 64bit with Linux Subsystem installed.
-//        if (Util.isWindows()) {
-//            return new String[] { "bash", "-c", "FROM_GUI=1 "+str.replace("\"", "\\\"") };
+//    // Create the argument array from a single command line String
+//    public static String[] splitCommandLine(String str) {
+////        boolean runFromBash = true;
+//        
+//        // Indirectly invoke the command using bash
+//        // Only for Windows 10+ 64bit with Linux Subsystem installed.
+////        if (Util.isWindows()) {
+////            return new String[] { "bash", "-c", "FROM_GUI=1 "+str.replace("\"", "\\\"") };
+////        }
+//        
+//        str += " "; // To detect last token when not quoted...
+//        ArrayList<String> strings = new ArrayList<>();
+//        char inQuote = 0;
+//        StringBuilder sb = new StringBuilder();
+//        for (int i = 0; i < str.length(); i++) {
+//            char c = str.charAt(i);
+//            if (((c == '\"' || c == '\'') && inQuote==0) || // opening quote
+//                    (c == inQuote) || // closing quote
+//                    (c == ' ' && inQuote==0)) // closing non-quoted argument
+//            {
+//                if (c == inQuote)
+//                    inQuote = 0;
+//                else if (inQuote == 0 && (c == '\"' || c == '\''))
+//                    inQuote = c;
+//                if (inQuote == 0 && sb.length() > 0) {
+//                    strings.add(sb.toString());
+//                    sb.delete(0, sb.length());
+//                }
+//            } 
+//            else
+//                sb.append(c);
 //        }
-        
-        str += " "; // To detect last token when not quoted...
-        ArrayList<String> strings = new ArrayList<>();
-        char inQuote = 0;
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < str.length(); i++) {
-            char c = str.charAt(i);
-            if (((c == '\"' || c == '\'') && inQuote==0) || // opening quote
-                    (c == inQuote) || // closing quote
-                    (c == ' ' && inQuote==0)) // closing non-quoted argument
-            {
-                if (c == inQuote)
-                    inQuote = 0;
-                else if (inQuote == 0 && (c == '\"' || c == '\''))
-                    inQuote = c;
-                if (inQuote == 0 && sb.length() > 0) {
-                    strings.add(sb.toString());
-                    sb.delete(0, sb.length());
-                }
-            } 
-            else
-                sb.append(c);
-        }
-        return strings.toArray(new String[strings.size()]);
-    }
+//        return strings.toArray(new String[strings.size()]);
+//    }
     
 //    public static void main(String[] args) {
 //        splitCommandLine("start start 'in in \" inside \" in  ' end end");
@@ -576,13 +576,13 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         return fn;        
     }
     public static String makeFilenameCmd(String fname, String ext) {
-        return makeFilenameCmd(fname, ext, "\"");
+        return makeFilenameCmd(fname, ext, "");
     }
     public static String makeFilenameCmd(String fname) {
-        return makeFilenameCmd(fname, null, "\"");
+        return makeFilenameCmd(fname, null, "");
     }
     public static String makeFilenameCmd(File fname) {
-        return makeFilenameCmd(fname.getAbsolutePath(), null, "\"");
+        return makeFilenameCmd(fname.getAbsolutePath(), null, "");
     }
     
     // Print a quoted net filename with the specified extension
@@ -597,7 +597,7 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
 ////        return fn;
 //    }
     protected String quotedFn(String ext) {
-        return makeFilenameCmd(getGspnFile().getAbsolutePath(), ext, "\"");
+        return makeFilenameCmd(getGspnFile().getAbsolutePath(), ext, "");
     }
 
     //==========================================================================
@@ -605,21 +605,25 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
     //==========================================================================
 
     // Compose the argument list with the parametric mark/rate parameters
-    protected String getParamBindingCmd(TemplateBinding currBind, boolean writeMarkPars, boolean writeRatePars) {
-        StringBuilder sb = new StringBuilder();
+    protected ArrayList<String> getParamBindingCmdArgs(TemplateBinding currBind, boolean writeMarkPars, boolean writeRatePars) {
+        ArrayList<String> cmdArgs = new ArrayList<>();
         // Prepare the bindings
         for (Map.Entry<String, Expr> bind : currBind.binding.entrySet()) {
             TemplateVariable var = (TemplateVariable)getPage().targetGspn.getNodeByUniqueName(bind.getKey());
             if (var.getType() == TemplateVariable.Type.INTEGER && writeMarkPars) {
                 int value = bind.getValue().evaluate(getContext(), EvaluationArguments.NO_ARGS).getScalarInt();
-                sb.append(" -mpar ").append(var.getUniqueName()).append(" ").append(value);
+                cmdArgs.add("-mpar ");
+                cmdArgs.add(var.getUniqueName());
+                cmdArgs.add(""+value);
             }
             else if (var.getType() == TemplateVariable.Type.REAL && writeRatePars) {
                 double value = bind.getValue().evaluate(getContext(), EvaluationArguments.NO_ARGS).getScalarRealOrIntAsReal();
-                sb.append(" -rpar ").append(var.getUniqueName()).append(" ").append(value);
+                cmdArgs.add("-rpar ");
+                cmdArgs.add(var.getUniqueName());
+                cmdArgs.add(""+value);
             }
         }
-        return sb.toString();
+        return cmdArgs;
     }
     
     // Standard readCommand implementation
@@ -764,10 +768,31 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         return cmd;
     }
     
-    public static String startOfCommand() {
-        if (Util.isWindows())
-            return "wsl -- ";
-        return "";
+//    public static String startOfCommand() {
+//        if (Util.isWindows())
+//            return "wsl -- ";
+//        return "";
+//    }
+    
+    public static ArrayList<String> startOfCommand() {
+        ArrayList<String> cmd = new ArrayList<>();
+        if (Util.isWindows()) {
+            cmd.add("wsl");
+            cmd.add("--");
+        }
+        return cmd;
+    }
+    
+    public static String cmdToString(ArrayList<String> cmd) {
+        StringBuffer sb =  new StringBuffer();
+        for (String s : cmd) {
+            if (s.contains(" "))
+                sb.append("\"").append(s).append("\"");
+            else
+                sb.append(s);
+            sb.append(" ");
+        }
+        return sb.toString();
     }
     
     //==========================================================================

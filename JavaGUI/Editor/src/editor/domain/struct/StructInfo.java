@@ -18,13 +18,14 @@ import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.TemplateBinding;
 import editor.domain.io.GreatSpnFormat;
 import editor.domain.measures.SolverInvokator;
+import static editor.domain.measures.SolverInvokator.cmdToString;
 import static editor.domain.measures.SolverInvokator.makeFilenameCmd;
-import static editor.domain.measures.SolverInvokator.splitCommandLine;
 import static editor.domain.measures.SolverInvokator.startOfCommand;
 import editor.domain.values.EvaluatedFormula;
 import java.awt.Window;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -68,7 +69,7 @@ public class StructInfo {
         
         try {
             // Additional -mpar switches, which are in common to both pinvar and struct
-            StringBuilder mpars = new StringBuilder();
+            ArrayList<String> mpars = new ArrayList<>();
             if (binding != null) {
                 for (Map.Entry<String, Expr> entry : binding.binding.entrySet()) {
                     String name = entry.getKey();
@@ -78,40 +79,40 @@ public class StructInfo {
                         if (tvar.getEvaluationType() == EvaluatedFormula.Type.INT) {
                             int value = entry.getValue().evaluate(context, EvaluationArguments.NO_ARGS).getScalarInt();
 
-                            mpars.append("-mpar ").append(name).append(" ").append(value).append(" ");
+                            mpars.add("-mpar");
+                            mpars.add(name);
+                            mpars.add(""+value);
                         }
                     }
                 }
             }
             
-            StringBuilder cmd = new StringBuilder();
-            cmd.append(startOfCommand());
-            cmd.append(SolverInvokator.useGreatSPN_binary("pinvar")).append(" ");
+            ArrayList<String> cmd = startOfCommand();
+            cmd.add(SolverInvokator.useGreatSPN_binary("pinvar"));
             
             // Save the net to a temporary file
             tmpName = File.createTempFile("net", "");
             File tmpNet = new File(tmpName.getAbsolutePath()+".net");
             File tmpDef = new File(tmpName.getAbsolutePath()+".def");
             GreatSpnFormat.exportGspn(gspn, tmpNet, tmpDef, true);
-            cmd.append(makeFilenameCmd(tmpName)).append(" ");
-            cmd.append(mpars.toString());
+            cmd.add(makeFilenameCmd(tmpName));
+            cmd.addAll(mpars);
             
             // Run the pinvar command
             String[] envp = SolverInvokator.prepareRuntimeEnvironmentVars();
-            System.out.println(cmd.toString());
-            Process pr = Runtime.getRuntime().exec(splitCommandLine(cmd.toString()), envp);
+            System.out.println("cmd = " + cmdToString(cmd));
+            Process pr = Runtime.getRuntime().exec(cmd.toArray(new String[cmd.size()]), envp);
             int retVal = pr.waitFor();
             if (retVal != 0)
                 throw new IllegalStateException("pinvar returned an exit code of "+retVal);
             
             // Run the struct tool
-            cmd.delete(0, cmd.length());
-            cmd.append(startOfCommand());
-            cmd.append(SolverInvokator.useGreatSPN_binary("struct")).append(" ");
-            cmd.append(makeFilenameCmd(tmpName)).append(" ");
-            cmd.append(mpars.toString());
-            System.out.println(cmd.toString());
-            pr = Runtime.getRuntime().exec(splitCommandLine(cmd.toString()), envp);
+            cmd = startOfCommand();
+            cmd.add(SolverInvokator.useGreatSPN_binary("struct"));
+            cmd.add(makeFilenameCmd(tmpName));
+            cmd.addAll(mpars);
+            System.out.println("cmd = " + cmdToString(cmd));
+            pr = Runtime.getRuntime().exec(cmd.toArray(new String[cmd.size()]), envp);
             retVal = pr.waitFor();
             if (retVal != 0)
                 throw new IllegalStateException("struct returned an exit code of "+retVal);

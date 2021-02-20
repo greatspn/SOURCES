@@ -12,6 +12,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -38,39 +39,68 @@ public class RGMEDD2Solver extends SolverInvokator {
 //            step.addCmd(useGreatSPN_binary("struct") + " " + quotedFn(null) + 
 //                        " -only-bnd " + getParamBindingCmd(currBind, true, false));
 //        }
-        
+
         // Generate the P-basis, the P-semiflows and the bounds
-        step.addOptionalCmd(startOfCommand() + useGreatSPN_binary("DSPN-Tool") + 
-                            " -load "+ quotedFn(null) + 
-                            getParamBindingCmd(currBind, true, true) +
-                            " -pbasis -detect-exp -psfl -bnd ");
+        ArrayList<String> cmd = startOfCommand();
+        cmd.add(useGreatSPN_binary("DSPN-Tool"));
+        cmd.add("-load");
+        cmd.add(quotedFn(null));
+        cmd.addAll(getParamBindingCmdArgs(currBind, true, true));
+        cmd.add("-pbasis");
+        cmd.add("-detect-exp");
+        cmd.add("-psfl");
+        cmd.add("-bnd");
+        step.addOptionalCmd(cmd);
+//        step.addOptionalCmd(startOfCommand() + useGreatSPN_binary("DSPN-Tool") + 
+//                            " -load "+ quotedFn(null) + 
+//                            getParamBindingCmd(currBind, true, true) +
+//                            " -pbasis -detect-exp -psfl -bnd ");
+
         
         // Generate the bounds from the ILP with a 5-seconds timeout
-        step.addOptionalCmd(startOfCommand() + useGreatSPN_binary("DSPN-Tool") +
-                            " -load "+ quotedFn(null) + 
-                            getParamBindingCmd(currBind, true, true) +
-                            " -load-bnd -timeout 5 -ilp-bnd\" '");
-//        step.addOptionalCmd("timeout 5s "+useGreatSPN_binary("DSPN-Tool") + " -load "+ quotedFn(null) + 
-//                            " -load-bnd -ilp-bnd ");
+        cmd = startOfCommand();
+        cmd.add(useGreatSPN_binary("DSPN-Tool"));
+        cmd.add("-load");
+        cmd.add(quotedFn(null));
+        cmd.addAll(getParamBindingCmdArgs(currBind, true, true));
+        cmd.add("-load-bnd");
+        cmd.add("-timeout");
+        cmd.add("5");
+        cmd.add("-ilp-bnd");
+        step.addOptionalCmd(cmd);
+//        step.addOptionalCmd(startOfCommand() + useGreatSPN_binary("DSPN-Tool") +
+//                            " -load "+ quotedFn(null) + 
+//                            getParamBindingCmd(currBind, true, true) +
+//                            " -load-bnd -timeout 5 -ilp-bnd\" '");
         
         boolean isV3 = getRGMEDDName().equals("RGMEDD3");
-        String rgmeddCmd = (startOfCommand() + useGreatSPN_binary(getRGMEDDName()) + 
-                            " " + quotedFn(null));
-        rgmeddCmd += " " + varOrder.getCmdOption() + " ";
+        cmd = startOfCommand();
+        cmd.add(useGreatSPN_binary(getRGMEDDName()));
+        cmd.add(quotedFn(null));
+        cmd.add(varOrder.getCmdOption());
         if (params.genCounterExamples)
-            rgmeddCmd += " -c";
+            cmd.add("-c");
         if (!isV3)
-            rgmeddCmd += " -satsets";
+            cmd.add("-satsets");
+        cmd.addAll(getParamBindingCmdArgs(currBind, true, true));
+//        String rgmeddCmd = (startOfCommand() + useGreatSPN_binary(getRGMEDDName()) + 
+//                            " " + quotedFn(null));
+//        rgmeddCmd += " " + varOrder.getCmdOption() + " ";
+//        if (params.genCounterExamples)
+//            rgmeddCmd += " -c";
+//        if (!isV3)
+//            rgmeddCmd += " -satsets";
         
         // Add the command for parameter bindings
-        rgmeddCmd += getParamBindingCmd(currBind, true, true);
+//        rgmeddCmd += getParamBindingCmd(currBind, true, true);
         
         // Format measures
         int measureNum = 0;
         File ctlFilename = new File(getGspnFile().getAbsolutePath()+".ctl");
         BufferedWriter ctlWriter = null;
         boolean hasStat = false;
-        String ddCmd = "", incCmd = "";
+        ArrayList<String> ddCmd = new ArrayList<>();
+        ArrayList<String> incCmd = new ArrayList<>();
         for (AbstractMeasure meas : measures) {
             String measName = "MEASURE"+(measureNum++);
             ResultEntry entry;
@@ -111,7 +141,9 @@ public class RGMEDD2Solver extends SolverInvokator {
                     case DD: {
                         String f = getGspnFile().getAbsoluteFile().toString()+"-DD-"+step.stepNum;
                         entry = new PdfResultEntry("DD", evalBind, new File(f+".pdf"));
-                        ddCmd = " -dot-F " + quotedFn("-DD-"+step.stepNum)+" ";
+                        ddCmd.add("-dot-F");
+                        ddCmd.add( quotedFn("-DD-"+step.stepNum));
+//                        ddCmd = " -dot-F " + quotedFn("-DD-"+step.stepNum)+" ";
                         step.entries.add(entry);
                         break;
                     }
@@ -119,7 +151,9 @@ public class RGMEDD2Solver extends SolverInvokator {
                     case INC: {
                         String f = getGspnFile().getAbsoluteFile()+"-INC-"+step.stepNum;
                         entry = new PdfResultEntry("INC", evalBind, new File(f+".pdf"));
-                        incCmd = " -inc-F " + quotedFn("-INC-"+step.stepNum)+" ";
+                        incCmd.add("-inc-F");
+                        incCmd.add( quotedFn("-INC-"+step.stepNum));
+//                        incCmd = " -inc-F " + quotedFn("-INC-"+step.stepNum)+" ";
                         step.entries.add(entry);
                         break;
                     }
@@ -133,14 +167,16 @@ public class RGMEDD2Solver extends SolverInvokator {
         }
         
         if (hasStat)
-            rgmeddCmd += " -gui-stat";
+            cmd.add("-gui-stat");
         if (ctlWriter != null) { // there are CTL measures to compute
             ctlWriter.close();
-            rgmeddCmd += " -C";
+            cmd.add("-C");
         }
-        rgmeddCmd += ddCmd;
-        rgmeddCmd += incCmd;
-        step.addCmd(rgmeddCmd);
+        cmd.addAll(ddCmd);
+        cmd.addAll(incCmd);
+//        rgmeddCmd += ddCmd;
+//        rgmeddCmd += incCmd;
+        step.addCmd(cmd);
     }
 
     @Override

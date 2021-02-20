@@ -16,13 +16,14 @@ import editor.domain.elements.TemplateVariable;
 import editor.domain.grammar.TemplateBinding;
 import editor.domain.io.GreatSpnFormat;
 import editor.domain.measures.SolverInvokator;
+import static editor.domain.measures.SolverInvokator.cmdToString;
 import static editor.domain.measures.SolverInvokator.makeFilenameCmd;
-import static editor.domain.measures.SolverInvokator.splitCommandLine;
 import static editor.domain.measures.SolverInvokator.startOfCommand;
 import static editor.domain.measures.SolverInvokator.useGreatSPN_binary;
 import java.awt.Cursor;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 import javax.swing.SwingUtilities;
 
@@ -88,8 +89,6 @@ public class ShowRgDialog extends javax.swing.JDialog {
     }
     
     private String execRG() {
-        StringBuilder cmd = new StringBuilder();
-        
         try {        
             File tmpRoot = File.createTempFile("petrinet", "");
             File tmpNet = new File(tmpRoot.getAbsolutePath() + ".net");
@@ -98,28 +97,35 @@ public class ShowRgDialog extends javax.swing.JDialog {
             
             GreatSpnFormat.exportGspn(gspn, tmpNet, tmpDef, true);
 
-            cmd.append(startOfCommand());
-            cmd.append(useGreatSPN_binary(rgType==RgType.SRG ? "WNSRG" : "WNRG"));
-            cmd.append(" ").append(makeFilenameCmd(tmpRoot));
-            cmd.append(" -max-markings 10000 -max-dot-markings 80");
-            cmd.append(" -dot-F ").append(makeFilenameCmd(tmpRoot));
+            ArrayList<String> cmd = startOfCommand();
+            cmd.add(useGreatSPN_binary(rgType==RgType.SRG ? "WNSRG" : "WNRG"));
+            cmd.add(makeFilenameCmd(tmpRoot));
+            cmd.add("-max-markings");
+            cmd.add("10000");
+            cmd.add("-max-dot-markings");
+            cmd.add("80");
+            cmd.add("-dot-F");
+            cmd.add(makeFilenameCmd(tmpRoot));
             if (rgType == RgType.CTMC)
-                cmd.append(" -m");
+                cmd.add("-m");
             
             for (Map.Entry<String, Expr> e : binding.binding.entrySet()) {
                 TemplateVariable tvar = (TemplateVariable)gspn.getNodeByUniqueName(e.getKey());
                 if (tvar.getType() == TemplateVariable.Type.INTEGER) {
-                    cmd.append(" -mpar ").append(tvar.getUniqueName()).append(" ").append(e.getValue().getExpr());
+                    cmd.add("-mpar");
+                    cmd.add(tvar.getUniqueName());
+                    cmd.add(e.getValue().getExpr());
                 }
                 else if (tvar.getType() == TemplateVariable.Type.REAL) {
-                    cmd.append(" -rpar ").append(tvar.getUniqueName()).append(" ")
-                            .append(e.getValue().getExpr());
+                    cmd.add("-rpar");
+                    cmd.add(tvar.getUniqueName());
+                    cmd.add(e.getValue().getExpr());
                 }
             }
             
-            System.out.println("cmd = "+cmd);
+            System.out.println("cmd = " + cmdToString(cmd));
             String[] envp = SolverInvokator.prepareRuntimeEnvironmentVars();
-            Runtime.getRuntime().exec(splitCommandLine(cmd.toString()), envp).waitFor();
+            Runtime.getRuntime().exec(cmd.toArray(new String[cmd.size()]), envp).waitFor();
             
             if (tmpPdf.exists()) {
                 Main.viewPDF(tmpPdf);

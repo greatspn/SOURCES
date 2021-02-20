@@ -19,8 +19,8 @@ import editor.domain.elements.Place;
 import editor.domain.elements.Transition;
 import editor.domain.io.GreatSpnFormat;
 import editor.domain.measures.SolverInvokator;
+import static editor.domain.measures.SolverInvokator.cmdToString;
 import static editor.domain.measures.SolverInvokator.makeFilenameCmd;
-import static editor.domain.measures.SolverInvokator.splitCommandLine;
 import static editor.domain.measures.SolverInvokator.startOfCommand;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -172,10 +172,8 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                     break; // user pressed the 'Cancel' button
 
                 try {
-                    StringBuilder cmd = new StringBuilder();
-                    
-                    cmd.append(startOfCommand());
-                    cmd.append(SolverInvokator.useGreatSPN_binary("algebra")).append(" ");
+                    ArrayList<String> cmd = startOfCommand();
+                    cmd.add(SolverInvokator.useGreatSPN_binary("algebra"));
                     String transitionTags = "", placeTags = "";
 
                     // Read properties from the dialog controls
@@ -223,17 +221,18 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                     
                     // Compose the algebra command
                     if (!propBrokenEdges)
-                        cmd.append("-no_ba ");
-                    cmd.append(makeFilenameCmd(tmpName1)).append(" ");
-                    cmd.append(makeFilenameCmd(tmpName2)).append(" ");
-                    cmd.append(propOperator).append(" ");
-                    cmd.append(makeFilenameCmd(tmpRestfile)).append(" ");
-                    cmd.append(makeFilenameCmd(tmpResult)).append(" ");
-                    cmd.append(propPlacement).append(" ");
+                        cmd.add("-no_ba");
+                    cmd.add(makeFilenameCmd(tmpName1));
+                    cmd.add(makeFilenameCmd(tmpName2));
+                    cmd.add(""+propOperator);
+                    cmd.add(makeFilenameCmd(tmpRestfile));
+                    cmd.add(makeFilenameCmd(tmpResult));
+                    cmd.add(""+propPlacement);
                     if (propPlacement == 3) {
                         propDxShift = Integer.parseInt(textFieldDxShift.getText());
                         propDyShift = Integer.parseInt(textFieldDyShift.getText());
-                        cmd.append(propDxShift).append(" ").append(propDyShift).append(" ");
+                        cmd.add(""+propDxShift);
+                        cmd.add(""+propDyShift);
                     }
 //                    System.out.println("NET1: "+tmpName1.getAbsolutePath());
 //                    System.out.println("NET2: "+tmpName2.getAbsolutePath());
@@ -243,8 +242,8 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                     
                     // Run the tool
                     String[] envp = SolverInvokator.prepareRuntimeEnvironmentVars();
-                    System.out.println(cmd);
-                    Process pr = Runtime.getRuntime().exec(splitCommandLine(cmd.toString()), envp);
+                    System.out.println("cmd = " + cmdToString(cmd));
+                    Process pr = Runtime.getRuntime().exec(cmd.toArray(new String[cmd.size()]), envp);
                     int retVal = pr.waitFor();
                     if (retVal != 0)
                         throw new IllegalStateException("algebra returned an exit code of "+retVal);

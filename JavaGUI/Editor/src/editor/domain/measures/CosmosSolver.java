@@ -15,6 +15,7 @@ import editor.domain.grammar.TemplateBinding;
 import editor.domain.io.GRMLFormat;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 
 /** Cosmos toolchain invokator for:  [gspn|swn]_[ord|sym]_[rg|sym|tr]
@@ -90,11 +91,16 @@ public class CosmosSolver extends SolverInvokator {
             meas.getResults().table.add(entry);
         }
   
-        step.addCmd(useCosmos_binary("Cosmos") + " \"" + grmlFile.getAbsolutePath() +
-                    "\" --loop 100 --max-run 20000");
-        //step.cmdLines[0] += getParamBindingCmd(currBind, true, true);
-        //step.cmdLines[0] += measCmd;
-
+        ArrayList<String> cmd = startOfCommand();
+        cmd.add(useCosmos_binary("Cosmos"));
+        cmd.add(makeFilenameCmd(grmlFile));
+        cmd.add("--loop");
+        cmd.add("100");
+        cmd.add("--max-run");
+        cmd.add("20000");
+        step.addCmd(cmd);
+//        step.addCmd(useCosmos_binary("Cosmos") + " \"" + grmlFile.getAbsolutePath() +
+//                    "\" --loop 100 --max-run 20000");
     }
 
     @Override
