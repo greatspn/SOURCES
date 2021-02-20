@@ -34,11 +34,11 @@ import org.apache.pdfbox.util.Matrix;
 public class PagePrintManager {
     
     // implement the awt PageFormat class
-    protected static class PdfPageFormat extends PageFormat {
+    protected static class MyPageFormat extends PageFormat {
         
         double width, height;
 
-        public PdfPageFormat(double width, double height) {
+        public MyPageFormat(double width, double height) {
             this.width = width;
             this.height = height;
         }
@@ -107,11 +107,11 @@ public class PagePrintManager {
             curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
             Util.getPreferences().put("pdf-export-dir", curDir);
             if (pdfFile.exists()) {
-                int r = JOptionPane.showConfirmDialog(mainInterface.getWindowFrame(), 
-                         "The file \""+pdfFile+"\" already exists! Overwrite it?", 
-                                                       "Overwrite file", 
-                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
-                                                       JOptionPane.WARNING_MESSAGE);
+                int r = JOptionPane.showConfirmDialog(mainInterface.getWindowFrame(),
+                            "The file \"" + pdfFile + "\" already exists! Overwrite it?",
+                            "Overwrite file",
+                            JOptionPane.YES_NO_CANCEL_OPTION,
+                            JOptionPane.WARNING_MESSAGE);
                 if (r == JOptionPane.NO_OPTION)
                     repeatChooser = true;
                 else if (r == JOptionPane.CANCEL_OPTION)
@@ -135,7 +135,7 @@ public class PagePrintManager {
             PdfBoxGraphics2D pdfBoxGraphics2D = new PdfBoxGraphics2D(document, width, height);
 //            pdfBoxGraphics2D.draw(new Rectangle2D.Float(0, 0, width, height));
 
-            PdfPageFormat pf = new PdfPageFormat(width, height);
+            MyPageFormat pf = new MyPageFormat(width, height);
             page.print(pdfBoxGraphics2D, pf);
             
 
@@ -192,10 +192,10 @@ public class PagePrintManager {
             Util.getPreferences().put("png-export-dir", curDir);
             if (pngFile.exists()) {
                 int r = JOptionPane.showConfirmDialog(mainInterface.getWindowFrame(), 
-                         "The file \""+pngFile+"\" already exists! Overwrite it?", 
-                                                       "Overwrite file", 
-                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
-                                                       JOptionPane.WARNING_MESSAGE);
+                            "The file \""+pngFile+"\" already exists! Overwrite it?", 
+                            "Overwrite file", 
+                            JOptionPane.YES_NO_CANCEL_OPTION, 
+                            JOptionPane.WARNING_MESSAGE);
                 if (r == JOptionPane.NO_OPTION)
                     repeatChooser = true;
                 else if (r == JOptionPane.CANCEL_OPTION)
@@ -216,7 +216,7 @@ public class PagePrintManager {
             g2.setColor(Color.white);
             g2.fillRect(0, 0, width, height);
             
-            PdfPageFormat pf = new PdfPageFormat(pageBounds.getWidth(), pageBounds.getHeight());
+            MyPageFormat pf = new MyPageFormat(pageBounds.getWidth(), pageBounds.getHeight());
             g2.scale(pngScaleFactor, pngScaleFactor);
             page.print(g2, pf);
 

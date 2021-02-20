@@ -3,8 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/TestPDFBox.java</file>
+            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/net/NetEditorPanel.java</file>
             <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/PagePrintManager.java</file>
+            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/AppWindow.java</file>
+            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/SharedResourceProvider.java</file>
         </group>
     </open-files>
 </project-private>
