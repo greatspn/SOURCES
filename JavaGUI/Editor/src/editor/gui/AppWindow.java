@@ -5,6 +5,7 @@
 package editor.gui;
 
 import common.Condition;
+import common.GuiIntegration;
 import common.LogWindow;
 import common.ModalLogDialog;
 import common.OSXIntegration;
@@ -341,7 +342,19 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         iconList.add(Main.loadImage("icon32.png"));
         iconList.add(Main.loadImage("icon64.png"));
         setIconImages(iconList);
-        OSXIntegration.completeOSXIntegration(this, "icon256.png");
+        if (Util.isOSX()) {
+            try {
+                GuiIntegration gi = (GuiIntegration)Class.forName("common.OSXIntegration").newInstance();
+                gi.completeOSXIntegration(this, "icon256.png");
+            }
+            catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, 
+                                              "Could not complete OSX integration.\n"+e.getMessage(),
+                                              "OSX Integration", 
+                                              JOptionPane.ERROR_MESSAGE);
+            }
+        }
         
         ccpEngine = new CutCopyPasteEngine(actionCut, actionCopy, actionPaste);
         

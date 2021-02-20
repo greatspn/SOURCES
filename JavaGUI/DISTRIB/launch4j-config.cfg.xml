@@ -18,7 +18,7 @@
     <path>%JAVA_HOME%;%PATH%</path>
     <bundledJre64Bit>false</bundledJre64Bit>
     <bundledJreAsFallback>false</bundledJreAsFallback>
-    <minVersion>15.0.0</minVersion>
+    <minVersion>11</minVersion>
     <maxVersion></maxVersion>
     <jdkPreference>preferJre</jdkPreference>
     <runtimeBits>64/32</runtimeBits>

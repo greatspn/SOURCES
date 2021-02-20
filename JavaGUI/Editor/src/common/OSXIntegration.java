@@ -7,9 +7,7 @@ package common;
 
 import editor.Main;
 import editor.gui.AppWindow;
-import editor.gui.MainWindowInterface;
 import java.awt.Desktop;
-import java.awt.Image;
 import java.awt.Taskbar;
 import java.awt.desktop.QuitEvent;
 import java.awt.desktop.QuitHandler;
@@ -20,9 +18,10 @@ import java.awt.desktop.QuitStrategy;
  *
  * @author elvio
  */
-public class OSXIntegration {
+public class OSXIntegration implements GuiIntegration {
     
-    public static void completeOSXIntegration(final AppWindow wnd, String iconName) {
+    @Override
+    public void completeOSXIntegration(final AppWindow wnd, String iconName) {
         if (Util.isOSX()) {
             // MacOS integration
             Taskbar taskbar = Taskbar.getTaskbar();
