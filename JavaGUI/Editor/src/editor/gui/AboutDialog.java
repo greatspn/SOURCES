@@ -4,7 +4,9 @@
  */
 package editor.gui;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -27,7 +29,12 @@ public class AboutDialog extends javax.swing.JDialog {
         setLocationRelativeTo(frame);
         getRootPane().setDefaultButton(jButtonCloseDialog);
         
-        jLabelVersion.setText("Build date: "+getBuildData());
+        String buildDate = getBuildDate();
+        String buildYear = buildDate.substring(0, buildDate.indexOf('-'));
+        
+        jLabelVersion.setText("Build number: "+getBuildNumber()+"   Build date: "+buildDate);
+        
+        jLabelCopyrights.setText(jLabelCopyrights.getText().replace("XXXX", buildYear));
     } 
 
     /**
@@ -42,7 +49,7 @@ public class AboutDialog extends javax.swing.JDialog {
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        jLabelCopyrights = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
@@ -58,8 +65,8 @@ public class AboutDialog extends javax.swing.JDialog {
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/editor/gui/icons/app-banner.png"))); // NOI18N
 
-        jLabel3.setText("<html> Credits:<br/>   &nbsp;&nbsp;&nbsp;GreatSPN framework: &copy; 1985-2021 : Università di Torino, Italy.<br/>\n  &nbsp;&nbsp;&nbsp;New GreatSPN Editor: &copy; 2013-2021 : Università di Torino, Italy.<br/>\n  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Main developer of the GUI: <a href=\"amparore@di.unito.it\">Elvio G. Amparore</a> <br/>  </html>");
-        jLabel3.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jLabelCopyrights.setText("<html> Credits:<br/>   &nbsp;&nbsp;&nbsp;GreatSPN framework: &copy; 1985-XXXX : Università di Torino, Italy.<br/>\n  &nbsp;&nbsp;&nbsp;New GreatSPN Editor: &copy; 2013-XXXX : Università di Torino, Italy.<br/>\n  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Main developer of the GUI: <a href=\"amparore@di.unito.it\">Elvio G. Amparore</a> <br/>  </html>");
+        jLabelCopyrights.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
         jLabel4.setText("This software uses ");
 
@@ -69,7 +76,7 @@ public class AboutDialog extends javax.swing.JDialog {
 
         jLabelVersion.setText("Version number: XXX");
 
-        jLabel7.setText("<html>JLaTeXMath is licensed with GPL v2 with linking exception.<br/>\nSome icons are taken from <u>http://www.fatcow.com/free-icons</u>, licensed<br/>\nunder Creative Commons Attribution 3.0 License.");
+        jLabel7.setText("<html>JLaTeXMath is licensed with GPL v2 with linking exception.<br/>\nSome icons are taken from <u>http://www.fatcow.com/free-icons</u>, licensed<br/>\nunder Creative Commons Attribution 3.0 License.<br/>\n\nApache PDFBox (<u>https://pdfbox.apache.org/</u>) and <br/>\npdfbox-graphics2d (<u>https://github.com/rototor/pdfbox-graphics2d</u>) <br/>\nare used to export diagrams in PDF format.<br/>");
         jLabel7.setToolTipText("");
         jLabel7.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
@@ -94,7 +101,7 @@ public class AboutDialog extends javax.swing.JDialog {
                         .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(jLabel7)
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .add(jLabel3)
+                                .add(jLabelCopyrights)
                                 .add(4, 4, 4))
                             .add(jPanel1Layout.createSequentialGroup()
                                 .add(jLabel4)
@@ -115,7 +122,7 @@ public class AboutDialog extends javax.swing.JDialog {
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jLabelVersion, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 32, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jLabel3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 83, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(jLabelCopyrights, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 83, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                     .add(jLabel5, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE)
@@ -161,10 +168,23 @@ public class AboutDialog extends javax.swing.JDialog {
         setVisible(false);
     }//GEN-LAST:event_jButtonCloseDialogActionPerformed
 
-    // Get the Build-Date attribute from the Manifest of this JAR.
-    // This function requires that the build process generates the Build-Date attribute,
-    // which is not by default. The build.xml has been changed to add this value.
-    private String getBuildData() {
+    // Get the build number
+    private String getBuildNumber() {
+        try {
+            BufferedReader txtReader = new BufferedReader
+                (new InputStreamReader(
+                      getClass().getResourceAsStream("/common/build_number.txt")));
+
+            String num = txtReader.readLine();
+            txtReader.close();
+            return num;
+        }
+        catch (IOException e) { }
+        return "<???>";
+    }
+    
+    // Get the Build Date from the compile time attribute of the Manifest
+    private String getBuildDate() {
         try {
             URL url = getClass().getResource(getClass().getSimpleName() + ".class");
             if (url == null)
@@ -183,16 +203,6 @@ public class AboutDialog extends javax.swing.JDialog {
             Date epochDate = new Date(epoch);
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             return df.format(epochDate);
-//            if (urlConn instanceof JarURLConnection) {
-//                JarURLConnection conn = (JarURLConnection)urlConn;
-//                Manifest mf = conn.getManifest();
-//                Attributes atts = mf.getMainAttributes();
-//                for (Object key : atts.keySet())
-//                    System.out.println(key + " = " + atts.get(key));
-//                return atts.getValue("Build-Date");
-//            }
-//            else
-//                return "<<Cannot retrieve JAR Manifest>>";
         }
         catch (IOException e) {
             return "---";
@@ -239,11 +249,11 @@ public class AboutDialog extends javax.swing.JDialog {
     private javax.swing.JButton jButtonCloseDialog;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabelCopyrights;
     private javax.swing.JLabel jLabelVersion;
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables

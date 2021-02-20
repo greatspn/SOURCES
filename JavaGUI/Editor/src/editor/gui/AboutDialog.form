@@ -80,7 +80,7 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="jLabel7" max="32767" attributes="0"/>
                               <Group type="102" alignment="1" attributes="0">
-                                  <Component id="jLabel3" max="32767" attributes="0"/>
+                                  <Component id="jLabelCopyrights" max="32767" attributes="0"/>
                                   <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
@@ -110,7 +110,7 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabelVersion" min="-2" pref="32" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jLabel3" min="-2" pref="83" max="-2" attributes="0"/>
+                  <Component id="jLabelCopyrights" min="-2" pref="83" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
                       <Component id="jLabel5" pref="29" max="32767" attributes="0"/>
@@ -138,9 +138,9 @@
             </Property>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="jLabel3">
+        <Component class="javax.swing.JLabel" name="jLabelCopyrights">
           <Properties>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt; Credits:&lt;br/&gt;   &amp;nbsp;&amp;nbsp;&amp;nbsp;GreatSPN framework: &amp;copy; 1985-2021 : Universit&#xe0; di Torino, Italy.&lt;br/&gt;&#xa;  &amp;nbsp;&amp;nbsp;&amp;nbsp;New GreatSPN Editor: &amp;copy; 2013-2021 : Universit&#xe0; di Torino, Italy.&lt;br/&gt;&#xa;  &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Main developer of the GUI: &lt;a href=&quot;amparore@di.unito.it&quot;&gt;Elvio G. Amparore&lt;/a&gt; &lt;br/&gt;  &lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt; Credits:&lt;br/&gt;   &amp;nbsp;&amp;nbsp;&amp;nbsp;GreatSPN framework: &amp;copy; 1985-XXXX : Universit&#xe0; di Torino, Italy.&lt;br/&gt;&#xa;  &amp;nbsp;&amp;nbsp;&amp;nbsp;New GreatSPN Editor: &amp;copy; 2013-XXXX : Universit&#xe0; di Torino, Italy.&lt;br/&gt;&#xa;  &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Main developer of the GUI: &lt;a href=&quot;amparore@di.unito.it&quot;&gt;Elvio G. Amparore&lt;/a&gt; &lt;br/&gt;  &lt;/html&gt;"/>
             <Property name="verticalAlignment" type="int" value="1"/>
           </Properties>
         </Component>
@@ -168,7 +168,7 @@
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel7">
           <Properties>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;JLaTeXMath is licensed with GPL v2 with linking exception.&lt;br/&gt;&#xa;Some icons are taken from &lt;u&gt;http://www.fatcow.com/free-icons&lt;/u&gt;, licensed&lt;br/&gt;&#xa;under Creative Commons Attribution 3.0 License."/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;JLaTeXMath is licensed with GPL v2 with linking exception.&lt;br/&gt;&#xa;Some icons are taken from &lt;u&gt;http://www.fatcow.com/free-icons&lt;/u&gt;, licensed&lt;br/&gt;&#xa;under Creative Commons Attribution 3.0 License.&lt;br/&gt;&#xa;&#xa;Apache PDFBox (&lt;u&gt;https://pdfbox.apache.org/&lt;/u&gt;) and &lt;br/&gt;&#xa;pdfbox-graphics2d (&lt;u&gt;https://github.com/rototor/pdfbox-graphics2d&lt;/u&gt;) &lt;br/&gt;&#xa;are used to export diagrams in PDF format.&lt;br/&gt;"/>
             <Property name="toolTipText" type="java.lang.String" value=""/>
             <Property name="verticalAlignment" type="int" value="1"/>
           </Properties>

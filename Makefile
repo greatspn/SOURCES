@@ -1865,7 +1865,7 @@ endif
 ######################################
 
 GUI_ZIP_DIR := .
-GUI_NAMEVER := GreatSPN-Editor-v1.5
+GUI_NAMEVER := GreatSPN-Editor-v1.6
 JAVA_BUILD_DIR += JavaGUI/Editor/build
 # JAVA_BUILD_DIR += JavaGUI/MathProvider/build 
 
@@ -1988,13 +1988,19 @@ endif
 
 JavaGUI: java-jars
 
+BUILD_NUMBER_FILE := JavaGUI/Editor/src/common/build_number.txt
+
+JavaGUI-increase-version-number: clean_JavaGUI_x
+	@echo "  [++VERSION]  $(BUILD_NUMBER_FILE)"
+	@echo $$(($$(cat $(BUILD_NUMBER_FILE)) + 1)) > $(BUILD_NUMBER_FILE)
+
 JavaGUI-archives: $(JAVA_GUI_ARCHIVES)
 
 unfolding2_SOURCEFILE := JavaGUI/unfolding2.sh
 greatspn_editor_SOURCEFILE := JavaGUI/greatspn_editor.sh
 
 
-upload_JavaGUI: JavaGUI JavaGUI-archives
+upload_JavaGUI: JavaGUI-increase-version-number JavaGUI JavaGUI-archives
 	scp $(JAVA_GUI_ARCHIVES) amparore@pianeta.di.unito.it:/docsrv/amparore/public_html/mc4cslta/EditorBinaries/
 
 clean_JavaGUI_x:
@@ -2052,7 +2058,8 @@ SCRIPTS += unfolding2 greatspn_editor
  endif
 endif
 
-.PHONY += JavaGUI clean_JavaGUI JavaGUI-antlr java-jars clean_java-gui linux-install-JavaGUI JavaGUI-archives
+.PHONY += JavaGUI clean_JavaGUI JavaGUI-antlr java-jars clean_java-gui linux-install-JavaGUI 
+.PHONY += JavaGUI-increase-version-number JavaGUI-archives
 .PHONY += JavaGUI-win JavaGUI-macosx JavaGUI-linux JavaGUI-jar upload_JavaGUI install_JavaGUI_jars
 
 
