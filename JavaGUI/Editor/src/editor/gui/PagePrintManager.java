@@ -127,7 +127,7 @@ public class PagePrintManager {
             float pdfScaleFactor = 12.0f;
             float width = (float)pageBounds.getWidth() * pdfScaleFactor;
             float height = (float)pageBounds.getHeight() * pdfScaleFactor;
-            System.out.println("width="+width+"height="+height);
+//            System.out.println("width="+width+" height="+height);
             PDRectangle pageRect = new PDRectangle(width + 2 * xBorder, height + 2 * yBorder);
             PDPage pdfPage = new PDPage(pageRect);
             document.addPage(pdfPage);
@@ -209,7 +209,7 @@ public class PagePrintManager {
             float pngScaleFactor = 32.0f;
             int width = (int)(pageBounds.getWidth() * pngScaleFactor);
             int height = (int)(pageBounds.getHeight() * pngScaleFactor);
-            System.out.println("width="+width+"height="+height);
+//            System.out.println("width="+width+" height="+height);
             
             BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2 = image.createGraphics();

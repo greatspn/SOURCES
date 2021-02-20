@@ -1993,7 +1993,7 @@ BUILD_NUMBER_FILE := JavaGUI/Editor/src/common/build_number.txt
 # Increase the version number file by one
 JavaGUI-increase-version-number: clean_JavaGUI_x
 	@echo "  [++VERSION]  $(BUILD_NUMBER_FILE)"
-	@echo $$(($$(cat $(BUILD_NUMBER_FILE)) + 1)) > $(BUILD_NUMBER_FILE)
+	@echo $$(( $$(cat $(BUILD_NUMBER_FILE)) + 1 )) > $(BUILD_NUMBER_FILE)
 
 JavaGUI-archives: $(JAVA_GUI_ARCHIVES)
 

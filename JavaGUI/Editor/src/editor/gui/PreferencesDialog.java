@@ -34,6 +34,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         Util.reformatPanelsForPlatformLookAndFeel(this);
         setLocationRelativeTo(frame);
         getRootPane().setDefaultButton(jButtonCloseDialog);
+        jPanelAutoUpdate.setVisible(false);
 
         // General
         jCheckBoxCheckUpdates.setSelected(Main.isCheckForUpdatesAutomatic());
@@ -98,7 +99,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         jLabel2 = new javax.swing.JLabel();
         jLabelNumLatexCacheEntries = new javax.swing.JLabel();
         jButtonClearLaTeXCache = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
+        jPanelAutoUpdate = new javax.swing.JPanel();
         jCheckBoxCheckUpdates = new javax.swing.JCheckBox();
         jPanel2 = new javax.swing.JPanel();
         jButtonCheckUpdates = new javax.swing.JButton();
@@ -195,8 +196,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Automatic check for updates..."));
-        jPanel1.setOpaque(false);
+        jPanelAutoUpdate.setBorder(javax.swing.BorderFactory.createTitledBorder("Automatic check for updates..."));
+        jPanelAutoUpdate.setOpaque(false);
 
         jCheckBoxCheckUpdates.setText("Automatically check for updates at startup.");
 
@@ -215,20 +216,20 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 6, 6);
         jPanel2.add(jButtonCheckUpdates, gridBagConstraints);
 
-        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout jPanelAutoUpdateLayout = new org.jdesktop.layout.GroupLayout(jPanelAutoUpdate);
+        jPanelAutoUpdate.setLayout(jPanelAutoUpdateLayout);
+        jPanelAutoUpdateLayout.setHorizontalGroup(
+            jPanelAutoUpdateLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanelAutoUpdateLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                .add(jPanelAutoUpdateLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(jCheckBoxCheckUpdates, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
                     .add(jPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel1Layout.createSequentialGroup()
+        jPanelAutoUpdateLayout.setVerticalGroup(
+            jPanelAutoUpdateLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanelAutoUpdateLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(jCheckBoxCheckUpdates)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -284,14 +285,14 @@ public class PreferencesDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .add(tabGeneralLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                     .add(jPanel3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, jPanelAutoUpdate, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel4, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         tabGeneralLayout.setVerticalGroup(
             tabGeneralLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(tabGeneralLayout.createSequentialGroup()
-                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(jPanelAutoUpdate, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -480,10 +481,10 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabelGreatSPN;
     private javax.swing.JLabel jLabelNSolve;
     private javax.swing.JLabel jLabelNumLatexCacheEntries;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanelAutoUpdate;
     private javax.swing.JSpinner jSpinnerMaxLatexCache;
     private javax.swing.JSpinner jSpinnerMaxUndo;
     private javax.swing.JTabbedPane jTabbedPane1;
