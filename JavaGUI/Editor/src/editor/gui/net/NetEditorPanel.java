@@ -34,6 +34,7 @@ import editor.domain.io.GreatSpnFormat;
 import editor.domain.io.PNMLFormat;
 import editor.domain.struct.StructInfo;
 import editor.gui.CutCopyPasteEngine;
+import editor.gui.PagePrintManager;
 import editor.gui.ResourceFactory;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -578,6 +579,10 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
                 case EXPORT_DTA_FORMAT:
                     act.setEnabled(isDta && currPage.isPageCorrect());
                     break;
+                    
+                case EXPORT_AS_PDF:
+                    act.setEnabled(true);
+                    break;
 
                 default:
                     act.setEnabled(false);
@@ -622,6 +627,10 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
                         
             case EXPORT_DTA_FORMAT:
                 exportInDtaFormat();
+                return;
+                
+            case EXPORT_AS_PDF:
+                PagePrintManager.printAsPdf(mainInterface, currPage);
                 return;
                         
             default:

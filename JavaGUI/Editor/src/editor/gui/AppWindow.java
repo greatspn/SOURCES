@@ -10,7 +10,6 @@ import common.ModalLogDialog;
 import common.OSXIntegration;
 import editor.Main;
 import common.Util;
-import static common.Util.isOSX;
 import static editor.Main.logException;
 import editor.domain.PageErrorWarning;
 import editor.domain.ProjectData;
@@ -41,18 +40,12 @@ import editor.gui.net.ParameterAssignmentDialog;
 import editor.gui.net.ShowRgDialog;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.Taskbar;
-import java.awt.desktop.QuitEvent;
-import java.awt.desktop.QuitHandler;
-import java.awt.desktop.QuitResponse;
-import java.awt.desktop.QuitStrategy;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -1017,6 +1010,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             case EXPORT_GRML_FORMAT:        return sharedActionExportGRML;
             case EXPORT_APNN_FORMAT:        return sharedActionExportAPNN;
             case EXPORT_DTA_FORMAT:         return sharedActionExportDta;
+            case EXPORT_AS_PDF:             return sharedActionExportAsPDF;
             default:  throw new IllegalStateException("Action is not bound.");
         }
     }
@@ -1429,6 +1423,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         sharedActionExportGRML = new common.Action();
         sharedActionExportAPNN = new common.Action();
         sharedActionExportDta = new common.Action();
+        sharedActionExportAsPDF = new common.Action();
         sharedActionChangeBindings = new common.Action();
         sharedActionComputePlaceSemiflows = new common.Action();
         sharedActionComputeTransitionSemiflows = new common.Action();
@@ -1530,6 +1525,8 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jMenuItem_GrMLExport = new javax.swing.JMenuItem();
         jMenuItem_ApnnFormat = new javax.swing.JMenuItem();
         jMenuItem_DtaFormat = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem_PdfExport = new javax.swing.JMenuItem();
         jMenuItem_FilePrint = new javax.swing.JMenuItem();
         jMenuItem_FileCloseProj = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
@@ -1565,7 +1562,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jMenuItem_HelpAbout = new javax.swing.JMenuItem();
         jMenuItem_HelpShowGrammar = new javax.swing.JMenuItem();
 
-        actionNewProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
+        actionNewProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         actionNewProject.setActionName("New");
         actionNewProject.setIcon(resourceFactory.getPnproNew16());
         actionNewProject.setMenuMnemonic(KeyEvent.VK_N);
@@ -1577,7 +1574,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             }
         });
 
-        actionOpen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
+        actionOpen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         actionOpen.setActionName("Open...");
         actionOpen.setIcon(resourceFactory.getOpen16());
         actionOpen.setMenuMnemonic(KeyEvent.VK_O);
@@ -1589,7 +1586,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             }
         });
 
-        actionSave.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
+        actionSave.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         actionSave.setActionName("Save");
         actionSave.setIcon(resourceFactory.getDisk16());
         actionSave.setMenuMnemonic(KeyEvent.VK_S);
@@ -1612,7 +1609,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             }
         });
 
-        actionSaveAll.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        actionSaveAll.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
         actionSaveAll.setActionName("Save all");
         actionSaveAll.setIcon(resourceFactory.getDiskMultiple16());
         actionSaveAll.setMenuMnemonic(KeyEvent.VK_V);
@@ -1624,7 +1621,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             }
         });
 
-        actionClose.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_MASK));
+        actionClose.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         actionClose.setActionName("Close");
         actionClose.setIcon(resourceFactory.getEmpty16());
         actionClose.setMenuMnemonic(KeyEvent.VK_C);
@@ -1635,7 +1632,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             }
         });
 
-        actionExit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_MASK));
+        actionExit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         actionExit.setActionName("Exit");
         actionExit.setIcon(resourceFactory.getEmpty16());
         actionExit.setMenuMnemonic(KeyEvent.VK_E);
@@ -1646,7 +1643,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             }
         });
 
-        actionUndo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
+        actionUndo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         actionUndo.setActionName("Undo");
         actionUndo.setIcon(resourceFactory.getUndo16());
         actionUndo.setMenuMnemonic(KeyEvent.VK_U);
@@ -1658,7 +1655,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             }
         });
 
-        actionRedo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        actionRedo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
         actionRedo.setActionName("Redo");
         actionRedo.setIcon(resourceFactory.getRedo16());
         actionRedo.setMenuMnemonic(KeyEvent.VK_R);
@@ -1729,12 +1726,12 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         });
 
         jPopupMenuAddPage.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
-            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
-                addPagePopupMenuBecomesVisible(evt);
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
             }
             public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
             }
-            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+                addPagePopupMenuBecomesVisible(evt);
             }
         });
 
@@ -1796,25 +1793,25 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             }
         });
 
-        actionZoomIn.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_PLUS, java.awt.event.InputEvent.CTRL_MASK));
+        actionZoomIn.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_PLUS, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         actionZoomIn.setActionName("Zoom in");
         actionZoomIn.setIcon(resourceFactory.getZoomIn16());
         actionZoomIn.setMenuMnemonic(KeyEvent.VK_I);
         actionZoomIn.setTooltipDesc("Zoom in the current page.");
 
-        actionZoomOut.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_MINUS, java.awt.event.InputEvent.CTRL_MASK));
+        actionZoomOut.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_MINUS, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         actionZoomOut.setActionName("Zoom out");
         actionZoomOut.setIcon(resourceFactory.getZoomOut16());
         actionZoomOut.setMenuMnemonic(KeyEvent.VK_O);
         actionZoomOut.setTooltipDesc("Zoom out the current page");
 
-        actionNormalZoom.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_0, java.awt.event.InputEvent.CTRL_MASK));
+        actionNormalZoom.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_0, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         actionNormalZoom.setActionName("Normal zoom");
         actionNormalZoom.setIcon(resourceFactory.getZoomSame16());
         actionNormalZoom.setMenuMnemonic(KeyEvent.VK_N);
         actionNormalZoom.setTooltipDesc("Set the normal 100% zoom for the current page.");
 
-        actionCut.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
+        actionCut.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         actionCut.setActionName("Cut");
         actionCut.setIcon(resourceFactory.getCut16());
         actionCut.setMenuMnemonic(KeyEvent.VK_U);
@@ -1826,7 +1823,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             }
         });
 
-        actionCopy.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
+        actionCopy.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         actionCopy.setActionName("Copy");
         actionCopy.setIcon(resourceFactory.getPageWhiteCopy16());
         actionCopy.setMenuMnemonic(KeyEvent.VK_C);
@@ -1838,7 +1835,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             }
         });
 
-        actionPaste.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_MASK));
+        actionPaste.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         actionPaste.setActionName("Paste");
         actionPaste.setIcon(resourceFactory.getPageWhitePaste16());
         actionPaste.setMenuMnemonic(KeyEvent.VK_P);
@@ -1850,7 +1847,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             }
         });
 
-        actionPrint.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
+        actionPrint.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         actionPrint.setActionName("Print...");
         actionPrint.setIcon(resourceFactory.getPrinter16());
         actionPrint.setMenuMnemonic(KeyEvent.VK_P);
@@ -2005,19 +2002,19 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         actionAdvRapidMeasurePopup.setIcon(resourceFactory.getAdvancedTools32());
         actionAdvRapidMeasurePopup.setTooltipDesc("Analyse the model with a solution tool.");
 
-        sharedActionRestart.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
+        sharedActionRestart.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         sharedActionRestart.setActionName("Restart");
         sharedActionRestart.setIcon(resourceFactory.getBegin16());
         sharedActionRestart.setToolbarIcon(resourceFactory.getBegin32());
         sharedActionRestart.setTooltipDesc("Restart from the initial state.");
 
-        sharedActionPrev.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_UP, java.awt.event.InputEvent.CTRL_MASK));
+        sharedActionPrev.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_UP, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         sharedActionPrev.setActionName("Previous firing");
         sharedActionPrev.setIcon(resourceFactory.getPrevious16());
         sharedActionPrev.setToolbarIcon(resourceFactory.getPrevious32());
         sharedActionPrev.setTooltipDesc("Rewind to the previous transition firing in the path.");
 
-        sharedActionNext.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DOWN, java.awt.event.InputEvent.CTRL_MASK));
+        sharedActionNext.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DOWN, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         sharedActionNext.setActionName("Next firing");
         sharedActionNext.setIcon(resourceFactory.getNext16());
         sharedActionNext.setToolbarIcon(resourceFactory.getNext32());
@@ -2029,21 +2026,23 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         sharedActionDeleteSelected.setToolbarIcon(resourceFactory.getCross32());
         sharedActionDeleteSelected.setTooltipDesc("Delete the selected object(s) in the current page.");
 
-        sharedActionSelectAll.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
+        sharedActionSelectAll.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         sharedActionSelectAll.setActionName("Select all");
         sharedActionSelectAll.setTooltipDesc("Select all the object in the current page.");
 
-        sharedActionInvertSelection.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        sharedActionInvertSelection.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
         sharedActionInvertSelection.setActionName("Invert selection");
         sharedActionInvertSelection.setTooltipDesc("Invert the current selection.");
 
-        sharedActionDeselectAll.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ESCAPE, java.awt.event.InputEvent.SHIFT_MASK));
+        sharedActionDeselectAll.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ESCAPE, java.awt.event.InputEvent.SHIFT_DOWN_MASK));
         sharedActionDeselectAll.setActionName("Deselect all");
         sharedActionDeselectAll.setTooltipDesc("Deselect all the selected object in the current page.");
 
+        sharedActionExportGreatSpn.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
         sharedActionExportGreatSpn.setActionName("Export in GreatSPN format...");
         sharedActionExportGreatSpn.setTooltipDesc("Export the current net in the GreatSPN file format (net/def).");
 
+        sharedActionExportPNML.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
         sharedActionExportPNML.setActionName("Export in PNML format...");
         sharedActionExportPNML.setTooltipDesc("Export the current net in the PNML file format (pnml).");
 
@@ -2055,6 +2054,9 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         sharedActionExportDta.setActionName("Export DTA in MC4CSLTA format...");
         sharedActionExportDta.setTooltipDesc("Export the current DTA in the MC4CSLTA format (.dta).");
+
+        sharedActionExportAsPDF.setActionName("Export as PDF...");
+        sharedActionExportAsPDF.setTooltipDesc("Export the current page in PDF format.");
 
         sharedActionChangeBindings.setActionName("Change bindings");
         sharedActionChangeBindings.setIcon(resourceFactory.getChangeBindings32());
@@ -2072,7 +2074,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         sharedActionComputeBoundsFromPinv.setIcon(resourceFactory.getBound32());
         sharedActionComputeBoundsFromPinv.setTooltipDesc("Recompute the place bounds of the GSPN using the P-invariants.");
 
-        actionCaptureSVG.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_J, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        actionCaptureSVG.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_J, java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
         actionCaptureSVG.setActionName("Save an SVG capture of the main window.");
         actionCaptureSVG.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2231,7 +2233,6 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         treeNode1.add(treeNode2);
         jTreeProjects.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
         jTreeProjects.setRootVisible(false);
-        jTreeProjects.setShowsRootHandles(true);
         jScrollPaneProjects.setViewportView(jTreeProjects);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -2522,6 +2523,11 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         jMenuItem_DtaFormat.setAction(sharedActionExportDta);
         jMenuItem_FileExport.add(jMenuItem_DtaFormat);
+        jMenuItem_FileExport.add(jSeparator3);
+
+        jMenuItem_PdfExport.setAction(sharedActionExportAsPDF);
+        jMenuItem_PdfExport.setText("Export in PDF format.");
+        jMenuItem_FileExport.add(jMenuItem_PdfExport);
 
         jMenuFile.add(jMenuItem_FileExport);
 
@@ -3531,6 +3537,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private javax.swing.JMenuItem jMenuItem_HelpShowGrammar;
     private javax.swing.JMenuItem jMenuItem_PNMLExport;
     private javax.swing.JMenuItem jMenuItem_PNMLImport;
+    private javax.swing.JMenuItem jMenuItem_PdfExport;
     private javax.swing.JMenuItem jMenuItem_SimClose;
     private javax.swing.JMenuItem jMenuItem_SimNext;
     private javax.swing.JMenuItem jMenuItem_SimPrev;
@@ -3561,6 +3568,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator10;
     private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JToolBar.Separator jSeparator6;
@@ -3626,6 +3634,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private common.Action sharedActionDeleteSelected;
     private common.Action sharedActionDeselectAll;
     private common.Action sharedActionExportAPNN;
+    private common.Action sharedActionExportAsPDF;
     private common.Action sharedActionExportDta;
     private common.Action sharedActionExportGRML;
     private common.Action sharedActionExportGreatSpn;

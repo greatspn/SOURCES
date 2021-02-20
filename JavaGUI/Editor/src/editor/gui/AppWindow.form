@@ -785,12 +785,18 @@
     </Component>
     <Component class="common.Action" name="sharedActionExportGreatSpn">
       <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="Shift+Ctrl+G"/>
+        </Property>
         <Property name="actionName" type="java.lang.String" value="Export in GreatSPN format..."/>
         <Property name="tooltipDesc" type="java.lang.String" value="Export the current net in the GreatSPN file format (net/def)."/>
       </Properties>
     </Component>
     <Component class="common.Action" name="sharedActionExportPNML">
       <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="Shift+Ctrl+P"/>
+        </Property>
         <Property name="actionName" type="java.lang.String" value="Export in PNML format..."/>
         <Property name="tooltipDesc" type="java.lang.String" value="Export the current net in the PNML file format (pnml)."/>
       </Properties>
@@ -811,6 +817,12 @@
       <Properties>
         <Property name="actionName" type="java.lang.String" value="Export DTA in MC4CSLTA format..."/>
         <Property name="tooltipDesc" type="java.lang.String" value="Export the current DTA in the MC4CSLTA format (.dta)."/>
+      </Properties>
+    </Component>
+    <Component class="common.Action" name="sharedActionExportAsPDF">
+      <Properties>
+        <Property name="actionName" type="java.lang.String" value="Export as PDF..."/>
+        <Property name="tooltipDesc" type="java.lang.String" value="Export the current page in PDF format."/>
       </Properties>
     </Component>
     <Component class="common.Action" name="sharedActionChangeBindings">
@@ -1140,6 +1152,16 @@
                     <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
                       <ComponentRef name="sharedActionExportDta"/>
                     </Property>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator3">
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItem_PdfExport">
+                  <Properties>
+                    <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                      <ComponentRef name="sharedActionExportAsPDF"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="Export in PDF format."/>
                   </Properties>
                 </MenuItem>
               </SubComponents>
