@@ -566,38 +566,28 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
     // Wrapping of filenames
     //==========================================================================
     
-    public static String makeFilenameCmd(String fname, String ext, String quote) {
-        String fn = quote + fname + (ext==null ? "" : ext) + quote;
+    public static String makeFilenameForCmd(String fname, String ext) {
+        String fn = fname + (ext==null ? "" : ext);
         if (Util.isWindows()) {
-//            System.out.print("quotedFn: "+fn);
-            fn = fn.replace("\\", "/").replace("C:", "/mnt/c");
-//            System.out.println(" -> "+fn);
+            // step 1:    C:  ->  /mnt/c/
+            if (fn.length()>2 && fn.charAt(1)==':') {
+                char devLetter = Character.toLowerCase(fn.charAt(0));
+                fn = "/mnt/"+devLetter+"/"+fn.substring(2);
+            }
+            // step 2:   replace backslash with slash
+            fn = fn.replace("\\", "/");
         }
         return fn;        
     }
-    public static String makeFilenameCmd(String fname, String ext) {
-        return makeFilenameCmd(fname, ext, "");
+    public static String makeFilenameForCmd(String fname) {
+        return makeFilenameForCmd(fname, null);
     }
-    public static String makeFilenameCmd(String fname) {
-        return makeFilenameCmd(fname, null, "");
+    public static String makeFilenameForCmd(File fname) {
+        return makeFilenameForCmd(fname.getAbsolutePath(), null);
     }
-    public static String makeFilenameCmd(File fname) {
-        return makeFilenameCmd(fname.getAbsolutePath(), null, "");
-    }
-    
-    // Print a quoted net filename with the specified extension
-//    protected String quotedFn(String ext, String quote) {
-//        return makeFilenameCmd(getGspnFile().getAbsolutePath(), ext, quote);
-////        String fn = quote + getGspnFile().getAbsolutePath() + (ext==null ? "" : ext) + quote;
-////        if (Util.isWindows()) {
-////            System.out.print("quotedFn: "+fn);
-////            fn = fn.replace("\\", "/").replace("C:", "/mnt/c");
-////            System.out.println(" -> "+fn);
-////        }
-////        return fn;
-//    }
-    protected String quotedFn(String ext) {
-        return makeFilenameCmd(getGspnFile().getAbsolutePath(), ext, "");
+
+    protected String makeDefaultModelFilenameForCmd(String ext) {
+        return makeFilenameForCmd(getGspnFile().getAbsolutePath(), ext);
     }
 
     //==========================================================================

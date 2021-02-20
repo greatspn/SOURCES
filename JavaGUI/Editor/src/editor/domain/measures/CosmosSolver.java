@@ -93,7 +93,7 @@ public class CosmosSolver extends SolverInvokator {
   
         ArrayList<String> cmd = startOfCommand();
         cmd.add(useCosmos_binary("Cosmos"));
-        cmd.add(makeFilenameCmd(grmlFile));
+        cmd.add(makeFilenameForCmd(grmlFile));
         cmd.add("--loop");
         cmd.add("100");
         cmd.add("--max-run");

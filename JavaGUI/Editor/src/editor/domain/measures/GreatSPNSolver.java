@@ -61,7 +61,7 @@ public class GreatSPNSolver extends SolverInvokator {
                                 new File(getGspnFile().getAbsoluteFile()+"-RG-"+step.stepNum+".pdf"));
                         params.maxDotMarkings.checkExprCorrectness(getContext(), getPage().targetGspn, null);
                         vGraphCmd.add("-dot-F");
-                        vGraphCmd.add(quotedFn("-RG-"+step.stepNum));
+                        vGraphCmd.add(makeDefaultModelFilenameForCmd("-RG-"+step.stepNum));
                         vGraphCmd.add("-max-dot-markings");
                         vGraphCmd.add(""+params.maxDotMarkings.evaluate
                                       (getContext(), EvaluationArguments.NO_ARGS).getScalarInt());
@@ -106,7 +106,7 @@ public class GreatSPNSolver extends SolverInvokator {
             }
             ArrayList<String> cmd = startOfCommand();
             cmd.add(useGreatSPN_binary(rgBuildCmd));
-            cmd.add(quotedFn(null));
+            cmd.add(makeDefaultModelFilenameForCmd(null));
             cmd.addAll(getParamBindingCmdArgs(currBind, true, true));
             if (hasMeasures)
                 cmd.add("-m");
@@ -127,14 +127,14 @@ public class GreatSPNSolver extends SolverInvokator {
                 cmd = startOfCommand();
                 cmd.add("/bin/cp");
                 cmd.add("/dev/null");
-                cmd.add(quotedFn(".gst"));
+                cmd.add(makeDefaultModelFilenameForCmd(".gst"));
                 step.addCmd(cmd);
 //                step.addCmd(startOfCommand() + "/bin/cp /dev/null "+quotedFn(".gst"));
 
                 // Step 2: invoke swn_stndrd
                 cmd = startOfCommand();
                 cmd.add(useGreatSPN_binary("swn_stndrd"));
-                cmd.add(quotedFn(null));
+                cmd.add(makeDefaultModelFilenameForCmd(null));
                 step.addCmd(cmd);
 //                step.addCmd(startOfCommand() + useGreatSPN_binary("swn_stndrd") + " " + quotedFn(null));
 
@@ -149,7 +149,7 @@ public class GreatSPNSolver extends SolverInvokator {
                     // Use Gauss-Seidel
                     cmd = startOfCommand();
                     cmd.add(useGreatSPN_binary("swn_ggsc"));
-                    cmd.add(quotedFn(null));
+                    cmd.add(makeDefaultModelFilenameForCmd(null));
                     cmd.add("-e"+epsilon);
                     cmd.add("-i"+maxIters);
                     step.addCmd(cmd);
@@ -163,7 +163,7 @@ public class GreatSPNSolver extends SolverInvokator {
                     // Use transient uniformization at time params.timeT
                     cmd = startOfCommand();
                     cmd.add(useGreatSPN_binary("swn_ntrs"));
-                    cmd.add(quotedFn(null));
+                    cmd.add(makeDefaultModelFilenameForCmd(null));
                     cmd.add(""+timeT);
                     cmd.add("-e"+epsilon);
                     cmd.add("-i"+maxIters);
@@ -175,15 +175,15 @@ public class GreatSPNSolver extends SolverInvokator {
                 // Step 4: copy .epd into .mpd
                 cmd = startOfCommand();
                 cmd.add("/bin/cp");
-                cmd.add(quotedFn(".epd"));
-                cmd.add(quotedFn(".mpd"));
+                cmd.add(makeDefaultModelFilenameForCmd(".epd"));
+                cmd.add(makeDefaultModelFilenameForCmd(".mpd"));
                 step.addCmd(cmd);
 //                step.addCmd(startOfCommand() + "/bin/cp "+quotedFn(".epd")+" "+quotedFn(".mpd"));
 
                 // Step 5: prepare measures (use modified mark/rate params and extra defs)
                 cmd = startOfCommand();
                 cmd.add(useGreatSPN_binary("swn_gst_prep"));
-                cmd.add(quotedFn(null));
+                cmd.add(makeDefaultModelFilenameForCmd(null));
                 cmd.addAll(getParamBindingCmdArgs(currBind, true, true));
                 cmd.addAll(measCmd);
                 step.addCmd(cmd);
@@ -193,9 +193,9 @@ public class GreatSPNSolver extends SolverInvokator {
                 // Step 6: compute measures
                 cmd = startOfCommand();
                 cmd.add(useGreatSPN_binary("swn_gst_stndrd"));
-                cmd.add(quotedFn(null));
+                cmd.add(makeDefaultModelFilenameForCmd(null));
                 cmd.add("-append");
-                cmd.add(quotedFn(".sta"));
+                cmd.add(makeDefaultModelFilenameForCmd(".sta"));
                 step.addCmd(cmd);
 //                step.addCmd(startOfCommand() + useGreatSPN_binary("swn_gst_stndrd") + " " + quotedFn(null) +
 //                            " -append " + quotedFn(".sta"));
@@ -214,7 +214,7 @@ public class GreatSPNSolver extends SolverInvokator {
             }
             ArrayList<String> cmd = startOfCommand();
             cmd.add(useGreatSPN_binary(rgBuildCmd));
-            cmd.add(quotedFn(null));
+            cmd.add(makeDefaultModelFilenameForCmd(null));
             cmd.addAll(getParamBindingCmdArgs(currBind, true, true));
             if (hasStat)
                 cmd.add("-gui-stat");

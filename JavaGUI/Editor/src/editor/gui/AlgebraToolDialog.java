@@ -20,7 +20,6 @@ import editor.domain.elements.Transition;
 import editor.domain.io.GreatSpnFormat;
 import editor.domain.measures.SolverInvokator;
 import static editor.domain.measures.SolverInvokator.cmdToString;
-import static editor.domain.measures.SolverInvokator.makeFilenameCmd;
 import static editor.domain.measures.SolverInvokator.startOfCommand;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -40,6 +39,9 @@ import javax.swing.DefaultListModel;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
+import static editor.domain.measures.SolverInvokator.makeFilenameForCmd;
+import static editor.domain.measures.SolverInvokator.makeFilenameForCmd;
+import static editor.domain.measures.SolverInvokator.makeFilenameForCmd;
 
 /**
  *
@@ -222,11 +224,11 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                     // Compose the algebra command
                     if (!propBrokenEdges)
                         cmd.add("-no_ba");
-                    cmd.add(makeFilenameCmd(tmpName1));
-                    cmd.add(makeFilenameCmd(tmpName2));
+                    cmd.add(makeFilenameForCmd(tmpName1));
+                    cmd.add(makeFilenameForCmd(tmpName2));
                     cmd.add(""+propOperator);
-                    cmd.add(makeFilenameCmd(tmpRestfile));
-                    cmd.add(makeFilenameCmd(tmpResult));
+                    cmd.add(makeFilenameForCmd(tmpRestfile));
+                    cmd.add(makeFilenameForCmd(tmpResult));
                     cmd.add(""+propPlacement);
                     if (propPlacement == 3) {
                         propDxShift = Integer.parseInt(textFieldDxShift.getText());

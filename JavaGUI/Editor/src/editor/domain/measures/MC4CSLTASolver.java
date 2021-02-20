@@ -32,7 +32,7 @@ public class MC4CSLTASolver extends SolverInvokator {
 //                    + "You must first set the solver path from the Edit > Options menu.");
 //        }
         cmd.add("-load");
-        cmd.add(quotedFn(null));
+        cmd.add(makeDefaultModelFilenameForCmd(null));
 //        cmd += " -load " + quotedFn(null);
         ArrayList<String> performanceIndexTime = new ArrayList<>();
         
@@ -127,7 +127,7 @@ public class MC4CSLTASolver extends SolverInvokator {
                         entry = new PdfResultEntry("TRG", evalBind, 
                                 new File(getGspnFile().getAbsoluteFile()+"-TRG-"+step.stepNum+".pdf"));
                         trgDot.add("-dot-F");
-                        trgDot.add(quotedFn("-TRG-"+step.stepNum));
+                        trgDot.add(makeDefaultModelFilenameForCmd("-TRG-"+step.stepNum));
 //                        trgDot = " -dot-F " + quotedFn("-TRG-"+step.stepNum);
                         step.entries.add(entry);
                         break;
@@ -137,7 +137,7 @@ public class MC4CSLTASolver extends SolverInvokator {
                                 new File(getGspnFile().getAbsoluteFile()+"-RG-"+step.stepNum+".pdf"));
                         rgDot.add("-new-rg");
                         rgDot.add("-dot-F");
-                        rgDot.add(quotedFn("-RG-"+step.stepNum));
+                        rgDot.add(makeDefaultModelFilenameForCmd("-RG-"+step.stepNum));
 //                        rgDot = " -new-rg -dot-F " + quotedFn("-RG-"+step.stepNum); // require new RG construction
                         step.entries.add(entry);
                         break;

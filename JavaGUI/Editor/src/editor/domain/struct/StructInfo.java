@@ -19,7 +19,6 @@ import editor.domain.grammar.TemplateBinding;
 import editor.domain.io.GreatSpnFormat;
 import editor.domain.measures.SolverInvokator;
 import static editor.domain.measures.SolverInvokator.cmdToString;
-import static editor.domain.measures.SolverInvokator.makeFilenameCmd;
 import static editor.domain.measures.SolverInvokator.startOfCommand;
 import editor.domain.values.EvaluatedFormula;
 import java.awt.Window;
@@ -30,6 +29,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
+import static editor.domain.measures.SolverInvokator.makeFilenameForCmd;
+import static editor.domain.measures.SolverInvokator.makeFilenameForCmd;
+import static editor.domain.measures.SolverInvokator.makeFilenameForCmd;
 
 /** Structural informations of a PN.
  * Actually an interface that calls the 'struct' tool of GreatSPN 
@@ -95,7 +97,7 @@ public class StructInfo {
             File tmpNet = new File(tmpName.getAbsolutePath()+".net");
             File tmpDef = new File(tmpName.getAbsolutePath()+".def");
             GreatSpnFormat.exportGspn(gspn, tmpNet, tmpDef, true);
-            cmd.add(makeFilenameCmd(tmpName));
+            cmd.add(makeFilenameForCmd(tmpName));
             cmd.addAll(mpars);
             
             // Run the pinvar command
@@ -109,7 +111,7 @@ public class StructInfo {
             // Run the struct tool
             cmd = startOfCommand();
             cmd.add(SolverInvokator.useGreatSPN_binary("struct"));
-            cmd.add(makeFilenameCmd(tmpName));
+            cmd.add(makeFilenameForCmd(tmpName));
             cmd.addAll(mpars);
             System.out.println("cmd = " + cmdToString(cmd));
             pr = Runtime.getRuntime().exec(cmd.toArray(new String[cmd.size()]), envp);

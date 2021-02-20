@@ -44,7 +44,7 @@ public class RGMEDD2Solver extends SolverInvokator {
         ArrayList<String> cmd = startOfCommand();
         cmd.add(useGreatSPN_binary("DSPN-Tool"));
         cmd.add("-load");
-        cmd.add(quotedFn(null));
+        cmd.add(makeDefaultModelFilenameForCmd(null));
         cmd.addAll(getParamBindingCmdArgs(currBind, true, true));
         cmd.add("-pbasis");
         cmd.add("-detect-exp");
@@ -61,7 +61,7 @@ public class RGMEDD2Solver extends SolverInvokator {
         cmd = startOfCommand();
         cmd.add(useGreatSPN_binary("DSPN-Tool"));
         cmd.add("-load");
-        cmd.add(quotedFn(null));
+        cmd.add(makeDefaultModelFilenameForCmd(null));
         cmd.addAll(getParamBindingCmdArgs(currBind, true, true));
         cmd.add("-load-bnd");
         cmd.add("-timeout");
@@ -76,7 +76,7 @@ public class RGMEDD2Solver extends SolverInvokator {
         boolean isV3 = getRGMEDDName().equals("RGMEDD3");
         cmd = startOfCommand();
         cmd.add(useGreatSPN_binary(getRGMEDDName()));
-        cmd.add(quotedFn(null));
+        cmd.add(makeDefaultModelFilenameForCmd(null));
         cmd.add(varOrder.getCmdOption());
         if (params.genCounterExamples)
             cmd.add("-c");
@@ -142,7 +142,7 @@ public class RGMEDD2Solver extends SolverInvokator {
                         String f = getGspnFile().getAbsoluteFile().toString()+"-DD-"+step.stepNum;
                         entry = new PdfResultEntry("DD", evalBind, new File(f+".pdf"));
                         ddCmd.add("-dot-F");
-                        ddCmd.add( quotedFn("-DD-"+step.stepNum));
+                        ddCmd.add( makeDefaultModelFilenameForCmd("-DD-"+step.stepNum));
 //                        ddCmd = " -dot-F " + quotedFn("-DD-"+step.stepNum)+" ";
                         step.entries.add(entry);
                         break;
@@ -152,7 +152,7 @@ public class RGMEDD2Solver extends SolverInvokator {
                         String f = getGspnFile().getAbsoluteFile()+"-INC-"+step.stepNum;
                         entry = new PdfResultEntry("INC", evalBind, new File(f+".pdf"));
                         incCmd.add("-inc-F");
-                        incCmd.add( quotedFn("-INC-"+step.stepNum));
+                        incCmd.add( makeDefaultModelFilenameForCmd("-INC-"+step.stepNum));
 //                        incCmd = " -inc-F " + quotedFn("-INC-"+step.stepNum)+" ";
                         step.entries.add(entry);
                         break;

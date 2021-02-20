@@ -17,7 +17,6 @@ import editor.domain.grammar.TemplateBinding;
 import editor.domain.io.GreatSpnFormat;
 import editor.domain.measures.SolverInvokator;
 import static editor.domain.measures.SolverInvokator.cmdToString;
-import static editor.domain.measures.SolverInvokator.makeFilenameCmd;
 import static editor.domain.measures.SolverInvokator.startOfCommand;
 import static editor.domain.measures.SolverInvokator.useGreatSPN_binary;
 import java.awt.Cursor;
@@ -26,6 +25,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import javax.swing.SwingUtilities;
+import static editor.domain.measures.SolverInvokator.makeFilenameForCmd;
+import static editor.domain.measures.SolverInvokator.makeFilenameForCmd;
+import static editor.domain.measures.SolverInvokator.makeFilenameForCmd;
 
 /**
  *
@@ -99,13 +101,13 @@ public class ShowRgDialog extends javax.swing.JDialog {
 
             ArrayList<String> cmd = startOfCommand();
             cmd.add(useGreatSPN_binary(rgType==RgType.SRG ? "WNSRG" : "WNRG"));
-            cmd.add(makeFilenameCmd(tmpRoot));
+            cmd.add(makeFilenameForCmd(tmpRoot));
             cmd.add("-max-markings");
             cmd.add("10000");
             cmd.add("-max-dot-markings");
             cmd.add("80");
             cmd.add("-dot-F");
-            cmd.add(makeFilenameCmd(tmpRoot));
+            cmd.add(makeFilenameForCmd(tmpRoot));
             if (rgType == RgType.CTMC)
                 cmd.add("-m");
             
