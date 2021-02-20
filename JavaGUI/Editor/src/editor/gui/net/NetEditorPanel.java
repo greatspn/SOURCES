@@ -581,6 +581,7 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
                     break;
                     
                 case EXPORT_AS_PDF:
+                case EXPORT_AS_PNG:
                     act.setEnabled(true);
                     break;
 
@@ -631,6 +632,10 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
                 
             case EXPORT_AS_PDF:
                 PagePrintManager.printAsPdf(mainInterface, currPage);
+                return;
+                
+            case EXPORT_AS_PNG:
+                PagePrintManager.printAsPng(mainInterface, currPage);
                 return;
                         
             default:

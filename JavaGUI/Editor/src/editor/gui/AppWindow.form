@@ -825,6 +825,12 @@
         <Property name="tooltipDesc" type="java.lang.String" value="Export the current page in PDF format."/>
       </Properties>
     </Component>
+    <Component class="common.Action" name="sharedActionExportAsPNG">
+      <Properties>
+        <Property name="actionName" type="java.lang.String" value="Export as PNG Image..."/>
+        <Property name="tooltipDesc" type="java.lang.String" value="Export the current page in PNG image format."/>
+      </Properties>
+    </Component>
     <Component class="common.Action" name="sharedActionChangeBindings">
       <Properties>
         <Property name="actionName" type="java.lang.String" value="Change bindings"/>
@@ -1161,7 +1167,13 @@
                     <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
                       <ComponentRef name="sharedActionExportAsPDF"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="Export in PDF format."/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItem_PngExport">
+                  <Properties>
+                    <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                      <ComponentRef name="sharedActionExportAsPNG"/>
+                    </Property>
                   </Properties>
                 </MenuItem>
               </SubComponents>

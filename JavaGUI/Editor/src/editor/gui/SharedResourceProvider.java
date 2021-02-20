@@ -16,7 +16,7 @@ public interface SharedResourceProvider {
         CHANGE_BINDINGS, COMPUTE_PLACE_SEMIFLOWS, COMPUTE_TRANS_SEMIFLOWS, COMPUTE_PLACE_BOUNDS_FROM_PINV,
         EXPORT_GREATSPN_FORMAT, EXPORT_PNML_FORMAT, 
         EXPORT_GRML_FORMAT, EXPORT_APNN_FORMAT, EXPORT_DTA_FORMAT,
-        EXPORT_AS_PDF
+        EXPORT_AS_PDF, EXPORT_AS_PNG
     }
     
     public common.Action getSharedAction(ActionName shAction);

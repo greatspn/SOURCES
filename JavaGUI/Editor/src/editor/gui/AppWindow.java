@@ -1011,6 +1011,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             case EXPORT_APNN_FORMAT:        return sharedActionExportAPNN;
             case EXPORT_DTA_FORMAT:         return sharedActionExportDta;
             case EXPORT_AS_PDF:             return sharedActionExportAsPDF;
+            case EXPORT_AS_PNG:             return sharedActionExportAsPNG;
             default:  throw new IllegalStateException("Action is not bound.");
         }
     }
@@ -1424,6 +1425,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         sharedActionExportAPNN = new common.Action();
         sharedActionExportDta = new common.Action();
         sharedActionExportAsPDF = new common.Action();
+        sharedActionExportAsPNG = new common.Action();
         sharedActionChangeBindings = new common.Action();
         sharedActionComputePlaceSemiflows = new common.Action();
         sharedActionComputeTransitionSemiflows = new common.Action();
@@ -1527,6 +1529,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jMenuItem_DtaFormat = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
         jMenuItem_PdfExport = new javax.swing.JMenuItem();
+        jMenuItem_PngExport = new javax.swing.JMenuItem();
         jMenuItem_FilePrint = new javax.swing.JMenuItem();
         jMenuItem_FileCloseProj = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
@@ -2058,6 +2061,9 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         sharedActionExportAsPDF.setActionName("Export as PDF...");
         sharedActionExportAsPDF.setTooltipDesc("Export the current page in PDF format.");
 
+        sharedActionExportAsPNG.setActionName("Export as PNG Image...");
+        sharedActionExportAsPNG.setTooltipDesc("Export the current page in PNG image format.");
+
         sharedActionChangeBindings.setActionName("Change bindings");
         sharedActionChangeBindings.setIcon(resourceFactory.getChangeBindings32());
         sharedActionChangeBindings.setTooltipDesc("Chnage the values bounded to the template Ids");
@@ -2331,7 +2337,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jPanelToolBars.setOpaque(false);
         jPanelToolBars.setLayout(new javax.swing.BoxLayout(jPanelToolBars, javax.swing.BoxLayout.LINE_AXIS));
 
-        jAppToolBar_File.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "File", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
+        jAppToolBar_File.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "File", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jAppToolBar_File.setFloatable(false);
         jAppToolBar_File.setRollover(true);
 
@@ -2350,7 +2356,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         jPanelToolBars.add(jAppToolBar_File);
 
-        jAppToolBar_Edit.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Edit", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
+        jAppToolBar_Edit.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "Edit", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jAppToolBar_Edit.setFloatable(false);
         jAppToolBar_Edit.setRollover(true);
 
@@ -2387,7 +2393,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         jPanelToolBars.add(jAppToolBar_Edit);
 
-        jAppToolBar_Basic.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Basic", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
+        jAppToolBar_Basic.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "Basic", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jAppToolBar_Basic.setFloatable(false);
         jAppToolBar_Basic.setRollover(true);
 
@@ -2444,7 +2450,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         jPanelToolBars.add(jAppToolBar_Basic);
 
-        jAppToolBar_Advanced.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Advanced", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
+        jAppToolBar_Advanced.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "Advanced", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jAppToolBar_Advanced.setFloatable(false);
         jAppToolBar_Advanced.setRollover(true);
 
@@ -2526,8 +2532,10 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jMenuItem_FileExport.add(jSeparator3);
 
         jMenuItem_PdfExport.setAction(sharedActionExportAsPDF);
-        jMenuItem_PdfExport.setText("Export in PDF format.");
         jMenuItem_FileExport.add(jMenuItem_PdfExport);
+
+        jMenuItem_PngExport.setAction(sharedActionExportAsPNG);
+        jMenuItem_FileExport.add(jMenuItem_PngExport);
 
         jMenuFile.add(jMenuItem_FileExport);
 
@@ -3538,6 +3546,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private javax.swing.JMenuItem jMenuItem_PNMLExport;
     private javax.swing.JMenuItem jMenuItem_PNMLImport;
     private javax.swing.JMenuItem jMenuItem_PdfExport;
+    private javax.swing.JMenuItem jMenuItem_PngExport;
     private javax.swing.JMenuItem jMenuItem_SimClose;
     private javax.swing.JMenuItem jMenuItem_SimNext;
     private javax.swing.JMenuItem jMenuItem_SimPrev;
@@ -3635,6 +3644,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private common.Action sharedActionDeselectAll;
     private common.Action sharedActionExportAPNN;
     private common.Action sharedActionExportAsPDF;
+    private common.Action sharedActionExportAsPNG;
     private common.Action sharedActionExportDta;
     private common.Action sharedActionExportGRML;
     private common.Action sharedActionExportGreatSpn;

@@ -9,11 +9,15 @@ import common.Util;
 import de.rototor.pdfbox.graphics2d.PdfBoxGraphics2D;
 import editor.domain.NetPage;
 import editor.domain.io.DtaFormat;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.io.File;
 import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -29,6 +33,7 @@ import org.apache.pdfbox.util.Matrix;
  */
 public class PagePrintManager {
     
+    // implement the awt PageFormat class
     protected static class PdfPageFormat extends PageFormat {
         
         double width, height;
@@ -128,9 +133,7 @@ public class PagePrintManager {
             document.addPage(pdfPage);
 
             PdfBoxGraphics2D pdfBoxGraphics2D = new PdfBoxGraphics2D(document, width, height);
-//            pdfBoxGraphics2D.scale(72, 72);
-            
-            pdfBoxGraphics2D.draw(new Rectangle2D.Float(0, 0, width, height));
+//            pdfBoxGraphics2D.draw(new Rectangle2D.Float(0, 0, width, height));
 
             PdfPageFormat pf = new PdfPageFormat(width, height);
             page.print(pdfBoxGraphics2D, pf);
@@ -157,13 +160,78 @@ public class PagePrintManager {
             document.close();
             
             mainInterface.setStatus("PDF exported.", true);
-        } catch (IOException e) {
+        } 
+        catch (IOException e) {
             JOptionPane.showMessageDialog(mainInterface.getWindowFrame(), 
                                           "An error happened while exporting the page in PDF format.\n"
                                           + "Reason: "+e.getMessage(),
                                           "Export \""+page.getPageName()+"\" in PDF format...", 
                                           JOptionPane.ERROR_MESSAGE);            
-            mainInterface.setStatus("could not export GSPN in APNN format.", true);
+            mainInterface.setStatus("could not export in PDF format.", true);
         }
     }
+    
+    
+    public static void printAsPng(MainWindowInterface mainInterface, NetPage page) {
+        File pngFile;
+        boolean repeatChooser;
+        do {
+            repeatChooser = false;
+            final JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Export \""+page.getPageName()+"\" in PNG format...");
+            String curDir = Util.getPreferences().get("png-export-dir", System.getProperty("user.home"));
+            fileChooser.setCurrentDirectory(curDir!=null ? new File(curDir) : null);
+            fileChooser.setSelectedFile(curDir!=null ? new File(curDir+File.separator+page.getPageName()+".png") : null);
+            fileChooser.addChoosableFileFilter(DtaFormat.fileFilter);
+            fileChooser.setFileFilter(DtaFormat.fileFilter);
+            if (fileChooser.showSaveDialog(mainInterface.getWindowFrame()) != JFileChooser.APPROVE_OPTION)
+                return;
+            pngFile = fileChooser.getSelectedFile();
+            
+            curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
+            Util.getPreferences().put("png-export-dir", curDir);
+            if (pngFile.exists()) {
+                int r = JOptionPane.showConfirmDialog(mainInterface.getWindowFrame(), 
+                         "The file \""+pngFile+"\" already exists! Overwrite it?", 
+                                                       "Overwrite file", 
+                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
+                                                       JOptionPane.WARNING_MESSAGE);
+                if (r == JOptionPane.NO_OPTION)
+                    repeatChooser = true;
+                else if (r == JOptionPane.CANCEL_OPTION)
+                    return;
+            }
+        } while (repeatChooser);
+        
+        try {
+            float xBorder = 0, yBorder = 0;
+            Rectangle2D pageBounds = page.getPageBounds();
+            float pngScaleFactor = 32.0f;
+            int width = (int)(pageBounds.getWidth() * pngScaleFactor);
+            int height = (int)(pageBounds.getHeight() * pngScaleFactor);
+            System.out.println("width="+width+"height="+height);
+            
+            BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2 = image.createGraphics();
+            g2.setColor(Color.white);
+            g2.fillRect(0, 0, width, height);
+            
+            PdfPageFormat pf = new PdfPageFormat(pageBounds.getWidth(), pageBounds.getHeight());
+            g2.scale(pngScaleFactor, pngScaleFactor);
+            page.print(g2, pf);
+
+            ImageIO.write(image, "png", pngFile.getAbsoluteFile());
+            
+            mainInterface.setStatus("PDF exported.", true);
+        } 
+        catch (IOException e) {
+            JOptionPane.showMessageDialog(mainInterface.getWindowFrame(), 
+                                          "An error happened while exporting the page in PNG format.\n"
+                                          + "Reason: "+e.getMessage(),
+                                          "Export \""+page.getPageName()+"\" in PNG format...", 
+                                          JOptionPane.ERROR_MESSAGE);            
+            mainInterface.setStatus("could not export in PNG format.", true);
+        }
+    }
+    
 }
