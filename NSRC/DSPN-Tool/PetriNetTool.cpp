@@ -151,6 +151,7 @@ static const char *s_AppBanner =
     "  {!-bnd}             Compute place bounds from P-semiflows, saved as {$<file>.bnd}.\n"
     "  {!-detect-exp}      Limit exponential growth in P/T flow generation.\n"
     "  {!-strict-support}  Slack variables are excluded from the flow support.\n"    
+    "  {!-timeout} {$<sec>}   Set a timeout of {$<sec>} seconds for the tool activity.\n"
     "\n"
     "  {!-dot}             Saves the (T)RG as a dot/pdf file.\n"
     "  {!-dot-open}        Like -dot, but also opens the pdf output.\n"

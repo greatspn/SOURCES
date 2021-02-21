@@ -843,7 +843,7 @@ void Inequality::createMDD(Context& ctx) {
                 apply(DIFFERENCE, ctx.get_state_set(), boole, boole);
                 break;
             default:
-                throw;
+                throw rgmedd_exception("Internal error.");
         }
         setMDD(boole);
         return;
@@ -885,7 +885,7 @@ void Inequality::createMDD(Context& ctx) {
         case IOP_MAJEQ:  opname = GREATER_THAN_EQUAL;   break;
         case IOP_EQ:     opname = EQUAL;                break;
         case IOP_NEQ:    opname = NOT_EQUAL;            break;
-        default: throw;
+        default: throw rgmedd_exception("Internal error.");
     }
 
     apply(opname, exp1MDD, exp2MDD, q);
@@ -919,7 +919,7 @@ void Inequality::createMDDByComplement(Context& ctx) {
         case IOP_MAJEQ:  complement_opname = LESS_THAN;            break;
         case IOP_EQ:     complement_opname = NOT_EQUAL;            break;
         case IOP_NEQ:    complement_opname = EQUAL;                break;
-        default: throw;
+        default: throw rgmedd_exception("Internal error.");
     }
 
     apply(complement_opname, r, complete, complement);
@@ -1529,7 +1529,8 @@ bool QuantifiedFormula::do_CTL_model_checking(Context& ctx)
                     return true;
                 }
                 break;
-            default: throw;
+            default: 
+                throw rgmedd_exception("Internal error.");
         }
     }
 
