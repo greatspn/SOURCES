@@ -32,7 +32,16 @@ public class AboutDialog extends javax.swing.JDialog {
         String buildDate = getBuildDate();
         String buildYear = buildDate.substring(0, buildDate.indexOf('-'));
         
-        jLabelVersion.setText("Build number: "+getBuildNumber()+"   Build date: "+buildDate);
+        String incrNum = getBuildNumber("build_number.txt");
+        String version = getBuildNumber("version_number.txt");
+        String repoBranch = getBuildNumber("repo_branch.txt");
+        String repoCount = getBuildNumber("repo_count.txt");
+        String repoHash = getBuildNumber("repo_hash.txt");
+        
+        jLabelVersion.setText("<html>Version: <b>"+version+"</b>-"+incrNum+"<br/>"
+                        + "Build date: "+buildDate+"<br/>"
+                        + "Repo branch: "+repoCount+"@"+repoBranch+", hash="+repoHash
+                        + "</html>");
         
         jLabelCopyrights.setText(jLabelCopyrights.getText().replace("XXXX", buildYear));
     } 
@@ -74,7 +83,7 @@ public class AboutDialog extends javax.swing.JDialog {
 
         jLabel6.setText(" for typesetting texts in LaTeX.");
 
-        jLabelVersion.setText("Version number: XXX");
+        jLabelVersion.setText("<html>Version number: XXX<br/>\nYYY<br/>\nZZZ\n</html>");
 
         jLabel7.setText("<html>JLaTeXMath is licensed with GPL v2 with linking exception.<br/>\nSome icons are taken from <u>http://www.fatcow.com/free-icons</u>, licensed<br/>\nunder Creative Commons Attribution 3.0 License.<br/>\n\nApache PDFBox (<u>https://pdfbox.apache.org/</u>) and <br/>\npdfbox-graphics2d (<u>https://github.com/rototor/pdfbox-graphics2d</u>) <br/>\nare used to export diagrams in PDF format.<br/>");
         jLabel7.setToolTipText("");
@@ -90,13 +99,8 @@ public class AboutDialog extends javax.swing.JDialog {
                     .add(jPanel1Layout.createSequentialGroup()
                         .add(jLabel1)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .add(jLabelVersion, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addContainerGap())
-                            .add(jPanel1Layout.createSequentialGroup()
-                                .add(jLabel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .add(10, 10, 10))))
+                        .add(jLabel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .add(10, 10, 10))
                     .add(jPanel1Layout.createSequentialGroup()
                         .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(jLabel7)
@@ -109,7 +113,8 @@ public class AboutDialog extends javax.swing.JDialog {
                                 .add(jLabel5)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(jLabel6, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                        .addContainerGap())))
+                        .addContainerGap())
+                    .add(jLabelVersion)))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -120,8 +125,8 @@ public class AboutDialog extends javax.swing.JDialog {
                         .add(22, 22, 22)
                         .add(jLabel1)))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jLabelVersion, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 32, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jLabelVersion, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(jLabelCopyrights, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 83, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
@@ -158,7 +163,7 @@ public class AboutDialog extends javax.swing.JDialog {
                 .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jButtonCloseDialog)
-                .addContainerGap())
+                .addContainerGap(19, Short.MAX_VALUE))
         );
 
         pack();
@@ -169,11 +174,11 @@ public class AboutDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_jButtonCloseDialogActionPerformed
 
     // Get the build number
-    private String getBuildNumber() {
+    private String getBuildNumber(String fname) {
         try {
             BufferedReader txtReader = new BufferedReader
                 (new InputStreamReader(
-                      getClass().getResourceAsStream("/common/build_number.txt")));
+                      getClass().getResourceAsStream("/common/"+fname)));
 
             String num = txtReader.readLine();
             txtReader.close();

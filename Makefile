@@ -1865,7 +1865,8 @@ endif
 ######################################
 
 GUI_ZIP_DIR := .
-GUI_NAMEVER := GreatSPN-Editor-v1.6
+GUI_VERSION := 1.6
+GUI_NAMEVER := GreatSPN-Editor-v$(GUI_VERSION)
 JAVA_BUILD_DIR += JavaGUI/Editor/build
 # JAVA_BUILD_DIR += JavaGUI/MathProvider/build 
 
@@ -1989,11 +1990,19 @@ endif
 JavaGUI: java-jars
 
 BUILD_NUMBER_FILE := JavaGUI/Editor/src/common/build_number.txt
+GUI_VERSION_FILE := JavaGUI/Editor/src/common/version_number.txt
+GUI_REPO_BRANCH := JavaGUI/Editor/src/common/repo_branch.txt
+GUI_REPO_HASH := JavaGUI/Editor/src/common/repo_hash.txt
+GUI_REPO_COUNT := JavaGUI/Editor/src/common/repo_count.txt
 
 # Increase the version number file by one
 JavaGUI-increase-version-number: clean_JavaGUI_x
-	@echo "  [++VERSION]  $(BUILD_NUMBER_FILE)"
+	@echo "  [VER]  JavaGUI"
 	@echo $$(( $$(cat $(BUILD_NUMBER_FILE)) + 1 )) > $(BUILD_NUMBER_FILE)
+	@echo "$(GUI_VERSION)" > $(GUI_VERSION_FILE)
+	@git branch --show-current > $(GUI_REPO_BRANCH)
+	@git log -1 --pretty=format:%h > $(GUI_REPO_HASH)
+	@git rev-list --count HEAD > $(GUI_REPO_COUNT)
 
 JavaGUI-archives: $(JAVA_GUI_ARCHIVES)
 
@@ -2008,10 +2017,6 @@ clean_JavaGUI_x:
 	@echo "  [CLEAN]  Editor.jar"
 	@rm -rf  JavaGUI/Editor/build
 	@rm -f 	 JavaGUI/Editor/dist/Editor.jar
-	#@ant -quiet -silent -buildfile  JavaGUI/Editor/build.xml  clean
-	# @echo "  [CLEAN]  MathProvider.jar"
-	# @rm -rf  JavaGUI/MathProvider/build
-	#@ant -quiet -silent -buildfile  JavaGUI/MathProvider/build.xml  clean
 	@echo "  [CLEAN]  GUI Installers"                              
 	@rm -rf $(OBJDIR)/JavaGUI/*
 	@rm -f $(JAVA_GUI_ARCHIVES)
