@@ -642,8 +642,25 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         // First GUI update is executed immediately, without the invalidateGUI()
         updateGUI();
-        if (Main.isCheckForUpdatesAutomatic())
-            Main.verifyNewVersion(this, false);
+//        if (Main.isCheckForUpdatesAutomatic())
+//            Main.verifyNewVersion(this, false);
+
+        // Reopen recently open files, if requested
+        if (Main.isReopenPrevOpenFilesAtStartup()) {
+            int ipf = 0;
+            while (true) {
+                String filename = prefs.get("last-open-file-"+ipf, null);
+                if (filename == null)
+                    break;
+                
+                File f = new File(filename);
+                if (f.exists() && f.canRead())
+                    openFile(f);
+                
+                ipf++;
+            }
+        }
+ 
     }
     
     // Cell renderer of the JTree of the project pages
@@ -3358,6 +3375,17 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     }
 
     private boolean quitApplication() {
+        final Preferences prefs = Util.getPreferences();
+        
+        // Save the list of currently open files, for later reopening
+        int ipf = 0;
+        if (Main.isReopenPrevOpenFilesAtStartup()) {
+            for (; ipf< projects.size(); ipf++) {
+                prefs.put("last-open-file-"+ipf, projects.get(ipf).getFilename().getAbsolutePath());
+            }
+        }
+        prefs.remove("last-open-file-"+ipf);
+        
         // Test if there are still unsaved documents
         while (!projects.isEmpty()) {
             if (!closeProject(projects.get(projects.size() - 1)))
@@ -3365,7 +3393,6 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         }
 
         // save the window geometry to the preferences
-        Preferences prefs = Util.getPreferences();
         Util.saveFramePosition(this, "main");
         prefs.putInt("frame-divLV", jSplitPaneLeftV.getDividerLocation());
         prefs.putInt("frame-divLCH", jSplitPaneLeftCenterH.getDividerLocation());

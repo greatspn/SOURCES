@@ -323,6 +323,14 @@ public class Main {
     public static boolean isCheckForUpdatesAutomatic() {
         return Util.getPreferences().getBoolean(AUTOMATIC_CHECK_KEY, false);
     }
+    
+    private static final String REOPEN_FILES_AT_STARTUP = "repen_files_at_startup";
+    public static void setReopenPrevOpenFilesAtStartup(boolean ok) {
+        Util.getPreferences().putBoolean(REOPEN_FILES_AT_STARTUP, ok);
+    }
+    public static boolean isReopenPrevOpenFilesAtStartup() {
+        return Util.getPreferences().getBoolean(REOPEN_FILES_AT_STARTUP, false);
+    }
 
     private static final String MAX_UNDO_KEY = "max_undo2";
     public static void setMaxUndo(int max) {

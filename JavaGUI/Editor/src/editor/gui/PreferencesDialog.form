@@ -242,7 +242,7 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="UI size"/>
+                    <TitledBorder title="General Options"/>
                   </Border>
                 </Property>
                 <Property name="opaque" type="boolean" value="false"/>
@@ -259,10 +259,11 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="comboBoxUiSizes" max="32767" attributes="0"/>
                               </Group>
-                              <Group type="102" alignment="0" attributes="0">
+                              <Group type="102" attributes="0">
                                   <Component id="labelUiNote" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  <EmptySpace min="0" pref="185" max="32767" attributes="0"/>
                               </Group>
+                              <Component id="jCheckBoxReopenFiles" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
@@ -277,7 +278,9 @@
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="labelUiNote" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="0" pref="21" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jCheckBoxReopenFiles" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="0" pref="46" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -299,6 +302,11 @@
                 <Component class="javax.swing.JLabel" name="labelUiNote">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Note:&lt;/b&gt; Changes to UI size will take effect the next time you start the application."/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="jCheckBoxReopenFiles">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Reopen previously open projects at startup."/>
                   </Properties>
                 </Component>
               </SubComponents>

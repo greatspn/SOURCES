@@ -31,12 +31,32 @@ public class ValuedMultiSet extends MultiSet {
             if (!e.getValue().isBlocked()) { // check consistency
                 // NOTE: this code needs to allow zero values, because
                 // boolean multiset predicates transform the multiset coefficient into 0.
+//                if (type == Type.INT && e.getValue().getScalarInt() <= 0)
+//                    throw new IllegalStateException("multiset element with coefficient <= 0");
+//                if (type == Type.REAL && e.getValue().getScalarReal() <= 0.0)
+//                    throw new IllegalStateException("multiset element with coefficient <= 0.0");
+                
                 assert type != Type.INT || e.getValue().getScalarInt() >= 0;
                 assert type != Type.REAL || e.getValue().getScalarReal() >= 0.0;// -GspnDtaPlayEngine.EPSILON_VALUE;
             }
             values[i] = e.getValue();
             i++;
         }
+    }
+    
+    @Override
+    public boolean equalsZero() {
+        boolean isZero = true;
+        if (numElements() > 0) {
+            for (EvaluatedFormula ev : values) {
+                if (!ev.equalsZero()) {
+                    isZero = false; // at least an element has coefficient != 0
+                    break;
+                }
+            }
+        }
+//        System.out.println("equalsZero "+this+" = "+isZero);
+        return isZero;
     }
 
     @Override

@@ -959,15 +959,17 @@ public class FormulaEvaluator extends ExprLangBaseVisitor<EvaluatedFormula> {
                 DomainElement ed = mset.getElement(i);
                 EvaluatedFormula ev = mset.getValue(i);
                 
-                context.filterThisDomain = ed;
-                context.filterThisValue = ev;
-                boolean keep = visit(ctx.mSetElemPredicate()).getScalarBoolean();
-                context.filterThisDomain = null;
-                context.filterThisValue = null;
+                if (ev.getScalarInt() != 0) {
+                    context.filterThisDomain = ed;
+                    context.filterThisValue = ev;
+                    boolean keep = visit(ctx.mSetElemPredicate()).getScalarBoolean();
+                    context.filterThisDomain = null;
+                    context.filterThisValue = null;
 
-//                System.out.println("eval ed="+ed+" ev="+ev+"   keep="+keep);
-                if (keep)
-                    newSet.put(ed, ev);
+    //                System.out.println("eval ed="+ed+" ev="+ev+"   keep="+keep);
+                    if (keep)
+                        newSet.put(ed, ev);
+                }
             }
             resMset = ValuedMultiSet.makeNew(mset.getType(), mset.getDomain(), newSet);
         }

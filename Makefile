@@ -1932,10 +1932,28 @@ $(OBJDIR)/JavaGUI/bin/Editor.jar: JavaGUI/Editor/dist/Editor.jar
 	@cp JavaGUI/Additional/greatspn48.png  $(OBJDIR)/JavaGUI/bin/pnpro-editor.png
 	@cp JavaGUI/Additional/pnpro-doc48.png  $(OBJDIR)/JavaGUI/bin/application-x-pnpro-editor.png
 
-# $(OBJDIR)/JavaGUI/bin/MathProvider.jar: JavaGUI/MathProvider/dist/MathProvider.jar
-# 	@echo "  [CP]  " $<
-# 	@$(MKDIR) $(dir $@)
-# 	@cp $<  $@
+
+
+# Builds the macOS native application using the jpackage tool
+# objects/JavaGUI/GreatSPN\ Editor.app: JavaGUI
+# 	@echo "  [JPACKAGE] " $@
+# 	@jpackage --input JavaGUI/Editor/dist --name GreatSPN\ Editor \
+# 		--main-jar Editor.jar --main-class editor.Main  \
+#         --java-options "-Djava.library.path=Contents/Java/" \
+#         --java-options "-Dapple.laf.useScreenMenuBar=true" \
+#         --java-options "-Dcom.apple.macos.useScreenMenuBar=true" \
+#         --java-options "-enableassertions" \
+#         --java-options "-splash:Contents/Java/splash.png" \
+# 		--type app-image \
+# 		--app-version "$(GUI_VERSION)" \
+# 		--copyright "University of Torino, Italy" \
+# 		--description "The GUI of the GreatSPN framework. Visit https://github.com/greatspn/SOURCES for more informations." \
+# 		--dest objects/JavaGUI/ \
+# 		--icon "JavaGUI/Additional/greatspn.icns" \
+# 		--file-associations JavaGUI/DISTRIB/PNPRO-macos-FileAssoc.txt
+
+
+
 
 $(OBJDIR)/JavaGUI/bin/lib/splash.png: JavaGUI/Additional/splash.png
 	@echo "  [CP]  " $<

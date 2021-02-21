@@ -38,6 +38,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
 
         // General
         jCheckBoxCheckUpdates.setSelected(Main.isCheckForUpdatesAutomatic());
+        jCheckBoxReopenFiles.setSelected(Main.isReopenPrevOpenFilesAtStartup());
         SpinnerModel sm = new SpinnerNumberModel(Main.getMaxUndo(), 3, 100, 1);
         jSpinnerMaxUndo.setModel(sm);
         sm = new SpinnerNumberModel(Main.getMaxLatexCacheEntries(), 50, 10000, 10);
@@ -107,6 +108,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         jLabel3 = new javax.swing.JLabel();
         comboBoxUiSizes = new javax.swing.JComboBox<>();
         labelUiNote = new javax.swing.JLabel();
+        jCheckBoxReopenFiles = new javax.swing.JCheckBox();
         tabSolverPath = new javax.swing.JPanel();
         jLabelGreatSPN = new javax.swing.JLabel();
         filenameGreatSPN = new common.JFilenameField();
@@ -237,7 +239,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("UI size"));
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("General Options"));
         jPanel3.setOpaque(false);
 
         jLabel3.setText("SIze of the UI fonts and graphics:");
@@ -249,6 +251,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
         });
 
         labelUiNote.setText("<html><b>Note:</b> Changes to UI size will take effect the next time you start the application.");
+
+        jCheckBoxReopenFiles.setText("Reopen previously open projects at startup.");
 
         org.jdesktop.layout.GroupLayout jPanel3Layout = new org.jdesktop.layout.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -263,7 +267,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
                         .add(comboBoxUiSizes, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .add(jPanel3Layout.createSequentialGroup()
                         .add(labelUiNote, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .add(0, 0, Short.MAX_VALUE)))
+                        .add(0, 185, Short.MAX_VALUE))
+                    .add(jCheckBoxReopenFiles, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -274,7 +279,9 @@ public class PreferencesDialog extends javax.swing.JDialog {
                     .add(jLabel3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 27, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(labelUiNote, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(0, 21, Short.MAX_VALUE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jCheckBoxReopenFiles)
+                .add(0, 46, Short.MAX_VALUE))
         );
 
         org.jdesktop.layout.GroupLayout tabGeneralLayout = new org.jdesktop.layout.GroupLayout(tabGeneral);
@@ -418,6 +425,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private void jButtonCloseDialogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCloseDialogActionPerformed
         // General
         Main.setAutomaticCheckForUpdates(jCheckBoxCheckUpdates.isSelected());
+        Main.setReopenPrevOpenFilesAtStartup(jCheckBoxReopenFiles.isSelected());
         Main.setMaxUndo((Integer)jSpinnerMaxUndo.getValue());
         Main.setMaxLatexCacheEntries((Integer)jSpinnerMaxLatexCache.getValue());
         Main.setStartupUiSize((Main.UiSize)comboBoxUiSizes.getSelectedItem());
@@ -469,6 +477,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JButton jButtonClearLaTeXCache;
     private javax.swing.JButton jButtonCloseDialog;
     private javax.swing.JCheckBox jCheckBoxCheckUpdates;
+    private javax.swing.JCheckBox jCheckBoxReopenFiles;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
