@@ -1695,7 +1695,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 String className = (ctx.SIMPLECOLORCLASS_ID()!=null ? ctx.SIMPLECOLORCLASS_ID().getText() : null);
                 MultiSetElemType ty = null;
                 
-                if (className!=null && ctx.INT()== null) {
+                if (className!=null && ctx.INT()==null) {
                     // if only the color class is provided and not an index, the color name
                     // should appear only once in the color domain
                     int colorCount = 0;
@@ -1709,6 +1709,9 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                             }
                         }
                     }
+                }
+                if (className==null && ctx.INT()==null) {
+                    context.addNewError("'@': either a class name or an index in the color domain tuple (or both) must be specified");
                 }
                 
                 // find the element index in the color tuple
