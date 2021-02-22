@@ -112,11 +112,11 @@ needed by some visualization tools.
 
 #### Windows installation instructions:
 
-GreatSPN is known to compile and run successfully using the WSL-2 (Windows 10 64bit minimum) using Ubuntu 20.04LTS.
+GreatSPN is known to compile and run successfully using the *Windows Subsystem for linux* (WSL-2, Windows 10 64bit minimum) using Ubuntu 20.04LTS.
 WSL installation is slightly different, since the GUI will be a standard Windows application, while the command line tools will reside and run inside the WSL subsystem.
 
 Follow the Linux steps to compile all the command line tools inside the WSL subsystem.
-If the WSL installation is newly installed, remember to update the apt-cache before installing the dependencies, 
+If the WSL component is newly installed, remember to update the apt-cache before installing the dependencies, 
 i.e. run the command `sudo apt-cache update`.
 Then download a precompiled GUI from [here](http://www.di.unito.it/~amparore/mc4cslta/editor.html). 
 You can use either the Windows version, or the JAR version (in case the Windows version raises problems).
