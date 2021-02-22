@@ -945,10 +945,13 @@ public class FormulaEvaluator extends ExprLangBaseVisitor<EvaluatedFormula> {
 
     @Override
     public EvaluatedFormula visitIntMSetExprElemProduct(ExprLangParser.IntMSetExprElemProductContext ctx) {
-        EvaluatedFormula pred = (ctx.mSetPredicate() != null ? visit(ctx.mSetPredicate()) : BooleanScalarValue.TRUE);
+        boolean guardPredicate = (ctx.mSetPredicate() != null ? visit(ctx.mSetPredicate()).getScalarBoolean() : true);
+        if (!guardPredicate) {
+            return MultiSet.makeNew(EvaluatedFormula.Type.INT, context.colorDomainOfExpr, new TreeMap<>());
+        }
+        
+        // Evaluate the element product
         EvaluatedFormula mult = (ctx.intExpr() != null ? visit(ctx.intExpr()) : IntScalarValue.ONE);
-        if (!pred.getScalarBoolean())
-            mult = IntScalarValue.ZERO; // Predicate evaluates to false.
         EvaluatedFormula resMset = visitMsetExprElemProduct(mult, ctx.multiSetElem());
         
         // Evaluate filter predicate
@@ -1005,10 +1008,13 @@ public class FormulaEvaluator extends ExprLangBaseVisitor<EvaluatedFormula> {
 
     @Override
     public EvaluatedFormula visitRealMSetExprElemProduct(ExprLangParser.RealMSetExprElemProductContext ctx) {
-        EvaluatedFormula pred = (ctx.mSetPredicate() != null ? visit(ctx.mSetPredicate()) : BooleanScalarValue.TRUE);
+        boolean guardPredicate = (ctx.mSetPredicate() != null ? visit(ctx.mSetPredicate()).getScalarBoolean() : true);
+        if (!guardPredicate) {
+            return MultiSet.makeNew(EvaluatedFormula.Type.REAL, context.colorDomainOfExpr, new TreeMap<>());
+        }
+        
+        // Evaluate the element product
         EvaluatedFormula mult = (ctx.realExpr() != null ? visit(ctx.realExpr()) : RealScalarValue.ONE);
-        if (!pred.getScalarBoolean())
-            mult = RealScalarValue.ZERO; // Predicate evaluates to false.
         EvaluatedFormula resMset = visitMsetExprElemProduct(mult, ctx.multiSetElem());
         
         // Evaluate filter predicate
