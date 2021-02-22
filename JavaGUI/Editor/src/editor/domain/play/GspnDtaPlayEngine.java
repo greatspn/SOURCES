@@ -251,7 +251,7 @@ public class GspnDtaPlayEngine {
                         
                         EvaluatedFormula inMult = e.evaluateMultiplicity(gspnContext, state, binding);
                         if (inMult.equalsZero()) {
-                            enabled = false;
+                            //enabled = false;
                             break;
                         }
                         if (p.isDiscrete()) {

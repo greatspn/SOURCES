@@ -268,7 +268,8 @@ public class Unfolding {
                                 EvaluatedFormula newArcMult = vmset.getValue(el);
                                 if (newArcMult.equalsZero()) {
                                     System.out.println("Arc of "+trn.getUniqueName()+" has mult=0 after unfolding.");
-                                    return;
+                                    //return;
+                                    continue;
                                 }
 //                                Place unfPlc = placeUnfolding.get(new Tuple<>(plc, elem));
                                 Place unfPlc = placeUnfolding.get(plc).get(elem);
