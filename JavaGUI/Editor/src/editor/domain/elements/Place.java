@@ -384,12 +384,23 @@ public class Place extends Node implements Serializable, ColorClass.DomainHolder
          new Point2D.Double(0, -1.5)},
         {new Point2D.Double(-1.5, -1.5), new Point2D.Double(1.5, -1.5),
          new Point2D.Double(-1.5, 1.5), new Point2D.Double(1.5, 1.5)},
-        {new Point2D.Double(-1.3, 1.6), new Point2D.Double(1.3, 1.6),
-         new Point2D.Double(-1.9, -0.7), new Point2D.Double(1.9, -0.7),
-         new Point2D.Double(0, -2.1)},
+        {new Point2D.Double(0.000, -2.100), new Point2D.Double(1.997, -0.649),
+         new Point2D.Double(1.234, 1.699), new Point2D.Double(-1.234, 1.699),
+         new Point2D.Double(-1.997, -0.649)},
         {new Point2D.Double(-1.9, -1.1), new Point2D.Double(1.9, -1.1),
          new Point2D.Double(0, -2.2), new Point2D.Double(0, 2.2),
-         new Point2D.Double(-1.9, 1.1), new Point2D.Double(1.9, 1.1)}
+         new Point2D.Double(-1.9, 1.1), new Point2D.Double(1.9, 1.1)},        
+        {new Point2D.Double(-2.0, -1.2), new Point2D.Double(2.0, -1.2),
+         new Point2D.Double(0, -2.3), new Point2D.Double(0, 2.3),
+         new Point2D.Double(-2.0, 1.2), new Point2D.Double(2.0, 1.2),
+         new Point2D.Double(0, 0)},
+        {new Point2D.Double(-0.000, -1.697), new Point2D.Double(-1.697, 0.000),
+         new Point2D.Double(1.697, -0.000), new Point2D.Double(0.000, 1.697),
+         new Point2D.Double(2.192, 2.192), new Point2D.Double(2.192, -2.192),
+         new Point2D.Double(-2.192, 2.192), new Point2D.Double(-2.192, -2.192)},
+        {new Point2D.Double(-0.000, -3.111), new Point2D.Double(-1.556, -1.556), new Point2D.Double(-3.111, 0.000),
+         new Point2D.Double(1.556, -1.556), new Point2D.Double(0.000, 0.000), new Point2D.Double(-1.556, 1.556),
+         new Point2D.Double(3.111, -0.000), new Point2D.Double(1.556, 1.556), new Point2D.Double(0.000, 3.111)}
     };
     
     @Override public Color getFillColor(ActivityState activity)        { return Color.WHITE; }

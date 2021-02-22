@@ -3503,14 +3503,16 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         if (Main.isReopenPrevOpenFilesAtStartup()) {
             for (; ipf< projects.size(); ipf++) {
                 ProjectFile pf = projects.get(ipf);
-                prefs.put("last-open-file-"+ipf, pf.getFilename().getAbsolutePath());
-                if (hasActiveProject() && activeProject==pf)
-                    if (pf.getCurrent().getActivePage() != null) {
-                        prefs.putInt("last-open-file-active-project", ipf);
-                        prefs.put("last-open-file-active-page-name", 
-                                pf.getCurrent().getActivePage().getPageName());
+                if (pf.getFilename() != null) {
+                    prefs.put("last-open-file-"+ipf, pf.getFilename().getAbsolutePath());
+                    if (hasActiveProject() && activeProject==pf) {
+                        if (pf.getCurrent().getActivePage() != null) {
+                            prefs.putInt("last-open-file-active-project", ipf);
+                            prefs.put("last-open-file-active-page-name", 
+                                    pf.getCurrent().getActivePage().getPageName());
+                        }
                     }
-                    
+                }
             }
         }
         prefs.remove("last-open-file-"+ipf);
