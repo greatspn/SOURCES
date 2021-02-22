@@ -1939,11 +1939,11 @@ $(OBJDIR)/JavaGUI/bin/Editor.jar: JavaGUI/Editor/dist/Editor.jar
 # 	@echo "  [JPACKAGE] " $@
 # 	@jpackage --input JavaGUI/Editor/dist --name GreatSPN\ Editor \
 # 		--main-jar Editor.jar --main-class editor.Main  \
-#         --java-options "-Djava.library.path=Contents/Java/" \
-#         --java-options "-Dapple.laf.useScreenMenuBar=true" \
-#         --java-options "-Dcom.apple.macos.useScreenMenuBar=true" \
-#         --java-options "-enableassertions" \
-#         --java-options "-splash:Contents/Java/splash.png" \
+# 		--java-options "-Djava.library.path=Contents/Java/" \
+# 		--java-options "-Dapple.laf.useScreenMenuBar=true" \
+# 		--java-options "-Dcom.apple.macos.useScreenMenuBar=true" \
+# 		--java-options "-enableassertions" \
+# 		--java-options "-splash:Contents/Java/splash.png" \
 # 		--type app-image \
 # 		--app-version "$(GUI_VERSION)" \
 # 		--copyright "University of Torino, Italy" \

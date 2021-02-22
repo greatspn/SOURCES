@@ -36,8 +36,8 @@ public class ValuedMultiSet extends MultiSet {
 //                if (type == Type.REAL && e.getValue().getScalarReal() <= 0.0)
 //                    throw new IllegalStateException("multiset element with coefficient <= 0.0");
                 
-                assert type != Type.INT || e.getValue().getScalarInt() >= 0;
-                assert type != Type.REAL || e.getValue().getScalarReal() >= 0.0;// -GspnDtaPlayEngine.EPSILON_VALUE;
+//                assert type != Type.INT || e.getValue().getScalarInt() >= 0;
+//                assert type != Type.REAL || e.getValue().getScalarReal() >= 0.0;// -GspnDtaPlayEngine.EPSILON_VALUE;
             }
             values[i] = e.getValue();
             i++;
@@ -55,7 +55,6 @@ public class ValuedMultiSet extends MultiSet {
                 }
             }
         }
-//        System.out.println("equalsZero "+this+" = "+isZero);
         return isZero;
     }
 

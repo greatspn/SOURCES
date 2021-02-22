@@ -116,10 +116,10 @@ GreatSPN is known to compile and run successfully using the WSL-2 (Windows 10 64
 WSL installation is slightly different, since the GUI will be a standard Windows application, while the command line tools will reside and run inside the WSL subsystem.
 
 Follow the Linux steps to compile all the command line tools inside the WSL subsystem.
-If the WSL installation is new, remember to update the apt-cache before installing the dependencies, 
+If the WSL installation is newly installed, remember to update the apt-cache before installing the dependencies, 
 i.e. run the command `sudo apt-cache update`.
 Then download a precompiled GUI from [here](http://www.di.unito.it/~amparore/mc4cslta/editor.html). 
-You can use either the Windows version, or the JAR version in case the Windows version raises problems.
+You can use either the Windows version, or the JAR version (in case the Windows version raises problems).
 The GUI for Windows is automatically configured to use the tools inside the WSL environment, so no additional step is needed.
 
 

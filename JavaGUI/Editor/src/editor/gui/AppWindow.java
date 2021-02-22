@@ -8,7 +8,6 @@ import common.Condition;
 import common.GuiIntegration;
 import common.LogWindow;
 import common.ModalLogDialog;
-import common.OSXIntegration;
 import editor.Main;
 import common.Util;
 import static editor.Main.logException;
@@ -645,24 +644,11 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 //        if (Main.isCheckForUpdatesAutomatic())
 //            Main.verifyNewVersion(this, false);
 
-        // Reopen recently open files, if requested
-        if (Main.isReopenPrevOpenFilesAtStartup()) {
-            int ipf = 0;
-            while (true) {
-                String filename = prefs.get("last-open-file-"+ipf, null);
-                if (filename == null)
-                    break;
-                
-                File f = new File(filename);
-                if (f.exists() && f.canRead())
-                    openFile(f);
-                
-                ipf++;
-            }
-        }
- 
+        // Reopen recently open files, if requested.
+        // invokeLater to have the GUI window show, before starting the openFile steps.
+        SwingUtilities.invokeLater(() -> reopenLastOpenProjects(prefs));
     }
-    
+        
     // Cell renderer of the JTree of the project pages
     private DefaultTreeCellRenderer editingRenderer = new DefaultTreeCellRenderer();
     
@@ -3378,13 +3364,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         final Preferences prefs = Util.getPreferences();
         
         // Save the list of currently open files, for later reopening
-        int ipf = 0;
-        if (Main.isReopenPrevOpenFilesAtStartup()) {
-            for (; ipf< projects.size(); ipf++) {
-                prefs.put("last-open-file-"+ipf, projects.get(ipf).getFilename().getAbsolutePath());
-            }
-        }
-        prefs.remove("last-open-file-"+ipf);
+        saveOpenProjectsForReopen(prefs);
         
         // Test if there are still unsaved documents
         while (!projects.isEmpty()) {
@@ -3484,6 +3464,58 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             setStatus(descr, false);
         }
     }
+    
+    // Reopen the projects that were open before the last application closure
+    private void reopenLastOpenProjects(Preferences prefs) {        
+        if (Main.isReopenPrevOpenFilesAtStartup()) {
+            int ipf = 0;
+            while (true) {
+                String filename = prefs.get("last-open-file-"+ipf, null);
+                if (filename == null)
+                    break;
+                
+                File f = new File(filename);
+                if (f.exists() && f.canRead())
+                    openFile(f);
+                
+                ipf++;
+            }
+        }
+        int activeProj = prefs.getInt("last-open-file-active-project", -1);
+        String activePageName = prefs.get("last-open-file-active-page-name", null);
+        if (activeProj >= 0 && activeProj < projects.size() && activePageName!=null) {
+            ProjectFile projToActivate = projects.get(activeProj);
+            ProjectPage pageToActivate = null;
+            for (int pp=0; pp<projToActivate.getCurrent().getPageCount(); pp++) {
+                if (projToActivate.getCurrent().getPageAt(pp).getPageName().equals(activePageName)) {
+                    pageToActivate = projToActivate.getCurrent().getPageAt(pp);
+                    break;
+                }
+            }
+            if (pageToActivate != null)
+                switchToProjectPage(projToActivate, pageToActivate, null);
+        }         
+    }
+    
+    // save the list of open projects, for late reopening
+    private void saveOpenProjectsForReopen(Preferences prefs) {
+        int ipf = 0;
+        if (Main.isReopenPrevOpenFilesAtStartup()) {
+            for (; ipf< projects.size(); ipf++) {
+                ProjectFile pf = projects.get(ipf);
+                prefs.put("last-open-file-"+ipf, pf.getFilename().getAbsolutePath());
+                if (hasActiveProject() && activeProject==pf)
+                    if (pf.getCurrent().getActivePage() != null) {
+                        prefs.putInt("last-open-file-active-project", ipf);
+                        prefs.put("last-open-file-active-page-name", 
+                                pf.getCurrent().getActivePage().getPageName());
+                    }
+                    
+            }
+        }
+        prefs.remove("last-open-file-"+ipf);
+    }
+
     
     // methods
     // Variables declaration - do not modify//GEN-BEGIN:variables
