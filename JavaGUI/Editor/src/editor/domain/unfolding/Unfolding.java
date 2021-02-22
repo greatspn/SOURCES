@@ -267,7 +267,7 @@ public class Unfolding {
                                 DomainElement elem = vmset.getElement(el);
                                 EvaluatedFormula newArcMult = vmset.getValue(el);
                                 if (newArcMult.equalsZero()) {
-                                    System.out.println("Arc of "+trn.getUniqueName()+" has mult=0 after unfolding.");
+//                                    System.out.println("Arc of "+trn.getUniqueName()+" has mult=0 after unfolding.");
                                     //return;
                                     continue;
                                 }

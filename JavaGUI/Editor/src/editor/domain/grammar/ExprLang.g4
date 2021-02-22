@@ -213,7 +213,7 @@ colorTerm : colorTerm op=('++'|'--')               # ColorTermNextPrev
           //| op=('!'|'^') colorTerm                 # ColorTermNextPrev2
           | colorVar                               # ColorTermVar
           | COLOR_ID                               # ColorTermColor
-          | '@' '[' INT ']'                        # ColorTermFilterThis
+          | '@' SIMPLECOLORCLASS_ID? ('[' INT ']')?  # ColorTermFilterThis
           ;
 
 colorSet : colorTerm                               # ColorSetTerm

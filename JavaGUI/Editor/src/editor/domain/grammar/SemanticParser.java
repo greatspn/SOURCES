@@ -1691,23 +1691,71 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case PNPRO:
             case LATEX:
             case GREATSPN: {
-                int index = Integer.parseInt(ctx.INT().getText());
+                int index = (ctx.INT()!= null ? Integer.parseInt(ctx.INT().getText()) : 0);
+                String className = (ctx.SIMPLECOLORCLASS_ID()!=null ? ctx.SIMPLECOLORCLASS_ID().getText() : null);
                 MultiSetElemType ty = null;
-                if (index < 0 || index >= context.colorDomainOfExpr.getNumClassesInDomain()) {
-                    context.addNewError("Domain index "+index+" must be in range [0, "
-                                        +context.colorDomainOfExpr.getNumClassesInDomain()+").");
+                
+                if (className!=null && ctx.INT()== null) {
+                    // if only the color class is provided and not an index, the color name
+                    // should appear only once in the color domain
+                    int colorCount = 0;
+                    for (int cc = 0; cc < context.colorDomainOfExpr.getNumClassesInDomain(); cc++) {
+                        if (className.equals(context.colorDomainOfExpr.getColorClassName(cc))) {
+                            ++colorCount;
+                            if (colorCount > 1) {
+                                context.addNewError("Color domain "+context.colorDomainOfExpr.getUniqueName()+
+                                                    " have multiple instances of "+className+": an index must be specified.");
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                // find the element index in the color tuple
+                int found = -1;
+                for (int cc = 0, index2 = index; cc < context.colorDomainOfExpr.getNumClassesInDomain(); cc++) {
+                    if (className!=null && !className.equals(context.colorDomainOfExpr.getColorClassName(cc)))
+                        continue; // not the same class
+                    if (index2 > 0) {
+                        --index2;
+                        continue; // not the i-th instance
+                    }
+                    found = cc;
+                    break;
+                }
+                if (found == -1) {
+                    if (className != null) {
+                        context.addNewError("Color domain "+context.colorDomainOfExpr.getUniqueName()+
+                                            " does not have "+index+" of color class "+className);
+                    } else {
+                        context.addNewError("Color domain "+context.colorDomainOfExpr.getUniqueName()+
+                                            " does not have "+index+" color classes.");                        
+                    }
+//                    context.addNewError("Domain index "+index+" must be in range [0, "
+//                                        +context.colorDomainOfExpr.getNumClassesInDomain()+").");
                     ty = new MultiSetElemType(ALL_COLORS);
                 }
-                else {
-                    ty = new MultiSetElemType(context.colorDomainOfExpr.getColorClass(index));
-                }
-                return format(true, "@[", index, "]").addPayload(ty);
+                else
+                    ty = new MultiSetElemType(context.colorDomainOfExpr.getColorClass(found));
+//                if (index < 0 || index >= context.colorDomainOfExpr.getNumClassesInDomain()) {
+//                    context.addNewError("Domain index "+index+" must be in range [0, "
+//                                        +context.colorDomainOfExpr.getNumClassesInDomain()+").");
+//                    ty = new MultiSetElemType(ALL_COLORS);
+//                }
+//                else {
+//                    ty = new MultiSetElemType(context.colorDomainOfExpr.getColorClass(index));
+//                }
+                
+                FormattedFormula f = format(true, '@');
+                if (ctx.SIMPLECOLORCLASS_ID()!=null)
+                    f = format(true, f, className);
+                if (ctx.INT()!= null)
+                    f = format(true, f, "[", index, "]");
+                return f.addPayload(ty);
             }
             default:
                 throw new UnsupportedOperationException("Multiset Filter Predicates are not supported");
         }
-
-        
     }
 
     //==========================================================================

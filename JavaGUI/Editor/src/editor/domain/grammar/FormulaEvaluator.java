@@ -897,21 +897,37 @@ public class FormulaEvaluator extends ExprLangBaseVisitor<EvaluatedFormula> {
     @Override
     public EvaluatedFormula visitColorTermFilterThis(ExprLangParser.ColorTermFilterThisContext ctx) {
         if (context.filterThisDomain == null)
-            throw new EvaluationException("@[i] statement can only be used in filter predicates.");
+            throw new EvaluationException("Filter argument statement '@' can only be used in filter predicates.");
         DomainElement thisElem = context.filterThisDomain;
         
-        int index = Integer.parseInt(ctx.INT().getText());
-        if (index < 0 || index >= thisElem.getDomain().getNumClassesInDomain())
-            throw new EvaluationException("Domain index "+index+" is outside its bounds.");
+        int index = (ctx.INT()!= null ? Integer.parseInt(ctx.INT().getText()) : 0);
+        String className = (ctx.SIMPLECOLORCLASS_ID()!=null ? ctx.SIMPLECOLORCLASS_ID().getText() : null);
+        // find the element index in the color tuple
+        int found = -1;
+        for (int cc = 0, index2 = index; cc < context.colorDomainOfExpr.getNumClassesInDomain(); cc++) {
+            if (className!=null && !className.equals(context.colorDomainOfExpr.getColorClassName(cc)))
+                continue; // not the same class
+            if (index2 > 0) {
+                --index2;
+                continue; // not the i-th instance
+            }
+            found = cc;
+            break;
+        }
+        if (found == -1)
+            throw new EvaluationException("Filter argument "+ctx.getText()+" cannot be evaluated.");
+//        int index = Integer.parseInt(ctx.INT().getText());
+//        if (index < 0 || index >= thisElem.getDomain().getNumClassesInDomain())
+//            throw new EvaluationException("Domain index "+index+" is outside its bounds.");
         
 //        int mset = ((IntScalarValue)context.filterThisValue).value;
         int[] colorIndex = new int[1];
-        colorIndex[0] = thisElem.getColor(index);
-        DomainElement singleCol = new DomainElement(thisElem.getDomain().getColorClass(index), 
+        colorIndex[0] = thisElem.getColor(found);
+        DomainElement singleCol = new DomainElement(thisElem.getDomain().getColorClass(found), 
                                                     colorIndex);        
         Set<DomainElement> cset = new TreeSet<>();
         cset.add(singleCol);
-        EvaluatedFormula term = MultiSet.makeNew(thisElem.getDomain().getColorClass(index), cset);
+        EvaluatedFormula term = MultiSet.makeNew(thisElem.getDomain().getColorClass(found), cset);
         return term;
     }
     
