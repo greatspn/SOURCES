@@ -93,7 +93,7 @@ Upon completion, the framework will be installed by default in the `/usr/local/G
 
 GreatSPN compiles and runs successfully on macOS. 
 Before running the Linux/Unix installation steps, you will first need to install the Developer Tools (Xcode)
-and Oracle Java (version 8 or greater).
+and Java OpenJDK (version 11 or greater).
 Then install all the required dependencies using a software like [Homebrew](https://brew.sh/), e.g. 
 by running the command:
 ```
@@ -117,7 +117,7 @@ WSL-2 installation is slightly different, since the GUI will be a standard Windo
 
 Follow the Linux steps to compile all the command line tools inside the WSL-2 subsystem.
 If the WSL-2 component is newly installed, remember to update the apt-cache before installing the dependencies, 
-i.e. run the command `sudo apt-cache update`.
+i.e. run the command `sudo apt update`.
 Then download a precompiled GUI from [here](http://www.di.unito.it/~amparore/mc4cslta/editor.html). 
 You can use either the Windows version, or the JAR version (in case the Windows version raises problems).
 The GUI for Windows is automatically configured to use the tools inside the WSL-2 environment, so no additional step is needed.

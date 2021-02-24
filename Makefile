@@ -2060,12 +2060,14 @@ install_JavaGUI_models:
 
 # On Linux, make install automatically re-installs the Java GUI
 ifeq ($(UNAME_S),Linux)
+ifdef HAS_JAVA_DEVELOPMENT_KIT
  ifdef HAS_APACHE_ANT
   ifndef EXCLUDE_GUI
 install: linux-install-JavaGUI
 
   endif
  endif
+endif
 endif
 
 ifdef HAS_JAVA_DEVELOPMENT_KIT
