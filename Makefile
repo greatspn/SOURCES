@@ -147,11 +147,25 @@ endef
 define search_lib
 	$(if $(HAS_$(1)), , \
 	  $(if $(wildcard $(2)), \
-	    $(eval HAS_$(1):=1) ; $(eval LINK_$(1):=-L$(dir $(2)) $(3))  )\
+	    $(eval HAS_$(1):=1) ; \
+	    $(eval LINK_$(1):=-L$(dir $(2)) $(3)) ; \
+	    $(eval PATH_TO_$(1):=$(dir $(2))) )\
 	 )
 endef
 define warn_missing
 	$(if $(HAS_$(1)), , $(warning Missing $(2). Some packages will not be compiled.) )
+endef
+# directories where libraries will be searched for
+LIBRARY_SEARCH_DIRS := /usr/local/lib \
+					   /usr/lib \
+					   /usr/lib64 \
+					   /opt/homebrew/lib \
+					   /usr/lib/x86_64-linux-gnu
+# define HAS_$(1) if file $(2) of library named $(3) is found in any library search path
+define search_library
+    $(foreach libdir,$(LIBRARY_SEARCH_DIRS),  \
+		      $(call search_lib,$(1),$(libdir)/$(2),$(4))) ;  \
+    $(call warn_missing,$(1),$(3))
 endef
 ##############################################################################
 
@@ -172,48 +186,54 @@ endif
 $(call search_file,GRAPHMDP_LIB,/usr/local/lib/libgraphmdp.*,-lgraphmdp)
 $(call warn_missing,GRAPHMDP_LIB,GraphMDP library)
 
+$(call search_library,LIBXMLPP2-6_LIB,libxml++-2.6,"libXML++-2.6 library")
+# $(call search_lib,LIBXMLPP2-6_LIB,/usr/local/lib/libxml++-2.6)
+# $(call search_lib,LIBXMLPP2-6_LIB,/usr/lib/libxml++-2.6)
+# $(call search_lib,LIBXMLPP2-6_LIB,/usr/lib64/libxml++-2.6)
+# $(call search_lib,LIBXMLPP2-6_LIB,/opt/homebrew/lib/libxml++-2.6)
+# $(call search_lib,LIBXMLPP2-6_LIB,/usr/lib/x86_64-linux-gnu/libxml++-2.6)
+# $(call warn_missing,LIBXMLPP2-6_LIB,libXML++-2.6 library)
 
-$(call search_lib,LIBXMLPP2-6_LIB,/usr/local/lib/libxml++-2.6)
-$(call search_lib,LIBXMLPP2-6_LIB,/usr/lib/libxml++-2.6)
-$(call search_lib,LIBXMLPP2-6_LIB,/usr/lib64/libxml++-2.6)
-$(call search_lib,LIBXMLPP2-6_LIB,/opt/homebrew/lib/libxml++-2.6)
-$(call search_lib,LIBXMLPP2-6_LIB,/usr/lib/x86_64-linux-gnu/libxml++-2.6)
-$(call warn_missing,LIBXMLPP2-6_LIB,libXML++-2.6 library)
-
-
-$(call search_lib,GLIBMM2-4_LIB,/usr/local/lib/libglibmm-2.4.*)
-$(call search_lib,GLIBMM2-4_LIB,/usr/lib/libglibmm-2.4.*)
-$(call search_lib,GLIBMM2-4_LIB,/usr/lib64/libglibmm-2.4.*)
-$(call search_lib,GLIBMM2-4_LIB,/opt/homebrew/lib/libglibmm-2.4.*)
-$(call search_lib,GLIBMM2-4_LIB,/usr/lib/x86_64-linux-gnu/libglibmm-2.4.*)
-$(call warn_missing,GLIBMM2-4_LIB,glibmm-2.4 library)
-
-
-$(call search_lib,GLPK_LIB,/usr/local/lib/libglpk.*,-lglpk)
-$(call search_lib,GLPK_LIB,/usr/lib/libglpk.*,-lglpk)
-$(call search_lib,GLPK_LIB,/usr/lib64/libglpk.*,-lglpk)
-$(call search_lib,GLPK_LIB,/opt/homebrew/lib/libglpk.*,-lglpk)
-$(call search_lib,GLPK_LIB,/usr/lib/x86_64-linux-gnu/libglpk.*,-lglpk)
-$(call warn_missing,GLPK_LIB,GLPK library)
+$(call search_library,GLIBMM2-4_LIB,libglibmm-2.4.*,"glibmm-2.4 library")
+# $(call search_lib,GLIBMM2-4_LIB,/usr/local/lib/libglibmm-2.4.*)
+# $(call search_lib,GLIBMM2-4_LIB,/usr/lib/libglibmm-2.4.*)
+# $(call search_lib,GLIBMM2-4_LIB,/usr/lib64/libglibmm-2.4.*)
+# $(call search_lib,GLIBMM2-4_LIB,/opt/homebrew/lib/libglibmm-2.4.*)
+# $(call search_lib,GLIBMM2-4_LIB,/usr/lib/x86_64-linux-gnu/libglibmm-2.4.*)
+# $(call warn_missing,GLIBMM2-4_LIB,glibmm-2.4 library)
 
 
-$(call search_lib,LP_SOLVE_LIB,/usr/local/lib/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
-$(call search_lib,LP_SOLVE_LIB,/usr/lib/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
-$(call search_lib,LP_SOLVE_LIB,/usr/lib64/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
-$(call search_lib,LP_SOLVE_LIB,/opt/homebrew/lib/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
-$(call search_lib,LP_SOLVE_LIB,/usr/lib/x86_64-linux-gnu/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
-$(call warn_missing,LP_SOLVE_LIB,lp_solve55 library)
+$(call search_library,GLPK_LIB,libglpk.*,"GLPK library",-lglpk)
+# $(call search_lib,GLPK_LIB,/usr/local/lib/libglpk.*,-lglpk)
+# $(call search_lib,GLPK_LIB,/usr/lib/libglpk.*,-lglpk)
+# $(call search_lib,GLPK_LIB,/usr/lib64/libglpk.*,-lglpk)
+# $(call search_lib,GLPK_LIB,/opt/homebrew/lib/libglpk.*,-lglpk)
+# $(call search_lib,GLPK_LIB,/usr/lib/x86_64-linux-gnu/libglpk.*,-lglpk)
+# $(call warn_missing,GLPK_LIB,GLPK library)
+
+
+$(call search_library,LP_SOLVE_LIB,liblpsolve55.*,"lp_solve55 library",-llpsolve55 -ldl -lcolamd)
 ifdef HAS_LP_SOLVE_LIB
-	INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I/usr/local/include/lpsolve/ -I/usr/include/lpsolve/
+  INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I$(PATH_TO_LP_SOLVE_LIB)
 endif
+# $(call search_lib,LP_SOLVE_LIB,/usr/local/lib/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
+# $(call search_lib,LP_SOLVE_LIB,/usr/lib/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
+# $(call search_lib,LP_SOLVE_LIB,/usr/lib64/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
+# $(call search_lib,LP_SOLVE_LIB,/opt/homebrew/lib/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
+# $(call search_lib,LP_SOLVE_LIB,/usr/lib/x86_64-linux-gnu/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
+# $(call warn_missing,LP_SOLVE_LIB,lp_solve55 library)
+# ifdef HAS_LP_SOLVE_LIB
+# 	INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I/usr/local/include/lpsolve/ -I/usr/include/lpsolve/
+# endif
 
 
-$(call search_lib,GMP_LIB,/usr/local/lib/libgmpxx.*,-lgmpxx -lgmp)
-$(call search_lib,GMP_LIB,/usr/lib/libgmpxx.*,-lgmpxx -lgmp)
-$(call search_lib,GMP_LIB,/usr/lib64/libgmpxx.*,-lgmpxx -lgmp)
-$(call search_lib,GMP_LIB,/opt/homebrew/lib/libgmpxx.*,-lgmpxx -lgmp)
-$(call search_lib,GMP_LIB,/usr/lib/x86_64-linux-gnu/libgmpxx.*,-lgmpxx -lgmp)
-$(call warn_missing,GMP_LIB,GMP library)
+$(call search_library,GMP_LIB,/libgmpxx.*,"GMP library",-lgmpxx -lgmp)
+# $(call search_lib,GMP_LIB,/usr/local/lib/libgmpxx.*,-lgmpxx -lgmp)
+# $(call search_lib,GMP_LIB,/usr/lib/libgmpxx.*,-lgmpxx -lgmp)
+# $(call search_lib,GMP_LIB,/usr/lib64/libgmpxx.*,-lgmpxx -lgmp)
+# $(call search_lib,GMP_LIB,/opt/homebrew/lib/libgmpxx.*,-lgmpxx -lgmp)
+# $(call search_lib,GMP_LIB,/usr/lib/x86_64-linux-gnu/libgmpxx.*,-lgmpxx -lgmp)
+# $(call warn_missing,GMP_LIB,GMP library)
 ifdef HAS_GMP_LIB
 	INCLUDE_GMP_LIB := -DHAS_GMP_LIB=1
 endif
@@ -227,28 +247,31 @@ $(call search_file,APACHE_ANT,$(shell which ant))
 $(call warn_missing,APACHE_ANT,Apache ANT)
 
 
-$(call search_lib,BOOST_CXX_LIB,/usr/local/lib/libboost_context*)
-$(call search_lib,BOOST_CXX_LIB,/usr/lib/libboost_context*)
-$(call search_lib,BOOST_CXX_LIB,/usr/lib64/libboost_context*)
-$(call search_lib,BOOST_CXX_LIB,/opt/homebrew/lib/libboost_context*)
-$(call search_lib,BOOST_CXX_LIB,/usr/lib/x86_64-linux-gnu/libboost_context*)
-$(call warn_missing,BOOST_CXX_LIB,Boost C++ library)
+$(call search_library,BOOST_CXX_LIB,libboost_context*,"Boost C++ library")
+# $(call search_lib,BOOST_CXX_LIB,/usr/local/lib/libboost_context*)
+# $(call search_lib,BOOST_CXX_LIB,/usr/lib/libboost_context*)
+# $(call search_lib,BOOST_CXX_LIB,/usr/lib64/libboost_context*)
+# $(call search_lib,BOOST_CXX_LIB,/opt/homebrew/lib/libboost_context*)
+# $(call search_lib,BOOST_CXX_LIB,/usr/lib/x86_64-linux-gnu/libboost_context*)
+# $(call warn_missing,BOOST_CXX_LIB,Boost C++ library)
 
 
-$(call search_lib,SPOT_LIB,/usr/local/lib/libspot.*)
-$(call search_lib,SPOT_LIB,/usr/lib/libspot.*)
-$(call search_lib,SPOT_LIB,/usr/lib64/libspot.*)
-$(call search_lib,SPOT_LIB,/opt/homebrew/lib/libspot.*)
-$(call search_lib,SPOT_LIB,/usr/lib/x86_64-linux-gnu/libspot.*)
-$(call warn_missing,SPOT_LIB,Spot library(spot.lrde.epita.fr/))
+$(call search_library,SPOT_LIB,libspot.*,"Spot library(spot.lrde.epita.fr/)")
+# $(call search_lib,SPOT_LIB,/usr/local/lib/libspot.*)
+# $(call search_lib,SPOT_LIB,/usr/lib/libspot.*)
+# $(call search_lib,SPOT_LIB,/usr/lib64/libspot.*)
+# $(call search_lib,SPOT_LIB,/opt/homebrew/lib/libspot.*)
+# $(call search_lib,SPOT_LIB,/usr/lib/x86_64-linux-gnu/libspot.*)
+# $(call warn_missing,SPOT_LIB,Spot library(spot.lrde.epita.fr/))
 
 
-$(call search_lib,MEDDLY_LIB,/usr/local/lib/libmeddly.*)
-$(call search_lib,MEDDLY_LIB,/usr/lib/libmeddly.*)
-$(call search_lib,MEDDLY_LIB,/usr/lib64/libmeddly.*)
-$(call search_lib,MEDDLY_LIB,/opt/homebrew/lib/libmeddly.*)
-$(call search_lib,MEDDLY_LIB,/usr/lib/x86_64-linux-gnu/libmeddly.*)
-$(call warn_missing,MEDDLY_LIB,Meddly library(github.com/asminer/meddly))
+$(call search_library,MEDDLY_LIB,libmeddly.*,"Meddly library(github.com/asminer/meddly)")
+# $(call search_lib,MEDDLY_LIB,/usr/local/lib/libmeddly.*)
+# $(call search_lib,MEDDLY_LIB,/usr/lib/libmeddly.*)
+# $(call search_lib,MEDDLY_LIB,/usr/lib64/libmeddly.*)
+# $(call search_lib,MEDDLY_LIB,/opt/homebrew/lib/libmeddly.*)
+# $(call search_lib,MEDDLY_LIB,/usr/lib/x86_64-linux-gnu/libmeddly.*)
+# $(call warn_missing,MEDDLY_LIB,Meddly library(github.com/asminer/meddly))
 
 
 ifneq ("$(wildcard /home/user/Desktop/HowToODE-SDE)","")
@@ -2060,19 +2083,11 @@ install_JavaGUI_models:
 
 # On Linux, make install automatically re-installs the Java GUI
 ifeq ($(UNAME_S),Linux)
-ifdef HAS_JAVA_DEVELOPMENT_KIT
- ifdef HAS_APACHE_ANT
-  ifndef EXCLUDE_GUI
+ ifdef HAS_JAVA_DEVELOPMENT_KIT
+  ifdef HAS_APACHE_ANT
+   ifndef EXCLUDE_GUI
 install: linux-install-JavaGUI
 
-  endif
- endif
-endif
-endif
-
-ifdef HAS_JAVA_DEVELOPMENT_KIT
- ifdef HAS_APACHE_ANT
-  ifndef EXCLUDE_GUI
 all: JavaGUI
 
 clean: clean_JavaGUI
@@ -2080,6 +2095,8 @@ clean: clean_JavaGUI
 install: install_JavaGUI_models install_JavaGUI_jars
 
 SCRIPTS += unfolding2 greatspn_editor
+
+   endif
   endif
  endif
 endif

@@ -161,7 +161,7 @@ public abstract class Node extends SelectableObject
             tagList = new String[0];
             return;
         }
-        tagList = getSuperPosTags().split(",");
+        tagList = getSuperPosTags().split("\\|"); // | is escaped since it is a regex
         int nonEmpty = 0;
         for (int i=0; i<tagList.length; i++) {
             tagList[i] = tagList[i].trim();
@@ -197,7 +197,24 @@ public abstract class Node extends SelectableObject
     public boolean canConnectEdges() { return true; }
     
     // Should this node be checked for correctness before the other nodes (used for type nodes, like ColorClass'es)
-    public void checkNodeCorrectness(NetPage page, ParserContext context) { /* add PageError's to the page */ }
+    public void checkNodeCorrectness(NetPage page, ParserContext context) { 
+        // Validate super-position tags (if exists)
+        if (hasSuperPosTags()) {
+            boolean ok = true;
+            for (int t=0; t<numTags() && ok; t++) {
+                String tag = getTag(t);
+                for (int c=0; c<tag.length() && ok; c++) {
+                    if (!Character.isLetterOrDigit(tag.charAt(c))) {
+                        page.addErrorWarningObject(PageErrorWarning.newError(
+                                "Invalid tag '"+tag+"'. "+
+                                "Tags list must be a '|'-separated list of alphanumeric identifiers. ", this));
+                        ok = false;
+                    }
+                }
+            }
+        }
+        /* add PageError's to the page */ 
+    }
     
     // Apply a rewriting rule to this node
     public abstract void rewriteNode(ParserContext context, ExprRewriter rewriter);
@@ -312,8 +329,9 @@ public abstract class Node extends SelectableObject
         
         @Override
         public boolean isValueValid(ProjectData proj, ProjectPage page, Object value) {
-            String taglist = (String)value;
-            return isValidTagList(taglist);
+            return true;
+//            String taglist = (String)value;
+//            return isValidTagList(taglist);
         }
         @Override
         public void setValue(ProjectData project, ProjectPage page, Object value) { 

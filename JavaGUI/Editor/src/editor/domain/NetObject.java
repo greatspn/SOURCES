@@ -326,32 +326,32 @@ public class NetObject implements Serializable {
 //        "S", /* SWN for <All> */
     };
     
-    // check if the identifier is a well-formed superposition tag (no pipe accepted)
-    public static boolean isSuperpositionTagIdentifier(String str) {
-        if (str == null || str.length() == 0)
-            return false;
-        for (int i=0; i<str.length(); i++) {
-            char ch = str.charAt(i);
-            if (!isAsciiLetterOrDigit(ch) && ch != '_' && ch != '<' && ch != '>' && ch != ',')
-                return false; 
-        }
-        return true;
-    }
-    
-    // check that the superposition tag list is valid
-    public static boolean isValidTagList(String list) {
-        if (list.length() == 0)
-            return true;
-        String clean = list.replaceAll("\\s", ""); // remove whitespaces
-        String[] tags = clean.split("\\|");
-        if (tags.length == 0)
-            return true; // the empty list is a valid list
-        for (String tag : tags) {
-            if (!isSuperpositionTagIdentifier(tag))
-                return false; // invalid tag
-        }
-        return true;
-    }
+//    // check if the identifier is a well-formed superposition tag (no pipe accepted)
+//    public static boolean isSuperpositionTagIdentifier(String str) {
+//        if (str == null || str.length() == 0)
+//            return false;
+//        for (int i=0; i<str.length(); i++) {
+//            char ch = str.charAt(i);
+//            if (!isAsciiLetterOrDigit(ch) && ch != '_')// && ch != '<' && ch != '>' && ch != ',')
+//                return false; 
+//        }
+//        return true;
+//    }
+//    
+//    // check that the superposition tag list is valid
+//    public static boolean isValidTagList(String list) {
+//        if (list.length() == 0)
+//            return true;
+//        String clean = list.replaceAll("\\s", ""); // remove whitespaces
+//        String[] tags = clean.split("\\|");
+//        if (tags.length == 0)
+//            return true; // the empty list is a valid list
+//        for (String tag : tags) {
+//            if (!isSuperpositionTagIdentifier(tag))
+//                return false; // invalid tag
+//        }
+//        return true;
+//    }
     
     // Accepted font styles
     public static final int STYLE_ROMAN = 0;

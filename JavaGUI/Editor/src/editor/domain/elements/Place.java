@@ -615,7 +615,7 @@ public class Place extends Node implements Serializable, ColorClass.DomainHolder
     @Override public GroupClass getGroupClass() { return GroupClass.PLACE; }
     @Override public String getSuperPosTags() { return superPosTags; }
     @Override public void setSuperPosTags(String superPosTags) { 
-        assert isValidTagList(superPosTags);
+//        assert isValidTagList(superPosTags);
         this.superPosTags = superPosTags;
         invalidateTagList();
     }

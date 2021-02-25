@@ -704,7 +704,7 @@ public class Transition extends Node implements Serializable, Firable {
     @Override public GroupClass getGroupClass() { return GroupClass.TRANSITION; }
     @Override public String getSuperPosTags() { return superPosTags; }
     @Override public void setSuperPosTags(String superPosTags) { 
-        assert isValidTagList(superPosTags);
+//        assert isValidTagList(superPosTags);
         this.superPosTags = superPosTags;
         invalidateTagList();
     }
