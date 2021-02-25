@@ -416,7 +416,7 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
     private void setupTimeStepPanel(boolean enabled) {
         boolean isTimedStep = false;
         boolean hasEnabledTimedTransition = false;
-        double nextTime = currentState().time;
+        //double nextTime = currentState().time;
         
         if (currStateIndex >= 0) {
             isTimedStep = enabled && isTimedSimulation() && currentState().isTangible();
