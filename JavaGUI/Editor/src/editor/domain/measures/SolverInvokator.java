@@ -602,13 +602,13 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
             TemplateVariable var = (TemplateVariable)getPage().targetGspn.getNodeByUniqueName(bind.getKey());
             if (var.getType() == TemplateVariable.Type.INTEGER && writeMarkPars) {
                 int value = bind.getValue().evaluate(getContext(), EvaluationArguments.NO_ARGS).getScalarInt();
-                cmdArgs.add("-mpar ");
+                cmdArgs.add("-mpar");
                 cmdArgs.add(var.getUniqueName());
                 cmdArgs.add(""+value);
             }
             else if (var.getType() == TemplateVariable.Type.REAL && writeRatePars) {
                 double value = bind.getValue().evaluate(getContext(), EvaluationArguments.NO_ARGS).getScalarRealOrIntAsReal();
-                cmdArgs.add("-rpar ");
+                cmdArgs.add("-rpar");
                 cmdArgs.add(var.getUniqueName());
                 cmdArgs.add(""+value);
             }
