@@ -10,7 +10,28 @@
                 "RGMEDD5",
                 "CFLAGS='-O0 -g'",
                 "LDFLAGS='-O0 -g'",
-                "-j10"
+                "-j8"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "make all",
+            "command": "/usr/bin/make",
+            "args": [
+                "-f",
+                "${workspaceFolder}/Makefile",
+                "all",
+                "CFLAGS='-O0 -g'",
+                "LDFLAGS='-O0 -g'",
+                "-j8"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"

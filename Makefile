@@ -138,22 +138,35 @@ endif
 ##############################################################################
 # Macros used to simplify the work
 
+# remove quotes from $(1)
+define unquote 
+$(subst $\",,$(1))
+endef
 # search for a file $(2). If it exists, define variable HAS_$(1) to 1
 define search_file
-	$(if $(HAS_$(1)), , $(if $(wildcard $(2)), $(eval HAS_$(1):=1) ))
+$(if $(HAS_$(1)), , $(if $(wildcard $(2)), $(eval HAS_$(1):=1) ))
 endef
 # search for a library in path $(2). If it exists, define two variables:
 #  HAS_$(1) to 1,  LINK_$(1) to the -L/path and the additional rules $(3)
 define search_lib
-	$(if $(HAS_$(1)), , \
-	  $(if $(wildcard $(2)), \
-	    $(eval HAS_$(1):=1) ; \
-	    $(eval LINK_$(1):=-L$(dir $(2)) $(3)) ; \
-	    $(eval PATH_TO_$(1):=$(dir $(2))) )\
-	 )
+$(if $(HAS_$(1)), , \
+  $(if $(wildcard $(2)), \
+    $(eval HAS_$(1):=1) ; \
+    $(eval LINK_$(1):=-L$(dir $(2)) $(3)) ; \
+    $(eval PATH_TO_$(1):=$(dir $(2))) )\
+ )
+endef
+# define warn_missing
+# 	$(if $(HAS_$(1)), , $(warning Missing $(2). Some packages will not be compiled.) )
+# endef
+define info_missing
+$(if $(HAS_$(1)), \
+	$(info $(call unquote,"  [DEP]  ")Found $(call unquote,$(2)) in $(PATH_TO_$(1))), \
+	$(info $(call unquote,"  [DEP]  ")Missing $(call unquote,$(2)). Some packages will not be compiled.) )
 endef
 define warn_missing
-	$(if $(HAS_$(1)), , $(warning Missing $(2). Some packages will not be compiled.) )
+$(if $(HAS_$(1)),, \
+	$(info $(call unquote,"  [DEP]  ")Missing $(call unquote,$(2)). Some packages will not be compiled.) )
 endef
 # directories where libraries will be searched for
 LIBRARY_SEARCH_DIRS := /usr/local/lib \
@@ -163,9 +176,9 @@ LIBRARY_SEARCH_DIRS := /usr/local/lib \
 					   /usr/lib/x86_64-linux-gnu
 # define HAS_$(1) if file $(2) of library named $(3) is found in any library search path
 define search_library
-    $(foreach libdir,$(LIBRARY_SEARCH_DIRS),  \
-		      $(call search_lib,$(1),$(libdir)/$(2),$(4))) ;  \
-    $(call warn_missing,$(1),$(3))
+$(foreach libdir,$(LIBRARY_SEARCH_DIRS),  \
+	      $(call search_lib,$(1),$(libdir)/$(2),$(4))) ;  \
+$(call warn_missing,$(1),$(3))
 endef
 ##############################################################################
 
@@ -273,6 +286,7 @@ $(call search_library,MEDDLY_LIB,libmeddly.*,"Meddly library(github.com/asminer/
 # $(call search_lib,MEDDLY_LIB,/usr/lib/x86_64-linux-gnu/libmeddly.*)
 # $(call warn_missing,MEDDLY_LIB,Meddly library(github.com/asminer/meddly))
 
+##############################################################################
 
 ifneq ("$(wildcard /home/user/Desktop/HowToODE-SDE)","")
   IS_VBOX_VERSION71 := 1
@@ -332,6 +346,8 @@ endif
 # prova:
 # 	@echo $(HAVE_PKG_CONFIG)
 # 	@echo $(call have_command,HAVE_PKG_CONFIG2,pkg-config) $(HAVE_PKG_CONFIG2)
+
+##############################################################################
 
 ### Note on variable definitions: ###
 # The makefile evaluates compilation variables from the most specific

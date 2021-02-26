@@ -40,8 +40,6 @@ import javax.swing.DefaultListSelectionModel;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import static editor.domain.measures.SolverInvokator.makeFilenameForCmd;
-import static editor.domain.measures.SolverInvokator.makeFilenameForCmd;
-import static editor.domain.measures.SolverInvokator.makeFilenameForCmd;
 
 /**
  *
@@ -96,6 +94,7 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
     public static final String KEY_TRANS_TAGS = "algebra.transition_tags";
     public static final String KEY_PLACEMENT = "algebra.placement";
     public static final String KEY_BROKEN_EDGES = "algebra.broken_edges";
+    public static final String KEY_COMBINE_TAGS = "algebra.combine_tags";
     public static final String KEY_DX_SHIFT = "algebra.dx";
     public static final String KEY_DY_SHIFT = "algebra.dy";
 
@@ -112,6 +111,7 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
             String propTransTags = Util.getPreferences().get(KEY_TRANS_TAGS, "");
             int propPlacement = Util.getPreferences().getInt(KEY_PLACEMENT, 1);
             boolean propBrokenEdges = Util.getPreferences().getBoolean(KEY_BROKEN_EDGES, false);
+            boolean propCombineTags = Util.getPreferences().getBoolean(KEY_COMBINE_TAGS, false);
             int propDxShift = Util.getPreferences().getInt(KEY_DX_SHIFT, 5);
             int propDyShift = Util.getPreferences().getInt(KEY_DY_SHIFT, 5);
             
@@ -145,6 +145,7 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
             textFieldPlaceTags.setText(propPlaceTags);
             textFieldTransitionTags.setText(propTransTags);
             checkBoxBrokenEdges.setSelected(propBrokenEdges);
+            checkBoxCombineTags.setSelected(propCombineTags);
             switch (propPlacement) {
                 case 1:  radioHorizontal.setSelected(true); break;
                 case 2:  radioVertical.setSelected(true); break;
@@ -195,6 +196,7 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                         transitionTags = "transition={"+propTransTags.replace(",", "|").replace(" ", "") + "}\n";
                     }
                     propBrokenEdges = checkBoxBrokenEdges.isSelected();
+                    propCombineTags = checkBoxCombineTags.isSelected();
 
                     if (radioHorizontal.isSelected())   propPlacement = 1;
                     if (radioVertical.isSelected())   propPlacement = 2;
@@ -216,6 +218,8 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                     restFileOut.print(transitionTags);
                     restFileOut.print(placeTags);
                     restFileOut.close();
+                    System.out.print(transitionTags);
+                    System.out.println(placeTags);
                     
                     File tmpResult = File.createTempFile("netResult", "");
                     File tmpNetRes = new File(tmpResult.getAbsolutePath()+".net");
@@ -224,6 +228,8 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                     // Compose the algebra command
                     if (!propBrokenEdges)
                         cmd.add("-no_ba");
+                    if (propCombineTags)
+                        cmd.add("-g");
                     cmd.add(makeFilenameForCmd(tmpName1));
                     cmd.add(makeFilenameForCmd(tmpName2));
                     cmd.add(""+propOperator);
@@ -285,6 +291,7 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                     Util.getPreferences().put(KEY_PLACE_TAGS, propPlaceTags);
                     Util.getPreferences().put(KEY_TRANS_TAGS, propTransTags);
                     Util.getPreferences().putBoolean(KEY_BROKEN_EDGES, propBrokenEdges);
+                    Util.getPreferences().putBoolean(KEY_COMBINE_TAGS, propCombineTags);
                     Util.getPreferences().putInt(KEY_PLACEMENT, propPlacement);
                     Util.getPreferences().putInt(KEY_DX_SHIFT, propDxShift);
                     Util.getPreferences().putInt(KEY_DY_SHIFT, propDyShift);
@@ -411,7 +418,7 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
         jPanel1 = new javax.swing.JPanel();
         labelNet1Name = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        comboNet2Name = new javax.swing.JComboBox<String>();
+        comboNet2Name = new javax.swing.JComboBox<>();
         jPanel2 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         textFieldPlaceTags = new javax.swing.JTextField();
@@ -420,9 +427,10 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
         radioPlaceSuperpos = new javax.swing.JRadioButton();
         radioTransitionSuperpos = new javax.swing.JRadioButton();
         radioPlaceAndTransitionSuperpos = new javax.swing.JRadioButton();
+        checkBoxCombineTags = new javax.swing.JCheckBox();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        listOfMessages = new javax.swing.JList<String>();
+        listOfMessages = new javax.swing.JList<>();
         jPanel4 = new javax.swing.JPanel();
         radioHorizontal = new javax.swing.JRadioButton();
         jLabel5 = new javax.swing.JLabel();
@@ -511,6 +519,8 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
             }
         });
 
+        checkBoxCombineTags.setText("Final net combines all tags from operands (EXPERIMENTAL)");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -527,7 +537,8 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                             .addComponent(radioPlaceSuperpos)
                             .addComponent(radioTransitionSuperpos)
                             .addComponent(radioPlaceAndTransitionSuperpos))
-                        .addGap(0, 2, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(checkBoxCombineTags, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -547,7 +558,9 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(textFieldTransitionTags, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(checkBoxCombineTags)
+                .addContainerGap())
         );
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Messages"));
@@ -801,6 +814,7 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
     private javax.swing.ButtonGroup buttonGroupPlacement;
     private javax.swing.JButton buttonRun;
     private javax.swing.JCheckBox checkBoxBrokenEdges;
+    private javax.swing.JCheckBox checkBoxCombineTags;
     private javax.swing.JComboBox<String> comboNet2Name;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
