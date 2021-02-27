@@ -40,6 +40,7 @@ public class Main {
     public static final String VERSION_URL = "http://www.di.unito.it/~amparore/mc4cslta/VERSION";
     public static final String APP_NAME = "New GreatSPN Editor";
     public static final String PREF_ROOT_KEY = "New Editor";
+    public static int JAVA_VERSION_REQUIRED_MAJOR = 11;
 
     // The main application instance
     static AppWindow wnd;
@@ -51,8 +52,7 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(final String[] args) {
-        if (!requireJavaVersion(11))
-            return;
+        requireJavaVersion(JAVA_VERSION_REQUIRED_MAJOR);
         Util.initApplication(PREF_ROOT_KEY, "/org/unito/mainprefs");
         
         // For debug purposes
@@ -287,14 +287,14 @@ public class Main {
 //        }
     }
     
-    public static boolean requireJavaVersion(int reqMajor) {
+    public static void requireJavaVersion(int reqMajor) {
         String currVer = System.getProperty("java.version");
         try {
             String[] verNum = currVer.split("\\.");
             int major = Integer.parseInt(verNum[0]);
-            System.out.println("currVer = "+currVer+" major="+major+" reqMajor="+reqMajor);
+//            System.out.println("currVer="+currVer+" major="+major+" reqMajor="+reqMajor);
             if (reqMajor <= major)
-                return true;
+                return;
         }
         catch (Exception e) { }
         
@@ -303,7 +303,6 @@ public class Main {
                 + "that it is correctly set as the default Java version.";
         System.err.println(err);
         JOptionPane.showMessageDialog(null, err, "Java Version Error", JOptionPane.ERROR_MESSAGE);
-        return false;
     }
     
     // Open a PDF file with an external viewer
