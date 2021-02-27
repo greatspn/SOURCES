@@ -2497,7 +2497,8 @@ struct place_object *JoinPlaces(struct place_object *place1, struct place_object
                             ++index2;
                             pl2 = pl2->next;
                         }
-                        // printf("CopyPlProperties[1] pl1->tag=%s  pl2->tag=%s  plr->tag=%s j=%d\n", pl1->tag, pl2->tag, plr->tag, j);
+                        // printf("CopyPlProperties[1] pl1->tag=%s  pl2->tag=%s  plr->tag=%s j=%d\n", 
+                        //        pl1->tag, pl2->tag, plr->tag, j);
                         struct tag_s *tp1 = DecomposeTag(pl1->tag);
                         struct tag_s *tp2 = DecomposeTag(pl2->tag);
                         char *newtag = CombineTags(tp1, tp2, strlen(pl1->tag) + strlen(pl2->tag));

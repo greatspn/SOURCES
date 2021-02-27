@@ -51,6 +51,8 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(final String[] args) {
+        if (!requireJavaVersion(11))
+            return;
         Util.initApplication(PREF_ROOT_KEY, "/org/unito/mainprefs");
         
         // For debug purposes
@@ -285,16 +287,23 @@ public class Main {
 //        }
     }
     
-    public static void requireJavaVersion(double versionNum) {
+    public static boolean requireJavaVersion(int reqMajor) {
         String currVer = System.getProperty("java.version");
         try {
-            double ver = Double.parseDouble(currVer);
-            if (ver >= versionNum)
-                return;
+            String[] verNum = currVer.split("\\.");
+            int major = Integer.parseInt(verNum[0]);
+            System.out.println("currVer = "+currVer+" major="+major+" reqMajor="+reqMajor);
+            if (reqMajor <= major)
+                return true;
         }
         catch (Exception e) { }
         
-        throw new UnsupportedOperationException("Java version "+versionNum+" is required, found version "+currVer);
+        String err = "Java version "+reqMajor+"+ is required, currently running on version "+currVer+".\n"
+                + "If you have already installed Java version "+reqMajor+" or greater, please verify\n"
+                + "that it is correctly set as the default Java version.";
+        System.err.println(err);
+        JOptionPane.showMessageDialog(null, err, "Java Version Error", JOptionPane.ERROR_MESSAGE);
+        return false;
     }
     
     // Open a PDF file with an external viewer
