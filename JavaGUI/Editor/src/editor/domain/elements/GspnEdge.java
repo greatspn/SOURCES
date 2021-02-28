@@ -257,28 +257,52 @@ public class GspnEdge extends Edge implements Serializable {
 //        throw new IllegalStateException();
     }
     
-    public boolean setConnectedPlace(Place p) {
-        if (getTailNode() != null && getTailNode() instanceof Place) {
-            connectToNode(p, getTailMagnet(), EndPoint.TAIL);
-            return true;
+    public void setConnectedPlace(Place p, Kind k) {
+        setEdgeKind(k);
+        switch (k) {
+            case INPUT:
+            case INHIBITOR:
+                connectToNode(p, getTailMagnet(), EndPoint.TAIL);
+                break;
+            case OUTPUT:
+                connectToNode(p, getHeadMagnet(), EndPoint.HEAD);
+                break;
+            default:
+                throw new IllegalStateException();
         }
-        if (getHeadNode() != null && getHeadNode() instanceof Place) {
-            connectToNode(p, getHeadMagnet(), EndPoint.HEAD);
-            return true;
-        }
-        return false;
+//        if (getTailNode() != null && getTailNode() instanceof Place) {
+//            connectToNode(p, getTailMagnet(), EndPoint.TAIL);
+//            return true;
+//        }
+//        if (getHeadNode() != null && getHeadNode() instanceof Place) {
+//            connectToNode(p, getHeadMagnet(), EndPoint.HEAD);
+//            return true;
+//        }
+//        return false;
     }
     
-    public boolean setConnectedTransition(Transition t) {
-        if (getTailNode() != null && getTailNode() instanceof Transition) {
-            connectToNode(t, getTailMagnet(), EndPoint.TAIL);
-            return true;
+    public void setConnectedTransition(Transition t, Kind k) {
+        setEdgeKind(k);
+        switch (k) {
+            case INPUT:
+            case INHIBITOR:
+                connectToNode(t, getHeadMagnet(), EndPoint.HEAD);
+                break;
+            case OUTPUT:
+                connectToNode(t, getTailMagnet(), EndPoint.TAIL);
+                break;
+            default:
+                throw new IllegalStateException();
         }
-        if (getHeadNode() != null && getHeadNode() instanceof Transition) {
-            connectToNode(t, getHeadMagnet(), EndPoint.HEAD);
-            return true;
-        }
-        return false;
+//        if (getTailNode() != null && getTailNode() instanceof Transition) {
+//            connectToNode(t, getTailMagnet(), EndPoint.TAIL);
+//            return true;
+//        }
+//        if (getHeadNode() != null && getHeadNode() instanceof Transition) {
+//            connectToNode(t, getHeadMagnet(), EndPoint.HEAD);
+//            return true;
+//        }
+//        return false;
     }
     
     // The connected place is continouos or discrete?

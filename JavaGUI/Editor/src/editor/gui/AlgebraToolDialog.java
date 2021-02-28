@@ -41,6 +41,7 @@ import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import static editor.domain.measures.SolverInvokator.makeFilenameForCmd;
 import editor.domain.unfolding.Algebra;
+import java.awt.geom.Rectangle2D;
 
 /**
  *
@@ -150,9 +151,9 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
             checkBoxBrokenEdges.setSelected(propBrokenEdges);
             checkBoxCombineTags.setSelected(propCombineTags);
             checkBoxNewImplementation.setSelected(propJavaImpl);
-            checkBoxNewImplementation.setVisible(Main.isDeveloperMachine());
-            if (Main.isDeveloperMachine())
-                System.out.println("\nDEVELOPER SWITCH ON!!\n");
+//            checkBoxNewImplementation.setVisible(Main.isDeveloperMachine());
+//            if (Main.isDeveloperMachine())
+//                System.out.println("\nDEVELOPER SWITCH ON!!\n");
             switch (propPlacement) {
                 case 1:  radioHorizontal.setSelected(true); break;
                 case 2:  radioVertical.setSelected(true); break;
@@ -213,13 +214,39 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                     GspnPage netComp;
                     GspnPage net2 = listOfNets2.get(comboNet2Name.getSelectedIndex());
                     if (propJavaImpl) {
+                        int dx2shift = 0, dy2shift = 0;
+                        Rectangle2D pageBounds1 = net1.getPageBounds();
+                        switch (propPlacement) {
+                            case 1: // horizontal
+                                dx2shift = (int)pageBounds1.getWidth() + 5;
+                                break;
+                            case 2: // vertical
+                                dy2shift = (int)pageBounds1.getHeight() + 5;
+                                break;
+                            case 3: // user-specified
+                                dx2shift = Integer.parseInt(textFieldDxShift.getText());
+                                dy2shift = Integer.parseInt(textFieldDyShift.getText());
+                                break;
+                        }
+                        
                         Algebra a = new Algebra(net1, net2, 
                                         propTransTags.replace(" ", "").split(","), 
-                                        propPlaceTags.replace(" ", "").split(","));
+                                        propPlaceTags.replace(" ", "").split(","), 
+                                        dx2shift, dy2shift);
                         a.compose();
                         netComp = a.result;
                         netComp.setPageName(net1.getPageName()+"+"+net2.getPageName());
                         netComp.viewProfile = (ViewProfile)Util.deepCopy(net1.viewProfile);
+                        
+                        if (!a.warnings.isEmpty()) {
+                            StringBuilder sb = new StringBuilder();
+                            for (String w : a.warnings)
+                                sb.append(w).append('\n');
+                            
+                            JOptionPane.showMessageDialog(this, 
+                                "Some object composition generated attribute conflicts:\n"+sb, 
+                                "Algebra Output", JOptionPane.INFORMATION_MESSAGE);
+                        }
                     }
                     else {
                         // Call the algebra tool.

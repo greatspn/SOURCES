@@ -36,12 +36,10 @@ import editor.domain.values.MultiSet;
 import editor.domain.values.RealScalarValue;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.GlyphVector;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -676,6 +674,10 @@ public class Place extends Node implements Serializable, ColorClass.DomainHolder
     
     public String convertInitMarkingLang(ParserContext context, ExpressionLanguage lang) {
         return initMarkingExpr.convertLang(context, EvaluationArguments.NO_ARGS, lang);
+    }
+    
+    public String getInitMarkingExpr() {
+        return initMarkingExpr.getExpr();
     }
     
     

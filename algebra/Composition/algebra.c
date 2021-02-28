@@ -4022,7 +4022,7 @@ int main(int argc, char *argv[]) {
         printf("  algebra [switches] net1 net2 operator restfile resultname [placement shiftx shifty]\n\n");
         printf(" Switches: -no_ba: no broken arcs will be used between subnets\n");
         printf("           -rs number: result will be rescaled by number\n");
-        printf("           -g: tags will be composed\n");
+        printf("           -g: tags will be composed (EXPERIMENTAL)\n"); // Added by Elvio 27/02/2021
         printf(" Operators: 't': Superposition Over Transitions\n");
         printf("            'p': Superposition Over Places\n");
         printf("            'b': Superposition Over Places & Transitions\n");
