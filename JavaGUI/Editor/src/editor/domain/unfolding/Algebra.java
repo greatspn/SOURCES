@@ -27,6 +27,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -381,8 +383,9 @@ public class Algebra {
                 int j = 0;
                 for (Node node2 : gspn2.nodes) {
                     if (node2 instanceof Place) {
+                        final Place p2 = (Place)node2;
                         if (shareRestrictedTag(node1, node2, restSetPl)) {
-                            final Place p2 = (Place)node2;
+                            // combine p1 and p2
                             List<Place> crossList2 = plc2InProd.get(p2);
                             if (crossList1 == null)
                                 crossList1 = new LinkedList<>();
@@ -402,6 +405,18 @@ public class Algebra {
                             {
                                 warnings.add("Composition conflict for place "+newPlace.getUniqueName());
                             }
+//                            // Combine the initial markings
+//                            String init1 = p1.getInitMarkingExpr();
+//                            String init2 = p2.getInitMarkingExpr(), newInit;
+//                            if (p1.isInNeutralDomain()) {
+//                                newInit = simpleNeutralExprSum(init1, init2, p1.getType());
+//                            }
+//                            else { // color expressions
+//                                newInit = simpleColorExprSum(init1, init2, p1.getType());
+//                            }
+//                            System.out.println("init1="+init1+" init2="+init2+" newInit="+newInit);
+//                            newPlace.getInitMarkingEditable().setValue(null, null, newInit);
+
                             result.nodes.add(newPlace);
                             j++;
 
@@ -455,8 +470,9 @@ public class Algebra {
                 int j = 0;
                 for (Node node2 : gspn2.nodes) {
                     if (node2 instanceof Transition) {
+                        final Transition t2 = (Transition)node2;
                         if (shareRestrictedTag(node1, node2, restSetTr)) {
-                            final Transition t2 = (Transition)node2;
+                            // combine t1 and t2
                             List<Transition> crossList2 = trn2InProd.get(t2);
                             if (crossList1 == null)
                                 crossList1 = new LinkedList<>();
@@ -609,45 +625,12 @@ public class Algebra {
                 }
                 else {
                     if (e1.getConnectedPlace().isInNeutralDomain()) {
-                        try {
-                            if (e1.getTypeOfConnectedPlace() == TokenType.DISCRETE) {
-                                int i1 = Integer.parseInt(m1);
-                                int i2 = Integer.parseInt(m2);
-                                mult = "" + (i1 + i2);
-                            }
-                            else {
-                                double i1 = Double.parseDouble(m1);
-                                double i2 = Double.parseDouble(m2);
-                                mult = "" + (i1 + i2);                                
-                            }
-                        }
-                        catch (NumberFormatException e) {
-                            mult = m1+" + "+m2;
-                        }
+                        mult = simpleNeutralExprSum(m1, m2, e1.getTypeOfConnectedPlace());
                     }
                     else { // color expressions
-                        for (ColorVar cvar2 : e2.getColorVarsInUse()) {
-                            for (ColorVar cvar1 : e1.getColorVarsInUse()) {
-                                if (cvar1.getUniqueName().equals(cvar2.getUniqueName())) {
-                                    // replace all occurrences of cvar1 in m2 with dupCvar
-                                    ColorVar dupCvar = dupColorVars.get(cvar1.getUniqueName());
-                                    usedDupColorVar.add(dupCvar);
-                                    
-                                    // rewrite cvar1 -> dupCvar
-                                    // regex from: group 1 = any non-alphanumeric char, or start of string
-                                    //             group 2 = searched identifier
-                                    //             group 3 = any non-alphanumeric char, or end of string
-                                    // regex to: group 1 + replaced identifier + group 3
-                                    String from = "([^a-zA-Z0-9_]|^)("+cvar1.getUniqueName()+")([^a-zA-Z0-9_]|$)";
-                                    String to = "$1"+dupCvar.getUniqueName()+"$3";
-                                    m2 = m2.replaceAll(from, to);
-                                    
-                                    break;
-                                }
-                            }
-                        }
-                        
-                        mult = m1+" + "+m2;
+                        m2 = duplicateCommonColorVars(e1.getColorVarsInUse(),
+                                e2.getColorVarsInUse(), m2);
+                        mult = simpleColorExprSum(m1, m2, e1.getTypeOfConnectedPlace());
                     }
                 }
             }
@@ -659,9 +642,109 @@ public class Algebra {
         }
     }
     
+    //=========================================================================
+    // replace in @expr all the occurrences of color variables in @colorVars2
+    // that are also present in @colorVars2
+    private String duplicateCommonColorVars(Set<ColorVar> colorVars1, Set<ColorVar> colorVars2, String expr) {
+        for (ColorVar cvar2 : colorVars1) {
+            for (ColorVar cvar1 : colorVars2) {
+                if (cvar1.getUniqueName().equals(cvar2.getUniqueName())) {
+                    // replace all occurrences of cvar1 in m2 with dupCvar
+                    ColorVar dupCvar = dupColorVars.get(cvar1.getUniqueName());
+                    usedDupColorVar.add(dupCvar);
+
+                    // rewrite cvar1 -> dupCvar
+                    // regex from: group 1 = any non-alphanumeric char, or start of string
+                    //             group 2 = searched identifier
+                    //             group 3 = any non-alphanumeric char, or end of string
+                    // regex to: group 1 + replaced identifier + group 3
+                    String from = "([^a-zA-Z0-9_]|^)("+cvar1.getUniqueName()+")([^a-zA-Z0-9_]|$)";
+                    String to = "$1"+dupCvar.getUniqueName()+"$3";
+                    expr = expr.replaceAll(from, to);
+
+                    break;
+                }
+            }
+        }
+        return expr;
+    }
+    
+    //=========================================================================
+    // simplified sum of color terms
+    private String simpleColorExprSum(String expr1, String expr2, TokenType type) {
+        if (expr1.isEmpty())
+            return expr2;
+        if (expr2.isEmpty())
+            return expr1;
+        // Simple case 1: 
+        // n * <All, .., All> + m * <All, ..., All> -> (n+m)<All, ..., All>
+        Pattern r = Pattern.compile("(\\d*)\\s*(<All[\\s*,\\s*All]*>)");
+        Matcher m1 = r.matcher(expr1);
+        Matcher m2 = r.matcher(expr2);
+        if (m1.find() && m2.find()) {
+            String s1 = m1.group(1);
+            String s2 = m2.group(1);
+            String all1 = m1.group(2);
+            if (s1.length() == 0)
+                s1 = "1";
+            if (s2.length() == 0)
+                s2 = "1";
+            try {
+                if (type == TokenType.DISCRETE) {
+                    int n1 = Integer.parseInt(s1);
+                    int n2 = Integer.parseInt(s2);
+                    return (n1+n2)+all1;
+                }
+                else {
+                    double d1 = Double.parseDouble(s1);
+                    double d2 = Double.parseDouble(s2);
+                    return (d1+d2)+all1;                 
+                }
+            }
+            catch (NumberFormatException e) {
+                return expr1+" + "+expr2;
+            }
+        }
+        
+        return expr1+" + "+expr2;
+    }
+
+    //=========================================================================
+    // simplified sum of non-colored terms
+    private String simpleNeutralExprSum(String expr1, String expr2, TokenType type) {
+        try {
+            if (type == TokenType.DISCRETE) {
+                int i1 = Integer.parseInt(expr1);
+                int i2 = Integer.parseInt(expr2);
+                return "" + (i1 + i2);
+            }
+            else {
+                double i1 = Double.parseDouble(expr1);
+                double i2 = Double.parseDouble(expr2);
+                return "" + (i1 + i2);                                
+            }
+        }
+        catch (NumberFormatException e) { }
+        return expr1+" + "+expr2;    
+    }
+     
 //    public static void main(String[] args) {
-//        System.out.println("<c1> + <c11>".replaceAll("[^a-zA-Z0-9_]", "#"));
-//        System.out.println("c1 <c1> + <c11> c1".replaceAll("([^a-zA-Z0-9_]|^)(c1)([^a-zA-Z0-9_]|$)", "$1c2$3"));
+////        System.out.println("<c1> + <c11>".replaceAll("[^a-zA-Z0-9_]", "#"));
+////        System.out.println("c1 <c1> + <c11> c1".replaceAll("([^a-zA-Z0-9_]|^)(c1)([^a-zA-Z0-9_]|$)", "$1c2$3"));
+//
+//        Pattern r = Pattern.compile("(\\d*)\\s*(<All[\\s*,\\s*All]*>)");
+//        String[] lines = {
+//            "<All>", "2<All>", "3 <All, All>", "4", "4<All,All, All>"
+//        };
+//        for (String line : lines) {
+//            Matcher m = r.matcher(line);
+//            boolean found = m.find();
+//            System.out.print(line+" -> "+found);
+//            if (found) {
+//                System.out.print("  $1="+m.group(1)+" $2="+m.group(2));
+//            }
+//            System.out.println("");
+//        }
 //    }
     
     //=========================================================================
