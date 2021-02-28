@@ -37,16 +37,18 @@ public class Algebra {
     // Algebra input net operators
     private final GspnPage gspn1, gspn2;
     
-    // Combined net
-    public final GspnPage result;
-    
     // Restriction sets
     private final String[] restSetTr, restSetPl;
     
     // net2 coordinate shifts
     private final int dx2, dy2;
+
+    private final boolean verbose;
     
-    // Output combination messages & warnings
+    // Output: combined net
+    public final GspnPage result;
+
+    // Output: combination messages & warnings
     public final ArrayList<String> warnings;
 
     //=========================================================================
@@ -168,13 +170,16 @@ public class Algebra {
     }
 
     //=========================================================================
-    public Algebra(GspnPage gspn1, GspnPage gspn2, String[] restSetTr, String[] restSetPl, int dx2, int dy2) {
+    public Algebra(GspnPage gspn1, GspnPage gspn2, String[] restSetTr, String[] restSetPl, 
+                   int dx2, int dy2, boolean verbose) 
+    {
         this.gspn1 = gspn1;
         this.gspn2 = gspn2;
         this.restSetTr = restSetTr;
         this.restSetPl = restSetPl;
         this.dx2 = dx2;
         this.dy2 = dy2;
+        this.verbose = verbose;
         
         result = new GspnPage();
         warnings = new ArrayList<>();
@@ -245,7 +250,6 @@ public class Algebra {
                 // create a duplicated color var for later use, and register its unique name
                 ColorVar dupColorVar = (ColorVar)Util.deepCopy(newColorVar);
                 makeNodeNameTotallyUnique(dupColorVar);
-//                dupColorVar.setUniqueName(dupColorVar.getUniqueName()+"_2");
                 dupColorVar.setX(dupColorVar.getX() + 5);
                 dupColorVars.put(c1.getUniqueName(), dupColorVar);
             }
@@ -372,19 +376,19 @@ public class Algebra {
     private void joinPlaces() {
         for (Node node1 : gspn1.nodes) {
             if (node1 instanceof Place) {
-                int j = 0;
+                final Place p1 = (Place)node1;
                 List<Place> crossList1 = null;
+                int j = 0;
                 for (Node node2 : gspn2.nodes) {
                     if (node2 instanceof Place) {
                         if (shareRestricedTag(node1, node2, restSetPl)) {
-                            List<Place> crossList2 = plc2InProd.get(node2);
+                            final Place p2 = (Place)node2;
+                            List<Place> crossList2 = plc2InProd.get(p2);
                             if (crossList1 == null)
                                 crossList1 = new LinkedList<>();
                             if (crossList2 == null)
                                 crossList2 = new LinkedList<>();
 
-                            Place p1 = (Place)node1;
-                            Place p2 = (Place)node2;
                             Place newPlace = (Place)Util.deepCopy(p1);
                             newPlace.setUniqueName(p1.getUniqueName()+"_"+p2.getUniqueName());
                             makeNodeNameUnique(newPlace);
@@ -415,7 +419,7 @@ public class Algebra {
         
         for (Node node1 : gspn1.nodes) {
             if (node1 instanceof Place) {
-                if (!plc1InProd.containsKey(node1)) {
+                if (!plc1InProd.containsKey((Place)node1)) {
                     Place newPlace = (Place)Util.deepCopy(node1);
                     makeNodeNameUnique(newPlace);
                     result.nodes.add(newPlace);
@@ -428,7 +432,7 @@ public class Algebra {
         }
         for (Node node2 : gspn2.nodes) {
             if (node2 instanceof Place) {
-                if (!plc2InProd.containsKey(node2)) {
+                if (!plc2InProd.containsKey((Place)node2)) {
                     Place newPlace = (Place)Util.deepCopy(node2);
                     makeNodeNameUnique(newPlace);
                     shiftNode(newPlace);
@@ -446,19 +450,19 @@ public class Algebra {
     private void joinTransitions() {
         for (Node node1 : gspn1.nodes) {
             if (node1 instanceof Transition) {
-                int j = 0;
+                final Transition t1 = (Transition)node1;
                 List<Transition> crossList1 = null;
+                int j = 0;
                 for (Node node2 : gspn2.nodes) {
                     if (node2 instanceof Transition) {
                         if (shareRestricedTag(node1, node2, restSetTr)) {
-                            List<Transition> crossList2 = trn2InProd.get(node2);
+                            final Transition t2 = (Transition)node2;
+                            List<Transition> crossList2 = trn2InProd.get(t2);
                             if (crossList1 == null)
                                 crossList1 = new LinkedList<>();
                             if (crossList2 == null)
                                 crossList2 = new LinkedList<>();
 
-                            Transition t1 = (Transition)node1;
-                            Transition t2 = (Transition)node2;
                             Transition newTransition = (Transition)Util.deepCopy(t1);
                             newTransition.setUniqueName(t1.getUniqueName()+"_"+t2.getUniqueName());
                             makeNodeNameUnique(newTransition);
@@ -492,7 +496,7 @@ public class Algebra {
         
         for (Node node1 : gspn1.nodes) {
             if (node1 instanceof Transition) {
-                if (!trn1InProd.containsKey(node1)) {
+                if (!trn1InProd.containsKey((Transition)node1)) {
                     Transition newTransition = (Transition)Util.deepCopy(node1);
                     makeNodeNameUnique(newTransition);
                     result.nodes.add(newTransition);
@@ -505,7 +509,7 @@ public class Algebra {
         }
         for (Node node2 : gspn2.nodes) {
             if (node2 instanceof Transition) {
-                if (!trn2InProd.containsKey(node2)) {
+                if (!trn2InProd.containsKey((Transition)node2)) {
                     Transition newTransition = (Transition)Util.deepCopy(node2);
                     makeNodeNameUnique(newTransition);
                     shiftNode(newTransition);
@@ -561,23 +565,12 @@ public class Algebra {
                 }
             }
         }
+        
+        if (verbose)
+            printEdgeHelpers(kind, edgeMap);
 
         // read back all edges, then compose and insert in the result net
         for (Map.Entry<Tuple<Place, Transition>, Tuple<GspnEdge, GspnEdge>> ee : edgeMap.entrySet()) {
-//                System.out.print(ee.getKey().x.getUniqueName()+" ");
-//                System.out.print(ee.getKey().y.getUniqueName()+" ");
-//                System.out.print(kind+"  --  ");
-//                if (ee.getValue().x == null)
-//                    System.out.print("null ");
-//                else
-//                    System.out.print(ee.getValue().x.getConnectedPlace().getUniqueName()+"+"+
-//                                     ee.getValue().x.getConnectedTransition().getUniqueName()+" ");
-//                if (ee.getValue().y == null)
-//                    System.out.print("null ");
-//                else
-//                    System.out.print(ee.getValue().y.getConnectedPlace().getUniqueName()+"+"+
-//                                     ee.getValue().y.getConnectedTransition().getUniqueName()+" ");
-//                System.out.println();
             Place resultPlace = ee.getKey().x;
             Transition resultTrans = ee.getKey().y;
             GspnEdge e1 = ee.getValue().x, e2 = ee.getValue().y;
@@ -705,6 +698,8 @@ public class Algebra {
         // Join and compose places and transitions
         joinPlaces();
         joinTransitions();
+        if (verbose)
+            printNodeHelpers();
 
         // Reconnect all edges from the composed places and transitions
         joinEdges(GspnEdge.Kind.INPUT, edgeMapInput);
@@ -713,50 +708,72 @@ public class Algebra {
         
         // Add the color variables that where used in expression rewritings
         joinDuplicatedColorVarsUsed();
-        
-//        System.out.println("plc1InProd:");
-//        for (Map.Entry<Place, List<Place>> ee : plc1InProd.entrySet()) {
-//            System.out.print("  "+ee.getKey().getUniqueName()+"  ->  ");
-//            for (Place n : ee.getValue())
-//                System.out.print(n.getUniqueName()+" ");
-//            System.out.println("");
-//        }
-//        System.out.println("plc1Copied:");
-//        for (Map.Entry<Place, Place> ee : plc1Copied.entrySet()) {
-//            System.out.println("  "+ee.getKey().getUniqueName()+"  ->  "+ee.getValue().getUniqueName());
-//        }
-//        System.out.println("plc2InProd:");
-//        for (Map.Entry<Place, List<Place>> ee : plc2InProd.entrySet()) {
-//            System.out.print("  "+ee.getKey().getUniqueName()+"  ->  ");
-//            for (Place n : ee.getValue())
-//                System.out.print(n.getUniqueName()+" ");
-//            System.out.println("");
-//        }
-//        System.out.println("plc2Copied:");
-//        for (Map.Entry<Place, Place> ee : plc2Copied.entrySet()) {
-//            System.out.println("  "+ee.getKey().getUniqueName()+"  ->  "+ee.getValue().getUniqueName());
-//        }
-//        System.out.println("trn1InProd:");
-//        for (Map.Entry<Transition, List<Transition>> ee : trn1InProd.entrySet()) {
-//            System.out.print("  "+ee.getKey().getUniqueName()+"  ->  ");
-//            for (Transition n : ee.getValue())
-//                System.out.print(n.getUniqueName()+" ");
-//            System.out.println("");
-//        }
-//        System.out.println("trn1Copied:");
-//        for (Map.Entry<Transition, Transition> ee : trn1Copied.entrySet()) {
-//            System.out.println("  "+ee.getKey().getUniqueName()+"  ->  "+ee.getValue().getUniqueName());
-//        }
-//        System.out.println("trn2InProd:");
-//        for (Map.Entry<Transition, List<Transition>> ee : trn2InProd.entrySet()) {
-//            System.out.print("  "+ee.getKey().getUniqueName()+"  ->  ");
-//            for (Transition n : ee.getValue())
-//                System.out.print(n.getUniqueName()+" ");
-//            System.out.println("");
-//        }
-//        System.out.println("trn2Copied:");
-//        for (Map.Entry<Transition, Transition> ee : trn2Copied.entrySet()) {
-//            System.out.println("  "+ee.getKey().getUniqueName()+"  ->  "+ee.getValue().getUniqueName());
-//        } 
     }
+    
+    
+    
+    //=========================================================================
+    private void printEdgeHelpers(GspnEdge.Kind kind, 
+                                  Map<Tuple<Place, Transition>, Tuple<GspnEdge, GspnEdge>> edgeMap) 
+    {
+        System.out.println(kind+" EDGES:");
+        for (Map.Entry<Tuple<Place, Transition>, Tuple<GspnEdge, GspnEdge>> ee : edgeMap.entrySet()) {
+            System.out.print("  ");
+            // source edges
+            if (ee.getValue().x == null)
+                System.out.print("...");
+            else
+                System.out.print(ee.getValue().x.getConnectedPlace().getUniqueName()+"+"+
+                                 ee.getValue().x.getConnectedTransition().getUniqueName()+"("+
+                                 ee.getValue().x.getMultiplicity()+")");
+            System.out.print(" + ");
+            if (ee.getValue().y == null)
+                System.out.print("...");
+            else
+                System.out.print(ee.getValue().y.getConnectedPlace().getUniqueName()+"+"+
+                                 ee.getValue().y.getConnectedTransition().getUniqueName()+"("+
+                                 ee.getValue().y.getMultiplicity()+")");
+            System.out.print("  ->  ");
+            // result edges
+            System.out.print(ee.getKey().x.getUniqueName()+" ");
+            System.out.print(ee.getKey().y.getUniqueName()+" ");
+            System.out.println();
+        }
+        System.out.println("");
+    }
+    
+    //=========================================================================
+    private void printNodeHelpers() {
+        System.out.println("NET1 PLACE MAP:");
+        for (Map.Entry<Place, List<Place>> ee : plc1InProd.entrySet()) {
+            System.out.print("  "+ee.getKey().getUniqueName()+"  ->  ");
+            for (Place n : ee.getValue())
+                System.out.print(n.getUniqueName()+" ");
+            System.out.println("");
+        }
+        System.out.println("NET2 PLACE MAP:");
+        for (Map.Entry<Place, List<Place>> ee : plc2InProd.entrySet()) {
+            System.out.print("  "+ee.getKey().getUniqueName()+"  ->  ");
+            for (Place n : ee.getValue())
+                System.out.print(n.getUniqueName()+" ");
+            System.out.println("");
+        }
+        System.out.println("NET1 TRANSITION MAP:");
+        for (Map.Entry<Transition, List<Transition>> ee : trn1InProd.entrySet()) {
+            System.out.print("  "+ee.getKey().getUniqueName()+"  ->  ");
+            for (Transition n : ee.getValue())
+                System.out.print(n.getUniqueName()+" ");
+            System.out.println("");
+        }
+        System.out.println("NET2 TRANSITION MAP:");
+        for (Map.Entry<Transition, List<Transition>> ee : trn2InProd.entrySet()) {
+            System.out.print("  "+ee.getKey().getUniqueName()+"  ->  ");
+            for (Transition n : ee.getValue())
+                System.out.print(n.getUniqueName()+" ");
+            System.out.println("");
+        }   
+        System.out.println("");
+    }
+
+    
 }

@@ -11,6 +11,7 @@ if [[ $# == 0 ]] ; then
 	echo "    -out-pnml  Save in PNML format instead of using the GreatSPN format."
 	echo "    -horiz     Lay out composed nets horizontally."
 	echo "    -vert      Lay out composed nets vertically."
+	echo "    -v         Verbose mode."
 	echo "    --         End of options."
 	
 	exit

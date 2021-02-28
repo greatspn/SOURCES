@@ -232,7 +232,7 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                         Algebra a = new Algebra(net1, net2, 
                                         propTransTags.replace(" ", "").split(","), 
                                         propPlaceTags.replace(" ", "").split(","), 
-                                        dx2shift, dy2shift);
+                                        dx2shift, dy2shift, false);
                         a.compose();
                         netComp = a.result;
                         netComp.setPageName(net1.getPageName()+"+"+net2.getPageName());

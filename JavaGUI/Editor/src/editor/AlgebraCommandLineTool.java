@@ -58,6 +58,7 @@ public class AlgebraCommandLineTool {
         String restSetTr = "";
         int propPlacement = 1;
         boolean saveAsPnml = false;
+        boolean verbose = false;
         int c;
         for (c=0; c<args.length; c++) {
 //            System.out.println("args["+c+"]="+args[c]);
@@ -86,6 +87,10 @@ public class AlgebraCommandLineTool {
 
                 case "-vert":
                     propPlacement = 2;
+                    break;
+
+                case "-v":
+                    verbose = true;
                     break;
 
                 case "--": // end of arguments
@@ -141,7 +146,7 @@ public class AlgebraCommandLineTool {
         Algebra a = new Algebra(net1, net2, 
                         restSetTr.replace(" ", "").split(","), 
                         restSetPl.replace(" ", "").split(","), 
-                        dx2shift, dy2shift);
+                        dx2shift, dy2shift, verbose);
         a.compose();
         GspnPage netComp = a.result;
         netComp.setPageName(net1.getPageName()+"_"+net2.getPageName());
@@ -153,8 +158,7 @@ public class AlgebraCommandLineTool {
             System.out.println("");
         }
         System.out.println("COMPOSITION TIME: "+(System.currentTimeMillis() - composeStart)/1000.0);
-        System.out.println("");
-        
+
         
         // Save the composed net
         long saveStart = System.currentTimeMillis();
