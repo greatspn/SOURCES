@@ -78,9 +78,9 @@ public class Algebra {
 
     //=========================================================================
     // Determine if two nodes with tags (i.e. places or transitions) share at
-    // least a common tag in the restricted list, whih means that the
+    // least a common tag in the restricted list, which means that the
     // two nodes will be composed in the @result net.
-    private boolean shareRestricedTag(Node node1, Node node2, String[] restList) {
+    private boolean shareRestrictedTag(Node node1, Node node2, String[] restList) {
         for (int n1=0; n1<node1.numTags(); n1++) {
             for (int n2=0; n2<node2.numTags(); n2++) {
                 if (node1.getTag(n1).equals(node2.getTag(n2))) {
@@ -146,7 +146,7 @@ public class Algebra {
     }
 
     //=========================================================================
-    // generate a new name that is unique for the input and the final nets
+    // generate a new name that is unique for both the input and the final nets
     private String generateTotallyUniqueCombinedName(String name) {
         String newName = name;
         int ii = 0;
@@ -381,7 +381,7 @@ public class Algebra {
                 int j = 0;
                 for (Node node2 : gspn2.nodes) {
                     if (node2 instanceof Place) {
-                        if (shareRestricedTag(node1, node2, restSetPl)) {
+                        if (shareRestrictedTag(node1, node2, restSetPl)) {
                             final Place p2 = (Place)node2;
                             List<Place> crossList2 = plc2InProd.get(p2);
                             if (crossList1 == null)
@@ -455,7 +455,7 @@ public class Algebra {
                 int j = 0;
                 for (Node node2 : gspn2.nodes) {
                     if (node2 instanceof Transition) {
-                        if (shareRestricedTag(node1, node2, restSetTr)) {
+                        if (shareRestrictedTag(node1, node2, restSetTr)) {
                             final Transition t2 = (Transition)node2;
                             List<Transition> crossList2 = trn2InProd.get(t2);
                             if (crossList1 == null)
@@ -701,7 +701,7 @@ public class Algebra {
         if (verbose)
             printNodeHelpers();
 
-        // Reconnect all edges from the composed places and transitions
+        // Generate all the edges connecting the composed places and transitions
         joinEdges(GspnEdge.Kind.INPUT, edgeMapInput);
         joinEdges(GspnEdge.Kind.OUTPUT, edgeMapOutput);
         joinEdges(GspnEdge.Kind.INHIBITOR, edgeMapInhibitor);
