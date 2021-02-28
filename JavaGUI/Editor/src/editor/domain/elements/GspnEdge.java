@@ -257,6 +257,30 @@ public class GspnEdge extends Edge implements Serializable {
 //        throw new IllegalStateException();
     }
     
+    public boolean setConnectedPlace(Place p) {
+        if (getTailNode() != null && getTailNode() instanceof Place) {
+            connectToNode(p, getTailMagnet(), EndPoint.TAIL);
+            return true;
+        }
+        if (getHeadNode() != null && getHeadNode() instanceof Place) {
+            connectToNode(p, getHeadMagnet(), EndPoint.HEAD);
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean setConnectedTransition(Transition t) {
+        if (getTailNode() != null && getTailNode() instanceof Transition) {
+            connectToNode(t, getTailMagnet(), EndPoint.TAIL);
+            return true;
+        }
+        if (getHeadNode() != null && getHeadNode() instanceof Transition) {
+            connectToNode(t, getHeadMagnet(), EndPoint.HEAD);
+            return true;
+        }
+        return false;
+    }
+    
     // The connected place is continouos or discrete?
     // This method returns null if the edge is not completely connected.
     public TokenType getTypeOfConnectedPlace() {

@@ -319,7 +319,7 @@ public class Main {
                 pdfFile.getAbsolutePath(), 
                 "Could not open PDF", JOptionPane.ERROR_MESSAGE);
     }
-    
+
     //-------------------------------------------------------------------------
     // Application preferences
     //-------------------------------------------------------------------------
@@ -391,4 +391,16 @@ public class Main {
         Util.getPreferences().put(MODEL_LIBRARY_DIR, dir);
     }
 
+    //-------------------------------------------------------------------------
+    // Developer switch
+    //-------------------------------------------------------------------------
+    
+    private static final String DEVELOPER_SWITCH = "developer_switch";
+    public static void setDeveloperMachine(boolean ok) {
+        Util.getPreferences().putBoolean(DEVELOPER_SWITCH, ok);
+    }
+    public static boolean isDeveloperMachine() {
+//        setDeveloperMachine(true);
+        return Util.getPreferences().getBoolean(DEVELOPER_SWITCH, false);
+    }
 }

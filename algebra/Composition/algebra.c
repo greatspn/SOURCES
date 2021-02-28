@@ -28,6 +28,8 @@ struct Desc {
     char **labels;              // labels of transition
     int nl;                     // number of labels
     char *end;                  // string to distinguish
+    struct place_object *pl_obj; // place being described
+    struct trans_object *tr_obj; // transition being described
     struct Desc *next;
 };
 
@@ -547,6 +549,8 @@ struct Desc *FillDescTr(struct trans_object *tr, struct group_object *group) {
         tmp->labels = NULL;
         tmp->end = NULL;
         tmp->next = NULL;
+        tmp->pl_obj = NULL;
+        tmp->tr_obj = t;
 
         // copy whole tag;
         tmp->wholetag = (char *)emalloc(sizeof(char) * (strlen(t->tag) + 1));
@@ -624,6 +628,8 @@ struct Desc *FillDescPl(struct place_object *pl) {
         tmp->nl = 0;
         tmp->labels = NULL;
         tmp->end = NULL;
+        tmp->pl_obj = t;
+        tmp->tr_obj = NULL;
 
         // copy whole tag;
         tmp->wholetag = (char *)emalloc(sizeof(char) * (strlen(t->tag) + 1));
@@ -2602,10 +2608,11 @@ struct group_object *JoinImmTrans(struct group_object *group1, struct group_obje
     struct group_object *gr1, *gr2, *gr3, *grr, *r;
     struct lisp_object *li;
     struct rpar_object *mp;
-    int first = 1, i, j, l, *k, mul, toadd, c1, c2, newgroup, firstgroup = 1, simple, index2;
+    struct Desc *desc2;
+    int first = 1, i, j, l, *k, mul, toadd, c1, c2, newgroup, firstgroup = 1, simple, index2, *trp;
 
-    if (g_compose_tags)
-        return JoinImmTrans2(group1, group2);
+    // if (g_compose_tags)
+    //     return JoinImmTrans2(group1, group2);
 
     r = NULL;
     c1 = GlCountTr1;
@@ -2614,6 +2621,7 @@ struct group_object *JoinImmTrans(struct group_object *group1, struct group_obje
     //printf(" Imm Start\n");
 
     if (group1 != NULL || group2 != NULL) {
+        trp = (int*)emalloc(sizeof(int) * MAX(Ntr1, Ntr2));
         // look for the first non-empty group;
         gr1 = group1;
         gr2 = group2;
@@ -2625,23 +2633,23 @@ struct group_object *JoinImmTrans(struct group_object *group1, struct group_obje
             if (gr1 == NULL) {
                 gr3 = gr2;
                 k = &c2;
-                printf("[A] gr1==NULL, gr2->pri=%d, k=%d\n", gr2->pri, *k);
+                // printf("[A] gr1==NULL, gr2->pri=%d, k=%d\n", gr2->pri, *k);
             }
             if (gr2 == NULL) {
                 gr3 = gr1;
                 k = &c1;
-                printf("[B] gr1->pri=%d, gr2==NULL, k=%d\n", gr1->pri, *k);
+                // printf("[B] gr1->pri=%d, gr2==NULL, k=%d\n", gr1->pri, *k);
             }
             if (gr1 != NULL && gr2 != NULL) {
                 if (gr1->pri > gr2->pri) {
                     gr3 = gr2;
                     k = &c2;
-                    printf("[C1] gr1->pri=%d > gr2->pri=%d, k=%d\n", gr1->pri, gr2->pri, *k);                    
+                    // printf("[C1] gr1->pri=%d > gr2->pri=%d, k=%d\n", gr1->pri, gr2->pri, *k);                    
                 }
                 else {
                     gr3 = gr1;
                     k = &c1;
-                    printf("[C2] gr1->pri=%d <= gr2->pri=%d, k=%d\n", gr1->pri, gr2->pri, *k);                    
+                    // printf("[C2] gr1->pri=%d <= gr2->pri=%d, k=%d\n", gr1->pri, gr2->pri, *k);                    
                 }
             }
             if (firstgroup) {
@@ -2675,8 +2683,9 @@ struct group_object *JoinImmTrans(struct group_object *group1, struct group_obje
             while (tr1 != NULL) {
                 mul = 0;
                 simple = 1;
+                index2 = 0;
                 if (gr3 == gr1) {
-                    for (j = 0; j < Ntr2; j++) if (JoinTr[*k][j] == 1) mul++;
+                    for (j = 0; j < Ntr2; j++) if (JoinTr[*k][j] == 1) { mul++; trp[index2++] = j; }
                     MapTr1[GlCountTr1] = NtrR;
                     if (mul > 0) {
                         simple = 0;
@@ -2687,7 +2696,7 @@ struct group_object *JoinImmTrans(struct group_object *group1, struct group_obje
                     }
                 }
                 if (gr3 == gr2) {
-                    for (j = 0; j < Ntr1; j++) if (JoinTr[j][*k] == 1) mul++;
+                    for (j = 0; j < Ntr1; j++) if (JoinTr[j][*k] == 1) { mul++; trp[index2++] = j; }
                     mul = (mul == 0);
                     MapTr2[GlCountTr2] = NtrR;
                 }
@@ -2714,35 +2723,26 @@ struct group_object *JoinImmTrans(struct group_object *group1, struct group_obje
                     else {
                         if (simple) SimpleArcs(tr1, trr, 0);
                     }
-                    // if (!simple) {
-                    //     if (g_compose_tags) {
-                    //         if (gr3 == gr1) {
-                    //             while (!JoinTr[*k][index2]) { // get the index of the other transition in net2
-                    //                 ++index2;
-                    //                 tr2 = tr2->next;
-                    //             }
-                    //         }
-                    //         else {
-                    //             while (!JoinTr[index2][*k]) { // get the index of the other transition in net2
-                    //                 ++index2;
-                    //                 tr2 = tr2->next;
-                    //             }
-                    //         }
-                    //         printf("COMBINE tr1->tag=%s  tr2->tag=%s  trr->tag=%s\n", 
-                    //                 tr1->tag, tr2->tag, trr->tag);
-                    //         struct tag_s *tp1 = DecomposeTag(tr1->tag);
-                    //         struct tag_s *tp2 = DecomposeTag(tr2->tag);
-                    //         char *newtag = CombineTags(tp1, tp2, strlen(tr1->tag) + strlen(tr2->tag));
-                    //         // printf("replacing %s with %s\n", trr->tag, newtag);
-                    //         free(trr->tag);
-                    //         trr->tag = newtag;
-                    //         FreeDecomposedTag(tp1);
-                    //         FreeDecomposedTag(tp2);
-                    //         // advance to next transition
-                    //         ++index2;
-                    //         tr2 = tr2->next;
-                    //     }
-                    // }
+                    if (!simple) {
+                        if (g_compose_tags) {
+                            if (gr3 == gr1) desc2 = Op2TrD;
+                            if (gr3 == gr2) desc2 = Op1TrD;
+                            // printf("j=%d trp[j]=%d, Ntr1=%d Ntr2=%d op1=%d\n", j, trp[j], Ntr1, Ntr2, gr3 == gr1);
+                            for (int ii=0; ii<trp[j]; ii++) 
+                                desc2 = desc2->next;
+                            tr2 = desc2->tr_obj;
+                        }
+                        // printf("COMBINE tr1->tag=%s  tr2->tag=%s  trr->tag=%s\n", 
+                        //         tr1->tag, tr2->tag, trr->tag);
+                        struct tag_s *tp1 = DecomposeTag(tr1->tag);
+                        struct tag_s *tp2 = DecomposeTag(tr2->tag);
+                        char *newtag = CombineTags(tp1, tp2, strlen(tr1->tag) + strlen(tr2->tag));
+                        // printf("replacing %s with %s\n", trr->tag, newtag);
+                        free(trr->tag);
+                        trr->tag = newtag;
+                        FreeDecomposedTag(tp1);
+                        FreeDecomposedTag(tp2);
+                    }
                 }
                 (*k)++;
                 tr1 = tr1->next;
@@ -2765,6 +2765,7 @@ struct group_object *JoinImmTrans(struct group_object *group1, struct group_obje
             if (gr3 == gr2) GlCountTr2++;
         }
     }
+    free(trp);
 
 #ifdef DEBUG
     printf("  Imm Transitions in Result:\n");
