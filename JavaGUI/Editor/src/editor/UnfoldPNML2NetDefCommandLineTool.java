@@ -418,7 +418,7 @@ public class UnfoldPNML2NetDefCommandLineTool {
     }
     
     // show stats of the GSPN
-    private static void printGspnStat(GspnPage gspn, PNMLFormat.NuPNUnit rootUnit) {
+    public static void printGspnStat(GspnPage gspn, PNMLFormat.NuPNUnit rootUnit) {
         int numPlaces = 0;
         int numColorClasses = 0;
         int numColorVars = 0;

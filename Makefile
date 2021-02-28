@@ -1970,6 +1970,7 @@ $(OBJDIR)/JavaGUI/bin/Editor.jar: JavaGUI/Editor/dist/Editor.jar
 	@cp JavaGUI/Additional/splash.png  $(OBJDIR)/JavaGUI/bin/lib/
 	@cp JavaGUI/Additional/greatspn48.png  $(OBJDIR)/JavaGUI/bin/pnpro-editor.png
 	@cp JavaGUI/Additional/pnpro-doc48.png  $(OBJDIR)/JavaGUI/bin/application-x-pnpro-editor.png
+	@cp JavaGUI/DISTRIB/install.sh $(OBJDIR)/JavaGUI/
 
 
 
@@ -2019,7 +2020,6 @@ JavaGUI/DISTRIB/GreatSPN\ Editor.exe: JavaGUI/DISTRIB/launch4j-config.cfg.xml \
 $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Linux.tgz: $(JAVA_GUI_OBJECTS) \
 	                                     JavaGUI/DISTRIB/install.sh
 	@echo "  [MAKE] Java GUI (Linux Tar)"
-	@cp JavaGUI/DISTRIB/install.sh $(OBJDIR)/JavaGUI/
 	@(cd $(OBJDIR)/JavaGUI && tar cz *.sh bin/* ) > $@
 
 # Generic Jar installer
@@ -2044,7 +2044,7 @@ ifdef HAVE_LAUNCH4J
   JAVA_GUI_ARCHIVES += $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Win.zip
 endif
 
-JavaGUI: java-jars
+JavaGUI: java-jars $(JAVA_GUI_OBJECTS)
 
 BUILD_NUMBER_FILE := JavaGUI/Editor/src/common/build_number.txt
 GUI_VERSION_FILE := JavaGUI/Editor/src/common/version_number.txt
@@ -2064,6 +2064,7 @@ JavaGUI-increase-version-number: clean_JavaGUI_x
 JavaGUI-archives: $(JAVA_GUI_ARCHIVES)
 
 unfolding2_SOURCEFILE := JavaGUI/unfolding2.sh
+algebra2_SOURCEFILE := JavaGUI/algebra2.sh
 greatspn_editor_SOURCEFILE := JavaGUI/greatspn_editor.sh
 
 
@@ -2110,7 +2111,7 @@ clean: clean_JavaGUI
 
 install: install_JavaGUI_models install_JavaGUI_jars
 
-SCRIPTS += unfolding2 greatspn_editor
+SCRIPTS += unfolding2 algebra2 greatspn_editor
 
    endif
   endif

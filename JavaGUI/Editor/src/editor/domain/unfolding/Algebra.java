@@ -50,7 +50,7 @@ public class Algebra {
     public final ArrayList<String> warnings;
 
     //=========================================================================
-    // Helper data structure that keep the composed relation.
+    // Fields thah help in the composition of the result net
 
     // Map places from net1 to result
     private final Map<Place, List<Place>> plc1InProd = new HashMap<>();
@@ -404,7 +404,6 @@ public class Algebra {
                             crossList1.add(newPlace);
                             crossList2.add(newPlace);
                             plc2InProd.put((Place)node2, crossList2);
-//                            plcProd.put(new Tuple<>(p1, p2), newPlace);
                         }
                     }
                 }
@@ -482,7 +481,6 @@ public class Algebra {
                             crossList1.add(newTransition);
                             crossList2.add(newTransition);
                             trn2InProd.put((Transition)node2, crossList2);
-//                            trnProd.put(new Tuple<>(t1, t2), newTransition);
                         }
                     }
                 }
@@ -760,9 +758,5 @@ public class Algebra {
 //        for (Map.Entry<Transition, Transition> ee : trn2Copied.entrySet()) {
 //            System.out.println("  "+ee.getKey().getUniqueName()+"  ->  "+ee.getValue().getUniqueName());
 //        } 
-        
-        
-        for (String w : warnings)
-            System.out.println("WARNING: "+w);
     }
 }
