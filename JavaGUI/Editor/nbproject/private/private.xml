@@ -5,11 +5,7 @@
         <group>
             <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/unfolding/Algebra.java</file>
             <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/AlgebraToolDialog.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/NetObject.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/Main.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/common/Util.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/AppWindow.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/ZoomPanel.java</file>
+            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/AlgebraCommandLineTool.java</file>
         </group>
     </open-files>
 </project-private>
