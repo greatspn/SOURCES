@@ -41,7 +41,10 @@ import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import static editor.domain.measures.SolverInvokator.makeFilenameForCmd;
 import editor.domain.unfolding.Algebra;
+import java.awt.Dimension;
 import java.awt.geom.Rectangle2D;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 /**
  *
@@ -213,7 +216,9 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                     
                     GspnPage netComp;
                     GspnPage net2 = listOfNets2.get(comboNet2Name.getSelectedIndex());
+                    
                     if (propJavaImpl) {
+                        // New Java-based Algebra implementation
                         int dx2shift = 0, dy2shift = 0;
                         Rectangle2D pageBounds1 = net1.getPageBounds();
                         switch (propPlacement) {
@@ -240,11 +245,17 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                         
                         if (!a.warnings.isEmpty()) {
                             StringBuilder sb = new StringBuilder();
+                            sb.append("Some object compositions generated attribute conflicts:\n");
                             for (String w : a.warnings)
                                 sb.append(w).append('\n');
                             
-                            JOptionPane.showMessageDialog(this, 
-                                "Some object composition generated attribute conflicts:\n"+sb, 
+                            JTextArea textArea = new JTextArea(sb.toString());
+                            textArea.setLineWrap(true);  
+                            textArea.setWrapStyleWord(true); 
+                            textArea.setEditable(false);
+                            JScrollPane scrollPane = new JScrollPane(textArea);  
+                            scrollPane.setPreferredSize(new Dimension(500, 300));                            
+                            JOptionPane.showMessageDialog(getParent(), scrollPane,
                                 "Algebra Output", JOptionPane.INFORMATION_MESSAGE);
                         }
                     }
@@ -350,7 +361,7 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                     break;
                 }
                 catch (Exception e) {
-                    JOptionPane.showMessageDialog(this, 
+                    JOptionPane.showMessageDialog(getParent(), 
                             "Could not complete the operation:\n"+e.getMessage(), 
                             "Algebra error", JOptionPane.ERROR_MESSAGE);
                     Main.logException(e, true);

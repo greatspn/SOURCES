@@ -171,7 +171,6 @@ public class AlgebraCommandLineTool {
     private static GspnPage loadPage(String baseName) throws Exception {
         GspnPage gspn = null;
         PNMLFormat.NuPNUnit rootUnit[] = new PNMLFormat.NuPNUnit[1];
-        Map<String, String> pnmlId2name = null;
         // Input files
         String netName = new File(baseName).getName();
         File inputPnpro = new File(baseName+".PNPRO");
@@ -192,7 +191,7 @@ public class AlgebraCommandLineTool {
         else if (inputPnml.canRead()) {
             // Read input PNML file
             System.out.println("LOADING "+inputPnml.getName()+" ...");
-            pnmlId2name = new TreeMap<>();
+            Map<String, String> pnmlId2name = new TreeMap<>();
             gspn = new GspnPage();
             String log = PNMLFormat.importPNML(gspn, inputPnml, pnmlId2name, rootUnit);
             gspn.setPageName(netName);
