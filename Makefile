@@ -2008,7 +2008,9 @@ JAVA_GUI_OBJECTS := $(OBJDIR)/JavaGUI/bin/Editor.jar \
 $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Win.zip: $(JAVA_GUI_OBJECTS) \
 	                                   JavaGUI/DISTRIB/GreatSPN\ Editor.exe
 	@echo "  [MAKE] Java GUI (Windows)"
-	@(cd $(OBJDIR)/JavaGUI && zip -q -r - *.exe bin/* ) > $@
+	@cp JavaGUI/DISTRIB/UPDATE-ON-WINDOWS-WSL.bat $(OBJDIR)/JavaGUI/
+	@(cd $(OBJDIR)/JavaGUI && zip -q -r - *.exe *.bat bin/* ) > $@
+	@rm $(OBJDIR)/JavaGUI/UPDATE-ON-WINDOWS-WSL.bat
 
 JavaGUI/DISTRIB/GreatSPN\ Editor.exe: JavaGUI/DISTRIB/launch4j-config.cfg.xml \
                                       $(OBJDIR)/JavaGUI/bin/Editor.jar
