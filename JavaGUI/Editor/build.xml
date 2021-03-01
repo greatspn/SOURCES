@@ -125,6 +125,12 @@
     <!-- Clean up Manifest.MF after build process -->
     <target name="-post-jar">
         <delete file="MANIFEST.MF"/>
+        <copy file="lib/antlr-runtime-4.2.1.jar" toFile="dist/lib/antlr-runtime-4.2.1.jar" />
+        <copy file="lib/AbsoluteLayout.jar" toFile="dist/lib/AbsoluteLayout.jar" />
+        <copy file="lib/jlatexmath-1.0.8-SNAPSHOT.jar" toFile="dist/lib/jlatexmath-1.0.8-SNAPSHOT.jar" />
+        <copy file="lib/swing-layout-1.0.4.jar" toFile="dist/lib/swing-layout-1.0.4.jar" />
+        <copy file="lib/pdfbox-app-2.0.22.jar" toFile="dist/lib/pdfbox-app-2.0.22.jar" />
+        <copy file="lib/graphics2d-0.31.jar" toFile="dist/lib/graphics2d-0.31.jar" />
     </target>
 
 </project>
