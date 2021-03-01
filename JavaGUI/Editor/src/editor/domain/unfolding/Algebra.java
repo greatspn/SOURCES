@@ -89,7 +89,7 @@ public class Algebra {
     // Determine if two nodes with tags (i.e. places or transitions) share at
     // least a common tag in the restricted list, which means that the
     // two nodes will be composed in the @result net.
-    private boolean shareRestrictedTag(Node node1, Node node2, String[] restList) {
+    private boolean nodesShareRestrictedTag(Node node1, Node node2, String[] restList) {
         for (int n1=0; n1<node1.numTags(); n1++) {
             for (int n2=0; n2<node2.numTags(); n2++) {
                 if (node1.getTag(n1).equals(node2.getTag(n2))) {
@@ -391,7 +391,7 @@ public class Algebra {
                 for (Node node2 : gspn2.nodes) {
                     if (node2 instanceof Place) {
                         final Place p2 = (Place)node2;
-                        if (shareRestrictedTag(node1, node2, restSetPl)) {
+                        if (nodesShareRestrictedTag(node1, node2, restSetPl)) {
                             // combine p1 and p2
                             List<Place> crossList2 = plc2InProd.get(p2);
                             if (crossList1 == null)
@@ -478,7 +478,7 @@ public class Algebra {
                 for (Node node2 : gspn2.nodes) {
                     if (node2 instanceof Transition) {
                         final Transition t2 = (Transition)node2;
-                        if (shareRestrictedTag(node1, node2, restSetTr)) {
+                        if (nodesShareRestrictedTag(node1, node2, restSetTr)) {
                             // combine t1 and t2
                             List<Transition> crossList2 = trn2InProd.get(t2);
                             if (crossList1 == null)
@@ -586,7 +586,7 @@ public class Algebra {
         if (verbose)
             printEdgeHelpers();
         
-        determineDuplicatedColorVars();
+        determineColorVarsToBeDuplicated();
 
         // read back all edges, then compose and insert in the result net
         for (Map.Entry<Triple<Place, Transition, Kind>, Tuple<GspnEdge, GspnEdge>> ee : edgeMap.entrySet()) {
@@ -599,14 +599,14 @@ public class Algebra {
             boolean isBroken;
             String mult;
 
-            if (e1 == null) { // only edge from net2
+            if (e1 == null) { // only one edge from net2
                 headMagnet = e2.getHeadMagnet();
                 tailMagnet = e2.getTailMagnet();
                 mult = e2.getMultiplicity();
                 isBroken = e2.isBroken;
                 points = composeEdgePoints(e1, null);
             }
-            else if (e2 == null) { // only edge from net1
+            else if (e2 == null) { // only one edge from net1
                 headMagnet = e1.getHeadMagnet();
                 tailMagnet = e1.getTailMagnet();
                 mult = e1.getMultiplicity();
@@ -647,7 +647,7 @@ public class Algebra {
     
     //=========================================================================
     // determine in each result transition, which color variables need to be duplicated
-    private void determineDuplicatedColorVars() {
+    private void determineColorVarsToBeDuplicated() {
         // all the color variables from edges of net1/2 used by a @result transition
         Map<Transition, Set<ColorVar>> clrVarsNet1 = new HashMap<>();
         Map<Transition, Set<ColorVar>> clrVarsNet2 = new HashMap<>();
@@ -696,7 +696,8 @@ public class Algebra {
                     if (verbose) {
                         for (String cvarName : clrVarsToDup) {
                             System.out.println("IN TRANSITION "+trr.getUniqueName()+
-                                    " INSTANCES OF "+cvarName+" FROM EDGES OF NET2 WILL BE REPLACED WITH "+
+                                    " ALL INSTANCES OF "+cvarName+
+                                    " FROM EDGES OF NET2 WILL BE REPLACED WITH "+
                                     dupColorVars.get(cvarName).getUniqueName());
                         }
                     }

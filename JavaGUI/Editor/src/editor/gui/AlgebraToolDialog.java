@@ -151,9 +151,9 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
             checkBoxBrokenEdges.setSelected(propBrokenEdges);
             checkBoxCombineTags.setSelected(propCombineTags);
             checkBoxNewImplementation.setSelected(propJavaImpl);
-            checkBoxNewImplementation.setVisible(Main.isDeveloperMachine());
-            if (Main.isDeveloperMachine())
-                System.out.println("\nDEVELOPER SWITCH ON!!\n");
+//            checkBoxNewImplementation.setVisible(Main.isDeveloperMachine());
+//            if (Main.isDeveloperMachine())
+//                System.out.println("\nDEVELOPER SWITCH ON!!\n");
             switch (propPlacement) {
                 case 1:  radioHorizontal.setSelected(true); break;
                 case 2:  radioVertical.setSelected(true); break;
