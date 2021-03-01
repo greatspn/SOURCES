@@ -5,6 +5,7 @@
  */
 package editor.domain.unfolding;
 
+import common.Triple;
 import common.Tuple;
 import common.Util;
 import editor.domain.Edge;
@@ -13,6 +14,7 @@ import editor.domain.elements.ColorClass;
 import editor.domain.elements.ColorVar;
 import editor.domain.elements.ConstantID;
 import editor.domain.elements.GspnEdge;
+import editor.domain.elements.GspnEdge.Kind;
 import editor.domain.elements.GspnPage;
 import editor.domain.elements.Place;
 import editor.domain.elements.TemplateVariable;
@@ -67,13 +69,16 @@ public class Algebra {
     private final Map<Transition, List<Transition>> trn2InProd = new HashMap<>();
     
     // Maps <place, trans> of composed net with the source edges from net1, net2
-    private final Map<Tuple<Place, Transition>, Tuple<GspnEdge, GspnEdge>> edgeMapInput = new HashMap<>();
-    private final Map<Tuple<Place, Transition>, Tuple<GspnEdge, GspnEdge>> edgeMapOutput = new HashMap<>();
-    private final Map<Tuple<Place, Transition>, Tuple<GspnEdge, GspnEdge>> edgeMapInhibitor = new HashMap<>();
+    private final Map<Triple<Place, Transition, Kind>, Tuple<GspnEdge, GspnEdge>> edgeMap = new HashMap<>();
+//    private final Map<Tuple<Place, Transition>, Tuple<GspnEdge, GspnEdge>> edgeMapOutput = new HashMap<>();
+//    private final Map<Tuple<Place, Transition>, Tuple<GspnEdge, GspnEdge>> edgeMapInhibitor = new HashMap<>();
     
     // Duplicated color variables
     private final Map<String, ColorVar> dupColorVars = new HashMap<>();
     private final Set<ColorVar> usedDupColorVar = new HashSet<>();
+    
+    // Rules to duplicate color variables for transition edges & expressions of net2
+    private final Map<Transition, Set<String>> trnClrVarsToDup = new HashMap<>();
     
     // Unique symbols in the result net
     private final Set<String> uniqueNamesResult = new HashSet<>();
@@ -540,14 +545,10 @@ public class Algebra {
     }
 
     //=========================================================================
-    private void joinEdges(GspnEdge.Kind kind, 
-                           Map<Tuple<Place, Transition>, Tuple<GspnEdge, GspnEdge>> edgeMap) 
-    {
+    private void joinEdges() {
         // prepare all edges of type @kind from net1
         for (Edge edge1 : gspn1.edges) {
             GspnEdge e1 = (GspnEdge)edge1;
-            if (kind != e1.getEdgeKind())
-                continue;
             Place p1 = e1.getConnectedPlace();
             List<Place> listPlace1 = plc1InProd.get(p1);
             Transition t1 = e1.getConnectedTransition();
@@ -555,7 +556,7 @@ public class Algebra {
 
             for (Place plr : listPlace1) {
                 for (Transition trr : listTr1) {
-                    Tuple<Place, Transition> key = new Tuple<>(plr, trr);
+                    Triple<Place, Transition, Kind> key = new Triple<>(plr, trr, e1.getEdgeKind());
                     edgeMap.put(key, new Tuple<>(e1, null));
                 }
             }
@@ -564,8 +565,6 @@ public class Algebra {
         // prepare all edges of type @kind from net2
         for (Edge edge2 : gspn2.edges) {
             GspnEdge e2 = (GspnEdge)edge2;
-            if (kind != e2.getEdgeKind())
-                continue;
             Place p2 = e2.getConnectedPlace();
             List<Place> listPlace2 = plc2InProd.get(p2);
             Transition t2 = e2.getConnectedTransition();
@@ -573,7 +572,7 @@ public class Algebra {
 
             for (Place plr : listPlace2) {
                 for (Transition trr : listTr2) {
-                    Tuple<Place, Transition> key = new Tuple<>(plr, trr);
+                    Triple<Place, Transition, Kind> key = new Triple<>(plr, trr, e2.getEdgeKind());
                     if (edgeMap.containsKey(key))
                         edgeMap.put(key, new Tuple<>(edgeMap.get(key).x, e2));
                     else
@@ -583,12 +582,15 @@ public class Algebra {
         }
         
         if (verbose)
-            printEdgeHelpers(kind, edgeMap);
+            printEdgeHelpers();
+        
+        determineDuplicatedColorVars();
 
         // read back all edges, then compose and insert in the result net
-        for (Map.Entry<Tuple<Place, Transition>, Tuple<GspnEdge, GspnEdge>> ee : edgeMap.entrySet()) {
+        for (Map.Entry<Triple<Place, Transition, Kind>, Tuple<GspnEdge, GspnEdge>> ee : edgeMap.entrySet()) {
             Place resultPlace = ee.getKey().x;
             Transition resultTrans = ee.getKey().y;
+            Kind kind = ee.getKey().z;
             GspnEdge e1 = ee.getValue().x, e2 = ee.getValue().y;
             int tailMagnet, headMagnet;
             ArrayList<Point2D> points;
@@ -628,8 +630,7 @@ public class Algebra {
                         mult = simpleNeutralExprSum(m1, m2, e1.getTypeOfConnectedPlace());
                     }
                     else { // color expressions
-                        m2 = duplicateCommonColorVars(e1.getColorVarsInUse(),
-                                e2.getColorVarsInUse(), m2);
+                        m2 = duplicateCommonColorVars(resultTrans, m2);
                         mult = simpleColorExprSum(m1, m2, e1.getTypeOfConnectedPlace());
                     }
                 }
@@ -643,28 +644,86 @@ public class Algebra {
     }
     
     //=========================================================================
-    // replace in @expr all the occurrences of color variables in @colorVars2
-    // that are also present in @colorVars2
-    private String duplicateCommonColorVars(Set<ColorVar> colorVars1, Set<ColorVar> colorVars2, String expr) {
-        for (ColorVar cvar2 : colorVars1) {
-            for (ColorVar cvar1 : colorVars2) {
-                if (cvar1.getUniqueName().equals(cvar2.getUniqueName())) {
-                    // replace all occurrences of cvar1 in m2 with dupCvar
-                    ColorVar dupCvar = dupColorVars.get(cvar1.getUniqueName());
-                    usedDupColorVar.add(dupCvar);
-
-                    // rewrite cvar1 -> dupCvar
-                    // regex from: group 1 = any non-alphanumeric char, or start of string
-                    //             group 2 = searched identifier
-                    //             group 3 = any non-alphanumeric char, or end of string
-                    // regex to: group 1 + replaced identifier + group 3
-                    String from = "([^a-zA-Z0-9_]|^)("+cvar1.getUniqueName()+")([^a-zA-Z0-9_]|$)";
-                    String to = "$1"+dupCvar.getUniqueName()+"$3";
-                    expr = expr.replaceAll(from, to);
-
-                    break;
+    // determine in each result transition, which color variables need to be duplicated
+    private void determineDuplicatedColorVars() {
+        // all the color variables from edges of net1/2 used by a @result transition
+        Map<Transition, Set<ColorVar>> clrVarsNet1 = new HashMap<>();
+        Map<Transition, Set<ColorVar>> clrVarsNet2 = new HashMap<>();
+        
+        // Determine all color variables used in each transition relation,
+        // on all the edges from net1 and net2
+        for (Map.Entry<Triple<Place, Transition, Kind>, Tuple<GspnEdge, GspnEdge>> ee : edgeMap.entrySet()) {
+            Transition trr = ee.getKey().y;
+            Set<ColorVar> set1 = clrVarsNet1.get(trr);
+            Set<ColorVar> set2 = clrVarsNet2.get(trr);
+            if (set1 == null)
+                set1 = new HashSet<>();
+            if (set2 == null)
+                set2 = new HashSet<>();
+            
+            if (ee.getValue().x != null)
+                set1.addAll(ee.getValue().x.getColorVarsInUse());
+            if (ee.getValue().y != null)
+                set2.addAll(ee.getValue().y.getColorVarsInUse());
+            
+            clrVarsNet1.put(trr, set1);
+            clrVarsNet2.put(trr, set2);
+        }
+        
+        // Determine, in each result transition, which color from net2 needs to be duplicated
+        for (Map.Entry<Transition, Set<ColorVar>> ee1 : clrVarsNet1.entrySet()) {
+            Transition trr = ee1.getKey();
+            if (clrVarsNet2.containsKey(trr)) {
+                Set<ColorVar> set1 = clrVarsNet1.get(trr);
+                Set<ColorVar> set2 = clrVarsNet2.get(trr);
+                Set<String> clrVarsToDup = new HashSet<>();
+                
+                for (ColorVar cvar2 : set1) {
+                    for (ColorVar cvar1 : set2) {
+                        if (cvar1.getUniqueName().equals(cvar2.getUniqueName())) {
+                            // cvar1 clashes with cvar2. Duplicate cvar2 on all net2 edges of trr
+                            clrVarsToDup.add(cvar1.getUniqueName());
+                            ColorVar dupCvar = dupColorVars.get(cvar1.getUniqueName());
+                            usedDupColorVar.add(dupCvar);
+                        }
+                    }
+                }
+                if (!clrVarsToDup.isEmpty()) {
+                    trnClrVarsToDup.put(trr, clrVarsToDup);
+                    
+                    if (verbose) {
+                        for (String cvarName : clrVarsToDup) {
+                            System.out.println("IN TRANSITION "+trr.getUniqueName()+
+                                    " INSTANCES OF "+cvarName+" FROM EDGES OF NET2 WILL BE REPLACED WITH "+
+                                    dupColorVars.get(cvarName).getUniqueName());
+                        }
+                    }
                 }
             }
+        }
+    }
+    
+    //=========================================================================
+    // replace in @expr all the occurrences of color variables in @colorVars2
+    // that are also present in @colorVars2
+    private String duplicateCommonColorVars(Transition trr, String expr) {
+        Set<String> clrVarsToDup = trnClrVarsToDup.get(trr);
+        if (clrVarsToDup == null)
+            return expr; // nothing to do
+        
+        for (String cvarName : clrVarsToDup) {
+            // replace all occurrences of cvar1 in m2 with dupCvar
+            ColorVar dupCvar = dupColorVars.get(cvarName);
+            usedDupColorVar.add(dupCvar);
+
+            // rewrite cvar1 -> dupCvar
+            // regex from: group 1 = any non-alphanumeric char, or start of string
+            //             group 2 = searched identifier
+            //             group 3 = any non-alphanumeric char, or end of string
+            // regex to: group 1 + replaced identifier + group 3
+            String from = "([^a-zA-Z0-9_]|^)("+cvarName+")([^a-zA-Z0-9_]|$)";
+            String to = "$1"+dupCvar.getUniqueName()+"$3";
+            expr = expr.replaceAll(from, to);
         }
         return expr;
     }
@@ -785,9 +844,10 @@ public class Algebra {
             printNodeHelpers();
 
         // Generate all the edges connecting the composed places and transitions
-        joinEdges(GspnEdge.Kind.INPUT, edgeMapInput);
-        joinEdges(GspnEdge.Kind.OUTPUT, edgeMapOutput);
-        joinEdges(GspnEdge.Kind.INHIBITOR, edgeMapInhibitor);
+        joinEdges();
+//        joinEdges(GspnEdge.Kind.INPUT, edgeMapInput);
+//        joinEdges(GspnEdge.Kind.OUTPUT, edgeMapOutput);
+//        joinEdges(GspnEdge.Kind.INHIBITOR, edgeMapInhibitor);
         
         // Add the color variables that where used in expression rewritings
         joinDuplicatedColorVarsUsed();
@@ -796,12 +856,11 @@ public class Algebra {
     
     
     //=========================================================================
-    private void printEdgeHelpers(GspnEdge.Kind kind, 
-                                  Map<Tuple<Place, Transition>, Tuple<GspnEdge, GspnEdge>> edgeMap) 
+    private void printEdgeHelpers() 
     {
-        System.out.println(kind+" EDGES:");
-        for (Map.Entry<Tuple<Place, Transition>, Tuple<GspnEdge, GspnEdge>> ee : edgeMap.entrySet()) {
-            System.out.print("  ");
+//        System.out.println(kind+" EDGES:");
+        for (Map.Entry<Triple<Place, Transition, Kind>, Tuple<GspnEdge, GspnEdge>> ee : edgeMap.entrySet()) {
+            System.out.print("  "+ee.getKey().z+" ");
             // source edges
             if (ee.getValue().x == null)
                 System.out.print("...");
