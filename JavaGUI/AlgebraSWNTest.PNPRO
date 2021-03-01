@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="AlgebraSWNTest" version="121">
+  <gspn name="SWN-A1" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place domain="C" marking="&lt;All&gt;" name="A0" superposition-tags="pp" x="7.0" y="6.0"/>
+      <place domain="C" name="A1" superposition-tags="pp" x="7.0" y="13.0"/>
+      <transition name="T0" nservers-x="0.5" superposition-tags="tt" type="EXP" x="16.55" y="6.0"/>
+      <transition name="T1" nservers-x="0.5" superposition-tags="tt" type="EXP" x="16.55" y="13.0"/>
+      <color-class definition="c{1..3}" name="C" x="29.125" y="3.0"/>
+      <color-var domain="C" name="c" x="29.25" y="5.0"/>
+      <text-box bold="true" border-color="#000000" fill-color="none" height="9.5" name="__textBox0" shadow="true" shape="ROUND_RECTANGLE" text-color="#000000" width="15.0" x="27.0" y="1.0">Definitions</text-box>
+      <color-var domain="C" name="c_0" x="29.5" y="7.0"/>
+      <color-var domain="C" name="c_1" x="29.5" y="8.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" mult="&lt;c&gt;" mult-k="0.61103515625" mult-x="-0.5502990722656254" mult-y="-0.5" tail="A0"/>
+      <arc head="T1" kind="INPUT" mult="&lt;c&gt;" mult-k="0.55556640625" mult-x="-9.765624999857891E-5" mult-y="-0.5" tail="A1"/>
+    </edges>
+  </gspn>
+  <gspn name="SWN-B1" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place domain="C" name="B0" superposition-tags="pp" x="7.0" y="6.0"/>
+      <place domain="C" name="B1" superposition-tags="pp" x="7.0" y="13.0"/>
+      <transition name="U0" nservers-x="0.5" superposition-tags="tt" type="EXP" x="16.55" y="6.0"/>
+      <transition name="U1" nservers-x="0.5" superposition-tags="tt" type="EXP" x="16.55" y="13.0"/>
+      <color-class definition="c{1..3}" name="C" x="28.125" y="2.0"/>
+      <color-var domain="C" name="c" x="28.25" y="4.0"/>
+    </nodes>
+    <edges>
+      <arc head="U0" kind="INPUT" mult="&lt;c&gt;" mult-k="0.61103515625" mult-x="6.835937499989342E-4" mult-y="-1.0" tail="B0"/>
+      <arc head="U1" kind="INPUT" mult="&lt;c&gt;" mult-k="0.44443359375" mult-x="9.765624999857891E-5" mult-y="-0.5" tail="B1"/>
+    </edges>
+  </gspn>
+  <gspn name="SWN-A2" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place domain="C" marking="&lt;All&gt;" name="A0" superposition-tags="pp" x="7.0" y="6.0"/>
+      <place domain="C" name="A1" superposition-tags="pp" x="7.0" y="13.0"/>
+      <transition name="T0" nservers-x="0.5" superposition-tags="tt" type="EXP" x="16.55" y="6.0"/>
+      <transition name="T1" nservers-x="0.5" superposition-tags="tt" type="EXP" x="16.55" y="13.0"/>
+      <color-class definition="c{1..3}" name="C" x="29.125" y="3.0"/>
+      <color-var domain="C" name="c" x="29.25" y="5.0"/>
+      <text-box bold="true" border-color="#000000" fill-color="none" height="9.5" name="__textBox0" shadow="true" shape="ROUND_RECTANGLE" text-color="#000000" width="15.0" x="27.0" y="1.0">Definitions</text-box>
+      <color-var domain="C" name="c_0" x="29.5" y="7.0"/>
+      <color-var domain="C" name="c_1" x="29.5" y="8.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" mult="&lt;c&gt;" mult-k="0.61103515625" mult-x="-0.5502990722656254" mult-y="-0.5" tail="A0"/>
+      <arc head="T1" kind="INPUT" mult="&lt;All&gt;" mult-k="0.55556640625" mult-x="-9.765624999857891E-5" mult-y="-0.5" tail="A1"/>
+    </edges>
+  </gspn>
+  <gspn name="SWN-B2" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place domain="C" marking="&lt;All&gt;" name="B0" superposition-tags="pp" x="7.0" y="6.0"/>
+      <place domain="C" name="B1" superposition-tags="pp" x="7.0" y="13.0"/>
+      <transition name="U0" nservers-x="0.5" superposition-tags="tt" type="EXP" x="16.55" y="6.0"/>
+      <transition name="U1" nservers-x="0.5" superposition-tags="tt" type="EXP" x="16.55" y="13.0"/>
+      <color-class definition="c{1..3}" name="C" x="28.125" y="2.0"/>
+      <color-var domain="C" name="c" x="28.25" y="4.0"/>
+    </nodes>
+    <edges>
+      <arc head="U0" kind="INPUT" mult="&lt;c&gt;" mult-k="0.61103515625" mult-x="6.835937499989342E-4" mult-y="-1.0" tail="B0"/>
+      <arc head="U1" kind="INPUT" mult="&lt;All&gt;" mult-k="0.44443359375" mult-x="9.765624999857891E-5" mult-y="-0.5" tail="B1"/>
+    </edges>
+  </gspn>
+  <gspn name="SWN-A3" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place domain="C" marking="&lt;All&gt;" name="A0" superposition-tags="pp" x="7.0" y="6.0"/>
+      <place domain="C" name="A1" superposition-tags="pp" x="7.0" y="13.0"/>
+      <transition name="T0" nservers-x="0.5" superposition-tags="tt" type="EXP" x="16.55" y="6.0"/>
+      <color-class definition="c{1..3}" name="C" x="37.125" y="3.0"/>
+      <color-var domain="C" name="c" x="37.25" y="5.0"/>
+      <text-box bold="true" border-color="#000000" fill-color="none" height="9.5" name="__textBox0" shadow="true" shape="ROUND_RECTANGLE" text-color="#000000" width="15.0" x="35.0" y="1.0">Definitions</text-box>
+      <color-var domain="C" name="c_0" x="37.5" y="7.0"/>
+      <color-var domain="C" name="c_1" x="37.5" y="8.0"/>
+      <place domain="C" name="A2" superposition-tags="qq" x="25.0" y="6.0"/>
+      <place domain="C" name="A3" superposition-tags="qq" x="25.0" y="13.0"/>
+      <color-var domain="C" name="x" x="41.9375" y="5.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" mult="&lt;x&gt;" mult-k="0.61103515625" mult-x="-0.5502990722656254" mult-y="-0.5" tail="A0"/>
+      <arc head="T0" kind="INPUT" mult="&lt;c&gt;" mult-k="0.55556640625" mult-x="-9.765624999857891E-5" mult-y="-0.5" tail="A1"/>
+      <arc head="A2" kind="OUTPUT" mult="&lt;x&gt;" tail="T0"/>
+      <arc head="A3" kind="OUTPUT" mult="&lt;c&gt;" mult-k="0.38896484374999996" tail="T0"/>
+    </edges>
+  </gspn>
+  <gspn name="SWN-B3" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place domain="C" name="B0" superposition-tags="pp" x="7.0" y="6.0"/>
+      <place domain="C" name="B1" superposition-tags="pp" x="7.0" y="13.0"/>
+      <transition name="U0" nservers-x="0.5" superposition-tags="tt" type="EXP" x="16.55" y="6.0"/>
+      <color-class definition="c{1..3}" name="C" x="28.125" y="2.0"/>
+      <color-var domain="C" name="c" x="28.25" y="4.0"/>
+      <place domain="C" name="B2" superposition-tags="qq" x="25.0" y="6.0"/>
+      <place domain="C" name="B3" superposition-tags="qq" x="25.0" y="13.0"/>
+    </nodes>
+    <edges>
+      <arc head="U0" kind="INPUT" mult="&lt;c&gt;" mult-k="0.61103515625" mult-x="6.835937499989342E-4" mult-y="-1.0" tail="B0"/>
+      <arc head="U0" kind="INPUT" mult="&lt;c&gt;" mult-k="0.44443359375" mult-x="9.765624999857891E-5" mult-y="-0.5" tail="B1"/>
+      <arc head="B2" kind="OUTPUT" mult="&lt;c&gt;" tail="U0"/>
+      <arc head="B3" kind="OUTPUT" mult="&lt;c&gt;" mult-k="0.38896484374999996" tail="U0"/>
+    </edges>
+  </gspn>
+  <gspn name="SWN-A3+SWN-B3 algebra" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <color-class definition="c{1..3}" name="C" x="37.125" y="3.0"/>
+      <place domain="C" label-x="-0.5687480000000003" label-y="1.5000000000000009" marking="&lt;All&gt;" name="A01" superposition-tags="pp" x="6.999998000000001" y="6.000001999999999"/>
+      <place domain="C" label-x="-0.7249980000000011" label-y="1.4999999999999982" marking="&lt;All&gt;" name="A0" superposition-tags="pp" x="9.999998000000001" y="8.499998000000001"/>
+      <place domain="C" label-x="-0.5687480000000003" label-y="1.4999999999999982" name="A11" superposition-tags="pp" x="6.999998000000001" y="12.999998000000001"/>
+      <place domain="C" label-x="-0.7249980000000011" label-y="1.5000000000000018" name="A1" superposition-tags="pp" x="9.999998000000001" y="15.5"/>
+      <place domain="C" label-x="-0.5687479999999976" label-y="1.5000000000000009" name="A21" superposition-tags="qq" x="24.999997999999998" y="6.000001999999999"/>
+      <place domain="C" label-x="-0.7249979999999976" label-y="1.4999999999999982" name="A2" superposition-tags="qq" x="27.999997999999998" y="8.499998000000001"/>
+      <place domain="C" label-x="-0.5687479999999976" label-y="1.4999999999999982" name="A31" superposition-tags="qq" x="24.999997999999998" y="12.999998000000001"/>
+      <place domain="C" label-x="-0.7249979999999976" label-y="1.5000000000000018" name="A3" superposition-tags="qq" x="27.999997999999998" y="15.5"/>
+      <transition delay="1.000000000000000" delay-x="0.500003999999997" delay-y="0.9999979999999997" label-x="1.999999998503199E-6" label-y="-1.5000040000000006" name="T0" nservers-x="0.5" superposition-tags="tt" type="EXP" x="16.549998000000002" y="6.000002"/>
+      <color-var domain="C" name="x" x="20.0" y="3.0"/>
+      <color-var domain="C" name="x1" x="20.0" y="4.0"/>
+      <color-var domain="C" name="c" x="20.0" y="5.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" head-magnet="0" kind="INPUT" mult="&lt;x&gt;+&lt;x1&gt;" tail="A0" tail-magnet="0"/>
+      <arc head="T0" head-magnet="0" kind="INPUT" mult="&lt;x&gt;+&lt;x1&gt;" tail="A01" tail-magnet="0"/>
+      <arc head="T0" head-magnet="0" kind="INPUT" mult="&lt;c&gt;+&lt;x1&gt;" tail="A1" tail-magnet="0"/>
+      <arc head="T0" head-magnet="0" kind="INPUT" mult="&lt;c&gt;+&lt;x1&gt;" tail="A11" tail-magnet="0"/>
+      <arc head="A2" head-magnet="0" kind="OUTPUT" mult="&lt;x&gt;+&lt;x1&gt;" tail="T0" tail-magnet="0"/>
+      <arc head="A21" head-magnet="0" kind="OUTPUT" mult="&lt;x&gt;+&lt;x1&gt;" tail="T0" tail-magnet="0"/>
+      <arc head="A3" head-magnet="0" kind="OUTPUT" mult="&lt;c&gt;+&lt;x1&gt;" tail="T0" tail-magnet="0"/>
+      <arc head="A31" head-magnet="0" kind="OUTPUT" mult="&lt;c&gt;+&lt;x1&gt;" tail="T0" tail-magnet="0"/>
+    </edges>
+  </gspn>
+</project>
