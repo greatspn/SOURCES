@@ -2111,8 +2111,7 @@ clean: clean_JavaGUI
 
 install: install_JavaGUI_models install_JavaGUI_jars
 
-#algebra2
-SCRIPTS += unfolding2 greatspn_editor
+SCRIPTS += unfolding2 algebra2 greatspn_editor
 
    endif
   endif

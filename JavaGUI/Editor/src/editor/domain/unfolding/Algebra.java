@@ -73,14 +73,16 @@ public class Algebra {
 //    private final Map<Tuple<Place, Transition>, Tuple<GspnEdge, GspnEdge>> edgeMapOutput = new HashMap<>();
 //    private final Map<Tuple<Place, Transition>, Tuple<GspnEdge, GspnEdge>> edgeMapInhibitor = new HashMap<>();
     
-    // Duplicated color variables
+    // Duplicated color variables. All ColorVars from net2 are initially duplicated,
+    // then only the one used (stored in @usedDupColorVar) actually end up in the @result net
     private final Map<String, ColorVar> dupColorVars = new HashMap<>();
     private final Set<ColorVar> usedDupColorVar = new HashSet<>();
     
-    // Rules to duplicate color variables for transition edges & expressions of net2
+    // Rules to duplicate color variables for all edges & expressions 
+    // of net2 for a given @result transition
     private final Map<Transition, Set<String>> trnClrVarsToDup = new HashMap<>();
     
-    // Unique symbols in the result net
+    // Unique symbols in the @result net
     private final Set<String> uniqueNamesResult = new HashSet<>();
 
     //=========================================================================
@@ -100,6 +102,7 @@ public class Algebra {
         return false;
     }
     
+    //=========================================================================
     // Build the union list of all tags of @node1 and @node2
     private String mergeTags(Node node1, Node node2) {
         String tags = node1.getSuperPosTags();        
@@ -113,7 +116,7 @@ public class Algebra {
             if (!found)
                 tags += "|" + node2.getTag(n2);
         }
-//        System.out.println("mergeTags "+node1.getSuperPosTags()+" "+node2.getSuperPosTags()+" -> "+tags);
+        //System.out.println("mergeTags "+node1.getSuperPosTags()+" "+node2.getSuperPosTags()+" -> "+tags);
         return tags;
     }
 
@@ -130,7 +133,6 @@ public class Algebra {
     }
     
     //=========================================================================
-
     // generate a new unique name for the final combined net
     private String generateUniqueCombinedName(String name) {
         String newName = name;
@@ -845,9 +847,6 @@ public class Algebra {
 
         // Generate all the edges connecting the composed places and transitions
         joinEdges();
-//        joinEdges(GspnEdge.Kind.INPUT, edgeMapInput);
-//        joinEdges(GspnEdge.Kind.OUTPUT, edgeMapOutput);
-//        joinEdges(GspnEdge.Kind.INHIBITOR, edgeMapInhibitor);
         
         // Add the color variables that where used in expression rewritings
         joinDuplicatedColorVarsUsed();
