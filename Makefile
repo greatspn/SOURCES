@@ -122,7 +122,7 @@ endif
 
 ifdef IS_WSL
 	LAUNCH4J := 
-	EXCLUDE_GUI = 1
+	#EXCLUDE_GUI = 1
 endif
 
 
