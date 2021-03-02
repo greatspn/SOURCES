@@ -69,7 +69,7 @@ echo $LN && echo
 DESKTOP_ENTRY_DIR=/home/user/.local/share/applications
 
 # Update Deskop link to mount script
-cat <<EOF > "${DESKTOP_ENTRY_DIR}/Mount Shared Folder"
+cat <<EOF > "${DESKTOP_ENTRY_DIR}/Mount Shared Folder.desktop"
 [Desktop Entry]
 Encoding=UTF-8
 Type=Application
@@ -80,10 +80,11 @@ Exec=/home/user/GreatSPN/SOURCES/NSRC/VirtualMachineSupport/mount-shared-folder.
 Comment[en_US]=
 Terminal=true
 EOF
-${RUN} chown user:user "${DESKTOP_ENTRY_DIR}/Mount Shared Folder"
+${RUN} chown user:user "${DESKTOP_ENTRY_DIR}/Mount Shared Folder.desktop"
+chmod 755 "${DESKTOP_ENTRY_DIR}/Mount Shared Folder.desktop"
 
 # Update Deskop link to upgrade GreatSPN
-cat <<EOF > "${DESKTOP_ENTRY_DIR}/Upgrade GreatSPN"
+cat <<EOF > "${DESKTOP_ENTRY_DIR}/Upgrade GreatSPN.desktop"
 [Desktop Entry]
 Encoding=UTF-8
 Type=Application
@@ -94,29 +95,31 @@ Exec=/home/user/GreatSPN/SOURCES/NSRC/VirtualMachineSupport/upgrade-greatspn-fro
 Comment[en_US]=
 Terminal=true
 EOF
-${RUN} chown user:user "${DESKTOP_ENTRY_DIR}/Upgrade GreatSPN"
+${RUN} chown user:user "${DESKTOP_ENTRY_DIR}/Upgrade GreatSPN.desktop"
+chmod 755 "${DESKTOP_ENTRY_DIR}/Upgrade GreatSPN.desktop"
 
 # Link to the old GreatSPN interface
-cat <<EOF > "/home/user/launch-old-greatspn"
+cat <<EOF > "/home/user/.launch-old-greatspn"
 #! /bin/sh
 export PATH=$PATH:/usr/local/GreatSPN/scripts
 greatspn
 EOF
-${RUN} chown user:user "/home/user/launch-old-greatspn"
-chmod 755 "/home/user/launch-old-greatspn"
+${RUN} chown user:user "/home/user/.launch-old-greatspn"
+chmod 755 "/home/user/.launch-old-greatspn"
 
-cat <<EOF > "${DESKTOP_ENTRY_DIR}/GreatSPN-OLD"
+cat <<EOF > "${DESKTOP_ENTRY_DIR}/GreatSPN-OLD.desktop"
 [Desktop Entry]
 Encoding=UTF-8
 Type=Application
 Name=GreatSPN-OLD
 Name[en_US]=GreatSPN-OLD
 Icon=utilities-terminal-symbolic
-Exec=/home/user/launch-old-greatspn
+Exec=/home/user/.launch-old-greatspn
 Comment[en_US]=
 Terminal=true
 EOF
-${RUN} chown user:user "${DESKTOP_ENTRY_DIR}/GreatSPN-OLD"
+${RUN} chown user:user "${DESKTOP_ENTRY_DIR}/GreatSPN-OLD.desktop"
+chmod 755 "${DESKTOP_ENTRY_DIR}/GreatSPN-OLD.desktop"
 
 # Link to the new GreatSPN interface
 # cat <<EOF > "/home/user/Desktop/New GreatSPN Editor"
@@ -217,5 +220,5 @@ echo && echo && echo
 echo "${B1}Upgrade procedure completed successfully...${B0}"
 echo
 read -p "Press any key to quit..." -n1 -s
-
+echo
 

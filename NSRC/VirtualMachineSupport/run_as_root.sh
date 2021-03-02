@@ -6,4 +6,4 @@ if [ ! -e /home/user/.greatspn-on-vbox ]; then
 fi
 
 # Run as root the command passed as arguments
-echo 'fedora' | sudo -p '' -S "$@"
+echo 'user' | sudo -p '' -S "$@"
