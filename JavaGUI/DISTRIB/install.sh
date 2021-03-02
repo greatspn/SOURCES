@@ -8,7 +8,7 @@ COMMENT="Petri Net Project"
 if [[ $EUID -eq 0 ]]; then
     PREFIX=${INSTALLDIR}
     if [ -z $PREFIX ]; then
-        PREFIX=/usr/local/GreatSPN/
+        PREFIX=/usr/local/GreatSPN
     fi
 	if [ -z $XDG_DIR ]; then
     	XDG_DIR=/usr/local/share
@@ -30,6 +30,9 @@ do
             ;;
         -silent) 
             SILENT=1
+            ;;
+        -nc) 
+            NO_COPY=1
             ;;
         -*) 
             echo "Unknown argument $1"
@@ -69,8 +72,10 @@ mkdir -p ${XDG_DIR}/pixmaps
 mkdir -p $APP_PATH
 
 # Install the application
-# echo "Copying application data..."
-# cp -R bin/*  ${APP_PATH}/
+if [ -z "${NO_COPY}" ]; then
+    echo "Copying application data..."
+    cp -R bin/*  ${APP_PATH}/
+fi
 
 # Install the icons
 xdg-icon-resource install --novendor --size 48 $APP_PATH/$APP.png $APP
@@ -114,7 +119,9 @@ update-desktop-database ${XDG_DIR}/applications
 update-mime-database    ${XDG_DIR}/mime
 
 # copy associated icons to pixmaps
-# cp $APP_PATH/$APP.png                ${XDG_DIR}/pixmaps
-# cp $APP_PATH/application-x-$APP.png  ${XDG_DIR}/pixmaps
+if [ -z "${NO_COPY}" ]; then
+    cp ${APP_PATH}/${APP}.png                ${XDG_DIR}/pixmaps
+    cp ${APP_PATH}/application-x-${APP}.png  ${XDG_DIR}/pixmaps
+fi
 
 

@@ -19,7 +19,6 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.Map;
 import java.util.TreeMap;
-import javax.swing.JOptionPane;
 import latex.DummyLatexProvider;
 
 /**
@@ -59,6 +58,7 @@ public class AlgebraCommandLineTool {
         int propPlacement = 1;
         boolean saveAsPnml = false;
         boolean verbose = false;
+        boolean useBrokenEdges = true;
         int c;
         for (c=0; c<args.length; c++) {
 //            System.out.println("args["+c+"]="+args[c]);
@@ -91,6 +91,10 @@ public class AlgebraCommandLineTool {
 
                 case "-v":
                     verbose = true;
+                    break;
+
+                case "-no_ba":
+                    useBrokenEdges = false;
                     break;
 
                 case "--": // end of arguments
@@ -146,7 +150,7 @@ public class AlgebraCommandLineTool {
         Algebra a = new Algebra(net1, net2, 
                         restSetTr.replace(" ", "").split(","), 
                         restSetPl.replace(" ", "").split(","), 
-                        dx2shift, dy2shift, verbose);
+                        dx2shift, dy2shift, useBrokenEdges, verbose);
         a.compose();
         GspnPage netComp = a.result;
         netComp.setPageName(net1.getPageName()+"_"+net2.getPageName());

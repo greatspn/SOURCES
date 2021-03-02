@@ -46,6 +46,9 @@ public class Algebra {
     
     // net2 coordinate shifts
     private final int dx2, dy2;
+    
+    // use broken edges between the two composed nets
+    private final boolean useBrokenEdges;
 
     private final boolean verbose;
     
@@ -121,6 +124,17 @@ public class Algebra {
     }
 
     //=========================================================================
+    // Warn for different attributes that cannot be merged
+    private void checkAttributeConflict(Node n1, Node n2, Node comb, String attr1, String attr2, String what) {
+        if (!attr1.equals(attr2)) {
+            String message = comb.getClass().getSimpleName()+
+                    " "+comb.getUniqueName()+": could not combine "+what+" of "+
+                    n1.getUniqueName()+" and "+n2.getUniqueName();
+            warnings.add(message);
+        }
+    }
+
+    //=========================================================================
     private Node shiftNode(Node n) {
         n.setX(n.getX() + dx2);
         n.setY(n.getY() + dy2);
@@ -180,7 +194,7 @@ public class Algebra {
 
     //=========================================================================
     public Algebra(GspnPage gspn1, GspnPage gspn2, String[] restSetTr, String[] restSetPl, 
-                   int dx2, int dy2, boolean verbose) 
+                   int dx2, int dy2, boolean useBrokenEdges, boolean verbose) 
     {
         this.gspn1 = gspn1;
         this.gspn2 = gspn2;
@@ -188,6 +202,7 @@ public class Algebra {
         this.restSetPl = restSetPl;
         this.dx2 = dx2;
         this.dy2 = dy2;
+        this.useBrokenEdges = useBrokenEdges;
         this.verbose = verbose;
         
         result = new GspnPage();
@@ -212,10 +227,9 @@ public class Algebra {
                 ColorClass c1 = (ColorClass)ee1.getValue();
                 ColorClass c2 = (ColorClass)map2.get(ee1.getKey());
                 ColorClass newColorClass = (ColorClass)Util.deepCopy(c1);
-                if (!c1.getColorClassDef().getExpr().equals(c2.getColorClassDef().getExpr())) 
-                {
-                    warnings.add("Composition conflict for color class "+newColorClass.getUniqueName());
-                }
+                checkAttributeConflict(c1, c2, newColorClass, 
+                        c1.getColorClassDef().getExpr(), c2.getColorClassDef().getExpr(),
+                        "color class definitions");
                 result.nodes.add(makeNodeNameUnique(newColorClass));
             }
             else {
@@ -250,10 +264,9 @@ public class Algebra {
                 ColorVar c1 = (ColorVar)ee1.getValue();
                 ColorVar c2 = (ColorVar)map2.get(ee1.getKey());
                 ColorVar newColorVar = (ColorVar)Util.deepCopy(c1);
-                if (!c1.getDomainExpr().getExpr().equals(c2.getDomainExpr().getExpr())) 
-                {
-                    warnings.add("Composition conflict for color variable "+newColorVar.getUniqueName());
-                }
+                checkAttributeConflict(c1, c2, newColorVar, 
+                        c1.getDomainExpr().getExpr(), c2.getDomainExpr().getExpr(),
+                        "color domains");
                 result.nodes.add(makeNodeNameUnique(newColorVar));
                 
                 // create a duplicated color var for later use, and register its unique name
@@ -301,12 +314,17 @@ public class Algebra {
                 ConstantID c1 = (ConstantID)ee1.getValue();
                 ConstantID c2 = (ConstantID)map2.get(ee1.getKey());
                 ConstantID newConst = (ConstantID)Util.deepCopy(c1);
-                if (c1.getConstType() != c2.getConstType() ||
-                    !c1.getColorDomainName().equals(c2.getColorDomainName()) ||
-                    !c1.getConstantExpr().getExpr().equals(c2.getConstantExpr().getExpr())) 
-                {
-                    warnings.add("Composition conflict for constant "+newConst.getUniqueName());
-                }
+                
+                checkAttributeConflict(c1, c2, newConst, 
+                        c1.getConstType().toString(), c2.getConstType().toString(),
+                        "types");
+                checkAttributeConflict(c1, c2, newConst, 
+                        c1.getColorDomainName(), c2.getColorDomainName(),
+                        "color domains");
+                checkAttributeConflict(c1, c2, newConst, 
+                        c1.getConstantExpr().getExpr(), c2.getConstantExpr().getExpr(),
+                        "definitions");
+
                 result.nodes.add(makeNodeNameUnique(newConst));
             }
             else {
@@ -341,10 +359,9 @@ public class Algebra {
                 TemplateVariable c1 = (TemplateVariable)ee1.getValue();
                 TemplateVariable c2 = (TemplateVariable)map2.get(ee1.getKey());
                 TemplateVariable newTVar = (TemplateVariable)Util.deepCopy(c1);
-                if (c1.getType()!= c2.getType()) 
-                {
-                    warnings.add("Composition conflict for template variable "+newTVar.getUniqueName());
-                }
+                
+                checkAttributeConflict(c1, c2, newTVar, 
+                        c1.getType().toString(), c2.getType().toString(), "types");
                 result.nodes.add(makeNodeNameUnique(newTVar));
             }
             else {
@@ -380,7 +397,7 @@ public class Algebra {
             }
         }
     }
-        
+            
     //=========================================================================
     private void joinPlaces() {
         for (Node node1 : gspn1.nodes) {
@@ -405,13 +422,15 @@ public class Algebra {
                             newPlace.setSuperPosTags(mergeTags(node1, node2));
                             newPlace.setX(newPlace.getX() + j*3);
                             newPlace.setY(newPlace.getY() + j*3);
-                            if (!p1.getColorDomainName().equals(p2.getColorDomainName()) ||
-                                p1.getType() != p2.getType() ||
-                                !p1.getInitMarkingExpr().equals(p2.getInitMarkingExpr()) ||
-                                !p1.getKroneckerPartition().equals(p2.getKroneckerPartition())) 
-                            {
-                                warnings.add("Composition conflict for place "+newPlace.getUniqueName());
-                            }
+                            
+                            checkAttributeConflict(p1, p2, newPlace, 
+                                    p1.getColorDomainName(), p2.getColorDomainName(), "color domains");
+                            checkAttributeConflict(p1, p2, newPlace, 
+                                    p1.getType().toString(), p2.getType().toString(), "types");
+                            checkAttributeConflict(p1, p2, newPlace, 
+                                    p1.getInitMarkingExpr(), p2.getInitMarkingExpr(), "initial markings");
+                            checkAttributeConflict(p1, p2, newPlace, 
+                                    p1.getKroneckerPartition(), p2.getKroneckerPartition(), "Kronecker partitions");
 //                            // Combine the initial markings
 //                            String init1 = p1.getInitMarkingExpr();
 //                            String init2 = p2.getInitMarkingExpr(), newInit;
@@ -492,16 +511,20 @@ public class Algebra {
                             newTransition.setSuperPosTags(mergeTags(node1, node2));
                             newTransition.setX(newTransition.getX() + j*3);
                             newTransition.setY(newTransition.getY() + j*3);
-                            if (t1.getType() != t2.getType() ||
-                                !t1.getDelay().equals(t2.getDelay()) ||
-                                !t1.getPriority().equals(t2.getPriority()) ||
-                                !t1.getWeight().equals(t2.getWeight()) ||
-                                !t1.getNumServers().equals(t2.getNumServers()) ||
-                                !t1.getGuard().equals(t2.getGuard()) ||
-                                t1.getRotation() != t2.getRotation()) 
-                            {
-                                warnings.add("Composition conflict for transition "+newTransition.getUniqueName());
-                            }
+                            
+                            checkAttributeConflict(t1, t2, newTransition, 
+                                t1.getType().toString(), t2.getType().toString(), "types");
+                            checkAttributeConflict(t1, t2, newTransition, 
+                                t1.getDelay(), t2.getDelay(), "delays");
+                            checkAttributeConflict(t1, t2, newTransition, 
+                                t1.getPriority(), t2.getPriority(), "priorities");
+                            checkAttributeConflict(t1, t2, newTransition, 
+                                t1.getWeight(), t2.getWeight(), "weights");
+                            checkAttributeConflict(t1, t2, newTransition, 
+                                t1.getNumServers(), t2.getNumServers(), "number of servers");
+                            checkAttributeConflict(t1, t2, newTransition, 
+                                t1.getGuard(), t2.getGuard(), "guards");
+
                             result.nodes.add(newTransition);
                             j++;
 
@@ -616,7 +639,7 @@ public class Algebra {
             else { // combine edge from net1 + edge from net2
                 headMagnet = e1.getHeadMagnet();
                 tailMagnet = e1.getTailMagnet();
-                isBroken = e1.isBroken || e2.isBroken;
+                isBroken = e1.isBroken || e2.isBroken || useBrokenEdges;
                 points = composeEdgePoints(e1, null); // NOTE: use only e1, do not use e2!
 
                 // Combine multiplicities

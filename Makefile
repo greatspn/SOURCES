@@ -2092,7 +2092,7 @@ install_JavaGUI_jars: JavaGUI
 # On Linux,also install the JavaGUI in the system menu using the XDG tools
 linux-install-JavaGUI: install_JavaGUI_jars
 	@echo "  [INSTALL] JavaGUI XDG resources"
-	@(cd $(OBJDIR)/JavaGUI/ && export INSTALLDIR=$(INSTALLDIR) && bash install.sh -silent )
+	@(cd $(OBJDIR)/JavaGUI/ && export INSTALLDIR=$(INSTALLDIR) && bash install.sh -silent -nc )
 
 # Install GUI library of models
 install_JavaGUI_models:
@@ -2101,7 +2101,7 @@ install_JavaGUI_models:
 
 
 # On Linux, make install automatically re-installs the Java GUI
-ifeq ($(UNAME_S),Linux)
+# ifeq ($(UNAME_S),Linux)
  ifdef HAS_JAVA_DEVELOPMENT_KIT
   ifdef HAS_APACHE_ANT
    ifndef EXCLUDE_GUI
@@ -2118,7 +2118,7 @@ SCRIPTS += unfolding2 algebra2 greatspn_editor
    endif
   endif
  endif
-endif
+# endif
 
 .PHONY += JavaGUI clean_JavaGUI JavaGUI-antlr java-jars clean_java-gui linux-install-JavaGUI 
 .PHONY += JavaGUI-increase-version-number JavaGUI-archives

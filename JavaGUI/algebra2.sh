@@ -12,6 +12,7 @@ if [[ $# == 0 ]] ; then
 	echo "    -horiz     Lay out composed nets horizontally."
 	echo "    -vert      Lay out composed nets vertically."
 	echo "    -v         Verbose mode."
+	echo "    -no_ba     Do not use broken edges between the two composed nets."
 	echo "    --         End of options."
 	
 	exit
