@@ -17,8 +17,8 @@ C0=$(tput setaf 9)
 LN="${B1}===============================================================================${B0}"
 
 echo $LN
-echo "${B1}Updating GreatSPN sources from SVN...${B0}"
-echo " Automatic SVN conflict resolution set to 'theirs-full'..."
+echo "${B1}Updating GreatSPN sources from github...${B0}"
+echo " WARNING: Repository will be reset to HEAD..."
 echo $LN
 read -p "Press any key to start upgrading..." -n1 -s
 echo
@@ -27,13 +27,13 @@ echo
 # SVNLOGIN="--username vboxuser"
 # (cd /home/user/GreatSPN/SOURCES && svn revert ${SVNLOGIN} --depth infinity . )
 # (cd /home/user/GreatSPN/SOURCES && svn update ${SVNLOGIN} --accept theirs-full )
-(cd /home/user/GreatSPN/SOURCES && git pull )
+(cd /home/user/GreatSPN/SOURCES && git reset --hard HEAD && git pull )
 if [ $? -eq 0 ]; then
 	echo
 	echo "${B1}Source tree has been upgraded. ${B0}"
 else
 	echo
-	echo "${B1}Error: Could not upgrade GreatSPN from SVN. ${B0}"
+	echo "${B1}Error: Could not upgrade GreatSPN from github. ${B0}"
 	read -p "Press any key to quit..." -n1 -s
 	exit 1
 fi
