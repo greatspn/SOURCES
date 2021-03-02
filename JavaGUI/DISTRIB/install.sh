@@ -69,7 +69,7 @@ fi
 mkdir -p ${XDG_DIR}/mime/packages
 mkdir -p ${XDG_DIR}/applications
 mkdir -p ${XDG_DIR}/pixmaps
-mkdir -p $APP_PATH
+mkdir -p ${APP_PATH}
 
 # Install the application
 if [ -z "${NO_COPY}" ]; then
@@ -78,40 +78,41 @@ if [ -z "${NO_COPY}" ]; then
 fi
 
 # Install the icons
-xdg-icon-resource install --novendor --size 48 $APP_PATH/$APP.png $APP
-xdg-icon-resource install --novendor --size 48 $APP_PATH/application-x-$APP.png application-x-$APP
+xdg-icon-resource install --novendor --size 48 ${APP_PATH}/${APP}.png ${APP}
+xdg-icon-resource install --novendor --size 48 ${APP_PATH}/application-x-${APP}.png application-x-${APP}
 
 # Create mime xml 
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <mime-info xmlns=\"http://www.freedesktop.org/standards/shared-mime-info\">
-    <mime-type type=\"application/x-$APP\">
-        <comment>$COMMENT</comment>
-        <icon name=\"application-x-$APP\"/>
-        <glob pattern=\"*.$EXT\"/>
+    <mime-type type=\"application/x-${APP}\">
+        <comment>${COMMENT}</comment>
+        <icon name=\"application-x-${APP}\"/>
+        <glob pattern=\"*.${EXT}\"/>
     </mime-type>
-</mime-info>" > ${XDG_DIR}/mime/packages/application-x-$APP.xml
+</mime-info>" > ${XDG_DIR}/mime/packages/application-x-${APP}.xml
 
 echo "Creating desktop entry..."
 
-# Create application desktop
+# Create application desktop entry
 echo "[Desktop Entry]
 Name=$LONGNAME
-Exec=java -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel -splash:$APP_PATH/lib/splash.png -jar $APP_PATH/Editor.jar %F
-MimeType=application/x-$APP
-Icon=$APP
-Path=$APP_PATH
+Exec=java -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel -splash:${APP_PATH}/lib/splash.png -jar ${APP_PATH}/Editor.jar %F
+MimeType=application/x-${APP}
+Icon=${APP}
+Path=${APP_PATH}
 Terminal=false
 Type=Application
 Categories=
 Comment=The New GreatSPN Editor.
-"> ${XDG_DIR}/applications/$APP.desktop
+"> ${XDG_DIR}/applications/${APP}.desktop
 
 echo "Installing menu entry..."
-xdg-desktop-menu install --novendor --mode system ${XDG_DIR}/applications/$APP.desktop
+xdg-desktop-menu install --novendor --mode system ${XDG_DIR}/applications/${APP}.desktop
 
+# install the link in the user Desktop menu
 XDG_USER_DIR=$(xdg-user-dir DESKTOP)
 rm -f ${XDG_USER_DIR}/New\ GreatSPN\ Editor.desktop
-ln ${XDG_DIR}/applications/$APP.desktop ${XDG_USER_DIR}/New\ GreatSPN\ Editor.desktop
+ln ${XDG_DIR}/applications/${APP}.desktop ${XDG_USER_DIR}/New\ GreatSPN\ Editor.desktop
 
 echo "Updating application/mime databases..."
 
