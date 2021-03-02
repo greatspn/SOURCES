@@ -2105,7 +2105,10 @@ install_JavaGUI_models:
  ifdef HAS_JAVA_DEVELOPMENT_KIT
   ifdef HAS_APACHE_ANT
    ifndef EXCLUDE_GUI
+
+ifeq ($(UNAME_S),Linux)
 install: linux-install-JavaGUI
+endif
 
 all: JavaGUI
 
