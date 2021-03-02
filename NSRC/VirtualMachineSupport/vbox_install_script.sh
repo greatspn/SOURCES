@@ -84,19 +84,19 @@ ${RUN} chown user:user "${DESKTOP_ENTRY_DIR}/Mount Shared Folder.desktop"
 chmod 755 "${DESKTOP_ENTRY_DIR}/Mount Shared Folder.desktop"
 
 # Update Deskop link to upgrade GreatSPN
-cat <<EOF > "${DESKTOP_ENTRY_DIR}/Upgrade GreatSPN.desktop"
+cat <<EOF > "${DESKTOP_ENTRY_DIR}/Update GreatSPN.desktop"
 [Desktop Entry]
 Encoding=UTF-8
 Type=Application
-Name=Upgrade GreatSPN
-Name[en_US]=Upgrade GreatSPN
+Name=Update GreatSPN
+Name[en_US]=Update GreatSPN
 Icon=/home/user/GreatSPN/SOURCES/JavaGUI/Additional/greatspn-update.png
 Exec=/home/user/GreatSPN/SOURCES/NSRC/VirtualMachineSupport/upgrade-greatspn-from-svn.sh
 Comment[en_US]=
 Terminal=true
 EOF
-${RUN} chown user:user "${DESKTOP_ENTRY_DIR}/Upgrade GreatSPN.desktop"
-chmod 755 "${DESKTOP_ENTRY_DIR}/Upgrade GreatSPN.desktop"
+${RUN} chown user:user "${DESKTOP_ENTRY_DIR}/Update GreatSPN.desktop"
+chmod 755 "${DESKTOP_ENTRY_DIR}/Update GreatSPN.desktop"
 
 # Link to the old GreatSPN interface
 cat <<EOF > "/home/user/.launch-old-greatspn"
