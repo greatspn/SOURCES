@@ -797,10 +797,19 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         return Util.getPreferences().get(ADDPATH_DIR, "");
     }
     
+    private static final String ADD_LD_LIBRARY_PATH_DIR = "additional_ld_library_path_dir";
+    public static void setAdditionalLibraryPathDir(String path) {
+        Util.getPreferences().put(ADD_LD_LIBRARY_PATH_DIR, path);
+    }
+    public static String getAdditionalLibraryPathDir() {
+        return Util.getPreferences().get(ADD_LD_LIBRARY_PATH_DIR, "/usr/local/lib");
+    }
+    
+    //==========================================================================
     public static String[] prepareRuntimeEnvironmentVars() {
         return prepareRuntimeEnvironmentVars(null);
     }
-    
+
     public static String[] prepareRuntimeEnvironmentVars(SolverInvokator solver) {
         // Prepare the environment variables
         Map<String, String> env = System.getenv(), nenv = new HashMap<>();
@@ -811,7 +820,7 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         nenv.put("FROM_GUI", "1");   // Tell the solver that is being called from the GUI
         
         if (Util.isWindows()) {
-            nenv.put("LD_LIBRARY_PATH", "/usr/local/lib");
+//            nenv.put("LD_LIBRARY_PATH", "/usr/local/lib");
             nenv.put("WSLENV", "TERM:FREQUENCY:FROM_GUI:LD_LIBRARY_PATH");
         }
         
@@ -825,6 +834,11 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
             if (e.getKey().equalsIgnoreCase("PATH")) {
                 if (!getAdditionalPathDir().isEmpty())
                     value += File.pathSeparator + getAdditionalPathDir();
+//                System.out.println("PATH="+value);
+            }
+            if (e.getKey().equalsIgnoreCase("LD_LIBRARY_PATH")) {
+                if (!getAdditionalLibraryPathDir().isEmpty())
+                    value += File.pathSeparator + getAdditionalLibraryPathDir();
 //                System.out.println("PATH="+value);
             }
             envp[pos++] = e.getKey()+"="+value;

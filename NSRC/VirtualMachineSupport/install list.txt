@@ -79,3 +79,4 @@ settings > internationalization > installa italiano & layout
 
 touch /home/user/.greatspn-on-vbox
 echo 'export PATH=$PATH:/usr/local/GreatSPN/scripts' >> ~/.bashrc
+echo 'export LD_LIBRARY_PATH=/usr/local/lib' >> ~/.bashrc
