@@ -137,8 +137,8 @@ It is designed to be run under VirtualBox or VMWare, to ease the software portab
 
 UPGRADE GREATSPN FROM SOURCES USING THE GITHUB REPOSITORY:
 
-Just double-click on the Upgrade-GreatSPN script on the Desktop.
-The script downloads the latest sources of GreatSPN and builds it.
+Just double-click on the "GreatSPN Update" icon in the application bar.
+The script downloads the latest sources of GreatSPN and rebuilds the software.
 
 ---------------------------------------------------------------------------------------
 INTEGRATION WITH VIRTUALBOX:
@@ -178,7 +178,7 @@ Share name *MUST* be:  shared
 
 Auto-mount feature of VirtualBox does not work properly and it is
 disabled. To mount the shared folder, double click on the
-'Mount Shared Folder' icon on the desktop.
+'Mount Shared Volume' icon on the application bar.
 
 FOR VMWARE
 -----------------------
@@ -217,7 +217,7 @@ mkdir -p /home/user/Desktop/SharedFolder
 # Install script end.
 #===================================================================
 echo && echo && echo
-echo "${B1}Upgrade procedure completed successfully...${B0}"
+echo "${B1}Update procedure completed successfully...${B0}"
 echo
 read -p "Press any key to quit..." -n1 -s
 echo
