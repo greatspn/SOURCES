@@ -66,8 +66,10 @@ echo $LN
 echo "${B1}Running post-installation script...${B0}"
 echo $LN && echo
 
+DESKTOP_ENTRY_DIR=/home/user/.local/share/applications
+
 # Update Deskop link to mount script
-cat <<EOF > "/home/user/Desktop/Mount Shared Folder"
+cat <<EOF > "${DESKTOP_ENTRY_DIR}/Mount Shared Folder"
 [Desktop Entry]
 Encoding=UTF-8
 Type=Application
@@ -78,10 +80,10 @@ Exec=/home/user/GreatSPN/SOURCES/NSRC/VirtualMachineSupport/mount-shared-folder.
 Comment[en_US]=
 Terminal=true
 EOF
-${RUN} chown user:user "/home/user/Desktop/Mount Shared Folder"
+${RUN} chown user:user "${DESKTOP_ENTRY_DIR}/Mount Shared Folder"
 
 # Update Deskop link to upgrade GreatSPN
-cat <<EOF > "/home/user/Desktop/Upgrade GreatSPN"
+cat <<EOF > "${DESKTOP_ENTRY_DIR}/Upgrade GreatSPN"
 [Desktop Entry]
 Encoding=UTF-8
 Type=Application
@@ -92,7 +94,7 @@ Exec=/home/user/GreatSPN/SOURCES/NSRC/VirtualMachineSupport/upgrade-greatspn-fro
 Comment[en_US]=
 Terminal=true
 EOF
-${RUN} chown user:user "/home/user/Desktop/Upgrade GreatSPN"
+${RUN} chown user:user "${DESKTOP_ENTRY_DIR}/Upgrade GreatSPN"
 
 # Link to the old GreatSPN interface
 cat <<EOF > "/home/user/launch-old-greatspn"
@@ -103,7 +105,7 @@ EOF
 ${RUN} chown user:user "/home/user/launch-old-greatspn"
 chmod 755 "/home/user/launch-old-greatspn"
 
-cat <<EOF > "/home/user/Desktop/GreatSPN-OLD"
+cat <<EOF > "${DESKTOP_ENTRY_DIR}/GreatSPN-OLD"
 [Desktop Entry]
 Encoding=UTF-8
 Type=Application
@@ -114,7 +116,7 @@ Exec=/home/user/launch-old-greatspn
 Comment[en_US]=
 Terminal=true
 EOF
-${RUN} chown user:user "/home/user/Desktop/GreatSPN-OLD"
+${RUN} chown user:user "${DESKTOP_ENTRY_DIR}/GreatSPN-OLD"
 
 # Link to the new GreatSPN interface
 # cat <<EOF > "/home/user/Desktop/New GreatSPN Editor"
