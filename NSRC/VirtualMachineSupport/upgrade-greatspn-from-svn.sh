@@ -1,12 +1,10 @@
 #!/bin/bash
 
-HOMEDIR=/home/greatspn
-
-if [ ! -e ${HOMEDIR}/.greatspn-on-vbox ]; then
+if [ ! -e /home/user/.greatspn-on-vbox ]; then
 	echo 'This script should be run only on the VirtualBox image of GreatSPN.'
 	exit 1
 fi
-#touch ${HOMEDIR}/.greatspn-on-vbox
+#touch /home/user/.greatspn-on-vbox
 
 # This script is intended to be executed in the virtualBox image
 # of GreatSPN by double-clicking on the Desktop icon 'Upgrade GreatSPN'
@@ -27,9 +25,9 @@ echo
 
 # SVNLOGIN="--username vboxuser -password vboxuser --non-interactive"
 # SVNLOGIN="--username vboxuser"
-# (cd ${HOMEDIR}/GreatSPN/SOURCES && svn revert ${SVNLOGIN} --depth infinity . )
-# (cd ${HOMEDIR}/GreatSPN/SOURCES && svn update ${SVNLOGIN} --accept theirs-full )
-(cd ${HOMEDIR}/GreatSPN/SOURCES && git reset --hard HEAD && git pull )
+# (cd /home/user/GreatSPN/SOURCES && svn revert ${SVNLOGIN} --depth infinity . )
+# (cd /home/user/GreatSPN/SOURCES && svn update ${SVNLOGIN} --accept theirs-full )
+(cd /home/user/GreatSPN/SOURCES && git reset --hard HEAD && git pull )
 if [ $? -eq 0 ]; then
 	echo
 	echo "${B1}Source tree has been upgraded. ${B0}"
@@ -41,7 +39,7 @@ else
 fi
 
 # The rest of the installation is done by the updated vbox_install_script.sh script
-${HOMEDIR}/GreatSPN/SOURCES/NSRC/VirtualMachineSupport/vbox_install_script.sh
+/home/user/GreatSPN/SOURCES/NSRC/VirtualMachineSupport/vbox_install_script.sh
 
 
 

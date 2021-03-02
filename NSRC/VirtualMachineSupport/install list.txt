@@ -63,3 +63,15 @@ ADD /usr/local/lib  to /etc/ld.so.conf  and re-run ldconfig
 
 dnf install system-config-printer
 Poi Menu > Administration > Printer e aggiungere una stampante CUPS-pdf di default
+
+
+-----------------------------------------------------------------
+VBOX 2021a su Ubuntu20.04LTS
+
+sudo apt update
+
+# per le guest additions
+sudo apt install -y gcc make perl
+
+settings > power > remove screensaver
+

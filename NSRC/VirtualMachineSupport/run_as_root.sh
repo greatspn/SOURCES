@@ -1,8 +1,6 @@
 #!/bin/bash
 
-HOMEDIR=/home/greatspn
-
-if [ ! -e ${HOMEDIR}/.greatspn-on-vbox ]; then
+if [ ! -e /home/user/.greatspn-on-vbox ]; then
 	echo 'This script should be run only on the VirtualBox image of GreatSPN.'
 	exit 1
 fi

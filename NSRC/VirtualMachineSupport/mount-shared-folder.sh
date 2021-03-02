@@ -3,9 +3,7 @@
 # This script is intended to be executed in the virtualBox image
 # of GreatSPN by double-clicking on the Desktop icon 'Mount Shared Folder'
 
-HOMEDIR=/home/greatspn
-
-if [ ! -e ${HOMEDIR}/.greatspn-on-vbox ]; then
+if [ ! -e /home/user/.greatspn-on-vbox ]; then
 	echo 'This script should be run only on the VirtualBox image of GreatSPN.'
 	exit 1
 fi
@@ -21,8 +19,8 @@ echo "${B1}  Mounting shared folder ...${B0}"
 #echo "${B1}  Type '${C1}fedora${C0}' when asked for a password${B0}"
 echo $LN
 echo
-RUN=${HOMEDIR}/GreatSPN/SOURCES/NSRC/VirtualMachineSupport/run_as_root.sh
-${RUN} mount -t vboxsf shared ~/Desktop/SharedFolder -o uid=`id -u user`
+RUN=/home/user/GreatSPN/SOURCES/NSRC/VirtualMachineSupport/run_as_root.sh
+${RUN} mount -t vboxsf shared /home/user/Desktop/SharedFolder -o uid=`id -u user`
 
 if [ $? -eq 0 ]; then
 	echo "${B1}  Shared folder mounted. ${B0}"
