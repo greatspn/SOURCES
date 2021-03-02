@@ -27,7 +27,7 @@ echo
 # SVNLOGIN="--username vboxuser"
 # (cd /home/user/GreatSPN/SOURCES && svn revert ${SVNLOGIN} --depth infinity . )
 # (cd /home/user/GreatSPN/SOURCES && svn update ${SVNLOGIN} --accept theirs-full )
-(cd /home/user/GreatSPN/SOURCES && git reset --hard HEAD && git pull )
+(cd /home/user/GreatSPN/SOURCES && git stash && git pull )
 if [ $? -eq 0 ]; then
 	echo
 	echo "${B1}Source tree has been upgraded. ${B0}"

@@ -26,9 +26,9 @@ then
 	# For now, always clear the editor sources, to avoid having ant
 	# not rebuilding everything and leaving some class uncompiled/stale
 	${RUN} chown -R user:user /home/user/GreatSPN/SOURCES
-	(rm -rf /home/user/GreatSPN/SOURCES/JavaGUI/Editor/build/classes/* )
-	(touch /home/user/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/grammar/ExprLang.g4)
-	(cd /home/user/GreatSPN/SOURCES && make JavaGUI-antlr)
+	# (rm -rf /home/user/GreatSPN/SOURCES/JavaGUI/Editor/build/classes/* )
+	# (touch /home/user/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/grammar/ExprLang.g4)
+	# (cd /home/user/GreatSPN/SOURCES && make JavaGUI)
 	# Make everything else
 	(cd /home/user/GreatSPN/SOURCES && make)
 	echo
