@@ -131,8 +131,9 @@ The GUI for Windows is automatically configured to use the tools inside the WSL-
 We offer a pre-installed VirtualBox machine image, based on Fedora Core, that ships with
 the GreatSPN framework already installed, with all the required dependencies.
 This is the easiest way to get GreatSPN, since you just have to download the image.
-The VirtualBox image can be downloaded from this [repository](http://www.di.unito.it/~greatspn/VBox/).
-In case you need it, the root password of the VirtualBox image is: `fedora`
+The VirtualBox image can be downloaded from this [repository](http://www.di.unito.it/~greatspn/VBox/) and this is the [LATEST IMAGE](http://www.di.unito.it/~greatspn/VBox/GreatSPN-2021a.ova).
+In case you need it, the root password of the VirtualBox image is: `user` 
+(on some older images the password was `fedora`).
 
 Sometimes the virtual box machine will require the re-installation of
 the so-called "Guest Additions", which allows to share directories with the host pc.
