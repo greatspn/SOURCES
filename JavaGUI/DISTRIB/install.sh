@@ -120,9 +120,7 @@ update-desktop-database ${XDG_DIR}/applications
 update-mime-database    ${XDG_DIR}/mime
 
 # copy associated icons to pixmaps
-if [ -z "${NO_COPY}" ]; then
-    cp ${APP_PATH}/${APP}.png                ${XDG_DIR}/pixmaps
-    cp ${APP_PATH}/application-x-${APP}.png  ${XDG_DIR}/pixmaps
-fi
+cp ${APP_PATH}/${APP}.png                ${XDG_DIR}/pixmaps
+cp ${APP_PATH}/application-x-${APP}.png  ${XDG_DIR}/pixmaps
 
 
