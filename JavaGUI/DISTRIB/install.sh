@@ -109,8 +109,9 @@ Comment=The New GreatSPN Editor.
 echo "Installing menu entry..."
 xdg-desktop-menu install --novendor --mode system ${XDG_DIR}/applications/$APP.desktop
 
-#rm -f ~/Desktop/New\ GreatSPN\ Editor.desktop
-#ln ${XDG_DIR}/applications/$APP.desktop ~/Desktop/New\ GreatSPN\ Editor.desktop
+XDG_USER_DIR=$(xdg-user-dir DESKTOP)
+rm -f ${XDG_USER_DIR}/New\ GreatSPN\ Editor.desktop
+ln ${XDG_DIR}/applications/$APP.desktop ${XDG_USER_DIR}/New\ GreatSPN\ Editor.desktop
 
 echo "Updating application/mime databases..."
 
