@@ -1,6 +1,6 @@
 #!/bin/bash
 if [[ $(id -u) -ne 0 ]] ; then 
-    echo "Please run installation as root"
+    echo "Please run install.sh as root"
     exit 1 
 fi
 
@@ -104,7 +104,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     </mime-type>
 </mime-info>" > ${XDG_DIR}/mime/packages/application-x-${APP}.xml
 
-echo "Creating desktop entry..."
+echo "  [XDG]  Creating desktop entry..."
 
 # Create application desktop entry
 echo "[Desktop Entry]
@@ -119,15 +119,16 @@ Categories=
 Comment=The New GreatSPN Editor.
 "> ${XDG_DIR}/applications/${APP}.desktop
 
-echo "Installing menu entry..."
+echo "  [XDG]  Installing menu entry..."
 xdg-desktop-menu install --novendor --mode system ${XDG_DIR}/applications/${APP}.desktop
 
 # install the link in the user Desktop menu
-XDG_USER_DIR=$(xdg-user-dir DESKTOP)
-rm -f ${XDG_USER_DIR}/New\ GreatSPN\ Editor.desktop
-ln ${XDG_DIR}/applications/${APP}.desktop ${XDG_USER_DIR}/New\ GreatSPN\ Editor.desktop
+# NOTE: when run as root, $(xdg-user-dir DESKTOP)  is the root desktop, not the user one.
+# XDG_USER_DIR=$(xdg-user-dir DESKTOP)
+# rm -f ${XDG_USER_DIR}/New\ GreatSPN\ Editor.desktop
+# ln ${XDG_DIR}/applications/${APP}.desktop ${XDG_USER_DIR}/New\ GreatSPN\ Editor.desktop
 
-echo "Updating application/mime databases..."
+echo "  [XDG]  Updating application/mime databases..."
 
 # update databases for both application and mime
 update-desktop-database ${XDG_DIR}/applications
