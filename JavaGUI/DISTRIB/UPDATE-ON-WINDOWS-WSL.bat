@@ -33,11 +33,11 @@ wsl -- unzip -o GreatSPN-Editor-v*-Jar.zip
 
 del GreatSPN-Editor-v*-Jar.zip
 
-move /Y  bin\*  .\
-mkdir lib
-move /Y  bin\lib\* .\lib\
-rmdir bin\lib
-rmdir bin
+rem move /Y  bin\*  .\
+rem mkdir lib
+rem move /Y  bin\lib\* .\lib\
+rem rmdir bin\lib
+rem rmdir bin
 
 echo.
 echo --------------------------------------------------------------

@@ -1950,7 +1950,7 @@ $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Mac.zip: JavaGUI/Editor/dist/GreatSPN\ Editor.app
 	@(cd JavaGUI/Editor/dist/ && zip -q -r - GreatSPN\ Editor.app ) > $@
 
 # Application package objects
-$(OBJDIR)/JavaGUI/bin/Editor.jar: JavaGUI/Editor/dist/Editor.jar
+$(OBJDIR)/JavaGUI/bin/Editor.jar: JavaGUI/Editor/dist/Editor.jar JavaGUI/DISTRIB/install.sh
 	@echo "  [JAR] " $@
 	@$(MKDIR) $(dir $@)/lib
 	@rm -f $@
@@ -2550,7 +2550,13 @@ distclean:
 	@echo "  [DISTCLEAN]"
 	@$(RMDIR) $(BINDIR) $(SCRIPTDIR) $(LIBDIR) $(OBJDIR) $(JAVA_BUILD_DIR) $(CLEAN_INSTALLEDSOURCE)
 
-install: all
+require-root:
+ifneq ($(shell id -u), 0)
+	@echo "You are not root, run 'install' as root please."
+	@exit 1
+endif
+
+install: all | require-root
 	@echo "  [INSTALL]"
 	@$(MKDIR) $(INSTALLDIR)/$(BINDIR)/
 	@cp $(BINARIES) $(EXTRA_INSTALLED_BINARIES)  $(INSTALLDIR)/$(BINDIR)/

@@ -1,4 +1,9 @@
 #!/bin/bash
+if [[ $(id -u) -ne 0 ]] ; then 
+    echo "Please run installation as root"
+    exit 1 
+fi
+
 APP="pnpro-editor"
 LONGNAME="New GreatSPN Editor"
 EXT="pnpro"
@@ -65,17 +70,25 @@ if [ -z "${SILENT}" ]; then
 	read -p "Press [Enter] key to start."
 fi
 
-# Create directories if missing
-mkdir -p ${XDG_DIR}/mime/packages
-mkdir -p ${XDG_DIR}/applications
-mkdir -p ${XDG_DIR}/pixmaps
-mkdir -p ${APP_PATH}
-
 # Install the application
 if [ -z "${NO_COPY}" ]; then
     echo "Copying application data..."
     cp -R bin/*  ${APP_PATH}/
 fi
+
+#---------------------------------------------------------------------------------
+# XDG Integration
+#---------------------------------------------------------------------------------
+if ! [ -x "$(command -v xdg-icon-resource)" ]; then
+  echo 'Missing XDG (X Desktop Group) utils. Could not perform XDG integration.' >&2
+  exit 0
+fi
+
+# Create directories if missing
+mkdir -p ${XDG_DIR}/mime/packages
+mkdir -p ${XDG_DIR}/applications
+mkdir -p ${XDG_DIR}/pixmaps
+mkdir -p ${APP_PATH}
 
 # Install the icons
 xdg-icon-resource install --novendor --size 48 ${APP_PATH}/${APP}.png ${APP}
