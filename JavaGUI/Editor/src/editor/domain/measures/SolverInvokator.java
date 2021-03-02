@@ -824,6 +824,11 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
             nenv.put("WSLENV", "TERM:FREQUENCY:FROM_GUI:LD_LIBRARY_PATH");
         }
         
+        if (!nenv.containsKey("PATH"))
+            nenv.put("PATH", "");
+        if (!nenv.containsKey("LD_LIBRARY_PATH"))
+            nenv.put("LD_LIBRARY_PATH", "");
+        
         if (solver != null)
             solver.modifyEnvironmentVars(nenv);
         
@@ -833,13 +838,13 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
             String value = e.getValue();
             if (e.getKey().equalsIgnoreCase("PATH")) {
                 if (!getAdditionalPathDir().isEmpty())
-                    value += File.pathSeparator + getAdditionalPathDir();
+                    value += (value.isEmpty() ? "" : File.pathSeparator) + getAdditionalPathDir();
 //                System.out.println("PATH="+value);
             }
             if (e.getKey().equalsIgnoreCase("LD_LIBRARY_PATH")) {
                 if (!getAdditionalLibraryPathDir().isEmpty())
-                    value += File.pathSeparator + getAdditionalLibraryPathDir();
-//                System.out.println("PATH="+value);
+                    value += (value.isEmpty() ? "" : File.pathSeparator) + getAdditionalLibraryPathDir();
+//                System.out.println("LD_LIBRARY_PATH="+value);
             }
             envp[pos++] = e.getKey()+"="+value;
         }
