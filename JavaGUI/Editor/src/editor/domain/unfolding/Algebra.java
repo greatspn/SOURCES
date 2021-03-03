@@ -93,6 +93,8 @@ public class Algebra {
     // least a common tag in the restricted list, which means that the
     // two nodes will be composed in the @result net.
     private boolean nodesShareRestrictedTag(Node node1, Node node2, String[] restList) {
+        if (restList == null)
+            return false;
         for (int n1=0; n1<node1.numTags(); n1++) {
             for (int n2=0; n2<node2.numTags(); n2++) {
                 if (node1.getTag(n1).equals(node2.getTag(n2))) {

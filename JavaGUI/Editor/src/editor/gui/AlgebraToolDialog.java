@@ -191,6 +191,7 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                     String transitionTags = "", placeTags = "";
 
                     // Read properties from the dialog controls
+                    boolean onPl = false, onTr = false;
                     if (radioPlaceAndTransitionSuperpos.isSelected())
                         propOperator = 'b';
                     if (radioPlaceSuperpos.isSelected())
@@ -201,10 +202,12 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                     if (propOperator == 'p' || propOperator == 'b') {
                         propPlaceTags = textFieldPlaceTags.getText();
                         placeTags = "place={"+propPlaceTags.replace(",", "|").replace(" ", "") + "}\n";
+                        onPl = true;
                     }
                     if (propOperator == 't' || propOperator == 'b') {
                         propTransTags = textFieldTransitionTags.getText();
                         transitionTags = "transition={"+propTransTags.replace(",", "|").replace(" ", "") + "}\n";
+                        onTr = true;
                     }
                     propBrokenEdges = checkBoxBrokenEdges.isSelected();
                     propCombineTags = checkBoxCombineTags.isSelected();
@@ -235,8 +238,8 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                         }
                         
                         Algebra a = new Algebra(net1, net2, 
-                                        propTransTags.replace(" ", "").split(","), 
-                                        propPlaceTags.replace(" ", "").split(","), 
+                                        onTr ? propTransTags.replace(" ", "").split(",") : null, 
+                                        onPl ? propPlaceTags.replace(" ", "").split(",") : null, 
                                         dx2shift, dy2shift, propBrokenEdges, false);
                         a.compose();
                         netComp = a.result;

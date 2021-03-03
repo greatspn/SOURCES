@@ -2234,7 +2234,7 @@ void ArcsofArg2(struct trans_object *tr2, int op1index, int specimen, struct tra
 // -----------------------------------
 struct trans_object *JoinExpTrans(struct trans_object *trans1, struct trans_object *trans2) {
     struct trans_object *tr1, *tr2, *trr, *r;
-    int first = 1, i, j, k, l, mul, toadd, simple, index2;
+    int first = 1, i, j, k, l, mul, toadd, simple, index2, *trp;
 
     ArcCount = 0;
     GlCountTr1 = 0;
@@ -2242,11 +2242,13 @@ struct trans_object *JoinExpTrans(struct trans_object *trans1, struct trans_obje
     r = NULL;
     NtrR = 0;
     if (trans1 != NULL || trans2 != NULL) {
+        trp = (int*)emalloc(sizeof(int) * MAX(Ntr1, Ntr2));
         tr1 = trans1;
         k = 0;
         while (tr1 != NULL) {
             mul = 0;
-            for (j = 0; j < Ntr2; j++) if (JoinTr[k][j] == 1) mul++;
+            index2 = 0;
+            for (j = 0; j < Ntr2; j++) if (JoinTr[k][j] == 1) { mul++; trp[index2++] = j; }
             simple = 1;
             if (mul > 0) { // have @mul transitions of net2 to combine with
                 simple = 0;
@@ -2257,8 +2259,8 @@ struct trans_object *JoinExpTrans(struct trans_object *trans1, struct trans_obje
             }
 
             MapTr1[GlCountTr1] = NtrR;
-            index2 = 0;
-            tr2 = trans2;
+            // index2 = 0;
+            // tr2 = trans2;
             for (j = 0; j < mul; j++) {
                 if (first) {
                     r = (struct trans_object *)emalloc(sizeof(struct trans_object));
@@ -2279,10 +2281,14 @@ struct trans_object *JoinExpTrans(struct trans_object *trans1, struct trans_obje
                     ArcsofArg2(trr, GlCountTr1, j, tr1);
                 if (!simple) {
                     if (g_compose_tags) {
-                        while (!JoinTr[k][index2]) { // get the index of the other transition in net2
-                            ++index2;
-                            tr2 = tr2->next;
-                        }
+                        struct Desc *desc2 = Op2TrD;
+                        for (int ii=0; ii<trp[j]; ii++) 
+                            desc2 = desc2->next;
+                        tr2 = desc2->tr_obj;
+                        // while (!JoinTr[k][index2]) { // get the index of the other transition in net2
+                        //     ++index2;
+                        //     tr2 = tr2->next;
+                        // }
                         // printf("CopyTrProperties[1] tr1->tag=%s  tr2->tag=%s  trr->tag=%s j=%d\n", tr1->tag, tr2->tag, trr->tag, j);
                         struct tag_s *tp1 = DecomposeTag(tr1->tag);
                         struct tag_s *tp2 = DecomposeTag(tr2->tag);
@@ -2293,8 +2299,8 @@ struct trans_object *JoinExpTrans(struct trans_object *trans1, struct trans_obje
                         FreeDecomposedTag(tp1);
                         FreeDecomposedTag(tp2);
                         // advance to next transition
-                        ++index2;
-                        tr2 = tr2->next;
+                        // ++index2;
+                        // tr2 = tr2->next;
                     }
                 }
                 // else {
@@ -2334,6 +2340,7 @@ struct trans_object *JoinExpTrans(struct trans_object *trans1, struct trans_obje
             tr2 = tr2->next;
             GlCountTr2++;
         }
+        free(trp);
     }
 
 #ifdef DEBUG
@@ -2476,17 +2483,19 @@ char *JoinPlColors(char *str1, char *str2) {
 // ---------------------------------------
 struct place_object *JoinPlaces(struct place_object *place1, struct place_object *place2) {
     struct place_object *pl1, *pl2, *plr, *r, *tmp, *tmp2;
-    int first = 1, i, j, k, l, mul, toadd, simple, GlCountPl1 = 0, GlCountPl2 = 0, index2;
+    int first = 1, i, j, k, l, mul, toadd, simple, GlCountPl1 = 0, GlCountPl2 = 0, index2, *plp;
     char *newcolor;
 
     r = NULL;
     NplR = 0;
     if (place1 != NULL || place2 != NULL) {
+        plp = (int*)emalloc(sizeof(int) * MAX(Npl1, Npl2));
         pl1 = place1;
         k = 0;
         while (pl1 != NULL) {
             mul = 0;
-            for (j = 0; j < Npl2; j++) if (JoinPl[k][j] == 1) mul++;
+            index2 = 0;
+            for (j = 0; j < Npl2; j++) if (JoinPl[k][j] == 1) { mul++; plp[index2++] = j; }
             simple = 1;
             if (mul > 0) { // have @mul places of net2 to combine with
                 simple = 0;
@@ -2497,8 +2506,8 @@ struct place_object *JoinPlaces(struct place_object *place1, struct place_object
             }
 
             MapPl1[GlCountPl1] = NplR;
-            index2 = 0;
-            pl2 = place2;
+            // index2 = 0;
+            // pl2 = place2;
             for (j = 0; j < mul; j++) {
                 if (first) {
                     r = (struct place_object *)emalloc(sizeof(struct place_object));
@@ -2516,10 +2525,14 @@ struct place_object *JoinPlaces(struct place_object *place1, struct place_object
                 plr->brokenout = 0;
                 if (!simple) {
                     if (g_compose_tags) {
-                        while (!JoinPl[k][index2]) { // get the index of the other place in net2
-                            ++index2;
-                            pl2 = pl2->next;
-                        }
+                        struct Desc *desc2 = Op2PlD;
+                        for (int ii=0; ii<plp[j]; ii++) 
+                            desc2 = desc2->next;
+                        pl2 = desc2->pl_obj;
+                        // while (!JoinPl[k][index2]) { // get the index of the other place in net2
+                        //     ++index2;
+                        //     pl2 = pl2->next;
+                        // }
                         // printf("CopyPlProperties[1] pl1->tag=%s  pl2->tag=%s  plr->tag=%s j=%d\n", 
                         //        pl1->tag, pl2->tag, plr->tag, j);
                         struct tag_s *tp1 = DecomposeTag(pl1->tag);
@@ -2532,8 +2545,8 @@ struct place_object *JoinPlaces(struct place_object *place1, struct place_object
                         FreeDecomposedTag(tp2);
 
                         // advance to next place in p2.
-                        ++index2;
-                        pl2 = pl2->next;
+                        // ++index2;
+                        // pl2 = pl2->next;
                     }
                 }
                 // else {
@@ -2569,6 +2582,7 @@ struct place_object *JoinPlaces(struct place_object *place1, struct place_object
             pl2 = pl2->next;
             GlCountPl2++;
         }
+        free(plp);
     }
 
 #ifdef DEBUG
