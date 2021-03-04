@@ -49,8 +49,8 @@
             "args": [ 
                 "-no_ba",
                 "-g",
-                "/home/elvio/nets/AA1",
-                "/home/elvio/nets/BB1",
+                "/home/elvio/nets/GRID1",
+                "/home/elvio/nets/GRID2",
                 "b",
                 "/home/elvio/nets/restfile",
                 "/home/elvio/nets/AABB"

@@ -2778,8 +2778,9 @@ struct group_object *JoinImmTrans(struct group_object *group1, struct group_obje
             if (gr3 == gr1) GlCountTr1++;
             if (gr3 == gr2) GlCountTr2++;
         }
+        free(trp);
     }
-    free(trp);
+    
 
 #ifdef DEBUG
     printf("  Imm Transitions in Result:\n");
