@@ -275,9 +275,12 @@ char *ConcComments(char *c1, char *c2) {
 }
 
 
-// // 26/02/2021 Added by Elvio
-// // Decompose a tag string:   name|tag1|tag2|...|tagN   into a linked list
+// 26/02/2021 Added by Elvio
+// ------------------------------------------------
+// Decompose a tag string:   name|tag1|tag2|...|tagN   into a linked list
+// ------------------------------------------------
 struct tag_s { char*tag; struct tag_s* next; int shared; };
+// ------------------------------------------------
 struct tag_s* DecomposeTag(const char* tag) {
     struct tag_s *lr = NULL, *l_curr = NULL, *l = NULL;
     // printf("DecomposeTag %s  ", tag);
@@ -311,6 +314,11 @@ struct tag_s* DecomposeTag(const char* tag) {
     // putchar('\n');
     return lr;
 }
+
+// 26/02/2021 Added by Elvio
+// ------------------------------------------------
+// Test if two tag lists share a common restricted tag
+// ------------------------------------------------
 int ShareCommonTag(struct tag_s* t1, struct tag_s* t2, struct RestSet* restset) {
     struct tag_s *l1=t1, *l2; 
     while (l1 != NULL) {
@@ -328,6 +336,11 @@ int ShareCommonTag(struct tag_s* t1, struct tag_s* t2, struct RestSet* restset) 
     }
     return 0;
 }
+
+// 26/02/2021 Added by Elvio
+// ------------------------------------------------
+// Free a tag_s* linked list
+// ------------------------------------------------
 void FreeDecomposedTag(struct tag_s* l) {
     while (l != NULL) {
         struct tag_s* next = l->next;
@@ -336,6 +349,7 @@ void FreeDecomposedTag(struct tag_s* l) {
         l = next;
     }
 }
+
 // 26/02/2021 Added by Elvio
 // ------------------------------------------------
 // Join common tags
@@ -2259,8 +2273,6 @@ struct trans_object *JoinExpTrans(struct trans_object *trans1, struct trans_obje
             }
 
             MapTr1[GlCountTr1] = NtrR;
-            // index2 = 0;
-            // tr2 = trans2;
             for (j = 0; j < mul; j++) {
                 if (first) {
                     r = (struct trans_object *)emalloc(sizeof(struct trans_object));
@@ -2279,16 +2291,13 @@ struct trans_object *JoinExpTrans(struct trans_object *trans1, struct trans_obje
                 SimpleArcs(tr1, trr, 1);
                 if (!simple) 
                     ArcsofArg2(trr, GlCountTr1, j, tr1);
-                if (!simple) {
+                if (!simple) { 
                     if (g_compose_tags) {
+                        // 26/02/2021 Added by Elvio - combine tags of exp transitions
                         struct Desc *desc2 = Op2TrD;
                         for (int ii=0; ii<trp[j]; ii++) 
                             desc2 = desc2->next;
                         tr2 = desc2->tr_obj;
-                        // while (!JoinTr[k][index2]) { // get the index of the other transition in net2
-                        //     ++index2;
-                        //     tr2 = tr2->next;
-                        // }
                         // printf("CopyTrProperties[1] tr1->tag=%s  tr2->tag=%s  trr->tag=%s j=%d\n", tr1->tag, tr2->tag, trr->tag, j);
                         struct tag_s *tp1 = DecomposeTag(tr1->tag);
                         struct tag_s *tp2 = DecomposeTag(tr2->tag);
@@ -2298,9 +2307,6 @@ struct trans_object *JoinExpTrans(struct trans_object *trans1, struct trans_obje
                         trr->tag = newtag;
                         FreeDecomposedTag(tp1);
                         FreeDecomposedTag(tp2);
-                        // advance to next transition
-                        // ++index2;
-                        // tr2 = tr2->next;
                     }
                 }
                 // else {
@@ -2506,8 +2512,6 @@ struct place_object *JoinPlaces(struct place_object *place1, struct place_object
             }
 
             MapPl1[GlCountPl1] = NplR;
-            // index2 = 0;
-            // pl2 = place2;
             for (j = 0; j < mul; j++) {
                 if (first) {
                     r = (struct place_object *)emalloc(sizeof(struct place_object));
@@ -2525,14 +2529,11 @@ struct place_object *JoinPlaces(struct place_object *place1, struct place_object
                 plr->brokenout = 0;
                 if (!simple) {
                     if (g_compose_tags) {
+                        // 26/02/2021 Added by Elvio - combine tags of places
                         struct Desc *desc2 = Op2PlD;
                         for (int ii=0; ii<plp[j]; ii++) 
                             desc2 = desc2->next;
                         pl2 = desc2->pl_obj;
-                        // while (!JoinPl[k][index2]) { // get the index of the other place in net2
-                        //     ++index2;
-                        //     pl2 = pl2->next;
-                        // }
                         // printf("CopyPlProperties[1] pl1->tag=%s  pl2->tag=%s  plr->tag=%s j=%d\n", 
                         //        pl1->tag, pl2->tag, plr->tag, j);
                         struct tag_s *tp1 = DecomposeTag(pl1->tag);
@@ -2543,10 +2544,6 @@ struct place_object *JoinPlaces(struct place_object *place1, struct place_object
                         plr->tag = newtag;
                         FreeDecomposedTag(tp1);
                         FreeDecomposedTag(tp2);
-
-                        // advance to next place in p2.
-                        // ++index2;
-                        // pl2 = pl2->next;
                     }
                 }
                 // else {
@@ -2622,11 +2619,7 @@ struct group_object *JoinImmTrans(struct group_object *group1, struct group_obje
     struct group_object *gr1, *gr2, *gr3, *grr, *r;
     struct lisp_object *li;
     struct rpar_object *mp;
-    struct Desc *desc2;
     int first = 1, i, j, l, *k, mul, toadd, c1, c2, newgroup, firstgroup = 1, simple, index2, *trp;
-
-    // if (g_compose_tags)
-    //     return JoinImmTrans2(group1, group2);
 
     r = NULL;
     c1 = GlCountTr1;
@@ -2715,8 +2708,6 @@ struct group_object *JoinImmTrans(struct group_object *group1, struct group_obje
                     MapTr2[GlCountTr2] = NtrR;
                 }
                 NtrR += mul;
-                // index2 = (gr3 == gr1) ? GlCountTr2 : GlCountTr1;
-                // tr2 = (gr3 == gr1) ? (gr2==NULL?NULL:gr2->trans) : (gr1==NULL?NULL:gr1->trans);
                 for (j = 0; j < mul; j++) {
                     if (!first) {
                         trr->next = (struct trans_object *)emalloc(sizeof(struct trans_object));
@@ -2739,23 +2730,25 @@ struct group_object *JoinImmTrans(struct group_object *group1, struct group_obje
                     }
                     if (!simple) {
                         if (g_compose_tags) {
+                            // 26/02/2021 Added by Elvio - combine tags of imm transitions
+                            struct Desc *desc2;
                             if (gr3 == gr1) desc2 = Op2TrD;
                             if (gr3 == gr2) desc2 = Op1TrD;
                             // printf("j=%d trp[j]=%d, Ntr1=%d Ntr2=%d op1=%d\n", j, trp[j], Ntr1, Ntr2, gr3 == gr1);
                             for (int ii=0; ii<trp[j]; ii++) 
                                 desc2 = desc2->next;
                             tr2 = desc2->tr_obj;
+                            // printf("COMBINE tr1->tag=%s  tr2->tag=%s  trr->tag=%s\n", 
+                            //         tr1->tag, tr2->tag, trr->tag);
+                            struct tag_s *tp1 = DecomposeTag(tr1->tag);
+                            struct tag_s *tp2 = DecomposeTag(tr2->tag);
+                            char *newtag = CombineTags(tp1, tp2, strlen(tr1->tag) + strlen(tr2->tag));
+                            // printf("replacing %s with %s\n", trr->tag, newtag);
+                            free(trr->tag);
+                            trr->tag = newtag;
+                            FreeDecomposedTag(tp1);
+                            FreeDecomposedTag(tp2);
                         }
-                        // printf("COMBINE tr1->tag=%s  tr2->tag=%s  trr->tag=%s\n", 
-                        //         tr1->tag, tr2->tag, trr->tag);
-                        struct tag_s *tp1 = DecomposeTag(tr1->tag);
-                        struct tag_s *tp2 = DecomposeTag(tr2->tag);
-                        char *newtag = CombineTags(tp1, tp2, strlen(tr1->tag) + strlen(tr2->tag));
-                        // printf("replacing %s with %s\n", trr->tag, newtag);
-                        free(trr->tag);
-                        trr->tag = newtag;
-                        FreeDecomposedTag(tp1);
-                        FreeDecomposedTag(tp2);
                     }
                 }
                 (*k)++;
@@ -2812,267 +2805,6 @@ struct group_object *JoinImmTrans(struct group_object *group1, struct group_obje
 
     return r;
 }
-
-// // -----------------------------------
-// // Join Immediate Transitions Objects
-// // -----------------------------------
-// struct group_object *JoinImmTrans2(struct group_object *group1, struct group_object *group2) {
-//     struct trans_object *tr1, *trr, *tr2, *trA, *trB;
-//     struct group_object *gr1, *gr2, *grA, *grB, *grr, *r;
-//     struct lisp_object *li;
-//     struct rpar_object *mp;
-//     int i, j, l, *kA, *kB, mul, toadd, c1, c2, newgroup, firstgroup = 1, simple, index2;
-
-//     r = NULL;
-//     c1 = GlCountTr1;
-//     c2 = GlCountTr2;
-
-//     //printf(" Imm Start\n");
-
-//     if (group1 != NULL || group2 != NULL) {
-//         // look for the first non-empty group;
-//         gr1 = group1;
-//         gr2 = group2;
-
-//         while (gr1 != NULL && gr1->trans == NULL) gr1 = gr1->next;
-//         while (gr2 != NULL && gr2->trans == NULL) gr2 = gr2->next;
-
-//         while (gr1 != NULL || gr2 != NULL) {
-//             int adv_gr1 = 0, adv_gr2 = 0;
-//             grA = grB = kA = kB = NULL;
-//             if (gr1 == NULL) {
-//                 grA = gr2;
-//                 kA = &c2;
-//                 adv_gr2 = 1;
-//                 //printf("[A] gr1==NULL, gr2->pri=%d, kA=%d\n", gr2->pri, *kA);
-//             }
-//             if (gr2 == NULL) {
-//                 grA = gr1;
-//                 kA = &c1;
-//                 adv_gr1 = 1;
-//                 //printf("[B] gr1->pri=%d, gr2==NULL, kA=%d\n", gr1->pri, *kA);
-//             }
-//             if (gr1 != NULL && gr2 != NULL) {
-//                 if (gr1->pri > gr2->pri) {
-//                     grA = gr2;
-//                     kA = &c2;
-//                     adv_gr2 = 1;
-//                     //printf("[C1] gr1->pri=%d > gr2->pri=%d, kA=%d\n", gr1->pri, gr2->pri, *kA);                    
-//                 }
-//                 else if (gr1->pri < gr2->pri) {
-//                     grA = gr1;
-//                     kA = &c1;
-//                     adv_gr1 = 1;
-//                     //printf("[C2] gr1->pri=%d < gr2->pri=%d, kA=%d\n", gr1->pri, gr2->pri, *kA);                    
-//                 }
-//                 else {
-//                     grA = gr1;
-//                     kA = &c1;
-//                     grB = gr2;
-//                     kB = &c2;
-//                     adv_gr1 = adv_gr2 = 1;
-//                     //printf("[C2] gr1->pri=%d == gr2->pri=%d, kA=%d, kB=%d\n", gr1->pri, gr2->pri, *kA, *kB);                    
-//                 }
-//             }
-
-
-//             if (firstgroup) {
-//                 r = (struct group_object *)emalloc(sizeof(struct group_object));
-//                 grr = r;
-//                 grr->trans = NULL;
-//                 firstgroup = 0;
-//                 // first = 1;
-//             }
-//             else {
-//                 grr->next = (struct group_object *)emalloc(sizeof(struct group_object));
-//                 grr = grr->next;
-//                 grr->trans = NULL;
-//             }
-//             grr->pri = grA->pri;
-//             grr->tag = (char *)emalloc((strlen(grA->tag) + 1) * sizeof(char));
-//             strcpy(grr->tag, grA->tag);
-//             grr->next = NULL;
-
-//             if (grB == NULL) { // No cross-product, just copy transitions as-is
-//                 //printf("  no cross product, copy.\n");
-//                 trA = grA->trans;
-//                 while (trA != NULL) {
-//                     if (grr->trans != NULL) {
-//                         trr->next = (struct trans_object *)emalloc(sizeof(struct trans_object));
-//                         trr = trr->next;
-//                     }
-//                     else {
-//                         grr->trans = (struct trans_object *)emalloc(sizeof(struct trans_object));
-//                         trr = grr->trans;
-//                         // first = 0;
-//                     }
-//                     CopyTrProperties(trA, trr, 0, grA == gr1);
-//                     trr->brokenin = 0;
-//                     trr->brokenout = 0;
-//                     SimpleArcs(trA, trr, grA == gr1);
-//                     //printf("  SIMPLE COPY %s\n", trr->tag);
-//                     (*kA)++;
-//                     trA = trA->next;
-//                     if (grA == gr1) GlCountTr1++;
-//                     if (grA == gr2) GlCountTr2++;
-//                 }
-//             }
-//             else {
-//                 //printf("  cross product, copy.\n");
-//                 int nA = 0, nB = 0, iA, iB;
-//                 for (trA = grA->trans; trA != NULL; trA = trA->next) nA++;
-//                 for (trB = grB->trans; trB != NULL; trB = trB->next) nB++;
-//                 int *selA = (int*)emalloc(sizeof(int) * nA);
-//                 memset(selA, 0, sizeof(int) * nA);
-//                 int *selB = (int*)emalloc(sizeof(int) * nB);
-//                 memset(selB, 0, sizeof(int) * nB);
-//                 struct tag_s **tpA = (struct tag_s*)emalloc(sizeof(struct tag_s*) * nA);
-//                 for (iA = 0, trA = grA->trans; trA != NULL; trA = trA->next) 
-//                     tpA[iA++] = DecomposeTag(trA->tag);
-//                 struct tag_s **tpB = (struct tag_s*)emalloc(sizeof(struct tag_s*) * nB);
-//                 for (iB = 0, trB = grB->trans; trB != NULL; trB = trB->next) 
-//                     tpB[iB++] = DecomposeTag(trB->tag);
-
-
-//                 trA = grA->trans;
-//                 iA = 0;
-//                 while (trA != NULL) {
-//                     mul = 0;
-//                     simple = 1;
-//                     trB = grB->trans;
-//                     iB = 0;
-//                     j = 0;
-//                     while (trB != NULL) {
-//                         if (ShareCommonTag(tpA[iA], tpB[iB], &TransRest)) {
-//                             selA[iA] = selB[iB] = 1;
-
-//                             if (grr->trans != NULL) {
-//                                 trr->next = (struct trans_object *)emalloc(sizeof(struct trans_object));
-//                                 trr = trr->next;
-//                             }
-//                             else {
-//                                 grr->trans = (struct trans_object *)emalloc(sizeof(struct trans_object));
-//                                 trr = grr->trans;
-//                             }
-//                             CopyTrProperties(trA, trr, j++, 1);
-//                             trr->brokenin = 0;
-//                             trr->brokenout = 0;
-//                             SimpleArcs(trA, trr, 1);
-//                             //ArcsofArg2(trr, GlCountTr1, j, trA);
-//                             if (g_compose_tags) {
-//                                 char *newtag = CombineTags(tpA[iA], tpB[iB], strlen(trA->tag) + strlen(trB->tag));
-//                                 //printf("  COMBINE trA->tag=%s  trB->tag=%s  trr->tag=%s  newtag=%s\n", 
-//                                         // trA->tag, trB->tag, trr->tag, newtag);
-//                                 free(trr->tag);
-//                                 trr->tag = newtag;
-//                             }
-//                             (*kA)++;
-//                             GlCountTr1++;
-//                             (*kB)++;
-//                             GlCountTr2++;
-//                         }
-//                         trB = trB->next;
-//                         iB++;
-//                     }
-//                     trA = trA->next;
-//                     iA++;
-//                 }
-
-//                 for (iA = 0, trA = grA->trans; trA != NULL; trA = trA->next) {
-//                     if (!selA[iA]) {
-//                         if (grr->trans != NULL) {
-//                             trr->next = (struct trans_object *)emalloc(sizeof(struct trans_object));
-//                             trr = trr->next;
-//                         }
-//                         else {
-//                             grr->trans = (struct trans_object *)emalloc(sizeof(struct trans_object));
-//                             trr = grr->trans;
-//                         }
-//                         CopyTrProperties(trA, trr, 0, 1);
-//                         trr->brokenin = 0;
-//                         trr->brokenout = 0;
-//                         SimpleArcs(trA, trr, 1);
-//                         //printf("  SIMPLE COPY %s\n", trr->tag);
-//                         (*kA)++;
-//                         GlCountTr1++;
-//                     }
-//                     iA++;
-//                 }
-//                 for (iB = 0, trB = grB->trans; trB != NULL; trB = trB->next) {
-//                     if (!selB[iB]) {
-//                         if (grr->trans != NULL) {
-//                             trr->next = (struct trans_object *)emalloc(sizeof(struct trans_object));
-//                             trr = trr->next;
-//                         }
-//                         else {
-//                             grr->trans = (struct trans_object *)emalloc(sizeof(struct trans_object));
-//                             trr = grr->trans;
-//                         }
-//                         CopyTrProperties(trB, trr, 0, 0);
-//                         trr->brokenin = 0;
-//                         trr->brokenout = 0;
-//                         SimpleArcs(trB, trr, 0);
-//                         //printf("  SIMPLE COPY %s\n", trr->tag);
-//                         (*kB)++;
-//                         GlCountTr2++;
-//                     }
-//                     iB++;
-//                 }
-
-//                 free(selA);
-//                 for (iA=0; iA<nA; iA++) FreeDecomposedTag(tpA[iA]);
-//                 free(tpA);
-//                 free(selB);
-//                 for (iB=0; iB<nB; iB++) FreeDecomposedTag(tpB[iB]);
-//                 free(tpB);
-//             }
-
-//             // step to an non-empty group
-//             if (adv_gr1) {
-//                 gr1 = gr1->next;
-//                 while (gr1 != NULL && gr1->trans == NULL)
-//                     gr1 = gr1->next;
-//             }
-//             if (adv_gr2) {
-//                 gr2 = gr2->next;
-//                 while (gr2 != NULL && gr2->trans == NULL)
-//                     gr2 = gr2->next;
-//             }
-//             // if (gr3 == gr1) GlCountTr1++;
-//             // if (gr3 == gr2) GlCountTr2++;
-//         }
-//     }
-
-// #ifdef DEBUG
-//     printf("  Imm Transitions in Result:\n");
-//     gr1 = r;
-//     j = 1;
-//     while (gr1 != NULL) {
-//         printf("   %s: %d\n", gr1->tag, gr1->pri);
-//         tr1 = gr1->trans;
-//         while (tr1 != NULL) {
-//             printf(" %d.   %s: ", j, tr1->tag);
-//             if (tr1->color != NULL)
-//                 printf(" %s ", tr1->color);
-//             printf(" Layers: ");
-//             for (i = 1; i <= Nlayer1 + Nlayer2; i++)
-//                 if (TestLayer(i, tr1->layer)) printf(" %s", GetLayerName(i));
-//             tr1 = tr1->next;
-//             j++;
-//             printf("\n");
-//         }
-//         gr1 = gr1->next;
-//     }
-//     printf("\n");
-//     printf(" Number of tr.s: %d\n", NtrR);
-//     printf("  Mapping of transitions s:\n");
-//     for (i = 0; i < Ntr1; i++) printf("     %d %d\n", i, MapTr1[i]);
-//     printf("\n");
-//     for (i = 0; i < Ntr2; i++) printf("     %d %d\n", i, MapTr2[i]);
-// #endif
-
-//     return r;
-// }
 
 // -------------------------------------------
 // Coordinate of shift positioning broken arcs

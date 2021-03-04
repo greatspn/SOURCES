@@ -5,4 +5,6 @@
  *
  */
 
+struct net_object; // forward declaration
+
 void RescaleNet(struct net_object *, double);
