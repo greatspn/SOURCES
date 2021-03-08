@@ -27,5 +27,9 @@ if [ $? -eq 0 ]; then
 	sleep 1
 else
 	echo "${B1}  Error: Shared folder NOT mounted. ${B0}"
+	echo
+	echo "Verify that a shared folder is properly defined in the virtual machine configuration."
+	echo "${B1}NOTE:${B0} the mount point must be called 'shared' to be auto-mounted."
+	echo
 	read -p "Press any key to quit..." -n1 -s
 fi
