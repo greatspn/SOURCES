@@ -23,11 +23,13 @@ First, install the following dependencies (using the developer packages with the
  * libgmp (GNU multiprecision library) (devel)
  * boost-c++ version 1.64+
  * flex (devel) and byacc
- * ant and Java 11+
  * graphviz
  * libxml++ (devel), glibmm24 (devel) and glib2 (devel)
  * libcolamd2, on fedora platform provided by suitesparse (devel)
  * glpk (devel) and lpsolve (devel)
+ * ant and Java 11+
+
+Verify that java is properly installed following these two steps: (1) type `javac -version` and check that it is the right version; (2) type `echo ${JAVA_HOME}` and verify that the JAVA_HOME environment variable correctly points to the JDK directory. If the JAVA_HOME is not pointing to the JDK directory, or if it is not defined, it is important to define it.
  
 For Fedora 32, you can install the dependencies with this command:
 
@@ -92,6 +94,8 @@ Upon completion, the framework will be installed by default in the `/usr/local/G
 Verify that all installed library are in the search path of the dynamic linker, 
 otherwise you will get an ld error when running the command line tools. 
 If not, modify the `/etc/ld.so.conf` and/or the environmental variable `LD_LIBRARY_PATH` accordingly.
+
+**Missing GraphMDP**: Only in the case you are interested in solution of MDP systems, you can find the optional dependency GraphMDP [here](http://www.di.unito.it/~greatspn/graphMDP-0.5.tar.gz). Note that this library is currently unmantained, and it could be hard to compile.
 
 
 #### macOS installation instructions:

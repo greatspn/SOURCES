@@ -757,13 +757,7 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         }
         return cmd;
     }
-    
-//    public static String startOfCommand() {
-//        if (Util.isWindows())
-//            return "wsl -- ";
-//        return "";
-//    }
-    
+        
     public static ArrayList<String> startOfCommand() {
         ArrayList<String> cmd = new ArrayList<>();
         if (Util.isWindows()) {
