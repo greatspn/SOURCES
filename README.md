@@ -8,13 +8,13 @@ The tool provides a friendly framework to experiment with timed Petri net based 
 It implements efficient analysis algorithms to allow its use on rather complex applications.
 
 
-### How to compile and install GreatSPN on your PC.
+## How to compile and install GreatSPN on your PC.
 
 GreatSPN can be compiled and installed on most POSIX-compliant systems.
 The framework requires several dependencies to be installed on your computer
 in order to compile it. 
 
-#### Linux/Unix installation instructions:
+### Linux/Unix installation instructions:
 
 In order to compile and install GreatSPN from sources, you need to do the following steps.
 First, install the following dependencies (using the developer packages with the header files):
@@ -98,7 +98,7 @@ If not, modify the `/etc/ld.so.conf` and/or the environmental variable `LD_LIBRA
 **Missing GraphMDP**: Only in the case you are interested in solution of MDP systems, you can find the optional dependency GraphMDP [here](http://www.di.unito.it/~greatspn/graphMDP-0.5.tar.gz). Note that this library is currently unmantained, and it could be hard to compile.
 
 
-#### macOS installation instructions:
+### macOS installation instructions:
 
 GreatSPN compiles and runs successfully on macOS. 
 Before running the Linux/Unix installation steps, you will first need to install the Developer Tools (Xcode)
@@ -119,7 +119,7 @@ needed by some visualization tools.
 
 
 
-#### Windows installation instructions:
+### Windows installation instructions:
 
 GreatSPN is known to compile and run successfully using the *Windows Subsystem for Linux ver.2* (WSL-2, Windows 10 64bit minimum) using Ubuntu 20.04LTS.
 WSL-2 installation is slightly different, since the GUI will be a standard Windows application, while the command line tools will reside and run inside the WSL-2 subsystem.
@@ -134,7 +134,7 @@ The GUI for Windows is automatically configured to use the tools inside the WSL-
 
 
 
-#### Pre-installed VirtualBox machine:
+### Pre-installed VirtualBox machine:
 
 We offer a pre-installed VirtualBox machine image, based on Fedora Core, that ships with
 the GreatSPN framework already installed, with all the required dependencies.
@@ -155,7 +155,7 @@ TBD. Instructions on how to update the shared directory.
 
 
 
-### How to run the Graphical User Interface.
+## How to run the Graphical User Interface.
 
 If the installation of GreatSPN is successful, the GreatSPN Editor should appear
 in the Linux application menu. Sometimes, a logout is required.
@@ -169,7 +169,7 @@ A precompiled macOS app bundle can also be found [here](http://www.di.unito.it/~
 
 
 
-### How to run the command-line solvers.
+## How to run the command-line solvers.
 
 When GreatSPN is installed on your PC, it will (by default) place itself 
 in the: `/usr/local/GreatSPN` directory. The following sub-directory will be created:
@@ -184,7 +184,7 @@ Typically, most tools are accessed through a script in the first directory.
 
 
 
-### Citing GreatSPN:
+## Citing GreatSPN:
 
 To cite the GreatSPN framework, please use this reference: [(PDF)](https://iris.unito.it/retrieve/handle/2318/1624717/295450/Amparore-trivedi-chapter.pdf)
 
@@ -230,7 +230,7 @@ Other recent papers referencing GreatSPN:
 ```
 
 
-### Recent Awards (Model Checking Context):
+## Recent Awards (Model Checking Context):
 
 GreatSPN partecipated to several Model Checking Context (MCC) editions:
 
@@ -250,7 +250,7 @@ See the [Model Checking Context site](https://mcc.lip6.fr) for further details.
 
 
 
-### Copyright and License
+## Copyright and License
 
 The GreatSPN Framework is licensed under the GPLv2.0 license, 
 which is available within the repository in the [LICENSE](LICENSE) file. 
