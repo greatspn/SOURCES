@@ -5,6 +5,7 @@
         <group>
             <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/unfolding/Algebra.java</file>
             <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/AlgebraToolDialog.java</file>
+            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/measures/SolverInvokator.java</file>
             <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/AlgebraCommandLineTool.java</file>
         </group>
     </open-files>

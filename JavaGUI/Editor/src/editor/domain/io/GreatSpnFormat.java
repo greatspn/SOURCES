@@ -423,7 +423,9 @@ public class GreatSpnFormat {
 
     // Parameter useExt means that we are using the new extensions of the format that
     // are not compatible with the old GreatSPN GUI.
-    public static String exportGspn(GspnPage gspn, File netFile, File defFile, boolean useExt) throws Exception {
+    public static String exportGspn(GspnPage gspn, File netFile, File defFile, 
+                                    boolean useExt, boolean useMDepArcs) throws Exception 
+    {
         if (!gspn.isPageCorrect()) {
             throw new UnsupportedOperationException("GSPN must be correct before exporting.");
         }
@@ -759,8 +761,13 @@ public class GreatSpnFormat {
                     sb.append("   ");
                     sb.append(arc.isBroken ? "-" : "");
                     boolean isColored = !arc.getColorDomainOfConnectedPlace().isNeutralDomain();
+                    boolean hasMdepExpr = false;
                     if (isColored)
                         sb.append("1");
+                    else if (useMDepArcs && !NetObject.isInteger(arc.getMultiplicity())) {
+                        hasMdepExpr = true;
+                        sb.append("1");
+                    }
                     else if (useExt && mpar2pos.containsKey(arc.getMultiplicity()))
                         sb.append(20000 + mpar2pos.get(arc.getMultiplicity()));
                     else
@@ -770,7 +777,7 @@ public class GreatSpnFormat {
                     sb.append(" ");
                     sb.append(arc.numPoints() - 2);
                     sb.append(" 0");
-                    if (isColored)
+                    if (isColored || hasMdepExpr)
                         sb.append(" 0.000000 0.000000 ").append(exportExpr(arc.getMultiplicity(), allColorClasses, log));
                     sb.append("\n");
                     for (int pt = 1; pt < arc.numPoints() - 1; pt++) {

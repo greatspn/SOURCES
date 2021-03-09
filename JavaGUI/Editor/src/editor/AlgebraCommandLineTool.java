@@ -241,7 +241,7 @@ public class AlgebraCommandLineTool {
             File outNet = new File(baseName+".net");
             File outDef = new File(baseName+".def");
             System.out.println("SAVING AS "+baseName+".(net/def) ...");
-            String ret = GreatSpnFormat.exportGspn(gspn, outNet, outDef, true);
+            String ret = GreatSpnFormat.exportGspn(gspn, outNet, outDef, true, true);
             if (ret != null) {
                 System.out.println("Problems exporting the net/def files:\n"+ret);
                 System.exit(1);

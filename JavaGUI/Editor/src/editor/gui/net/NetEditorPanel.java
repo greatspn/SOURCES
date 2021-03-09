@@ -902,7 +902,8 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
         
         try {
             String log = GreatSpnFormat.exportGspn((GspnPage)currPage, netFile, defFile, 
-                                                    Main.isGreatSPNExtAllowed());
+                                                    Main.isGreatSPNExtAllowed(),
+                                                    Main.areGreatSPNMdepArcsAllowed());
             if (log != null)
                 new ModalLogDialog(this, log).setVisible(true);
             mainInterface.setStatus("GSPN exported.", true);

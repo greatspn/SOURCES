@@ -271,8 +271,8 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                         File tmpName2 = File.createTempFile("net2", "");
                         File tmpNet2 = new File(tmpName2.getAbsolutePath()+".net");
                         File tmpDef2 = new File(tmpName2.getAbsolutePath()+".def");
-                        GreatSpnFormat.exportGspn(net1, tmpNet1, tmpDef1, false);
-                        GreatSpnFormat.exportGspn(net2, tmpNet2, tmpDef2, false);
+                        GreatSpnFormat.exportGspn(net1, tmpNet1, tmpDef1, false, false);
+                        GreatSpnFormat.exportGspn(net2, tmpNet2, tmpDef2, false, false);
 
                         File tmpRestfile = File.createTempFile("tags", ".restfile");
                         PrintWriter restFileOut = new UnixPrintWriter(new BufferedWriter(new FileWriter(tmpRestfile)));

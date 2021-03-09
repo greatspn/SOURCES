@@ -386,7 +386,8 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         String err = GreatSpnFormat.exportGspn(page.targetGspn, 
                                   new File(gspnFile.getAbsolutePath()+".net"), 
                                   new File(gspnFile.getAbsolutePath()+".def"),
-                                  true);
+                                  true,
+                                  enableSupportForMDepArcsInNetDef());
         if (err != null) {
             asyncLogStdout("Encountered the following problems during GSPN exportation:\n"+err+"\n");
         }
@@ -515,6 +516,8 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
     abstract void startOfStep(SolutionStep step);
     
     abstract void endOfStep(SolutionStep step, boolean interrupted, boolean allStepsCompleted);
+    
+    abstract boolean enableSupportForMDepArcsInNetDef();
     
     //==========================================================================
     

@@ -97,7 +97,7 @@ public class ShowRgDialog extends javax.swing.JDialog {
             File tmpDef = new File(tmpRoot.getAbsolutePath() + ".def");
             File tmpPdf = new File(tmpRoot.getAbsolutePath() + ".pdf");
             
-            GreatSpnFormat.exportGspn(gspn, tmpNet, tmpDef, true);
+            GreatSpnFormat.exportGspn(gspn, tmpNet, tmpDef, true, false);
 
             ArrayList<String> cmd = startOfCommand();
             cmd.add(useGreatSPN_binary(rgType==RgType.SRG ? "WNSRG" : "WNRG"));

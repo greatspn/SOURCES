@@ -299,4 +299,9 @@ public class GreatSPNSolver extends SolverInvokator {
     void endOfStep(SolutionStep step, boolean interrupted, boolean allStepsCompleted) {
         step.completed = (!interrupted && allStepsCompleted);
     }
+    
+    @Override
+    boolean enableSupportForMDepArcsInNetDef() {
+        return false;
+    }
 }

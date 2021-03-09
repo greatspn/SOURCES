@@ -165,6 +165,11 @@ public class NSolve extends SolverInvokator {
         step.completed = (!interrupted && allStepsCompleted);
     }
     
+    @Override
+    boolean enableSupportForMDepArcsInNetDef() {
+        return false;
+    }
+    
     //==========================================================================
 
     void readMeasuresFromPopFile(ResultEntry all, File popFile) {

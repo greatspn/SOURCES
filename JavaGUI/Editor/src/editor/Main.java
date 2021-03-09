@@ -382,7 +382,14 @@ public class Main {
         return Util.getPreferences().getBoolean(ALLOW_GSPN_EXT_KEY, false);
     }
     
-    
+    private static final String ALLOW_GSPN_MDEP_ARCS_KEY = "allow_greatspn_mdep_arcs";
+    public static void setGreatSPNMdepArcsAllowed(boolean ok) {
+        Util.getPreferences().putBoolean(ALLOW_GSPN_MDEP_ARCS_KEY, ok);
+    }
+    public static boolean areGreatSPNMdepArcsAllowed() {
+        return Util.getPreferences().getBoolean(ALLOW_GSPN_MDEP_ARCS_KEY, false);
+    }
+
     private static final String MODEL_LIBRARY_DIR = "model_library_dir";
     public static String getModelLibraryDirectory() {
         return Util.getPreferences().get(MODEL_LIBRARY_DIR, "/usr/local/GreatSPN/models");

@@ -96,7 +96,7 @@ public class StructInfo {
             tmpName = File.createTempFile("net", "");
             File tmpNet = new File(tmpName.getAbsolutePath()+".net");
             File tmpDef = new File(tmpName.getAbsolutePath()+".def");
-            GreatSpnFormat.exportGspn(gspn, tmpNet, tmpDef, true);
+            GreatSpnFormat.exportGspn(gspn, tmpNet, tmpDef, true, false);
             cmd.add(makeFilenameForCmd(tmpName));
             cmd.addAll(mpars);
             
