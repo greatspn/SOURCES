@@ -89,6 +89,10 @@ sudo make install
  
 Upon completion, the framework will be installed by default in the `/usr/local/GreatSPN/` directory.
 
+Verify that all installed library are in the search path of the dynamic linker, 
+otherwise you will get an ld error when running the command line tools. 
+If not, modify the `/etc/ld.so.conf` and/or the environmental variable `LD_LIBRARY_PATH` accordingly.
+
 
 #### macOS installation instructions:
 
