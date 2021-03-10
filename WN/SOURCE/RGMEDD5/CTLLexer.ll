@@ -61,6 +61,7 @@ int lex_identifier(const std::string& token) {
 "bounds"            {return BOUNDS;}
 "deadlock"          {return DEADLOCK;}
 "ndeadlock"         {return NDEADLOCK;}
+"initial"           {return INITIAL_STATE;}
 "true"|"True"  		{return TRUEv;}
 "false"|"False"     {return FALSEv;}
 "or"|"||" 	        {return OR;} 

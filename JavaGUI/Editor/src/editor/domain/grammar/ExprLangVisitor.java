@@ -30,6 +30,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	T visitCsltaExprBool(@NotNull ExprLangParser.CsltaExprBoolContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#BoolExprCTLinitState}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBoolExprCTLinitState(@NotNull ExprLangParser.BoolExprCTLinitStateContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#RealConstLiteral}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

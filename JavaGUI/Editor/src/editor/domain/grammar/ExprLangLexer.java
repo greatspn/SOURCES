@@ -234,6 +234,7 @@ public class ExprLangLexer extends Lexer {
 		            case "bounds":       setType(ExprLangParser.BOUNDS);      return;
 		            case "deadlock":     setType(ExprLangParser.DEADLOCK);    return;
 		            case "ndeadlock":    setType(ExprLangParser.NO_DEADLOCK); return;
+		            case "initial":      setType(ExprLangParser.INITIAL_STATE);    return;
 		            // If new context-dependent keywords are added to this list,
 		            // they must also be added in NetObject.extraKeyWords[].
 		        }

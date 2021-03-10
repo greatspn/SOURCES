@@ -346,7 +346,7 @@
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="filenameGreatSPN" pref="643" max="32767" attributes="0"/>
+                                  <Component id="filenameGreatSPN" pref="634" max="32767" attributes="0"/>
                                   <Component id="filenameModelLibrary" alignment="0" max="32767" attributes="0"/>
                                   <Component id="jLabel7" pref="0" max="32767" attributes="0"/>
                                   <Component id="jLabel6" alignment="1" pref="0" max="32767" attributes="0"/>
@@ -391,8 +391,8 @@
                           <Component id="jLabel9" alignment="3" min="-2" pref="27" max="-2" attributes="0"/>
                           <Component id="textFieldLibraryPath" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel6" min="-2" pref="53" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jLabel6" min="-2" pref="69" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="filenameModelLibrary" max="32767" attributes="0"/>
@@ -405,7 +405,7 @@
                           <Component id="textField_rgmeddVer" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="106" max="32767" attributes="0"/>
+                      <EmptySpace pref="90" max="32767" attributes="0"/>
                       <Component id="checkBox_allowGreatSPNExt" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="checkBox_allowGreatSPNMdepArcs" min="-2" max="-2" attributes="0"/>
@@ -443,7 +443,7 @@
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel6">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;i&gt;&#xa;When the editor calls the external commands, it adds the &apos;Additional PATH&apos; to the PATH environment variable.&#xa;&lt;/i&gt;&lt;/html&gt;"/>
+                <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;i&gt; When the editor calls the external commands, it adds the &apos;Additional PATH&apos; to the PATH environment variable, and the &apos;Additional Library Paths&apos; to the LD_LIBRARY_PATH variable. &lt;/i&gt;&lt;/html&gt;"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel7">
@@ -481,7 +481,7 @@
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel9">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Additional Library Path:"/>
+                <Property name="text" type="java.lang.String" value="Additional Library Paths:"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="textFieldLibraryPath">

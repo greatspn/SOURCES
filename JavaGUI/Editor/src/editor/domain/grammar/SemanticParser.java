@@ -1348,7 +1348,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 
     @Override
     public FormattedFormula visitBoolExprCTLdeadlocks(ExprLangParser.BoolExprCTLdeadlocksContext ctx) {
-       switch (lang) {
+        switch (lang) {
             case LATEX:
                 return format(true, ctx.DEADLOCK() != null ? "\\mathrm{deadlock}" : "\\mathrm{ndeadlock}");
             case GREATSPN:
@@ -1358,6 +1358,21 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 throw new UnsupportedOperationException();
         }
     }
+
+    @Override
+    public FormattedFormula visitBoolExprCTLinitState(ExprLangParser.BoolExprCTLinitStateContext ctx) {
+        switch (lang) {
+            case LATEX:
+                return format(true, "\\mathrm{initial}");
+            case GREATSPN:
+            case PNPRO:
+                return format(true, "initial");
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+    
+    
     
     //==========================================================================
     //  CTLSTAR terms:

@@ -324,7 +324,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
 
         jLabel5.setText("Model Library:");
 
-        jLabel6.setText("<html><i>\nWhen the editor calls the external commands, it adds the 'Additional PATH' to the PATH environment variable.\n</i></html>");
+        jLabel6.setText("<html><i> When the editor calls the external commands, it adds the 'Additional PATH' to the PATH environment variable, and the 'Additional Library Paths' to the LD_LIBRARY_PATH variable. </i></html>");
 
         jLabel7.setText("<html><i>\nThe directory where the example models are stored. You may add a library model to your projects using\nAdd new Page (toolbar icon) > Add Library Model.\n</i></html>");
 
@@ -347,7 +347,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel8.setText("RGMEDD version:");
 
-        jLabel9.setText("Additional Library Path:");
+        jLabel9.setText("Additional Library Paths:");
 
         checkBox_allowGreatSPNMdepArcs.setText("Export marking-dependent arcs in GreatSPN format (extension only support by DSPN-Tool)");
 
@@ -371,7 +371,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
                                 .add(jLabel8, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(filenameGreatSPN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 643, Short.MAX_VALUE)
+                            .add(filenameGreatSPN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 634, Short.MAX_VALUE)
                             .add(filenameModelLibrary, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .add(jLabel7, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabel6, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
@@ -407,7 +407,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
                     .add(jLabel9, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 27, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(textFieldLibraryPath, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jLabel6, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 53, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(jLabel6, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 69, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                     .add(filenameModelLibrary, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -418,7 +418,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
                 .add(tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(textField_rgmeddVer, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(jLabel8))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 106, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 90, Short.MAX_VALUE)
                 .add(checkBox_allowGreatSPNExt)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(checkBox_allowGreatSPNMdepArcs)

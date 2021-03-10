@@ -70,6 +70,7 @@ class TemporalFormula;
 class QuantifiedFormula;
 class BoolLiteral;
 class Deadlock;
+class InitState;
 class Reachability;
 class Fireability ;
 class Inequality ;
@@ -760,6 +761,29 @@ public:
      * @return boolean value
      * */
     bool getValue() const;
+};
+
+/*-------------------------
+ ---	InitState	---
+ ---------------------------*/
+/** Atomic proposition true in the initial marking, and false otherwise. */
+
+class InitState: public AtomicProposition {
+    DECLARE_CTL_CLASS;
+private:
+    virtual void createMDD(Context& ctx) override;
+    virtual bool equals(const BaseFormula* pf) const override;
+    virtual size_t compute_hash() const override;
+protected:
+    /**
+     * Constructor.
+     * @param value a boolean value
+     * */
+    InitState();
+    virtual ~InitState();
+public:
+    virtual TreeTraceNode *generateTrace(const vector<int> &state, TraceType traceTy) override;
+    virtual void print(std::ostream &os) const override;
 };
 
 /*-------------------------

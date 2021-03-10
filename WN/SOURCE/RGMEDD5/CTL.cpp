@@ -1124,6 +1124,41 @@ TreeTraceNode *Deadlock::generateTrace(const vector<int> &state, TraceType trace
     return nullptr;
 }
 
+/*---------------------
+ ---	InitState	---
+ ----------------------*/
+
+InitState::InitState() { }
+InitState::~InitState() { }
+
+bool InitState::equals(const BaseFormula* pf) const {
+    if (typeid(*pf) == typeid(*this)) {
+        // const InitState* p = dynamic_cast<const InitState*>(pf);
+        // if (p->getValue() == getValue())
+        return true;
+    }
+    return false;
+}
+
+size_t InitState::compute_hash() const {
+    return hash_combine(0x29093712493f5446/*, getValue()*/);
+    
+}
+
+void InitState::print(std::ostream &os) const {
+    os << "initial";
+}
+
+void InitState::createMDD(Context& ctx) {
+    FormulaPrinter<InitState> fp(this);
+    setMDD(ctx.rsrg->getInitMark());
+}
+
+TreeTraceNode *InitState::generateTrace(const vector<int> &state, TraceType traceTy) {
+    // TBD
+    return nullptr;
+}
+
 /*-------------------------
  ---    Reachability    ---
  --------------------------*/

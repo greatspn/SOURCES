@@ -321,7 +321,7 @@ public class NetObject implements Serializable {
     private static final String[] extraKeyWords = {
         "E", "A", "X", "G", "F", "U", "EX", "EF", "EG", "AX", "AF", "AG", 
         "CN", "If", "when", "ever", "Card", "All", "Subclass",
-        "en", "bounds", "deadlock", "ndeadlock", "possibly", "impossibly",
+        "en", "bounds", "deadlock", "ndeadlock", "initial", "possibly", "impossibly",
         "invariantly", "I", "Uniform", "Triangular", "Erlang", "TruncatedExp", "Pareto", 
 //        "S", /* SWN for <All> */
     };

@@ -27,7 +27,7 @@ tokens {
     EXISTS, FORALL, NEXT, FUTURE, GLOBALLY, UNTIL,
     EXISTS_NEXT, EXISTS_FUTURE, EXISTS_GLOBALLY,
     FORALL_NEXT, FORALL_FUTURE, FORALL_GLOBALLY,
-    POSSIBLY, IMPOSSIBLY, INVARIANTLY, ENABLED, BOUNDS, DEADLOCK, NO_DEADLOCK,
+    POSSIBLY, IMPOSSIBLY, INVARIANTLY, ENABLED, BOUNDS, DEADLOCK, NO_DEADLOCK, INITIAL_STATE,
 
     CTLSTAR_NEXT, CTLSTAR_FUTURE, CTLSTAR_GLOBALLY, CTLSTAR_UNTIL,
     CTLSTAR_EXISTS, CTLSTAR_FORALL,
@@ -152,6 +152,7 @@ boolExpr : '!' boolExpr                                          # BoolExprNot
          | pin=(POSSIBLY|IMPOSSIBLY|INVARIANTLY) boolExpr        # BoolExprCTLpin
          | ENABLED '(' TRANSITION_ID ')'                         # BoolExprCTLenabled
          | (DEADLOCK|NO_DEADLOCK)                                # BoolExprCTLdeadlocks
+         | INITIAL_STATE                                         # BoolExprCTLinitState
          /* LTL/CTL* language */
          | op=(CTLSTAR_NEXT | CTLSTAR_FUTURE | CTLSTAR_GLOBALLY) boolExpr  # BoolExprCTLStar
          | '(' boolExpr CTLSTAR_UNTIL boolExpr ')'               # BoolExprCTLStarUntil
@@ -621,6 +622,7 @@ ID : ID_LETTER (ID_LETTER | DIGIT)* {
             case "bounds":       setType(ExprLangParser.BOUNDS);      return;
             case "deadlock":     setType(ExprLangParser.DEADLOCK);    return;
             case "ndeadlock":    setType(ExprLangParser.NO_DEADLOCK); return;
+            case "initial":      setType(ExprLangParser.INITIAL_STATE);    return;
             // If new context-dependent keywords are added to this list,
             // they must also be added in NetObject.extraKeyWords[].
         }

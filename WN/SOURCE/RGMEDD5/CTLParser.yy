@@ -96,7 +96,7 @@ inline Formula* fix_unquantified_ctlstar_formulas(Formula* f) {
 %token PLUS MINUS TIMES DIV MINOR MAJOR MINOREQ MAJOREQ EQ NEQ 
 %token OR XOR AND NOT IMPLY BIIMPLY POSSIBLY IMPOSSIBLY INVARIANT
 %token HAS_DEADLOCK QUASI_LIVENESS STABLE_MARKING LIVENESS ONESAFE
-%token LPARENT RPARENT TRUEv FALSEv LQPARENT RQPARENT 
+%token LPARENT RPARENT TRUEv FALSEv LQPARENT RQPARENT INITIAL_STATE
 %token DEADLOCK NDEADLOCK ENABLED BOUNDS COMMA
 %token SIM DIF SHARP SEMICOLON
 %right E A U ENABLED BOUNDS POSSIBLY IMPOSSIBLY INVARIANT // AX AF AG EX EF EG
@@ -190,6 +190,7 @@ atomic_prop: NDEADLOCK                       { $$ = ctlnew<Deadlock>(false); }
            | DEADLOCK                        { $$ = ctlnew<Deadlock>(true); }
            | TRUEv                           { $$ = ctlnew<BoolLiteral>(true); }
            | FALSEv                          { $$ = ctlnew<BoolLiteral>(false); }
+           | INITIAL_STATE                   { $$ = ctlnew<InitState>(); }
            | ENABLED LPARENT transition_list RPARENT  { $$ = ctlnew<Fireability>($3); delete $3; }
            | expression ineq_op expression   { $$ = make_inequality($1, $2, $3); }
            ;
