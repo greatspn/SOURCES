@@ -1174,7 +1174,6 @@ RGMEDD5_SOURCES := WN/SOURCE/SHARED/service.c \
 				   WN/SOURCE/RGMEDD5/varorders_soups.cpp \
 				   WN/SOURCE/RGMEDD5/varorders_pbasis.cpp \
 				   WN/SOURCE/RGMEDD5/meddEv.cpp \
-				   WN/SOURCE/RGMEDD5/general.cpp \
 				   WN/SOURCE/RGMEDD5/graphMEDD.cpp \
 				   WN/SOURCE/RGMEDD5/FormulaEval.cpp \
 				   WN/SOURCE/RGMEDD5/CTL.cpp \

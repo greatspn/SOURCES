@@ -70,7 +70,7 @@ inline double get_double(cardinality_t c) { return c; }
 #include <meddly.h>
 #include <meddly_expert.h>
 
-#include "general.h"
+// #include "general.h"
 
 // #ifndef __PRS_H__
 // #define __PRS_H__
@@ -1212,70 +1212,70 @@ This class is used to manage the RS augmented with the Automaton
 //     void  checkRate(float &val, const int *plmark);
 // };
 
-class QUASIPRODFOR {
-private:
-    domain *d;
-    forest *fRS;
-    forest *fEV;
-    dd_edge *rs;
-    dd_edge *indexrs;
-    dd_edge *Mark;
-    int **to;
-    enumerator *it;
-    int nvar;
+// class QUASIPRODFOR {
+// private:
+//     domain *d;
+//     forest *fRS;
+//     forest *fEV;
+//     dd_edge *rs;
+//     dd_edge *indexrs;
+//     dd_edge *Mark;
+//     int **to;
+//     enumerator *it;
+//     int nvar;
 
-public:
-    QUASIPRODFOR(dd_edge *rs, dd_edge *indexrs, domain *d) {
-        fRS = rs->getForest();
-        fEV = indexrs->getForest();
-        this->d = d;
-        this->rs = rs;
-        this->indexrs = indexrs;
-        nvar = d->getNumVariables();
-        //to = (int **) malloc(sizeof(int *));
-        //to[0] = (int*) malloc(sizeof(int) * (nvar + 1));
-        it = NULL;
-        Mark = new dd_edge(fRS);
-    }
-    ~QUASIPRODFOR() {
-        // free(to[0]);
-        // free(to);
-        if (it != NULL)
-            delete it;
-        delete Mark;
-    }
+// public:
+//     QUASIPRODFOR(dd_edge *rs, dd_edge *indexrs, domain *d) {
+//         fRS = rs->getForest();
+//         fEV = indexrs->getForest();
+//         this->d = d;
+//         this->rs = rs;
+//         this->indexrs = indexrs;
+//         nvar = d->getNumVariables();
+//         //to = (int **) malloc(sizeof(int *));
+//         //to[0] = (int*) malloc(sizeof(int) * (nvar + 1));
+//         it = NULL;
+//         Mark = new dd_edge(fRS);
+//     }
+//     ~QUASIPRODFOR() {
+//         // free(to[0]);
+//         // free(to);
+//         if (it != NULL)
+//             delete it;
+//         delete Mark;
+//     }
 
-    //! \name Methods use to quasi product form
-    //@{
-    //!It computes the intersection between input MDD and the MDD encoding the RS. The ouput is encoded on the input MDD.
-    inline bool getState(int **ins) {
+//     //! \name Methods use to quasi product form
+//     //@{
+//     //!It computes the intersection between input MDD and the MDD encoding the RS. The ouput is encoded on the input MDD.
+//     inline bool getState(int **ins) {
 
-        fRS->createEdge(ins, 1, *Mark);
-        apply(INTERSECTION, *Mark, *rs, *Mark);
-        return true;
-    };
+//         fRS->createEdge(ins, 1, *Mark);
+//         apply(INTERSECTION, *Mark, *rs, *Mark);
+//         return true;
+//     };
 
 
-    inline int initIterator() {
-        it = new enumerator(*Mark);
-        return Mark->getCardinality();
-    };
+//     inline int initIterator() {
+//         it = new enumerator(*Mark);
+//         return Mark->getCardinality();
+//     };
 
-    inline bool getMarking(int *vmark, long &idm) {
-        const int *plmark;
-        if (it == NULL || *it == 0)
-            return false;
-        else {
-            plmark = it->getAssignments();
-            fEV->evaluate((*indexrs), plmark, idm);
-            memcpy(vmark, plmark, nvar * sizeof(int));
-            ++(*it);
-            return true;
-        }
-    }
+//     inline bool getMarking(int *vmark, long &idm) {
+//         const int *plmark;
+//         if (it == NULL || *it == 0)
+//             return false;
+//         else {
+//             plmark = it->getAssignments();
+//             fEV->evaluate((*indexrs), plmark, idm);
+//             memcpy(vmark, plmark, nvar * sizeof(int));
+//             ++(*it);
+//             return true;
+//         }
+//     }
 
-    //@}
-};
+//     //@}
+// };
 
 
 #endif /* MEDD_H_ */
