@@ -207,7 +207,7 @@ To cite the decision-diagram based model checker RGMEDD, please use this referen
   title={Variable order metrics for decision diagrams in system verification},
   author={Amparore, Elvio Gilberto and Donatelli, Susanna and Ciardo, Gianfranco},
   journal={International Journal on Software Tools for Technology Transfer},
-  pages={1--22},
+  pages={541--562},
   year={2019},
   publisher={Springer}
 }

@@ -200,53 +200,20 @@ $(call search_file,GRAPHMDP_LIB,/usr/local/lib/libgraphmdp.*,-lgraphmdp)
 $(call warn_missing,GRAPHMDP_LIB,GraphMDP library)
 
 $(call search_library,LIBXMLPP2-6_LIB,libxml++-2.6,"libXML++-2.6 library")
-# $(call search_lib,LIBXMLPP2-6_LIB,/usr/local/lib/libxml++-2.6)
-# $(call search_lib,LIBXMLPP2-6_LIB,/usr/lib/libxml++-2.6)
-# $(call search_lib,LIBXMLPP2-6_LIB,/usr/lib64/libxml++-2.6)
-# $(call search_lib,LIBXMLPP2-6_LIB,/opt/homebrew/lib/libxml++-2.6)
-# $(call search_lib,LIBXMLPP2-6_LIB,/usr/lib/x86_64-linux-gnu/libxml++-2.6)
-# $(call warn_missing,LIBXMLPP2-6_LIB,libXML++-2.6 library)
 
 $(call search_library,GLIBMM2-4_LIB,libglibmm-2.4.*,"glibmm-2.4 library")
-# $(call search_lib,GLIBMM2-4_LIB,/usr/local/lib/libglibmm-2.4.*)
-# $(call search_lib,GLIBMM2-4_LIB,/usr/lib/libglibmm-2.4.*)
-# $(call search_lib,GLIBMM2-4_LIB,/usr/lib64/libglibmm-2.4.*)
-# $(call search_lib,GLIBMM2-4_LIB,/opt/homebrew/lib/libglibmm-2.4.*)
-# $(call search_lib,GLIBMM2-4_LIB,/usr/lib/x86_64-linux-gnu/libglibmm-2.4.*)
-# $(call warn_missing,GLIBMM2-4_LIB,glibmm-2.4 library)
 
 
 $(call search_library,GLPK_LIB,libglpk.*,"GLPK library",-lglpk)
-# $(call search_lib,GLPK_LIB,/usr/local/lib/libglpk.*,-lglpk)
-# $(call search_lib,GLPK_LIB,/usr/lib/libglpk.*,-lglpk)
-# $(call search_lib,GLPK_LIB,/usr/lib64/libglpk.*,-lglpk)
-# $(call search_lib,GLPK_LIB,/opt/homebrew/lib/libglpk.*,-lglpk)
-# $(call search_lib,GLPK_LIB,/usr/lib/x86_64-linux-gnu/libglpk.*,-lglpk)
-# $(call warn_missing,GLPK_LIB,GLPK library)
 
 
 $(call search_library,LP_SOLVE_LIB,liblpsolve55.*,"lp_solve55 library",-llpsolve55 -ldl -lcolamd)
 ifdef HAS_LP_SOLVE_LIB
   INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I$(PATH_TO_LP_SOLVE_LIB)../include/lpsolve
 endif
-# $(call search_lib,LP_SOLVE_LIB,/usr/local/lib/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
-# $(call search_lib,LP_SOLVE_LIB,/usr/lib/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
-# $(call search_lib,LP_SOLVE_LIB,/usr/lib64/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
-# $(call search_lib,LP_SOLVE_LIB,/opt/homebrew/lib/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
-# $(call search_lib,LP_SOLVE_LIB,/usr/lib/x86_64-linux-gnu/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
-# $(call warn_missing,LP_SOLVE_LIB,lp_solve55 library)
-# ifdef HAS_LP_SOLVE_LIB
-# 	INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I/usr/local/include/lpsolve/ -I/usr/include/lpsolve/
-# endif
 
 
 $(call search_library,GMP_LIB,/libgmpxx.*,"GMP library",-lgmpxx -lgmp)
-# $(call search_lib,GMP_LIB,/usr/local/lib/libgmpxx.*,-lgmpxx -lgmp)
-# $(call search_lib,GMP_LIB,/usr/lib/libgmpxx.*,-lgmpxx -lgmp)
-# $(call search_lib,GMP_LIB,/usr/lib64/libgmpxx.*,-lgmpxx -lgmp)
-# $(call search_lib,GMP_LIB,/opt/homebrew/lib/libgmpxx.*,-lgmpxx -lgmp)
-# $(call search_lib,GMP_LIB,/usr/lib/x86_64-linux-gnu/libgmpxx.*,-lgmpxx -lgmp)
-# $(call warn_missing,GMP_LIB,GMP library)
 ifdef HAS_GMP_LIB
 	INCLUDE_GMP_LIB := -DHAS_GMP_LIB=1
 endif
@@ -254,6 +221,9 @@ endif
 
 $(call search_file,JAVA_DEVELOPMENT_KIT,$(shell which javac))
 $(call warn_missing,JAVA_DEVELOPMENT_KIT,Java JDK)
+ifndef JAVA_HOME
+  $(info $(call unquote,"  [DEP]  JAVA_HOME environment variable is undefined. Please define it."))
+endif
 
 
 $(call search_file,APACHE_ANT,$(shell which ant))
@@ -261,30 +231,12 @@ $(call warn_missing,APACHE_ANT,Apache ANT)
 
 
 $(call search_library,BOOST_CXX_LIB,libboost_context*,"Boost C++ library")
-# $(call search_lib,BOOST_CXX_LIB,/usr/local/lib/libboost_context*)
-# $(call search_lib,BOOST_CXX_LIB,/usr/lib/libboost_context*)
-# $(call search_lib,BOOST_CXX_LIB,/usr/lib64/libboost_context*)
-# $(call search_lib,BOOST_CXX_LIB,/opt/homebrew/lib/libboost_context*)
-# $(call search_lib,BOOST_CXX_LIB,/usr/lib/x86_64-linux-gnu/libboost_context*)
-# $(call warn_missing,BOOST_CXX_LIB,Boost C++ library)
 
 
 $(call search_library,SPOT_LIB,libspot.*,"Spot library(spot.lrde.epita.fr/)")
-# $(call search_lib,SPOT_LIB,/usr/local/lib/libspot.*)
-# $(call search_lib,SPOT_LIB,/usr/lib/libspot.*)
-# $(call search_lib,SPOT_LIB,/usr/lib64/libspot.*)
-# $(call search_lib,SPOT_LIB,/opt/homebrew/lib/libspot.*)
-# $(call search_lib,SPOT_LIB,/usr/lib/x86_64-linux-gnu/libspot.*)
-# $(call warn_missing,SPOT_LIB,Spot library(spot.lrde.epita.fr/))
 
 
 $(call search_library,MEDDLY_LIB,libmeddly.*,"Meddly library(github.com/asminer/meddly)")
-# $(call search_lib,MEDDLY_LIB,/usr/local/lib/libmeddly.*)
-# $(call search_lib,MEDDLY_LIB,/usr/lib/libmeddly.*)
-# $(call search_lib,MEDDLY_LIB,/usr/lib64/libmeddly.*)
-# $(call search_lib,MEDDLY_LIB,/opt/homebrew/lib/libmeddly.*)
-# $(call search_lib,MEDDLY_LIB,/usr/lib/x86_64-linux-gnu/libmeddly.*)
-# $(call warn_missing,MEDDLY_LIB,Meddly library(github.com/asminer/meddly))
 
 ##############################################################################
 
