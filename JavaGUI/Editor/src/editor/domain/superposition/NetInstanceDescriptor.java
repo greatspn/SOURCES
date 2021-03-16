@@ -46,7 +46,7 @@ public class NetInstanceDescriptor extends SelectableObject implements Serializa
     // For replicated instances, instParams is applied uniformly to all the nets.
     public final TemplateBinding instParams = new TemplateBinding();
     // Variables that are kept unbound
-    public final Set<String> unboundParams = new HashSet<>();
+//    public final Set<String> unboundParams = new HashSet<>();
     
     //----------------------------------------------------------
     // Transient reference to the target net
@@ -73,9 +73,9 @@ public class NetInstanceDescriptor extends SelectableObject implements Serializa
     public TemplateBinding getListOfBoundVars() {
         return instParams;
     }
-    public Set<String> getListOfUnboundVars() {
-        return unboundParams;
-    }
+//    public Set<String> getListOfUnboundVars() {
+//        return unboundParams;
+//    }
     
     public TemplateBinding getBindingOfReplica(int rep) {
         // Here we have the opportunity of modifying bound values for the specific replica
@@ -85,40 +85,51 @@ public class NetInstanceDescriptor extends SelectableObject implements Serializa
     // Add a new parameter to the set of instantiated parameters, to all the replicas
     public void bindParam(String param, Expr startValue) {
         instParams.bindSingleValue(param, startValue);
-        unboundParams.remove(param);
+//        unboundParams.remove(param);
     }
     
     // Remove a parameter from the list of instantiated params
     public void unbindParam(String param) {
         instParams.unbind(param);
-        unboundParams.add(param);
+//        unboundParams.add(param);
     }
     
-    // Is this parameter in the list of known parameters?
-    public boolean isParamKnown(String param) {
-        return instParams.binding.containsKey(param) || unboundParams.contains(param);
+//    // Is this parameter in the list of known parameters?
+//    public boolean isParamKnown(String param) {
+//        return instParams.binding.containsKey(param) || unboundParams.contains(param);
+//    }
+    
+    // Is this parameter already bound?
+    public boolean isParamBound(String param) {
+        return instParams.binding.containsKey(param);
+    }
+    
+    // rename a binding
+    public void renameBoundParam(String oldName, String newName) {
+        instParams.bindSingleValue(newName, instParams.binding.get(oldName));
+        instParams.binding.remove(oldName);
     }
     
     // Remove parameters that are not in the list of @params
     public void removeMissingParams(Set<TemplateVariable> params) {
-        Iterator<String> it1 = unboundParams.iterator();
-        while (it1.hasNext()) {
-            String par = it1.next();
-            
-            boolean found = false;
-            Iterator<TemplateVariable> itVar = params.iterator();
-            while (itVar.hasNext()) {
-                TemplateVariable tvar = itVar.next();
-                if (tvar.getUniqueName().equals(par)) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                it1.remove();
-                System.out.println("Removing unbound param "+par+" from NetInstance of "+targetNetName);
-            }
-        }
+//        Iterator<String> it1 = unboundParams.iterator();
+//        while (it1.hasNext()) {
+//            String par = it1.next();
+//            
+//            boolean found = false;
+//            Iterator<TemplateVariable> itVar = params.iterator();
+//            while (itVar.hasNext()) {
+//                TemplateVariable tvar = itVar.next();
+//                if (tvar.getUniqueName().equals(par)) {
+//                    found = true;
+//                    break;
+//                }
+//            }
+//            if (!found) {
+//                it1.remove();
+//                System.out.println("Removing unbound param "+par+" from NetInstance of "+targetNetName);
+//            }
+//        }
         
         Iterator<Entry<String, Expr>> it2 = instParams.binding.entrySet().iterator();
         while (it2.hasNext()) {

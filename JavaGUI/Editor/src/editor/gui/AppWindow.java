@@ -638,6 +638,11 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
                 }
             });
         }
+        
+//        if (Main.isDeveloperMachine()) { // resurrect the MultiNet support
+//            JMenuItem addMultiPage = new JMenuItem(actionNewMultiPage);
+//            jPopupMenuAddPage.add(addMultiPage);
+//        }
 
         // First GUI update is executed immediately, without the invalidateGUI()
         updateGUI();

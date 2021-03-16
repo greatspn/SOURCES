@@ -586,9 +586,9 @@ public class MultiNetPage extends ProjectPage implements Serializable, Composabl
     }
 
     @Override
-    public Set<TemplateVariable> enumerateParams() {
+    public Set<TemplateVariable> enumerateParamsForNetComposition() {
         assert isPageCorrect() && compNet != null;
-        return compNet.enumerateParams();
+        return compNet.enumerateParamsForNetComposition();
     }
 
     @Override
@@ -645,10 +645,14 @@ public class MultiNetPage extends ProjectPage implements Serializable, Composabl
                             doCompose = doCompose || changedPages.contains(namedPage);
                         
                         // Keep in synch the template variables
-                        Set<TemplateVariable> pageParams = descr.net.enumerateParams();
-                        for (TemplateVariable var : pageParams)
-                            if (!descr.isParamKnown(var.getUniqueName()))
-                                descr.unbindParam(var.getUniqueName());
+                        Set<TemplateVariable> pageParams = descr.net.enumerateParamsForNetComposition();
+//                        Set<TemplateVariable> pageParams = descr.net.enumerateParams();
+                        for (TemplateVariable var : pageParams) {
+//                            if (!descr.isParamKnown(var.getUniqueName()))
+//                                descr.unbindParam(var.getUniqueName());
+                            if (!descr.isParamBound(var.getUniqueName()))
+                                descr.bindParam(var.getUniqueName(), var.getLastBindingExpr());
+                        }
                         descr.removeMissingParams(pageParams);
                         
                         // Copy latex string of template variables
@@ -657,8 +661,8 @@ public class MultiNetPage extends ProjectPage implements Serializable, Composabl
                             descr.paramRefs.put(tvar.getUniqueName(), tvar);
                         
                         System.out.println("pageParams="+pageParams.size()+
-                                " bound="+descr.instParams.binding.size()+
-                                " unbound="+descr.unboundParams.size());
+                                " bound="+descr.instParams.binding.size());
+//                                " unbound="+descr.unboundParams.size());
                     }
                     // Validate the replica count
                     descr.numReplicas.checkExprCorrectness(context, this, descr);
@@ -695,6 +699,19 @@ public class MultiNetPage extends ProjectPage implements Serializable, Composabl
             if (descr != null && descr.targetNetName.equals(oldName))
                 descr.targetNetName = newName;
     }
+
+    @Override
+    public void onAnotherPageNodeRenaming(ProjectPage otherPage, String oldId, String newId) {
+        // Keep template variable names in synch
+        for (NetInstanceDescriptor descr : netsDescr) {
+            if (descr != null && descr.targetNetName.equals(otherPage.getPageName())) {
+                if (descr.isParamBound(oldId)) {
+                    System.out.println("onAnotherPageNodeRenaming "+otherPage.getPageName()+" "+oldId+"->"+newId);
+                    descr.renameBoundParam(oldId, newId);
+                }
+            }
+        }
+    }
     
     private static final DataFlavor dataFlavour = new DataFlavor(MultiNetPage.class, "MultiNetDef");
     @Override public DataFlavor getDataFlavour() { return dataFlavour; }
@@ -723,7 +740,7 @@ public class MultiNetPage extends ProjectPage implements Serializable, Composabl
     
     @Override
     public boolean pageSupportsRG(RgType rgType) {
-        throw new UnsupportedOperationException(""); 
+        return false;
     }
 
     @Override

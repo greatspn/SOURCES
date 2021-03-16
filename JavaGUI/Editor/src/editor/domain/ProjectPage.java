@@ -73,6 +73,9 @@ public abstract class ProjectPage implements Serializable, UuidObject, ResourceH
     // called when another page in the project has been renamed
     public void onAnotherPageRenaming(String oldName, String newName) { }
     
+    // called when a node changes its unique ID in another page
+    public void onAnotherPageNodeRenaming(ProjectPage otherPage, String oldId, String newId) { }
+    
     // Syntax/semantic analysis of the page content
     public final boolean isPageCorrect() { return numRealErrors == 0; }
     

@@ -72,9 +72,9 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel impleme
         button_down.setEnabled(numInst != (mnPage.netsDescr.size() - 1));
         
         int numBoundVars = descr.getListOfBoundVars().binding.size();
-        int numVars = numBoundVars + descr.getListOfUnboundVars().size();
+        int numVars = numBoundVars;// + descr.getListOfUnboundVars().size();
         panel_binding.setVisible(numBoundVars > 0);
-        button_bindParam.setEnabled(numVars > 0);
+//        button_bindParam.setEnabled(numVars > 0);
         
         // Net selection combo box
         comboBox_model.removeAllItems();
@@ -159,9 +159,8 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel impleme
         resourceFactory = new editor.gui.ResourceFactory();
         label_Num = new javax.swing.JLabel();
         checkBox_selected = new javax.swing.JCheckBox();
-        comboBox_model = new javax.swing.JComboBox<String>();
+        comboBox_model = new javax.swing.JComboBox<>();
         exprField_replicas = new editor.domain.measures.ExprField();
-        button_bindParam = new javax.swing.JButton();
         button_up = new javax.swing.JButton();
         button_down = new javax.swing.JButton();
         panel_binding = new javax.swing.JPanel();
@@ -206,17 +205,6 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel impleme
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 0.5;
         add(exprField_replicas, gridBagConstraints);
-
-        button_bindParam.setIcon(resourceFactory.getDropdown16());
-        button_bindParam.setText("Params...");
-        button_bindParam.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                button_bindParamActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridy = 2;
-        add(button_bindParam, gridBagConstraints);
 
         button_up.setIcon(resourceFactory.getArrowUp16());
         button_up.addActionListener(new java.awt.event.ActionListener() {
@@ -334,47 +322,45 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel impleme
         });
     }//GEN-LAST:event_button_downActionPerformed
 
-    private void button_bindParamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_bindParamActionPerformed
-        JPopupMenu popup = new JPopupMenu();
-        // Add binding commands
-        for (final String var : descr.unboundParams) {
-            final TemplateVariable tvar = descr.paramRefs.get(var);
-            JMenuItem bindCmd = new JMenuItem("Bind parameter "+var);
-            bindCmd.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    mainInterface.executeUndoableCommand("bind parameter "+var, (ProjectData proj, ProjectPage page) -> {
-                        NetInstanceDescriptor d = ((MultiNetPage)page).netsDescr.get(numInst);
-                        d.unboundParams.remove(var);
-                        d.instParams.bindSingleValue(var, tvar.getLastBindingExpr());
-                    });
-                }
-            });
-            popup.add(bindCmd);
-        }
-        // Add unbinding commands
-        for (final String var : descr.instParams.binding.keySet()) {
-            final TemplateVariable tvar = descr.paramRefs.get(var);
-            JMenuItem unbindCmd = new JMenuItem("Unbind parameter "+var);
-            unbindCmd.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    mainInterface.executeUndoableCommand("unbind parameter "+var, (ProjectData proj, ProjectPage page) -> {
-                        NetInstanceDescriptor d = ((MultiNetPage)page).netsDescr.get(numInst);
-                        d.instParams.unbind(var);
-                        d.unboundParams.add(var);
-                    });
-                }
-            });
-            popup.add(unbindCmd);
-        }
-        // Show the popup
-        popup.show(button_bindParam, 0, button_bindParam.getHeight());
-    }//GEN-LAST:event_button_bindParamActionPerformed
-
+//    private void button_bindParamActionPerformed(java.awt.event.ActionEvent evt) {                                                 
+//        JPopupMenu popup = new JPopupMenu();
+//        // Add binding commands
+//        for (final String var : descr.unboundParams) {
+//            final TemplateVariable tvar = descr.paramRefs.get(var);
+//            JMenuItem bindCmd = new JMenuItem("Bind parameter "+var);
+//            bindCmd.addActionListener(new ActionListener() {
+//                @Override
+//                public void actionPerformed(ActionEvent e) {
+//                    mainInterface.executeUndoableCommand("bind parameter "+var, (ProjectData proj, ProjectPage page) -> {
+//                        NetInstanceDescriptor d = ((MultiNetPage)page).netsDescr.get(numInst);
+//                        d.unboundParams.remove(var);
+//                        d.instParams.bindSingleValue(var, tvar.getLastBindingExpr());
+//                    });
+//                }
+//            });
+//            popup.add(bindCmd);
+//        }
+//        // Add unbinding commands
+//        for (final String var : descr.instParams.binding.keySet()) {
+//            final TemplateVariable tvar = descr.paramRefs.get(var);
+//            JMenuItem unbindCmd = new JMenuItem("Unbind parameter "+var);
+//            unbindCmd.addActionListener(new ActionListener() {
+//                @Override
+//                public void actionPerformed(ActionEvent e) {
+//                    mainInterface.executeUndoableCommand("unbind parameter "+var, (ProjectData proj, ProjectPage page) -> {
+//                        NetInstanceDescriptor d = ((MultiNetPage)page).netsDescr.get(numInst);
+//                        d.instParams.unbind(var);
+//                        d.unboundParams.add(var);
+//                    });
+//                }
+//            });
+//            popup.add(unbindCmd);
+//        }
+//        // Show the popup
+//        popup.show(button_bindParam, 0, button_bindParam.getHeight());
+//    }                                                
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton button_bindParam;
     private javax.swing.JButton button_down;
     private javax.swing.JButton button_up;
     private javax.swing.JCheckBox checkBox_selected;

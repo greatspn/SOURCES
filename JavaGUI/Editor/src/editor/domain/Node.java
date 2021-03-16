@@ -264,6 +264,8 @@ public abstract class Node extends SelectableObject
             ExprIdReplacer rewriter = new ExprIdReplacer(oldName, newName);
             ParserContext context = new ParserContext(page);
             ((NetPage)page).applyRewriteRule(context, rewriter);
+            for (int i=0; i<project.getPageCount(); i++)
+                project.getPageAt(i).onAnotherPageNodeRenaming(page, oldName, newName);
             setUniqueName(newName);
         }
         @Override public boolean isEditable() { return true; }

@@ -715,13 +715,29 @@ public abstract class NetPage extends ProjectPage implements Serializable, Compo
     }
 
     @Override
-    public Set<TemplateVariable> enumerateParams() {
+    public Set<TemplateVariable> enumerateParamsForNetComposition() {
         assert isPageCorrect();
-        Set<TemplateVariable> params = new HashSet<>();
+//        Set<TemplateVariable> params = new HashSet<>();
+//        for (Node node : nodes)
+//            if (node instanceof TemplateVariable)
+//                params.add((TemplateVariable)node);
+//        return params;
+
+        // Get the parametric color class definitions, 
+        // and extract which parameters are template
+        Set<String> ccDepVarNames = new HashSet<>();
+        Iterator<ColorClass> ccIter = colorClassIterator();
+        if (ccIter!=null) {
+            while (ccIter.hasNext()) {
+                ColorClass cc = ccIter.next();
+                cc.getDependentVariables(ccDepVarNames);
+            }
+        }
+        Set<TemplateVariable> colorClassDepTemplateVars = new HashSet<>();
         for (Node node : nodes)
-            if (node instanceof TemplateVariable)
-                params.add((TemplateVariable)node);
-        return params;
+            if (node instanceof TemplateVariable && ccDepVarNames.contains(node.getUniqueName()))
+                colorClassDepTemplateVars.add((TemplateVariable)node);
+        return colorClassDepTemplateVars;
     }
     
     @Override

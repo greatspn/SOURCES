@@ -151,6 +151,7 @@ public class GspnPage extends NetPage implements Serializable {
             }
         }
         
+        
         // If Kronecker partitions are used, all places should have a partition
         if (hasKroneckerPartitions) {
             Set<Selectable> withoutPartition = new HashSet<>();

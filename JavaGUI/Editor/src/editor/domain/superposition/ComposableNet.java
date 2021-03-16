@@ -28,7 +28,7 @@ public interface ComposableNet {
     public int numNodeGroups();
     
     // Enumerate parameters
-    public Set<TemplateVariable> enumerateParams();
+    public Set<TemplateVariable> enumerateParamsForNetComposition();
     
     // Replace parameters with constant values
     public void instantiateParams(TemplateBinding binding);
