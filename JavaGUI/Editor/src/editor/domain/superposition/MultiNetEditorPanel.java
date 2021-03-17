@@ -131,16 +131,21 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         currPage = (MultiNetPage)page;
         initializing = true;
         
+        toolbarButton_addSubnet.setEnabled(!currPage.operator.hasFixedNumOfOperators());
+        label_operator.setIcon(currPage.operator.getOperatorIcon());
+        label_operator.setText(currPage.operator.getOperatorName());
+        
         if (currPage.isPageCorrect()) {
             // Flatten list of netpages
 //            ArrayList<NetPage> flatNetList = new ArrayList<>();
 //            ArrayList<String> flatNetNames = new ArrayList<>();
 //            recursiveFlatten(currPage, flatNetList, flatNetNames, "");
-            String[] flatNetNames = currPage.flattenedSubNetNames.toArray
-                        (new String[currPage.flattenedSubNetNames.size()]);
-            NetPage[] flatNetList = currPage.flattenedSubNets.toArray
-                    (new NetPage[currPage.flattenedSubNets.size()]);
-            
+//            String[] flatNetNames = currPage.flattenedSubNetNames.toArray
+//                        (new String[currPage.flattenedSubNetNames.size()]);
+//            NetPage[] flatNetList = currPage.flattenedSubNets.toArray
+//                    (new NetPage[currPage.flattenedSubNets.size()]);
+            String[] flatNetNames = currPage.getVisualizedSubnetNames();
+            NetPage[] flatNetList = currPage.getVisualizedSubnets();
             
             viewerPanel.removeAllNetPanels();
             viewerPanel.initializePanel(flatNetList, flatNetNames,
@@ -407,6 +412,8 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         resourceFactory = new editor.gui.ResourceFactory();
         toolBarEmpty = new javax.swing.JToolBar();
         propertyPanel = new javax.swing.JPanel();
+        panel_operator = new javax.swing.JPanel();
+        label_operator = new javax.swing.JLabel();
         actionAddSubnet = new common.Action();
         scrollPaneCentral = new javax.swing.JScrollPane();
         toolbar = new javax.swing.JToolBar();
@@ -415,16 +422,28 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
 
         toolBarEmpty.setRollover(true);
 
-        javax.swing.GroupLayout propertyPanelLayout = new javax.swing.GroupLayout(propertyPanel);
-        propertyPanel.setLayout(propertyPanelLayout);
-        propertyPanelLayout.setHorizontalGroup(
-            propertyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
-        propertyPanelLayout.setVerticalGroup(
-            propertyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
+        propertyPanel.setLayout(new java.awt.GridBagLayout());
+
+        panel_operator.setBorder(javax.swing.BorderFactory.createTitledBorder("Composition operator:"));
+        panel_operator.setLayout(new java.awt.GridBagLayout());
+
+        label_operator.setText("OPX");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 8;
+        gridBagConstraints.ipady = 8;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
+        panel_operator.add(label_operator, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        propertyPanel.add(panel_operator, gridBagConstraints);
 
         actionAddSubnet.setActionName("Add subnet");
         actionAddSubnet.setTooltipDesc("Add a new subnet in this multi page.");
@@ -438,6 +457,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 0.1;
         gridBagConstraints.weighty = 0.1;
@@ -452,15 +472,19 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         toolbar.add(toolbarButton_addSubnet);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         add(toolbar, gridBagConstraints);
 
-        panel_netInstanceEditor.setBorder(javax.swing.BorderFactory.createTitledBorder("Subnet definition:"));
+        panel_netInstanceEditor.setBorder(javax.swing.BorderFactory.createTitledBorder("Subnet definitions:"));
         panel_netInstanceEditor.setLayout(new javax.swing.BoxLayout(panel_netInstanceEditor, javax.swing.BoxLayout.LINE_AXIS));
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 0.1;
         add(panel_netInstanceEditor, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -490,7 +514,9 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private common.Action actionAddSubnet;
+    private javax.swing.JLabel label_operator;
     private javax.swing.JPanel panel_netInstanceEditor;
+    private javax.swing.JPanel panel_operator;
     private javax.swing.JPanel propertyPanel;
     private editor.gui.ResourceFactory resourceFactory;
     private javax.swing.JScrollPane scrollPaneCentral;

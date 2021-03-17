@@ -690,29 +690,29 @@ public abstract class NetPage extends ProjectPage implements Serializable, Compo
     }
     
     //----------------- Net composition interface ---------------------------
-    @Override
-    public Iterator<NodeGroup> groupIterator() {
-        Iterator it = nodes.iterator();
-        @SuppressWarnings("unchecked") Iterator<NodeGroup> nIt = (it);
-        return nIt;
-    }
-
-    @Override
-    public Iterator<ComposableNet> subnetsIterator() {
-        @SuppressWarnings("unchecked") Iterator<ComposableNet> cnIt
-                = common.EmptyIterator.INSTANCE;
-        return cnIt;
-    }
-
-    @Override
-    public int numNodeGroups() { 
-        return nodes.size();
-    }
-
-    @Override
-    public int numSubnets() {
-        return 0;
-    }
+//    @Override
+//    public Iterator<NodeGroup> groupIterator() {
+//        Iterator it = nodes.iterator();
+//        @SuppressWarnings("unchecked") Iterator<NodeGroup> nIt = (it);
+//        return nIt;
+//    }
+//
+//    @Override
+//    public Iterator<ComposableNet> subnetsIterator() {
+//        @SuppressWarnings("unchecked") Iterator<ComposableNet> cnIt
+//                = common.EmptyIterator.INSTANCE;
+//        return cnIt;
+//    }
+//
+//    @Override
+//    public int numNodeGroups() { 
+//        return nodes.size();
+//    }
+//
+//    @Override
+//    public int numSubnets() {
+//        return 0;
+//    }
 
     @Override
     public Set<TemplateVariable> enumerateParamsForNetComposition() {

@@ -29,6 +29,7 @@ import editor.domain.measures.FormulaLanguage;
 import editor.domain.measures.FormulaMeasure;
 import editor.domain.measures.MeasureEditorPanel;
 import editor.domain.measures.MeasurePage;
+import editor.domain.superposition.AlgebraCompositionOperator;
 import editor.domain.superposition.MultiNetEditorPanel;
 import editor.domain.superposition.MultiNetPage;
 import editor.domain.superposition.NetInstanceDescriptor;
@@ -639,10 +640,10 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             });
         }
         
-//        if (Main.isDeveloperMachine()) { // resurrect the MultiNet support
-//            JMenuItem addMultiPage = new JMenuItem(actionNewMultiPage);
-//            jPopupMenuAddPage.add(addMultiPage);
-//        }
+        if (Main.isDeveloperMachine()) { // resurrect the MultiNet support
+            JMenuItem addMultiPage = new JMenuItem(actionNewMultiPage);
+            jPopupMenuAddPage.add(addMultiPage);
+        }
 
         // First GUI update is executed immediately, without the invalidateGUI()
         updateGUI();
@@ -3139,6 +3140,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             newPage.netsDescr.add(new NetInstanceDescriptor());
             newPage.netsDescr.get(0).targetNetName = "PN1";
             newPage.netsDescr.get(1).targetNetName = "PN2";
+            newPage.operator = new AlgebraCompositionOperator();
             activeProject.getCurrent().addPage(newPage);
             switchToProjectPage(activeProject, newPage, null);
         });

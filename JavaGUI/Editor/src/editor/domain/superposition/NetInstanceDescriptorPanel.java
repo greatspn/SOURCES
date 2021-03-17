@@ -8,17 +8,12 @@ package editor.domain.superposition;
 
 import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
-import editor.domain.elements.TemplateVariable;
 import editor.domain.measures.ExprField;
 import editor.domain.measures.SolverParams;
 import editor.gui.MainWindowInterface;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 
 /**
  *
@@ -53,7 +48,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel impleme
 
         // Fix combo box size
         Dimension comboSize = comboBox_model.getPreferredSize();
-        comboSize.width = 8 * comboSize.height;
+        comboSize.width = 12 * comboSize.height;
         comboBox_model.setPreferredSize(comboSize);
         comboBox_model.setMinimumSize(comboSize);
         comboBox_model.setMaximumSize(comboSize);        
@@ -78,7 +73,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel impleme
         
         // Net selection combo box
         comboBox_model.removeAllItems();
-        boolean found = mnPage.canComposeWith(currProject.findPageByName(descr.targetNetName));
+        boolean found = mnPage.operator.canComposeWith(currProject.findPageByName(descr.targetNetName), mnPage);
         comboBox_model.setForeground(found ? Color.BLACK : Color.red);
         if (!found) {
             comboBox_model.addItem(descr.targetNetName+" <missing>");
@@ -86,7 +81,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel impleme
         }
         for (int p=0; p<currProject.getPageCount(); p++) {
             ProjectPage page = currProject.getPageAt(p);
-            if (mnPage.canComposeWith(page)) {
+            if (mnPage.operator.canComposeWith(page, mnPage)) {
                 comboBox_model.addItem(page.getPageName());
             }
         }
@@ -99,6 +94,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel impleme
         // Replica count
         numReplicaExprCopy.setExpr(descr.numReplicas.getExpr());
         exprField_replicas.initializeFor(numReplicaExprCopy.getEditableValue(), mnPage);
+        exprField_replicas.setEnabled(mnPage.operator.useReplicaCount());
         
         // Bound variables
         for (VarBindingPanel vbp : bindPanels) {
@@ -204,6 +200,8 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel impleme
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weighty = 0.3;
+        gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
         add(exprField_replicas, gridBagConstraints);
 
         button_up.setIcon(resourceFactory.getArrowUp16());
@@ -257,7 +255,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel impleme
         panel_horizBar.setLayout(panel_horizBarLayout);
         panel_horizBarLayout.setHorizontalGroup(
             panel_horizBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 434, Short.MAX_VALUE)
         );
         panel_horizBarLayout.setVerticalGroup(
             panel_horizBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -285,6 +283,8 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel impleme
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weighty = 0.3;
+        gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
         add(label_numReplicas, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 

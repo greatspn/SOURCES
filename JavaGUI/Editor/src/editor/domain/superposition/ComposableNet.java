@@ -19,13 +19,13 @@ import java.util.Set;
 public interface ComposableNet {
     
     // Iterate over subnets
-    public Iterator<ComposableNet> subnetsIterator();
-    public int numSubnets();
-    public String getPageName();
+//    public Iterator<ComposableNet> subnetsIterator();
+//    public int numSubnets();
+//    public String getPageName();
     
     // Iterate over groups
-    public Iterator<NodeGroup> groupIterator();
-    public int numNodeGroups();
+//    public Iterator<NodeGroup> groupIterator();
+//    public int numNodeGroups();
     
     // Enumerate parameters
     public Set<TemplateVariable> enumerateParamsForNetComposition();

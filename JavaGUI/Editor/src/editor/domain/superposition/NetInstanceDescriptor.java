@@ -21,7 +21,6 @@ import editor.domain.measures.SolverParams;
 import editor.domain.values.EvaluatedFormula;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -148,6 +147,14 @@ public class NetInstanceDescriptor extends SelectableObject implements Serializa
                 it2.remove();
                 System.out.println("Removing bound param "+par+" from NetInstance of "+targetNetName);
             }
+        }
+    }
+    
+    public void checkBindingCorrectness(MultiNetPage page, ParserContext context) {
+        Iterator<Entry<String, Expr>> it = instParams.binding.entrySet().iterator();
+        while (it.hasNext()) {
+            Entry<String, Expr> bind = it.next();
+            bind.getValue().checkExprCorrectness(context, page, this);
         }
     }
 
