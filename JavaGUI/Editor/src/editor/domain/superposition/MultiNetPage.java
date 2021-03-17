@@ -8,7 +8,6 @@ package editor.domain.superposition;
 
 import common.EmptyIterator;
 import common.Util;
-import editor.domain.Expr;
 import editor.domain.NetPage;
 import editor.domain.Node;
 import editor.domain.PageErrorWarning;
@@ -18,15 +17,12 @@ import editor.domain.ProjectPage;
 import editor.domain.ProjectResource;
 import editor.domain.ViewProfile;
 import editor.domain.elements.ColorClass;
-import editor.domain.elements.ConstantID;
-import editor.domain.elements.GspnPage;
 import editor.domain.elements.TemplateVariable;
 import editor.domain.grammar.NodeNamespace;
 import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.TemplateBinding;
 import editor.gui.AbstractPageEditor;
 import editor.gui.RapidMeasureCmd;
-import editor.gui.ResourceFactory;
 import editor.gui.SharedResourceProvider;
 import java.awt.Component;
 import java.awt.Graphics2D;
@@ -36,7 +32,6 @@ import java.awt.print.PageFormat;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -75,24 +70,33 @@ public class MultiNetPage extends ProjectPage implements Serializable, Composabl
     // The list of nets that will be composed. Each of these nets could be a
     // simple NetPage, or the composed NetPage of a MultiNetPage.
     // Note:  compSubNets.size() == netsDescr.size()
-    private transient ArrayList<NetPage> compSubNets;
-    private transient ArrayList<String> subNetPrefixes;
-    // The 'flattened' list of components in this multipage, which is what is actually shown
-    // Note:  flattenedSubNets.size() >= netsDescr.size()
-    private transient ArrayList<NetPage> flattenedSubNets;
-    private transient ArrayList<String> flattenedSubNetNames;
+//    private transient ArrayList<NetPage> compSubNets;
+//    private transient ArrayList<String> subNetPrefixes;
+//    // The 'flattened' list of components in this multipage, which is what is actually shown
+//    // Note:  flattenedSubNets.size() >= netsDescr.size()
+//    private transient ArrayList<NetPage> flattenedSubNets;
+//    private transient ArrayList<String> flattenedSubNetNames;
     
     
     // The composed net
     private transient NetPage compNet;
+    // How the composed net is visualized
+    private transient String[] visualizedSubNetNames;
+    private transient NetPage[] visualizedSubNets;
     
     
     // Visualization
     public NetPage[] getVisualizedSubnets() { 
-        return flattenedSubNets.toArray(new NetPage[flattenedSubNets.size()]);
+        return visualizedSubNets;
     }
     public String[] getVisualizedSubnetNames() { 
-        return flattenedSubNetNames.toArray(new String[flattenedSubNetNames.size()]);
+        return visualizedSubNetNames;
+    }
+    
+    public void setCompositionSuccessfull(NetPage compNet, String[] visualizedSubNetNames, NetPage[] visualizedSubNets) {
+        this.compNet = compNet;
+        this.visualizedSubNetNames = visualizedSubNetNames;
+        this.visualizedSubNets = visualizedSubNets;
     }
     
 //    // A visual component (a single unit of the multinet)
@@ -131,17 +135,19 @@ public class MultiNetPage extends ProjectPage implements Serializable, Composabl
     
     private void doComposition() {
         System.out.println("doComposition "+getPageName()+"  isPageCorrect="+isPageCorrect());
-        compSubNets = new ArrayList<>();
-        subNetPrefixes = new ArrayList<>();
-        flattenedSubNets = new ArrayList<>();
-        flattenedSubNetNames = new ArrayList<>();
+//        compSubNets = new ArrayList<>();
+//        subNetPrefixes = new ArrayList<>();
+//        flattenedSubNets = new ArrayList<>();
+//        flattenedSubNetNames = new ArrayList<>();
         compNet = null;
+        visualizedSubNetNames = null;
+        visualizedSubNets = null;
 //        compNet = new GspnPage();
         
         // Construct the subnet hierarchy
         ParserContext rootContext = new ParserContext(this);
-        TemplateBinding rootBinding = new TemplateBinding();
-        enumComponents("", this, rootBinding, rootContext);
+//        TemplateBinding rootBinding = new TemplateBinding();
+//        enumComponents("", this, rootBinding, rootContext);
         
 //        // Compose the subnets into a single net
 //        final int numSubNets = compSubNets.size();
@@ -164,404 +170,12 @@ public class MultiNetPage extends ProjectPage implements Serializable, Composabl
 
         // Composition was successfull
         if (isPageCorrect()) {
-            compNet = new GspnPage();
+            operator.compose(this, rootContext);
+//            compNet = new GspnPage();
         }
     }
     
-//    private static class TaggedNodes {
-//        // All nodes that share the same tag, divided by subnets.
-//        LinkedList<Node>[] nodesBySubnet;
-//
-//        public TaggedNodes(int numSubnets) {
-//            @SuppressWarnings("unchecked") LinkedList<Node>[] ll = new LinkedList[numSubnets];
-//            this.nodesBySubnet = ll;
-//        }
-//    }
-//    
-//    private void insertNodeByTag(Map<String, TaggedNodes> table, Node node, String tag, int subnetId) {
-//        TaggedNodes tn = table.get(tag);
-//        if (tn == null) {
-//            tn = new TaggedNodes(compSubNets.size());
-//            table.put(tag, tn);
-//        }
-//        if (tn.nodesBySubnet[subnetId] == null)
-//            tn.nodesBySubnet[subnetId] = new LinkedList<>();
-//        tn.nodesBySubnet[subnetId].add(node);
-//    }
-//    
-//    private static final String NON_COMPOSABLE = "@#!";
-    
-//    // Do simple node composition: nodes with the same name and type are fused toghether,
-//    // and are assigned to a new unique name. Otherwise, they remain separated, and their
-//    // names are prefixed with the subnet name.
-//    private void composeNodesOfType(GroupClass type) {
-//        System.out.println("composeNodesOfType "+type);
-//        Map<String, TaggedNodes> taggedNode = new HashMap<>();
-//        
-//        int subnetId = 0;
-//        for (NetPage subnet: compSubNets) {
-//            for (Node node : subnet.nodes) {
-//                GroupClass nodeType = node.getGroupClass();
-//                if (nodeType != type)
-//                    continue;
-//                // Determine the node tag
-//                String tag;
-//                if (node.hasSuperPosTags()) {
-//                    if (node.numTags() == 0)
-//                        tag = NON_COMPOSABLE;
-//                    else {
-//                        if (node.numTags() > 1)
-//                            addPageWarning("Multiple node tags are not supported.", node);
-//                        tag = node.getTag(0);
-//                    }
-//                }
-//                else
-//                    tag = node.getUniqueName();
-//                
-//                // Insert the node in the composition structure, by tag.
-//                insertNodeByTag(taggedNode, node, tag, subnetId);
-//            }
-//            subnetId++;
-//        }
-//        
-//        for (Map.Entry<String, TaggedNodes> e : taggedNode.entrySet()) {
-//            System.out.print(type+" "+e.getKey()+" ");
-//            for (LinkedList<Node> l : e.getValue().nodesBySubnet) {
-//                if (l == null)
-//                    System.out.print("null ");
-//                else {
-//                    System.out.print("[");
-//                    for (Node n : l) {
-//                        System.out.print(n.getUniqueName()+" ");
-//                    }
-//                    System.out.print("] ");
-//                }
-//            }
-//            System.out.println("");
-//        }
-//        
-//        // Generate the node synchronization
-//        Node[] synch = new Node[compSubNets.size()];
-//        for (Map.Entry<String, TaggedNodes> e : taggedNode.entrySet()) {
-//            if (e.getKey().equals(NON_COMPOSABLE))
-//                continue;
-//            generateSynchRecursively(e.getValue(), synch, e.getKey(), 0);
-//        }
-//        
-//        // Copy non-synchronized nodes
-//        TaggedNodes nonSynch = taggedNode.get(NON_COMPOSABLE);
-//        if (nonSynch != null) {
-//            for (int i=0; i<compSubNets.size(); i++) {
-//                if (nonSynch.nodesBySubnet[i] != null) {
-//                    for (Node nn : nonSynch.nodesBySubnet[i]) {
-//                        synch[i] = nn;
-//                        Node newNode = createNode(synch);
-//                        compNet.nodes.add(newNode);
-//                        synch[i] = null;
-//                    }
-//                }
-//            }
-//        }
-//    }
-//    
-//    private void generateSynchRecursively(TaggedNodes tn, Node[] synch, String tag, int level) {
-//        if (level == compSubNets.size()) {
-//            Node newNode = createNode(synch);
-//            compNet.nodes.add(newNode);
-//        }
-//        else {
-//            if (tn.nodesBySubnet[level] == null)
-//                generateSynchRecursively(tn, synch, tag, level+1);
-//            else {
-//                for (Node n : tn.nodesBySubnet[level]) {
-//                    synch[level] = n;
-//                    generateSynchRecursively(tn, synch, tag, level+1);
-//                    synch[level] = null;
-//                }
-//            }
-//        }
-//    }
-    
-//    private Node createNode(Node[] synch) {
-//        // Find the first not-null entry in synch and copy the node from it.
-//        Node newNode = null, copiedNode = null;
-//        for (Node n : synch) {
-//            if (n != null) {
-//                copiedNode = n;
-//                newNode = (Node)Util.deepCopy(n);
-//                break;
-//            }
-//        }
-//        assert newNode != null;
-//        
-//        // Now emit warnings/errors if the fused nodes are inconsistent
-//        for (Node nn : synch) {
-//            if (nn == null || nn == copiedNode)
-//                continue;
-//            if (nn instanceof ConstantID) {
-//                ConstantID c1 = (ConstantID)newNode;
-//                ConstantID c2 = (ConstantID)nn;
-//                
-//                if (!c1.getConstantExpr().getExpr().equals(c2.getConstantExpr().getExpr())) {
-//                    addPageWarning("Composition of constants with different values.", newNode);
-//                }
-//            }
-//            else {
-//                System.out.println("UNKNOWN NODE TYPE.");
-//            }
-//        }
-//        return newNode;
-//    }
-    
-    // The procedure that enumerates (and flattens) the hierarchical structure of subnets,
-    // with net copying, renaming and partial parameter instantiation
-    private void enumComponents(String prefix, MultiNetPage thisPage,
-                                TemplateBinding binding,
-                                ParserContext multiPageContext) 
-    {
-//        assert nets != null && numReplicas >= 1 && instParams != null;
-        Set<String> tvarWarnSet = new HashSet<>();
-        // Are we enumerating the nets that will be composed (the first level in the hierarchy)?
-        final boolean isFirstLevel = (prefix.isEmpty());
-        
-        for (NetInstanceDescriptor descr : netsDescr) {
-            assert descr.net != null;
-            
-            // Try to evaluate the replica count
-            Integer numReplicas = descr.evalNumReplicas(multiPageContext);
-//            if (numReplicas == null) { 
-//                // Parametric count
-//                areReplicaCountParametric = true;
-//                
-//                // Add the first instantiated subnet, for parameter instantiation.
-//                throw new UnsupportedOperationException("To implement.");
-//            }
-//            else {
-            if (numReplicas == null || numReplicas < 1) {
-                thisPage.addPageError("Cannot have "+numReplicas
-                        +" replicas of net \""+descr.targetNetName+"\".", null);
-                continue;
-            }
-            String netPrefixBase = uniqueNameForSubNet(descr);
-            for (int inst=0; inst < numReplicas; inst++) {
-                // List the parameter instantiations
-                TemplateBinding effectiveBinding = new TemplateBinding();
-                effectiveBinding.binding.putAll(binding.binding);
-                for (Map.Entry<String, Expr> bind : descr.getBindingOfReplica(inst).binding.entrySet()) {
-                    if (effectiveBinding.binding.containsKey(bind.getKey())) {
-                        if (!tvarWarnSet.contains(bind.getKey())) {
-                            thisPage.addPageWarning("Template parameter instantiation of "+bind.getKey()+
-                                    " is hidden by an internal instantiation.", null);
-                            tvarWarnSet.add(bind.getKey());
-                        }
-                    }
-                    Expr value = bind.getValue();
-//                        if (value.contains("$$"))
-//                            value = value.replaceAll("$$", ""+inst);
-                    effectiveBinding.bindSingleValue(bind.getKey(), bind.getValue());
-                }
 
-                // Generate the subnet name
-                String netPrefix = netPrefixBase;
-                if (numReplicas > 1)
-                    netPrefix += "[" + inst + "]";
-                if (!prefix.isEmpty())
-                    netPrefix = prefix + "." + netPrefix;
-                if (isFirstLevel)
-                    subNetPrefixes.add(netPrefix);
-
-                // Compose hierarchically
-                if (descr.net instanceof NetPage) {
-                    // Insert the netpage (copying it)
-                    NetPage npage = (NetPage)Util.deepCopy(descr.net);
-
-                    // Apply parameter substitution
-                    substituteParameters(npage, effectiveBinding);
-
-                    thisPage.flattenedSubNets.add(npage);
-                    thisPage.flattenedSubNetNames.add(netPrefix);
-                    if (isFirstLevel)
-                        thisPage.compSubNets.add(npage);
-                }
-                else if (descr.net instanceof MultiNetPage) {
-                    // Discend recursively
-                    MultiNetPage mnpage = (MultiNetPage)descr.net;
-                    NetPage compPage = (NetPage)Util.deepCopy(mnpage.getComposedNet());
-                    assert compPage != null;
-
-                    // Apply parameter substitution
-                    substituteParameters(compPage, effectiveBinding);
-
-                    if (isFirstLevel)
-                        thisPage.compSubNets.add(compPage);
-                    mnpage.enumComponents(netPrefix, thisPage, 
-                                          effectiveBinding, multiPageContext);
-                }
-                else throw new UnsupportedOperationException("Unknown composable net!");
-            }
-        }
-//        }
-    }
-    
-    // Generate a unique name for the net descriptor @netsDescr[i]
-    // Will be thenet name if the net is not repeated in the multinetpage definition,
-    // or will be netName/num if it repeats multiple times.
-    private String uniqueNameForSubNet(NetInstanceDescriptor di) {
-        boolean isRepeated = false;
-        for (NetInstanceDescriptor descr : netsDescr)
-            if (descr != di)
-                if (descr.net == di.net)
-                    isRepeated = true;
-        if (!isRepeated)
-            return di.targetNetName;
-        // count copies before the i-th net
-        int prevInst = 0;
-        for (int j=0; netsDescr.get(j) != di; j++)
-            if (netsDescr.get(j).net == di.net)
-                prevInst++;
-        return di.targetNetName+"/"+prevInst;
-    }
-    
-    // Apply parameter substitution to a netpage
-    private static void substituteParameters(NetPage page, TemplateBinding binding) {
-        for (int n=0; n<page.nodes.size(); n++) {
-            Node node = page.nodes.get(n);
-            if (node instanceof TemplateVariable) {
-                TemplateVariable tvar = (TemplateVariable)node;
-                // Check if we want to instantiate this parameter
-                if (binding.binding.containsKey(node.getUniqueName())) {
-                    ConstantID con = new ConstantID(tvar);
-                    String value = binding.getSingleValueBoundTo(tvar).getExpr();
-                    if (value.isEmpty())
-                        value = "???";
-                    con.getConstantExpr().setExpr(value);
-                    page.nodes.set(n, con);
-                }
-            }
-        }
-    }
-    
-//    // The procedure that actually does the composition.
-//    private void compose() {
-//        if (netsDescr.isEmpty()) {
-//            groups = new HashSet<>();
-//            return;
-//        }
-//        this.groups = new HashSet<>();
-//        
-//        // Index of synchronizable node groups, by tag name
-//        @SuppressWarnings("unchecked")
-//        MultiMap<String, NodeGroup>[] byLabel = new MultiMap[netsDescr.size()];
-//        Set<String> allLabels = new HashSet<>();
-//
-//        for (int n=0; n<netsDescr.size(); n++) {
-//            byLabel[n] = new MultiMap<>();
-//            Iterator<NodeGroup> netGroups = netsDescr.get(n).net.groupIterator();
-//            while (netGroups.hasNext()) {
-//                NodeGroup group = netGroups.next();
-//                // Nodes without tags pass directly without any synchronization
-//                if (group.numTags() == 0 || !group.getGroupClass().isGroupable()) {
-//                    groups.add(group);
-//                }
-//                else {
-//                    // Index all nodes by their (multiple) tags
-//                    for (int t=0; t<group.numTags(); t++) {
-//                        byLabel[n].put(group.getTag(t), group);
-//                        allLabels.add(group.getTag(t));
-//                    }
-//                }
-//            }
-//        }
-//        
-//        // Generate all combinations of synchronizable objects
-//        // Proceed by generating the largest set of nodes in the same groupclass
-//        // that share a single tag.
-//        @SuppressWarnings("unchecked")
-//        Set<NodeGroup>[] composed = new Set[netsDescr.size()];
-//        for (int n=0; n<netsDescr.size(); n++)
-//            composed[n] = new HashSet<>();
-//        
-//        // TODO: it is possible that two nodes with label: {a,b} || {a,b}
-//        //  are synchronized twice. In this case, when doing synchronization for tag 'b'
-//        // avoid it if the minimum set of common tags contains 'a' < 'b'.
-//        
-//        for (GroupClass groupClass : GroupClass.values()) {
-//            if (!groupClass.isGroupable())
-//                continue;
-//            for (String tag : allLabels) {
-//                // Reset the composition set
-//                for (int n=0; n<netsDescr.size(); n++)
-//                    composed[n].clear();
-//
-//                // Search for node groups with this tag and a specific group class
-//                boolean shouldGenerate = false;
-//                for (int n=0; n<netsDescr.size(); n++) {
-//                    Collection<NodeGroup> candidates = byLabel[n].get(tag);
-//                    Iterator<NodeGroup> candIt = candidates.iterator();
-//                    while (candIt.hasNext()) {
-//                        NodeGroup grp = candIt.next();
-//                        if (grp.getGroupClass() != groupClass)
-//                            continue; // same label, another group class. Ignore this node
-//                        composed[n].add(grp);
-//                        shouldGenerate = true;
-//                    }
-//                }
-//                if (!shouldGenerate)
-//                    continue; // No nodes with this tag in this group class
-//
-//                int numNetsInComposition = 0, netInd = 0;
-//                for (int n=0; n<netsDescr.size(); n++)
-//                    if (!composed[n].isEmpty())
-//                        numNetsInComposition++;
-//                assert numNetsInComposition > 0;
-//                
-//                if (numNetsInComposition == 1) {
-//                    // All nodes in the same net, there is no synchronization.
-//                    for (int n=0; n<netsDescr.size(); n++) {
-//                        if (!composed[n].isEmpty()) {
-//                            for (NodeGroup group : composed[n])
-//                                groups.add(group);
-//                            break;
-//                        }
-//                    }
-//                }
-//                else { // Nodes in multiple nets, there is a real synchronzation
-//                    int[] netIndexes = new int[numNetsInComposition];
-//                    for (int n=0; n<netsDescr.size(); n++)
-//                        if (!composed[n].isEmpty())
-//                            netIndexes[netInd++] = n;
-//                    NodeGroup[] synchGroups = new NodeGroup[numNetsInComposition];
-//
-//                    // Generate the cross-product of all the nodes in the composition vector 
-//                    generateSynchRecursively(netIndexes, 0, composed, synchGroups, groupClass);
-//                }
-//            }
-//        }
-//    }
-//    
-//    private void generateSynchRecursively(int[] netIndexes, int level,
-//                                          Set<NodeGroup>[] composed, NodeGroup[] synchGroups,
-//                                          GroupClass gc) 
-//    {
-//        if (level == netIndexes.length) { // Generate new group
-//            // Duplicate nodes
-//            NodeGroup[] dupSynchGroup = Arrays.copyOf(synchGroups, synchGroups.length);
-//            NodeGroup newGroup = new SynchGroup(dupSynchGroup, netIndexes, gc);
-//            if (!groups.contains(newGroup))
-//                groups.add(newGroup);
-//            else {
-//                System.out.println("Duplicate synchronization group avoided!");
-//            }
-//        }
-//        else { // Iterate over the cross-product elements
-//            int nn = netIndexes[level];
-//            for (NodeGroup ng : composed[nn]) {
-//                synchGroups[level] = ng;
-//                assert ng.getGroupClass() == gc;
-//                generateSynchRecursively(netIndexes, level + 1, composed, synchGroups, gc);
-//            }
-//        }
-//    }
     
     //==========================================================================
 
@@ -663,22 +277,24 @@ public class MultiNetPage extends ProjectPage implements Serializable, Composabl
                             doCompose = doCompose || changedPages.contains(namedPage);
                         
                         // Keep in synch the template variables binding list
-                        Set<TemplateVariable> pageParams = descr.net.enumerateParamsForNetComposition();
-//                        Set<TemplateVariable> pageParams = descr.net.enumerateParams();
-                        for (TemplateVariable var : pageParams) {
-//                            if (!descr.isParamKnown(var.getUniqueName()))
-//                                descr.unbindParam(var.getUniqueName());
-                            if (!descr.isParamBound(var.getUniqueName()))
-                                descr.bindParam(var.getUniqueName(), var.getLastBindingExpr());
+                        if (operator.requireParamBinding()) {
+                            Set<TemplateVariable> pageParams = descr.net.enumerateParamsForNetComposition();
+    //                        Set<TemplateVariable> pageParams = descr.net.enumerateParams();
+                            for (TemplateVariable var : pageParams) {
+    //                            if (!descr.isParamKnown(var.getUniqueName()))
+    //                                descr.unbindParam(var.getUniqueName());
+                                if (!descr.isParamBound(var.getUniqueName()))
+                                    descr.bindParam(var.getUniqueName(), var.getLastBindingExpr());
+                            }
+                            descr.removeMissingParams(pageParams);
+
+                            // Copy latex string of template variables
+                            descr.paramRefs = new TreeMap<>();
+                            for (TemplateVariable tvar : pageParams)
+                                descr.paramRefs.put(tvar.getUniqueName(), tvar);
+
+                            descr.checkBindingCorrectness(this, context);
                         }
-                        descr.removeMissingParams(pageParams);
-                        
-                        // Copy latex string of template variables
-                        descr.paramRefs = new TreeMap<>();
-                        for (TemplateVariable tvar : pageParams)
-                            descr.paramRefs.put(tvar.getUniqueName(), tvar);
-                        
-                        descr.checkBindingCorrectness(this, context);
                         
 //                        System.out.println("pageParams="+pageParams.size()+
 //                                " bound="+descr.instParams.binding.size());

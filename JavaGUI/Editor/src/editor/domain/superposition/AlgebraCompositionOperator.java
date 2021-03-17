@@ -5,9 +5,12 @@
  */
 package editor.domain.superposition;
 
+import editor.domain.NetPage;
 import editor.domain.ProjectPage;
+import editor.domain.grammar.ParserContext;
 import editor.gui.ResourceFactory;
 import java.io.Serializable;
+import java.util.ArrayList;
 import javax.swing.Icon;
 
 /**
@@ -51,6 +54,16 @@ public class AlgebraCompositionOperator implements CompositionOperator, Serializ
     public boolean useReplicaCount() {
         return false;
     }
+
+    @Override
+    public boolean requireParamBinding() {
+        return false;
+    }
     
+    //======================================================================
     
+    // do the net composition
+    public void compose(MultiNetPage mnPage, ParserContext context) {
+        mnPage.addPageError("Could not compose. Unimplemented.", null);
+    }
 }

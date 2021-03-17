@@ -6,6 +6,7 @@
 
 package editor.domain.superposition;
 
+import editor.domain.Expr;
 import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
 import editor.domain.measures.ExprField;
@@ -14,6 +15,7 @@ import editor.gui.MainWindowInterface;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  *
@@ -103,9 +105,11 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel impleme
         bindPanels.clear();
         panel_bindVars.removeAll();
         
-        for (String varName : descr.paramRefs.keySet()) {
-            if (descr.instParams.binding.containsKey(varName)) {
-                VarBindingPanel vbp = new VarBindingPanel(descr.paramRefs.get(varName), 
+        for (Map.Entry<String, Expr> bind : descr.instParams.binding.entrySet()) {
+            if (descr.paramRefs.containsKey(bind.getKey())) {
+//        for (String varName : descr.paramRefs.keySet()) {
+//            if (descr.instParams.binding.containsKey(varName)) {
+                VarBindingPanel vbp = new VarBindingPanel(descr.paramRefs.get(bind.getKey()), 
                                                           descr, numInst, mnPage, mainInterface);
                 bindPanels.add(vbp);
                 panel_bindVars.add(vbp);

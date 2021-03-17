@@ -6,6 +6,7 @@
 package editor.domain.superposition;
 
 import editor.domain.ProjectPage;
+import editor.domain.grammar.ParserContext;
 import javax.swing.Icon;
 
 /**
@@ -29,4 +30,10 @@ public interface CompositionOperator {
     
     // Is net replication count available
     public boolean useReplicaCount();
+    
+    // Net requires to instantiate color class parameters?
+    public boolean requireParamBinding();
+    
+    // do the net composition
+    public void compose(MultiNetPage mnPage, ParserContext context);
 }
