@@ -32,7 +32,6 @@ import editor.domain.elements.TemplateVariable;
 import editor.domain.elements.TextBox;
 import editor.domain.elements.TokenType;
 import editor.gui.MainWindowInterface;
-import editor.gui.UndoableCommand;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;

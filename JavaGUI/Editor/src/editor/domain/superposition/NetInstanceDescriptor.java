@@ -17,6 +17,12 @@ import editor.domain.grammar.EvaluationArguments;
 import editor.domain.grammar.EvaluationException;
 import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.TemplateBinding;
+import editor.domain.io.XmlExchangeDirection;
+import editor.domain.io.XmlExchangeException;
+import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
+import editor.domain.io.XmlExchangeable;
+import static editor.domain.measures.RGMEDD2SolverParams.DEFAULT_GEN_COUNTEREXAMPLES;
+import static editor.domain.measures.RGMEDD2SolverParams.DEFAULT_VARIABLE_ORDER;
 import editor.domain.measures.SolverParams;
 import editor.domain.values.EvaluatedFormula;
 import java.awt.geom.Rectangle2D;
@@ -25,6 +31,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import org.w3c.dom.Element;
 
 /** Describes a net that will be part of the multinet. 
  *  The net may appear in more than one instance, 
@@ -32,7 +39,7 @@ import java.util.Set;
  *
  * @author elvio
  */
-public class NetInstanceDescriptor extends SelectableObject implements Serializable {
+public class NetInstanceDescriptor extends SelectableObject implements Serializable, XmlExchangeable {
     
     // Name of the net page
     public String targetNetName;
@@ -62,6 +69,12 @@ public class NetInstanceDescriptor extends SelectableObject implements Serializa
             // Expression depends on non-instantiated parameters
             return null;
         }
+    }
+    
+    @Override
+    public void exchangeXML(Element el, XmlExchangeDirection exDir) throws XmlExchangeException {
+        bindXMLAttrib(this, el, exDir, "netname", "targetNetName", "");
+        bindXMLAttrib(this, el, exDir, "replicas", "numReplicas.@Expr", "1");
     }
     
 //    public void copyBindingsInto(TemplateBinding tb, int repNum) {

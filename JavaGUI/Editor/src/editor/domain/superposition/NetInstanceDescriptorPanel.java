@@ -9,6 +9,7 @@ package editor.domain.superposition;
 import editor.domain.Expr;
 import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
+import editor.domain.io.XmlExchangeable;
 import editor.domain.measures.ExprField;
 import editor.domain.measures.SolverParams;
 import editor.gui.MainWindowInterface;
@@ -21,7 +22,9 @@ import java.util.Map;
  *
  * @author elvio
  */
-public final class NetInstanceDescriptorPanel extends javax.swing.JPanel implements ExprField.ExprFieldListener {
+public final class NetInstanceDescriptorPanel extends javax.swing.JPanel 
+        implements ExprField.ExprFieldListener
+{
 
     private MainWindowInterface mainInterface;
     private ProjectData currProject;

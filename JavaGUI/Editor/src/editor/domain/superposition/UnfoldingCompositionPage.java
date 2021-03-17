@@ -12,13 +12,15 @@ import editor.domain.ProjectPage;
 import editor.domain.elements.GspnPage;
 import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.TemplateBinding;
+import editor.domain.io.XmlExchangeDirection;
+import editor.domain.io.XmlExchangeException;
 import editor.domain.unfolding.CouldNotUnfoldException;
 import editor.domain.unfolding.Unfolding;
 import editor.gui.ResourceFactory;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Map;
 import javax.swing.Icon;
+import org.w3c.dom.Element;
 
 /**
  *
@@ -134,5 +136,9 @@ public class UnfoldingCompositionPage extends MultiNetPage implements Serializab
 //        mnPage.setCompositionSuccessfull(new GspnPage(), 
 //                netNames.toArray(new String[netNames.size()]), 
 //                nets.toArray(new NetPage[nets.size()]));
+    }
+
+    @Override
+    public void exchangeXML(Element el, XmlExchangeDirection exDir) throws XmlExchangeException {
     }
 }

@@ -22,6 +22,8 @@ import editor.gui.MainWindowInterface;
 import editor.gui.SharedResourceProvider;
 import editor.gui.net.NetViewerPanel;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -33,13 +35,19 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.ActionMap;
+import javax.swing.DefaultListModel;
 import javax.swing.InputMap;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -94,12 +102,44 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
             }
         });
         
+//        list_TagsP.setCellRenderer(new CheckboxListCellRenderer<>());
+        list_TagsP.setCellRenderer(new CellRenderer());
+        list_TagsT.setCellRenderer(new CellRenderer());
+//        list_TagsP.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        
+        Dimension minSize = scrollPane_TagsP.getMinimumSize();
+        int minHeight = jLabel1.getFontMetrics(jLabel1.getFont()).getHeight() * 8;
+        minSize.height = Math.max(minSize.height, minHeight);
+        scrollPane_TagsP.setMinimumSize(minSize);
+        
         // Add actions to the input map manually
         InputMap inMap = getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         ActionMap actMap = getActionMap();
         Action.registerAllActions(actMap, inMap, this, getClass(), actionCondition);
         
         initializing = false;
+    }
+
+     protected class CellRenderer implements ListCellRenderer<JCheckBox> {
+        public Component getListCellRendererComponent(
+                JList<? extends JCheckBox> list, JCheckBox value, int index,
+                boolean isSelected, boolean cellHasFocus) {
+            JCheckBox checkbox = value;
+
+            //Drawing checkbox, change the appearance here
+//      checkbox.setBackground(isSelected ? getSelectionBackground()
+//          : getBackground());
+//      checkbox.setForeground(isSelected ? getSelectionForeground()
+//          : getForeground());
+            checkbox.setEnabled(isEnabled());
+            checkbox.setFont(getFont());
+            checkbox.setFocusPainted(false);
+            checkbox.setBorderPainted(false);
+            checkbox.setBackground(UIManager.getColor("List.background"));
+//      checkbox.setBorder(isSelected ? UIManager
+//          .getBorder("List.focusCellHighlightBorder") : UIManager);
+            return checkbox;
+        }
     }
 
     @Override
@@ -134,6 +174,35 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         toolbarButton_addSubnet.setEnabled(!currPage.hasFixedNumOfOperators());
         label_operator.setIcon(currPage.getOperatorIcon());
         label_operator.setText(currPage.getOperatorName());
+        
+        if (currPage instanceof AlgebraCompositionPage) {
+            AlgebraCompositionPage acp = (AlgebraCompositionPage)currPage;
+            
+            DefaultListModel<JCheckBox> modelP = new DefaultListModel<JCheckBox>();
+            if (acp.commonTagsP != null) {
+                for (String tag : acp.commonTagsP) {
+                    JCheckBox elem = new JCheckBox(tag, acp.selTagsP.contains(tag));
+                    modelP.addElement(elem);
+                }
+            }
+            list_TagsP.setModel(modelP);
+            
+            DefaultListModel<JCheckBox> modelT = new DefaultListModel<JCheckBox>();
+            if (acp.commonTagsT != null) {
+                for (String tag : acp.commonTagsT) {
+                    JCheckBox elem = new JCheckBox(tag, acp.selTagsT.contains(tag));
+                    modelT.addElement(elem);
+                }
+            }
+            list_TagsT.setModel(modelT);
+            
+            panel_algebra.setVisible(true);
+        }
+        else {
+            list_TagsP.removeAll();
+            list_TagsT.removeAll();
+            panel_algebra.setVisible(false);
+        }
         
         if (currPage.hasComposedNet()) {
             // Flatten list of netpages
@@ -414,6 +483,14 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         propertyPanel = new javax.swing.JPanel();
         panel_operator = new javax.swing.JPanel();
         label_operator = new javax.swing.JLabel();
+        panel_algebra = new javax.swing.JPanel();
+        scrollPane_TagsP = new javax.swing.JScrollPane();
+        list_TagsP = new javax.swing.JList<>();
+        scrollPane_TagsT = new javax.swing.JScrollPane();
+        list_TagsT = new javax.swing.JList<>();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        panel_bottom = new javax.swing.JPanel();
         actionAddSubnet = new common.Action();
         scrollPaneCentral = new javax.swing.JScrollPane();
         toolbar = new javax.swing.JToolBar();
@@ -440,10 +517,73 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         propertyPanel.add(panel_operator, gridBagConstraints);
+
+        panel_algebra.setBorder(javax.swing.BorderFactory.createTitledBorder("Algebra Options"));
+        panel_algebra.setLayout(new java.awt.GridBagLayout());
+
+        list_TagsP.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                list_TagsPMouseClicked(evt);
+            }
+        });
+        scrollPane_TagsP.setViewportView(list_TagsP);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        panel_algebra.add(scrollPane_TagsP, gridBagConstraints);
+
+        list_TagsT.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                list_TagsTMouseClicked(evt);
+            }
+        });
+        scrollPane_TagsT.setViewportView(list_TagsT);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
+        panel_algebra.add(scrollPane_TagsT, gridBagConstraints);
+
+        jLabel1.setText("Place Tags:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        panel_algebra.add(jLabel1, gridBagConstraints);
+
+        jLabel2.setText("Transition Tags:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
+        panel_algebra.add(jLabel2, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        propertyPanel.add(panel_algebra, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 8;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        propertyPanel.add(panel_bottom, gridBagConstraints);
 
         actionAddSubnet.setActionName("Add subnet");
         actionAddSubnet.setTooltipDesc("Add a new subnet in this multi page.");
@@ -511,15 +651,59 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         popup.show(toolbarButton_addSubnet, 0, toolbarButton_addSubnet.getHeight());
     }//GEN-LAST:event_actionAddSubnetActionPerformed
 
+    private void list_TagsPMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_list_TagsPMouseClicked
+        JList list = (JList)evt.getSource();
+        if (evt.getClickCount() == 1 && evt.getButton()==MouseEvent.BUTTON1) {
+            final int index = list.locationToIndex(evt.getPoint());
+            final JCheckBox box = (JCheckBox)list.getModel().getElementAt(index);
+            final String tag = box.getText();
+//            System.out.println("list_TagsPMouseClicked "+index+" "+tag);
+            
+            mainInterface.executeUndoableCommand("change place tag selection.", (ProjectData proj, ProjectPage elem) -> {
+                AlgebraCompositionPage acp = (AlgebraCompositionPage)currPage;
+                if (acp.selTagsP.contains(tag))
+                    acp.selTagsP.remove(tag);
+                else
+                    acp.selTagsP.add(tag);
+            });
+        }
+    }//GEN-LAST:event_list_TagsPMouseClicked
+
+    private void list_TagsTMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_list_TagsTMouseClicked
+        JList list = (JList)evt.getSource();
+        if (evt.getClickCount() == 1 && evt.getButton()==MouseEvent.BUTTON1) {
+            final int index = list.locationToIndex(evt.getPoint());
+            final JCheckBox box = (JCheckBox)list.getModel().getElementAt(index);
+            final String tag = box.getText();
+//            System.out.println("list_TagsPMouseClicked "+index+" "+tag);
+            
+            mainInterface.executeUndoableCommand("change transition tag selection.", (ProjectData proj, ProjectPage elem) -> {
+                AlgebraCompositionPage acp = (AlgebraCompositionPage)currPage;
+                if (acp.selTagsT.contains(tag))
+                    acp.selTagsT.remove(tag);
+                else
+                    acp.selTagsT.add(tag);
+            });
+        }
+    }//GEN-LAST:event_list_TagsTMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private common.Action actionAddSubnet;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel label_operator;
+    private javax.swing.JList<JCheckBox> list_TagsP;
+    private javax.swing.JList<JCheckBox> list_TagsT;
+    private javax.swing.JPanel panel_algebra;
+    private javax.swing.JPanel panel_bottom;
     private javax.swing.JPanel panel_netInstanceEditor;
     private javax.swing.JPanel panel_operator;
     private javax.swing.JPanel propertyPanel;
     private editor.gui.ResourceFactory resourceFactory;
     private javax.swing.JScrollPane scrollPaneCentral;
+    private javax.swing.JScrollPane scrollPane_TagsP;
+    private javax.swing.JScrollPane scrollPane_TagsT;
     private javax.swing.JToolBar toolBarEmpty;
     private javax.swing.JToolBar toolbar;
     private common.JToolbarButton toolbarButton_addSubnet;

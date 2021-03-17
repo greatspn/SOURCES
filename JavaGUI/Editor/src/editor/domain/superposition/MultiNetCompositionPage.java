@@ -12,6 +12,8 @@ import editor.domain.ProjectPage;
 import editor.domain.elements.GspnPage;
 import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.TemplateBinding;
+import editor.domain.io.XmlExchangeDirection;
+import editor.domain.io.XmlExchangeException;
 import editor.gui.ResourceFactory;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.Icon;
+import org.w3c.dom.Element;
 
 /**
  *
@@ -76,8 +79,8 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
     // The list of nets that will be composed. Each of these nets could be a
     // simple NetPage, or the composed NetPage of a MultiNetPage.
     // Note:  compSubNets.size() == netsDescr.size()
-    private transient ArrayList<NetPage> compSubNets;
-    private transient ArrayList<String> subNetPrefixes;
+//    private transient ArrayList<NetPage> compSubNets;
+//    private transient ArrayList<String> subNetPrefixes;
     // The 'flattened' list of components in this multipage, which is what is actually shown
     // Note:  flattenedSubNets.size() >= netsDescr.size()
     private transient ArrayList<NetPage> flattenedSubNets;
@@ -88,8 +91,8 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
     // do the net composition
     @Override
     protected void compose(ParserContext context) {
-        compSubNets = new ArrayList<>();
-        subNetPrefixes = new ArrayList<>();
+//        compSubNets = new ArrayList<>();
+//        subNetPrefixes = new ArrayList<>();
         flattenedSubNets = new ArrayList<>();
         flattenedSubNetNames = new ArrayList<>();
 
@@ -115,9 +118,20 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
         // Clear composition data
 //        compData = null;
 
-        setCompositionSuccessfull(new GspnPage(), 
+        for (NetPage subnet : flattenedSubNets) {
+            subnet.preparePageCheck();
+            subnet.checkPage(null, null, subnet, null);
+        }
+
+        GspnPage gspn = new GspnPage();
+        gspn.setPageName("comp");
+        setCompositionSuccessfull(gspn, 
                 flattenedSubNetNames.toArray(new String[flattenedSubNetNames.size()]), 
                 flattenedSubNets.toArray(new NetPage[flattenedSubNets.size()]));
+    }
+    
+    @Override
+    public void exchangeXML(Element el, XmlExchangeDirection exDir) throws XmlExchangeException {
     }
     
 //    // A visual component (a single unit of the multinet)
@@ -348,37 +362,45 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
                     netPrefix += "[" + inst + "]";
                 if (!prefix.isEmpty())
                     netPrefix = prefix + "." + netPrefix;
-                if (isFirstLevel)
-                    subNetPrefixes.add(netPrefix);
+//                if (isFirstLevel)
+//                    subNetPrefixes.add(netPrefix);
 
                 // Compose hierarchically
-                if (descr.net instanceof NetPage) {
+                if (descr.net instanceof MultiNetCompositionPage) {
+                    MultiNetCompositionPage mncp = (MultiNetCompositionPage)descr.net;
+                    
+//                    if (isFirstLevel)
+//                        compSubNets.add(compPage);
+                    enumComponents(netPrefix, mncp, 
+                                   effectiveBinding, multiPageContext);
+                }
+                else /*(descr.net instanceof NetPage)*/ {
                     // Insert the netpage (copying it)
-                    NetPage npage = (NetPage)Util.deepCopy(descr.net);
+                    NetPage npage = (NetPage)Util.deepCopy(descr.net.getComposedNet());
 
                     // Apply parameter substitution
                     thisPage.substituteParameters(npage, effectiveBinding);
 
                     flattenedSubNets.add(npage);
                     flattenedSubNetNames.add(netPrefix);
-                    if (isFirstLevel)
-                        compSubNets.add(npage);
+//                    if (isFirstLevel)
+//                        compSubNets.add(npage);
                 }
-                else if (descr.net instanceof MultiNetPage) {
-                    // Discend recursively
-                    MultiNetPage mnpage = (MultiNetPage)descr.net;
-                    NetPage compPage = (NetPage)Util.deepCopy(mnpage.getComposedNet());
-                    assert compPage != null;
-
-                    // Apply parameter substitution
-                    thisPage.substituteParameters(compPage, effectiveBinding);
-
-                    if (isFirstLevel)
-                        compSubNets.add(compPage);
-                    enumComponents(netPrefix, thisPage, 
-                                   effectiveBinding, multiPageContext);
-                }
-                else throw new UnsupportedOperationException("Unknown composable net!");
+//                else if (descr.net instanceof MultiNetPage) {
+//                    // Discend recursively
+//                    MultiNetPage mnpage = (MultiNetPage)descr.net;
+//                    NetPage compPage = (NetPage)Util.deepCopy(mnpage.getComposedNet());
+//                    assert compPage != null;
+//
+//                    // Apply parameter substitution
+//                    thisPage.substituteParameters(compPage, effectiveBinding);
+//
+//                    if (isFirstLevel)
+//                        compSubNets.add(compPage);
+//                    enumComponents(netPrefix, thisPage, 
+//                                   effectiveBinding, multiPageContext);
+//                }
+//                else throw new UnsupportedOperationException("Unknown composable net!");
             }
         }
 //        }

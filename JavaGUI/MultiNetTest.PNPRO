@@ -2,8 +2,8 @@
 <!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="New project" version="121">
   <gspn name="PN1" show-fluid-cmd="false">
     <nodes>
-      <place domain="CC" marking="&lt;All&gt;" name="P0" x="5.0" y="4.0"/>
-      <transition name="T0" nservers-x="0.5" type="EXP" x="11.55" y="4.0"/>
+      <place domain="CC" marking="&lt;All&gt;" name="P0" superposition-tags="pp|aa|bb|cc" x="5.0" y="4.0"/>
+      <transition name="T0" nservers-x="0.5" superposition-tags="tt" type="EXP" x="11.55" y="4.0"/>
       <template name="n" type="INTEGER" x="6.0" y="9.0"/>
       <color-class definition="c{1..n}" name="CC" x="4.125" y="12.0"/>
       <color-var domain="CC" name="v" x="4.958333333333333" y="14.0"/>
@@ -14,8 +14,8 @@
   </gspn>
   <gspn name="PN2">
     <nodes>
-      <place name="P0" x="6.0" y="5.0"/>
-      <transition name="T0" nservers-x="0.5" type="EXP" x="12.55" y="6.0"/>
+      <place name="P0" superposition-tags="pp|cc|bb|dd" x="6.0" y="5.0"/>
+      <transition name="T0" nservers-x="0.5" superposition-tags="tt" type="EXP" x="12.55" y="6.0"/>
       <template name="r" type="REAL" x="7.0" y="10.0"/>
       <template name="n" type="INTEGER" x="10.0" y="10.0"/>
       <color-class definition="c{1..n}" name="D" x="3.125" y="13.0"/>
@@ -26,4 +26,30 @@
       <arc head="T0" kind="INPUT" tail="P0"/>
     </edges>
   </gspn>
+  <unfolding name="Unfolding">
+    <subnet netname="PN1">
+      <assignments value="5" varname="n"/>
+    </subnet>
+  </unfolding>
+  <multinet name="MultiNet">
+    <subnet netname="Unfolding"/>
+    <subnet netname="PN2">
+      <assignments value="6" varname="m"/>
+      <assignments value="3" varname="n"/>
+    </subnet>
+  </multinet>
+  <algebra name="Composition">
+    <place-tags>
+      <tag name="bb"/>
+    </place-tags>
+    <transition-tags/>
+    <subnet netname="PN1"/>
+    <subnet netname="PN2"/>
+  </algebra>
+  <multinet name="MultiNet 1">
+    <subnet netname="MultiNet"/>
+    <subnet netname="PN1">
+      <assignments value="4" varname="n"/>
+    </subnet>
+  </multinet>
 </project>

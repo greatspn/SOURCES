@@ -22,6 +22,7 @@ import editor.domain.elements.TemplateVariable;
 import editor.domain.grammar.NodeNamespace;
 import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.TemplateBinding;
+import editor.domain.io.XmlExchangeable;
 import editor.gui.AbstractPageEditor;
 import editor.gui.RapidMeasureCmd;
 import editor.gui.SharedResourceProvider;
@@ -47,7 +48,7 @@ import javax.swing.JPopupMenu;
  *
  * @author elvio
  */
-public abstract class MultiNetPage extends ProjectPage implements Serializable, ComposableNet, NodeNamespace {
+public abstract class MultiNetPage extends ProjectPage implements Serializable, ComposableNet, NodeNamespace, XmlExchangeable {
     
     // Current viewport position
     public Point viewportPos = new Point(0, 0);
