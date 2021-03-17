@@ -8,11 +8,8 @@ package editor.domain.superposition;
 import common.Util;
 import editor.domain.Expr;
 import editor.domain.NetPage;
-import editor.domain.Node;
 import editor.domain.ProjectPage;
-import editor.domain.elements.ConstantID;
 import editor.domain.elements.GspnPage;
-import editor.domain.elements.TemplateVariable;
 import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.TemplateBinding;
 import editor.gui.ResourceFactory;
@@ -27,8 +24,13 @@ import javax.swing.Icon;
  *
  * @author elvio
  */
-public class MultiNetCompositionOperator implements CompositionOperator, Serializable {
+public class MultiNetCompositionPage extends MultiNetPage implements Serializable {
 
+    @Override
+    public String getPageTypeName() {
+        return "MULTINETCOMPOSITIONPAGE";
+    }
+    
     @Override
     public String getOperatorName() {
         return "MultiNet Composition";
@@ -54,8 +56,8 @@ public class MultiNetCompositionOperator implements CompositionOperator, Seriali
     }
     
     @Override
-    public boolean canComposeWith(ProjectPage page, MultiNetPage resultPage) {
-        boolean canComp = (page != null) && (page != resultPage) && (page instanceof ComposableNet);
+    public boolean canComposeWith(ProjectPage page) {
+        boolean canComp = (page != null) && (page != this) && (page instanceof ComposableNet);
         return canComp;
     }
 
@@ -84,14 +86,15 @@ public class MultiNetCompositionOperator implements CompositionOperator, Seriali
 //    private transient MultiNetPage mnPage;
 
     // do the net composition
-    public void compose(MultiNetPage mnPage, ParserContext context) {
+    @Override
+    protected void compose(ParserContext context) {
         compSubNets = new ArrayList<>();
         subNetPrefixes = new ArrayList<>();
         flattenedSubNets = new ArrayList<>();
         flattenedSubNetNames = new ArrayList<>();
 
         TemplateBinding rootBinding = new TemplateBinding();
-        enumComponents("", mnPage, rootBinding, context);
+        enumComponents("", this, rootBinding, context);
         
 //        // Compose the subnets into a single net
 //        final int numSubNets = compSubNets.size();
@@ -112,7 +115,7 @@ public class MultiNetCompositionOperator implements CompositionOperator, Seriali
         // Clear composition data
 //        compData = null;
 
-        mnPage.setCompositionSuccessfull(new GspnPage(), 
+        setCompositionSuccessfull(new GspnPage(), 
                 flattenedSubNetNames.toArray(new String[flattenedSubNetNames.size()]), 
                 flattenedSubNets.toArray(new NetPage[flattenedSubNets.size()]));
     }

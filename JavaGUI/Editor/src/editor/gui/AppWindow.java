@@ -29,12 +29,12 @@ import editor.domain.measures.FormulaLanguage;
 import editor.domain.measures.FormulaMeasure;
 import editor.domain.measures.MeasureEditorPanel;
 import editor.domain.measures.MeasurePage;
-import editor.domain.superposition.AlgebraCompositionOperator;
-import editor.domain.superposition.MultiNetCompositionOperator;
+import editor.domain.superposition.AlgebraCompositionPage;
+import editor.domain.superposition.MultiNetCompositionPage;
 import editor.domain.superposition.MultiNetEditorPanel;
 import editor.domain.superposition.MultiNetPage;
 import editor.domain.superposition.NetInstanceDescriptor;
-import editor.domain.superposition.UnfoldingCompositionOperator;
+import editor.domain.superposition.UnfoldingCompositionPage;
 import editor.domain.unfolding.Unfolding;
 import editor.gui.net.BaseCellEditor;
 import editor.gui.net.NetSemiflowsPanel;
@@ -3157,14 +3157,13 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
     private void actionNewMultiPage_AlgebraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewMultiPage_AlgebraActionPerformed
         executeUndoableCommand("new Multi net page.", (ProjectData proj, ProjectPage elem) -> {
-            MultiNetPage newPage = new MultiNetPage();
+            MultiNetPage newPage = new AlgebraCompositionPage();
             newPage.viewProfile.setProfileForNetType(NewProjectDialog.PetriNetType.FullPN);
             newPage.setPageName(generateUniquePageName(activeProject, "Composition"));
             newPage.netsDescr.add(new NetInstanceDescriptor());
             newPage.netsDescr.add(new NetInstanceDescriptor());
             newPage.netsDescr.get(0).targetNetName = "PN1";
             newPage.netsDescr.get(1).targetNetName = "PN2";
-            newPage.operator = new AlgebraCompositionOperator();
             activeProject.getCurrent().addPage(newPage);
             switchToProjectPage(activeProject, newPage, null);
         });
@@ -3339,12 +3338,11 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
     private void actionNewMultiPage_UnfoldingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewMultiPage_UnfoldingActionPerformed
         executeUndoableCommand("new Multi net page.", (ProjectData proj, ProjectPage elem) -> {
-            MultiNetPage newPage = new MultiNetPage();
+            MultiNetPage newPage = new UnfoldingCompositionPage();
             newPage.viewProfile.setProfileForNetType(NewProjectDialog.PetriNetType.FullPN);
             newPage.setPageName(generateUniquePageName(activeProject, "Unfolding"));
             newPage.netsDescr.add(new NetInstanceDescriptor());
             newPage.netsDescr.get(0).targetNetName = "PN1";
-            newPage.operator = new UnfoldingCompositionOperator();
             activeProject.getCurrent().addPage(newPage);
             switchToProjectPage(activeProject, newPage, null);
         });
@@ -3352,14 +3350,13 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
     private void actionNewMultiPage_multiNetOLDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewMultiPage_multiNetOLDActionPerformed
         executeUndoableCommand("new Multi net page.", (ProjectData proj, ProjectPage elem) -> {
-            MultiNetPage newPage = new MultiNetPage();
+            MultiNetPage newPage = new MultiNetCompositionPage();
             newPage.viewProfile.setProfileForNetType(NewProjectDialog.PetriNetType.FullPN);
             newPage.setPageName(generateUniquePageName(activeProject, "MultiNet"));
             newPage.netsDescr.add(new NetInstanceDescriptor());
             newPage.netsDescr.add(new NetInstanceDescriptor());
             newPage.netsDescr.get(0).targetNetName = "PN1";
             newPage.netsDescr.get(1).targetNetName = "PN2";
-            newPage.operator = new MultiNetCompositionOperator();
             activeProject.getCurrent().addPage(newPage);
             switchToProjectPage(activeProject, newPage, null);
         });

@@ -17,7 +17,12 @@ import javax.swing.Icon;
  *
  * @author elvio
  */
-public class AlgebraCompositionOperator implements CompositionOperator, Serializable {
+public class AlgebraCompositionPage extends MultiNetPage implements Serializable {
+
+    @Override
+    public String getPageTypeName() {
+        return "ALGEBRACOMPOSITIONPAGE";
+    }
 
     @Override
     public String getOperatorName() {
@@ -45,8 +50,8 @@ public class AlgebraCompositionOperator implements CompositionOperator, Serializ
     }
     
     @Override
-    public boolean canComposeWith(ProjectPage page, MultiNetPage resultPage) {
-        boolean canComp = (page != null) && (page != resultPage) && (page instanceof ComposableNet);
+    public boolean canComposeWith(ProjectPage page) {
+        boolean canComp = (page != null) && (page != this) && (page instanceof ComposableNet);
         return canComp;
     }
 
@@ -63,7 +68,8 @@ public class AlgebraCompositionOperator implements CompositionOperator, Serializ
     //======================================================================
     
     // do the net composition
-    public void compose(MultiNetPage mnPage, ParserContext context) {
-        mnPage.addPageError("Could not compose. Unimplemented.", null);
+    @Override
+    protected void compose(ParserContext context) {
+        addPageError("Could not compose. Unimplemented.", null);
     }
 }

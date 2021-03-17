@@ -131,11 +131,11 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         currPage = (MultiNetPage)page;
         initializing = true;
         
-        toolbarButton_addSubnet.setEnabled(!currPage.operator.hasFixedNumOfOperators());
-        label_operator.setIcon(currPage.operator.getOperatorIcon());
-        label_operator.setText(currPage.operator.getOperatorName());
+        toolbarButton_addSubnet.setEnabled(!currPage.hasFixedNumOfOperators());
+        label_operator.setIcon(currPage.getOperatorIcon());
+        label_operator.setText(currPage.getOperatorName());
         
-        if (currPage.isPageCorrect()) {
+        if (currPage.hasComposedNet()) {
             // Flatten list of netpages
 //            ArrayList<NetPage> flatNetList = new ArrayList<>();
 //            ArrayList<String> flatNetNames = new ArrayList<>();

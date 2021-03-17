@@ -75,7 +75,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel impleme
         
         // Net selection combo box
         comboBox_model.removeAllItems();
-        boolean found = mnPage.operator.canComposeWith(currProject.findPageByName(descr.targetNetName), mnPage);
+        boolean found = mnPage.canComposeWith(currProject.findPageByName(descr.targetNetName));
         comboBox_model.setForeground(found ? Color.BLACK : Color.red);
         if (!found) {
             comboBox_model.addItem(descr.targetNetName+" <missing>");
@@ -83,7 +83,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel impleme
         }
         for (int p=0; p<currProject.getPageCount(); p++) {
             ProjectPage page = currProject.getPageAt(p);
-            if (mnPage.operator.canComposeWith(page, mnPage)) {
+            if (mnPage.canComposeWith(page)) {
                 comboBox_model.addItem(page.getPageName());
             }
         }
@@ -96,7 +96,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel impleme
         // Replica count
         numReplicaExprCopy.setExpr(descr.numReplicas.getExpr());
         exprField_replicas.initializeFor(numReplicaExprCopy.getEditableValue(), mnPage);
-        exprField_replicas.setEnabled(mnPage.operator.useReplicaCount());
+        exprField_replicas.setEnabled(mnPage.useReplicaCount());
         
         // Bound variables
         for (VarBindingPanel vbp : bindPanels) {

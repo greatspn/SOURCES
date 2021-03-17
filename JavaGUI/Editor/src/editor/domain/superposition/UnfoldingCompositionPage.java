@@ -24,7 +24,12 @@ import javax.swing.Icon;
  *
  * @author elvio
  */
-public class UnfoldingCompositionOperator implements CompositionOperator, Serializable {
+public class UnfoldingCompositionPage extends MultiNetPage implements Serializable {
+
+    @Override
+    public String getPageTypeName() {
+        return "UNFOLDINGPAGE";
+    }
 
     @Override
     public String getOperatorName() {
@@ -51,8 +56,8 @@ public class UnfoldingCompositionOperator implements CompositionOperator, Serial
     }
     
     @Override
-    public boolean canComposeWith(ProjectPage page, MultiNetPage resultPage) {
-        boolean canComp = (page != null) && (page != resultPage) && (page instanceof ComposableNet);
+    public boolean canComposeWith(ProjectPage page) {
+        boolean canComp = (page != null) && (page != this) && (page instanceof ComposableNet);
         if (canComp) {
             ComposableNet net = (ComposableNet)page;
             NetPage compNet = net.getComposedNet();
@@ -73,25 +78,26 @@ public class UnfoldingCompositionOperator implements CompositionOperator, Serial
     
     //======================================================================
     // do the net composition
-    public void compose(MultiNetPage mnPage, ParserContext context) {
-        assert mnPage.netsDescr.size() == 1;
-        GspnPage compNetBase = (GspnPage)mnPage.netsDescr.get(0).net.getComposedNet();
+    @Override
+    protected void compose(ParserContext context) {
+        assert netsDescr.size() == 1;
+        GspnPage compNetBase = (GspnPage)netsDescr.get(0).net.getComposedNet();
         
         // Insert the netpage (copying it)
         GspnPage compNet = (GspnPage)Util.deepCopy(compNetBase);
 
         // Apply parameter substitution
         TemplateBinding effectiveBinding = new TemplateBinding();
-        effectiveBinding.binding.putAll(mnPage.netsDescr.get(0).instParams.binding);
+        effectiveBinding.binding.putAll(netsDescr.get(0).instParams.binding);
         for (Map.Entry<String, Expr> bind : effectiveBinding.binding.entrySet()) {
             Expr value = bind.getValue();
-            value.checkExprCorrectness(context, mnPage, null);
+            value.checkExprCorrectness(context, this, null);
 //            effectiveBinding.bindSingleValue(bind.getKey(), bind.getValue());
         }
-        mnPage.substituteParameters(compNet, effectiveBinding);
+        substituteParameters(compNet, effectiveBinding);
         
         // Check that all expressions were evaluated correctly
-        if (mnPage.isPageCorrect()) {
+        if (isPageCorrect()) {
             compNet.preparePageCheck();
             compNet.checkPage(null, null, compNet, null);
             if (compNet.isPageCorrect()) {
@@ -101,15 +107,15 @@ public class UnfoldingCompositionOperator implements CompositionOperator, Serial
                     String uniqueName = "Unfolding of "+compNet.getPageName();
                     u.unfolded.setPageName(uniqueName);
 
-                    mnPage.setCompositionSuccessfull(u.unfolded, 
+                    setCompositionSuccessfull(u.unfolded, 
                             new String[]{uniqueName}, new NetPage[]{u.unfolded});
                 }
                 catch (CouldNotUnfoldException e) {
-                    mnPage.addPageError(e.getMessage(), null);
+                    addPageError(e.getMessage(), null);
                 }
             }
             else {
-                mnPage.addPageError("Could not pepare "+compNet.getPageName()+" for the unfolding.", null);
+                addPageError("Could not pepare "+compNet.getPageName()+" for the unfolding.", null);
             }
         }
 //                netNames.toArray(new String[netNames.size()]), 
