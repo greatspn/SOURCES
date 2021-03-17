@@ -16,6 +16,7 @@ public interface CompositionOperator {
     
     public String getOperatorName();
     public Icon getOperatorIcon();
+    public Icon getPageIcon();
     
     // Is the number of composed nets fixed or variable?
     public boolean hasFixedNumOfOperators();

@@ -14,31 +14,30 @@ import javax.swing.Icon;
  *
  * @author elvio
  */
-public class AlgebraCompositionOperator implements CompositionOperator, Serializable {
+public class MultiNetCompositionOperator implements CompositionOperator, Serializable {
 
     @Override
     public String getOperatorName() {
-        return "Algebra";
+        return "MultiNet Composition";
     }
 
     @Override
     public Icon getOperatorIcon() {
-        return ResourceFactory.getInstance().getSum32();
+        return ResourceFactory.loadIcon32("page_multinet");
     }
 
     @Override public Icon getPageIcon() {
-        return ResourceFactory.getInstance().getPageAlgebra16();
+        return ResourceFactory.getInstance().getPageMultiNet16();
     }
-    
     
     @Override
     public boolean hasFixedNumOfOperators() {
-        return true;
+        return false;
     }
 
     @Override
     public int getFixedNumOfOperators() {
-        return 2;
+        throw new IllegalStateException();
     }
     
     @Override
@@ -49,7 +48,7 @@ public class AlgebraCompositionOperator implements CompositionOperator, Serializ
 
     @Override
     public boolean useReplicaCount() {
-        return false;
+        return true;
     }
     
     

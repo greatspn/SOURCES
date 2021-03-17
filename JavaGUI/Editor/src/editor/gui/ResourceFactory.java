@@ -417,6 +417,14 @@ public class ResourceFactory {
         return loadIcon24("new_multinet");
     }
     
+    public ImageIcon getNewAlgebraNet24() {
+        return loadIcon24("new_algebranet");
+    }
+    
+    public ImageIcon getNewUnfoldingNet24() {
+        return loadIcon24("new_unfoldingnet");
+    }
+    
     public ImageIcon getNewNet24() {
         return loadIcon24("new_net");
     }
@@ -464,7 +472,15 @@ public class ResourceFactory {
     public ImageIcon getPageMultiNet16() {
         return loadIcon16("page_multinet");
     }
-
+    
+    public ImageIcon getPageAlgebra16() {
+        return loadIcon16("page_algebra");
+    }
+    
+    public ImageIcon getPageUnfolding16() {
+        return loadIcon16("page_unfolding");
+    }
+    
     public ImageIcon getPageNet16() {
         return loadIcon16("page_net");
     }

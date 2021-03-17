@@ -14,22 +14,21 @@ import javax.swing.Icon;
  *
  * @author elvio
  */
-public class AlgebraCompositionOperator implements CompositionOperator, Serializable {
+public class UnfoldingCompositionOperator implements CompositionOperator, Serializable {
 
     @Override
     public String getOperatorName() {
-        return "Algebra";
+        return "Unfolding";
     }
 
     @Override
     public Icon getOperatorIcon() {
-        return ResourceFactory.getInstance().getSum32();
+        return ResourceFactory.getInstance().getUnfolding32();
     }
 
     @Override public Icon getPageIcon() {
-        return ResourceFactory.getInstance().getPageAlgebra16();
+        return ResourceFactory.getInstance().getPageUnfolding16();
     }
-    
     
     @Override
     public boolean hasFixedNumOfOperators() {
@@ -38,7 +37,7 @@ public class AlgebraCompositionOperator implements CompositionOperator, Serializ
 
     @Override
     public int getFixedNumOfOperators() {
-        return 2;
+        return 1;
     }
     
     @Override

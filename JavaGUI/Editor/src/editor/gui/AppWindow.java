@@ -30,9 +30,11 @@ import editor.domain.measures.FormulaMeasure;
 import editor.domain.measures.MeasureEditorPanel;
 import editor.domain.measures.MeasurePage;
 import editor.domain.superposition.AlgebraCompositionOperator;
+import editor.domain.superposition.MultiNetCompositionOperator;
 import editor.domain.superposition.MultiNetEditorPanel;
 import editor.domain.superposition.MultiNetPage;
 import editor.domain.superposition.NetInstanceDescriptor;
+import editor.domain.superposition.UnfoldingCompositionOperator;
 import editor.domain.unfolding.Unfolding;
 import editor.gui.net.BaseCellEditor;
 import editor.gui.net.NetSemiflowsPanel;
@@ -641,8 +643,12 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         }
         
         if (Main.isDeveloperMachine()) { // resurrect the MultiNet support
-            JMenuItem addMultiPage = new JMenuItem(actionNewMultiPage);
-            jPopupMenuAddPage.add(addMultiPage);
+            JMenuItem addAlgebraMultiPage = new JMenuItem(actionNewMultiPage_Algebra);
+            jPopupMenuAddPage.add(addAlgebraMultiPage);
+            JMenuItem addUnfoldingMultiPage = new JMenuItem(actionNewMultiPage_Unfolding);
+            jPopupMenuAddPage.add(addUnfoldingMultiPage);
+            JMenuItem addOldMultiNetPage = new JMenuItem(actionNewMultiPage_multiNetOLD);
+            jPopupMenuAddPage.add(addOldMultiNetPage);
         }
 
         // First GUI update is executed immediately, without the invalidateGUI()
@@ -1457,7 +1463,9 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         actionNewNetPage_CPN = new common.Action();
         actionNewNetPage_GSPN = new common.Action();
         actionNewNetPage_SWN = new common.Action();
-        actionNewMultiPage = new common.Action();
+        actionNewMultiPage_Algebra = new common.Action();
+        actionNewMultiPage_Unfolding = new common.Action();
+        actionNewMultiPage_multiNetOLD = new common.Action();
         resourceFactory = new editor.gui.ResourceFactory();
         rmcActionCTL = new common.Action();
         rmcActionBuildRG = new common.Action();
@@ -1787,7 +1795,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jMenuItemNewMeasurePage.setText("jMenuItem2");
         jPopupMenuAddPage.add(jMenuItemNewMeasurePage);
 
-        jMenuItemNewMultiPage.setAction(actionNewMultiPage);
+        jMenuItemNewMultiPage.setAction(actionNewMultiPage_Algebra);
         jPopupMenuAddPage.add(jMenuItemNewMultiPage);
         jPopupMenuAddPage.add(jSeparatorLibraryModels);
 
@@ -2142,11 +2150,27 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             }
         });
 
-        actionNewMultiPage.setActionName("Add a new multi page.");
-        actionNewMultiPage.setIcon(resourceFactory.getNewMultiNet24());
-        actionNewMultiPage.addActionListener(new java.awt.event.ActionListener() {
+        actionNewMultiPage_Algebra.setActionName("Add a new net composition page.");
+        actionNewMultiPage_Algebra.setIcon(resourceFactory.getNewAlgebraNet24());
+        actionNewMultiPage_Algebra.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                actionNewMultiPageActionPerformed(evt);
+                actionNewMultiPage_AlgebraActionPerformed(evt);
+            }
+        });
+
+        actionNewMultiPage_Unfolding.setActionName("Add a new net unfolding page.");
+        actionNewMultiPage_Unfolding.setIcon(resourceFactory.getNewUnfoldingNet24());
+        actionNewMultiPage_Unfolding.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionNewMultiPage_UnfoldingActionPerformed(evt);
+            }
+        });
+
+        actionNewMultiPage_multiNetOLD.setActionName("Add a new multi page.");
+        actionNewMultiPage_multiNetOLD.setIcon(resourceFactory.getNewMultiNet24());
+        actionNewMultiPage_multiNetOLD.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionNewMultiPage_multiNetOLDActionPerformed(evt);
             }
         });
 
@@ -3131,11 +3155,11 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 //        }
     }//GEN-LAST:event_actionStartUnfoldingActionPerformed
 
-    private void actionNewMultiPageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewMultiPageActionPerformed
+    private void actionNewMultiPage_AlgebraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewMultiPage_AlgebraActionPerformed
         executeUndoableCommand("new Multi net page.", (ProjectData proj, ProjectPage elem) -> {
             MultiNetPage newPage = new MultiNetPage();
             newPage.viewProfile.setProfileForNetType(NewProjectDialog.PetriNetType.FullPN);
-            newPage.setPageName(generateUniquePageName(activeProject, "MultiNet"));
+            newPage.setPageName(generateUniquePageName(activeProject, "Composition"));
             newPage.netsDescr.add(new NetInstanceDescriptor());
             newPage.netsDescr.add(new NetInstanceDescriptor());
             newPage.netsDescr.get(0).targetNetName = "PN1";
@@ -3144,7 +3168,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             activeProject.getCurrent().addPage(newPage);
             switchToProjectPage(activeProject, newPage, null);
         });
-    }//GEN-LAST:event_actionNewMultiPageActionPerformed
+    }//GEN-LAST:event_actionNewMultiPage_AlgebraActionPerformed
 
     private void actionDuplicatePageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionDuplicatePageActionPerformed
         executeUndoableCommand("duplicate page.", (ProjectData proj, ProjectPage page) -> {
@@ -3312,6 +3336,34 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private void actionStartCTMCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionStartCTMCActionPerformed
         startRGTool(RgType.CTMC);
     }//GEN-LAST:event_actionStartCTMCActionPerformed
+
+    private void actionNewMultiPage_UnfoldingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewMultiPage_UnfoldingActionPerformed
+        executeUndoableCommand("new Multi net page.", (ProjectData proj, ProjectPage elem) -> {
+            MultiNetPage newPage = new MultiNetPage();
+            newPage.viewProfile.setProfileForNetType(NewProjectDialog.PetriNetType.FullPN);
+            newPage.setPageName(generateUniquePageName(activeProject, "Unfolding"));
+            newPage.netsDescr.add(new NetInstanceDescriptor());
+            newPage.netsDescr.get(0).targetNetName = "PN1";
+            newPage.operator = new UnfoldingCompositionOperator();
+            activeProject.getCurrent().addPage(newPage);
+            switchToProjectPage(activeProject, newPage, null);
+        });
+    }//GEN-LAST:event_actionNewMultiPage_UnfoldingActionPerformed
+
+    private void actionNewMultiPage_multiNetOLDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewMultiPage_multiNetOLDActionPerformed
+        executeUndoableCommand("new Multi net page.", (ProjectData proj, ProjectPage elem) -> {
+            MultiNetPage newPage = new MultiNetPage();
+            newPage.viewProfile.setProfileForNetType(NewProjectDialog.PetriNetType.FullPN);
+            newPage.setPageName(generateUniquePageName(activeProject, "MultiNet"));
+            newPage.netsDescr.add(new NetInstanceDescriptor());
+            newPage.netsDescr.add(new NetInstanceDescriptor());
+            newPage.netsDescr.get(0).targetNetName = "PN1";
+            newPage.netsDescr.get(1).targetNetName = "PN2";
+            newPage.operator = new MultiNetCompositionOperator();
+            activeProject.getCurrent().addPage(newPage);
+            switchToProjectPage(activeProject, newPage, null);
+        });
+    }//GEN-LAST:event_actionNewMultiPage_multiNetOLDActionPerformed
 
     
     
@@ -3547,7 +3599,9 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private common.Action actionMoveUp;
     private common.Action actionNewDtaPage;
     private common.Action actionNewMeasurePage;
-    private common.Action actionNewMultiPage;
+    private common.Action actionNewMultiPage_Algebra;
+    private common.Action actionNewMultiPage_Unfolding;
+    private common.Action actionNewMultiPage_multiNetOLD;
     private common.Action actionNewNetPage_CPN;
     private common.Action actionNewNetPage_FullGSPN;
     private common.Action actionNewNetPage_GSPN;

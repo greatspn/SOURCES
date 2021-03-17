@@ -737,7 +737,7 @@ public class MultiNetPage extends ProjectPage implements Serializable, Composabl
     @Override public DataFlavor getDataFlavour() { return dataFlavour; }
 
     @Override public Icon getPageIcon() {
-        return ResourceFactory.getInstance().getPageMultiNet16();
+        return operator.getPageIcon();
     }
     @Override public String getPageTypeName() {
         return "MULTINET";
