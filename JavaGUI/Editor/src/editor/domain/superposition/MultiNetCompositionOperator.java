@@ -85,7 +85,6 @@ public class MultiNetCompositionOperator implements CompositionOperator, Seriali
 
     // do the net composition
     public void compose(MultiNetPage mnPage, ParserContext context) {
-//        this.mnPage = mnPage;
         compSubNets = new ArrayList<>();
         subNetPrefixes = new ArrayList<>();
         flattenedSubNets = new ArrayList<>();
@@ -93,12 +92,59 @@ public class MultiNetCompositionOperator implements CompositionOperator, Seriali
 
         TemplateBinding rootBinding = new TemplateBinding();
         enumComponents("", mnPage, rootBinding, context);
+        
+//        // Compose the subnets into a single net
+//        final int numSubNets = compSubNets.size();
+//        compData = new CompositionData[numSubNets];
+//        for (int i=0; i<numSubNets; i++)
+//            compData[i] = new CompositionData();
+//        
+//        // Enumerate node classes
+//        Set<GroupClass> allClasses = new HashSet<>();
+//        for (NetPage subnet: compSubNets)
+//            for (Node node : subnet.nodes)
+//                allClasses.add(node.getGroupClass());
+//        
+//        // Compose nodes, by classes
+//        for (GroupClass grClass : allClasses)
+//            composeNodesOfType(grClass);
+        
+        // Clear composition data
+//        compData = null;
 
         mnPage.setCompositionSuccessfull(new GspnPage(), 
                 flattenedSubNetNames.toArray(new String[flattenedSubNetNames.size()]), 
                 flattenedSubNets.toArray(new NetPage[flattenedSubNets.size()]));
-//        this.mnPage = null;
     }
+    
+//    // A visual component (a single unit of the multinet)
+//    private static class NetPageUnit extends NetUnit {
+//        // Elements in this component
+//        public NetPage net;
+//    }
+    
+//    // A synchronization unit, which is made by several components and the
+//    // synchronization of nodes/edges
+//    private static class NetUnit {
+//        // Name/prefix of this component
+//        public String prefix;
+//        // sub-components of this component. Could be null for page units
+//        public NetUnit[] subUnits;
+//        // How nodes interacts between the sub-units
+//        public ArrayList<NodeGroup> gNodes;
+//        // How edges interact between the sub-units
+//        
+//        // Renaming table
+//        Map<String, String> renaming = new HashMap<>();
+//    }
+
+//    // Support data for net composition
+//    private static class CompositionData {
+//        // ID conversion table
+//        Map<String, String> idConv = new HashMap<>();
+//    }
+//    private transient CompositionData[] compData;
+    
 
     //    private static class TaggedNodes {
 //        // All nodes that share the same tag, divided by subnets.
@@ -308,7 +354,7 @@ public class MultiNetCompositionOperator implements CompositionOperator, Seriali
                     NetPage npage = (NetPage)Util.deepCopy(descr.net);
 
                     // Apply parameter substitution
-                    substituteParameters(npage, effectiveBinding);
+                    thisPage.substituteParameters(npage, effectiveBinding);
 
                     flattenedSubNets.add(npage);
                     flattenedSubNetNames.add(netPrefix);
@@ -322,7 +368,7 @@ public class MultiNetCompositionOperator implements CompositionOperator, Seriali
                     assert compPage != null;
 
                     // Apply parameter substitution
-                    substituteParameters(compPage, effectiveBinding);
+                    thisPage.substituteParameters(compPage, effectiveBinding);
 
                     if (isFirstLevel)
                         compSubNets.add(compPage);
@@ -354,24 +400,7 @@ public class MultiNetCompositionOperator implements CompositionOperator, Seriali
         return di.targetNetName+"/"+prevInst;
     }
     
-    // Apply parameter substitution to a netpage
-    private static void substituteParameters(NetPage page, TemplateBinding binding) {
-        for (int n=0; n<page.nodes.size(); n++) {
-            Node node = page.nodes.get(n);
-            if (node instanceof TemplateVariable) {
-                TemplateVariable tvar = (TemplateVariable)node;
-                // Check if we want to instantiate this parameter
-                if (binding.binding.containsKey(node.getUniqueName())) {
-                    ConstantID con = new ConstantID(tvar);
-                    String value = binding.getSingleValueBoundTo(tvar).getExpr();
-                    if (value.isEmpty())
-                        value = "???";
-                    con.getConstantExpr().setExpr(value);
-                    page.nodes.set(n, con);
-                }
-            }
-        }
-    }
+
     
 //    // The procedure that actually does the composition.
 //    private void compose() {

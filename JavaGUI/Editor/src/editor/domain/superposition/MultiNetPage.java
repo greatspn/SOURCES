@@ -17,6 +17,7 @@ import editor.domain.ProjectPage;
 import editor.domain.ProjectResource;
 import editor.domain.ViewProfile;
 import editor.domain.elements.ColorClass;
+import editor.domain.elements.ConstantID;
 import editor.domain.elements.TemplateVariable;
 import editor.domain.grammar.NodeNamespace;
 import editor.domain.grammar.ParserContext;
@@ -67,17 +68,6 @@ public class MultiNetPage extends ProjectPage implements Serializable, Composabl
 //    public boolean areReplicaCountParametric;
     
     //-------------------------------------------------------------------------
-    // The list of nets that will be composed. Each of these nets could be a
-    // simple NetPage, or the composed NetPage of a MultiNetPage.
-    // Note:  compSubNets.size() == netsDescr.size()
-//    private transient ArrayList<NetPage> compSubNets;
-//    private transient ArrayList<String> subNetPrefixes;
-//    // The 'flattened' list of components in this multipage, which is what is actually shown
-//    // Note:  flattenedSubNets.size() >= netsDescr.size()
-//    private transient ArrayList<NetPage> flattenedSubNets;
-//    private transient ArrayList<String> flattenedSubNetNames;
-    
-    
     // The composed net
     private transient NetPage compNet;
     // How the composed net is visualized
@@ -99,83 +89,9 @@ public class MultiNetPage extends ProjectPage implements Serializable, Composabl
         this.visualizedSubNets = visualizedSubNets;
     }
     
-//    // A visual component (a single unit of the multinet)
-//    private static class NetPageUnit extends NetUnit {
-//        // Elements in this component
-//        public NetPage net;
-//    }
-    
-//    // A synchronization unit, which is made by several components and the
-//    // synchronization of nodes/edges
-//    private static class NetUnit {
-//        // Name/prefix of this component
-//        public String prefix;
-//        // sub-components of this component. Could be null for page units
-//        public NetUnit[] subUnits;
-//        // How nodes interacts between the sub-units
-//        public ArrayList<NodeGroup> gNodes;
-//        // How edges interact between the sub-units
-//        
-//        // Renaming table
-//        Map<String, String> renaming = new HashMap<>();
-//    }
-
-//    // Support data for net composition
-//    private static class CompositionData {
-//        // ID conversion table
-//        Map<String, String> idConv = new HashMap<>();
-//    }
-//    private transient CompositionData[] compData;
-    
-    
-    
     public MultiNetPage() {
     }
     
-    
-    private void doComposition() {
-        System.out.println("doComposition "+getPageName()+"  isPageCorrect="+isPageCorrect());
-//        compSubNets = new ArrayList<>();
-//        subNetPrefixes = new ArrayList<>();
-//        flattenedSubNets = new ArrayList<>();
-//        flattenedSubNetNames = new ArrayList<>();
-        compNet = null;
-        visualizedSubNetNames = null;
-        visualizedSubNets = null;
-//        compNet = new GspnPage();
-        
-        // Construct the subnet hierarchy
-        ParserContext rootContext = new ParserContext(this);
-//        TemplateBinding rootBinding = new TemplateBinding();
-//        enumComponents("", this, rootBinding, rootContext);
-        
-//        // Compose the subnets into a single net
-//        final int numSubNets = compSubNets.size();
-//        compData = new CompositionData[numSubNets];
-//        for (int i=0; i<numSubNets; i++)
-//            compData[i] = new CompositionData();
-//        
-//        // Enumerate node classes
-//        Set<GroupClass> allClasses = new HashSet<>();
-//        for (NetPage subnet: compSubNets)
-//            for (Node node : subnet.nodes)
-//                allClasses.add(node.getGroupClass());
-//        
-//        // Compose nodes, by classes
-//        for (GroupClass grClass : allClasses)
-//            composeNodesOfType(grClass);
-        
-        // Clear composition data
-//        compData = null;
-
-        // Composition was successfull
-        if (isPageCorrect()) {
-            operator.compose(this, rootContext);
-//            compNet = new GspnPage();
-        }
-    }
-    
-
     
     //==========================================================================
 
@@ -315,17 +231,41 @@ public class MultiNetPage extends ProjectPage implements Serializable, Composabl
         if (!dependenciesAreOk) {
             for (NetInstanceDescriptor descr : netsDescr)
                 descr.net = null;
-            compNet = null;
+            setCompositionSuccessfull(null, null, null);
         }
         else if (compNet==null || doCompose) {
-            System.out.println("REBUILDING "+getPageName());
-            doComposition();
+            setCompositionSuccessfull(null, null, null);
+            if (isPageCorrect()) {
+                System.out.println("REBUILDING "+getPageName());
+                ParserContext rootContext = new ParserContext(this);
+                operator.compose(this, rootContext);
+            }
         }
 //        else {
 //            System.out.println("Keeping net composition of "+getPageName());
 //        }
         
         return true;
+    }
+    
+    
+    // Apply parameter substitution to a netpage
+    public static void substituteParameters(NetPage page, TemplateBinding binding) {
+        for (int n=0; n<page.nodes.size(); n++) {
+            Node node = page.nodes.get(n);
+            if (node instanceof TemplateVariable) {
+                TemplateVariable tvar = (TemplateVariable)node;
+                // Check if we want to instantiate this parameter
+                if (binding.binding.containsKey(node.getUniqueName())) {
+                    ConstantID con = new ConstantID(tvar);
+                    String value = binding.getSingleValueBoundTo(tvar).getExpr();
+                    if (value.isEmpty())
+                        value = "???";
+                    con.getConstantExpr().setExpr(value);
+                    page.nodes.set(n, con);
+                }
+            }
+        }
     }
 
     @Override

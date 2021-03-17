@@ -2,13 +2,14 @@
 <!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="New project" version="121">
   <gspn name="PN1" show-fluid-cmd="false">
     <nodes>
-      <place name="P0" x="5.0" y="4.0"/>
+      <place domain="CC" marking="&lt;All&gt;" name="P0" x="5.0" y="4.0"/>
       <transition name="T0" nservers-x="0.5" type="EXP" x="11.55" y="4.0"/>
       <template name="n" type="INTEGER" x="6.0" y="9.0"/>
-      <color-class definition="c{1..n}" name="C0" x="4.125" y="12.0"/>
+      <color-class definition="c{1..n}" name="CC" x="4.125" y="12.0"/>
+      <color-var domain="CC" name="v" x="4.958333333333333" y="14.0"/>
     </nodes>
     <edges>
-      <arc head="T0" kind="INPUT" tail="P0"/>
+      <arc head="T0" kind="INPUT" mult="&lt;v&gt;" tail="P0"/>
     </edges>
   </gspn>
   <gspn name="PN2">

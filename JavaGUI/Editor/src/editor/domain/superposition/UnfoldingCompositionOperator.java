@@ -5,13 +5,19 @@
  */
 package editor.domain.superposition;
 
+import common.Util;
+import editor.domain.Expr;
 import editor.domain.NetPage;
 import editor.domain.ProjectPage;
 import editor.domain.elements.GspnPage;
 import editor.domain.grammar.ParserContext;
+import editor.domain.grammar.TemplateBinding;
+import editor.domain.unfolding.CouldNotUnfoldException;
+import editor.domain.unfolding.Unfolding;
 import editor.gui.ResourceFactory;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Map;
 import javax.swing.Icon;
 
 /**
@@ -47,6 +53,11 @@ public class UnfoldingCompositionOperator implements CompositionOperator, Serial
     @Override
     public boolean canComposeWith(ProjectPage page, MultiNetPage resultPage) {
         boolean canComp = (page != null) && (page != resultPage) && (page instanceof ComposableNet);
+        if (canComp) {
+            ComposableNet net = (ComposableNet)page;
+            NetPage compNet = net.getComposedNet();
+            canComp = (compNet != null) && compNet.canBeUnfolded();
+        }
         return canComp;
     }
 
@@ -63,17 +74,59 @@ public class UnfoldingCompositionOperator implements CompositionOperator, Serial
     //======================================================================
     // do the net composition
     public void compose(MultiNetPage mnPage, ParserContext context) {
-        ArrayList<NetPage> nets = new ArrayList<>();
-        ArrayList<String> netNames = new ArrayList<>();
+        assert mnPage.netsDescr.size() == 1;
+        GspnPage compNetBase = (GspnPage)mnPage.netsDescr.get(0).net.getComposedNet();
         
-        for (NetInstanceDescriptor di : mnPage.netsDescr) {
-            NetPage compNet = di.net.getComposedNet();
-            nets.add(compNet);
-            netNames.add("Unfolding of "+compNet.getPageName());
+        // Insert the netpage (copying it)
+        GspnPage compNet = (GspnPage)Util.deepCopy(compNetBase);
+
+        // Apply parameter substitution
+        TemplateBinding effectiveBinding = new TemplateBinding();
+        effectiveBinding.binding.putAll(mnPage.netsDescr.get(0).instParams.binding);
+        for (Map.Entry<String, Expr> bind : effectiveBinding.binding.entrySet()) {
+            Expr value = bind.getValue();
+            value.checkExprCorrectness(context, mnPage, null);
+//            effectiveBinding.bindSingleValue(bind.getKey(), bind.getValue());
         }
+        mnPage.substituteParameters(compNet, effectiveBinding);
         
-        mnPage.setCompositionSuccessfull(new GspnPage(), 
-                netNames.toArray(new String[netNames.size()]), 
-                nets.toArray(new NetPage[nets.size()]));
+        // Check that all expressions were evaluated correctly
+        if (mnPage.isPageCorrect()) {
+            compNet.preparePageCheck();
+            compNet.checkPage(null, null, compNet, null);
+            if (compNet.isPageCorrect()) {
+                try {
+                    final Unfolding u = new Unfolding(compNet);
+                    u.unfold();
+                    String uniqueName = "Unfolding of "+compNet.getPageName();
+                    u.unfolded.setPageName(uniqueName);
+
+                    mnPage.setCompositionSuccessfull(u.unfolded, 
+                            new String[]{uniqueName}, new NetPage[]{u.unfolded});
+                }
+                catch (CouldNotUnfoldException e) {
+                    mnPage.addPageError(e.getMessage(), null);
+                }
+            }
+            else {
+                mnPage.addPageError("Could not pepare "+compNet.getPageName()+" for the unfolding.", null);
+            }
+        }
+//                netNames.toArray(new String[netNames.size()]), 
+//                nets.toArray(new NetPage[nets.size()]));
+        
+//        
+//        ArrayList<NetPage> nets = new ArrayList<>();
+//        ArrayList<String> netNames = new ArrayList<>();
+//        
+//        for (NetInstanceDescriptor di : mnPage.netsDescr) {
+//            NetPage compNet = di.net.getComposedNet();
+//            nets.add(compNet);
+//            netNames.add("Unfolding of "+compNet.getPageName());
+//        }
+//        
+//        mnPage.setCompositionSuccessfull(new GspnPage(), 
+//                netNames.toArray(new String[netNames.size()]), 
+//                nets.toArray(new NetPage[nets.size()]));
     }
 }
