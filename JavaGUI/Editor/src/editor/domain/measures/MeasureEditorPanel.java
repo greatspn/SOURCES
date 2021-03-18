@@ -10,6 +10,7 @@ import common.Action;
 import common.Condition;
 import common.Util;
 import editor.Main;
+import editor.domain.NetPage;
 import editor.domain.elements.GspnPage;
 import editor.domain.PageErrorWarning;
 import editor.domain.ProjectData;
@@ -18,6 +19,7 @@ import editor.domain.ProjectPage;
 import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.TemplateBinding;
 import editor.domain.grammar.VarListMultiAssignment;
+import editor.domain.superposition.ComposableNet;
 import editor.gui.AbstractPageEditor;
 import editor.gui.CutCopyPasteEngine;
 import editor.gui.MainWindowInterface;
@@ -157,17 +159,22 @@ public class MeasureEditorPanel extends javax.swing.JPanel
         updatingGspnCombo = true;
         jComboBox_gspn.removeAllItems();
         boolean hasSelection = false;
-        for (int p = 0; p < pf.getCurrent().getPageCount(); p++)
-            if (pf.getCurrent().getPageAt(p) instanceof GspnPage) {
-                GspnPage gspn = (GspnPage)pf.getCurrent().getPageAt(p);
-                jComboBox_gspn.addItem(gspn.getPageName());
-                if (currPage.targetGspnName != null && 
-                    currPage.targetGspnName.equals(gspn.getPageName())) 
-                {
-                    hasSelection = true;
-                    jComboBox_gspn.setSelectedItem(currPage.targetGspnName);
+        for (int p = 0; p < pf.getCurrent().getPageCount(); p++) {
+            ProjectPage targetPage = pf.getCurrent().getPageAt(p);
+            if (targetPage instanceof ComposableNet) {
+                NetPage comp = ((ComposableNet)targetPage).getComposedNet();
+                if (comp != null && comp instanceof GspnPage) {
+                    GspnPage gspn = (GspnPage)comp;
+                    jComboBox_gspn.addItem(targetPage.getPageName());
+                    if (currPage.targetGspnName != null && 
+                        currPage.targetGspnName.equals(targetPage.getPageName())) 
+                    {
+                        hasSelection = true;
+                        jComboBox_gspn.setSelectedItem(currPage.targetGspnName);
+                    }
                 }
             }
+        }
         if (!hasSelection) {
             ((MutableComboBoxModel<String>)jComboBox_gspn.getModel()).insertElementAt(UNSELECTED_GSPN, 0);
             jComboBox_gspn.setSelectedItem(UNSELECTED_GSPN);

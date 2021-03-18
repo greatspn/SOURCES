@@ -26,9 +26,7 @@ import editor.domain.elements.ColorVar;
 import editor.domain.elements.Transition;
 import editor.domain.elements.ConstantID;
 import editor.domain.elements.TemplateVariable;
-import editor.domain.elements.TemplateVariable.BoundedExpr;
 import editor.domain.elements.TextBox;
-import editor.domain.grammar.DomainElement;
 import editor.domain.grammar.VarMultiAssignment;
 import editor.domain.measures.AbstractMeasure;
 import editor.domain.measures.AllMeasuresResult;
@@ -51,7 +49,6 @@ import editor.domain.superposition.MultiNetCompositionPage;
 import editor.domain.superposition.MultiNetPage;
 import editor.domain.superposition.NetInstanceDescriptor;
 import editor.domain.superposition.UnfoldingCompositionPage;
-import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -499,8 +496,8 @@ public class PnProFormat {
                         Element bindingElem = (Element)bindingItem;
                         String varName = safeParseString(bindingElem.getAttribute("varname"), "");
                         String expr = safeParseString(bindingElem.getAttribute("value"), "");
-                        ConstantID c = new ConstantID(ConstantID.ConstType.INTEGER, "dummy", expr, "", new Point2D.Double());
-                        nid.bindParam(varName, c.getConstantExpr());
+//                        ConstantID c = new ConstantID(ConstantID.ConstType.INTEGER, "dummy", expr, "", new Point2D.Double());
+                        nid.bindParam(varName, new SolverParams.IntExpr(expr));
                     }
                 }
                 
@@ -562,7 +559,7 @@ public class PnProFormat {
         return UUID.fromString(str);
     }
     
-    private static String safeParseString(String str, String defaultVal) {
+    public static String safeParseString(String str, String defaultVal) {
         if (str == null || str.length() == 0)
             return defaultVal;
         return str;

@@ -11,6 +11,7 @@ import common.ModalLogDialog;
 import editor.Main;
 import common.Util;
 import static editor.Main.logException;
+import editor.domain.NetPage;
 import editor.domain.PageErrorWarning;
 import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
@@ -30,6 +31,7 @@ import editor.domain.measures.FormulaMeasure;
 import editor.domain.measures.MeasureEditorPanel;
 import editor.domain.measures.MeasurePage;
 import editor.domain.superposition.AlgebraCompositionPage;
+import editor.domain.superposition.ComposableNet;
 import editor.domain.superposition.MultiNetCompositionPage;
 import editor.domain.superposition.MultiNetEditorPanel;
 import editor.domain.superposition.MultiNetPage;
@@ -642,13 +644,11 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             });
         }
         
-        if (Main.isDeveloperMachine()) { // resurrect the MultiNet support
-            JMenuItem addAlgebraMultiPage = new JMenuItem(actionNewMultiPage_Algebra);
-            jPopupMenuAddPage.add(addAlgebraMultiPage);
-            JMenuItem addUnfoldingMultiPage = new JMenuItem(actionNewMultiPage_Unfolding);
-            jPopupMenuAddPage.add(addUnfoldingMultiPage);
-            JMenuItem addOldMultiNetPage = new JMenuItem(actionNewMultiPage_multiNetOLD);
-            jPopupMenuAddPage.add(addOldMultiNetPage);
+        if (!Main.isDeveloperMachine()) { // hide multi-net support
+            jMenuItemNewAlgebraPage.setVisible(false);
+            jMenuItemNewMultiPageOLD.setVisible(false);
+            jMenuItemNewUnfoldingPage.setVisible(false);
+            jSeparatorMultiPages.setVisible(false);
         }
 
         // First GUI update is executed immediately, without the invalidateGUI()
@@ -753,7 +753,6 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
             //----------------------------------
             // Update Actions - all actions must be checked here
-            jMenuItemNewMultiPage.setVisible(false);
             actionSave.setEnabled(canEdit && hasActiveProject() && !activeProject.isSaved());
             actionSaveAs.setEnabled(canEdit && hasActiveProject());
             boolean canSaveAll = false;
@@ -829,6 +828,10 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
                 actionClearMeasureDir.setEnabled(hasClearMeasureDir &&
                         selectedElem.canClearMeasure(activeProject.getFilename()));
                 
+                boolean hasSubnets = canEdit && selectedElem != null && 
+                        selectedElem instanceof ComposableNet && ((ComposableNet)selectedElem).hasSubnets();
+                jToolbarButtonMakeEditable.setVisible(hasSubnets);
+                
                 // Rapid measures pop-up
                 boolean hasRapidMeas = selectedElem != null && selectedElem.hasRapidMesures();
                 if (hasRapidMeas) {
@@ -874,6 +877,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
                 jToolbarButtonUnfolding.setVisible(false);
                 jToolbarButtonClearMeasureDir.setVisible(false);
                 actionClearMeasureDir.setEnabled(false);
+                jToolbarButtonMakeEditable.setVisible(false);
                 jDropdownToolbarButtonRapidMeasure.setVisible(false);
             }
             
@@ -1029,6 +1033,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             case PLAY_NEXT:                 return sharedActionNext;
             case PLAY_PREVIOUS:             return sharedActionPrev;
             case PLAY_RESTART:              return sharedActionRestart;
+            case MAKE_EDITABLE_NET:         return sharedActionMakeEditableNet;
             case CHANGE_BINDINGS:           return sharedActionChangeBindings;
             case COMPUTE_PLACE_SEMIFLOWS:   return sharedActionComputePlaceSemiflows;
             case COMPUTE_TRANS_SEMIFLOWS:   return sharedActionComputeTransitionSemiflows;
@@ -1074,7 +1079,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     
     private void onRapidMeasureSelected(final RapidMeasureCmd rmc) {
         executeUndoableCommand("new rapid measure.", (ProjectData proj, ProjectPage elem) -> {
-            MeasurePage mPage = rmc.createRapidMeasureFor((GspnPage)elem);
+            MeasurePage mPage = rmc.createRapidMeasureFor(elem);
             if (mPage == null)
                 throw new NoOpException();
             
@@ -1089,7 +1094,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
                     {
                         // Replace the (already existing) rapid measure page
                         activeProject.getCurrent().deletePage(i);
-                        mPage.setPageName(generateUniquePageName(activeProject, mPage.getPageName()));
+                        mPage.setPageName(activeProject.generateUniquePageName(mPage.getPageName()));
                         activeProject.getCurrent().addPageAt(mPage, i);
                         replaced = true;
                         break;
@@ -1097,7 +1102,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
                 }
             }
             if (!replaced) {
-                mPage.setPageName(generateUniquePageName(activeProject, mPage.getPageName()));
+                mPage.setPageName(activeProject.generateUniquePageName(mPage.getPageName()));
                 activeProject.getCurrent().addPage(mPage);
             }
             switchToProjectPage(activeProject, mPage, null);
@@ -1410,7 +1415,10 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jSeparatorPetriNets = new javax.swing.JPopupMenu.Separator();
         jMenuItemNewDtaPage = new javax.swing.JMenuItem();
         jMenuItemNewMeasurePage = new javax.swing.JMenuItem();
-        jMenuItemNewMultiPage = new javax.swing.JMenuItem();
+        jSeparatorMultiPages = new javax.swing.JPopupMenu.Separator();
+        jMenuItemNewAlgebraPage = new javax.swing.JMenuItem();
+        jMenuItemNewUnfoldingPage = new javax.swing.JMenuItem();
+        jMenuItemNewMultiPageOLD = new javax.swing.JMenuItem();
         jSeparatorLibraryModels = new javax.swing.JPopupMenu.Separator();
         jMenuLibraryModels = new javax.swing.JMenu();
         actionNewNetPage_FullGSPN = new common.Action();
@@ -1458,6 +1466,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         sharedActionComputePlaceSemiflows = new common.Action();
         sharedActionComputeTransitionSemiflows = new common.Action();
         sharedActionComputeBoundsFromPinv = new common.Action();
+        sharedActionMakeEditableNet = new common.Action();
         actionCaptureSVG = new common.Action();
         actionNewNetPage_PT = new common.Action();
         actionNewNetPage_CPN = new common.Action();
@@ -1537,6 +1546,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jToolbarButtonClearMeasureDir = new common.JToolbarButton();
         jAppToolBar_Advanced = new javax.swing.JToolBar();
         jToolbarButtonAlgebra = new common.JToolbarButton();
+        jToolbarButtonMakeEditable = new common.JToolbarButton();
         jDropdownToolbarButtonRapidMeasure = new common.JDropdownToolbarButton();
         jPlayToolBar = new javax.swing.JToolBar();
         jToolbarButtonEndPlay = new common.JToolbarButton();
@@ -1794,9 +1804,16 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jMenuItemNewMeasurePage.setAction(actionNewMeasurePage);
         jMenuItemNewMeasurePage.setText("jMenuItem2");
         jPopupMenuAddPage.add(jMenuItemNewMeasurePage);
+        jPopupMenuAddPage.add(jSeparatorMultiPages);
 
-        jMenuItemNewMultiPage.setAction(actionNewMultiPage_Algebra);
-        jPopupMenuAddPage.add(jMenuItemNewMultiPage);
+        jMenuItemNewAlgebraPage.setAction(actionNewMultiPage_Algebra);
+        jPopupMenuAddPage.add(jMenuItemNewAlgebraPage);
+
+        jMenuItemNewUnfoldingPage.setAction(actionNewMultiPage_Unfolding);
+        jPopupMenuAddPage.add(jMenuItemNewUnfoldingPage);
+
+        jMenuItemNewMultiPageOLD.setAction(actionNewMultiPage_multiNetOLD);
+        jPopupMenuAddPage.add(jMenuItemNewMultiPageOLD);
         jPopupMenuAddPage.add(jSeparatorLibraryModels);
 
         jMenuLibraryModels.setText("Add library model...");
@@ -2109,6 +2126,10 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         sharedActionComputeBoundsFromPinv.setActionName("Compute place bounds from P-invariants");
         sharedActionComputeBoundsFromPinv.setIcon(resourceFactory.getBound32());
         sharedActionComputeBoundsFromPinv.setTooltipDesc("Recompute the place bounds of the GSPN using the P-invariants.");
+
+        sharedActionMakeEditableNet.setActionName("Duplicate as an editable net.");
+        sharedActionMakeEditableNet.setIcon(resourceFactory.getMakeEditable32());
+        sharedActionMakeEditableNet.setTooltipDesc("Duplicate as an editable net.");
 
         actionCaptureSVG.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_J, java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
         actionCaptureSVG.setActionName("Save an SVG capture of the main window.");
@@ -2505,6 +2526,11 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jToolbarButtonAlgebra.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jAppToolBar_Advanced.add(jToolbarButtonAlgebra);
 
+        jToolbarButtonMakeEditable.setAction(sharedActionMakeEditableNet);
+        jToolbarButtonMakeEditable.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jToolbarButtonMakeEditable.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jAppToolBar_Advanced.add(jToolbarButtonMakeEditable);
+
         jDropdownToolbarButtonRapidMeasure.setAction(actionAdvRapidMeasurePopup);
         jDropdownToolbarButtonRapidMeasure.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jDropdownToolbarButtonRapidMeasure.setPopupMenu(jPopupMenuRapidMeaureCmd);
@@ -2698,7 +2724,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         String pageName = type.netPrefix;
         page.viewProfile.setProfileForNetType(type);
         if (proj != null)
-            pageName = generateUniquePageName(proj, pageName);
+            pageName = proj.generateUniquePageName(pageName);
         page.setPageName(pageName);
 //        
 //        Place p;
@@ -2868,7 +2894,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private void actionNewDtaPageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewDtaPageActionPerformed
         executeUndoableCommand("new DTA.", (ProjectData proj, ProjectPage elem) -> {
             DtaPage newPage = new DtaPage();
-            newPage.setPageName(generateUniquePageName(activeProject, "DTA"));
+            newPage.setPageName(activeProject.generateUniquePageName("DTA"));
             newPage.nodes.add(new ClockVar("x", new Point2D.Double(2, 2)));
             activeProject.getCurrent().addPage(newPage);
             switchToProjectPage(activeProject, newPage, null);
@@ -3025,7 +3051,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         
         try {
             final GspnPage gspn = new GspnPage();
-            gspn.setPageName(generateUniquePageName(activeProject, new File(path).getName()));
+            gspn.setPageName(activeProject.generateUniquePageName(new File(path).getName()));
             String log = GreatSpnFormat.importGspn(gspn, netFile, defFile);
             if (log != null)
                 new ModalLogDialog(this, log).setVisible(true);
@@ -3050,7 +3076,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private void actionNewMeasurePageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewMeasurePageActionPerformed
         executeUndoableCommand("new list of measures.", (ProjectData proj, ProjectPage elem) -> {
             ProjectPage newPage = new MeasurePage();
-            newPage.setPageName(generateUniquePageName(activeProject, "Measures"));
+            newPage.setPageName(activeProject.generateUniquePageName("Measures"));
             activeProject.getCurrent().addPage(newPage);
             switchToProjectPage(activeProject, newPage, null);
         });
@@ -3145,7 +3171,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             assert elem != null && elem.canBeUnfolded();
             final Unfolding u = new Unfolding((GspnPage)elem);
             u.unfold();
-            String uniqueName = generateUniquePageName(activeProject, "Unfolding of "+elem.getPageName());
+            String uniqueName = activeProject.generateUniquePageName("Unfolding of "+elem.getPageName());
             u.unfolded.setPageName(uniqueName);
             activeProject.getCurrent().addPage(u.unfolded);
             switchToProjectPage(activeProject, u.unfolded, null);
@@ -3159,7 +3185,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         executeUndoableCommand("new Multi net page.", (ProjectData proj, ProjectPage elem) -> {
             MultiNetPage newPage = new AlgebraCompositionPage();
             newPage.viewProfile.setProfileForNetType(NewProjectDialog.PetriNetType.FullPN);
-            newPage.setPageName(generateUniquePageName(activeProject, "Composition"));
+            newPage.setPageName(activeProject.generateUniquePageName("Composition"));
             newPage.netsDescr.add(new NetInstanceDescriptor());
             newPage.netsDescr.add(new NetInstanceDescriptor());
             newPage.netsDescr.get(0).targetNetName = "PN1";
@@ -3213,7 +3239,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
                         for (int p = 0; p < newProj.getCurrent().getPageCount(); p++) {
                             ProjectPage newPage = newProj.getCurrent().getPageAt(p);
                             String newPageName = newPage.getPageName();
-                            newPageName = generateUniquePageName(activeProject, newPageName);
+                            newPageName = activeProject.generateUniquePageName(newPageName);
                             if (!newPageName.equals(newPage.getPageName())) {
                                 for (int p2 = 0; p2 < newProj.getCurrent().getPageCount(); p2++)
                                     if (p != p2)
@@ -3250,7 +3276,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
                 activeProject.getCurrent());
         if (newPage != null) {
             executeUndoableCommand("net composition.", (ProjectData proj, ProjectPage page) -> {
-                newPage.setPageName(generateUniquePageName(activeProject, newPage.getPageName()));
+                newPage.setPageName(activeProject.generateUniquePageName(newPage.getPageName()));
                 activeProject.getCurrent().addPage(newPage);
                 switchToProjectPage(activeProject, newPage, null);
                 setStatus("Net \""+newPage.getPageName()+"\" composed with algebra.", true);
@@ -3294,7 +3320,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         
         try {
             final GspnPage gspn = new GspnPage();
-//            gspn.setPageName(generateUniquePageName(activeProject, new File(path).getName()));
+//            gspn.setPageName(activeProject.generateUniquePageName(new File(path).getName()));
             Map<String, String> id2name = new TreeMap<>();
             String log = PNMLFormat.importPNML(gspn, pnmlFile, id2name, null);
             if (log != null)
@@ -3305,7 +3331,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
             // Avoid duplicate page names
             } else if (activeProject.getCurrent().findPageByName(gspn.getPageName()) != null)
-                gspn.setPageName(generateUniquePageName(activeProject, gspn.getPageName()));
+                gspn.setPageName(activeProject.generateUniquePageName(gspn.getPageName()));
             
             executeUndoableCommand("import GSPN from PNML format.", (ProjectData proj, ProjectPage elem) -> {
                 activeProject.getCurrent().addPage(gspn);
@@ -3340,7 +3366,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         executeUndoableCommand("new Multi net page.", (ProjectData proj, ProjectPage elem) -> {
             MultiNetPage newPage = new UnfoldingCompositionPage();
             newPage.viewProfile.setProfileForNetType(NewProjectDialog.PetriNetType.FullPN);
-            newPage.setPageName(generateUniquePageName(activeProject, "Unfolding"));
+            newPage.setPageName(activeProject.generateUniquePageName("Unfolding"));
             newPage.netsDescr.add(new NetInstanceDescriptor());
             newPage.netsDescr.get(0).targetNetName = "PN1";
             activeProject.getCurrent().addPage(newPage);
@@ -3352,7 +3378,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         executeUndoableCommand("new Multi net page.", (ProjectData proj, ProjectPage elem) -> {
             MultiNetPage newPage = new MultiNetCompositionPage();
             newPage.viewProfile.setProfileForNetType(NewProjectDialog.PetriNetType.FullPN);
-            newPage.setPageName(generateUniquePageName(activeProject, "MultiNet"));
+            newPage.setPageName(activeProject.generateUniquePageName("MultiNet"));
             newPage.netsDescr.add(new NetInstanceDescriptor());
             newPage.netsDescr.add(new NetInstanceDescriptor());
             newPage.netsDescr.get(0).targetNetName = "PN1";
@@ -3366,7 +3392,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     
     public void startRGTool(RgType rgType) {
         assert hasActiveProject();
-        final GspnPage page =  (GspnPage)activeProject.getCurrent().getActivePage();
+        final GspnPage page = (GspnPage)((ComposableNet)activeProject.getCurrent().getActivePage()).getComposedNet();
         final TemplateBinding binding = ParameterAssignmentDialog.askParamAssignment(this, page);
         if (binding == null)
             return; // cancel RG
@@ -3444,20 +3470,6 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         // Ensure that other windowClose() listeners are called before exiting.
         SwingUtilities.invokeLater(() -> System.exit(0) );
         return true;
-    }
-    
-    private static String generateUniquePageName(ProjectFile project, String prefix) {
-        for (int i=0; ; i++) {
-            String candidate = prefix + (i==0 ? "" : " " + i);
-            boolean found = false;
-            for (int j=0; j<project.getCurrent().getPageCount(); j++)
-                if (project.getCurrent().getPageAt(j).getPageName().equals(candidate)) {
-                    found = true;
-                    break;
-                }
-            if (!found)
-                return candidate; // Unique name
-        }        
     }
     
     private void moveSelectedPage(final int incr, String descr) {
@@ -3640,14 +3652,16 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private javax.swing.JMenu jMenuFile;
     private javax.swing.JMenu jMenuHelp;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItemNewAlgebraPage;
     private javax.swing.JMenuItem jMenuItemNewDtaPage;
     private javax.swing.JMenuItem jMenuItemNewMeasurePage;
-    private javax.swing.JMenuItem jMenuItemNewMultiPage;
+    private javax.swing.JMenuItem jMenuItemNewMultiPageOLD;
     private javax.swing.JMenuItem jMenuItemNewNetPage_CPN;
     private javax.swing.JMenuItem jMenuItemNewNetPage_FullGSPN;
     private javax.swing.JMenuItem jMenuItemNewNetPage_GSPN;
     private javax.swing.JMenuItem jMenuItemNewNetPage_PT;
     private javax.swing.JMenuItem jMenuItemNewNetPage_SWN;
+    private javax.swing.JMenuItem jMenuItemNewUnfoldingPage;
     private javax.swing.JMenuItem jMenuItemOptions;
     private javax.swing.JMenuItem jMenuItem_ApnnFormat;
     private javax.swing.JMenuItem jMenuItem_DtaFormat;
@@ -3716,6 +3730,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private javax.swing.JPopupMenu.Separator jSeparator8;
     private javax.swing.JPopupMenu.Separator jSeparator9;
     private javax.swing.JPopupMenu.Separator jSeparatorLibraryModels;
+    private javax.swing.JPopupMenu.Separator jSeparatorMultiPages;
     private javax.swing.JPopupMenu.Separator jSeparatorPetriNets;
     private javax.swing.JSplitPane jSplitPaneCenterErrListV;
     private javax.swing.JSplitPane jSplitPaneLeftCenterH;
@@ -3732,6 +3747,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private common.JToolbarButton jToolbarButtonDeleteSelected;
     private common.JToolbarButton jToolbarButtonDuplicatePage;
     private common.JToolbarButton jToolbarButtonEndPlay;
+    private common.JToolbarButton jToolbarButtonMakeEditable;
     private common.JToolbarButton jToolbarButtonMoveDown;
     private common.JToolbarButton jToolbarButtonMoveUp;
     private common.JToolbarButton jToolbarButtonNew;
@@ -3782,6 +3798,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private common.Action sharedActionExportGreatSpn;
     private common.Action sharedActionExportPNML;
     private common.Action sharedActionInvertSelection;
+    private common.Action sharedActionMakeEditableNet;
     private common.Action sharedActionNext;
     private common.Action sharedActionPrev;
     private common.Action sharedActionRestart;

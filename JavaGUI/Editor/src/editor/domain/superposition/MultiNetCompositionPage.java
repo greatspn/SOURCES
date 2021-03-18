@@ -8,6 +8,7 @@ package editor.domain.superposition;
 import common.Util;
 import editor.domain.Expr;
 import editor.domain.NetPage;
+import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
 import editor.domain.elements.GspnPage;
 import editor.domain.grammar.ParserContext;
@@ -74,6 +75,17 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
         return true;
     }
     
+    @Override
+    protected void checkPageFieldsCorrectness(boolean isNewOrModified, boolean dependenciesAreOk, ProjectData proj) {        
+        // nothing to check...
+    }
+    
+    @Override
+    protected void resetCompositionTargets() {
+        setCompositionSuccessfull(null, null, null);
+        setCompositionTarget(UNSUCCESSFULL_GSPN_TARGET);
+    }
+    
     //======================================================================
 
     // The list of nets that will be composed. Each of these nets could be a
@@ -123,11 +135,12 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
             subnet.checkPage(null, null, subnet, null);
         }
 
-        GspnPage gspn = new GspnPage();
-        gspn.setPageName("comp");
-        setCompositionSuccessfull(gspn, 
+//        GspnPage gspn = new GspnPage();
+//        gspn.setPageName("comp");
+        setCompositionSuccessfull(null,//gspn, 
                 flattenedSubNetNames.toArray(new String[flattenedSubNetNames.size()]), 
                 flattenedSubNets.toArray(new NetPage[flattenedSubNets.size()]));
+        addPageWarning("Composition is unimplemented.", null);
     }
     
     @Override

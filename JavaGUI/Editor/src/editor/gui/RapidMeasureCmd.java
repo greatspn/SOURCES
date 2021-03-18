@@ -5,12 +5,14 @@
  */
 package editor.gui;
 
+import editor.domain.ProjectPage;
 import editor.domain.elements.GspnPage;
 import editor.domain.measures.FormulaLanguage;
 import editor.domain.measures.FormulaMeasure;
 import editor.domain.measures.GreatSPNSolverParams;
 import editor.domain.measures.MeasurePage;
 import editor.domain.measures.RGMEDD2SolverParams;
+import editor.domain.superposition.ComposableNet;
 
 /** Common page commands
  *
@@ -26,7 +28,8 @@ public enum RapidMeasureCmd {
     STEADY_STATE_SIM,
     TRANSIENT_SIM;
     
-    public MeasurePage createRapidMeasureFor(GspnPage page) {
+    public MeasurePage createRapidMeasureFor(ProjectPage page) {
+        final GspnPage compGspn = (GspnPage)((ComposableNet)page).getComposedNet();
         MeasurePage mp = new MeasurePage();
         mp.rapidMeasureType = this.name();
         mp.simplifiedUI = true;
@@ -48,7 +51,7 @@ public enum RapidMeasureCmd {
             case BUILD_RG:
             case BUILD_SYMRG: {
                 boolean sym = (this == BUILD_SYMRG);
-                boolean isCPN = page.gspnHasColors();
+                boolean isCPN = compGspn.gspnHasColors();
                 mp.setPageName((sym ? "SRG" : "RG")+" of "+page.getPageName());
                 GreatSPNSolverParams sp = new GreatSPNSolverParams();
                 sp.mode = sym ? GreatSPNSolverParams.SolverMode.SWN_SYM

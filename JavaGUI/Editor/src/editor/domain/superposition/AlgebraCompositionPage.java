@@ -5,29 +5,28 @@
  */
 package editor.domain.superposition;
 
-import common.Util;
 import editor.domain.NetPage;
 import editor.domain.Node;
 import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
-import editor.domain.ViewProfile;
+import editor.domain.Selectable;
+import editor.domain.Selectable.DummyNamedSelectable;
 import editor.domain.elements.GspnPage;
 import editor.domain.elements.Place;
 import editor.domain.elements.Transition;
 import editor.domain.grammar.ParserContext;
 import editor.domain.io.XmlExchangeDirection;
 import editor.domain.io.XmlExchangeException;
+import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
+import editor.domain.measures.SolverParams;
 import editor.domain.unfolding.Algebra;
 import editor.gui.ResourceFactory;
-import java.awt.Dimension;
+import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import javax.swing.Icon;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -84,20 +83,35 @@ public class AlgebraCompositionPage extends MultiNetPage implements Serializable
         return false;
     }
     
+    @Override
+    protected void resetCompositionTargets() {
+        setCompositionSuccessfull(null, null, null);
+        setCompositionTarget(UNSUCCESSFULL_GSPN_TARGET);
+    }
+    
     //======================================================================
     
+    // Composition tags
     public Set<String> selTagsP = new HashSet<>();
     public Set<String> selTagsT = new HashSet<>();
     
+    // Alignment options
+    public static enum Alignment { HORIZONTAL, VERTICAL, CUSTOM }
+    public Alignment alignment = Alignment.HORIZONTAL;
+    public final SolverParams.IntExpr alignDx = new SolverParams.IntExpr("10");
+    public final SolverParams.IntExpr alignDy = new SolverParams.IntExpr("10");
+    
+    // Use broken edges
+    public boolean useBrokenEdges = true;
+        
+    
+    // Tags extracted from the operand nets
     transient public Set<String> commonTagsP;
     transient public Set<String> commonTagsT;
 
     @Override
-    protected boolean checkPageCorrectness(boolean isNewOrModified, ProjectData proj, 
-            Set<ProjectPage> changedPages, ProjectPage invokerPage) 
+    protected void checkPageFieldsCorrectness(boolean isNewOrModified, boolean dependenciesAreOk, ProjectData proj) 
     {
-        boolean res = super.checkPageCorrectness(isNewOrModified, proj, changedPages, invokerPage); 
-        
         Set<String> net1TagsP = new HashSet<>();
         Set<String> net1TagsT = new HashSet<>();
         Set<String> net2TagsP = new HashSet<>();
@@ -106,12 +120,10 @@ public class AlgebraCompositionPage extends MultiNetPage implements Serializable
         commonTagsT = new HashSet<>();
         
         // reconstruct the tagLists
-        if (netsDescr.size()!=2) 
-            return res;    
-        if (netsDescr.get(0).net != null)
-            getNetTags(netsDescr.get(0).net.getComposedNet(), net1TagsP, net1TagsT);
-        if (netsDescr.get(1).net != null)
-            getNetTags(netsDescr.get(1).net.getComposedNet(), net2TagsP, net2TagsT);
+        if (!dependenciesAreOk)
+            return;
+        getNetTags(netsDescr.get(0).net.getComposedNet(), net1TagsP, net1TagsT);
+        getNetTags(netsDescr.get(1).net.getComposedNet(), net2TagsP, net2TagsT);
 
         // Get the intersection of the set of tags
         for (String tag : net1TagsP)
@@ -135,11 +147,18 @@ public class AlgebraCompositionPage extends MultiNetPage implements Serializable
                 it.remove();
         }
         
+        // Validate expression ojects
+        ParserContext context = new ParserContext(this);
+//        System.out.println("alignDx="+alignDx.getExpr());
+        alignDx.checkExprCorrectness(context, this, horizSelectable);
+//        System.out.println("getNumErrorsAndWarnings()="+getNumErrorsAndWarnings());
+        alignDy.checkExprCorrectness(context, this, vertSelectable);
 //        for (String tag : commonTagsP)
 //            System.out.println(getPageName()+" tagsP="+tag);
-        
-        return res;
     }
+    
+    private static Selectable horizSelectable = new DummyNamedSelectable("Horizontal offset");
+    private static Selectable vertSelectable = new DummyNamedSelectable("Vertical offset");
     
     private void getNetTags(NetPage net, Set<String> tagsP, Set<String> tagsT) {
         if (net == null)
@@ -161,17 +180,32 @@ public class AlgebraCompositionPage extends MultiNetPage implements Serializable
     // do the net composition
     @Override
     protected void compose(ParserContext context) {
+//        System.out.println("getNumErrorsAndWarnings()="+getNumErrorsAndWarnings());
 //        addPageError("Could not compose. Unimplemented.", null);
+//            compNet.preparePageCheck();
+//            compNet.checkPage(null, null, compNet, null);
+//            if (compNet.isPageCorrect()) {
         GspnPage net1 = (GspnPage)netsDescr.get(0).net.getComposedNet();
         GspnPage net2 = (GspnPage)netsDescr.get(1).net.getComposedNet();
 
-        int dx2shift = 20;
-        int dy2shift = 20;
-        boolean propBrokenEdges = true;
+        int dx2shift = 0, dy2shift = 0;
+        Rectangle2D pageBounds1 = net1.getPageBounds();
+        switch (alignment) {
+            case HORIZONTAL: 
+                dx2shift = (int)pageBounds1.getWidth() + 5;
+                break;
+            case VERTICAL: 
+                dy2shift = (int)pageBounds1.getHeight() + 5;
+                break;
+            case CUSTOM:
+                dx2shift = Integer.parseInt(alignDx.getExpr());
+                dy2shift = Integer.parseInt(alignDy.getExpr());
+                break;
+        }
         Algebra a = new Algebra(net1, net2, 
                 selTagsT.isEmpty() ? null : selTagsT.toArray(new String[selTagsT.size()]),
                 selTagsP.isEmpty() ? null : selTagsP.toArray(new String[selTagsP.size()]),
-                dx2shift, dy2shift, propBrokenEdges, false);
+                dx2shift, dy2shift, useBrokenEdges, false);
         a.compose();
         
         String uniqueName = net1.getPageName()+"+"+net2.getPageName();
@@ -189,6 +223,11 @@ public class AlgebraCompositionPage extends MultiNetPage implements Serializable
     
     @Override
     public void exchangeXML(Element el, XmlExchangeDirection exDir) throws XmlExchangeException {
+        bindXMLAttrib(this, el, exDir, "use-broken-edges", "useBrokenEdges", false);
+        bindXMLAttrib(this, el, exDir, "align-dx", "alignDx.@Expr", "10");
+        bindXMLAttrib(this, el, exDir, "align-dy", "alignDy.@Expr", "10");
+        bindXMLAttrib(this, el, exDir, "alignment", "alignment", null, Alignment.class);
+        
         Document doc = exDir.getDocument();
         if (exDir.FieldsToXml()) {
             Element placeTagListElem = doc.createElement("place-tags");
@@ -206,6 +245,8 @@ public class AlgebraCompositionPage extends MultiNetPage implements Serializable
                 tagElem.setAttribute("name", selTag);
                 transTagListElem.appendChild(tagElem);
             }
+            
+//            el.setAttribute("alignment", alignment.toString());
         }
         else {
             NodeList placeTagListElemL = el.getElementsByTagName("place-tags");
@@ -247,6 +288,8 @@ public class AlgebraCompositionPage extends MultiNetPage implements Serializable
                     }
                 }
             }
+            
+//            alignment = Alignment.valueOf(safeParseString(el.getAttribute("alignment"), Alignment.HORIZONTAL.toString()));
         }
     }
 }

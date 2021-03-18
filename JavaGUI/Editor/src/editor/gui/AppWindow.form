@@ -328,10 +328,26 @@
             <Property name="text" type="java.lang.String" value="jMenuItem2"/>
           </Properties>
         </MenuItem>
-        <MenuItem class="javax.swing.JMenuItem" name="jMenuItemNewMultiPage">
+        <Component class="javax.swing.JPopupMenu$Separator" name="jSeparatorMultiPages">
+        </Component>
+        <MenuItem class="javax.swing.JMenuItem" name="jMenuItemNewAlgebraPage">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
               <ComponentRef name="actionNewMultiPage_Algebra"/>
+            </Property>
+          </Properties>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="jMenuItemNewUnfoldingPage">
+          <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+              <ComponentRef name="actionNewMultiPage_Unfolding"/>
+            </Property>
+          </Properties>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="jMenuItemNewMultiPageOLD">
+          <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+              <ComponentRef name="actionNewMultiPage_multiNetOLD"/>
             </Property>
           </Properties>
         </MenuItem>
@@ -865,6 +881,15 @@
           <Connection component="resourceFactory" name="getBound32" type="method"/>
         </Property>
         <Property name="tooltipDesc" type="java.lang.String" value="Recompute the place bounds of the GSPN using the P-invariants."/>
+      </Properties>
+    </Component>
+    <Component class="common.Action" name="sharedActionMakeEditableNet">
+      <Properties>
+        <Property name="actionName" type="java.lang.String" value="Duplicate as an editable net."/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getMakeEditable32" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="Duplicate as an editable net."/>
       </Properties>
     </Component>
     <Component class="common.Action" name="actionCaptureSVG">
@@ -2008,6 +2033,15 @@
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
                   <ComponentRef name="actionStartAlgebra"/>
+                </Property>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToolbarButton" name="jToolbarButtonMakeEditable">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="sharedActionMakeEditableNet"/>
                 </Property>
                 <Property name="horizontalTextPosition" type="int" value="0"/>
                 <Property name="verticalTextPosition" type="int" value="3"/>

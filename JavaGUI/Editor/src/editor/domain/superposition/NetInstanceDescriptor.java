@@ -21,8 +21,6 @@ import editor.domain.io.XmlExchangeDirection;
 import editor.domain.io.XmlExchangeException;
 import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
 import editor.domain.io.XmlExchangeable;
-import static editor.domain.measures.RGMEDD2SolverParams.DEFAULT_GEN_COUNTEREXAMPLES;
-import static editor.domain.measures.RGMEDD2SolverParams.DEFAULT_VARIABLE_ORDER;
 import editor.domain.measures.SolverParams;
 import editor.domain.values.EvaluatedFormula;
 import java.awt.geom.Rectangle2D;

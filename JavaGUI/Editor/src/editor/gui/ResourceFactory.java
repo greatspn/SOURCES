@@ -368,6 +368,10 @@ public class ResourceFactory {
     public ImageIcon getLockOpen16() {
         return loadIcon16("lock_open");
     }
+    
+    public ImageIcon getMakeEditable32() {
+        return loadIcon32("make_editable");
+    }
 
     public ImageIcon getMeasure16() {
         return loadIcon16("measure");

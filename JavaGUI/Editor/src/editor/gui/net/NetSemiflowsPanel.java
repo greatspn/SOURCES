@@ -22,6 +22,7 @@ import editor.domain.elements.Transition;
 import editor.domain.grammar.ParserContext;
 import editor.domain.semiflows.SemiFlows;
 import editor.domain.semiflows.MartinezSilvaAlgorithm;
+import editor.domain.superposition.ComposableNet;
 import editor.gui.AbstractPageEditor;
 import editor.gui.MainWindowInterface;
 import editor.gui.SharedResourceProvider;
@@ -131,10 +132,10 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
     @Override
     public void setEditorEnabledFor(ProjectFile pf, ProjectPage page, MainWindowInterface interf) {
         assert mainInterface == null && origGspn == null && viewerPanel == null;
-        assert page != null && page instanceof GspnPage && page.isPageCorrect();
+        assert page != null && page instanceof ComposableNet && page.isPageCorrect();
         mainInterface = interf;
         
-        origGspn = (GspnPage)page;
+        origGspn = (GspnPage)((ComposableNet)page).getComposedNet();
         GspnPage gspn = (GspnPage)Util.deepCopyRelink(origGspn);
         gspn.preparePageCheck();
         gspn.checkPage(null, null, null, null);

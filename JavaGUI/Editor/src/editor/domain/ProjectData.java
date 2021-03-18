@@ -240,6 +240,20 @@ public class ProjectData {
             page.retrieveLinkedResources(resourceTable);
     }
     
+    public String generateUniquePageName(String prefix) {
+        for (int i=0; ; i++) {
+            String candidate = prefix + (i==0 ? "" : " " + i);
+            boolean found = false;
+            for (int j=0; j<getPageCount(); j++)
+                if (getPageAt(j).getPageName().equals(candidate)) {
+                    found = true;
+                    break;
+                }
+            if (!found)
+                return candidate; // Unique name
+        }        
+    }
+    
     //-------------------------------------------------------------------------
 
     public ProjectResource findResourceByID(UUID id) {

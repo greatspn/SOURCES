@@ -18,6 +18,7 @@ import editor.domain.ProjectResource;
 import editor.domain.ViewProfile;
 import editor.domain.elements.ColorClass;
 import editor.domain.elements.ConstantID;
+import editor.domain.elements.GspnPage;
 import editor.domain.elements.TemplateVariable;
 import editor.domain.grammar.NodeNamespace;
 import editor.domain.grammar.ParserContext;
@@ -84,6 +85,16 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
         return visualizedSubNetNames;
     }
     
+    public static final GspnPage UNSUCCESSFULL_GSPN_TARGET;
+    static {
+        UNSUCCESSFULL_GSPN_TARGET = new GspnPage();
+        UNSUCCESSFULL_GSPN_TARGET.setPageName("ERROR");
+        UNSUCCESSFULL_GSPN_TARGET.addPageError("Could not compose.", null);
+    }
+    protected void setCompositionTarget(NetPage compNet) {
+        this.compNet = compNet;
+    }
+    
     protected void setCompositionSuccessfull(NetPage compNet, String[] visualizedSubNetNames, NetPage[] visualizedSubNets) {
         this.compNet = compNet;
         this.visualizedSubNetNames = visualizedSubNetNames;
@@ -92,8 +103,8 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
     
     // Return true if the composed net is available, even if it contains some error
     // This method is different from isPageCorrect(), which requires the compNet to be correct.
-    public boolean hasComposedNet() {
-        return compNet != null;
+    public boolean areSubnetsVisualizable() {
+        return visualizedSubNets != null && visualizedSubNets.length > 0;
     }
     
     public MultiNetPage() {
@@ -137,6 +148,10 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
     
     // do the net composition
     protected abstract void compose(ParserContext context);
+    
+    // reset composition targets. This allows to set a default compNet 
+    // when composition fails
+    protected abstract void resetCompositionTargets();
 
     //==========================================================================
 //    @Override
@@ -193,7 +208,7 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
 //    }
 
     @Override
-    protected boolean checkPageCorrectness(boolean isNewOrModified, ProjectData proj, 
+    protected final boolean checkPageCorrectness(boolean isNewOrModified, ProjectData proj, 
                                            Set<ProjectPage> changedPages, ProjectPage invokerPage) 
     {
         clearPageErrorsAndWarnings();
@@ -258,18 +273,24 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
         }
         if (netsDescr.isEmpty())
             addPageError("No Petri nets in composition. Add some net.", null);
+        
+        // Check the additional fields of the derived classes
+        checkPageFieldsCorrectness(isNewOrModified, dependenciesAreOk, proj);
 
         if (!dependenciesAreOk) {
             for (NetInstanceDescriptor descr : netsDescr)
                 descr.net = null;
-            setCompositionSuccessfull(null, null, null);
+            resetCompositionTargets();
         }
         else if (compNet==null || doCompose) {
-            setCompositionSuccessfull(null, null, null);
+            resetCompositionTargets();
             if (isPageCorrect()) {
                 System.out.println("REBUILDING "+getPageName());
                 ParserContext rootContext = new ParserContext(this);
                 compose(rootContext);
+                // Since we are rebuilding the composed net, mark this page as changed
+                if (changedPages != null)
+                    changedPages.add(this);
                 
                 if (compNet == null)
                     addPageError("Composition failed.", null); // should not happen
@@ -297,6 +318,8 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
         
         return true;
     }
+    
+    abstract protected void checkPageFieldsCorrectness(boolean isNewOrModified, boolean dependenciesAreOk, ProjectData proj);
     
     
     // Apply parameter substitution to a netpage
@@ -366,23 +389,31 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
     
     @Override
     public boolean pageSupportsRG(RgType rgType) {
-        return false;
+        if (!isPageCorrect())
+            return false;
+        return getComposedNet().pageSupportsRG(rgType);
     }
 
     @Override
     public boolean canBuildRG(RgType rgType) {
-        return false;
+        if (!isPageCorrect())
+            return false;
+        return getComposedNet().canBuildRG(rgType);
     }
 
     @Override
-    public boolean hasRapidMesures() { return false; }
+    public boolean hasRapidMesures() { return true; }
     @Override
     public boolean pageSupportsRapidMeasure(RapidMeasureCmd rmc) {
-        throw new UnsupportedOperationException(""); 
+        if (!isPageCorrect())
+            return false;
+        return getComposedNet().pageSupportsRapidMeasure(rmc);
     }
     @Override
     public boolean canDoRapidMeasure(RapidMeasureCmd rmc) {
-        throw new UnsupportedOperationException(""); 
+        if (!isPageCorrect())
+            return false;
+        return getComposedNet().canDoRapidMeasure(rmc);
     }
     
     
@@ -403,18 +434,20 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
 
     @Override
     public boolean hasPlaceTransInv() {
-        return false;
+        if (!isPageCorrect())
+            return false;
+        return getComposedNet().hasPlaceTransInv();
     }
 
     // ======== Print support ==================================
     @Override
     public boolean canPrint() {
-        return false;
+        return isPageCorrect();
     }
 
     @Override
     public void print(Graphics2D g, PageFormat pf) {
-        throw new UnsupportedOperationException("Not supported yet."); 
+        getComposedNet().print(g, pf);
     }
 
     // ======== Cut/Copy/Paste support =========================
@@ -492,17 +525,24 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
 
     @Override
     public PlayCommand canPlay(ProjectFile project) {
-        return PlayCommand.NO;
+//        return PlayCommand.NO;
+        if (!isPageCorrect())
+            return PlayCommand.NO;
+        return getComposedNet().canPlay(project);
     }
 
     @Override
     public JPopupMenu getPlayDropdownMenu(ProjectFile project, Action action) {
-        return null;
+        if (!isPageCorrect())
+            return null;
+        return getComposedNet().getPlayDropdownMenu(project, action);
     }
 
     @Override
     public AbstractPageEditor getPlayWindow(SharedResourceProvider shActProv, JMenuItem menuItem) {
-        return null;
+        if (!isPageCorrect())
+            return null;
+        return getComposedNet().getPlayWindow(shActProv, menuItem);
     }
     
     

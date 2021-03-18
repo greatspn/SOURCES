@@ -8,6 +8,7 @@ package editor.domain.measures;
 
 import editor.domain.elements.DtaSignature;
 import common.Util;
+import editor.domain.NetPage;
 import editor.domain.elements.DtaPage;
 import editor.domain.elements.GspnPage;
 import editor.domain.Node;
@@ -21,6 +22,7 @@ import editor.domain.elements.TemplateVariable;
 import editor.domain.grammar.VarMultiAssignment;
 import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.VarListMultiAssignment;
+import editor.domain.superposition.ComposableNet;
 import editor.gui.AbstractPageEditor;
 import editor.gui.RapidMeasureCmd;
 import editor.gui.ResourceFactory;
@@ -164,8 +166,11 @@ public class MeasurePage extends ProjectPage implements Serializable {
         // Find the target GSPN page and verify that is ok
         if (targetGspnName != null) {
             ProjectPage p = proj.findPageByName(targetGspnName);
-            if (p != null && p instanceof GspnPage)
-                targetGspn = (GspnPage)p;
+            if (p != null && p instanceof ComposableNet) {
+                NetPage comp = ((ComposableNet)p).getComposedNet();
+                if (comp != null && comp instanceof GspnPage)
+                    targetGspn = (GspnPage)comp;
+            }
 
 //            // Non-existent name - delete it.
 //            if (targetGspn == null) 

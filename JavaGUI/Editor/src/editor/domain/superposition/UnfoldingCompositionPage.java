@@ -8,6 +8,7 @@ package editor.domain.superposition;
 import common.Util;
 import editor.domain.Expr;
 import editor.domain.NetPage;
+import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
 import editor.domain.elements.GspnPage;
 import editor.domain.grammar.ParserContext;
@@ -76,6 +77,17 @@ public class UnfoldingCompositionPage extends MultiNetPage implements Serializab
     @Override
     public boolean requireParamBinding() {
         return true;
+    }
+    
+    @Override
+    protected void checkPageFieldsCorrectness(boolean isNewOrModified, boolean dependenciesAreOk, ProjectData proj) {        
+        // nothing to check...
+    }
+
+    @Override
+    protected void resetCompositionTargets() {
+        setCompositionSuccessfull(null, null, null);
+        setCompositionTarget(UNSUCCESSFULL_GSPN_TARGET);
     }
     
     //======================================================================

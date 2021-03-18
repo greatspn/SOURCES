@@ -7,10 +7,12 @@ package editor.gui;
 
 import common.Util;
 import de.rototor.pdfbox.graphics2d.PdfBoxGraphics2D;
+import editor.domain.DrawHelper;
 import editor.domain.NetPage;
 import editor.domain.io.DtaFormat;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;

@@ -342,7 +342,7 @@ public class Unfolding {
         }
         catch (Exception e) {
             gspn.compileParsedInfo(null);
-            throw new IllegalStateException("Color class definitions are parametric "
+            throw new CouldNotUnfoldException("Color class definitions are parametric "
                     + "and not unfoldable.\nReason: "+e.getMessage());
         }
         try {
