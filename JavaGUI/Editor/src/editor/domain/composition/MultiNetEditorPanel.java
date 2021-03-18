@@ -74,6 +74,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
     private final NetInstanceEditorTable editorTable;
     
     private final SolverParams.IntExpr alignDxCopy, alignDyCopy;
+    private final SolverParams.IntExpr dxMultCopy, dyMultCopy;
 
     /**
      * Creates new form MultiNetEditorPanel
@@ -134,6 +135,27 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
             }
             @Override public void onEditingText() { }
         });
+        
+        dxMultCopy = new SolverParams.IntExpr("1");
+        dyMultCopy = new SolverParams.IntExpr("1");
+        exprField_dxMultUnf.setExprListener(new ExprField.ExprFieldListener() {
+            @Override public void onExprModified() {
+                mainInterface.executeUndoableCommand("change dx multiplier.", (ProjectData proj, ProjectPage elem) -> {
+                    UnfoldingCompositionPage ucp = (UnfoldingCompositionPage)currPage;
+                    ucp.dxMult.setExpr(dxMultCopy.getExpr());
+                });
+            }
+            @Override public void onEditingText() { }
+        });
+        exprField_dyMultUnf.setExprListener(new ExprField.ExprFieldListener() {
+            @Override public void onExprModified() {
+                mainInterface.executeUndoableCommand("change dy multiplier.", (ProjectData proj, ProjectPage elem) -> {
+                    UnfoldingCompositionPage ucp = (UnfoldingCompositionPage)currPage;
+                    ucp.dyMult.setExpr(dyMultCopy.getExpr());
+                });
+            }
+            @Override public void onEditingText() { }
+        });
 
         
         // Add actions to the input map manually
@@ -190,6 +212,8 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         
         exprField_dx.deinitialize();
         exprField_dy.deinitialize();
+        exprField_dxMultUnf.deinitialize();
+        exprField_dyMultUnf.deinitialize();
     }
 
     @Override
@@ -246,6 +270,24 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
             exprField_dx.deinitialize();
             exprField_dy.deinitialize();
             panel_algebra.setVisible(false);
+        }
+        
+        //-----------------------------------------
+        // Unfolding Property Panel
+        if (currPage instanceof UnfoldingCompositionPage) {
+            UnfoldingCompositionPage ucp = (UnfoldingCompositionPage)currPage;
+            
+            dxMultCopy.setExpr(ucp.dxMult.getExpr());
+            exprField_dxMultUnf.initializeFor(dxMultCopy.getEditableValue(), page);
+            dyMultCopy.setExpr(ucp.dyMult.getExpr());
+            exprField_dyMultUnf.initializeFor(dyMultCopy.getEditableValue(), page);
+            
+            panel_unfolding.setVisible(true);
+        }
+        else {
+            exprField_dxMultUnf.deinitialize();
+            exprField_dyMultUnf.deinitialize();
+            panel_unfolding.setVisible(false);
         }
         
         //-----------------------------------------
@@ -565,6 +607,11 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         toggle_custom = new javax.swing.JToggleButton();
         checkBox_useBrokenEdges = new javax.swing.JCheckBox();
         panel_bottom = new javax.swing.JPanel();
+        panel_unfolding = new javax.swing.JPanel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        exprField_dxMultUnf = new editor.domain.measures.ExprField();
+        exprField_dyMultUnf = new editor.domain.measures.ExprField();
         actionAddSubnet = new common.Action();
         scrollPaneCentral = new javax.swing.JScrollPane();
         toolbar = new javax.swing.JToolBar();
@@ -782,6 +829,38 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         gridBagConstraints.weighty = 1.0;
         propertyPanel.add(panel_bottom, gridBagConstraints);
 
+        panel_unfolding.setBorder(javax.swing.BorderFactory.createTitledBorder("Unfolding Options:"));
+        panel_unfolding.setLayout(new java.awt.GridBagLayout());
+
+        jLabel7.setText("dx multiplier:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 9);
+        panel_unfolding.add(jLabel7, gridBagConstraints);
+
+        jLabel8.setText("dy multiplier:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 9);
+        panel_unfolding.add(jLabel8, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        panel_unfolding.add(exprField_dxMultUnf, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        panel_unfolding.add(exprField_dyMultUnf, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        propertyPanel.add(panel_unfolding, gridBagConstraints);
+
         actionAddSubnet.setActionName("Add subnet");
         actionAddSubnet.setTooltipDesc("Add a new subnet in this multi page.");
         actionAddSubnet.addActionListener(new java.awt.event.ActionListener() {
@@ -917,13 +996,17 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
     private common.Action actionAddSubnet;
     private javax.swing.JCheckBox checkBox_useBrokenEdges;
     private editor.domain.measures.ExprField exprField_dx;
+    private editor.domain.measures.ExprField exprField_dxMultUnf;
     private editor.domain.measures.ExprField exprField_dy;
+    private editor.domain.measures.ExprField exprField_dyMultUnf;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel label_operator;
     private javax.swing.JList<JCheckBox> list_TagsP;
     private javax.swing.JList<JCheckBox> list_TagsT;
@@ -934,6 +1017,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
     private javax.swing.JPanel panel_netInstanceEditor;
     private javax.swing.JPanel panel_operator;
     private javax.swing.JPanel panel_toggles;
+    private javax.swing.JPanel panel_unfolding;
     private javax.swing.JPanel propertyPanel;
     private editor.gui.ResourceFactory resourceFactory;
     private javax.swing.JScrollPane scrollPaneCentral;

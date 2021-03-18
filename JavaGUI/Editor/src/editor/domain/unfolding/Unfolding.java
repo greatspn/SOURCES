@@ -56,6 +56,9 @@ public class Unfolding {
     // Attach long name or short color indices
     public boolean useLongUnfoldedNames = true;
     
+    // dx/dy multipliers
+    public double dxMult = 3.0, dyMult = 3.0;
+    
     // Support structure that remembers the original colored place,
     // and its unfolding for a given color domain element.
     public Map<Place, Map<DomainElement, Place>> placeUnfolding = new HashMap<>();
@@ -73,11 +76,11 @@ public class Unfolding {
         unfolded = new GspnPage();
     }
     
-    private static double next_dx(double dx, int comp, int color) {
-        return dx + ((comp&1)==1 ? 3*color : 0);
+    private double next_dx(double dx, int comp, int color) {
+        return dx + ((comp&1)==1 ? dxMult*color : 0);
     }
-    private static double next_dy(double dy, int comp, int color) {
-        return dy + ((comp&1)==0 ? 3*color : 0);
+    private double next_dy(double dy, int comp, int color) {
+        return dy + ((comp&1)==0 ? dyMult*color : 0);
     }
     private String getColorSuffixName(ColorClass domain, int color) {
         if (useLongUnfoldedNames)

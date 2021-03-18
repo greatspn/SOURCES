@@ -949,7 +949,7 @@
     </Component>
     <Component class="common.Action" name="actionNewMultiPage_Algebra">
       <Properties>
-        <Property name="actionName" type="java.lang.String" value="Add a new net composition page."/>
+        <Property name="actionName" type="java.lang.String" value="Add a new Net Composition page."/>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
           <Connection component="resourceFactory" name="getNewAlgebraNet24" type="method"/>
         </Property>
@@ -960,7 +960,7 @@
     </Component>
     <Component class="common.Action" name="actionNewMultiPage_Unfolding">
       <Properties>
-        <Property name="actionName" type="java.lang.String" value="Add a new net unfolding page."/>
+        <Property name="actionName" type="java.lang.String" value="Add a new Net Unfolding page."/>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
           <Connection component="resourceFactory" name="getNewUnfoldingNet24" type="method"/>
         </Property>
@@ -971,7 +971,7 @@
     </Component>
     <Component class="common.Action" name="actionNewMultiPage_multiNetOLD">
       <Properties>
-        <Property name="actionName" type="java.lang.String" value="Add a new multi page."/>
+        <Property name="actionName" type="java.lang.String" value="Add a new Multi net page."/>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
           <Connection component="resourceFactory" name="getNewMultiNet24" type="method"/>
         </Property>

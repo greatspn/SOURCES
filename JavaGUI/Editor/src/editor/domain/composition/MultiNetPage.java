@@ -206,7 +206,7 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
 
     @Override
     protected final boolean checkPageCorrectness(boolean isNewOrModified, ProjectData proj, 
-                                           Set<ProjectPage> changedPages, ProjectPage invokerPage) 
+                                                 Set<ProjectPage> changedPages, ProjectPage invokerPage) 
     {
         clearPageErrorsAndWarnings();
         boolean doCompose = isNewOrModified;
@@ -218,6 +218,7 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
         // Rebuild transient references to nets (by-name lookup)
 //        areReplicaCountParametric = false;
         for (NetInstanceDescriptor descr : netsDescr) {
+            descr.paramRefs = new TreeMap<>();
             if (descr.targetNetName == null)
                 dependenciesAreOk = false; // Possible??
             else {
@@ -248,7 +249,7 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
                             descr.removeMissingParams(pageParams);
 
                             // Copy latex string of template variables
-                            descr.paramRefs = new TreeMap<>();
+//                            descr.paramRefs = new TreeMap<>();
                             for (TemplateVariable tvar : pageParams)
                                 descr.paramRefs.put(tvar.getUniqueName(), tvar);
 
@@ -270,6 +271,8 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
         }
         if (netsDescr.isEmpty())
             addPageError("No Petri nets in composition. Add some net.", null);
+        if (hasFixedNumOfOperators() && getFixedNumOfOperators() != netsDescr.size())
+            addPageError("Wrong number of net operands.", null);
         
         // Check the additional fields of the derived classes
         checkPageFieldsCorrectness(isNewOrModified, dependenciesAreOk, proj);

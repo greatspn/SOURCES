@@ -645,10 +645,10 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         }
         
         if (!Main.isDeveloperMachine()) { // hide multi-net support
-            jMenuItemNewAlgebraPage.setVisible(false);
+//            jMenuItemNewAlgebraPage.setVisible(false);
             jMenuItemNewMultiPageOLD.setVisible(false);
-            jMenuItemNewUnfoldingPage.setVisible(false);
-            jSeparatorMultiPages.setVisible(false);
+//            jMenuItemNewUnfoldingPage.setVisible(false);
+//            jSeparatorMultiPages.setVisible(false);
         }
 
         // First GUI update is executed immediately, without the invalidateGUI()
@@ -2171,7 +2171,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             }
         });
 
-        actionNewMultiPage_Algebra.setActionName("Add a new net composition page.");
+        actionNewMultiPage_Algebra.setActionName("Add a new Net Composition page.");
         actionNewMultiPage_Algebra.setIcon(resourceFactory.getNewAlgebraNet24());
         actionNewMultiPage_Algebra.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2179,7 +2179,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             }
         });
 
-        actionNewMultiPage_Unfolding.setActionName("Add a new net unfolding page.");
+        actionNewMultiPage_Unfolding.setActionName("Add a new Net Unfolding page.");
         actionNewMultiPage_Unfolding.setIcon(resourceFactory.getNewUnfoldingNet24());
         actionNewMultiPage_Unfolding.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2187,7 +2187,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             }
         });
 
-        actionNewMultiPage_multiNetOLD.setActionName("Add a new multi page.");
+        actionNewMultiPage_multiNetOLD.setActionName("Add a new Multi net page.");
         actionNewMultiPage_multiNetOLD.setIcon(resourceFactory.getNewMultiNet24());
         actionNewMultiPage_multiNetOLD.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

@@ -215,6 +215,7 @@ public class AlgebraCompositionPage extends MultiNetPage implements Serializable
                 selTagsP.isEmpty() ? null : selTagsP.toArray(new String[selTagsP.size()]),
                 dx2shift, dy2shift, useBrokenEdges, false);
         a.compose();
+        a.result.setSelectionFlag(false);
         
         String uniqueName = net1.getPageName()+"+"+net2.getPageName();
         a.result.setPageName(uniqueName);

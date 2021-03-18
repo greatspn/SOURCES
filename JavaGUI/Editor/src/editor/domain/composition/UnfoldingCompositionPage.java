@@ -10,11 +10,14 @@ import editor.domain.Expr;
 import editor.domain.NetPage;
 import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
+import editor.domain.Selectable;
 import editor.domain.elements.GspnPage;
 import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.TemplateBinding;
 import editor.domain.io.XmlExchangeDirection;
 import editor.domain.io.XmlExchangeException;
+import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
+import editor.domain.measures.SolverParams;
 import editor.domain.unfolding.CouldNotUnfoldException;
 import editor.domain.unfolding.Unfolding;
 import editor.gui.ResourceFactory;
@@ -28,6 +31,11 @@ import org.w3c.dom.Element;
  * @author elvio
  */
 public class UnfoldingCompositionPage extends MultiNetPage implements Serializable {
+    
+    public final SolverParams.IntExpr dxMult = new SolverParams.IntExpr("3");
+    public final SolverParams.IntExpr dyMult = new SolverParams.IntExpr("3");
+    
+    //======================================================================
 
     @Override
     public String getPageTypeName() {
@@ -81,8 +89,15 @@ public class UnfoldingCompositionPage extends MultiNetPage implements Serializab
     
     @Override
     protected void checkPageFieldsCorrectness(boolean isNewOrModified, boolean dependenciesAreOk, ProjectData proj) {        
-        // nothing to check...
+        // Validate expression ojects
+        ParserContext context = new ParserContext(this);
+        dxMult.checkExprCorrectness(context, this, horizSelectable);
+        dyMult.checkExprCorrectness(context, this, vertSelectable);
+
     }
+
+    private static Selectable horizSelectable = new Selectable.DummyNamedSelectable("Horizontal multiplier");
+    private static Selectable vertSelectable = new Selectable.DummyNamedSelectable("Vertical multiplier");
 
     @Override
     protected void resetCompositionTargets() {
@@ -117,9 +132,13 @@ public class UnfoldingCompositionPage extends MultiNetPage implements Serializab
             if (compNet.isPageCorrect()) {
                 try {
                     final Unfolding u = new Unfolding(compNet);
+                    u.dxMult = Integer.parseInt(dxMult.getExpr());
+                    u.dyMult = Integer.parseInt(dyMult.getExpr()); 
+                    
                     u.unfold();
                     String uniqueName = "Unfolding of "+compNet.getPageName();
                     u.unfolded.setPageName(uniqueName);
+                    u.unfolded.setSelectionFlag(false);
 
                     setCompositionSuccessfull(u.unfolded, 
                             new String[]{uniqueName}, new NetPage[]{u.unfolded});
@@ -152,5 +171,7 @@ public class UnfoldingCompositionPage extends MultiNetPage implements Serializab
 
     @Override
     public void exchangeXML(Element el, XmlExchangeDirection exDir) throws XmlExchangeException {
+        bindXMLAttrib(this, el, exDir, "mult-dx", "dxMult.@Expr", "3");
+        bindXMLAttrib(this, el, exDir, "mult-dy", "dyMult.@Expr", "3");
     }
 }
