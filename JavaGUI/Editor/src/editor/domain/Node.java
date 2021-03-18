@@ -16,8 +16,6 @@ import editor.domain.io.XmlExchangeable;
 import editor.domain.measures.ComputedScalar;
 import editor.domain.play.ActivityState;
 import editor.domain.semiflows.SemiFlows;
-import editor.domain.superposition.GroupClass;
-import editor.domain.superposition.NodeGroup;
 import editor.gui.NoOpException;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
@@ -48,7 +46,7 @@ import org.w3c.dom.Element;
  * @author Elvio
  */
 public abstract class Node extends SelectableObject 
-        implements Serializable, DecorHolder, PlaceableObject, ResourceHolder, XmlExchangeable, NodeGroup
+        implements Serializable, DecorHolder, PlaceableObject, ResourceHolder, XmlExchangeable//, NodeGroup
 {
     // Position
     private Point2D pos = new Point2D.Double();
@@ -130,23 +128,24 @@ public abstract class Node extends SelectableObject
         this.altNameFn = altNameFn;
     }
 
-    public final boolean hasSuperPosTags() { return getGroupClass().hasTagSuperposition(); }
+//    public final boolean hasSuperPosTags() { return getGroupClass().hasTagSuperposition(); }
+    public abstract boolean hasSuperPosTags();
     public abstract Point2D getSuperPosTagsDefaultPos();
     public String getSuperPosTags() { throw new IllegalStateException(); }
     public void setSuperPosTags(String superPosTags) { throw new IllegalStateException(); }
     public LabelDecor getSuperPosTagsDecor() { throw new IllegalStateException(); }
-    @Override
-    public abstract GroupClass getGroupClass();
-
-    @Override public int numSynchNodes() { return 1; }
-    @Override public NodeGroup getSynchNode(int i) { return this; }
-    @Override public int getSynchNodeNetIndex(int i) { return 0; }
+//    @Override
+//    public abstract GroupClass getGroupClass();
+//
+//    @Override public int numSynchNodes() { return 1; }
+//    @Override public NodeGroup getSynchNode(int i) { return this; }
+//    @Override public int getSynchNodeNetIndex(int i) { return 0; }
 
     // Precomputed set of splitted tags
     private transient String[] tagList = null;
-    @Override public int numTags() { rebuiltTagList(); return tagList.length; }
-    @Override public String getTag(int i) { rebuiltTagList(); return tagList[i]; }
-    @Override public boolean hasTag(String tag) { 
+    public int numTags() { rebuiltTagList(); return tagList.length; }
+    public String getTag(int i) { rebuiltTagList(); return tagList[i]; }
+    public boolean hasTag(String tag) { 
         rebuiltTagList();
         for (String s : tagList)
             if (s.equals(tag))

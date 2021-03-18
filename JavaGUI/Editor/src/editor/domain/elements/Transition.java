@@ -36,7 +36,6 @@ import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
 import editor.domain.play.AbstractMarking;
 import editor.domain.play.ActivityState;
 import editor.domain.play.Firable;
-import editor.domain.superposition.GroupClass;
 import editor.domain.values.ListOfBounds;
 import editor.domain.values.RealScalarValue;
 import java.awt.Color;
@@ -701,7 +700,8 @@ public class Transition extends Node implements Serializable, Firable {
     }
     
     @Override public EditableValue getSuperPosTagsLabelEditable() { return superPosTagLabel; }
-    @Override public GroupClass getGroupClass() { return GroupClass.TRANSITION; }
+//    @Override public GroupClass getGroupClass() { return GroupClass.TRANSITION; }
+    @Override public boolean hasSuperPosTags() { return true; }
     @Override public String getSuperPosTags() { return superPosTags; }
     @Override public void setSuperPosTags(String superPosTags) { 
 //        assert isValidTagList(superPosTags);

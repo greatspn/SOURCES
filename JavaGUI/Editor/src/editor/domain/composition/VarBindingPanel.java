@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package editor.domain.superposition;
+package editor.domain.composition;
 
 import common.Util;
 import static common.Util.UIscaleFactor;
@@ -13,7 +13,7 @@ import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
 import editor.domain.elements.TemplateVariable;
 import editor.domain.measures.ExprField;
-import static editor.domain.superposition.NetInstanceDescriptorPanel.LABEL_FOREGROUND_COLOR;
+import static editor.domain.composition.NetInstanceDescriptorPanel.LABEL_FOREGROUND_COLOR;
 import editor.gui.MainWindowInterface;
 
 /**

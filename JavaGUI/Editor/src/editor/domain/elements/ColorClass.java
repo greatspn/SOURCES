@@ -21,7 +21,6 @@ import editor.domain.grammar.ParserContext;
 import editor.domain.io.XmlExchangeDirection;
 import editor.domain.io.XmlExchangeException;
 import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
-import editor.domain.superposition.GroupClass;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Set;
@@ -112,7 +111,8 @@ public class ColorClass extends BaseID implements Serializable, FormulaPayload {
     @Override
     public int getUniqueNameFontStyle() { return STYLE_ITALIC; }
     
-    @Override public GroupClass getGroupClass() { return GroupClass.COLOR_CLASS; }
+//    @Override public GroupClass getGroupClass() { return GroupClass.COLOR_CLASS; }
+    @Override public boolean hasSuperPosTags() { return false; }
     
     
     //=========================================================================

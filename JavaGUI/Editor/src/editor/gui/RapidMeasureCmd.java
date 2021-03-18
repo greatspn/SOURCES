@@ -12,7 +12,7 @@ import editor.domain.measures.FormulaMeasure;
 import editor.domain.measures.GreatSPNSolverParams;
 import editor.domain.measures.MeasurePage;
 import editor.domain.measures.RGMEDD2SolverParams;
-import editor.domain.superposition.ComposableNet;
+import editor.domain.composition.ComposableNet;
 
 /** Common page commands
  *

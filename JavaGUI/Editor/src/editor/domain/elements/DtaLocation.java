@@ -33,7 +33,6 @@ import editor.domain.io.XmlExchangeException;
 import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
 import editor.domain.play.AbstractMarking;
 import editor.domain.play.ActivityState;
-import editor.domain.superposition.GroupClass;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -425,7 +424,8 @@ public class DtaLocation extends Node implements Serializable {
 
     @Override public boolean hasShadow() { return true; }
     
-    @Override public GroupClass getGroupClass() { return GroupClass.LOCATION; }
+//    @Override public GroupClass getGroupClass() { return GroupClass.LOCATION; }
+    @Override public boolean hasSuperPosTags() { return false; }
     @Override public Point2D getSuperPosTagsDefaultPos() { throw new UnsupportedOperationException(); }
 
     public static final Color CURRENT_LOCATION_CLR = new Color(194, 235, 255);

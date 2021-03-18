@@ -131,7 +131,8 @@ public class Algebra {
         if (!attr1.equals(attr2)) {
             String message = comb.getClass().getSimpleName()+
                     " "+comb.getUniqueName()+": could not combine "+what+" of "+
-                    n1.getUniqueName()+" and "+n2.getUniqueName();
+                    n1.getUniqueName()+" (net "+gspn1.getPageName()+
+                    ") and "+n2.getUniqueName()+" (net "+gspn2.getPageName()+")";
             warnings.add(message);
         }
     }

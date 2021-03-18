@@ -22,7 +22,7 @@ import editor.domain.elements.Transition;
 import editor.domain.grammar.ParserContext;
 import editor.domain.semiflows.SemiFlows;
 import editor.domain.semiflows.MartinezSilvaAlgorithm;
-import editor.domain.superposition.ComposableNet;
+import editor.domain.composition.ComposableNet;
 import editor.gui.AbstractPageEditor;
 import editor.gui.MainWindowInterface;
 import editor.gui.SharedResourceProvider;

@@ -19,7 +19,7 @@ import editor.domain.ProjectPage;
 import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.TemplateBinding;
 import editor.domain.grammar.VarListMultiAssignment;
-import editor.domain.superposition.ComposableNet;
+import editor.domain.composition.ComposableNet;
 import editor.gui.AbstractPageEditor;
 import editor.gui.CutCopyPasteEngine;
 import editor.gui.MainWindowInterface;

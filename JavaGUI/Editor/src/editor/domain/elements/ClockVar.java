@@ -10,7 +10,6 @@ import editor.domain.grammar.ExprRewriter;
 import editor.domain.grammar.ParserContext;
 import editor.domain.io.XmlExchangeDirection;
 import editor.domain.io.XmlExchangeException;
-import editor.domain.superposition.GroupClass;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import org.w3c.dom.Element;
@@ -59,9 +58,10 @@ public class ClockVar extends BaseID implements Serializable {
     }
     
     
-    @Override public GroupClass getGroupClass() {
-        return GroupClass.CLOCK;
-    }
+//    @Override public GroupClass getGroupClass() {
+//        return GroupClass.CLOCK;
+//    }
+    @Override public boolean hasSuperPosTags() { return false; }
 
     @Override
     public void rewriteNode(ParserContext context, ExprRewriter rewriter) {

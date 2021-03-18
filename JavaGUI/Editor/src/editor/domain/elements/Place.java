@@ -30,7 +30,6 @@ import editor.domain.io.XmlExchangeDirection;
 import editor.domain.io.XmlExchangeException;
 import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
 import editor.domain.play.ActivityState;
-import editor.domain.superposition.GroupClass;
 import editor.domain.values.IntScalarValue;
 import editor.domain.values.MultiSet;
 import editor.domain.values.RealScalarValue;
@@ -610,7 +609,8 @@ public class Place extends Node implements Serializable, ColorClass.DomainHolder
         return tokenText;
     }
 
-    @Override public GroupClass getGroupClass() { return GroupClass.PLACE; }
+    @Override public boolean hasSuperPosTags() { return true; }
+//    @Override public GroupClass getGroupClass() { return GroupClass.PLACE; }
     @Override public String getSuperPosTags() { return superPosTags; }
     @Override public void setSuperPosTags(String superPosTags) { 
 //        assert isValidTagList(superPosTags);

@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package editor.domain.superposition;
+package editor.domain.composition;
 
 import editor.domain.EditableCell;
 import editor.domain.Expr;

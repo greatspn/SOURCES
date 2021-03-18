@@ -6,7 +6,7 @@ package editor.domain;
 
 import common.Util;
 import editor.domain.measures.FormulaMeasure;
-import editor.domain.superposition.NetInstanceDescriptor;
+import editor.domain.composition.NetInstanceDescriptor;
 import editor.gui.ResourceFactory;
 import java.awt.Color;
 import java.awt.Component;

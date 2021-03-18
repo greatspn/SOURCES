@@ -10,7 +10,7 @@ import editor.Main;
 import editor.domain.measures.AllMeasuresResult;
 import editor.domain.play.ActivityState;
 import editor.domain.semiflows.SemiFlows;
-import editor.domain.superposition.MultiNetPage;
+import editor.domain.composition.MultiNetPage;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Stroke;

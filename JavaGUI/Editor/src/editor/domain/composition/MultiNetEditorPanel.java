@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package editor.domain.superposition;
+package editor.domain.composition;
 
 import common.Action;
 import common.Condition;
@@ -22,7 +22,6 @@ import editor.gui.AbstractPageEditor;
 import editor.gui.CutCopyPasteEngine;
 import editor.gui.MainWindowInterface;
 import editor.gui.SharedResourceProvider;
-import static editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_COLOR;
 import editor.gui.net.NetViewerPanel;
 import java.awt.Color;
 import java.awt.Component;
@@ -525,7 +524,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
 
         @Override
         public Color getNetBackground(String overlayMsg) {
-            return PAGE_BACKGROUND_COLOR;
+            return editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_COLOR;
         }
     }
     

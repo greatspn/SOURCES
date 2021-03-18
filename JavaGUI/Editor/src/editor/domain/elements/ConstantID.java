@@ -20,7 +20,6 @@ import editor.domain.grammar.ParserContext;
 import editor.domain.io.XmlExchangeDirection;
 import editor.domain.io.XmlExchangeException;
 import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
-import editor.domain.superposition.GroupClass;
 import editor.domain.values.EvaluatedFormula;
 import editor.domain.values.UnevaluatedFormula;
 import java.awt.geom.Point2D;
@@ -192,9 +191,10 @@ public class ConstantID extends BaseID implements Serializable, ColorClass.Domai
         return colorDomainExpr.getColorDomainEditable();
     }
     
-    @Override public GroupClass getGroupClass() { 
-        return GroupClass.CONSTANT;
-    }
+//    @Override public GroupClass getGroupClass() { 
+//        return GroupClass.CONSTANT;
+//    }
+    @Override public boolean hasSuperPosTags() { return false; }
     
     public boolean isIntConst() {
         return type == ConstType.INTEGER;

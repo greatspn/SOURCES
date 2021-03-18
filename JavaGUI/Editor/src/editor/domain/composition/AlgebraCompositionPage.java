@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package editor.domain.superposition;
+package editor.domain.composition;
 
 import editor.domain.NetPage;
 import editor.domain.Node;
@@ -185,8 +185,16 @@ public class AlgebraCompositionPage extends MultiNetPage implements Serializable
 //            compNet.preparePageCheck();
 //            compNet.checkPage(null, null, compNet, null);
 //            if (compNet.isPageCorrect()) {
-        GspnPage net1 = (GspnPage)netsDescr.get(0).net.getComposedNet();
-        GspnPage net2 = (GspnPage)netsDescr.get(1).net.getComposedNet();
+        NetPage net1 = netsDescr.get(0).net.getComposedNet();
+        NetPage net2 = netsDescr.get(1).net.getComposedNet();
+        if (!(net1 instanceof GspnPage)) {
+            addPageError(net1.getPageName()+" is not a GSPN page. Cannot compose", null);
+            return;
+        }
+        if (!(net2 instanceof GspnPage)) {
+            addPageError(net2.getPageName()+" is not a GSPN page. Cannot compose", null);
+            return;
+        }
 
         int dx2shift = 0, dy2shift = 0;
         Rectangle2D pageBounds1 = net1.getPageBounds();
@@ -202,7 +210,7 @@ public class AlgebraCompositionPage extends MultiNetPage implements Serializable
                 dy2shift = Integer.parseInt(alignDy.getExpr());
                 break;
         }
-        Algebra a = new Algebra(net1, net2, 
+        Algebra a = new Algebra((GspnPage)net1, (GspnPage)net2, 
                 selTagsT.isEmpty() ? null : selTagsT.toArray(new String[selTagsT.size()]),
                 selTagsP.isEmpty() ? null : selTagsP.toArray(new String[selTagsP.size()]),
                 dx2shift, dy2shift, useBrokenEdges, false);

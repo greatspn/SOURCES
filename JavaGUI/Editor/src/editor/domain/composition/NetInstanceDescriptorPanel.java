@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package editor.domain.superposition;
+package editor.domain.composition;
 
 import editor.domain.Expr;
 import editor.domain.ProjectData;
@@ -90,7 +90,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         // Net selection combo box
         comboBox_model.removeAllItems();
         boolean found = mnPage.canComposeWith(currProject.findPageByName(descr.targetNetName));
-        comboBox_model.setForeground(found ? (Color)UIManager.get("ComboBox.background") : Color.red);
+        comboBox_model.setForeground(found ? (Color)UIManager.get("ComboBox.foreground") : Color.red);
         if (!found) {
             comboBox_model.addItem(descr.targetNetName+" <missing>");
             comboBox_model.setSelectedIndex(0);

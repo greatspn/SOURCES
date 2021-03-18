@@ -13,7 +13,7 @@ import editor.domain.grammar.ExprRewriter;
 import editor.domain.grammar.NodeNamespace;
 import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.TemplateBinding;
-import editor.domain.superposition.ComposableNet;
+import editor.domain.composition.ComposableNet;
 import editor.gui.net.NetEditorPanel;
 import java.awt.Component;
 import java.awt.Graphics2D;

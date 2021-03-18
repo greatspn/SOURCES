@@ -26,7 +26,6 @@ import editor.domain.io.XmlExchangeException;
 import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
 import static editor.domain.io.XmlExchangeUtils.bindXMLContent;
 import editor.domain.play.ActivityState;
-import editor.domain.superposition.GroupClass;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -121,7 +120,8 @@ public class TextBox extends Node implements Serializable {
     
     @Override public double getActivityValue(ActivityState activity) { return 0.0; }
 
-    @Override public GroupClass getGroupClass() { return GroupClass.NON_GROUPABLE; }
+//    @Override public GroupClass getGroupClass() { return GroupClass.NON_GROUPABLE; }
+    @Override public boolean hasSuperPosTags() { return false; }
     @Override public Point2D getSuperPosTagsDefaultPos() { throw new UnsupportedOperationException(""); }
     
 

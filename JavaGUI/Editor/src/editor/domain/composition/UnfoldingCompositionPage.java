@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package editor.domain.superposition;
+package editor.domain.composition;
 
 import common.Util;
 import editor.domain.Expr;

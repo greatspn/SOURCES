@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package editor.domain.superposition;
+package editor.domain.composition;
 
 import common.EmptyIterator;
 import common.Util;
@@ -45,7 +45,7 @@ import javax.swing.Icon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-/** A composition of n subnets, with tag-based P/T synchronization.
+/** Abstract composition of n subnets.
  *
  * @author elvio
  */
@@ -72,6 +72,7 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
     //-------------------------------------------------------------------------
     // The composed net
     private transient NetPage compNet;
+    
     // How the composed net is visualized
     private transient String[] visualizedSubNetNames;
     private transient NetPage[] visualizedSubNets;
@@ -85,6 +86,7 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
         return visualizedSubNetNames;
     }
     
+    // Default failure target for @compNet (for operators generating GSPN)
     public static final GspnPage UNSUCCESSFULL_GSPN_TARGET;
     static {
         UNSUCCESSFULL_GSPN_TARGET = new GspnPage();
@@ -102,7 +104,7 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
     }
     
     // Return true if the composed net is available, even if it contains some error
-    // This method is different from isPageCorrect(), which requires the compNet to be correct.
+    // This method is different from isPageCorrect(), which requires the compNet to be fully correct.
     public boolean areSubnetsVisualizable() {
         return visualizedSubNets != null && visualizedSubNets.length > 0;
     }
@@ -129,7 +131,6 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
     
     public abstract String getOperatorName();
     public abstract Icon getOperatorIcon();
-//    public abstract Icon getPageIcon();
     
     // Is the number of composed nets fixed or variable?
     public abstract boolean hasFixedNumOfOperators();
@@ -202,10 +203,6 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
     }
     
     //==========================================================================
-    
-//    public boolean canComposeWith(ProjectPage page) {
-//        return (page != null) && (page != this) && (page instanceof ComposableNet);
-//    }
 
     @Override
     protected final boolean checkPageCorrectness(boolean isNewOrModified, ProjectData proj, 
@@ -365,12 +362,6 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
     private static final DataFlavor dataFlavour = new DataFlavor(MultiNetPage.class, "MultiNetDef");
     @Override public DataFlavor getDataFlavour() { return dataFlavour; }
 
-//    @Override public Icon getPageIcon() {
-//        return operator.getPageIcon();
-//    }
-//    @Override public String getPageTypeName() {
-//        return "MULTINET";
-//    }
     @Override public boolean hasEditableName() { return true; }
 
     @Override public boolean hasClearMeasureCmd() { return false; }

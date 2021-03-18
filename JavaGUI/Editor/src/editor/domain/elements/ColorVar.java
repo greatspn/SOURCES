@@ -18,7 +18,6 @@ import editor.domain.grammar.ParserContext;
 import editor.domain.io.XmlExchangeDirection;
 import editor.domain.io.XmlExchangeException;
 import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
-import editor.domain.superposition.GroupClass;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import org.w3c.dom.Element;
@@ -105,7 +104,8 @@ public class ColorVar extends BaseID implements Serializable {
         return null;
     }
     
-    @Override public GroupClass getGroupClass() { return GroupClass.COLOR_VAR; }
+//    @Override public GroupClass getGroupClass() { return GroupClass.COLOR_VAR; }
+    @Override public boolean hasSuperPosTags() { return false; }
     
     @Override
     public void exchangeXML(Element el, XmlExchangeDirection exDir) throws XmlExchangeException {

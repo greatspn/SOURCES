@@ -3,14 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package editor.domain.superposition;
+package editor.domain.composition;
 
 import common.Util;
 import editor.domain.Expr;
 import editor.domain.NetPage;
 import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
-import editor.domain.elements.GspnPage;
 import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.TemplateBinding;
 import editor.domain.io.XmlExchangeDirection;

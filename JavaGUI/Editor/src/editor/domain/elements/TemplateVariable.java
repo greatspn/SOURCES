@@ -17,7 +17,6 @@ import editor.domain.grammar.ParserContext;
 import editor.domain.io.XmlExchangeDirection;
 import editor.domain.io.XmlExchangeException;
 import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
-import editor.domain.superposition.GroupClass;
 import editor.domain.values.EvaluatedFormula;
 import editor.domain.values.UnevaluatedFormula;
 import java.awt.geom.Point2D;
@@ -321,17 +320,18 @@ public class TemplateVariable extends BaseID implements Serializable {
 
     public Expr getLastBindingExpr() { return lastBinding; }  
     
-    @Override public GroupClass getGroupClass() { 
-        switch (type) {
-            case INTEGER:
-            case REAL:
-                return GroupClass.CONSTANT;
-                
-            case COLOR_CLASS:
-                return GroupClass.COLOR_CLASS;
-        }
-        return GroupClass.NON_GROUPABLE;
-    }
+//    @Override public GroupClass getGroupClass() { 
+//        switch (type) {
+//            case INTEGER:
+//            case REAL:
+//                return GroupClass.CONSTANT;
+//                
+//            case COLOR_CLASS:
+//                return GroupClass.COLOR_CLASS;
+//        }
+//        return GroupClass.NON_GROUPABLE;
+//    }
+    @Override public boolean hasSuperPosTags() { return false; }
 
     @Override
     public void exchangeXML(Element el, XmlExchangeDirection exDir) throws XmlExchangeException {
