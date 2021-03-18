@@ -13,7 +13,6 @@ import java.awt.Insets;
 import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.UIManager;
 
 /**
  *
@@ -39,7 +38,7 @@ public class FormulaListPanel extends javax.swing.JPanel {
     public FormulaListPanel() {
         initComponents();
         setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY));
-        setBackground(Color.WHITE);
+        setBackground(editor.gui.net.NetViewerPanel.TITLE_GRAY_BKGND);
         jLabel1.setForeground(Color.BLACK);
         jLabel2.setForeground(Color.BLACK);
     }
@@ -181,7 +180,6 @@ public class FormulaListPanel extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
 
-        setBackground(new java.awt.Color(255, 255, 255));
         setLayout(new java.awt.GridBagLayout());
 
         jLabel1.setText("Pos:");

@@ -13,6 +13,7 @@ import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
 import editor.domain.elements.TemplateVariable;
 import editor.domain.measures.ExprField;
+import static editor.domain.superposition.NetInstanceDescriptorPanel.LABEL_FOREGROUND_COLOR;
 import editor.gui.MainWindowInterface;
 
 /**
@@ -48,6 +49,8 @@ public class VarBindingPanel extends javax.swing.JPanel implements ExprField.Exp
         exprCopy = (Expr)Util.deepCopy(descr.instParams.getSingleValueBoundTo(tvar));
         exprField.setExprListener(this);
         exprField.initializeFor(exprCopy.getEditableValue(), mnPage);
+        
+        label_varEq.setForeground(LABEL_FOREGROUND_COLOR);
     }
     
     public void deinitialize() {
@@ -80,13 +83,14 @@ public class VarBindingPanel extends javax.swing.JPanel implements ExprField.Exp
         label_varEq = new javax.swing.JLabel();
         exprField = new editor.domain.measures.ExprField();
 
-        setBackground(new java.awt.Color(255, 255, 255));
+        setOpaque(false);
         setLayout(new java.awt.GridBagLayout());
 
         label_varEq.setText(" = ");
         add(label_varEq, new java.awt.GridBagConstraints());
 
         exprField.setBackground(new java.awt.Color(255, 255, 255));
+        exprField.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 0.1;

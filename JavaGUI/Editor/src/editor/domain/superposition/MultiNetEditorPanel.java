@@ -16,13 +16,13 @@ import editor.domain.PageErrorWarning;
 import editor.domain.ProjectData;
 import editor.domain.ProjectFile;
 import editor.domain.ProjectPage;
-import editor.domain.Selectable;
 import editor.domain.measures.ExprField;
 import editor.domain.measures.SolverParams;
 import editor.gui.AbstractPageEditor;
 import editor.gui.CutCopyPasteEngine;
 import editor.gui.MainWindowInterface;
 import editor.gui.SharedResourceProvider;
+import static editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_COLOR;
 import editor.gui.net.NetViewerPanel;
 import java.awt.Color;
 import java.awt.Component;
@@ -525,7 +525,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
 
         @Override
         public Color getNetBackground(String overlayMsg) {
-            return Color.WHITE;
+            return PAGE_BACKGROUND_COLOR;
         }
     }
     

@@ -9,7 +9,6 @@ package editor.domain.superposition;
 import editor.domain.Expr;
 import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
-import editor.domain.io.XmlExchangeable;
 import editor.domain.measures.ExprField;
 import editor.domain.measures.SolverParams;
 import editor.gui.MainWindowInterface;
@@ -17,6 +16,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Map;
+import javax.swing.UIManager;
 
 /**
  *
@@ -44,7 +44,6 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         numReplicaExprCopy = new SolverParams.IntExpr("1");
         label_Num.setText((numInst+1)+"º");
         exprField_replicas.setExprListener(this);
-        initializing = false;
 
         button_up.setEnabled(numInst != 0);
         label_netName.setVisible(numInst == 0);
@@ -56,8 +55,20 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         comboSize.width = 12 * comboSize.height;
         comboBox_model.setPreferredSize(comboSize);
         comboBox_model.setMinimumSize(comboSize);
-        comboBox_model.setMaximumSize(comboSize);        
+        comboBox_model.setMaximumSize(comboSize); 
+        
+        setBackground(editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_COLOR);
+        exprField_replicas.setOpaque(false);
+        label_binding.setForeground(LABEL_FOREGROUND_COLOR);
+        label_netName.setForeground(LABEL_FOREGROUND_COLOR);
+        label_numReplicas.setForeground(LABEL_FOREGROUND_COLOR);
+        label_Num.setForeground(LABEL_FOREGROUND_COLOR);
+//        exprField_replicas.setBackground(PAGE_BACKGROUND_COLOR);
+        
+        initializing = false;
     }
+    
+    public static final Color LABEL_FOREGROUND_COLOR = new Color(4, 4, 4);
     
     public void initialize(MainWindowInterface mainInterface, ProjectData currProject, 
                            MultiNetPage mnPage) 
@@ -79,7 +90,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         // Net selection combo box
         comboBox_model.removeAllItems();
         boolean found = mnPage.canComposeWith(currProject.findPageByName(descr.targetNetName));
-        comboBox_model.setForeground(found ? Color.BLACK : Color.red);
+        comboBox_model.setForeground(found ? (Color)UIManager.get("ComboBox.background") : Color.red);
         if (!found) {
             comboBox_model.addItem(descr.targetNetName+" <missing>");
             comboBox_model.setSelectedIndex(0);
@@ -167,7 +178,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         button_up = new javax.swing.JButton();
         button_down = new javax.swing.JButton();
         panel_binding = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        label_binding = new javax.swing.JLabel();
         panel_bindVars = new javax.swing.JPanel();
         panel_horizBar = new javax.swing.JPanel();
         label_netName = new javax.swing.JLabel();
@@ -201,8 +212,6 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         add(comboBox_model, gridBagConstraints);
-
-        exprField_replicas.setBackground(new java.awt.Color(255, 255, 255));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -232,15 +241,15 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
         add(button_down, gridBagConstraints);
 
-        panel_binding.setBackground(new java.awt.Color(255, 255, 255));
+        panel_binding.setOpaque(false);
         panel_binding.setLayout(new java.awt.GridBagLayout());
 
-        jLabel1.setText("Bind parameter values:");
+        label_binding.setText("Bind parameter values:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        panel_binding.add(jLabel1, gridBagConstraints);
+        panel_binding.add(label_binding, gridBagConstraints);
 
-        panel_bindVars.setBackground(new java.awt.Color(255, 255, 255));
+        panel_bindVars.setOpaque(false);
         panel_bindVars.setLayout(new javax.swing.BoxLayout(panel_bindVars, javax.swing.BoxLayout.LINE_AXIS));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -373,8 +382,8 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
     private javax.swing.JCheckBox checkBox_selected;
     private javax.swing.JComboBox<String> comboBox_model;
     private editor.domain.measures.ExprField exprField_replicas;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel label_Num;
+    private javax.swing.JLabel label_binding;
     private javax.swing.JLabel label_netName;
     private javax.swing.JLabel label_numReplicas;
     private javax.swing.JPanel panel_bindVars;
