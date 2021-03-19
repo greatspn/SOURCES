@@ -18,6 +18,7 @@ import editor.gui.net.NetEditorPanel;
 import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -211,6 +212,30 @@ public abstract class NetPage extends ProjectPage implements Serializable, Compo
             node.retrieveLinkedResources(resourceTable);
         for (Edge edge : edges)
             edge.retrieveLinkedResources(resourceTable);
+    }
+    
+    // =========== Unique name generation ============
+
+    public String generateUniqueNodeName(boolean useZeroSuffix, String prefix) {
+        for (int i=0; ; i++) {
+            String name;
+            if (i == 0 && !useZeroSuffix)
+                name = prefix;  // Generate N instead of N0
+            else
+                name = prefix + i;
+//            if (i >= 10)
+//                name += "{" + i + "}";
+//            else
+//                name += i;
+            boolean isDup = false;
+            for (Node node : nodes)
+                if (node.getUniqueName().equals(name)) {
+                    isDup = true;
+                    break;
+                }
+            if (!isDup)
+                return name;
+        }
     }
     
     // =========== Test for page content correctness ===========
@@ -443,6 +468,15 @@ public abstract class NetPage extends ProjectPage implements Serializable, Compo
         Rectangle2D bounds = getOrComputeBoundsOfContent();
         return new Rectangle2D.Double(bounds.getX(), bounds.getY(), 
                                       bounds.getWidth(), bounds.getHeight());
+    }
+    
+    public Rectangle2D computeIntegerPageBounds() {
+        Rectangle2D bounds = computePageBounds(0, 0);
+        bounds.setFrame((int)Math.floor(bounds.getX()), 
+                        (int)Math.floor(bounds.getY()),
+                        (int)Math.ceil(bounds.getWidth()),
+                        (int)Math.ceil(bounds.getHeight()));
+        return bounds;
     }
     
     public void selectionEnds() {

@@ -1008,6 +1008,11 @@ public abstract class Node extends SelectableObject
             if (activity > 0) 
                 paintNodeActiveBorder(g, dh, nodeShape, activity, ACTIVE_COLOR);
         }
+        if (dh.multiNet != null) {
+            Color clr = dh.multiNet.colorOfMergedNode(this);
+            if (clr != null)
+                paintNodeActiveBorder(g, dh, nodeShape, 0.2, clr);
+        }
         
         // Highlighted in visualization mode
         if (dh.semiflows != null && dh.semiflows.contains(this)) {
@@ -1031,12 +1036,12 @@ public abstract class Node extends SelectableObject
         }
         
         // Draw the border of the shape
-        Color borderColor;
+        Color borderColor = null;
         if (errorFlag)
             borderColor = getBorderColorError();
-        else if (isGrayed())
+        if (borderColor==null && isGrayed())
             borderColor = getBorderColorGrayed();
-        else
+        if (borderColor==null)
             borderColor = getBorderColor();
         if (borderColor != null) {
             Stroke sk = g.getStroke();

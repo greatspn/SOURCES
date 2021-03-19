@@ -45,28 +45,6 @@ class AddNodeTool extends NetToolBase {
     
     static int lastRotationDegrees = 0;
 
-    private String generateUniqueNodeName(boolean useZeroSuffix, String prefix) {
-        for (int i=0; ; i++) {
-            String name;
-            if (i == 0 && !useZeroSuffix)
-                name = prefix;  // Generate N instead of N0
-            else
-                name = prefix + i;
-//            if (i >= 10)
-//                name += "{" + i + "}";
-//            else
-//                name += i;
-            boolean isDup = false;
-            for (Node node : editor.currPage.nodes)
-                if (node.getUniqueName().equals(name)) {
-                    isDup = true;
-                    break;
-                }
-            if (!isDup)
-                return name;
-        }
-    }
-
     private static final double OUTSIDE_COORD = -100.0;
     private Point2D outsidePoint() { 
         return new Point2D.Double(OUTSIDE_COORD, OUTSIDE_COORD); 
@@ -77,34 +55,34 @@ class AddNodeTool extends NetToolBase {
         switch (tool) {
             case NEW_INT_CONST:
                 newNode = new ConstantID(ConstantID.ConstType.INTEGER, 
-                                         generateUniqueNodeName(false, "N"), "0", "", outsidePoint());
+                                         editor.currPage.generateUniqueNodeName(false, "N"), "0", "", outsidePoint());
                 break;
             case NEW_REAL_CONST:
                 newNode = new ConstantID(ConstantID.ConstType.REAL, 
-                                         generateUniqueNodeName(false, "R"), "0.0", "", outsidePoint());
+                                         editor.currPage.generateUniqueNodeName(false, "R"), "0.0", "", outsidePoint());
                 break;
             case NEW_PLACE:
-                newNode = new Place(generateUniqueNodeName(true, "P"), "", 
+                newNode = new Place(editor.currPage.generateUniqueNodeName(true, "P"), "", 
                                     TokenType.DISCRETE, ""/*color domain*/, ""/*partition*/, outsidePoint());
                 break;
             case NEW_CONT_PLACE:
-                newNode = new Place(generateUniqueNodeName(true, "C"), "", 
+                newNode = new Place(editor.currPage.generateUniqueNodeName(true, "C"), "", 
                                     TokenType.CONTINUOUS, ""/*color domain*/, ""/*partition*/, outsidePoint());
                 break;
             case NEW_EXP_TRN:
-                newNode = new Transition(generateUniqueNodeName(true, "T"), Transition.Type.EXP, 
+                newNode = new Transition(editor.currPage.generateUniqueNodeName(true, "T"), Transition.Type.EXP, 
                                          "1.0", "1", "1.0", "Infinite", "True", 0.0, outsidePoint());
                 break;
             case NEW_IMM_TRN:
-                newNode = new Transition(generateUniqueNodeName(true, "t"), Transition.Type.IMM, 
+                newNode = new Transition(editor.currPage.generateUniqueNodeName(true, "t"), Transition.Type.IMM, 
                                          "1.0", "1", "1.0", "Infinite", "True", 0.0, outsidePoint());
                 break;
             case NEW_GEN_TRN:
-                newNode = new Transition(generateUniqueNodeName(true, "D"), Transition.Type.GEN, 
+                newNode = new Transition(editor.currPage.generateUniqueNodeName(true, "D"), Transition.Type.GEN, 
                                          "I[1.0]", "1", "1.0", "Infinite", "True", 0.0, outsidePoint());
                 break;
             case NEW_CONT_TRN:
-                newNode = new Transition(generateUniqueNodeName(true, "F"), Transition.Type.CONT, 
+                newNode = new Transition(editor.currPage.generateUniqueNodeName(true, "F"), Transition.Type.CONT, 
                                          "1.0", "1", "1.0", "Infinite", "True", 0.0, outsidePoint());
                 break;
             case NEW_DTA_LOC:
@@ -117,31 +95,31 @@ class AddNodeTool extends NetToolBase {
                     ft = DtaLocation.FinalType.ACCEPTING;
                 if (tool == NetEditorPanel.Tool.NEW_DTA_REJECT_LOC)
                     ft = DtaLocation.FinalType.REJECTING;
-                newNode = new DtaLocation(generateUniqueNodeName(true, "l"), 
+                newNode = new DtaLocation(editor.currPage.generateUniqueNodeName(true, "l"), 
                                           isInit, ft, "True", outsidePoint());
                 break;
             case NEW_INT_TEMPLATE:
                 newNode = new TemplateVariable(TemplateVariable.Type.INTEGER, 
-                                               generateUniqueNodeName(false, "n"), "", outsidePoint());
+                                               editor.currPage.generateUniqueNodeName(false, "n"), "", outsidePoint());
                 break;
             case NEW_REAL_TEMPLATE:
                 newNode = new TemplateVariable(TemplateVariable.Type.REAL, 
-                                               generateUniqueNodeName(false, "r"), "", outsidePoint());
+                                               editor.currPage.generateUniqueNodeName(false, "r"), "", outsidePoint());
                 break;
             case NEW_STATEPROP:
                 newNode = new TemplateVariable(TemplateVariable.Type.STATEPROP, 
-                                               generateUniqueNodeName(true, "Phi"), "", outsidePoint());
+                                               editor.currPage.generateUniqueNodeName(true, "Phi"), "", outsidePoint());
                 break;
             case NEW_ACTION:
                 newNode = new TemplateVariable(TemplateVariable.Type.ACTION, 
-                                               generateUniqueNodeName(true, "act"), "", outsidePoint());
+                                               editor.currPage.generateUniqueNodeName(true, "act"), "", outsidePoint());
                 break;
             case NEW_COLOR_CLASS_TEMPLATE:
                 newNode = new TemplateVariable(TemplateVariable.Type.COLOR_CLASS, 
-                                               generateUniqueNodeName(true, "cl"), "", outsidePoint());
+                                               editor.currPage.generateUniqueNodeName(true, "cl"), "", outsidePoint());
                 break;
             case NEW_COLOR_CLASS:
-                newNode = new ColorClass(generateUniqueNodeName(true, "C"), outsidePoint(), "c{1..3}");
+                newNode = new ColorClass(editor.currPage.generateUniqueNodeName(true, "C"), outsidePoint(), "c{1..3}");
                 break;
             case NEW_COLOR_VAR:
                 String colClass = "color";
@@ -150,14 +128,14 @@ class AddNodeTool extends NetToolBase {
                         colClass = node.getUniqueName();
                         break;
                     }
-                newNode = new ColorVar(generateUniqueNodeName(true, "v"), outsidePoint(), colClass);
+                newNode = new ColorVar(editor.currPage.generateUniqueNodeName(true, "v"), outsidePoint(), colClass);
                 break;
             case NEW_CLOCKVAR:
-                newNode = new ClockVar(generateUniqueNodeName(false, "x"), outsidePoint());
+                newNode = new ClockVar(editor.currPage.generateUniqueNodeName(false, "x"), outsidePoint());
                 break;
             case NEW_TEXT_BOX_NODE:
                 newNode = new TextBox("(Click to insert text)", outsidePoint(), 
-                                      generateUniqueNodeName(true, "__textBox"));
+                                      editor.currPage.generateUniqueNodeName(true, "__textBox"));
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported tool");

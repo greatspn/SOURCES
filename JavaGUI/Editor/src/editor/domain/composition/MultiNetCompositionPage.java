@@ -8,13 +8,22 @@ package editor.domain.composition;
 import common.Util;
 import editor.domain.Expr;
 import editor.domain.NetPage;
+import editor.domain.Node;
 import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
+import editor.domain.elements.GspnPage;
+import editor.domain.elements.Place;
+import editor.domain.elements.TextBox;
+import editor.domain.elements.Transition;
 import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.TemplateBinding;
 import editor.domain.io.XmlExchangeDirection;
 import editor.domain.io.XmlExchangeException;
+import editor.domain.unfolding.Algebra;
 import editor.gui.ResourceFactory;
+import java.awt.Color;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -97,6 +106,39 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
     private transient ArrayList<NetPage> flattenedSubNets;
     private transient ArrayList<String> flattenedSubNetNames;
     
+    private transient Set<String> placeNames, mergedPlaceNames;
+    private transient Set<String> transNames, mergedTransNames;
+    
+    private void updateMergeNames(NetPage net) {
+        for (Node node : net.nodes) {
+            if (node instanceof Place) {
+                if (!placeNames.contains(node.getUniqueName()))
+                    placeNames.add(node.getUniqueName());
+                else 
+                    mergedPlaceNames.add(node.getUniqueName());
+            }
+            else if (node instanceof Transition) {
+                if (!transNames.contains(node.getUniqueName()))
+                    transNames.add(node.getUniqueName());
+                else 
+                    mergedTransNames.add(node.getUniqueName());
+            }
+        }
+    }
+    
+    public static final Color MERGED_PLACE_COLOR = new Color(62, 0, 148);
+    public static final Color MERGED_TRANS_COLOR = new Color(107, 0, 89);
+    
+    @Override
+    public Color colorOfMergedNode(Node node) {
+        if (node instanceof Place && mergedPlaceNames!=null && mergedPlaceNames.contains(node.getUniqueName()))
+            return MERGED_PLACE_COLOR;
+        else if (node instanceof Transition && mergedTransNames!=null && mergedTransNames.contains(node.getUniqueName()))
+            return MERGED_TRANS_COLOR;
+        else 
+            return null;
+    }
+    
 //    private transient MultiNetPage mnPage;
 
     // do the net composition
@@ -129,17 +171,127 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
         // Clear composition data
 //        compData = null;
 
+        placeNames = new HashSet<>();
+        mergedPlaceNames = new HashSet<>();
+        transNames = new HashSet<>();
+        mergedTransNames = new HashSet<>();
+
         for (NetPage subnet : flattenedSubNets) {
             subnet.preparePageCheck();
             subnet.checkPage(null, null, subnet, null);
         }
+        
+        for (int i=0; i<netsDescr.size(); i++) {
+            ComposableNet net = netsDescr.get(i).net;
+            String name = netsDescr.get(i).targetNetName;
+            if (net == null) {
+                addPageError(name+" is missing. Cannot compose", null);
+            }
+            else if (net.getComposedNet() == null) {
+                addPageError(name+" is not a valid GSPN page. Cannot compose", null);
+            }
+            else if (!(net.getComposedNet() instanceof GspnPage)) {
+                addPageError(name+" is not a GSPN page. Cannot compose", null);
+                return;
+            }
+        }
+        
+        NetPage composedNet = UNSUCCESSFULL_GSPN_TARGET;
+        final int moveDx = 1, moveDy = 2;
+        final int textBoxExtraWidth = 2, textBoxExtraHeight = 3;
+        if (flattenedSubNets.size() > 0 && isPageCorrect()) {
+            composedNet = (NetPage)Util.deepCopy(flattenedSubNets.get(0));
+            composedNet.preparePageCheck();
+            composedNet.checkPage(null, null, composedNet, null);
+            composedNet.setPageName(flattenedSubNetNames.get(0));
+            updateMergeNames(composedNet);
+            Rectangle2D composedPageBounds = composedNet.computeIntegerPageBounds();
+            System.out.println("composedPageBounds="+composedPageBounds+"\n");
+            // Wrap the composedNet with the TextBox
+            
+            TextBox textBox = new TextBox(flattenedSubNetNames.get(0), 
+                    new Point2D.Double(1+moveDx-1, 0+moveDy-1), 
+                    composedNet.generateUniqueNodeName(true, "__textBox"));
+            textBox.setWidth(composedPageBounds.getWidth()+textBoxExtraWidth);
+            textBox.setHeight(composedPageBounds.getHeight()+textBoxExtraHeight);
+            textBox.getLockEditable().setValue(null, null, Boolean.TRUE);
+            textBox.getBorderColorEditable().setValue(null, null, new Color(0, 64, 255));
+            composedPageBounds.setRect(1, 0, 
+                    composedPageBounds.getWidth() + textBoxExtraWidth, 
+                    composedPageBounds.getHeight() + textBoxExtraHeight);
+            for (Node node : composedNet.nodes)
+                node.setNodePosition(node.getX() + moveDx - composedPageBounds.getX() + 1, 
+                                     node.getY() + moveDy - composedPageBounds.getY());
+            composedNet.nodes.add(textBox);
+            System.out.println("composedPageBounds="+composedPageBounds+"\n");
+            
+//            composedPageBounds = composedNet.getPageBounds();
+//            System.out.println("composedPageBounds="+composedPageBounds+"\n");
+            
+            if (!composedNet.isPageCorrect()) {
+                addPageError("Could not prepare "+composedNet.getPageName()+" for the composition.", null);
+            }
+            else {            
+                for (int index=1; index<flattenedSubNets.size() && isPageCorrect(); index++) {
+                    NetPage ithNet = flattenedSubNets.get(index);
+                    Rectangle2D ithPageBounds = ithNet.computeIntegerPageBounds();
+                    
+                    final int stepX = 4;
+                    int dx2shift = (int)composedPageBounds.getWidth() + stepX + moveDx - (int)ithPageBounds.getX();
+                    int dy2shift = moveDy - (int)ithPageBounds.getY();//(int)pageBounds1.getHeight() + 5;
+                    System.out.println("ithPageBounds="+ithPageBounds);
+                    System.out.println("dx2shift="+dx2shift+" dy2shift="+dy2shift);
+                    boolean useBrokenEdges = true;
+                    Algebra a = new Algebra((GspnPage)composedNet, (GspnPage)ithNet, 
+                            null, null, dx2shift, dy2shift, useBrokenEdges, false);
+                    a.mergeByName = true;
+                    a.compose();
+                    a.result.setSelectionFlag(false);
+                    
+                    String uniqueName = composedNet.getPageName()+"+"+flattenedSubNetNames.get(index);
+                    a.result.setPageName(uniqueName);
+                    for (String w : a.warnings) {
+                        addPageWarning("Composition with "+ithNet.getPageName()+": "+w, null);
+                    }
+                    composedNet = a.result;
+                    composedNet.preparePageCheck();
+                    composedNet.checkPage(null, null, composedNet, null);
+                    if (!composedNet.isPageCorrect()) {
+                        addPageError("Could not prepare "+composedNet.getPageName()+" for the composition.", null);
+                    }
+                    updateMergeNames(ithNet);
+                    
+                    // Wrap the ithNet in the composedNet with a new TextBox
+                    textBox = new TextBox(flattenedSubNetNames.get(index), 
+                            new Point2D.Double(composedPageBounds.getWidth() + stepX + moveDx - 1, 1), 
+                            composedNet.generateUniqueNodeName(true, "__textBox"));
+                    textBox.setWidth(ithPageBounds.getWidth()+2);
+                    textBox.setHeight(ithPageBounds.getHeight()+3);
+                    textBox.getLockEditable().setValue(null, null, Boolean.TRUE);
+                    textBox.getBorderColorEditable().setValue(null, null, new Color(0, 64, 255));
+                    composedNet.nodes.add(textBox);
+                    
+                    // finally, update the composed Net bounds
+                    composedPageBounds = composedNet.computeIntegerPageBounds();
+                    System.out.println("composedPageBounds="+composedPageBounds+"\n");
+                }
+            }
+        }
+        
+        if (!isPageCorrect())
+            composedNet = UNSUCCESSFULL_GSPN_TARGET;
 
-//        GspnPage gspn = new GspnPage();
-//        gspn.setPageName("comp");
-        setCompositionSuccessfull(null,//gspn, 
+        setCompositionSuccessfull(composedNet, 
                 flattenedSubNetNames.toArray(new String[flattenedSubNetNames.size()]), 
                 flattenedSubNets.toArray(new NetPage[flattenedSubNets.size()]));
-        addPageWarning("Composition is unimplemented.", null);
+
+//
+////        GspnPage gspn = new GspnPage();
+////        gspn.setPageName("comp");
+//        setCompositionSuccessfull(null,//gspn, 
+//                flattenedSubNetNames.toArray(new String[flattenedSubNetNames.size()]), 
+//                flattenedSubNets.toArray(new NetPage[flattenedSubNets.size()]));
+//        addPageWarning("Composition is unimplemented.", null);
     }
     
     @Override

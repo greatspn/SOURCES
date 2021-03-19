@@ -27,6 +27,7 @@ import editor.domain.io.XmlExchangeable;
 import editor.gui.AbstractPageEditor;
 import editor.gui.RapidMeasureCmd;
 import editor.gui.SharedResourceProvider;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -153,6 +154,9 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
     // reset composition targets. This allows to set a default compNet 
     // when composition fails
     protected abstract void resetCompositionTargets();
+    
+    // color of merged nodes for visualization
+    public abstract Color colorOfMergedNode(Node node);
 
     //==========================================================================
 //    @Override

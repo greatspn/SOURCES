@@ -21,6 +21,7 @@ import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
 import editor.domain.measures.SolverParams;
 import editor.domain.unfolding.Algebra;
 import editor.gui.ResourceFactory;
+import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -87,6 +88,11 @@ public class AlgebraCompositionPage extends MultiNetPage implements Serializable
     protected void resetCompositionTargets() {
         setCompositionSuccessfull(null, null, null);
         setCompositionTarget(UNSUCCESSFULL_GSPN_TARGET);
+    }
+    
+    @Override
+    public Color colorOfMergedNode(Node node) {
+        return null;
     }
     
     //======================================================================

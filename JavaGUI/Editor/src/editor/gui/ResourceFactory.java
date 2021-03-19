@@ -408,6 +408,10 @@ public class ResourceFactory {
     public ImageIcon getMultiBindings32() {
         return loadIcon32("multi_bindings");
     }
+    
+    public ImageIcon getMultiNetAdd24() {
+        return loadIcon24("multinet_add");
+    }
 
     public ImageIcon getNewDta24() {
         return loadIcon24("new_dta");

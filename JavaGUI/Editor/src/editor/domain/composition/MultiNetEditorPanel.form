@@ -434,6 +434,9 @@
     <Component class="common.Action" name="actionAddSubnet">
       <Properties>
         <Property name="actionName" type="java.lang.String" value="Add subnet"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="multiNetAdd24" type="property"/>
+        </Property>
         <Property name="tooltipDesc" type="java.lang.String" value="Add a new subnet in this multi page."/>
       </Properties>
       <Events>
@@ -483,8 +486,7 @@
               <ComponentRef name="actionAddSubnet"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Add subnet."/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
+            <Property name="horizontalTextPosition" type="int" value="11"/>
           </Properties>
         </Component>
       </SubComponents>

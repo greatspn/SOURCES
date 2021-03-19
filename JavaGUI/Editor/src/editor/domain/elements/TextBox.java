@@ -52,7 +52,7 @@ public class TextBox extends Node implements Serializable {
     
     // The image shown aside the text (the effective image data is a project resource)
     ProjectResourceRef<ProjectImageResource> image = new ProjectResourceRef<>();
-    private double imageScale = 1.0;
+    private static final double imageScale = 1.0;
     
     // Various formatting/styling flags and parameters
     private TextSize textSize = TextSize.NORMAL;
@@ -61,7 +61,7 @@ public class TextBox extends Node implements Serializable {
     private Color textClr = Color.BLACK;
     private double width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT, rotation = 0.0;
     private ShapeType shapeType = ShapeType.ROUND_RECTANGLE;
-    private double roundRectXY = 1.0;
+    private static final double roundRectXY = 1.0;
     private boolean shadow = true;
     private boolean boldText = true;
     private boolean italicText = false;

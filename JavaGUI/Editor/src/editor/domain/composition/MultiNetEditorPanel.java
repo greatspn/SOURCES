@@ -975,6 +975,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         propertyPanel.add(panel_unfolding, gridBagConstraints);
 
         actionAddSubnet.setActionName("Add subnet");
+        actionAddSubnet.setIcon(resourceFactory.getMultiNetAdd24());
         actionAddSubnet.setTooltipDesc("Add a new subnet in this multi page.");
         actionAddSubnet.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -996,8 +997,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
 
         toolbarButton_addSubnet.setAction(actionAddSubnet);
         toolbarButton_addSubnet.setText("Add subnet.");
-        toolbarButton_addSubnet.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        toolbarButton_addSubnet.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolbarButton_addSubnet.setHorizontalTextPosition(javax.swing.SwingConstants.TRAILING);
         toolbar.add(toolbarButton_addSubnet);
 
         gridBagConstraints = new java.awt.GridBagConstraints();

@@ -57,6 +57,8 @@ public class Algebra {
 
     // Output: combination messages & warnings
     public final ArrayList<String> warnings;
+    
+    public boolean mergeByName = false;
 
     //=========================================================================
     // Fields thah help in the composition of the result net
@@ -93,6 +95,9 @@ public class Algebra {
     // least a common tag in the restricted list, which means that the
     // two nodes will be composed in the @result net.
     private boolean nodesShareRestrictedTag(Node node1, Node node2, String[] restList) {
+        if (mergeByName)
+            return node1.getUniqueName().equals(node2.getUniqueName());
+        
         if (restList == null)
             return false;
         for (int n1=0; n1<node1.numTags(); n1++) {
@@ -119,7 +124,7 @@ public class Algebra {
                 }
             }
             if (!found)
-                tags += "|" + node2.getTag(n2);
+                tags += (tags.isEmpty() ? "" : "|") + node2.getTag(n2);
         }
         //System.out.println("mergeTags "+node1.getSuperPosTags()+" "+node2.getSuperPosTags()+" -> "+tags);
         return tags;
@@ -193,6 +198,14 @@ public class Algebra {
         n.setUniqueName(generateTotallyUniqueCombinedName(n.getUniqueName()));
         uniqueNamesResult.add(n.getUniqueName());
         return n;
+    }
+    
+    // policy for generating the merged name from the two operand names
+    private String getMergedName(String name1, String name2) {
+        if (mergeByName)
+            return name1;
+        else
+            return name1+"_"+name2;
     }
 
     //=========================================================================
@@ -420,7 +433,7 @@ public class Algebra {
                                 crossList2 = new LinkedList<>();
 
                             Place newPlace = (Place)Util.deepCopy(p1);
-                            newPlace.setUniqueName(p1.getUniqueName()+"_"+p2.getUniqueName());
+                            newPlace.setUniqueName(getMergedName(p1.getUniqueName(), p2.getUniqueName()));
                             makeNodeNameUnique(newPlace);
                             newPlace.setSuperPosTags(mergeTags(node1, node2));
                             newPlace.setX(newPlace.getX() + j*3);
@@ -509,7 +522,7 @@ public class Algebra {
                                 crossList2 = new LinkedList<>();
 
                             Transition newTransition = (Transition)Util.deepCopy(t1);
-                            newTransition.setUniqueName(t1.getUniqueName()+"_"+t2.getUniqueName());
+                            newTransition.setUniqueName(getMergedName(t1.getUniqueName(), t2.getUniqueName()));
                             makeNodeNameUnique(newTransition);
                             newTransition.setSuperPosTags(mergeTags(node1, node2));
                             newTransition.setX(newTransition.getX() + j*3);

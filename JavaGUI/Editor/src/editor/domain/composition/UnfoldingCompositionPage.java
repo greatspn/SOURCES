@@ -8,6 +8,7 @@ package editor.domain.composition;
 import common.Util;
 import editor.domain.Expr;
 import editor.domain.NetPage;
+import editor.domain.Node;
 import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
 import editor.domain.Selectable;
@@ -20,6 +21,7 @@ import editor.domain.measures.SolverParams;
 import editor.domain.unfolding.CouldNotUnfoldException;
 import editor.domain.unfolding.Unfolding;
 import editor.gui.ResourceFactory;
+import java.awt.Color;
 import java.io.Serializable;
 import java.util.Map;
 import javax.swing.Icon;
@@ -130,6 +132,11 @@ public class UnfoldingCompositionPage extends MultiNetPage implements Serializab
         setCompositionTarget(UNSUCCESSFULL_GSPN_TARGET);
     }
     
+    @Override
+    public Color colorOfMergedNode(Node node) {
+        return null;
+    }
+    
     //======================================================================
     // do the net composition
     @Override
@@ -183,7 +190,7 @@ public class UnfoldingCompositionPage extends MultiNetPage implements Serializab
                 }
             }
             else {
-                addPageError("Could not pepare "+compNet.getPageName()+" for the unfolding.", null);
+                addPageError("Could not prepare "+compNet.getPageName()+" for the unfolding.", null);
             }
         }
 //                netNames.toArray(new String[netNames.size()]), 

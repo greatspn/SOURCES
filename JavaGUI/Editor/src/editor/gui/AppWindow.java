@@ -644,12 +644,12 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             });
         }
         
-        if (!Main.isDeveloperMachine()) { // hide multi-net support
-//            jMenuItemNewAlgebraPage.setVisible(false);
-            jMenuItemNewMultiPageOLD.setVisible(false);
-//            jMenuItemNewUnfoldingPage.setVisible(false);
-//            jSeparatorMultiPages.setVisible(false);
-        }
+//        if (!Main.isDeveloperMachine()) { // hide multi-net support
+////            jMenuItemNewAlgebraPage.setVisible(false);
+//            jMenuItemNewMultiPageOLD.setVisible(false);
+////            jMenuItemNewUnfoldingPage.setVisible(false);
+////            jSeparatorMultiPages.setVisible(false);
+//        }
 
         // First GUI update is executed immediately, without the invalidateGUI()
         updateGUI();
@@ -3182,7 +3182,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     }//GEN-LAST:event_actionStartUnfoldingActionPerformed
 
     private void actionNewMultiPage_AlgebraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewMultiPage_AlgebraActionPerformed
-        executeUndoableCommand("new Multi net page.", (ProjectData proj, ProjectPage elem) -> {
+        executeUndoableCommand("new net composition page.", (ProjectData proj, ProjectPage elem) -> {
             MultiNetPage newPage = new AlgebraCompositionPage();
             newPage.viewProfile.setProfileForNetType(NewProjectDialog.PetriNetType.FullPN);
             newPage.setPageName(activeProject.generateUniquePageName("Composition"));
@@ -3363,7 +3363,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     }//GEN-LAST:event_actionStartCTMCActionPerformed
 
     private void actionNewMultiPage_UnfoldingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewMultiPage_UnfoldingActionPerformed
-        executeUndoableCommand("new Multi net page.", (ProjectData proj, ProjectPage elem) -> {
+        executeUndoableCommand("new unfolding page.", (ProjectData proj, ProjectPage elem) -> {
             MultiNetPage newPage = new UnfoldingCompositionPage();
             newPage.viewProfile.setProfileForNetType(NewProjectDialog.PetriNetType.FullPN);
             newPage.setPageName(activeProject.generateUniquePageName("Unfolding"));
@@ -3375,7 +3375,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     }//GEN-LAST:event_actionNewMultiPage_UnfoldingActionPerformed
 
     private void actionNewMultiPage_multiNetOLDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewMultiPage_multiNetOLDActionPerformed
-        executeUndoableCommand("new Multi net page.", (ProjectData proj, ProjectPage elem) -> {
+        executeUndoableCommand("new net composition page.", (ProjectData proj, ProjectPage elem) -> {
             MultiNetPage newPage = new MultiNetCompositionPage();
             newPage.viewProfile.setProfileForNetType(NewProjectDialog.PetriNetType.FullPN);
             newPage.setPageName(activeProject.generateUniquePageName("MultiNet"));
