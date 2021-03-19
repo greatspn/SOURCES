@@ -16,7 +16,6 @@ import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.TemplateBinding;
 import editor.domain.io.XmlExchangeDirection;
 import editor.domain.io.XmlExchangeException;
-import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
 import editor.domain.measures.SolverParams;
 import editor.domain.unfolding.CouldNotUnfoldException;
 import editor.domain.unfolding.Unfolding;
@@ -24,7 +23,9 @@ import editor.gui.ResourceFactory;
 import java.io.Serializable;
 import java.util.Map;
 import javax.swing.Icon;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  *
@@ -32,9 +33,30 @@ import org.w3c.dom.Element;
  */
 public class UnfoldingCompositionPage extends MultiNetPage implements Serializable {
     
-    public final SolverParams.IntExpr dxMult = new SolverParams.IntExpr("3");
-    public final SolverParams.IntExpr dyMult = new SolverParams.IntExpr("3");
+    public final SolverParams.IntExpr[] dxMult;
+    public final SolverParams.IntExpr[] dyMult;
     
+    //======================================================================
+    
+    public static final int NUM_OFFSET_ROWS = 4;
+    
+    public UnfoldingCompositionPage() {
+        dxMult = new SolverParams.IntExpr[NUM_OFFSET_ROWS];
+        dyMult = new SolverParams.IntExpr[NUM_OFFSET_ROWS];
+        for (int i=0; i<NUM_OFFSET_ROWS; i++) {
+            dxMult[i] = new SolverParams.IntExpr();
+            dyMult[i] = new SolverParams.IntExpr();
+        }
+        resetOffsetMatrix();
+    }
+    
+    public void resetOffsetMatrix() {
+        for (int i=0; i<NUM_OFFSET_ROWS; i++) {
+            dxMult[i].setExpr(i%2==0 ? "0" : "3");
+            dyMult[i].setExpr(i%2==0 ? "3" : "0");
+        }
+    }
+
     //======================================================================
 
     @Override
@@ -91,8 +113,11 @@ public class UnfoldingCompositionPage extends MultiNetPage implements Serializab
     protected void checkPageFieldsCorrectness(boolean isNewOrModified, boolean dependenciesAreOk, ProjectData proj) {        
         // Validate expression ojects
         ParserContext context = new ParserContext(this);
-        dxMult.checkExprCorrectness(context, this, horizSelectable);
-        dyMult.checkExprCorrectness(context, this, vertSelectable);
+        
+        for (SolverParams.IntExpr expr : dxMult)
+            expr.checkExprCorrectness(context, this, horizSelectable);
+        for (SolverParams.IntExpr expr : dyMult)
+            expr.checkExprCorrectness(context, this, vertSelectable);
 
     }
 
@@ -132,8 +157,18 @@ public class UnfoldingCompositionPage extends MultiNetPage implements Serializab
             if (compNet.isPageCorrect()) {
                 try {
                     final Unfolding u = new Unfolding(compNet);
-                    u.dxMult = Integer.parseInt(dxMult.getExpr());
-                    u.dyMult = Integer.parseInt(dyMult.getExpr()); 
+                    double[][] gfxMultipliers = { 
+                        { Integer.parseInt(dxMult[0].getExpr()), Integer.parseInt(dyMult[0].getExpr()) }, 
+                        { Integer.parseInt(dxMult[1].getExpr()), Integer.parseInt(dyMult[1].getExpr()) },
+                        { Integer.parseInt(dxMult[2].getExpr()), Integer.parseInt(dyMult[2].getExpr()) },
+                        { Integer.parseInt(dxMult[3].getExpr()), Integer.parseInt(dyMult[3].getExpr()) }
+                    };
+                    u.gfxMultipliers = gfxMultipliers;
+//                    for (int r=0; r<gfxMultipliers.length; r++) {
+//                        for (int c=0; c<gfxMultipliers[r].length; c++)
+//                            System.out.print(gfxMultipliers[r][c]+" ");
+//                        System.out.println("");
+//                    }
                     
                     u.unfold();
                     String uniqueName = "Unfolding of "+compNet.getPageName();
@@ -171,7 +206,43 @@ public class UnfoldingCompositionPage extends MultiNetPage implements Serializab
 
     @Override
     public void exchangeXML(Element el, XmlExchangeDirection exDir) throws XmlExchangeException {
-        bindXMLAttrib(this, el, exDir, "mult-dx", "dxMult.@Expr", "3");
-        bindXMLAttrib(this, el, exDir, "mult-dy", "dyMult.@Expr", "3");
+        Document doc = exDir.getDocument();
+        if (exDir.FieldsToXml()) {
+            Element offsetListElem = doc.createElement("offset-list");
+            el.appendChild(offsetListElem);
+            for (int i=0; i<NUM_OFFSET_ROWS; i++) {
+                Element offsetElem = doc.createElement("offset");
+                offsetElem.setAttribute("dx", dxMult[i].getExpr());
+                offsetElem.setAttribute("dy", dyMult[i].getExpr());
+                offsetListElem.appendChild(offsetElem);
+            }
+        }
+        else {
+            NodeList offsetListElemL = el.getElementsByTagName("offset-list");
+            if (offsetListElemL.getLength() > 0) {
+                org.w3c.dom.Node offsetListNode = offsetListElemL.item(0);
+                if (offsetListNode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                    Element offsetListElem = (Element)offsetListNode;
+
+                    NodeList tagElemList = offsetListElem.getElementsByTagName("offset");
+                    int j = 0;
+                    for (int i=0; i<tagElemList.getLength() && j<NUM_OFFSET_ROWS; i++) {
+                        org.w3c.dom.Node tagElemNode = tagElemList.item(i);
+                        if (tagElemNode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                            Element tagElem = (Element)tagElemNode;
+                            String tag = tagElem.getAttribute("dx");
+                            if (tag != null) {
+                                dxMult[j].setExpr(tag);
+                            }
+                            tag = tagElem.getAttribute("dy");
+                            if (tag != null) {
+                                dyMult[j].setExpr(tag);
+                            }
+                            j++;
+                        }
+                    }
+                }
+            }
+        }
     }
 }

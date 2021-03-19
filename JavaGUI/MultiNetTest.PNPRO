@@ -54,6 +54,12 @@
     </edges>
   </gspn>
   <unfolding name="Unfolding">
+    <offset-list>
+      <offset dx="0" dy="3"/>
+      <offset dx="3" dy="0"/>
+      <offset dx="0" dy="3"/>
+      <offset dx="3" dy="0"/>
+    </offset-list>
     <subnet netname="CPN2">
       <assignments value="5" varname="m"/>
       <assignments value="4" varname="n"/>
@@ -158,7 +164,13 @@
       </formula>
     </formulas>
   </measures>
-  <unfolding mult-dx="2" mult-dy="4" name="Unfolding 1">
+  <unfolding name="Unfolding 1">
+    <offset-list>
+      <offset dx="0" dy="3"/>
+      <offset dx="3" dy="0"/>
+      <offset dx="0" dy="3"/>
+      <offset dx="3" dy="0"/>
+    </offset-list>
     <subnet netname="CPN1">
       <assignments value="4" varname="n"/>
     </subnet>
@@ -215,7 +227,13 @@
       </arc>
     </edges>
   </gspn>
-  <unfolding mult-dx="10" mult-dy="24" name="Unfolding 2">
+  <unfolding name="Unfolding 2">
+    <offset-list>
+      <offset dx="25" dy="0"/>
+      <offset dx="5" dy="0"/>
+      <offset dx="0" dy="3"/>
+      <offset dx="3" dy="0"/>
+    </offset-list>
     <subnet netname="Philosophers">
       <assignments value="4" varname="N"/>
     </subnet>

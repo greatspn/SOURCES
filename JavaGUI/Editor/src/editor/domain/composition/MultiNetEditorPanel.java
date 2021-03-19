@@ -74,7 +74,11 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
     private final NetInstanceEditorTable editorTable;
     
     private final SolverParams.IntExpr alignDxCopy, alignDyCopy;
-    private final SolverParams.IntExpr dxMultCopy, dyMultCopy;
+    
+    private final SolverParams.IntExpr[] dxMultCopy;
+    private final SolverParams.IntExpr[] dyMultCopy;
+    private final ExprField[] exprFieldDx;
+    private final ExprField[] exprFieldDy;
 
     /**
      * Creates new form MultiNetEditorPanel
@@ -117,7 +121,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         
         alignDxCopy = new SolverParams.IntExpr("1");
         alignDyCopy = new SolverParams.IntExpr("1");
-        exprField_dx.setExprListener(new ExprField.ExprFieldListener() {
+        exprField_algebraDx.setExprListener(new ExprField.ExprFieldListener() {
             @Override public void onExprModified() {
                 mainInterface.executeUndoableCommand("change dx offset.", (ProjectData proj, ProjectPage elem) -> {
                     AlgebraCompositionPage acp = (AlgebraCompositionPage)currPage;
@@ -126,7 +130,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
             }
             @Override public void onEditingText() { }
         });
-        exprField_dy.setExprListener(new ExprField.ExprFieldListener() {
+        exprField_algebraDy.setExprListener(new ExprField.ExprFieldListener() {
             @Override public void onExprModified() {
                 mainInterface.executeUndoableCommand("change dy offset.", (ProjectData proj, ProjectPage elem) -> {
                     AlgebraCompositionPage acp = (AlgebraCompositionPage)currPage;
@@ -136,26 +140,36 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
             @Override public void onEditingText() { }
         });
         
-        dxMultCopy = new SolverParams.IntExpr("1");
-        dyMultCopy = new SolverParams.IntExpr("1");
-        exprField_dxMultUnf.setExprListener(new ExprField.ExprFieldListener() {
-            @Override public void onExprModified() {
-                mainInterface.executeUndoableCommand("change dx multiplier.", (ProjectData proj, ProjectPage elem) -> {
-                    UnfoldingCompositionPage ucp = (UnfoldingCompositionPage)currPage;
-                    ucp.dxMult.setExpr(dxMultCopy.getExpr());
-                });
-            }
-            @Override public void onEditingText() { }
-        });
-        exprField_dyMultUnf.setExprListener(new ExprField.ExprFieldListener() {
-            @Override public void onExprModified() {
-                mainInterface.executeUndoableCommand("change dy multiplier.", (ProjectData proj, ProjectPage elem) -> {
-                    UnfoldingCompositionPage ucp = (UnfoldingCompositionPage)currPage;
-                    ucp.dyMult.setExpr(dyMultCopy.getExpr());
-                });
-            }
-            @Override public void onEditingText() { }
-        });
+        
+        dxMultCopy = new SolverParams.IntExpr[UnfoldingCompositionPage.NUM_OFFSET_ROWS];
+        dyMultCopy = new SolverParams.IntExpr[UnfoldingCompositionPage.NUM_OFFSET_ROWS];
+        for (int i=0; i<dxMultCopy.length; i++) {
+            dxMultCopy[i] = new SolverParams.IntExpr("1");
+            dyMultCopy[i] = new SolverParams.IntExpr("1");
+        }
+        exprFieldDx = new ExprField[] { exprField_unfDxMult1, exprField_unfDxMult2, exprField_unfDxMult3, exprField_unfDxMult4 };
+        exprFieldDy = new ExprField[] { exprField_unfDyMult1, exprField_unfDyMult2, exprField_unfDyMult3, exprField_unfDyMult4 };
+        for (int i=0; i<4; i++) {
+            final int ii = i;
+            exprFieldDx[ii].setExprListener(new ExprField.ExprFieldListener() {
+                @Override public void onExprModified() {
+                    mainInterface.executeUndoableCommand("change dx multiplier.", (ProjectData proj, ProjectPage elem) -> {
+                        UnfoldingCompositionPage ucp = (UnfoldingCompositionPage)currPage;
+                        ucp.dxMult[ii].setExpr(dxMultCopy[ii].getExpr());
+                    });
+                }
+                @Override public void onEditingText() { }
+            });
+            exprFieldDy[ii].setExprListener(new ExprField.ExprFieldListener() {
+                @Override public void onExprModified() {
+                    mainInterface.executeUndoableCommand("change dy multiplier.", (ProjectData proj, ProjectPage elem) -> {
+                        UnfoldingCompositionPage ucp = (UnfoldingCompositionPage)currPage;
+                        ucp.dyMult[ii].setExpr(dyMultCopy[ii].getExpr());
+                    });
+                }
+                @Override public void onEditingText() { }
+            });
+        }
 
         
         // Add actions to the input map manually
@@ -210,10 +224,12 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         editorTable.removeAll();
         instanceEditors.clear();
         
-        exprField_dx.deinitialize();
-        exprField_dy.deinitialize();
-        exprField_dxMultUnf.deinitialize();
-        exprField_dyMultUnf.deinitialize();
+        exprField_algebraDx.deinitialize();
+        exprField_algebraDy.deinitialize();
+        for (ExprField ef : exprFieldDx)
+            ef.deinitialize();
+        for (ExprField ef : exprFieldDy)
+            ef.deinitialize();
     }
 
     @Override
@@ -253,12 +269,12 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
             toggle_custom.setSelected(acp.alignment == AlgebraCompositionPage.Alignment.CUSTOM);
             
             alignDxCopy.setExpr(acp.alignDx.getExpr());
-            exprField_dx.initializeFor(alignDxCopy.getEditableValue(), page);
+            exprField_algebraDx.initializeFor(alignDxCopy.getEditableValue(), page);
             alignDyCopy.setExpr(acp.alignDy.getExpr());
-            exprField_dy.initializeFor(alignDyCopy.getEditableValue(), page);
+            exprField_algebraDy.initializeFor(alignDyCopy.getEditableValue(), page);
             
-            exprField_dx.setEnabled(acp.alignment == AlgebraCompositionPage.Alignment.CUSTOM);
-            exprField_dy.setEnabled(acp.alignment == AlgebraCompositionPage.Alignment.CUSTOM);
+            exprField_algebraDx.setEnabled(acp.alignment == AlgebraCompositionPage.Alignment.CUSTOM);
+            exprField_algebraDy.setEnabled(acp.alignment == AlgebraCompositionPage.Alignment.CUSTOM);
             
             checkBox_useBrokenEdges.setSelected(acp.useBrokenEdges);
             
@@ -267,8 +283,8 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         else {
             list_TagsP.removeAll();
             list_TagsT.removeAll();
-            exprField_dx.deinitialize();
-            exprField_dy.deinitialize();
+            exprField_algebraDx.deinitialize();
+            exprField_algebraDy.deinitialize();
             panel_algebra.setVisible(false);
         }
         
@@ -277,16 +293,20 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         if (currPage instanceof UnfoldingCompositionPage) {
             UnfoldingCompositionPage ucp = (UnfoldingCompositionPage)currPage;
             
-            dxMultCopy.setExpr(ucp.dxMult.getExpr());
-            exprField_dxMultUnf.initializeFor(dxMultCopy.getEditableValue(), page);
-            dyMultCopy.setExpr(ucp.dyMult.getExpr());
-            exprField_dyMultUnf.initializeFor(dyMultCopy.getEditableValue(), page);
+            for (int i=0; i<4; i++) {
+                dxMultCopy[i].setExpr(ucp.dxMult[i].getExpr());
+                exprFieldDx[i].initializeFor(dxMultCopy[i].getEditableValue(), page);
+                dyMultCopy[i].setExpr(ucp.dyMult[i].getExpr());
+                exprFieldDy[i].initializeFor(dyMultCopy[i].getEditableValue(), page);
+            }
             
             panel_unfolding.setVisible(true);
         }
         else {
-            exprField_dxMultUnf.deinitialize();
-            exprField_dyMultUnf.deinitialize();
+            for (ExprField ef : exprFieldDx)
+            ef.deinitialize();
+        for (ExprField ef : exprFieldDy)
+            ef.deinitialize();
             panel_unfolding.setVisible(false);
         }
         
@@ -597,8 +617,8 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         list_TagsP = new javax.swing.JList<>();
         panel_alignment = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
-        exprField_dx = new editor.domain.measures.ExprField();
-        exprField_dy = new editor.domain.measures.ExprField();
+        exprField_algebraDx = new editor.domain.measures.ExprField();
+        exprField_algebraDy = new editor.domain.measures.ExprField();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         panel_toggles = new javax.swing.JPanel();
@@ -610,8 +630,19 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         panel_unfolding = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        exprField_dxMultUnf = new editor.domain.measures.ExprField();
-        exprField_dyMultUnf = new editor.domain.measures.ExprField();
+        exprField_unfDxMult1 = new editor.domain.measures.ExprField();
+        exprField_unfDyMult1 = new editor.domain.measures.ExprField();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        exprField_unfDxMult2 = new editor.domain.measures.ExprField();
+        exprField_unfDyMult2 = new editor.domain.measures.ExprField();
+        jLabel11 = new javax.swing.JLabel();
+        exprField_unfDxMult3 = new editor.domain.measures.ExprField();
+        exprField_unfDyMult3 = new editor.domain.measures.ExprField();
+        jLabel12 = new javax.swing.JLabel();
+        exprField_unfDxMult4 = new editor.domain.measures.ExprField();
+        exprField_unfDyMult4 = new editor.domain.measures.ExprField();
+        button_resetOffsetMatrix = new javax.swing.JButton();
         actionAddSubnet = new common.Action();
         scrollPaneCentral = new javax.swing.JScrollPane();
         toolbar = new javax.swing.JToolBar();
@@ -725,14 +756,14 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
-        panel_alignment.add(exprField_dx, gridBagConstraints);
+        panel_alignment.add(exprField_algebraDx, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
-        panel_alignment.add(exprField_dy, gridBagConstraints);
+        panel_alignment.add(exprField_algebraDy, gridBagConstraints);
 
         jLabel5.setText("dx:");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -832,27 +863,109 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         panel_unfolding.setBorder(javax.swing.BorderFactory.createTitledBorder("Unfolding Options:"));
         panel_unfolding.setLayout(new java.awt.GridBagLayout());
 
-        jLabel7.setText("dx multiplier:");
+        jLabel7.setText("dx");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 9);
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         panel_unfolding.add(jLabel7, gridBagConstraints);
 
-        jLabel8.setText("dy multiplier:");
+        jLabel8.setText("dy");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 9);
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         panel_unfolding.add(jLabel8, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        panel_unfolding.add(exprField_dxMultUnf, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
-        panel_unfolding.add(exprField_dyMultUnf, gridBagConstraints);
+        panel_unfolding.add(exprField_unfDxMult1, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        panel_unfolding.add(exprField_unfDyMult1, gridBagConstraints);
+
+        jLabel9.setText("Class 1:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 7);
+        panel_unfolding.add(jLabel9, gridBagConstraints);
+
+        jLabel10.setText("Class 2:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 7);
+        panel_unfolding.add(jLabel10, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        panel_unfolding.add(exprField_unfDxMult2, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        panel_unfolding.add(exprField_unfDyMult2, gridBagConstraints);
+
+        jLabel11.setText("Class 3:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 7);
+        panel_unfolding.add(jLabel11, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        panel_unfolding.add(exprField_unfDxMult3, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        panel_unfolding.add(exprField_unfDyMult3, gridBagConstraints);
+
+        jLabel12.setText("Class 4:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 7);
+        panel_unfolding.add(jLabel12, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        panel_unfolding.add(exprField_unfDxMult4, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        panel_unfolding.add(exprField_unfDyMult4, gridBagConstraints);
+
+        button_resetOffsetMatrix.setText("Reset offset matrix");
+        button_resetOffsetMatrix.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_resetOffsetMatrixActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
+        panel_unfolding.add(button_resetOffsetMatrix, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -991,15 +1104,32 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         });
     }//GEN-LAST:event_checkBox_useBrokenEdgesActionPerformed
 
+    private void button_resetOffsetMatrixActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_resetOffsetMatrixActionPerformed
+        mainInterface.executeUndoableCommand("reset offset matrix.", (ProjectData proj, ProjectPage elem) -> {
+            UnfoldingCompositionPage ucp = (UnfoldingCompositionPage)currPage;
+            ucp.resetOffsetMatrix();
+        });
+    }//GEN-LAST:event_button_resetOffsetMatrixActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private common.Action actionAddSubnet;
+    private javax.swing.JButton button_resetOffsetMatrix;
     private javax.swing.JCheckBox checkBox_useBrokenEdges;
-    private editor.domain.measures.ExprField exprField_dx;
-    private editor.domain.measures.ExprField exprField_dxMultUnf;
-    private editor.domain.measures.ExprField exprField_dy;
-    private editor.domain.measures.ExprField exprField_dyMultUnf;
+    private editor.domain.measures.ExprField exprField_algebraDx;
+    private editor.domain.measures.ExprField exprField_algebraDy;
+    private editor.domain.measures.ExprField exprField_unfDxMult1;
+    private editor.domain.measures.ExprField exprField_unfDxMult2;
+    private editor.domain.measures.ExprField exprField_unfDxMult3;
+    private editor.domain.measures.ExprField exprField_unfDxMult4;
+    private editor.domain.measures.ExprField exprField_unfDyMult1;
+    private editor.domain.measures.ExprField exprField_unfDyMult2;
+    private editor.domain.measures.ExprField exprField_unfDyMult3;
+    private editor.domain.measures.ExprField exprField_unfDyMult4;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1007,6 +1137,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel label_operator;
     private javax.swing.JList<JCheckBox> list_TagsP;
     private javax.swing.JList<JCheckBox> list_TagsT;
