@@ -242,6 +242,7 @@ public class AlgebraCompositionPage extends MultiNetPage implements Serializable
     
     @Override
     public void exchangeXML(Element el, XmlExchangeDirection exDir) throws XmlExchangeException {
+        super.exchangeXML(el, exDir);
         bindXMLAttrib(this, el, exDir, "use-broken-edges", "useBrokenEdges", false);
         bindXMLAttrib(this, el, exDir, "align-dx", "alignDx.@Expr", "10");
         bindXMLAttrib(this, el, exDir, "align-dy", "alignDy.@Expr", "10");

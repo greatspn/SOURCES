@@ -60,10 +60,14 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         setBackground(editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_COLOR);
         exprField_replicas.setOpaque(false);
         label_binding.setForeground(editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR);
-        label_netName.setForeground(editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR);
-        label_numReplicas.setForeground(editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR);
         label_Num.setForeground(editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR);
-//        exprField_replicas.setBackground(PAGE_BACKGROUND_COLOR);
+        
+        label_netName.setForeground(editor.gui.net.NetEditorPanel.PAGE_TITLE_FOREGROUND);
+        label_netName.setBackground(editor.gui.net.NetEditorPanel.PAGE_TITLE_BACKGROUND);
+        label_numReplicas.setForeground(editor.gui.net.NetEditorPanel.PAGE_TITLE_FOREGROUND);
+        label_numReplicas.setBackground(editor.gui.net.NetEditorPanel.PAGE_TITLE_BACKGROUND);   
+        panel_horizBar.setBackground(editor.gui.net.NetEditorPanel.PAGE_TITLE_BACKGROUND);
+        panel_horizBar.setForeground(editor.gui.net.NetEditorPanel.PAGE_TITLE_BACKGROUND);
         
         initializing = false;
     }
@@ -187,6 +191,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.ipady = 3;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         add(label_Num, gridBagConstraints);
 
@@ -197,6 +202,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.ipady = 3;
         add(checkBox_selected, gridBagConstraints);
 
         comboBox_model.addActionListener(new java.awt.event.ActionListener() {
@@ -207,13 +213,15 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipady = 3;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 8);
         add(comboBox_model, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipady = 3;
         gridBagConstraints.weightx = 0.5;
         gridBagConstraints.weighty = 0.3;
-        gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
         add(exprField_replicas, gridBagConstraints);
 
         button_up.setIcon(resourceFactory.getArrowUp16());
@@ -224,6 +232,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.ipady = 3;
         add(button_up, gridBagConstraints);
 
         button_down.setIcon(resourceFactory.getArrowDown16());
@@ -234,6 +243,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.ipady = 3;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
         add(button_down, gridBagConstraints);
 
@@ -258,10 +268,12 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         gridBagConstraints.gridy = 3;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipady = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         add(panel_binding, gridBagConstraints);
 
         panel_horizBar.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(0, 0, 0)));
+        panel_horizBar.setMinimumSize(new java.awt.Dimension(0, 1));
 
         javax.swing.GroupLayout panel_horizBarLayout = new javax.swing.GroupLayout(panel_horizBar);
         panel_horizBar.setLayout(panel_horizBarLayout);
@@ -280,23 +292,28 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         gridBagConstraints.gridwidth = 7;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 0.1;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
         add(panel_horizBar, gridBagConstraints);
 
         label_netName.setText("Net:");
+        label_netName.setOpaque(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         add(label_netName, gridBagConstraints);
 
         label_numReplicas.setText("Number of Replicas:");
+        label_numReplicas.setOpaque(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weighty = 0.3;
-        gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
         add(label_numReplicas, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 

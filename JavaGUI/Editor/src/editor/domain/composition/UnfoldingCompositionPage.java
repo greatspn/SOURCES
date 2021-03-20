@@ -213,6 +213,7 @@ public class UnfoldingCompositionPage extends MultiNetPage implements Serializab
 
     @Override
     public void exchangeXML(Element el, XmlExchangeDirection exDir) throws XmlExchangeException {
+        super.exchangeXML(el, exDir);
         Document doc = exDir.getDocument();
         if (exDir.FieldsToXml()) {
             Element offsetListElem = doc.createElement("offset-list");

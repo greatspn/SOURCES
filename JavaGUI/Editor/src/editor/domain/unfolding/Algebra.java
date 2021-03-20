@@ -670,7 +670,7 @@ public class Algebra {
             else { // combine edge from net1 + edge from net2
                 headMagnet = e1.getHeadMagnet();
                 tailMagnet = e1.getTailMagnet();
-                isBroken = e1.isBroken || e2.isBroken || breakEdge;
+                isBroken = e1.isBroken || e2.isBroken;
                 points = composeEdgePoints(e1, e2); // NOTE: use only e1, do not use e2!
 
                 // Combine multiplicities

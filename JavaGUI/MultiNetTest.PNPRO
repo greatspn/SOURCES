@@ -163,7 +163,7 @@
       </formula>
     </formulas>
   </measures>
-  <unfolding name="Unfolding 1">
+  <unfolding name="Unfolding 1" show-fluid-cmd="false">
     <offset-list>
       <offset dx="0" dy="3"/>
       <offset dx="3" dy="0"/>

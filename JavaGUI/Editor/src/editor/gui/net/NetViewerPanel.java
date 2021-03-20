@@ -268,7 +268,7 @@ public abstract class NetViewerPanel extends JPanel implements Scrollable {
             viewProfile.zoom = newZoomLevel;
             //allNetsPanel.revalidate();
             for (JNetPanel panel : netPanels)
-                panel.resizeToAccomodate();;
+                panel.resizeToAccomodate();
         }
         setSize(getPreferredSize());
     }
@@ -343,9 +343,9 @@ public abstract class NetViewerPanel extends JPanel implements Scrollable {
             setLayout(new BorderLayout());
             
             title = new JLabel(panel.netName, panel.net.getPageIcon(), SwingConstants.LEFT);
-            title.setBackground(editor.gui.net.NetEditorPanel.PAGE_TITLE_COLOR);
+            title.setBackground(editor.gui.net.NetEditorPanel.PAGE_TITLE_BACKGROUND);
             title.setForeground(editor.gui.net.NetEditorPanel.PAGE_TITLE_FOREGROUND);
-            title.setBorder(BorderFactory.createMatteBorder(2, 10, 2, 2, editor.gui.net.NetEditorPanel.PAGE_TITLE_COLOR));
+            title.setBorder(BorderFactory.createMatteBorder(2, 10, 2, 2, editor.gui.net.NetEditorPanel.PAGE_TITLE_BACKGROUND));
             title.setOpaque(true);
             
             header = new JPanel();
@@ -380,7 +380,7 @@ public abstract class NetViewerPanel extends JPanel implements Scrollable {
         public JNetPanel(NetPage _net, String _netName) {
             this.net = _net;
             this.netName = _netName;
-            setBackground(Color.WHITE);
+            setBackground(Color.BLUE);
             setFocusable(true);
             setOpaque(true);
             pageBounds = net.getPageBounds();

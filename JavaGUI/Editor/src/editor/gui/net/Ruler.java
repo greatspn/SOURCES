@@ -42,7 +42,7 @@ public class Ruler extends JComponent {
         this.orientation = o;
         this.viewportView = viewportView;
         
-        this.BKGND = UIManager.getColor("TextField.background");
+        this.BKGND = Util.mix(UIManager.getColor("TextField.background"), new Color(0xEEEEEE), 0.80f);
         this.CLR_TICK_10 = Util.mix(BKGND, UIManager.getColor("TextField.foreground"), 0.05f);
         this.CLR_TICK_5 = Util.mix(BKGND, CLR_TICK_10, 0.25f);
         this.CLR_TICK_1 = Util.mix(BKGND, CLR_TICK_10, 0.50f);
