@@ -54,6 +54,9 @@
     </edges>
   </gspn>
   <unfolding name="Unfolding">
+    <bindings-list>
+      <binding value="" variable="K"/>
+    </bindings-list>
     <offset-list>
       <offset dx="0" dy="3"/>
       <offset dx="3" dy="0"/>
@@ -66,6 +69,11 @@
     </subnet>
   </unfolding>
   <algebra align-dy="6" alignment="CUSTOM" name="Composition" use-broken-edges="true">
+    <bindings-list>
+      <binding value="" variable="r"/>
+      <binding value="" variable="m"/>
+      <binding value="" variable="n"/>
+    </bindings-list>
     <place-tags>
       <tag name="cc"/>
     </place-tags>
@@ -74,11 +82,26 @@
     <subnet netname="PN1"/>
   </algebra>
   <multinet name="MultiNet 1">
+    <bindings-list>
+      <binding value="" variable="n_2"/>
+      <binding value="" variable="n_1"/>
+      <binding value="" variable="r"/>
+      <binding value="" variable="n_3"/>
+      <binding value="" variable="K"/>
+      <binding value="" variable="n_0"/>
+      <binding value="" variable="m_0"/>
+    </bindings-list>
     <subnet netname="MultiNet"/>
     <subnet netname="PN1" replicas="3"/>
     <subnet netname="PN3"/>
   </multinet>
   <multinet name="MultiNet">
+    <bindings-list>
+      <binding value="" variable="r"/>
+      <binding value="" variable="K"/>
+      <binding value="" variable="n_0"/>
+      <binding value="" variable="m_0"/>
+    </bindings-list>
     <subnet netname="Unfolding"/>
     <subnet netname="PN2"/>
   </multinet>
@@ -164,6 +187,7 @@
     </formulas>
   </measures>
   <unfolding name="Unfolding 1" show-fluid-cmd="false">
+    <bindings-list/>
     <offset-list>
       <offset dx="0" dy="3"/>
       <offset dx="3" dy="0"/>
@@ -174,61 +198,58 @@
       <assignments value="4" varname="n"/>
     </subnet>
   </unfolding>
-  <gspn name="Philosophers">
+  <gspn name="Philosophers" view-rates="false">
     <nodes>
       <color-class definition="circular p{1..N}" name="Philo" x="3.5" y="2.875"/>
       <color-var domain="Philo" name="x" x="3.5625" y="4.0625"/>
-      <place domain="Philo" label-x="2.875" label-y="1.3125" magnets="THREE_PER_SIDE" marking="&lt;All&gt;" name="Fork" x="6.0" y="15.0"/>
-      <transition label-x="2.5" label-y="0.0" name="FF1a" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="14.55" y="11.0"/>
-      <transition label-x="2.5" label-y="0.0" name="FF1b" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="22.55" y="11.0"/>
-      <place domain="Philo" label-y="-1.5" marking="&lt;All&gt;" name="Think" x="18.0" y="6.0"/>
-      <place domain="Philo" label-x="3.375" label-y="1.3125" name="Catch1" x="14.0" y="15.0"/>
-      <place domain="Philo" label-x="3.5" name="Catch2" x="22.0" y="15.0"/>
-      <transition label-x="2.5" label-y="0.0" name="FF2a" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="14.55" y="19.0"/>
-      <transition label-x="2.5" label-y="0.0" name="FF2b" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="22.55" y="19.0"/>
-      <place domain="Philo" name="Eat" x="18.0" y="25.0"/>
-      <transition magnets="THREE_PER_SIDE" name="end" nservers-x="0.5" rotation="3.141592653589793" type="EXP" x="11.55" y="25.0"/>
+      <place domain="Philo" marking="&lt;All&gt;" name="Fork" x="11.0" y="35.0"/>
+      <transition label-x="0.5" label-y="-1.0" name="FF1a" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="7.55" y="12.0"/>
+      <transition label-x="1.0" label-y="-1.0" name="FF1b" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="15.55" y="12.0"/>
+      <place domain="Philo" label-y="-1.5" marking="&lt;All&gt;" name="Think" x="11.0" y="7.0"/>
+      <place domain="Philo" label-x="3.5" label-y="-1.5" name="Catch1" x="7.0" y="16.0"/>
+      <place domain="Philo" label-x="-0.5" label-y="1.0" name="Catch2" x="15.0" y="16.0"/>
+      <transition label-x="2.5" label-y="0.0" name="FF2a" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="7.55" y="20.0"/>
+      <transition label-x="2.5" label-y="0.0" name="FF2b" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="15.55" y="20.0"/>
+      <place domain="Philo" label-x="2.0" name="Eat" x="11.0" y="24.0"/>
+      <transition label-x="1.0" label-y="-1.0" name="end" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="11.55" y="29.0"/>
       <template last-binding="2" name="N" type="INTEGER" x="3.5" y="1.6875"/>
     </nodes>
     <edges>
-      <arc head="FF1a" kind="INPUT" mult="&lt;x&gt;" mult-k="0.56103515625" mult-x="0.744140625" mult-y="0.69482421875" tail="Think"/>
-      <arc head="FF1b" kind="INPUT" mult="&lt;x&gt;" mult-k="0.56103515625" mult-x="-0.744140625" mult-y="0.69482421875" tail="Think"/>
+      <arc head="FF1a" kind="INPUT" mult="&lt;x&gt;" mult-k="0.56103515625" mult-x="-0.255859375" mult-y="-0.80517578125" tail="Think"/>
+      <arc head="FF1b" kind="INPUT" mult="&lt;x&gt;" mult-k="0.56103515625" mult-x="0.255859375" mult-y="-0.80517578125" tail="Think"/>
       <arc head="Catch1" kind="OUTPUT" mult="&lt;x&gt;" mult-k="0.37509765625" mult-x="-0.8125" mult-y="0.062109375000000355" tail="FF1a"/>
       <arc head="FF2a" kind="INPUT" mult="&lt;x&gt;" mult-k="0.50009765625" mult-x="-0.75" mult-y="0.0" tail="Catch1"/>
       <arc head="FF2b" kind="INPUT" mult="&lt;x&gt;" mult-k="0.50009765625" mult-x="-0.75" mult-y="0.125" tail="Catch2"/>
       <arc head="Catch2" kind="OUTPUT" mult="&lt;x&gt;" mult-k="0.37509765625" mult-x="-0.8125" mult-y="-3.9062499999964473E-4" tail="FF1b"/>
       <arc head="Eat" kind="OUTPUT" mult="&lt;x&gt;" mult-k="0.44228515625" mult-x="0.5625" mult-y="-0.4375" tail="FF2a"/>
       <arc head="Eat" kind="OUTPUT" mult="&lt;x&gt;" mult-k="0.44228515625" mult-x="-0.6625000000000014" mult-y="-0.3500000000000014" tail="FF2b"/>
-      <arc head="end" kind="INPUT" mult="&lt;x&gt;" mult-k="0.50009765625" mult-x="0.0" mult-y="-0.6875" tail="Eat"/>
-      <arc head="Think" kind="OUTPUT" mult="&lt;x&gt;" mult-k="2.6465820312500004" mult-x="0.0" mult-y="-0.4375" tail="end" tail-magnet="3">
-        <point x="3.5" y="26.5"/>
-        <point x="3.5" y="7.0"/>
+      <arc head="end" kind="INPUT" mult="&lt;x&gt;" mult-k="0.50009765625" mult-x="-0.5" mult-y="-4.8828125E-4" tail="Eat"/>
+      <arc head="Think" kind="OUTPUT" mult="&lt;x&gt;" mult-k="2.3223632812499995" mult-x="-0.49987490185843875" mult-y="-0.5" tail="end" tail-magnet="3">
+        <point x="2.5" y="30.0"/>
+        <point x="2.5" y="8.0"/>
       </arc>
-      <arc head="FF1b" kind="INPUT" mult="&lt;x&gt;" mult-k="2.39228515625" mult-x="0.6875" mult-y="0.125" tail="Fork" tail-magnet="8">
-        <point x="6.5" y="9.0"/>
-        <point x="23.0" y="9.0"/>
+      <arc head="FF1b" kind="INPUT" mult="&lt;x&gt;" mult-k="1.7166992187499996" mult-x="0.6875" mult-y="0.125" tail="Fork" tail-magnet="8">
+        <point x="20.0" y="32.5"/>
+        <point x="20.0" y="13.0"/>
       </arc>
-      <arc head="FF1a" kind="INPUT" mult="&lt;x++&gt;" mult-k="1.6516601562499997" mult-x="0.125" mult-y="0.625" tail="Fork" tail-magnet="10">
-        <point x="7.5" y="10.0"/>
-        <point x="15.0" y="10.0"/>
+      <arc broken="true" head="FF1a" kind="INPUT" mult="&lt;x++&gt;" mult-k="2.3587530136108397" mult-x="0.0017201433592024529" mult-y="-1.0" tail="Fork" tail-magnet="10">
+        <point x="6.5" y="38.0"/>
+        <point x="4.5" y="13.0"/>
       </arc>
-      <arc head="FF2a" kind="INPUT" mult="&lt;x&gt;" mult-k="1.7165039062499998" mult-x="-0.1875" mult-y="-0.5" tail="Fork" tail-magnet="2">
-        <point x="7.5" y="22.5"/>
-        <point x="15.0" y="22.5"/>
+      <arc head="FF2a" kind="INPUT" mult="&lt;x&gt;" mult-k="1.9999023437499996" mult-x="-0.1875" mult-y="-0.5" tail="Fork" tail-magnet="2">
+        <point x="8.0" y="33.0"/>
       </arc>
-      <arc head="FF2b" kind="INPUT" mult="&lt;x++&gt;" mult-k="2.32822265625" mult-x="1.25" mult-y="0.0625" tail="Fork" tail-magnet="4">
-        <point x="6.5" y="23.5"/>
-        <point x="23.0" y="23.5"/>
+      <arc broken="true" head="FF2b" kind="INPUT" mult="&lt;x++&gt;" mult-k="2.64749755859375" mult-x="1.097294238259309" mult-y="0.23621193356303394" tail="Fork" tail-magnet="4">
+        <point x="17.5" y="38.5"/>
+        <point x="18.5" y="24.5"/>
       </arc>
-      <arc head="Fork" kind="OUTPUT" mult="&lt;x&gt;+&lt;x++&gt;" mult-k="0.5999023437500001" mult-x="0.6249999999999991" mult-y="-0.5" tail="end" tail-magnet="5">
-        <point x="4.5" y="25.5"/>
-        <point x="4.5" y="16.0"/>
-      </arc>
+      <arc head="Fork" kind="OUTPUT" mult="&lt;x&gt;+&lt;x++&gt;" mult-k="0.41669921875000004" mult-x="2.0" mult-y="1.9531250000071054E-4" tail="end" tail-magnet="5"/>
     </edges>
   </gspn>
-  <unfolding name="Unfolding 2">
+  <unfolding name="UnfoldingPhilo" view-rates="false">
+    <bindings-list/>
     <offset-list>
-      <offset dx="25" dy="0"/>
+      <offset dx="20" dy="0"/>
       <offset dx="5" dy="0"/>
       <offset dx="0" dy="3"/>
       <offset dx="3" dy="0"/>

@@ -97,8 +97,10 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
     protected void setCompositionSuccessfull(NetPage compNet, ViewProfile newProfile,
                                              String[] visualizedSubNetNames, NetPage[] visualizedSubNets) 
     {
-        newProfile.zoom = this.viewProfile.zoom;
-        this.viewProfile = newProfile;
+        if (newProfile != null) {
+            newProfile.zoom = this.viewProfile.zoom;
+            this.viewProfile.copyFrom(newProfile);
+        }
         this.compNet = compNet;
         this.visualizedSubNetNames = visualizedSubNetNames;
         this.visualizedSubNets = visualizedSubNets;

@@ -88,7 +88,7 @@ public class AlgebraCompositionPage extends MultiNetPage implements Serializable
     
     @Override
     protected void resetCompositionTargets() {
-        setCompositionSuccessfull(null, viewProfile, null, null);
+        setCompositionSuccessfull(null, null, null, null);
         setCompositionTarget(UNSUCCESSFULL_GSPN_TARGET);
     }
     

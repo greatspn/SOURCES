@@ -66,6 +66,18 @@ public class ViewProfile implements Serializable, XmlExchangeable {
         
         return newProfile;
     }
+    
+    public void copyFrom(ViewProfile vp) {
+        this.zoom              = vp.zoom;
+        this.viewRatesDelays   = vp.viewRatesDelays;
+        this.viewGuards        = vp.viewGuards;
+        this.viewPriorities    = vp.viewPriorities;
+        this.viewNames         = vp.viewNames;
+        this.viewSuperPosTags  = vp.viewSuperPosTags;
+        this.showTimedCommands = vp.showTimedCommands;
+        this.showColorCommands = vp.showColorCommands;
+        this.showFluidCommands = vp.showFluidCommands;
+    }
 
     
     // Profile for type of petri nets

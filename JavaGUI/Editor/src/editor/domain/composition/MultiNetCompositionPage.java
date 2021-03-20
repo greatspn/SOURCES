@@ -94,7 +94,7 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
     
     @Override
     protected void resetCompositionTargets() {
-        setCompositionSuccessfull(null, viewProfile, null, null);
+        setCompositionSuccessfull(null, null, null, null);
         setCompositionTarget(UNSUCCESSFULL_GSPN_TARGET);
     }
     

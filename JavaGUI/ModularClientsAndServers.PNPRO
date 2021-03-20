@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="New project" version="121">
-  <multinet name="ClientsAndServers">
-    <subnet netname="Clients"/>
-    <subnet netname="Servers"/>
-    <subnet netname="ResManagers"/>
-    <subnet netname="ResUnits"/>
-  </multinet>
   <gspn name="Clients" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
     <nodes>
       <place label-y="-1.5" name="CA" x="16.0" y="30.0"/>
@@ -143,4 +137,11 @@
       <arc head="MtF" head-magnet="0" kind="OUTPUT" tail="mrF" tail-magnet="0"/>
     </edges>
   </gspn>
+  <multinet name="ClientsAndServers" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <bindings-list/>
+    <subnet netname="Clients"/>
+    <subnet netname="Servers"/>
+    <subnet netname="ResManagers"/>
+    <subnet netname="ResUnits"/>
+  </multinet>
 </project>

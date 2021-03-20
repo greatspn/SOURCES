@@ -123,12 +123,12 @@ public class UnfoldingCompositionPage extends MultiNetPage implements Serializab
 
     }
 
-    private static Selectable horizSelectable = new Selectable.DummyNamedSelectable("Horizontal multiplier");
-    private static Selectable vertSelectable = new Selectable.DummyNamedSelectable("Vertical multiplier");
+    private static final Selectable horizSelectable = new Selectable.DummyNamedSelectable("Horizontal multiplier");
+    private static final Selectable vertSelectable = new Selectable.DummyNamedSelectable("Vertical multiplier");
 
     @Override
     protected void resetCompositionTargets() {
-        setCompositionSuccessfull(null, viewProfile, null, null);
+        setCompositionSuccessfull(null, null, null, null);
         setCompositionTarget(UNSUCCESSFULL_GSPN_TARGET);
     }
     
@@ -181,6 +181,7 @@ public class UnfoldingCompositionPage extends MultiNetPage implements Serializab
                     String uniqueName = "Unfolding of "+compNet.getPageName();
                     u.unfolded.setPageName(uniqueName);
                     u.unfolded.setSelectionFlag(false);
+                    u.unfolded.viewProfile.copyFrom(compNet.viewProfile);
 
                     setCompositionSuccessfull(u.unfolded, compNet.viewProfile,
                             new String[]{uniqueName}, new NetPage[]{u.unfolded});
