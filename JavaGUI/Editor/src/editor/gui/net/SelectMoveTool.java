@@ -16,7 +16,6 @@ import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
 import editor.domain.Selectable;
 import editor.gui.NoOpException;
-import editor.gui.UndoableCommand;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;

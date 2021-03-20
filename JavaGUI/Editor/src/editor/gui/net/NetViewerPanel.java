@@ -343,9 +343,9 @@ public abstract class NetViewerPanel extends JPanel implements Scrollable {
             setLayout(new BorderLayout());
             
             title = new JLabel(panel.netName, panel.net.getPageIcon(), SwingConstants.LEFT);
-            title.setBackground(TITLE_GRAY_BKGND);
-            title.setForeground(Color.BLACK);
-            title.setBorder(BorderFactory.createMatteBorder(2, 10, 2, 2, TITLE_GRAY_BKGND));
+            title.setBackground(editor.gui.net.NetEditorPanel.PAGE_TITLE_COLOR);
+            title.setForeground(editor.gui.net.NetEditorPanel.PAGE_TITLE_FOREGROUND);
+            title.setBorder(BorderFactory.createMatteBorder(2, 10, 2, 2, editor.gui.net.NetEditorPanel.PAGE_TITLE_COLOR));
             title.setOpaque(true);
             
             header = new JPanel();
@@ -370,9 +370,6 @@ public abstract class NetViewerPanel extends JPanel implements Scrollable {
     public abstract void allBindingsOk(boolean allOk);
     
     public abstract Color getNetBackground(String overlayMsg);
-    
-    public static final Color VERY_LIGHT_GRAY_BKGND = new Color(240, 240, 240);
-    public static final Color TITLE_GRAY_BKGND = new Color(224, 224, 230);
     
     public class JNetPanel extends JPanel {
         NetPage net;

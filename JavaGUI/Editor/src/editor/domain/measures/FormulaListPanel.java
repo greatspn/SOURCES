@@ -38,9 +38,9 @@ public class FormulaListPanel extends javax.swing.JPanel {
     public FormulaListPanel() {
         initComponents();
         setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY));
-        setBackground(editor.gui.net.NetViewerPanel.TITLE_GRAY_BKGND);
-        jLabel1.setForeground(Color.BLACK);
-        jLabel2.setForeground(Color.BLACK);
+        setBackground(editor.gui.net.NetEditorPanel.PAGE_TITLE_COLOR);
+        jLabel1.setForeground(editor.gui.net.NetEditorPanel.PAGE_TITLE_FOREGROUND);
+        jLabel2.setForeground(editor.gui.net.NetEditorPanel.PAGE_TITLE_FOREGROUND);
     }
     
     public void setFormulaLisListener(FormulaListListener listener) {

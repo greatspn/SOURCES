@@ -49,6 +49,7 @@ public class ExprField extends javax.swing.JPanel {
 
     public ExprField() {
         initComponents();
+        setOpaque(false);
 
         textField.getDocument().addDocumentListener(new DocumentListener() {
             @Override

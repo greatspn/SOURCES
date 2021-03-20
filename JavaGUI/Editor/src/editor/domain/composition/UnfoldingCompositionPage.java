@@ -128,7 +128,7 @@ public class UnfoldingCompositionPage extends MultiNetPage implements Serializab
 
     @Override
     protected void resetCompositionTargets() {
-        setCompositionSuccessfull(null, null, null);
+        setCompositionSuccessfull(null, viewProfile, null, null);
         setCompositionTarget(UNSUCCESSFULL_GSPN_TARGET);
     }
     
@@ -182,7 +182,7 @@ public class UnfoldingCompositionPage extends MultiNetPage implements Serializab
                     u.unfolded.setPageName(uniqueName);
                     u.unfolded.setSelectionFlag(false);
 
-                    setCompositionSuccessfull(u.unfolded, 
+                    setCompositionSuccessfull(u.unfolded, compNet.viewProfile,
                             new String[]{uniqueName}, new NetPage[]{u.unfolded});
                 }
                 catch (CouldNotUnfoldException e) {

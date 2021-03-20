@@ -4,6 +4,7 @@
  */
 package editor.gui.net;
 
+import common.Util;
 import editor.Main;
 import editor.domain.NetObject;
 import java.awt.Color;
@@ -11,6 +12,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import javax.swing.JComponent;
+import javax.swing.UIManager;
 
 /** The horizontal/vertical rulers drawn around the editor panel.
  *
@@ -21,10 +23,15 @@ public class Ruler extends JComponent {
     public static final int VERTICAL = 1;
     public final int SIZE;
     
-    public static final Color BKGND = new Color(245, 245, 245);
-    public static final Color CLR_TICK_10 = Color.BLACK;
-    public static final Color CLR_TICK_5 = new Color(128, 128, 128);
-    public static final Color CLR_TICK_1 = new Color(192, 192, 192);
+//    public static final Color BKGND = new Color(245, 245, 245);
+//    public static final Color CLR_TICK_10 = Color.BLACK;
+//    public static final Color CLR_TICK_5 = new Color(128, 128, 128);
+//    public static final Color CLR_TICK_1 = new Color(192, 192, 192);
+    
+    public final Color BKGND;
+    private final Color CLR_TICK_10;
+    private final Color CLR_TICK_5;
+    private final Color CLR_TICK_1;
  
     public int orientation;
     private final JComponent viewportView;
@@ -34,6 +41,11 @@ public class Ruler extends JComponent {
         this.SIZE = (int)(16 * Main.getUiSize().getScaleMultiplier());
         this.orientation = o;
         this.viewportView = viewportView;
+        
+        this.BKGND = UIManager.getColor("TextField.background");
+        this.CLR_TICK_10 = Util.mix(BKGND, UIManager.getColor("TextField.foreground"), 0.05f);
+        this.CLR_TICK_5 = Util.mix(BKGND, CLR_TICK_10, 0.25f);
+        this.CLR_TICK_1 = Util.mix(BKGND, CLR_TICK_10, 0.50f);
     }
 
     public int getZoomLevel() {

@@ -400,8 +400,8 @@ public class PetriNetMeasuresPanel extends javax.swing.JPanel
         @Override
         public Color getNetBackground(String overlayMsg) {
             if (tableVars.getSelectedRowCount()== 0)
-                return Color.LIGHT_GRAY;
-            return Color.WHITE;
+                return editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_DISABLED_COLOR;
+            return editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_COLOR;
         }
     }
     

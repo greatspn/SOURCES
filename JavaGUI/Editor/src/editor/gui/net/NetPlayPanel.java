@@ -342,7 +342,8 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
         public Color getNetBackground(String overlayMsg) {
             boolean isWhite = (isEnabled() && currStateIndex >= 0 && 
                                !viewerPanel.isInBindingPhase());
-            return isWhite ? Color.WHITE : VERY_LIGHT_GRAY_BKGND;
+            return isWhite ? editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_COLOR : 
+                             editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_DISABLED_COLOR;
         }
     }
     

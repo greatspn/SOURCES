@@ -13,7 +13,6 @@ import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
 import editor.domain.elements.TemplateVariable;
 import editor.domain.measures.ExprField;
-import static editor.domain.composition.NetInstanceDescriptorPanel.LABEL_FOREGROUND_COLOR;
 import editor.gui.MainWindowInterface;
 
 /**
@@ -50,7 +49,7 @@ public class VarBindingPanel extends javax.swing.JPanel implements ExprField.Exp
         exprField.setExprListener(this);
         exprField.initializeFor(exprCopy.getEditableValue(), mnPage);
         
-        label_varEq.setForeground(LABEL_FOREGROUND_COLOR);
+        label_varEq.setForeground(editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR);
     }
     
     public void deinitialize() {

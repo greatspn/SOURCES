@@ -8,7 +8,6 @@ package editor.domain.composition;
 
 import common.EmptyIterator;
 import common.Util;
-import editor.domain.NetObject;
 import editor.domain.NetPage;
 import editor.domain.Node;
 import editor.domain.PageErrorWarning;
@@ -92,7 +91,11 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
         this.compNet = compNet;
     }
     
-    protected void setCompositionSuccessfull(NetPage compNet, String[] visualizedSubNetNames, NetPage[] visualizedSubNets) {
+    protected void setCompositionSuccessfull(NetPage compNet, ViewProfile newProfile,
+                                             String[] visualizedSubNetNames, NetPage[] visualizedSubNets) 
+    {
+        newProfile.zoom = this.viewProfile.zoom;
+        this.viewProfile = newProfile;
         this.compNet = compNet;
         this.visualizedSubNetNames = visualizedSubNetNames;
         this.visualizedSubNets = visualizedSubNets;

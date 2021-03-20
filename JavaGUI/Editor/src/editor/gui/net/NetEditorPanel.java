@@ -280,7 +280,7 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
         jScrollPane.setColumnHeaderView(horizRuler);
         jScrollPane.setRowHeaderView(vertRuler);
         JPanel corner = new JPanel();
-        corner.setBackground(Color.WHITE);
+        corner.setBackground(horizRuler.BKGND);
         jScrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, corner);
         
         // Add actions to the input map manually
@@ -675,6 +675,15 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
     };
     
     public static final Color PAGE_BACKGROUND_COLOR = Util.mix(UIManager.getColor("TextField.background"), Color.WHITE, 0.20f);
+    public static final Color PAGE_FOREGROUND_COLOR = Util.mix(UIManager.getColor("TextField.foreground"), Color.BLACK, 0.20f);
+    public static final Color PAGE_BACKGROUND_DISABLED_COLOR = Util.mix(PAGE_BACKGROUND_COLOR, PAGE_FOREGROUND_COLOR, 0.90f);
+    static{
+//        System.out.println("Util.mix(UIManager.getColor(\"TextField.inactiveBackground\") = "+UIManager.getColor("TextField.inactiveBackground"));
+        System.out.println("PAGE_BACKGROUND_DISABLED_COLOR = "+PAGE_BACKGROUND_DISABLED_COLOR);
+    }
+    
+    public static final Color PAGE_TITLE_COLOR = Util.mix(UIManager.getColor("TextField.background"), new Color(223, 223, 255), 0.20f);
+    public static final Color PAGE_TITLE_FOREGROUND = Color.BLACK;
     
 
     class JNetPanel extends JPanel implements Scrollable, 

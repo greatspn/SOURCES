@@ -59,16 +59,14 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         
         setBackground(editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_COLOR);
         exprField_replicas.setOpaque(false);
-        label_binding.setForeground(LABEL_FOREGROUND_COLOR);
-        label_netName.setForeground(LABEL_FOREGROUND_COLOR);
-        label_numReplicas.setForeground(LABEL_FOREGROUND_COLOR);
-        label_Num.setForeground(LABEL_FOREGROUND_COLOR);
+        label_binding.setForeground(editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR);
+        label_netName.setForeground(editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR);
+        label_numReplicas.setForeground(editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR);
+        label_Num.setForeground(editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR);
 //        exprField_replicas.setBackground(PAGE_BACKGROUND_COLOR);
         
         initializing = false;
     }
-    
-    public static final Color LABEL_FOREGROUND_COLOR = new Color(4, 4, 4);
     
     public void initialize(MainWindowInterface mainInterface, ProjectData currProject, 
                            MultiNetPage mnPage) 
@@ -121,8 +119,6 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         
         for (Map.Entry<String, Expr> bind : descr.instParams.binding.entrySet()) {
             if (descr.paramRefs.containsKey(bind.getKey())) {
-//        for (String varName : descr.paramRefs.keySet()) {
-//            if (descr.instParams.binding.containsKey(varName)) {
                 VarBindingPanel vbp = new VarBindingPanel(descr.paramRefs.get(bind.getKey()), 
                                                           descr, numInst, mnPage, mainInterface);
                 bindPanels.add(vbp);

@@ -791,8 +791,8 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         @Override
         public Color getNetBackground(String overlayMsg) {
             if (isEnabled() && !isInBindingPhase() && hasSemiflows)
-                return Color.WHITE;
-            return VERY_LIGHT_GRAY_BKGND;
+                return editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_COLOR;
+            return editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_DISABLED_COLOR;
         }
     }
     

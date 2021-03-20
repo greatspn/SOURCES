@@ -11,6 +11,7 @@ import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
 import editor.domain.Selectable;
 import editor.domain.Selectable.DummyNamedSelectable;
+import editor.domain.ViewProfile;
 import editor.domain.elements.GspnPage;
 import editor.domain.elements.Place;
 import editor.domain.elements.Transition;
@@ -87,7 +88,7 @@ public class AlgebraCompositionPage extends MultiNetPage implements Serializable
     
     @Override
     protected void resetCompositionTargets() {
-        setCompositionSuccessfull(null, null, null);
+        setCompositionSuccessfull(null, viewProfile, null, null);
         setCompositionTarget(UNSUCCESSFULL_GSPN_TARGET);
     }
     
@@ -226,8 +227,10 @@ public class AlgebraCompositionPage extends MultiNetPage implements Serializable
         
         String uniqueName = net1.getPageName()+"+"+net2.getPageName();
         a.result.setPageName(uniqueName);
+        
+        ViewProfile newProfile = net1.viewProfile.combineWith(net2.viewProfile);
 
-        setCompositionSuccessfull(a.result, 
+        setCompositionSuccessfull(a.result, newProfile,
                 new String[]{uniqueName}, new NetPage[]{a.result});
         
         for (String w : a.warnings) {

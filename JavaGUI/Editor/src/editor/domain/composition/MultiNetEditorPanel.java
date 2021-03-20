@@ -16,6 +16,7 @@ import editor.domain.PageErrorWarning;
 import editor.domain.ProjectData;
 import editor.domain.ProjectFile;
 import editor.domain.ProjectPage;
+import editor.domain.ViewProfile;
 import editor.domain.measures.ExprField;
 import editor.domain.measures.SolverParams;
 import editor.gui.AbstractPageEditor;
@@ -469,6 +470,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         mainInterface.executeUndoableCommand("duplicate composable net as editable.", (ProjectData proj, ProjectPage elem) -> {
             NetPage newPage = (NetPage)Util.deepCopy(currPage.getComposedNet());
             newPage.setPageName(proj.generateUniquePageName(newPage.getPageName()));
+            newPage.viewProfile = (ViewProfile)Util.deepCopy(currPage.viewProfile);
             proj.addPage(newPage);
             mainInterface.switchToProjectPage(currProject, newPage, null);
         });

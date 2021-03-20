@@ -50,6 +50,9 @@ public class Algebra {
     // use broken edges between the two composed nets
     private final boolean useBrokenEdges;
 
+    // Merge by shared tags or by common name
+    private final MergePolicy mergePolicy;
+
     private final boolean verbose;
     
     // Output: combined net
@@ -58,25 +61,25 @@ public class Algebra {
     // Output: combination messages & warnings
     public final ArrayList<String> warnings;
     
-    public final MergePolicy mergePolicy;
-
     //=========================================================================
-    // Fields thah help in the composition of the result net
+    // Fields that help in the composition of the result net
 
     // Map places from net1 to result
     private final Map<Place, List<Place>> plc1InProd = new HashMap<>();
     // Map places from net2 to result
     private final Map<Place, List<Place>> plc2InProd = new HashMap<>();
-
+    
     // Map transitions from net1 to result
     private final Map<Transition, List<Transition>> trn1InProd = new HashMap<>();
     // Map transitions from net2 to result
     private final Map<Transition, List<Transition>> trn2InProd = new HashMap<>();
     
+    // Set of result places/transitions that are merged 
+    private final Set<Place> mergedPlcs = new HashSet<>();
+    private final Set<Transition> mergedTrns = new HashSet<>();
+
     // Maps <place, trans> of composed net with the source edges from net1, net2
     private final Map<Triple<Place, Transition, Kind>, Tuple<GspnEdge, GspnEdge>> edgeMap = new HashMap<>();
-//    private final Map<Tuple<Place, Transition>, Tuple<GspnEdge, GspnEdge>> edgeMapOutput = new HashMap<>();
-//    private final Map<Tuple<Place, Transition>, Tuple<GspnEdge, GspnEdge>> edgeMapInhibitor = new HashMap<>();
     
     // Duplicated color variables. All ColorVars from net2 are initially duplicated,
     // then only the one used (stored in @usedDupColorVar) actually end up in the @result net
@@ -93,26 +96,29 @@ public class Algebra {
     //=========================================================================
     // Determine if two nodes should be merged togheter
     private boolean nodesShouldBeMerged(Node node1, Node node2, String[] restList) {
-        // Merge by name: node1 mrges node2 if they have the same name
-        if (mergePolicy == MergePolicy.BY_NAME)
-            return node1.getUniqueName().equals(node2.getUniqueName());
-        
-        // Merge by tag: node1 mrges node2 if they share a common tag
-        // Determine if two nodes with tags (i.e. places or transitions) share at
-        // least a common tag in the restricted list, which means that the
-        // two nodes will be composed in the @result net.
-        if (restList == null)
-            return false;
-        for (int n1=0; n1<node1.numTags(); n1++) {
-            for (int n2=0; n2<node2.numTags(); n2++) {
-                if (node1.getTag(n1).equals(node2.getTag(n2))) {
-                    for (String tag : restList)
-                        if (tag.equals(node1.getTag(n1)))
-                            return true;
+        switch (mergePolicy) {
+            case BY_NAME:
+                // node1 merges node2 if they both have the same name
+                return node1.getUniqueName().equals(node2.getUniqueName());
+                
+            case BY_TAG:
+                // node1 merges node2 if they both share a common tag in the restricted list
+                if (restList == null)
+                    return false;
+                for (int n1=0; n1<node1.numTags(); n1++) {
+                    for (int n2=0; n2<node2.numTags(); n2++) {
+                        if (node1.getTag(n1).equals(node2.getTag(n2))) {
+                            for (String tag : restList)
+                                if (tag.equals(node1.getTag(n1)))
+                                    return true;
+                        }
+                    }
                 }
-            }
+                return false;
+                
+            default:
+                throw new IllegalStateException();
         }
-        return false;
     }
     
     //=========================================================================
@@ -461,10 +467,11 @@ public class Algebra {
                             else { // color expressions
                                 newInit = simpleColorExprSum(init1, init2, p1.getType());
                             }
-                            System.out.println("init1="+init1+" init2="+init2+" newInit="+newInit);
+//                            System.out.println("init1="+init1+" init2="+init2+" newInit="+newInit);
                             newPlace.getInitMarkingEditable().setValue(null, null, newInit);
 
                             result.nodes.add(newPlace);
+                            mergedPlcs.add(newPlace);
                             j++;
 
                             crossList1.add(newPlace);
@@ -547,6 +554,7 @@ public class Algebra {
                                 t1.getGuard(), t2.getGuard(), "guards");
 
                             result.nodes.add(newTransition);
+                            mergedTrns.add(newTransition);
                             j++;
 
                             crossList1.add(newTransition);
@@ -642,26 +650,28 @@ public class Algebra {
             ArrayList<Point2D> points;
             boolean isBroken;
             String mult;
+            boolean breakEdge = useBrokenEdges && (mergedPlcs.contains(resultPlace) || 
+                                                   mergedTrns.contains(resultTrans));
 
-            if (e1 == null) { // only one edge from net2
-                headMagnet = e2.getHeadMagnet();
-                tailMagnet = e2.getTailMagnet();
-                mult = e2.getMultiplicity();
-                isBroken = e2.isBroken;
-                points = composeEdgePoints(e1, null);
-            }
-            else if (e2 == null) { // only one edge from net1
+            if (e2 == null) { // only one edge from net1
                 headMagnet = e1.getHeadMagnet();
                 tailMagnet = e1.getTailMagnet();
                 mult = e1.getMultiplicity();
                 isBroken = e1.isBroken;
-                points = composeEdgePoints(null, e2);
+                points = composeEdgePoints(e1, e2);
+            }
+            else if (e1 == null) { // only one edge from net2
+                headMagnet = e2.getHeadMagnet();
+                tailMagnet = e2.getTailMagnet();
+                mult = e2.getMultiplicity();
+                isBroken = e2.isBroken || breakEdge;
+                points = composeEdgePoints(e1, e2);
             }
             else { // combine edge from net1 + edge from net2
                 headMagnet = e1.getHeadMagnet();
                 tailMagnet = e1.getTailMagnet();
-                isBroken = e1.isBroken || e2.isBroken || useBrokenEdges;
-                points = composeEdgePoints(e1, null); // NOTE: use only e1, do not use e2!
+                isBroken = e1.isBroken || e2.isBroken || breakEdge;
+                points = composeEdgePoints(e1, e2); // NOTE: use only e1, do not use e2!
 
                 // Combine multiplicities
                 String m1 = e1.getMultiplicity(), m2 = e2.getMultiplicity();

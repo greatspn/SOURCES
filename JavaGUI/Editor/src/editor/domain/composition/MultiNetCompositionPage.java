@@ -6,11 +6,13 @@
 package editor.domain.composition;
 
 import common.Util;
+import editor.domain.Edge;
 import editor.domain.Expr;
 import editor.domain.NetPage;
 import editor.domain.Node;
 import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
+import editor.domain.ViewProfile;
 import editor.domain.elements.GspnPage;
 import editor.domain.elements.Place;
 import editor.domain.elements.TextBox;
@@ -92,7 +94,7 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
     
     @Override
     protected void resetCompositionTargets() {
-        setCompositionSuccessfull(null, null, null);
+        setCompositionSuccessfull(null, viewProfile, null, null);
         setCompositionTarget(UNSUCCESSFULL_GSPN_TARGET);
     }
     
@@ -207,35 +209,39 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
         }
         
         NetPage composedNet = UNSUCCESSFULL_GSPN_TARGET;
-        final int moveDx = 1, moveDy = 2;
+        ViewProfile newProfile = viewProfile;
+        final int ptMoveDx = 1, ptMoveDy = 1;
         final int textBoxExtraWidth = 2, textBoxExtraHeight = 3;
+        int posX = 1, posY = 1;
         if (flattenedSubNets.size() > 0 && isPageCorrect()) {
             composedNet = (NetPage)Util.deepCopy(flattenedSubNets.get(0));
+            newProfile = composedNet.viewProfile;
             composedNet.preparePageCheck();
             composedNet.checkPage(null, null, composedNet, null);
             composedNet.setPageName(flattenedSubNetNames.get(0));
             updateMergeNames(composedNet);
             Rectangle2D composedPageBounds = composedNet.computeIntegerPageBounds();
 //            System.out.println("composedPageBounds="+composedPageBounds+"\n");
+            double xShift = posX - composedPageBounds.getX() + ptMoveDx;
+            double yShift = posY - composedPageBounds.getY() + ptMoveDy;
+            for (Node node : composedNet.nodes)
+                node.getCenterHandle(composedNet).moveBy(xShift, yShift, true);
+            for (Edge edge : composedNet.edges)
+                edge.getCenterHandle(composedNet).moveBy(xShift, yShift, true);
             
             // Wrap the composedNet with the TextBox            
             TextBox textBox = new TextBox(flattenedSubNetNames.get(0), 
-                    new Point2D.Double(1+moveDx-1, 0+moveDy-1), 
+                    new Point2D.Double(posX, posY), 
                     composedNet.generateUniqueNodeName(true, "__textBox"));
             textBox.setWidth(composedPageBounds.getWidth()+textBoxExtraWidth);
             textBox.setHeight(composedPageBounds.getHeight()+textBoxExtraHeight);
             textBox.getLockEditable().setValue(null, null, Boolean.TRUE);
             textBox.getBorderColorEditable().setValue(null, null, new Color(0, 64, 255));
-            composedPageBounds.setRect(1, 0, 
-                    composedPageBounds.getWidth() + textBoxExtraWidth, 
-                    composedPageBounds.getHeight() + textBoxExtraHeight);
-            for (Node node : composedNet.nodes)
-                node.setNodePosition(node.getX() + moveDx - composedPageBounds.getX() + 1, 
-                                     node.getY() + moveDy - composedPageBounds.getY());
             composedNet.nodes.add(textBox);
 //            System.out.println("composedPageBounds="+composedPageBounds+"\n");
-//            composedPageBounds = composedNet.getPageBounds();
-//            System.out.println("composedPageBounds="+composedPageBounds+"\n");
+            final int stepX = 2;
+            posX += composedPageBounds.getWidth() + textBoxExtraWidth + stepX;
+//            System.out.println("posX = "+posX);
             
             if (!composedNet.isPageCorrect()) {
                 addPageError("Could not prepare "+composedNet.getPageName()+" for the composition.", null);
@@ -245,9 +251,10 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
                     NetPage ithNet = flattenedSubNets.get(index);
                     Rectangle2D ithPageBounds = ithNet.computeIntegerPageBounds();
                     
-                    final int stepX = 4;
-                    int dx2shift = (int)composedPageBounds.getWidth() + stepX + moveDx - (int)ithPageBounds.getX();
-                    int dy2shift = moveDy - (int)ithPageBounds.getY();//(int)pageBounds1.getHeight() + 5;
+//                    int dx2shift = (int)composedPageBounds.getWidth() + 2*textBoxExtraWidth + stepX + moveDx - (int)ithPageBounds.getX();
+//                    int dy2shift = moveDy - (int)ithPageBounds.getY();//(int)pageBounds1.getHeight() + 5;
+                    int dx2shift = posX - (int)ithPageBounds.getX() + ptMoveDx;
+                    int dy2shift = posY - (int)ithPageBounds.getY() + ptMoveDy;
 //                    System.out.println("ithPageBounds="+ithPageBounds);
 //                    System.out.println("dx2shift="+dx2shift+" dy2shift="+dy2shift);
                     boolean useBrokenEdges = true;
@@ -262,6 +269,7 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
                         addPageWarning("Composition with "+ithNet.getPageName()+": "+w, null);
                     }
                     composedNet = a.result;
+                    newProfile = newProfile.combineWith(ithNet.viewProfile);
                     composedNet.preparePageCheck();
                     composedNet.checkPage(null, null, composedNet, null);
                     if (!composedNet.isPageCorrect()) {
@@ -271,17 +279,19 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
                     
                     // Wrap the ithNet in the composedNet with a new TextBox
                     textBox = new TextBox(flattenedSubNetNames.get(index), 
-                            new Point2D.Double(composedPageBounds.getWidth() + stepX + moveDx - 1, 1), 
+                            new Point2D.Double(posX, posY), 
                             composedNet.generateUniqueNodeName(true, "__textBox"));
-                    textBox.setWidth(ithPageBounds.getWidth()+2);
-                    textBox.setHeight(ithPageBounds.getHeight()+3);
+                    textBox.setWidth(ithPageBounds.getWidth()+textBoxExtraWidth);
+                    textBox.setHeight(ithPageBounds.getHeight()+textBoxExtraHeight);
                     textBox.getLockEditable().setValue(null, null, Boolean.TRUE);
                     textBox.getBorderColorEditable().setValue(null, null, new Color(0, 64, 255));
                     composedNet.nodes.add(textBox);
                     
                     // finally, update the composed Net bounds
                     composedPageBounds = composedNet.computeIntegerPageBounds();
+                    posX += ithPageBounds.getWidth()+ textBoxExtraWidth + stepX;
 //                    System.out.println("composedPageBounds="+composedPageBounds+"\n");
+//                    System.out.println("posX = "+posX);
                 }
             }
         }
@@ -289,7 +299,7 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
         if (!isPageCorrect())
             composedNet = UNSUCCESSFULL_GSPN_TARGET;
 
-        setCompositionSuccessfull(composedNet, 
+        setCompositionSuccessfull(composedNet, newProfile,
                 flattenedSubNetNames.toArray(new String[flattenedSubNetNames.size()]), 
                 flattenedSubNets.toArray(new NetPage[flattenedSubNets.size()]));
 
