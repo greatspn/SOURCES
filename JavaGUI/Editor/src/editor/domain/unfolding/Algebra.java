@@ -58,7 +58,7 @@ public class Algebra {
     // Output: combination messages & warnings
     public final ArrayList<String> warnings;
     
-    public boolean mergeByName = false;
+    public final MergePolicy mergePolicy;
 
     //=========================================================================
     // Fields thah help in the composition of the result net
@@ -91,13 +91,16 @@ public class Algebra {
     private final Set<String> uniqueNamesResult = new HashSet<>();
 
     //=========================================================================
-    // Determine if two nodes with tags (i.e. places or transitions) share at
-    // least a common tag in the restricted list, which means that the
-    // two nodes will be composed in the @result net.
-    private boolean nodesShareRestrictedTag(Node node1, Node node2, String[] restList) {
-        if (mergeByName)
+    // Determine if two nodes should be merged togheter
+    private boolean nodesShouldBeMerged(Node node1, Node node2, String[] restList) {
+        // Merge by name: node1 mrges node2 if they have the same name
+        if (mergePolicy == MergePolicy.BY_NAME)
             return node1.getUniqueName().equals(node2.getUniqueName());
         
+        // Merge by tag: node1 mrges node2 if they share a common tag
+        // Determine if two nodes with tags (i.e. places or transitions) share at
+        // least a common tag in the restricted list, which means that the
+        // two nodes will be composed in the @result net.
         if (restList == null)
             return false;
         for (int n1=0; n1<node1.numTags(); n1++) {
@@ -202,16 +205,18 @@ public class Algebra {
     
     // policy for generating the merged name from the two operand names
     private String getMergedName(String name1, String name2) {
-        if (mergeByName)
+        if (mergePolicy == MergePolicy.BY_NAME)
             return name1;
         else
             return name1+"_"+name2;
     }
 
     //=========================================================================
-    public Algebra(GspnPage gspn1, GspnPage gspn2, String[] restSetTr, String[] restSetPl, 
+    public Algebra(MergePolicy mergePolicy, GspnPage gspn1, GspnPage gspn2, 
+                   String[] restSetTr, String[] restSetPl, 
                    int dx2, int dy2, boolean useBrokenEdges, boolean verbose) 
     {
+        this.mergePolicy = mergePolicy;
         this.gspn1 = gspn1;
         this.gspn2 = gspn2;
         this.restSetTr = restSetTr;
@@ -424,7 +429,7 @@ public class Algebra {
                 for (Node node2 : gspn2.nodes) {
                     if (node2 instanceof Place) {
                         final Place p2 = (Place)node2;
-                        if (nodesShareRestrictedTag(node1, node2, restSetPl)) {
+                        if (nodesShouldBeMerged(node1, node2, restSetPl)) {
                             // combine p1 and p2
                             List<Place> crossList2 = plc2InProd.get(p2);
                             if (crossList1 == null)
@@ -444,20 +449,20 @@ public class Algebra {
                             checkAttributeConflict(p1, p2, newPlace, 
                                     p1.getType().toString(), p2.getType().toString(), "types");
                             checkAttributeConflict(p1, p2, newPlace, 
-                                    p1.getInitMarkingExpr(), p2.getInitMarkingExpr(), "initial markings");
-                            checkAttributeConflict(p1, p2, newPlace, 
                                     p1.getKroneckerPartition(), p2.getKroneckerPartition(), "Kronecker partitions");
-//                            // Combine the initial markings
-//                            String init1 = p1.getInitMarkingExpr();
-//                            String init2 = p2.getInitMarkingExpr(), newInit;
-//                            if (p1.isInNeutralDomain()) {
-//                                newInit = simpleNeutralExprSum(init1, init2, p1.getType());
-//                            }
-//                            else { // color expressions
-//                                newInit = simpleColorExprSum(init1, init2, p1.getType());
-//                            }
-//                            System.out.println("init1="+init1+" init2="+init2+" newInit="+newInit);
-//                            newPlace.getInitMarkingEditable().setValue(null, null, newInit);
+//                            checkAttributeConflict(p1, p2, newPlace, 
+//                                    p1.getInitMarkingExpr(), p2.getInitMarkingExpr(), "initial markings");
+                            // Combine the initial markings
+                            String init1 = p1.getInitMarkingExpr();
+                            String init2 = p2.getInitMarkingExpr(), newInit;
+                            if (p1.isInNeutralDomain()) {
+                                newInit = simpleNeutralExprSum(init1, init2, p1.getType());
+                            }
+                            else { // color expressions
+                                newInit = simpleColorExprSum(init1, init2, p1.getType());
+                            }
+                            System.out.println("init1="+init1+" init2="+init2+" newInit="+newInit);
+                            newPlace.getInitMarkingEditable().setValue(null, null, newInit);
 
                             result.nodes.add(newPlace);
                             j++;
@@ -513,7 +518,7 @@ public class Algebra {
                 for (Node node2 : gspn2.nodes) {
                     if (node2 instanceof Transition) {
                         final Transition t2 = (Transition)node2;
-                        if (nodesShareRestrictedTag(node1, node2, restSetTr)) {
+                        if (nodesShouldBeMerged(node1, node2, restSetTr)) {
                             // combine t1 and t2
                             List<Transition> crossList2 = trn2InProd.get(t2);
                             if (crossList1 == null)
@@ -813,6 +818,14 @@ public class Algebra {
     //=========================================================================
     // simplified sum of non-colored terms
     private String simpleNeutralExprSum(String expr1, String expr2, TokenType type) {
+        boolean blank1 = expr1.isBlank(), blank2 = expr2.isBlank();
+        if (blank1 && blank2)
+            return "";
+        if (blank1)
+            return expr2;
+        if (blank2)
+            return expr1;
+        
         try {
             if (type == TokenType.DISCRETE) {
                 int i1 = Integer.parseInt(expr1);

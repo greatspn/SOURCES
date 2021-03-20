@@ -20,12 +20,14 @@ import editor.domain.grammar.TemplateBinding;
 import editor.domain.io.XmlExchangeDirection;
 import editor.domain.io.XmlExchangeException;
 import editor.domain.unfolding.Algebra;
+import editor.domain.unfolding.MergePolicy;
 import editor.gui.ResourceFactory;
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -106,35 +108,42 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
     private transient ArrayList<NetPage> flattenedSubNets;
     private transient ArrayList<String> flattenedSubNetNames;
     
-    private transient Set<String> placeNames, mergedPlaceNames;
-    private transient Set<String> transNames, mergedTransNames;
+    private transient Set<String> placeNames;
+    private transient Set<String> transNames;
+    
+    private transient Map<String, Color> colorOfPlace;
+    private transient Map<String, Color> colorOfTrans;
+    private transient int placePalIndex, transPalIndex;
     
     private void updateMergeNames(NetPage net) {
         for (Node node : net.nodes) {
             if (node instanceof Place) {
                 if (!placeNames.contains(node.getUniqueName()))
                     placeNames.add(node.getUniqueName());
-                else 
-                    mergedPlaceNames.add(node.getUniqueName());
+                else {
+                    if (!colorOfPlace.containsKey(node.getUniqueName()))
+                        colorOfPlace.put(node.getUniqueName(), 
+                                BLUE_PALETTE[(placePalIndex++) % BLUE_PALETTE.length]);
+                }
             }
             else if (node instanceof Transition) {
                 if (!transNames.contains(node.getUniqueName()))
                     transNames.add(node.getUniqueName());
-                else 
-                    mergedTransNames.add(node.getUniqueName());
+                else {
+                    if (!colorOfTrans.containsKey(node.getUniqueName()))
+                        colorOfTrans.put(node.getUniqueName(), 
+                                RED_PALETTE[(transPalIndex++) % RED_PALETTE.length]);
+                }
             }
         }
     }
     
-    public static final Color MERGED_PLACE_COLOR = new Color(62, 0, 148);
-    public static final Color MERGED_TRANS_COLOR = new Color(107, 0, 89);
-    
     @Override
     public Color colorOfMergedNode(Node node) {
-        if (node instanceof Place && mergedPlaceNames!=null && mergedPlaceNames.contains(node.getUniqueName()))
-            return MERGED_PLACE_COLOR;
-        else if (node instanceof Transition && mergedTransNames!=null && mergedTransNames.contains(node.getUniqueName()))
-            return MERGED_TRANS_COLOR;
+        if (node instanceof Place && colorOfPlace!=null && colorOfPlace.containsKey(node.getUniqueName()))
+            return colorOfPlace.get(node.getUniqueName());
+        else if (node instanceof Transition && colorOfTrans!=null && colorOfTrans.containsKey(node.getUniqueName()))
+            return colorOfTrans.get(node.getUniqueName());
         else 
             return null;
     }
@@ -172,9 +181,10 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
 //        compData = null;
 
         placeNames = new HashSet<>();
-        mergedPlaceNames = new HashSet<>();
         transNames = new HashSet<>();
-        mergedTransNames = new HashSet<>();
+        colorOfPlace = new HashMap<>();
+        colorOfTrans = new HashMap<>();
+        placePalIndex = transPalIndex = 0;
 
         for (NetPage subnet : flattenedSubNets) {
             subnet.preparePageCheck();
@@ -206,9 +216,9 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
             composedNet.setPageName(flattenedSubNetNames.get(0));
             updateMergeNames(composedNet);
             Rectangle2D composedPageBounds = composedNet.computeIntegerPageBounds();
-            System.out.println("composedPageBounds="+composedPageBounds+"\n");
-            // Wrap the composedNet with the TextBox
+//            System.out.println("composedPageBounds="+composedPageBounds+"\n");
             
+            // Wrap the composedNet with the TextBox            
             TextBox textBox = new TextBox(flattenedSubNetNames.get(0), 
                     new Point2D.Double(1+moveDx-1, 0+moveDy-1), 
                     composedNet.generateUniqueNodeName(true, "__textBox"));
@@ -223,8 +233,7 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
                 node.setNodePosition(node.getX() + moveDx - composedPageBounds.getX() + 1, 
                                      node.getY() + moveDy - composedPageBounds.getY());
             composedNet.nodes.add(textBox);
-            System.out.println("composedPageBounds="+composedPageBounds+"\n");
-            
+//            System.out.println("composedPageBounds="+composedPageBounds+"\n");
 //            composedPageBounds = composedNet.getPageBounds();
 //            System.out.println("composedPageBounds="+composedPageBounds+"\n");
             
@@ -239,12 +248,11 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
                     final int stepX = 4;
                     int dx2shift = (int)composedPageBounds.getWidth() + stepX + moveDx - (int)ithPageBounds.getX();
                     int dy2shift = moveDy - (int)ithPageBounds.getY();//(int)pageBounds1.getHeight() + 5;
-                    System.out.println("ithPageBounds="+ithPageBounds);
-                    System.out.println("dx2shift="+dx2shift+" dy2shift="+dy2shift);
+//                    System.out.println("ithPageBounds="+ithPageBounds);
+//                    System.out.println("dx2shift="+dx2shift+" dy2shift="+dy2shift);
                     boolean useBrokenEdges = true;
-                    Algebra a = new Algebra((GspnPage)composedNet, (GspnPage)ithNet, 
+                    Algebra a = new Algebra(MergePolicy.BY_NAME, (GspnPage)composedNet, (GspnPage)ithNet, 
                             null, null, dx2shift, dy2shift, useBrokenEdges, false);
-                    a.mergeByName = true;
                     a.compose();
                     a.result.setSelectionFlag(false);
                     
@@ -257,7 +265,7 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
                     composedNet.preparePageCheck();
                     composedNet.checkPage(null, null, composedNet, null);
                     if (!composedNet.isPageCorrect()) {
-                        addPageError("Could not prepare "+composedNet.getPageName()+" for the composition.", null);
+                        addPageError("Could not compose with "+flattenedSubNetNames.get(index)+".", null);
                     }
                     updateMergeNames(ithNet);
                     
@@ -273,7 +281,7 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
                     
                     // finally, update the composed Net bounds
                     composedPageBounds = composedNet.computeIntegerPageBounds();
-                    System.out.println("composedPageBounds="+composedPageBounds+"\n");
+//                    System.out.println("composedPageBounds="+composedPageBounds+"\n");
                 }
             }
         }

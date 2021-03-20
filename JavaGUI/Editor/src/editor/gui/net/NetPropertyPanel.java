@@ -1840,13 +1840,17 @@ public class NetPropertyPanel extends javax.swing.JPanel {
             throw new IllegalStateException("Unknown source component.");
         }
         
-        Object currValue = editable.getValue();
-        if (currValue != null && currValue.equals(newValue))
-            return; // No changes
-        
-        mainInterface.executeUndoableCommand(descr, (ProjectData proj, ProjectPage page) -> {
-            editable.setValue(proj, (NetPage)page, newValue);
-        });
+        if (editable != null) {
+            Object currValue = editable.getValue();
+            if (currValue != null && currValue.equals(newValue))
+                return; // No changes
+            mainInterface.executeUndoableCommand(descr, (ProjectData proj, ProjectPage page) -> {
+                editable.setValue(proj, (NetPage)page, newValue);
+            });
+        }
+        else {
+            System.out.println("editable == null: should not happen");
+        }
     }
         
     private void textField_UniqueNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textField_UniqueNameActionPerformed

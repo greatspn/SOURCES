@@ -41,6 +41,7 @@ import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import static editor.domain.measures.SolverInvokator.makeFilenameForCmd;
 import editor.domain.unfolding.Algebra;
+import editor.domain.unfolding.MergePolicy;
 import java.awt.Dimension;
 import java.awt.geom.Rectangle2D;
 import javax.swing.JScrollPane;
@@ -237,7 +238,7 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                                 break;
                         }
                         
-                        Algebra a = new Algebra(net1, net2, 
+                        Algebra a = new Algebra(MergePolicy.BY_TAG, net1, net2, 
                                         onTr ? propTransTags.replace(" ", "").split(",") : null, 
                                         onPl ? propPlaceTags.replace(" ", "").split(",") : null, 
                                         dx2shift, dy2shift, propBrokenEdges, false);

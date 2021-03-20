@@ -15,6 +15,7 @@ import editor.domain.io.GreatSpnFormat;
 import editor.domain.io.PNMLFormat;
 import editor.domain.io.PnProFormat;
 import editor.domain.unfolding.Algebra;
+import editor.domain.unfolding.MergePolicy;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.Map;
@@ -147,7 +148,7 @@ public class AlgebraCommandLineTool {
 //                break;
         }
 
-        Algebra a = new Algebra(net1, net2, 
+        Algebra a = new Algebra(MergePolicy.BY_TAG, net1, net2, 
                         restSetTr.replace(" ", "").split(","), 
                         restSetPl.replace(" ", "").split(","), 
                         dx2shift, dy2shift, useBrokenEdges, verbose);

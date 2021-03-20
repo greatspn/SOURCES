@@ -20,6 +20,7 @@ import editor.domain.io.XmlExchangeException;
 import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
 import editor.domain.measures.SolverParams;
 import editor.domain.unfolding.Algebra;
+import editor.domain.unfolding.MergePolicy;
 import editor.gui.ResourceFactory;
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
@@ -216,7 +217,7 @@ public class AlgebraCompositionPage extends MultiNetPage implements Serializable
                 dy2shift = Integer.parseInt(alignDy.getExpr());
                 break;
         }
-        Algebra a = new Algebra((GspnPage)net1, (GspnPage)net2, 
+        Algebra a = new Algebra(MergePolicy.BY_TAG, (GspnPage)net1, (GspnPage)net2, 
                 selTagsT.isEmpty() ? null : selTagsT.toArray(new String[selTagsT.size()]),
                 selTagsP.isEmpty() ? null : selTagsP.toArray(new String[selTagsP.size()]),
                 dx2shift, dy2shift, useBrokenEdges, false);

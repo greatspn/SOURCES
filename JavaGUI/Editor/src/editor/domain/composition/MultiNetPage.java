@@ -8,6 +8,7 @@ package editor.domain.composition;
 
 import common.EmptyIterator;
 import common.Util;
+import editor.domain.NetObject;
 import editor.domain.NetPage;
 import editor.domain.Node;
 import editor.domain.PageErrorWarning;
@@ -87,13 +88,6 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
         return visualizedSubNetNames;
     }
     
-    // Default failure target for @compNet (for operators generating GSPN)
-    public static final GspnPage UNSUCCESSFULL_GSPN_TARGET;
-    static {
-        UNSUCCESSFULL_GSPN_TARGET = new GspnPage();
-        UNSUCCESSFULL_GSPN_TARGET.setPageName("ERROR");
-        UNSUCCESSFULL_GSPN_TARGET.addPageError("Could not compose.", null);
-    }
     protected void setCompositionTarget(NetPage compNet) {
         this.compNet = compNet;
     }
@@ -109,10 +103,50 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
     public boolean areSubnetsVisualizable() {
         return visualizedSubNets != null && visualizedSubNets.length > 0;
     }
+
+    // Default failure target for @compNet (for operators generating GSPN)
+    public static final GspnPage UNSUCCESSFULL_GSPN_TARGET;
+    static {
+        UNSUCCESSFULL_GSPN_TARGET = new GspnPage();
+        UNSUCCESSFULL_GSPN_TARGET.setPageName("ERROR");
+        UNSUCCESSFULL_GSPN_TARGET.addPageError("Could not compose.", null);
+    }
     
     public MultiNetPage() {
     }
     
+    
+    //==========================================================================
+
+    public static final Color[] RED_PALETTE = {
+        new Color(0x800000), // maroon
+        new Color(0xFF8C00), // dark orange
+        new Color(0xFF0000), // red
+        new Color(0xFFD700), // gold
+        new Color(0xFF7F50), // coral
+        new Color(0xFFFF00), // yellow
+        new Color(0xFFB6C1), // light pink
+        new Color(0xB8860B), // dark golden rod
+        new Color(0xFF1493), // deep pink
+        new Color(0xBDB76B), // dark khaki
+        new Color(0xC71585), // medium violet red
+        new Color(0xFF6347), // tomato
+        new Color(0xFF00FF), // magenta / fuchsia
+    };
+
+    public static final Color[] BLUE_PALETTE = {
+        new Color(0x6495ED), // corn flower blue
+        new Color(0x00BFFF), // deep sky blue
+        new Color(0xADD8E6), // light blue
+        new Color(0x1E90FF), // dodger blue
+        new Color(0x191970), // midnight blue
+        new Color(0x00FFFF), // aqua
+        new Color(0xE0FFFF), // light cyan
+        new Color(0x3CB371), // medium sea green
+        new Color(0x2F4F4F), // dark slate gray
+        new Color(0x00FF7F), // spring green
+        new Color(0x7B68EE), // medium slate blue  
+    };
     
     //==========================================================================
 
