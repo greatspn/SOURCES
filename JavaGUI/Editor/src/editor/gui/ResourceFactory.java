@@ -173,6 +173,10 @@ public class ResourceFactory {
         return loadIcon32("bound");
     }
 
+    public ImageIcon getBrick16() { // generic icon
+        return loadIcon16("brick");
+    }
+    
     public ImageIcon getBroom32() {
         return loadIcon32("broom");
     }
@@ -598,6 +602,10 @@ public class ResourceFactory {
 
     public ImageIcon getRuler24() {
         return loadIcon24("ruler");
+    }
+    
+    public ImageIcon getShowMatrices32() {
+        return loadIcon32("show_matrices");
     }
 
     public ImageIcon getSnapToGrid24() {

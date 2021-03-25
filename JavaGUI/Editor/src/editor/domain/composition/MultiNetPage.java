@@ -474,6 +474,13 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
             return false;
         return getComposedNet().hasPlaceTransInv();
     }
+    
+    @Override
+    public boolean hasNetMatrices() {
+        if (!isPageCorrect())
+            return false;
+        return getComposedNet().hasNetMatrices();
+    }
 
     // ======== Print support ==================================
     @Override

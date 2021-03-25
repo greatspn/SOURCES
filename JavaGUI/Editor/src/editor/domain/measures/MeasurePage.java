@@ -442,6 +442,9 @@ public class MeasurePage extends ProjectPage implements Serializable {
 
     @Override
     public boolean hasPlaceTransInv() { return false; }
+
+    @Override
+    public boolean hasNetMatrices() { return false; }
     
     @Override public boolean pageSupportsAlgebraTool() { return false; }
 }

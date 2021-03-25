@@ -637,6 +637,10 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
             case EXPORT_AS_PNG:
                 PagePrintManager.printAsPng(mainInterface, currPage);
                 return;
+                
+            case SHOW_NET_MATRICES:
+                showNetMatrices();
+                return;
                         
             default:
                 throw new IllegalStateException();
@@ -862,7 +866,12 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
             g2.setTransform(oldAT);
         }
     }
-    
+
+
+    private void showNetMatrices() {
+        ShowNetMatricesDialog dlg = new ShowNetMatricesDialog(mainInterface.getWindowFrame(), true, (GspnPage)currPage);
+        dlg.setVisible(true);
+    }
 
     
     private void exportGspnInGreatSPNFormat() {

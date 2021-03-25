@@ -892,6 +892,15 @@
         <Property name="tooltipDesc" type="java.lang.String" value="Duplicate as an editable net."/>
       </Properties>
     </Component>
+    <Component class="common.Action" name="sharedActionShowNetMatrices">
+      <Properties>
+        <Property name="actionName" type="java.lang.String" value="Show net matrices."/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getShowMatrices32" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="Show the net matrices."/>
+      </Properties>
+    </Component>
     <Component class="common.Action" name="actionCaptureSVG">
       <Properties>
         <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
@@ -1941,6 +1950,15 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jToolbarButtonStartPlayActionPerformed"/>
               </Events>
+            </Component>
+            <Component class="common.JToolbarButton" name="jToolbarButtonShowNetMatrices">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="sharedActionShowNetMatrices"/>
+                </Property>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
             </Component>
             <Component class="common.JToolbarButton" name="jToolbarButtonShowPlaceSemiflows">
               <Properties>

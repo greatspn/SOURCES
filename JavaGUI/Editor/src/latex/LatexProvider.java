@@ -27,7 +27,7 @@ public abstract class LatexProvider {
         latexProvider = p;
     }
     
-    abstract MetaCommands typesetLatexFormula(String latex, float size);
+    abstract MetaCommands typesetLatexFormula(String latex, float size, boolean useCache);
     
     abstract public void quit();
 }

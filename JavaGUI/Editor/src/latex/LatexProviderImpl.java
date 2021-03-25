@@ -127,16 +127,19 @@ public class LatexProviderImpl extends LatexProvider {
     // Get the graphics command corresponding to a LaTeX formula, or a
     // LatexParseException if the formula is not parseable.
     @Override
-    MetaCommands typesetLatexFormula(String latex, float size) 
+    MetaCommands typesetLatexFormula(String latex, float size, boolean useCache) 
     {
-        MetaCommands mc = typesetCacheLRU.searchCache(latex, size);
+        MetaCommands mc = null;
+        if (useCache)
+            mc = typesetCacheLRU.searchCache(latex, size);
         if (mc != null)
             return mc;
         mc = typesetLatexFormulaImpl(latex, size);
         if (mc == null) {
             mc = MetaCommands.drawSimpleString(deLatexify(latex), (int)size);
         }
-        typesetCacheLRU.addToCache(latex, size, mc);
+        if (useCache)
+            typesetCacheLRU.addToCache(latex, size, mc);
         return mc;
     }
     

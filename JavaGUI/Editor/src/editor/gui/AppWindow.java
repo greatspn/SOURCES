@@ -11,7 +11,6 @@ import common.ModalLogDialog;
 import editor.Main;
 import common.Util;
 import static editor.Main.logException;
-import editor.domain.NetPage;
 import editor.domain.PageErrorWarning;
 import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
@@ -832,6 +831,11 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
                         selectedElem instanceof ComposableNet && ((ComposableNet)selectedElem).hasSubnets();
                 jToolbarButtonMakeEditable.setVisible(hasSubnets);
                 
+                boolean canShowNetMatrices = selectedElem != null && selectedElem.hasNetMatrices();
+                boolean isShowNetMatricesEnabled = canEdit && canShowNetMatrices && selectedElem.isPageCorrect();
+                jToolbarButtonShowNetMatrices.setVisible(canShowNetMatrices);
+                jToolbarButtonShowNetMatrices.setEnabled(isShowNetMatricesEnabled);
+                
                 // Rapid measures pop-up
                 boolean hasRapidMeas = selectedElem != null && selectedElem.hasRapidMesures();
                 if (hasRapidMeas) {
@@ -878,6 +882,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
                 jToolbarButtonClearMeasureDir.setVisible(false);
                 actionClearMeasureDir.setEnabled(false);
                 jToolbarButtonMakeEditable.setVisible(false);
+                jToolbarButtonShowNetMatrices.setVisible(false);
                 jDropdownToolbarButtonRapidMeasure.setVisible(false);
             }
             
@@ -1034,6 +1039,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             case PLAY_PREVIOUS:             return sharedActionPrev;
             case PLAY_RESTART:              return sharedActionRestart;
             case MAKE_EDITABLE_NET:         return sharedActionMakeEditableNet;
+            case SHOW_NET_MATRICES:         return sharedActionShowNetMatrices;
             case CHANGE_BINDINGS:           return sharedActionChangeBindings;
             case COMPUTE_PLACE_SEMIFLOWS:   return sharedActionComputePlaceSemiflows;
             case COMPUTE_TRANS_SEMIFLOWS:   return sharedActionComputeTransitionSemiflows;
@@ -1467,6 +1473,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         sharedActionComputeTransitionSemiflows = new common.Action();
         sharedActionComputeBoundsFromPinv = new common.Action();
         sharedActionMakeEditableNet = new common.Action();
+        sharedActionShowNetMatrices = new common.Action();
         actionCaptureSVG = new common.Action();
         actionNewNetPage_PT = new common.Action();
         actionNewNetPage_CPN = new common.Action();
@@ -1536,6 +1543,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jToolbarButtonDeleteSelected = new common.JToolbarButton();
         jAppToolBar_Basic = new javax.swing.JToolBar();
         jToolbarButtonStartPlay = new common.JToolbarButton();
+        jToolbarButtonShowNetMatrices = new common.JToolbarButton();
         jToolbarButtonShowPlaceSemiflows = new common.JToolbarButton();
         jToolbarButtonShowTransitionSemiflows = new common.JToolbarButton();
         jToolbarButtonShowPlaceBoundsFromPinv = new common.JToolbarButton();
@@ -2131,6 +2139,10 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         sharedActionMakeEditableNet.setIcon(resourceFactory.getMakeEditable32());
         sharedActionMakeEditableNet.setTooltipDesc("Duplicate as an editable net.");
 
+        sharedActionShowNetMatrices.setActionName("Show net matrices.");
+        sharedActionShowNetMatrices.setIcon(resourceFactory.getShowMatrices32());
+        sharedActionShowNetMatrices.setTooltipDesc("Show the net matrices.");
+
         actionCaptureSVG.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_J, java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
         actionCaptureSVG.setActionName("Save an SVG capture of the main window.");
         actionCaptureSVG.addActionListener(new java.awt.event.ActionListener() {
@@ -2474,6 +2486,11 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             }
         });
         jAppToolBar_Basic.add(jToolbarButtonStartPlay);
+
+        jToolbarButtonShowNetMatrices.setAction(sharedActionShowNetMatrices);
+        jToolbarButtonShowNetMatrices.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jToolbarButtonShowNetMatrices.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jAppToolBar_Basic.add(jToolbarButtonShowNetMatrices);
 
         jToolbarButtonShowPlaceSemiflows.setAction(actionStartPlaceInv);
         jToolbarButtonShowPlaceSemiflows.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -3757,6 +3774,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private common.JToolbarButton jToolbarButtonRenamePage;
     private common.JToolbarButton jToolbarButtonSaveAll;
     private common.JToolbarButton jToolbarButtonShowCTMC;
+    private common.JToolbarButton jToolbarButtonShowNetMatrices;
     private common.JToolbarButton jToolbarButtonShowPlaceBoundsFromPinv;
     private common.JToolbarButton jToolbarButtonShowPlaceSemiflows;
     private common.JToolbarButton jToolbarButtonShowRG;
@@ -3803,6 +3821,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private common.Action sharedActionPrev;
     private common.Action sharedActionRestart;
     private common.Action sharedActionSelectAll;
+    private common.Action sharedActionShowNetMatrices;
     // End of variables declaration//GEN-END:variables
 
 }

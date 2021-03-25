@@ -30,7 +30,7 @@ import org.scilab.forge.jlatexmath.UnderscoreAtom;
  */
 public class TestJLaTeXMath {
 
-    public static void writeLatexFormulaAsImage(String latex, String filename, float size)
+    public static void writeLatexFormulaAsImage(String latex, String filename, float size, boolean drawBaseline)
             throws IOException, ClassNotFoundException 
     {
         System.out.println("\nwriteLatexFormulaAsImage \""+latex+"\"  as "+filename);
@@ -74,9 +74,11 @@ public class TestJLaTeXMath {
         icon.paintIcon(jl, g2, 0, 0);
         
         // Draw the baseline
-        g2.setColor(Color.red);
-        int y = icon.getIconHeight() - icon.getIconDepth();
-        g2.fillRect(0, y, icon.getIconWidth(), 1);
+        if (drawBaseline) {
+            g2.setColor(Color.red);
+            int y = icon.getIconHeight() - icon.getIconDepth();
+            g2.fillRect(0, y, icon.getIconWidth(), 1);
+        }
 
         File file = new File(filename);
         ImageIO.write(image, "png", file.getAbsoluteFile());
@@ -112,7 +114,7 @@ public class TestJLaTeXMath {
 
         try {
             for (int i=0; i<latexStrings.length; i++) {
-                writeLatexFormulaAsImage(latexStrings[i], "jLatexMathTest_"+i+".png", 32.0f);
+                writeLatexFormulaAsImage(latexStrings[i], "jLatexMathTest_"+i+".png", 32.0f, true);
             }
 //            writeLatexFormulaAsImage("prova_0", "ExampleImg1.png", 100);
 //            writeLatexFormulaAsImage("Prova_0", "ExampleImg2.png", 100);

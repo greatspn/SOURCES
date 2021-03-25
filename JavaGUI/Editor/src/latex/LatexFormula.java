@@ -37,11 +37,11 @@ public class LatexFormula implements Serializable {
             // Retrieve the graphic LaTeX representation
             LatexProvider lp = LatexProvider.getProvider();
             try {
-                graphicCommands = lp.typesetLatexFormula(latex, size);
+                graphicCommands = lp.typesetLatexFormula(latex, size, true);
             }
             catch (Exception lpe) {
                 try {
-                    graphicCommands = lp.typesetLatexFormula(LatexProvider.DEFAULT_LATEX_ERROR, size);
+                    graphicCommands = lp.typesetLatexFormula(LatexProvider.DEFAULT_LATEX_ERROR, size, true);
                 }
                 catch (Exception lpe2) {
                     graphicCommands = null;

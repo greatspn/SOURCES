@@ -104,6 +104,11 @@ public class DtaPage extends NetPage implements Serializable {
     }
 
     @Override
+    public boolean hasNetMatrices() {
+        return false;
+    }
+
+    @Override
     public boolean pageSupportsUnfolding() {
         return false;
     }

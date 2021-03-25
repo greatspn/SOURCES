@@ -17,6 +17,7 @@ import editor.domain.ProjectData;
 import editor.domain.ProjectFile;
 import editor.domain.ProjectPage;
 import editor.domain.ViewProfile;
+import editor.domain.elements.GspnPage;
 import editor.domain.measures.ExprField;
 import editor.domain.measures.SolverParams;
 import editor.gui.AbstractPageEditor;
@@ -24,6 +25,7 @@ import editor.gui.CutCopyPasteEngine;
 import editor.gui.MainWindowInterface;
 import editor.gui.SharedResourceProvider;
 import editor.gui.net.NetViewerPanel;
+import editor.gui.net.ShowNetMatricesDialog;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -432,6 +434,9 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
             case MAKE_EDITABLE_NET:
                 makeEditableNet();
                 break;
+            case SHOW_NET_MATRICES:
+                showNetMatrices();
+                break;
             default:
                 throw new IllegalStateException();
         }
@@ -474,6 +479,12 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
             proj.addPage(newPage);
             mainInterface.switchToProjectPage(currProject, newPage, null);
         });
+    }
+    
+    private void showNetMatrices() {
+        ShowNetMatricesDialog dlg = new ShowNetMatricesDialog(mainInterface.getWindowFrame(), true, 
+                                                              (GspnPage)currPage.getComposedNet());
+        dlg.setVisible(true);
     }
     
     private class NetInstanceEditorTable extends JPanel 

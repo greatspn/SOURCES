@@ -197,6 +197,8 @@ public abstract class ProjectPage implements Serializable, UuidObject, ResourceH
     public abstract boolean pageSupportsUnfolding();
     // Page data can be unfolded
     public abstract boolean canBeUnfolded();
+    // net amtrices (incidence, I,O,H) can be extracted and shown
+    public abstract boolean hasNetMatrices();
     
     public enum RgType {
         RG, SRG, CTMC

@@ -210,6 +210,11 @@ public class GspnPage extends NetPage implements Serializable {
         return (hasColors==null || !hasColors);
     }
     
+    @Override
+    public boolean hasNetMatrices() {
+        return (hasColors==null || !hasColors);
+    }
+    
     @Override public boolean pageSupportsAlgebraTool() { return true; }
     
     @Override

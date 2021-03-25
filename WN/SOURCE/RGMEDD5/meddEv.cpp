@@ -2668,8 +2668,8 @@ ostream& operator<<(ostream &out, class RSRG &rs) {
             mddVar = *(i.getAssignments() + j);
             if ((mddVar != 0)) {
                 out << rs.nameOfMddVar(j - 1) << "(" << mddVar << ")";
-
             }
+            // out << mddVar << " ";
         }//per ogni posto
         out << endl;
         ++i;
