@@ -41,7 +41,10 @@ public class IncidenceMatrixFormatter {
             }
         }
     }
-    
+
+    public GspnPage getGspn() {
+        return gspn;
+    }
     
     public String latexFor(MatrixMode mode, boolean separateSums, boolean writeZeros, boolean stacked) {
         PartialSum[][] matAdd=null, matSub=null;

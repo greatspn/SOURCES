@@ -611,7 +611,8 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
     
     private void showSemiflowsMatrix() {
         ShowSemiflowsMatrixDialog dlg = new ShowSemiflowsMatrixDialog(mainInterface.getWindowFrame(), true, 
-                                                                      algo, sfType, places, transitions);
+                                                                      algo, sfType, origGspn.getPageName(),
+                                                                      places, transitions);
         dlg.setVisible(true);
     }
     

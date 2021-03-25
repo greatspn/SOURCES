@@ -36,7 +36,7 @@ import org.apache.pdfbox.util.Matrix;
 public class PagePrintManager {
     
     // implement the awt PageFormat class
-    protected static class MyPageFormat extends PageFormat {
+    public static class MyPageFormat extends PageFormat {
         
         double width, height;
 

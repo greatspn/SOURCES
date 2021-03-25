@@ -16,7 +16,17 @@ public interface SemiFlows {
     public final char INFINITY_UNICODE = '\u221E';
     
     public enum Type {
-        PLACE_SEMIFLOW, TRANSITION_SEMIFLOWS, PLACE_BOUNDS_FROM_PINV
+        PLACE_SEMIFLOW, TRANSITION_SEMIFLOWS, PLACE_BOUNDS_FROM_PINV;
+        
+        public String printableName() {
+            switch (this) {
+                case PLACE_SEMIFLOW: return "Place semiflows";
+                case TRANSITION_SEMIFLOWS: return "Transition semiflows";
+                case PLACE_BOUNDS_FROM_PINV: return "Place bounds";
+                default:
+                    throw new IllegalStateException();
+            }
+        }
     }
     
     // What type of informations is this?

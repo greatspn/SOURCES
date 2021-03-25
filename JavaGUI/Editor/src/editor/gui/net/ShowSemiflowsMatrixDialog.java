@@ -28,6 +28,7 @@ import latex.LatexFormula;
 public class ShowSemiflowsMatrixDialog extends javax.swing.JDialog {
 
     private final SemiFlows.Type type;
+    private final String netName;
     private final MartinezSilvaAlgorithm algo;
     private final ArrayList<Place> places;
     private final ArrayList<Transition> transitions;
@@ -37,10 +38,11 @@ public class ShowSemiflowsMatrixDialog extends javax.swing.JDialog {
      * Creates new form ShowNetMatricesDialog
      */
     public ShowSemiflowsMatrixDialog(java.awt.Frame parent, boolean modal, MartinezSilvaAlgorithm algo,
-                                     SemiFlows.Type type, ArrayList<Place> places, ArrayList<Transition> transitions) {
+                                     SemiFlows.Type type, String netName, ArrayList<Place> places, ArrayList<Transition> transitions) {
         super(parent, modal);
         this.algo = algo;
         this.type = type;
+        this.netName = netName;
         this.places = places;
         this.transitions = transitions;
         initComponents();
@@ -80,6 +82,7 @@ public class ShowSemiflowsMatrixDialog extends javax.swing.JDialog {
         jPanel1 = new javax.swing.JPanel();
         checkBox_showZeros = new javax.swing.JCheckBox();
         button_copyToClipboard = new javax.swing.JButton();
+        button_saveAsPdf = new javax.swing.JButton();
         scrollPane = new javax.swing.JScrollPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -130,6 +133,18 @@ public class ShowSemiflowsMatrixDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         jPanel1.add(button_copyToClipboard, gridBagConstraints);
 
+        button_saveAsPdf.setText("Save as PDF...");
+        button_saveAsPdf.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_saveAsPdfActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel1.add(button_saveAsPdf, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
@@ -156,18 +171,18 @@ public class ShowSemiflowsMatrixDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_checkBox_showZerosActionPerformed
 
     private void button_copyToClipboardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_copyToClipboardActionPerformed
-        LatexFormula formula = latexComp.getFormula();
-        if (formula == null)
-            return;
-        StringSelection stringSelection = new StringSelection(formula.getLatex());
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        clipboard.setContents(stringSelection, null);
+        latexComp.copyToClipboard();
     }//GEN-LAST:event_button_copyToClipboardActionPerformed
+
+    private void button_saveAsPdfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_saveAsPdfActionPerformed
+        latexComp.saveAsPdf(type.printableName()+" of "+netName);
+    }//GEN-LAST:event_button_saveAsPdfActionPerformed
 
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton button_copyToClipboard;
+    private javax.swing.JButton button_saveAsPdf;
     private javax.swing.JCheckBox checkBox_showZeros;
     private javax.swing.JButton jButton_close;
     private javax.swing.JPanel jPanel1;

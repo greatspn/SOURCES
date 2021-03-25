@@ -83,6 +83,7 @@ public class ShowNetMatricesDialog extends javax.swing.JDialog {
         checkBox_showSumOfTerms = new javax.swing.JCheckBox();
         checkBox_showTermsStacked = new javax.swing.JCheckBox();
         button_copyToClipboard = new javax.swing.JButton();
+        button_saveAsPdf = new javax.swing.JButton();
         scrollPane = new javax.swing.JScrollPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -168,8 +169,21 @@ public class ShowNetMatricesDialog extends javax.swing.JDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         jPanel1.add(button_copyToClipboard, gridBagConstraints);
+
+        button_saveAsPdf.setText("Save as PDF...");
+        button_saveAsPdf.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_saveAsPdfActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel1.add(button_saveAsPdf, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -209,18 +223,18 @@ public class ShowNetMatricesDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_checkBox_showTermsStackedActionPerformed
 
     private void button_copyToClipboardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_copyToClipboardActionPerformed
-        LatexFormula formula = latexComp.getFormula();
-        if (formula == null)
-            return;
-        StringSelection stringSelection = new StringSelection(formula.getLatex());
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        clipboard.setContents(stringSelection, null);
+        latexComp.copyToClipboard();
     }//GEN-LAST:event_button_copyToClipboardActionPerformed
+
+    private void button_saveAsPdfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_saveAsPdfActionPerformed
+        latexComp.saveAsPdf((MatrixMode)comboBox_matrixMode.getSelectedItem()+" of "+matFormatter.getGspn().getPageName());
+    }//GEN-LAST:event_button_saveAsPdfActionPerformed
 
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton button_copyToClipboard;
+    private javax.swing.JButton button_saveAsPdf;
     private javax.swing.JCheckBox checkBox_showSumOfTerms;
     private javax.swing.JCheckBox checkBox_showTermsStacked;
     private javax.swing.JCheckBox checkBox_showZeros;
