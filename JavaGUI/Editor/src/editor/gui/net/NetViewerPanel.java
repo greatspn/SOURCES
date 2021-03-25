@@ -69,7 +69,7 @@ public abstract class NetViewerPanel extends JPanel implements Scrollable {
         wrapLayout.setAlignOnBaseline(true);
         setLayout(wrapLayout);
         setFocusable(false);
-        setOpaque(false);
+//        setOpaque(false);
         scrollPane.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent ce) {
@@ -413,9 +413,14 @@ public abstract class NetViewerPanel extends JPanel implements Scrollable {
             assert net != null;
             
             String overlayMsg = getOverlayMessage(net);
-            setBackground(getNetBackground(overlayMsg));
+//            setBackground(getNetBackground(overlayMsg));
 //            setBackground(isEnabled() && overlayMsg==null ? Color.WHITE : VERY_LIGHT_GRAY_BKGND);
-            super.paintComponent(g); 
+//            super.paintComponent(g); 
+            Color bkgndColor = getNetBackground(overlayMsg);
+            Color oldClr = g.getColor();
+            g.setColor(bkgndColor);
+            g.fillRect(0, 0, getWidth(), getHeight());
+            g.setColor(oldClr);
             
             // Render the page content
             Graphics2D g2 = (Graphics2D)g;

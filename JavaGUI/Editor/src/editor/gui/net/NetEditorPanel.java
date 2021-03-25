@@ -680,10 +680,10 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
     
     public static final Color PAGE_BACKGROUND_COLOR = Util.mix(UIManager.getColor("TextField.background"), Color.WHITE, 0.20f);
     public static final Color PAGE_FOREGROUND_COLOR = Util.mix(UIManager.getColor("TextField.foreground"), Color.BLACK, 0.20f);
-    public static final Color PAGE_BACKGROUND_DISABLED_COLOR = Util.mix(PAGE_BACKGROUND_COLOR, PAGE_FOREGROUND_COLOR, 0.90f);
+    public static final Color PAGE_BACKGROUND_DISABLED_COLOR = Util.mix(PAGE_BACKGROUND_COLOR, Color.BLACK, 0.80f);
     static{
 //        System.out.println("Util.mix(UIManager.getColor(\"TextField.inactiveBackground\") = "+UIManager.getColor("TextField.inactiveBackground"));
-        System.out.println("PAGE_BACKGROUND_DISABLED_COLOR = "+PAGE_BACKGROUND_DISABLED_COLOR);
+//        System.out.println("PAGE_BACKGROUND_DISABLED_COLOR = "+PAGE_BACKGROUND_DISABLED_COLOR);
     }
     
     public static final Color PAGE_TITLE_BACKGROUND = Util.mix(UIManager.getColor("TextField.background"), new Color(223, 223, 255), 0.20f);
