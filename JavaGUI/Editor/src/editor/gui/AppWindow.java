@@ -3205,8 +3205,8 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             newPage.setPageName(activeProject.generateUniquePageName("Composition"));
             newPage.netsDescr.add(new NetInstanceDescriptor());
             newPage.netsDescr.add(new NetInstanceDescriptor());
-            newPage.netsDescr.get(0).targetNetName = "PN1";
-            newPage.netsDescr.get(1).targetNetName = "PN2";
+            newPage.netsDescr.get(0).targetNetName = (elem instanceof GspnPage ? elem.getPageName() : "");
+            newPage.netsDescr.get(1).targetNetName = "";
             activeProject.getCurrent().addPage(newPage);
             switchToProjectPage(activeProject, newPage, null);
         });
@@ -3385,7 +3385,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             newPage.viewProfile.setProfileForNetType(NewProjectDialog.PetriNetType.FullPN);
             newPage.setPageName(activeProject.generateUniquePageName("Unfolding"));
             newPage.netsDescr.add(new NetInstanceDescriptor());
-            newPage.netsDescr.get(0).targetNetName = "PN1";
+            newPage.netsDescr.get(0).targetNetName = (elem.canBeUnfolded() ? elem.getPageName() : "");;
             activeProject.getCurrent().addPage(newPage);
             switchToProjectPage(activeProject, newPage, null);
         });
@@ -3398,8 +3398,8 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             newPage.setPageName(activeProject.generateUniquePageName("MultiNet"));
             newPage.netsDescr.add(new NetInstanceDescriptor());
             newPage.netsDescr.add(new NetInstanceDescriptor());
-            newPage.netsDescr.get(0).targetNetName = "PN1";
-            newPage.netsDescr.get(1).targetNetName = "PN2";
+            newPage.netsDescr.get(0).targetNetName = (elem instanceof GspnPage ? elem.getPageName() : "");;
+            newPage.netsDescr.get(1).targetNetName = "";
             activeProject.getCurrent().addPage(newPage);
             switchToProjectPage(activeProject, newPage, null);
         });
