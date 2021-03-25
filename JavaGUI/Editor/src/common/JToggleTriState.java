@@ -122,4 +122,5 @@ public class JToggleTriState extends JToggleButton {
     @Override public void setText(String text) { super.setText(""); this.text = text; }
     @Override public String getText() { return text; }
     
+    
 }

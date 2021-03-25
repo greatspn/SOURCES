@@ -1095,6 +1095,51 @@
         </MenuItem>
       </SubComponents>
     </Container>
+    <Component class="common.Action" name="sharedActionPlaceSemiflows">
+      <Properties>
+        <Property name="actionName" type="java.lang.String" value="Compute place semiflows"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getPinv_N32" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="Recompute the place semiflows of the GSPN."/>
+      </Properties>
+    </Component>
+    <Component class="common.Action" name="sharedActionPlaceFlows">
+      <Properties>
+        <Property name="actionName" type="java.lang.String" value="Compute place flows"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getPinv_Z32" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="Recompute the place flows of the GSPN."/>
+      </Properties>
+    </Component>
+    <Component class="common.Action" name="sharedActionTransitionSemiflows">
+      <Properties>
+        <Property name="actionName" type="java.lang.String" value="Compute transition semiflows"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getTinv_N32" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="Recompute the transition semiflows of the GSPN."/>
+      </Properties>
+    </Component>
+    <Component class="common.Action" name="sharedActionTransitionFlows">
+      <Properties>
+        <Property name="actionName" type="java.lang.String" value="Compute transition flows"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getTinv_Z32" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="Recompute the transition flows of the GSPN."/>
+      </Properties>
+    </Component>
+    <Component class="common.Action" name="sharedActionBoundsFromSemiflows">
+      <Properties>
+        <Property name="actionName" type="java.lang.String" value="Compute place bounds from P-invariants"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getBound32" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="Recompute the place bounds using the P-invariants."/>
+      </Properties>
+    </Component>
     <Menu class="javax.swing.JMenuBar" name="jAppMenuBar">
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="jMenuFile">

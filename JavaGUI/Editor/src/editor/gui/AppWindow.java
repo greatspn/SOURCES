@@ -1044,6 +1044,11 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             case COMPUTE_PLACE_SEMIFLOWS:   return sharedActionComputePlaceSemiflows;
             case COMPUTE_TRANS_SEMIFLOWS:   return sharedActionComputeTransitionSemiflows;
             case COMPUTE_PLACE_BOUNDS_FROM_PINV: return sharedActionComputeBoundsFromPinv;
+            case PLACE_FLOWS:               return sharedActionPlaceFlows;
+            case PLACE_SEMIFLOWS:           return sharedActionPlaceSemiflows;
+            case TRANS_FLOWS:               return sharedActionTransitionFlows;
+            case TRANS_SEMIFLOWS:           return sharedActionTransitionSemiflows;
+            case PLACE_BOUNDS_FROM_SEMIFLOWS: return sharedActionBoundsFromSemiflows;
             case EXPORT_GREATSPN_FORMAT:    return sharedActionExportGreatSpn;
             case EXPORT_PNML_FORMAT:        return sharedActionExportPNML;
             case EXPORT_GRML_FORMAT:        return sharedActionExportGRML;
@@ -1500,6 +1505,11 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         rmcMenuItemTransientSol = new javax.swing.JMenuItem();
         rmcMenuItemSteadyStateSim = new javax.swing.JMenuItem();
         rmcMenuItemTransientSim = new javax.swing.JMenuItem();
+        sharedActionPlaceSemiflows = new common.Action();
+        sharedActionPlaceFlows = new common.Action();
+        sharedActionTransitionSemiflows = new common.Action();
+        sharedActionTransitionFlows = new common.Action();
+        sharedActionBoundsFromSemiflows = new common.Action();
         jStatusBar = new javax.swing.JPanel();
         jStatusLabel = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
@@ -2246,6 +2256,26 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         rmcMenuItemTransientSim.setAction(rmcActionTransientSim);
         jPopupMenuRapidMeaureCmd.add(rmcMenuItemTransientSim);
+
+        sharedActionPlaceSemiflows.setActionName("Compute place semiflows");
+        sharedActionPlaceSemiflows.setIcon(resourceFactory.getPinv_N32());
+        sharedActionPlaceSemiflows.setTooltipDesc("Recompute the place semiflows of the GSPN.");
+
+        sharedActionPlaceFlows.setActionName("Compute place flows");
+        sharedActionPlaceFlows.setIcon(resourceFactory.getPinv_Z32());
+        sharedActionPlaceFlows.setTooltipDesc("Recompute the place flows of the GSPN.");
+
+        sharedActionTransitionSemiflows.setActionName("Compute transition semiflows");
+        sharedActionTransitionSemiflows.setIcon(resourceFactory.getTinv_N32());
+        sharedActionTransitionSemiflows.setTooltipDesc("Recompute the transition semiflows of the GSPN.");
+
+        sharedActionTransitionFlows.setActionName("Compute transition flows");
+        sharedActionTransitionFlows.setIcon(resourceFactory.getTinv_Z32());
+        sharedActionTransitionFlows.setTooltipDesc("Recompute the transition flows of the GSPN.");
+
+        sharedActionBoundsFromSemiflows.setActionName("Compute place bounds from P-invariants");
+        sharedActionBoundsFromSemiflows.setIcon(resourceFactory.getBound32());
+        sharedActionBoundsFromSemiflows.setTooltipDesc("Recompute the place bounds using the P-invariants.");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Editor");
@@ -3802,6 +3832,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private javax.swing.JMenuItem rmcMenuItemSteadyStateSol;
     private javax.swing.JMenuItem rmcMenuItemTransientSim;
     private javax.swing.JMenuItem rmcMenuItemTransientSol;
+    private common.Action sharedActionBoundsFromSemiflows;
     private common.Action sharedActionChangeBindings;
     private common.Action sharedActionComputeBoundsFromPinv;
     private common.Action sharedActionComputePlaceSemiflows;
@@ -3818,10 +3849,14 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private common.Action sharedActionInvertSelection;
     private common.Action sharedActionMakeEditableNet;
     private common.Action sharedActionNext;
+    private common.Action sharedActionPlaceFlows;
+    private common.Action sharedActionPlaceSemiflows;
     private common.Action sharedActionPrev;
     private common.Action sharedActionRestart;
     private common.Action sharedActionSelectAll;
     private common.Action sharedActionShowNetMatrices;
+    private common.Action sharedActionTransitionFlows;
+    private common.Action sharedActionTransitionSemiflows;
     // End of variables declaration//GEN-END:variables
 
 }

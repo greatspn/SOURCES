@@ -72,6 +72,24 @@ public final class Util {
     public static ImageIcon loadIcon(String iconName) {
         return new ImageIcon(loadImage(iconName));
     }
+    
+//    public static void main(String[] args) throws Exception {
+    // combine two images into a single one
+//        ImageIcon icon1 = new ImageIcon(ImageIO.read(new File("/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/icons/page_net16.png")));
+//        ImageIcon icon2 = new ImageIcon(ImageIO.read(new File("/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/icons/overlay_plus16.png")));
+//        
+//        ImageIcon icon3 = new ImageIcon(icon1.getImage());
+//        Graphics2D g2 = (Graphics2D)icon3.getImage().getGraphics();
+//        g2.drawImage(icon2.getImage(), 0, 0, null);
+//        g2.dispose();
+//        
+//        Image img = icon3.getImage();
+//        BufferedImage bi = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+//        Graphics2D g3 = bi.createGraphics();
+//        g3.drawImage(img, 0, 0, null);
+//        g3.dispose();
+//        ImageIO.write(bi, "png", new File("/home/elvio/test.png"));
+//    }
 
     
     // Prepara l'avvio dell'applicazione

@@ -16,12 +16,16 @@ public interface SemiFlows {
     public final char INFINITY_UNICODE = '\u221E';
     
     public enum Type {
-        PLACE_SEMIFLOW, TRANSITION_SEMIFLOWS, PLACE_BOUNDS_FROM_PINV;
+        PLACE_SEMIFLOW, PLACE_FLOW, 
+        TRANSITION_SEMIFLOWS, TRANSITION_FLOWS, 
+        PLACE_BOUNDS_FROM_PINV;
         
         public String printableName() {
             switch (this) {
                 case PLACE_SEMIFLOW: return "Place semiflows";
+                case PLACE_FLOW: return "Place flows";
                 case TRANSITION_SEMIFLOWS: return "Transition semiflows";
+                case TRANSITION_FLOWS: return "Transition flows";
                 case PLACE_BOUNDS_FROM_PINV: return "Place bounds";
                 default:
                     throw new IllegalStateException();
@@ -39,11 +43,11 @@ public interface SemiFlows {
     public int getNodeCardinality(Selectable elem);
     
     // Lower bound of a place, or -1 if not in bound mode
-    public int getNodeLowerBound(Selectable elem);
+    public int getNodeBound(Selectable elem, boolean lower);
     
     // Preferred color in visualization mode
-    public Color getLineColor();
-    public Color getTextColor();
+    public Color getLineColor(int card);
+    public Color getTextColor(int card);
     
     // Phase for animation of the dashed edges.
     public int getDashPhase();

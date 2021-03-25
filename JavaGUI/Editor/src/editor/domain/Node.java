@@ -1015,9 +1015,11 @@ public abstract class Node extends SelectableObject
         }
         
         // Highlighted in visualization mode
+        int semiflowCard = -100;
         if (dh.semiflows != null && dh.semiflows.contains(this)) {
+            semiflowCard = dh.semiflows.getNodeCardinality(this);
             paintNodeActiveBorder(g, dh, nodeShape, DEFAULT_ACTIVITY_AURA_SIZE, 
-                                  dh.semiflows.getLineColor());
+                                  dh.semiflows.getLineColor(semiflowCard));
         }
         
         // Fill the node interior
@@ -1062,8 +1064,8 @@ public abstract class Node extends SelectableObject
         if (dh.semiflows != null) {
             String countText = null;
             if (dh.semiflows.getType() == SemiFlows.Type.PLACE_BOUNDS_FROM_PINV) {
-                int upper = dh.semiflows.getNodeCardinality(this);
-                int lower = dh.semiflows.getNodeLowerBound(this);
+                int upper = dh.semiflows.getNodeBound(this, false);
+                int lower = dh.semiflows.getNodeBound(this, true);
                 if (upper >= 0 && lower >= 0) {
                     if (upper == Integer.MAX_VALUE)
                         countText = "\\mathbf{["+lower+","+SemiFlows.INFINITY_UNICODE+"]}";
@@ -1073,14 +1075,14 @@ public abstract class Node extends SelectableObject
             }
             else {
                 if (dh.semiflows.contains(this)) {
-                    int card = dh.semiflows.getNodeCardinality(this);
-                    if (card >= 1)
-                        countText = "\\mathbf{"+card+"}";
+//                    int card = dh.semiflows.getNodeCardinality(this);
+                    if (semiflowCard != 0 && semiflowCard != Integer.MAX_VALUE)
+                        countText = "\\mathbf{"+semiflowCard+"}";
                 }
             }
             
             if (countText != null)
-                paintPTSemiflowsCardinality(g, dh, dh.semiflows.getTextColor(), 
+                paintPTSemiflowsCardinality(g, dh, dh.semiflows.getTextColor(semiflowCard), 
                                             oldAT, 0.95f, countText);
         }
         

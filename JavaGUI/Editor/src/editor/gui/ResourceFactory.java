@@ -531,6 +531,14 @@ public class ResourceFactory {
     public ImageIcon getPinv32() {
         return loadIcon32("pinv");
     }
+    
+    public ImageIcon getPinv_N32() {
+        return loadIcon32("pinv_N");
+    }
+    
+    public ImageIcon getPinv_Z32() {
+        return loadIcon32("pinv_Z");
+    }
 
     public ImageIcon getPlay16() {
         return loadIcon16("play");
@@ -674,6 +682,14 @@ public class ResourceFactory {
 
     public ImageIcon getTinv32() {
         return loadIcon32("tinv");
+    }
+    
+    public ImageIcon getTinv_N32() {
+        return loadIcon32("tinv_N");
+    }
+    
+    public ImageIcon getTinv_Z32() {
+        return loadIcon32("tinv_Z");
     }
     
     public ImageIcon getCheckBoxSelected16() {

@@ -11,6 +11,7 @@ import static editor.domain.NetObject.ACTIVE_COLOR;
 import static editor.domain.NetObject.ALPHA_50;
 import static editor.domain.NetObject.SELECTION_COLOR;
 import static editor.domain.NetObject.linearInterp;
+import editor.domain.elements.GspnEdge;
 import editor.domain.grammar.ExprRewriter;
 import editor.domain.grammar.ParserContext;
 import editor.domain.io.XmlExchangeDirection;
@@ -18,6 +19,7 @@ import editor.domain.io.XmlExchangeException;
 import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
 import editor.domain.io.XmlExchangeable;
 import editor.domain.play.ActivityState;
+import editor.domain.semiflows.SemiFlows;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Composite;
@@ -882,7 +884,13 @@ public abstract class Edge extends SelectableObject
             Stroke sk = g.getStroke();
             Color clr = g.getColor();
             Composite comp = g.getComposite();
-            g.setColor(dh.semiflows.getLineColor());
+//            int card;
+//            if (dh.semiflows.getType() == SemiFlows.Type.PLACE_FLOW || 
+//                dh.semiflows.getType() == SemiFlows.Type.PLACE_SEMIFLOW)
+//                card = dh.semiflows.getNodeCardinality(((GspnEdge)this).getConnectedPlace());
+//            else
+//                card = dh.semiflows.getNodeCardinality(((GspnEdge)this).getConnectedTransition());
+            g.setColor(dh.semiflows.getLineColor(1));
             g.setComposite(ALPHA_75);
             int phase = NUM_HIGHLIGHT_PHASES - (dh.semiflows.getDashPhase() % NUM_HIGHLIGHT_PHASES);
             g.setStroke(new BasicStroke((float)(2 * DEFAULT_ACTIVITY_AURA_SIZE), BasicStroke.CAP_SQUARE,

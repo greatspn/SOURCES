@@ -56,7 +56,7 @@
       <offset dx="3" dy="0"/>
     </offset-list>
     <subnet netname="Philosophers">
-      <assignments value="5" varname="N"/>
+      <assignments value="3" varname="N"/>
     </subnet>
   </unfolding>
 </project>

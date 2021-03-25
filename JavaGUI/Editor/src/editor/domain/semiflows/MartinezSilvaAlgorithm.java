@@ -6,7 +6,6 @@ package editor.domain.semiflows;
 
 import editor.domain.elements.Place;
 import editor.domain.elements.Transition;
-import editor.domain.struct.SilvaColom88Algorithm;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -32,14 +31,17 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
     public int[] initQuantity; // array of N elements
     public int[] lowerBnd, upperBnd; // place bounds
     
+    // Will compute semiflows or integer flows
+    public boolean onlySemiflows = true;
     
-    SilvaColom88Algorithm scAlgo;
+    
+//    SilvaColom88Algorithm scAlgo;
     
 
     // For P-semiflows: N=|P|, M=|T| (for T-semiflows: N=|T|, M=|P|)
     public MartinezSilvaAlgorithm(int N, int M) {
-//        System.out.println("M="+M+", N="+N);
         super(N, M);
+//        System.out.println("M="+M+", N="+N);
         mD = new ArrayList<>();
         mA = new ArrayList<>();
         mB = new ArrayList<>();
@@ -49,17 +51,17 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
             mB.add(new boolean[M]);
             mD.get(i)[i] = 1;
         }
-        scAlgo = new SilvaColom88Algorithm(N, M);
+//        scAlgo = new SilvaColom88Algorithm(N, M);
     }
 
     // Add a flow from i to j with the specified cardinality
     @Override
     public void addFlow(int i, int j, int card) {
-//        System.out.println("addFlow("+i+", "+j+", "+card+");");
+//        System.out.println("msa.addFlow("+i+", "+j+", "+card+");");
         mA.get(i)[j] += card;
         mB.get(i)[j] = (mA.get(i)[j] != 0);
         
-        scAlgo.addFlow(i, j, card);
+//        scAlgo.addFlow(i, j, card);
     }
     
     // Add the initial token of a place (only for P-invariant computation)
@@ -73,7 +75,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
         assert initQuantity[i] == 0;
         initQuantity[i] = quantity;
         
-        scAlgo.setInitQuantity(i, quantity);
+//        scAlgo.setInitQuantity(i, quantity);
     }
     
     public int[] getSemiflow(int i) {
@@ -127,9 +129,23 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
                     // Find two rows r1 and r2 such that r1[i] and r2[i] have opposite signs.
                     if (mA.get(r2)[i] == 0)
                         continue;
-                    if (sign(mA.get(r1)[i]) == sign(mA.get(r2)[i]))
-                        continue;
-                    int abs1 = Math.abs(mA.get(r1)[i]), abs2 = Math.abs(mA.get(r2)[i]);
+                    
+                    int mult1, mult2;
+                    if (onlySemiflows) {
+                        if (sign(mA.get(r1)[i]) == sign(mA.get(r2)[i]))
+                            continue;
+                        mult1 = Math.abs(mA.get(r1)[i]);
+                        mult2 = Math.abs(mA.get(r2)[i]);
+                    }
+                    else {
+                        mult1 = Math.abs(mA.get(r1)[i]);
+                        mult2 = Math.abs(mA.get(r2)[i]);
+                        int gcd12 = gcd(mult1, mult2);
+                        mult1 /= gcd12;
+                        mult2 /= gcd12;
+                        if (sign(mA.get(r1)[i]) == sign(mA.get(r2)[i]))
+                            mult1 *= -1;
+                    }
 
                     // Create a new row nr' such that:
                     //   nr = |r2[i]| * r1 + |ri[i]| * r2
@@ -140,13 +156,13 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
                     boolean[] nrB = new boolean[M];
                     int gcdAD = -1;
                     for (int k = 0; k < M; k++) {
-                        nrA[k] = abs2 * mA.get(r1)[k] + abs1 * mA.get(r2)[k];
+                        nrA[k] = mult2 * mA.get(r1)[k] + mult1 * mA.get(r2)[k];
                         gcdAD = (k == 0) ? Math.abs(nrA[k]) : gcd(gcdAD, Math.abs(nrA[k]));
                         nrB[k] = mB.get(r1)[k] || mB.get(r2)[k];
                     }
                     assert nrA[i] == 0;
                     for (int k = 0; k < N; k++) {
-                        nrD[k] = abs2 * mD.get(r1)[k] + abs1 * mD.get(r2)[k];
+                        nrD[k] = mult2 * mD.get(r1)[k] + mult1 * mD.get(r2)[k];
                         gcdAD = gcd(gcdAD, Math.abs(nrD[k]));
                     }
                     if (gcdAD != 1) {
@@ -210,7 +226,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
         
         if (computeBounds) {
             computeBoundsFromInvariants();
-            scAlgo.compute(log, obs);
+//            scAlgo.compute(log, obs);
         }
         
         setComputed();
@@ -232,30 +248,38 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
                 if (i == rr)
                     continue;
                 // Check if the semiflow D[rr] contains D[i]
-                int mult = -1;
-                boolean isComp = true; // Says if i is a linear component of rr
-                for (int k=0; k<N; k++) {
+                // Check if the support(D[i]) subseteq support(D[rr])
+                boolean support_included = true;
+                for (int k=0; k<N && support_included; k++) {
                     if (mD.get(i)[k] != 0) {
-                        if (mD.get(i)[k] > mD.get(rr)[k]) {
-                            isComp = false;
-                            break; // i is not a linear component of rr
-                        }
-                        if (mult == -1)
-                            mult = mD.get(rr)[k] / mD.get(i)[k];
-                        else
-                            mult = Math.min(mult, mD.get(rr)[k] / mD.get(i)[k]);
-                    }
+                        if (mD.get(rr)[k] == 0)
+                            support_included = false;
+                    } 
                 }
-                if (!isComp)
-                    continue;
-                // in matrix D:  D[rr] -= mult * D[i]
-                assert mult > 0;
-                boolean isZero = true;
-                for (int k=0; k<N; k++) {
-                    mD.get(rr)[k] -= mult * mD.get(i)[k];
-                    isZero = isZero && (mD.get(rr)[k] == 0);
-                }
-                if (isZero) {
+//                int mult = -1;
+//                boolean isComp = true; // Says if i is a linear component of rr
+//                for (int k=0; k<N; k++) {
+//                    if (mD.get(i)[k] != 0) {
+//                        if (mD.get(i)[k] > mD.get(rr)[k]) {
+//                            isComp = false;
+//                            break; // i is not a linear component of rr
+//                        }
+//                        if (mult == -1)
+//                            mult = mD.get(rr)[k] / mD.get(i)[k];
+//                        else
+//                            mult = Math.min(mult, mD.get(rr)[k] / mD.get(i)[k]);
+//                    }
+//                }
+//                if (!isComp)
+//                    continue;
+//                // in matrix D:  D[rr] -= mult * D[i]
+//                assert mult > 0;
+//                boolean support_included = true;
+//                for (int k=0; k<N; k++) {
+//                    mD.get(rr)[k] -= mult * mD.get(i)[k];
+//                    support_included = support_included && (mD.get(rr)[k] == 0);
+//                }
+                if (support_included) {
                     // rr was a linear combination of other semiflows. Remove it
                     if (log)
                         System.out.println("DEL row " + rr);
@@ -365,42 +389,30 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
         sb.append("\\\\ \n\\hline\n");
                 
         // row for a place/transition
-        for (int pl=0; pl<N; pl++) {
-//            String m0p = null;
-//            if (add_m0_col) {
-//                m0p = places.get(pl).getInitMarkingExpr();
-//                if (m0p.isBlank())
-//                    m0p = "0";
-//                int m0val = -1000;
-//                try {
-//                    m0val = Integer.parseInt(m0p);
-//                }
-//                catch (NumberFormatException e) {}
-//            }
-            
+        for (int row=0; row<N; row++) {
             if (type == SemiFlows.Type.PLACE_SEMIFLOW)
-                sb.append(places.get(pl).getUniqueNameDecor().getLatexFormula().getLatex());
+                sb.append(places.get(row).getUniqueNameDecor().getLatexFormula().getLatex());
             else
-                sb.append(transitions.get(pl).getUniqueNameDecor().getLatexFormula().getLatex());
+                sb.append(transitions.get(row).getUniqueNameDecor().getLatexFormula().getLatex());
             
             for (int f=0; f<numSemiflows(); f++) {
                 int[] semiflow = getSemiflow(f);
                 
                 sb.append(" &");
-                if (showZeros || semiflow[pl]!=0) {
+                if (showZeros || semiflow[row]!=0) {
                     String color;
-                    if (semiflow[pl] > 0)
+                    if (semiflow[row] > 0)
                         color = "Blue";
-                    else if (semiflow[pl] < 0)
+                    else if (semiflow[row] < 0)
                         color = "Mahogany";
                     else
                         color = "Gray";
-                    sb.append("\\textcolor{").append(color).append("}{").append(semiflow[pl]).append("}");
+                    sb.append("\\textcolor{").append(color).append("}{").append(semiflow[row]).append("}");
                 }
             } 
             
             if (add_m0_col) {
-                sb.append(" & \\mathbf{").append(initQuantity[pl]).append("}");
+                sb.append(" & \\mathbf{").append(initQuantity[row]).append("}");
             }
             sb.append("\\\\ \n\\hline\n");
             
@@ -422,19 +434,6 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
             }
             sb.append("\\\\ \n");
         }
-//        sb.append("\n& ");
-//        for (int f=0; f<pinMat.size(); f++) {
-//            if (!extra_pm0[f].isEmpty()) {
-//                if (sum_pm0[f] == 0)
-//                    sb.append(extra_pm0[f]);
-//                else
-//                    sb.append(sum_pm0[f]+"+"+extra_pm0[f]);
-//            }
-//            else sb.append(sum_pm0[f]);
-//            sb.append("& ");
-//        }
-//        sb.append("\\\\ \n");
-        
         
         sb.append("\\end{array}$");
         return sb.toString();
@@ -468,48 +467,36 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
 //    }
     
     public static MartinezSilvaAlgorithm init1() {
-        int M=16, N=12;
+        int M=10, N=14;
         MartinezSilvaAlgorithm msa = new MartinezSilvaAlgorithm(N, M);
-        msa.addFlow(1, 1, 1);
-        msa.addFlow(0, 2, 1);
-        msa.addFlow(2, 3, 1);
-        msa.addFlow(2, 1, 1);
-        msa.addFlow(1, 0, 1);
         msa.addFlow(0, 0, 1);
-        msa.addFlow(3, 2, 1);
+        msa.addFlow(0, 4, -1);
+        msa.addFlow(1, 4, 1);
+        msa.addFlow(1, 3, -1);
+        msa.addFlow(12, 3, -1);
         msa.addFlow(3, 3, 1);
-        msa.addFlow(1, 5, 1);
-        msa.addFlow(8, 5, -1);
-        msa.addFlow(8, 6, 1);
-        msa.addFlow(4, 6, -1);
-        msa.addFlow(4, 4, 1);
-        msa.addFlow(1, 4, -1);
-        msa.addFlow(4, 1, -1);
-        msa.addFlow(7, 1, -1);
-        msa.addFlow(5, 2, -1);
-        msa.addFlow(6, 2, -1);
-        msa.addFlow(0, 7, -1);
-        msa.addFlow(0, 8, 1);
-        msa.addFlow(6, 8, -1);
-        msa.addFlow(6, 9, 1);
-        msa.addFlow(9, 9, -1);
-        msa.addFlow(9, 7, 1);
-        msa.addFlow(3, 13, 1);
-        msa.addFlow(10, 13, -1);
-        msa.addFlow(10, 14, 1);
-        msa.addFlow(5, 14, -1);
-        msa.addFlow(5, 10, 1);
-        msa.addFlow(3, 10, -1);
-        msa.addFlow(2, 12, -1);
-        msa.addFlow(2, 11, 1);
-        msa.addFlow(7, 11, -1);
-        msa.addFlow(7, 15, 1);
-        msa.addFlow(11, 15, -1);
-        msa.addFlow(11, 12, 1);
-        msa.addFlow(8, 0, -1);
-        msa.addFlow(9, 0, -1);
-        msa.addFlow(11, 3, -1);
-        msa.addFlow(10, 3, -1);
+        msa.addFlow(3, 0, -1);
+        msa.addFlow(2, 0, 1);
+        msa.addFlow(4, 0, -1);
+        msa.addFlow(2, 5, -1);
+        msa.addFlow(13, 5, 1);
+        msa.addFlow(13, 1, -1);
+        msa.addFlow(5, 1, 1);
+        msa.addFlow(5, 6, -1);
+        msa.addFlow(4, 6, 1);
+        msa.addFlow(6, 1, -1);
+        msa.addFlow(7, 1, 1);
+        msa.addFlow(7, 7, -1);
+        msa.addFlow(8, 7, 1);
+        msa.addFlow(8, 2, -1);
+        msa.addFlow(9, 2, 1);
+        msa.addFlow(10, 2, 1);
+        msa.addFlow(10, 9, -1);
+        msa.addFlow(11, 9, 1);
+        msa.addFlow(12, 9, 1);
+        msa.addFlow(11, 8, -1);
+        msa.addFlow(9, 8, -1);
+        msa.addFlow(6, 8, 1);
         return msa;
     }
     
@@ -521,6 +508,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
             public void advance(int step, int total, int s, int t) {
             }
         };
+        msa.onlySemiflows = false;
         msa.compute(true, obs);
     }
 }

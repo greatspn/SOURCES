@@ -26,7 +26,6 @@ import editor.domain.composition.ComposableNet;
 import editor.gui.AbstractPageEditor;
 import editor.gui.MainWindowInterface;
 import editor.gui.SharedResourceProvider;
-import static editor.gui.SharedResourceProvider.ActionName.COMPUTE_PLACE_SEMIFLOWS;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -97,11 +96,15 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         jToolbarButtonChangeBindings.setAction(shActProv.getSharedAction
                 (SharedResourceProvider.ActionName.CHANGE_BINDINGS));
         jToolbarButtonComputePlaceSemiflows.setAction(shActProv.getSharedAction
-                (SharedResourceProvider.ActionName.COMPUTE_PLACE_SEMIFLOWS));
+                (SharedResourceProvider.ActionName.PLACE_SEMIFLOWS));
+        jToolbarButtonComputePlaceFlows.setAction(shActProv.getSharedAction
+                (SharedResourceProvider.ActionName.PLACE_FLOWS));
         jToolbarButtonComputeTransitionSemiflows.setAction(shActProv.getSharedAction
-                (SharedResourceProvider.ActionName.COMPUTE_TRANS_SEMIFLOWS));
+                (SharedResourceProvider.ActionName.TRANS_SEMIFLOWS));
+        jToolbarButtonComputeTransitionFlows.setAction(shActProv.getSharedAction
+                (SharedResourceProvider.ActionName.TRANS_FLOWS));
         jToolbarButtonComputeBoundsFromPinv.setAction(shActProv.getSharedAction
-                (SharedResourceProvider.ActionName.COMPUTE_PLACE_BOUNDS_FROM_PINV));
+                (SharedResourceProvider.ActionName.PLACE_BOUNDS_FROM_SEMIFLOWS));
         jToolbarButtonShowMatrices.setAction(shActProv.getSharedAction
                 (SharedResourceProvider.ActionName.SHOW_NET_MATRICES));
         
@@ -211,17 +214,27 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
                     act.setEnabled(viewerPanel.hasBindingForms() && !viewerPanel.isInBindingPhase());
                     break;
                     
-                case COMPUTE_PLACE_SEMIFLOWS:
+                case PLACE_SEMIFLOWS:
                     act.setEnabled((viewerPanel.isInBindingPhase() && viewerPanel.areAllBindingsOk()) ||
                                    (!viewerPanel.isInBindingPhase() && sfType != SemiFlows.Type.PLACE_SEMIFLOW));
                     break;
                     
-                case COMPUTE_TRANS_SEMIFLOWS:
+                case PLACE_FLOWS:
+                    act.setEnabled((viewerPanel.isInBindingPhase() && viewerPanel.areAllBindingsOk()) ||
+                                   (!viewerPanel.isInBindingPhase() && sfType != SemiFlows.Type.PLACE_FLOW));
+                    break;
+                    
+                case TRANS_SEMIFLOWS:
                     act.setEnabled((viewerPanel.isInBindingPhase() && viewerPanel.areAllBindingsOk()) ||
                                    (!viewerPanel.isInBindingPhase() && sfType != SemiFlows.Type.TRANSITION_SEMIFLOWS));
                     break;
                     
-                case COMPUTE_PLACE_BOUNDS_FROM_PINV:
+                case TRANS_FLOWS:
+                    act.setEnabled((viewerPanel.isInBindingPhase() && viewerPanel.areAllBindingsOk()) ||
+                                   (!viewerPanel.isInBindingPhase() && sfType != SemiFlows.Type.TRANSITION_FLOWS));
+                    break;
+                    
+                case PLACE_BOUNDS_FROM_SEMIFLOWS:
                     act.setEnabled((viewerPanel.isInBindingPhase() && viewerPanel.areAllBindingsOk()) ||
                                    (!viewerPanel.isInBindingPhase() && sfType != SemiFlows.Type.PLACE_BOUNDS_FROM_PINV));
                     break;
@@ -244,19 +257,31 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
                 restartFromBeginning(true);
                 break;
                 
-            case COMPUTE_PLACE_SEMIFLOWS:
+            case PLACE_SEMIFLOWS:
                 if (viewerPanel.isInBindingPhase())
                     closeBindingForm();
                 recomputeSemiflowsLater(SemiFlows.Type.PLACE_SEMIFLOW);
                 break;
                 
-            case COMPUTE_TRANS_SEMIFLOWS:
+            case PLACE_FLOWS:
+                if (viewerPanel.isInBindingPhase())
+                    closeBindingForm();
+                recomputeSemiflowsLater(SemiFlows.Type.PLACE_FLOW);
+                break;
+                
+            case TRANS_SEMIFLOWS:
                 if (viewerPanel.isInBindingPhase())
                     closeBindingForm();
                 recomputeSemiflowsLater(SemiFlows.Type.TRANSITION_SEMIFLOWS);
                 break;
+
+            case TRANS_FLOWS:
+                if (viewerPanel.isInBindingPhase())
+                    closeBindingForm();
+                recomputeSemiflowsLater(SemiFlows.Type.TRANSITION_FLOWS);
+                break;
                 
-            case COMPUTE_PLACE_BOUNDS_FROM_PINV:
+            case PLACE_BOUNDS_FROM_SEMIFLOWS:
                 if (viewerPanel.isInBindingPhase())
                     closeBindingForm();
                 recomputeSemiflowsLater(SemiFlows.Type.PLACE_BOUNDS_FROM_PINV);
@@ -286,15 +311,20 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         
         // Both P-semiflows and Place bounds are initialized in the same way
         boolean initializeForPsemiflows = (sfType == SemiFlows.Type.PLACE_SEMIFLOW ||
+                                           sfType == SemiFlows.Type.PLACE_FLOW ||
                                            sfType == SemiFlows.Type.PLACE_BOUNDS_FROM_PINV);
         boolean initializeForBounds = (sfType == SemiFlows.Type.PLACE_BOUNDS_FROM_PINV);
+        boolean onlySemiflows = (sfType == SemiFlows.Type.PLACE_SEMIFLOW ||
+                                 sfType == SemiFlows.Type.TRANSITION_SEMIFLOWS ||
+                                 sfType == SemiFlows.Type.PLACE_BOUNDS_FROM_PINV);
         
         if (initializeForPsemiflows)
             algo = new MartinezSilvaAlgorithm(places.size(), transitions.size());
         else
             algo = new MartinezSilvaAlgorithm(transitions.size(), places.size());
+        algo.onlySemiflows = onlySemiflows;
         
-        // Compute the semiflows
+        // Compute the (semi)flows
         ParserContext context = new ParserContext(viewerPanel.getGspn());
         context.templateVarsBinding = viewerPanel.getGspnBinding();
         context.bindingContext = context;
@@ -362,7 +392,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
             }            
         }
         
-        if (sfType == SemiFlows.Type.PLACE_BOUNDS_FROM_PINV || sfType == SemiFlows.Type.PLACE_SEMIFLOW) {
+        if (initializeForPsemiflows) {
             // Prepare also bound computation
             for (Node node : viewerPanel.getGspn().nodes) {
                 if (node instanceof Place) {
@@ -427,7 +457,9 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
 
         // Update titles and warnings
         jLabel_PSemiflow.setVisible(sfType == SemiFlows.Type.PLACE_SEMIFLOW);
+        jLabel_PFlows.setVisible(sfType == SemiFlows.Type.PLACE_FLOW);
         jLabel_TSemiflow.setVisible(sfType == SemiFlows.Type.TRANSITION_SEMIFLOWS);
+        jLabel_TFlows.setVisible(sfType == SemiFlows.Type.TRANSITION_FLOWS);
         jLabel_PlaceBoundsFromPinv.setVisible(sfType == SemiFlows.Type.PLACE_BOUNDS_FROM_PINV);
         
         // Make the list of errors
@@ -550,7 +582,8 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         GspnPage gspn = viewerPanel.getGspn();
         
         switch (sfType) {
-            case PLACE_SEMIFLOW: {
+            case PLACE_SEMIFLOW:
+            case PLACE_FLOW: {
                 int[] placeSF = algo.getSemiflow(sfNum);
                 // [1] Add all places of the semiflow into the list
                 for (int k=0; k<placeSF.length; k++)
@@ -570,7 +603,8 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
             }
             break;
                 
-            case TRANSITION_SEMIFLOWS: {
+            case TRANSITION_SEMIFLOWS:
+            case TRANSITION_FLOWS:{
                 int[] trnSF = algo.getSemiflow(sfNum);
                 // [1] Add all transitions of the semiflow into the list
                 for (int k=0; k<trnSF.length; k++)
@@ -598,7 +632,11 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         }
         
         // Highlight edges between place/transitions, when visualizing semiflows
-        if (sfType == SemiFlows.Type.PLACE_SEMIFLOW || sfType == SemiFlows.Type.TRANSITION_SEMIFLOWS) {
+        if (sfType == SemiFlows.Type.PLACE_SEMIFLOW || 
+            sfType == SemiFlows.Type.PLACE_FLOW || 
+            sfType == SemiFlows.Type.TRANSITION_SEMIFLOWS || 
+            sfType == SemiFlows.Type.TRANSITION_FLOWS) 
+        {
             // [3] Add all input/output edges between selected places and transitions
             for (Edge edge : gspn.edges)
                 if (edge instanceof GspnEdge && 
@@ -661,12 +699,18 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         viewerPanel.zoomChanged(newZoomLevel);
     }
     
-    private static final Color PLACE_SEMIFLOW_LINE_CLR = new Color(90, 180, 240);
-    private static final Color TRANSITION_SEMIFLOW_LINE_CLR = new Color(240, 130, 70);
-    private static final Color PLACE_BOUND_LINE_CLR = new Color(0, 210, 0);
-    private static final Color PLACE_SEMIFLOW_TEXT_CLR = new Color(40, 50, 180);
-    private static final Color TRANSITION_SEMIFLOW_TEXT_CLR = new Color(190, 40, 20);
-    private static final Color PLACE_BOUND_TEXT_CLR = new Color(0, 160, 0);
+    private static final Color POSITIVE_PLACE_LINE_CLR = new Color(0x5ab4f0);
+    private static final Color NEGATIVE_PLACE_LINE_CLR = new Color(0x8975FF);
+    private static final Color POSITIVE_TRANSITION_LINE_CLR = new Color(0xf08246);
+    private static final Color NEGATIVE_TRANSITION_LINE_CLR = new Color(0xC06CE5);
+    
+    private static final Color POSITIVE_PLACE_TEXT_CLR = new Color(0x2832b4);
+    private static final Color NEGATIVE_PLACE_TEXT_CLR = new Color(0x5f32b4);
+    private static final Color POSITIVE_TRANSITION_TEXT_CLR = new Color(0xbe2814);
+    private static final Color NEGATIVE_TRANSITION_TEXT_CLR = new Color(0x5F008A);
+
+    private static final Color PLACE_BOUND_LINE_CLR = new Color(0x00d200);
+    private static final Color PLACE_BOUND_TEXT_CLR = new Color(0x00a000);
 
     
     private class SelectedSemiflow implements SemiFlows {
@@ -681,7 +725,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         @Override
         public int getNodeCardinality(Selectable elem) {
             if (algo == null)
-                return -1;
+                return Integer.MAX_VALUE;
             int selSF = jListSemiflows.getSelectedIndex();
             boolean hasSelSF = true;
             if (selSF < 0 || selSF >= jListSemiflows.getModel().getSize())
@@ -689,37 +733,43 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
             
             switch (sfType) {
                 case PLACE_SEMIFLOW:
+                case PLACE_FLOW:
                     if (!hasSelSF)
-                        return -1;
+                        return Integer.MAX_VALUE;
                     if (elem instanceof Place)
                         return algo.getSemiflow(selSF)[place2index.get((Place)elem)];
                     break;
                     
                 case TRANSITION_SEMIFLOWS:
+                case TRANSITION_FLOWS:
                     if (!hasSelSF)
-                        return -1;
+                        return Integer.MAX_VALUE;
                     if (elem instanceof Transition)
                         return algo.getSemiflow(selSF)[trn2index.get((Transition)elem)];
                     break;
                     
                 case PLACE_BOUNDS_FROM_PINV:
-                    if (elem instanceof Place)
-                        return algo.getUpperBoundOf(place2index.get((Place)elem));
-                    break;
+                    throw new IllegalStateException();
+//                    if (elem instanceof Place)
+//                        return algo.getUpperBoundOf(place2index.get((Place)elem));
+//                    break;
             }
-            return -1;
+            return Integer.MAX_VALUE;
         }
 
         @Override
-        public int getNodeLowerBound(Selectable elem) {
+        public int getNodeBound(Selectable elem, boolean lower) {
             if (algo == null)
                 return -1;
+            if (sfType != Type.PLACE_BOUNDS_FROM_PINV)
+                return -1;
+            if (!(elem instanceof Place))
+                return -1;
             
-            if (sfType == Type.PLACE_BOUNDS_FROM_PINV) {
-                if (elem instanceof Place)
-                    return algo.getLowerBoundOf(place2index.get((Place)elem));
-            }
-            return -1;
+            if (lower)
+                return algo.getLowerBoundOf(place2index.get((Place)elem));
+            else
+                return algo.getUpperBoundOf(place2index.get((Place)elem));
         }
 
         @Override
@@ -728,12 +778,14 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         }
 
         @Override
-        public Color getLineColor() {
+        public Color getLineColor(int card) {
             switch (sfType) {
                 case PLACE_SEMIFLOW:
-                    return PLACE_SEMIFLOW_LINE_CLR;
+                case PLACE_FLOW:
+                    return (card > 0 ? POSITIVE_PLACE_LINE_CLR : NEGATIVE_PLACE_LINE_CLR);
                 case TRANSITION_SEMIFLOWS:
-                    return TRANSITION_SEMIFLOW_LINE_CLR;
+                case TRANSITION_FLOWS:
+                    return (card > 0 ? POSITIVE_TRANSITION_LINE_CLR : NEGATIVE_TRANSITION_LINE_CLR);
                 case PLACE_BOUNDS_FROM_PINV:
                     return PLACE_BOUND_LINE_CLR;
             }
@@ -741,12 +793,14 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         }
 
         @Override
-        public Color getTextColor() {
+        public Color getTextColor(int card) {
             switch (sfType) {
                 case PLACE_SEMIFLOW:
-                    return PLACE_SEMIFLOW_TEXT_CLR;
+                case PLACE_FLOW:
+                    return (card > 0 ? POSITIVE_PLACE_TEXT_CLR : NEGATIVE_PLACE_TEXT_CLR);
                 case TRANSITION_SEMIFLOWS:
-                    return TRANSITION_SEMIFLOW_TEXT_CLR;
+                case TRANSITION_FLOWS:
+                    return (card > 0 ? POSITIVE_TRANSITION_TEXT_CLR : NEGATIVE_TRANSITION_TEXT_CLR);
                 case PLACE_BOUNDS_FROM_PINV:
                     return PLACE_BOUND_TEXT_CLR;
             }
@@ -827,7 +881,9 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         jToolBar = new javax.swing.JToolBar();
         jToolbarButtonChangeBindings = new common.JToolbarButton();
         jToolbarButtonComputePlaceSemiflows = new common.JToolbarButton();
+        jToolbarButtonComputePlaceFlows = new common.JToolbarButton();
         jToolbarButtonComputeTransitionSemiflows = new common.JToolbarButton();
+        jToolbarButtonComputeTransitionFlows = new common.JToolbarButton();
         jToolbarButtonComputeBoundsFromPinv = new common.JToolbarButton();
         jToolbarButtonShowMatrices = new common.JToolbarButton();
         jPanelNet = new javax.swing.JPanel();
@@ -849,6 +905,8 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jListSemiflows = new javax.swing.JList<>();
+        jLabel_PFlows = new javax.swing.JLabel();
+        jLabel_TFlows = new javax.swing.JLabel();
 
         jToolBar.setRollover(true);
 
@@ -858,8 +916,18 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         jToolbarButtonComputePlaceSemiflows.setText("jToolbarButton1");
         jToolBar.add(jToolbarButtonComputePlaceSemiflows);
 
+        jToolbarButtonComputePlaceFlows.setText("jToolbarButton1");
+        jToolbarButtonComputePlaceFlows.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jToolbarButtonComputePlaceFlows.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar.add(jToolbarButtonComputePlaceFlows);
+
         jToolbarButtonComputeTransitionSemiflows.setText("jToolbarButton2");
         jToolBar.add(jToolbarButtonComputeTransitionSemiflows);
+
+        jToolbarButtonComputeTransitionFlows.setText("jToolbarButton2");
+        jToolbarButtonComputeTransitionFlows.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jToolbarButtonComputeTransitionFlows.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar.add(jToolbarButtonComputeTransitionFlows);
 
         jToolbarButtonComputeBoundsFromPinv.setText("jToolbarButton1");
         jToolbarButtonComputeBoundsFromPinv.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -965,11 +1033,11 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         jPanelControls.add(jLabel_PSemiflow, gridBagConstraints);
 
         jLabel_TSemiflow.setIcon(resourceFactory.getTinv32());
-        jLabel_TSemiflow.setText("T-semiflows:");
+        jLabel_TSemiflow.setText("T-flows:");
         jLabel_TSemiflow.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 0.1;
@@ -1009,11 +1077,35 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 9;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 0.1;
         gridBagConstraints.weighty = 0.1;
         jPanelControls.add(jPanel1, gridBagConstraints);
+
+        jLabel_PFlows.setIcon(resourceFactory.getPinv32());
+        jLabel_PFlows.setText("P-flows:");
+        jLabel_PFlows.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 0.1;
+        gridBagConstraints.insets = new java.awt.Insets(1, 1, 1, 1);
+        jPanelControls.add(jLabel_PFlows, gridBagConstraints);
+
+        jLabel_TFlows.setIcon(resourceFactory.getTinv32());
+        jLabel_TFlows.setText("T-semiflows:");
+        jLabel_TFlows.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 0.1;
+        gridBagConstraints.insets = new java.awt.Insets(1, 1, 1, 1);
+        jPanelControls.add(jLabel_TFlows, gridBagConstraints);
 
         add(jPanelControls, "controls");
     }// </editor-fold>//GEN-END:initComponents
@@ -1026,8 +1118,10 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel_Binding;
+    private javax.swing.JLabel jLabel_PFlows;
     private javax.swing.JLabel jLabel_PSemiflow;
     private javax.swing.JLabel jLabel_PlaceBoundsFromPinv;
+    private javax.swing.JLabel jLabel_TFlows;
     private javax.swing.JLabel jLabel_TSemiflow;
     private javax.swing.JList<String> jListSemiflows;
     private javax.swing.JPanel jPanel1;
@@ -1040,7 +1134,9 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
     private javax.swing.JToolBar jToolBar;
     private common.JToolbarButton jToolbarButtonChangeBindings;
     private common.JToolbarButton jToolbarButtonComputeBoundsFromPinv;
+    private common.JToolbarButton jToolbarButtonComputePlaceFlows;
     private common.JToolbarButton jToolbarButtonComputePlaceSemiflows;
+    private common.JToolbarButton jToolbarButtonComputeTransitionFlows;
     private common.JToolbarButton jToolbarButtonComputeTransitionSemiflows;
     private common.JToolbarButton jToolbarButtonShowMatrices;
     private editor.gui.ResourceFactory resourceFactory;
