@@ -372,25 +372,24 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
                                 ArrayList<Transition> transitions,
                                 boolean showZeros) 
     {
-        boolean add_m0_col = (type==SemiFlows.Type.PLACE_SEMIFLOW);
         StringBuilder sb = new StringBuilder();
         
         // header
         sb.append("$\\begin{array}{r");
         for (int f=0; f<numSemiflows(); f++)
             sb.append("|c");
-        if (add_m0_col)
+        if (type.isPlace())
             sb.append("|r");
         sb.append("}\n ");
         for (int f=0; f<numSemiflows(); f++)
             sb.append("& i_{").append(f+1).append("}");
-        if (add_m0_col)
+        if (type.isPlace())
             sb.append("& \\mathbf{m}_0");
         sb.append("\\\\ \n\\hline\n");
                 
         // row for a place/transition
         for (int row=0; row<N; row++) {
-            if (type == SemiFlows.Type.PLACE_SEMIFLOW)
+            if (type.isPlace())
                 sb.append(places.get(row).getUniqueNameDecor().getLatexFormula().getLatex());
             else
                 sb.append(transitions.get(row).getUniqueNameDecor().getLatexFormula().getLatex());
@@ -411,7 +410,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
                 }
             } 
             
-            if (add_m0_col) {
+            if (type.isPlace()) {
                 sb.append(" & \\mathbf{").append(initQuantity[row]).append("}");
             }
             sb.append("\\\\ \n\\hline\n");
@@ -419,7 +418,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
         }
         
         // final row
-        if (type == SemiFlows.Type.PLACE_SEMIFLOW) {
+        if (type.isPlace()) {
             sb.append("\n \\mathbf{m}_0 \\cdot I & ");
             
             for (int f=0; f<numSemiflows(); f++) {

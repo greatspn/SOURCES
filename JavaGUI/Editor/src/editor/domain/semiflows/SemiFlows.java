@@ -31,6 +31,14 @@ public interface SemiFlows {
                     throw new IllegalStateException();
             }
         }
+        
+        public boolean isPlace() {
+            return this==PLACE_FLOW || this==PLACE_SEMIFLOW;
+        }
+        
+        public boolean isTransition() {
+            return this==TRANSITION_FLOWS || this==TRANSITION_SEMIFLOWS;
+        }
     }
     
     // What type of informations is this?

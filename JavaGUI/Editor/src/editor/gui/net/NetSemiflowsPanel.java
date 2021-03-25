@@ -749,10 +749,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
                     break;
                     
                 case PLACE_BOUNDS_FROM_PINV:
-                    throw new IllegalStateException();
-//                    if (elem instanceof Place)
-//                        return algo.getUpperBoundOf(place2index.get((Place)elem));
-//                    break;
+                    return Integer.MAX_VALUE; // do not throw
             }
             return Integer.MAX_VALUE;
         }
