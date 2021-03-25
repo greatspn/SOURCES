@@ -7,14 +7,16 @@ package editor.gui.net;
 
 import editor.domain.NetObject;
 import editor.domain.elements.GspnPage;
-import editor.domain.unfolding.IncidenceMatrixFormatter;
-import editor.domain.unfolding.MatrixMode;
+import editor.domain.elements.Place;
+import editor.domain.elements.Transition;
+import editor.domain.semiflows.MartinezSilvaAlgorithm;
+import editor.domain.semiflows.SemiFlows;
 import editor.gui.ResourceFactory;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import javax.swing.DefaultComboBoxModel;
+import java.util.ArrayList;
 import javax.swing.SwingUtilities;
 import latex.JLatexComponent;
 import latex.LatexFormula;
@@ -23,16 +25,24 @@ import latex.LatexFormula;
  *
  * @author elvio
  */
-public class ShowNetMatricesDialog extends javax.swing.JDialog {
+public class ShowSemiflowsMatrixDialog extends javax.swing.JDialog {
 
-    private final IncidenceMatrixFormatter matFormatter;
+    private final SemiFlows.Type type;
+    private final MartinezSilvaAlgorithm algo;
+    private final ArrayList<Place> places;
+    private final ArrayList<Transition> transitions;
     JLatexComponent latexComp;
     
     /**
      * Creates new form ShowNetMatricesDialog
      */
-    public ShowNetMatricesDialog(java.awt.Frame parent, boolean modal, GspnPage gspn) {
+    public ShowSemiflowsMatrixDialog(java.awt.Frame parent, boolean modal, MartinezSilvaAlgorithm algo,
+                                     SemiFlows.Type type, ArrayList<Place> places, ArrayList<Transition> transitions) {
         super(parent, modal);
+        this.algo = algo;
+        this.type = type;
+        this.places = places;
+        this.transitions = transitions;
         initComponents();
         
         latexComp = new JLatexComponent();
@@ -45,21 +55,11 @@ public class ShowNetMatricesDialog extends javax.swing.JDialog {
         pack();
         setLocationRelativeTo(getOwner());
         
-        matFormatter = new IncidenceMatrixFormatter(gspn);
-        DefaultComboBoxModel<MatrixMode> model = new DefaultComboBoxModel<>();
-        for (MatrixMode m : MatrixMode.values())
-            model.addElement(m);
-        model.setSelectedItem(MatrixMode.INCIDENCE_MATRIX);
-        comboBox_matrixMode.setModel(model);
-        
         update();
     }
     
     private void update() {
-        String latex = matFormatter.latexFor((MatrixMode)comboBox_matrixMode.getSelectedItem(), 
-                checkBox_showSumOfTerms.isSelected(), 
-                checkBox_showZeros.isSelected(), 
-                checkBox_showTermsStacked.isSelected());
+        String latex = algo.toLatexString(type, places, transitions, checkBox_showZeros.isSelected());
         LatexFormula formula = new LatexFormula(latex, NetObject.getUnitToPixels());
         
         latexComp.setFormula(formula);
@@ -78,15 +78,12 @@ public class ShowNetMatricesDialog extends javax.swing.JDialog {
         southPanel = new javax.swing.JPanel();
         jButton_close = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
-        comboBox_matrixMode = new javax.swing.JComboBox<>();
         checkBox_showZeros = new javax.swing.JCheckBox();
-        checkBox_showSumOfTerms = new javax.swing.JCheckBox();
-        checkBox_showTermsStacked = new javax.swing.JCheckBox();
         button_copyToClipboard = new javax.swing.JButton();
         scrollPane = new javax.swing.JScrollPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Net matrices");
+        setTitle("Semiflows matrix");
 
         southPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -106,15 +103,6 @@ public class ShowNetMatricesDialog extends javax.swing.JDialog {
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Options"));
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        comboBox_matrixMode.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                comboBox_matrixModeActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        jPanel1.add(comboBox_matrixMode, gridBagConstraints);
-
         checkBox_showZeros.setSelected(true);
         checkBox_showZeros.setText("Show zeros.");
         checkBox_showZeros.addActionListener(new java.awt.event.ActionListener() {
@@ -129,35 +117,6 @@ public class ShowNetMatricesDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 1.0;
         jPanel1.add(checkBox_showZeros, gridBagConstraints);
-
-        checkBox_showSumOfTerms.setSelected(true);
-        checkBox_showSumOfTerms.setText("Show sum of terms.");
-        checkBox_showSumOfTerms.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                checkBox_showSumOfTermsActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 1.0;
-        jPanel1.add(checkBox_showSumOfTerms, gridBagConstraints);
-
-        checkBox_showTermsStacked.setText("Show terms stacked");
-        checkBox_showTermsStacked.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                checkBox_showTermsStackedActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 1.0;
-        jPanel1.add(checkBox_showTermsStacked, gridBagConstraints);
 
         button_copyToClipboard.setText("CopyToClipboard");
         button_copyToClipboard.addActionListener(new java.awt.event.ActionListener() {
@@ -192,21 +151,9 @@ public class ShowNetMatricesDialog extends javax.swing.JDialog {
         });
     }//GEN-LAST:event_jButton_closeActionPerformed
 
-    private void comboBox_matrixModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBox_matrixModeActionPerformed
-        update();
-    }//GEN-LAST:event_comboBox_matrixModeActionPerformed
-
     private void checkBox_showZerosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBox_showZerosActionPerformed
         update();
     }//GEN-LAST:event_checkBox_showZerosActionPerformed
-
-    private void checkBox_showSumOfTermsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBox_showSumOfTermsActionPerformed
-        update();
-    }//GEN-LAST:event_checkBox_showSumOfTermsActionPerformed
-
-    private void checkBox_showTermsStackedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBox_showTermsStackedActionPerformed
-        update();
-    }//GEN-LAST:event_checkBox_showTermsStackedActionPerformed
 
     private void button_copyToClipboardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_copyToClipboardActionPerformed
         LatexFormula formula = latexComp.getFormula();
@@ -221,10 +168,7 @@ public class ShowNetMatricesDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton button_copyToClipboard;
-    private javax.swing.JCheckBox checkBox_showSumOfTerms;
-    private javax.swing.JCheckBox checkBox_showTermsStacked;
     private javax.swing.JCheckBox checkBox_showZeros;
-    private javax.swing.JComboBox<MatrixMode> comboBox_matrixMode;
     private javax.swing.JButton jButton_close;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane scrollPane;

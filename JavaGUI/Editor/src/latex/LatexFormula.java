@@ -31,17 +31,18 @@ public class LatexFormula implements Serializable {
     }
     
     
-    private void retrieveCommands() {
+    // Initialize the  sequence of graphics commands needed to draw the @latex text
+    public void initializeGraphicsCommands(boolean useProviderCache) {
         if (graphicCommands == null) {
 
             // Retrieve the graphic LaTeX representation
             LatexProvider lp = LatexProvider.getProvider();
             try {
-                graphicCommands = lp.typesetLatexFormula(latex, size, true);
+                graphicCommands = lp.typesetLatexFormula(latex, size, useProviderCache);
             }
             catch (Exception lpe) {
                 try {
-                    graphicCommands = lp.typesetLatexFormula(LatexProvider.DEFAULT_LATEX_ERROR, size, true);
+                    graphicCommands = lp.typesetLatexFormula(LatexProvider.DEFAULT_LATEX_ERROR, size, useProviderCache);
                 }
                 catch (Exception lpe2) {
                     graphicCommands = null;
@@ -54,7 +55,7 @@ public class LatexFormula implements Serializable {
                      double scaleFact,  boolean doLog) 
     {
 //        System.out.println("latex.draw: \""+latex+"\" textX="+textX+" textY="+textY+" scaleFact="+scaleFact);
-        retrieveCommands();
+        initializeGraphicsCommands(true);
         if (graphicCommands != null) {
             AffineTransform oldTransform = g.getTransform();
             g.translate(textX, textY);
@@ -73,35 +74,35 @@ public class LatexFormula implements Serializable {
     }
     
     public int getWidth() {
-        retrieveCommands();
+        initializeGraphicsCommands(true);
         if (graphicCommands != null)
             return graphicCommands.getWidth();
         return 1;
     }
     
     public int getHeight() {
-        retrieveCommands();
+        initializeGraphicsCommands(true);
         if (graphicCommands != null)
             return graphicCommands.getHeight();
         return 1;
     }
     
     public int getDepth() {
-        retrieveCommands();
+        initializeGraphicsCommands(true);
         if (graphicCommands != null)
             return graphicCommands.getDepth();
         return 1;
     }
 
     public int getLineHeight() {
-        retrieveCommands();
+        initializeGraphicsCommands(true);
         if (graphicCommands != null)
             return graphicCommands.getLineHeight();
         return 1;
     }
 
     public int getLineDepth() {
-        retrieveCommands();
+        initializeGraphicsCommands(true);
         if (graphicCommands != null)
             return graphicCommands.getLineDepth();
         return 1;

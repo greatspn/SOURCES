@@ -4,6 +4,8 @@
  */
 package editor.domain.semiflows;
 
+import editor.domain.elements.Place;
+import editor.domain.elements.Transition;
 import editor.domain.struct.SilvaColom88Algorithm;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -339,6 +341,104 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
         return lowerBnd[p];
     }
     
+    
+    
+    
+    public String toLatexString(SemiFlows.Type type, ArrayList<Place> places, 
+                                ArrayList<Transition> transitions,
+                                boolean showZeros) 
+    {
+        boolean add_m0_col = (type==SemiFlows.Type.PLACE_SEMIFLOW);
+        StringBuilder sb = new StringBuilder();
+        
+        // header
+        sb.append("$\\begin{array}{r");
+        for (int f=0; f<numSemiflows(); f++)
+            sb.append("|c");
+        if (add_m0_col)
+            sb.append("|r");
+        sb.append("}\n ");
+        for (int f=0; f<numSemiflows(); f++)
+            sb.append("& i_{").append(f+1).append("}");
+        if (add_m0_col)
+            sb.append("& \\mathbf{m}_0");
+        sb.append("\\\\ \n\\hline\n");
+                
+        // row for a place/transition
+        for (int pl=0; pl<N; pl++) {
+//            String m0p = null;
+//            if (add_m0_col) {
+//                m0p = places.get(pl).getInitMarkingExpr();
+//                if (m0p.isBlank())
+//                    m0p = "0";
+//                int m0val = -1000;
+//                try {
+//                    m0val = Integer.parseInt(m0p);
+//                }
+//                catch (NumberFormatException e) {}
+//            }
+            
+            if (type == SemiFlows.Type.PLACE_SEMIFLOW)
+                sb.append(places.get(pl).getUniqueNameDecor().getLatexFormula().getLatex());
+            else
+                sb.append(transitions.get(pl).getUniqueNameDecor().getLatexFormula().getLatex());
+            
+            for (int f=0; f<numSemiflows(); f++) {
+                int[] semiflow = getSemiflow(f);
+                
+                sb.append(" &");
+                if (showZeros || semiflow[pl]!=0) {
+                    String color;
+                    if (semiflow[pl] > 0)
+                        color = "Blue";
+                    else if (semiflow[pl] < 0)
+                        color = "Mahogany";
+                    else
+                        color = "Gray";
+                    sb.append("\\textcolor{").append(color).append("}{").append(semiflow[pl]).append("}");
+                }
+            } 
+            
+            if (add_m0_col) {
+                sb.append(" & \\mathbf{").append(initQuantity[pl]).append("}");
+            }
+            sb.append("\\\\ \n\\hline\n");
+            
+        }
+        
+        // final row
+        if (type == SemiFlows.Type.PLACE_SEMIFLOW) {
+            sb.append("\n \\mathbf{m}_0 \\cdot I & ");
+            
+            for (int f=0; f<numSemiflows(); f++) {
+                int[] semiflow = getSemiflow(f);
+                int sum = 0;
+                for (int j=0; j<semiflow.length; j++) {
+                    int initMark = initQuantity[j];
+                    sum += initMark * semiflow[j];
+                }
+                
+                sb.append("\\mathbf{").append(sum).append("} & ");
+            }
+            sb.append("\\\\ \n");
+        }
+//        sb.append("\n& ");
+//        for (int f=0; f<pinMat.size(); f++) {
+//            if (!extra_pm0[f].isEmpty()) {
+//                if (sum_pm0[f] == 0)
+//                    sb.append(extra_pm0[f]);
+//                else
+//                    sb.append(sum_pm0[f]+"+"+extra_pm0[f]);
+//            }
+//            else sb.append(sum_pm0[f]);
+//            sb.append("& ");
+//        }
+//        sb.append("\\\\ \n");
+        
+        
+        sb.append("\\end{array}$");
+        return sb.toString();
+    }
 
 //    public static void main(String[] args) {
 //        int NP = 14, MT = 10;

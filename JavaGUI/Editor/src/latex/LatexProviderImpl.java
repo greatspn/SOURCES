@@ -201,7 +201,10 @@ public class LatexProviderImpl extends LatexProvider {
         g2.saveCommands(mc);
         
         double totTime = (System.currentTimeMillis() - startTime) / 1000.0;
-        System.out.println("LaTeX formula \""+latex+"\" typesetted in " + totTime + " sec.");
+        final int MAX_OUT_SZ = 100;
+        System.out.println("LaTeX formula \""+
+                           (latex.length()>MAX_OUT_SZ ? latex.substring(0, MAX_OUT_SZ)+"..." : latex).replace("\n", "")+
+                           "\" typesetted in " + totTime + " sec.");
         
         if (doLog) {
             g2.printObjectTables();

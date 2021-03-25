@@ -102,6 +102,8 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
                 (SharedResourceProvider.ActionName.COMPUTE_TRANS_SEMIFLOWS));
         jToolbarButtonComputeBoundsFromPinv.setAction(shActProv.getSharedAction
                 (SharedResourceProvider.ActionName.COMPUTE_PLACE_BOUNDS_FROM_PINV));
+        jToolbarButtonShowMatrices.setAction(shActProv.getSharedAction
+                (SharedResourceProvider.ActionName.SHOW_NET_MATRICES));
         
         jToolbarButtonChangeBindings.setHideActionText(false);
         
@@ -223,6 +225,11 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
                     act.setEnabled((viewerPanel.isInBindingPhase() && viewerPanel.areAllBindingsOk()) ||
                                    (!viewerPanel.isInBindingPhase() && sfType != SemiFlows.Type.PLACE_BOUNDS_FROM_PINV));
                     break;
+                    
+                case SHOW_NET_MATRICES:
+                    act.setEnabled(!viewerPanel.isInBindingPhase() &&
+                                   (sfType != SemiFlows.Type.PLACE_BOUNDS_FROM_PINV));
+                    break;
                 
                 default:
                     act.setEnabled(false);
@@ -253,6 +260,10 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
                 if (viewerPanel.isInBindingPhase())
                     closeBindingForm();
                 recomputeSemiflowsLater(SemiFlows.Type.PLACE_BOUNDS_FROM_PINV);
+                break;
+                
+            case SHOW_NET_MATRICES:
+                showSemiflowsMatrix();
                 break;
             
             default:
@@ -351,7 +362,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
             }            
         }
         
-        if (sfType == SemiFlows.Type.PLACE_BOUNDS_FROM_PINV) {
+        if (sfType == SemiFlows.Type.PLACE_BOUNDS_FROM_PINV || sfType == SemiFlows.Type.PLACE_SEMIFLOW) {
             // Prepare also bound computation
             for (Node node : viewerPanel.getGspn().nodes) {
                 if (node instanceof Place) {
@@ -598,6 +609,12 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         }
     }
     
+    private void showSemiflowsMatrix() {
+        ShowSemiflowsMatrixDialog dlg = new ShowSemiflowsMatrixDialog(mainInterface.getWindowFrame(), true, 
+                                                                      algo, sfType, places, transitions);
+        dlg.setVisible(true);
+    }
+    
     @Override
     public JComponent getEditorComponent() {
         return jPanelNet;
@@ -811,6 +828,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         jToolbarButtonComputePlaceSemiflows = new common.JToolbarButton();
         jToolbarButtonComputeTransitionSemiflows = new common.JToolbarButton();
         jToolbarButtonComputeBoundsFromPinv = new common.JToolbarButton();
+        jToolbarButtonShowMatrices = new common.JToolbarButton();
         jPanelNet = new javax.swing.JPanel();
         jScrollPaneNet = new javax.swing.JScrollPane();
         resourceFactory = new editor.gui.ResourceFactory();
@@ -829,7 +847,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         jLabel_Binding = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jListSemiflows = new javax.swing.JList<String>();
+        jListSemiflows = new javax.swing.JList<>();
 
         jToolBar.setRollover(true);
 
@@ -846,6 +864,11 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         jToolbarButtonComputeBoundsFromPinv.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jToolbarButtonComputeBoundsFromPinv.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar.add(jToolbarButtonComputeBoundsFromPinv);
+
+        jToolbarButtonShowMatrices.setText("jToolbarButton1");
+        jToolbarButtonShowMatrices.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jToolbarButtonShowMatrices.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar.add(jToolbarButtonShowMatrices);
 
         jPanelNet.setLayout(new javax.swing.BoxLayout(jPanelNet, javax.swing.BoxLayout.LINE_AXIS));
         jPanelNet.add(jScrollPaneNet);
@@ -1018,6 +1041,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
     private common.JToolbarButton jToolbarButtonComputeBoundsFromPinv;
     private common.JToolbarButton jToolbarButtonComputePlaceSemiflows;
     private common.JToolbarButton jToolbarButtonComputeTransitionSemiflows;
+    private common.JToolbarButton jToolbarButtonShowMatrices;
     private editor.gui.ResourceFactory resourceFactory;
     // End of variables declaration//GEN-END:variables
 }

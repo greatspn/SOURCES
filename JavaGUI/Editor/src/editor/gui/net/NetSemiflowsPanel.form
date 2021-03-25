@@ -31,6 +31,13 @@
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
         </Component>
+        <Component class="common.JToolbarButton" name="jToolbarButtonShowMatrices">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="jToolbarButton1"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
+        </Component>
       </SubComponents>
     </Container>
     <Container class="javax.swing.JPanel" name="jPanelNet">
