@@ -264,6 +264,8 @@ public abstract class NetViewerPanel extends JPanel implements Scrollable {
     
     public void zoomChanged(int newZoomLevel) {
 //        System.out.println("zoomChanged "+newZoomLevel+"   old="+commonZoomLevel);
+        if (viewProfile == null)
+            return;
         if (newZoomLevel != viewProfile.zoom) {
             viewProfile.zoom = newZoomLevel;
             //allNetsPanel.revalidate();
