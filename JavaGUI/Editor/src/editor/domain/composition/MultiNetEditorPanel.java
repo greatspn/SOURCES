@@ -23,6 +23,7 @@ import editor.domain.measures.SolverParams;
 import editor.gui.AbstractPageEditor;
 import editor.gui.CutCopyPasteEngine;
 import editor.gui.MainWindowInterface;
+import editor.gui.PagePrintExportManager;
 import editor.gui.SharedResourceProvider;
 import editor.gui.net.NetViewerPanel;
 import editor.gui.net.ShowNetMatricesDialog;
@@ -413,6 +414,16 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
                 case MAKE_EDITABLE_NET:
                     act.setEnabled(currPage.isPageCorrect());
                     break;
+                case EXPORT_GREATSPN_FORMAT:
+                case EXPORT_GRML_FORMAT:
+                case EXPORT_APNN_FORMAT:
+                case EXPORT_PNML_FORMAT:
+                    act.setEnabled(currPage.isPageCorrect() && currPage.getComposedNet() instanceof GspnPage);
+                    break;
+                case EXPORT_AS_PDF:
+                case EXPORT_AS_PNG:
+                    act.setEnabled(currPage.isPageCorrect());
+                    break;
                 default:
                     act.setEnabled(false);
             }
@@ -440,6 +451,24 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
             case SHOW_NET_MATRICES:
                 showNetMatrices();
                 break;
+            case EXPORT_GREATSPN_FORMAT:
+                PagePrintExportManager.exportGspnInGreatSPNFormat(mainInterface, (GspnPage)currPage.getComposedNet());
+                return;
+            case EXPORT_PNML_FORMAT:
+                PagePrintExportManager.exportGspnInPNMLFormat(mainInterface, (GspnPage)currPage.getComposedNet());
+                return;                
+            case EXPORT_GRML_FORMAT:
+                PagePrintExportManager.exportGspnInGRMLFormat(mainInterface, (GspnPage)currPage.getComposedNet());
+                return;                
+            case EXPORT_APNN_FORMAT:
+                PagePrintExportManager.exportGspnInAPNNFormat(mainInterface, (GspnPage)currPage.getComposedNet());
+                return;                        
+            case EXPORT_AS_PDF:
+                PagePrintExportManager.printAsPdf(mainInterface, currPage.getComposedNet());
+                return;                
+            case EXPORT_AS_PNG:
+                PagePrintExportManager.printAsPng(mainInterface, currPage.getComposedNet());
+                return;                
             default:
                 throw new IllegalStateException();
         }

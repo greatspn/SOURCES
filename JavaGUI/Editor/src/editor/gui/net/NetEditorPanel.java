@@ -8,7 +8,6 @@ import editor.gui.SharedResourceProvider;
 import common.Action;
 import common.Condition;
 import common.JToggleTriState;
-import common.ModalLogDialog;
 import common.Util;
 import editor.Main;
 import editor.domain.Decor;
@@ -27,14 +26,8 @@ import editor.domain.PageErrorWarning;
 import editor.domain.ProjectData;
 import editor.domain.Selectable;
 import editor.domain.ViewProfile;
-import editor.domain.io.ApnnFormat;
-import editor.domain.io.DtaFormat;
-import editor.domain.io.GRMLFormat;
-import editor.domain.io.GreatSpnFormat;
-import editor.domain.io.PNMLFormat;
-import editor.domain.struct.StructInfo;
 import editor.gui.CutCopyPasteEngine;
-import editor.gui.PagePrintManager;
+import editor.gui.PagePrintExportManager;
 import editor.gui.ResourceFactory;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -55,7 +48,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -66,8 +58,6 @@ import javax.swing.AbstractButton;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
@@ -611,35 +601,35 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
                 return;
                 
             case EXPORT_GREATSPN_FORMAT:
-                exportGspnInGreatSPNFormat();
+                PagePrintExportManager.exportGspnInGreatSPNFormat(mainInterface, (GspnPage)currPage);
                 return;
                 
             case EXPORT_PNML_FORMAT:
-                exportGspnInPNMLFormat();
+                PagePrintExportManager.exportGspnInPNMLFormat(mainInterface, (GspnPage)currPage);
                 return;
                 
             case EXPORT_GRML_FORMAT:
-                exportGspnInGRMLFormat();
+                PagePrintExportManager.exportGspnInGRMLFormat(mainInterface, (GspnPage)currPage);
                 return;
                 
             case EXPORT_APNN_FORMAT:
-                exportGspnInAPNNFormat();
+                PagePrintExportManager.exportGspnInAPNNFormat(mainInterface, (GspnPage)currPage);
                 return;
                         
             case EXPORT_DTA_FORMAT:
-                exportInDtaFormat();
+                PagePrintExportManager.exportInDtaFormat(mainInterface, (DtaPage)currPage);
                 return;
                 
             case EXPORT_AS_PDF:
-                PagePrintManager.printAsPdf(mainInterface, currPage);
+                PagePrintExportManager.printAsPdf(mainInterface, currPage);
                 return;
                 
             case EXPORT_AS_PNG:
-                PagePrintManager.printAsPng(mainInterface, currPage);
+                PagePrintExportManager.printAsPng(mainInterface, currPage);
                 return;
                 
             case SHOW_NET_MATRICES:
-                showNetMatrices();
+                PagePrintExportManager.showNetMatrices(mainInterface, (GspnPage)currPage);
                 return;
                         
             default:
@@ -868,273 +858,273 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
     }
 
 
-    private void showNetMatrices() {
-        ShowNetMatricesDialog dlg = new ShowNetMatricesDialog(mainInterface.getWindowFrame(), true, (GspnPage)currPage);
-        dlg.setVisible(true);
-    }
-
-    
-    private void exportGspnInGreatSPNFormat() {
-        assert currPage instanceof GspnPage && currPage.isPageCorrect();
-        
-        File netFile, defFile;
-        boolean repeatChooser;
-        do {
-            repeatChooser = false;
-            final JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Export \""+currPage.getPageName()+"\" in GreatSPN format...");
-            String curDir = Util.getPreferences().get("greatspn-export-dir", System.getProperty("user.home"));
-            fileChooser.setCurrentDirectory(curDir!=null ? new File(curDir) : null);
-            fileChooser.setSelectedFile(curDir!=null ? new File(curDir+File.separator+currPage.getPageName()+".net") : null);
-            fileChooser.addChoosableFileFilter(GreatSpnFormat.fileFilter);
-            fileChooser.setFileFilter(GreatSpnFormat.fileFilter);
-            if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
-                return;
-            netFile = fileChooser.getSelectedFile();
-            
-            // Generate the .net and .def filenames
-            String path = netFile.getPath();
-            int lastDot = path.lastIndexOf(".");
-            //System.out.println("path.substring(lastDot) = "+path.substring(lastDot));
-            if (lastDot != -1 && path.substring(lastDot).equalsIgnoreCase(".net"))
-                path = path.substring(0, lastDot);
-            netFile = new File(path + ".net");
-            defFile = new File(path + ".def");
-            curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
-            Util.getPreferences().put("greatspn-export-dir", curDir);
-            if (netFile.exists()) {
-                int r = JOptionPane.showConfirmDialog(this, 
-                         "The file \""+netFile+"\" already exists! Overwrite it?", 
-                                                       "Overwrite file", 
-                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
-                                                       JOptionPane.WARNING_MESSAGE);
-                if (r == JOptionPane.NO_OPTION)
-                    repeatChooser = true;
-                else if (r == JOptionPane.CANCEL_OPTION)
-                    return;
-            }
-        } while (repeatChooser);
-        
-        System.out.println("netFile = "+netFile);
-        System.out.println("defFile = "+defFile);
-        
-        try {
-            String log = GreatSpnFormat.exportGspn((GspnPage)currPage, netFile, defFile, 
-                                                    Main.isGreatSPNExtAllowed(),
-                                                    Main.areGreatSPNMdepArcsAllowed());
-            if (log != null)
-                new ModalLogDialog(this, log).setVisible(true);
-            mainInterface.setStatus("GSPN exported.", true);
-        }
-        catch (Exception e) {
-            JOptionPane.showMessageDialog(this, 
-                                          "An error happened while exporting the page in GreatSPN format.\n"
-                                          + "Reason: "+e.getMessage(),
-                                          "Export \""+currPage.getPageName()+"\" in GreatSPN format...", 
-                                          JOptionPane.ERROR_MESSAGE);            
-            mainInterface.setStatus("could not export GSPN.", true);
-        }
-    }
-    
-    private void exportGspnInGRMLFormat() {
-        assert currPage instanceof GspnPage && currPage.isPageCorrect();
-        
-        File grmlFile;
-        boolean repeatChooser;
-        do {
-            repeatChooser = false;
-            final JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Export \""+currPage.getPageName()+"\" in GrML format...");
-            String curDir = Util.getPreferences().get("grml-export-dir", System.getProperty("user.home"));
-            fileChooser.setCurrentDirectory(curDir!=null ? new File(curDir) : null);
-            fileChooser.setSelectedFile(curDir!=null ? new File(curDir+File.separator+currPage.getPageName()+".grml") : null);
-            fileChooser.addChoosableFileFilter(GRMLFormat.fileFilter);
-            fileChooser.setFileFilter(GRMLFormat.fileFilter);
-            if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
-                return;
-            grmlFile = fileChooser.getSelectedFile();
-            curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
-            Util.getPreferences().put("grml-export-dir", curDir);
-            if (grmlFile.exists()) {
-                int r = JOptionPane.showConfirmDialog(this, 
-                         "The file \""+grmlFile+"\" already exists! Overwrite it?", 
-                                                       "Overwrite file", 
-                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
-                                                       JOptionPane.WARNING_MESSAGE);
-                if (r == JOptionPane.NO_OPTION)
-                    repeatChooser = true;
-                else if (r == JOptionPane.CANCEL_OPTION)
-                    return;
-            }
-        } while (repeatChooser);
-        
-        try {
-            //StructInfo struct = StructInfo.computeStructInfo(mainInterface.getWindowFrame(), 
-            //                                                 (GspnPage)currPage, null, null);
-            String log = GRMLFormat.exportGspn((GspnPage)currPage, grmlFile);
-            if (log != null)
-                new ModalLogDialog(this, log).setVisible(true);
-            mainInterface.setStatus("GSPN exported in GrML format.", true);
-        }
-        catch (Exception e) {
-            JOptionPane.showMessageDialog(this, 
-                                          "An error happened while exporting the page in GrML format.\n"
-                                          + "Reason: "+e.getMessage(),
-                                          "Export \""+currPage.getPageName()+"\" in GrML format...", 
-                                          JOptionPane.ERROR_MESSAGE);            
-            mainInterface.setStatus("could not export GSPN in GrML format.", true);
-        }        
-    }
-    
-    private void exportGspnInPNMLFormat() {
-        assert currPage instanceof GspnPage && currPage.isPageCorrect();
-        
-        File pnmlFile;
-        boolean repeatChooser;
-        do {
-            repeatChooser = false;
-            final JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Export \""+currPage.getPageName()+"\" in PNML format...");
-            String curDir = Util.getPreferences().get("pnml-export-dir", System.getProperty("user.home"));
-            fileChooser.setCurrentDirectory(curDir!=null ? new File(curDir) : null);
-            fileChooser.setSelectedFile(curDir!=null ? new File(curDir+File.separator+currPage.getPageName()+".pnml") : null);
-            fileChooser.addChoosableFileFilter(PNMLFormat.fileFilter);
-            fileChooser.setFileFilter(PNMLFormat.fileFilter);
-            if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
-                return;
-            pnmlFile = fileChooser.getSelectedFile();
-            curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
-            Util.getPreferences().put("pnml-export-dir", curDir);
-            if (pnmlFile.exists()) {
-                int r = JOptionPane.showConfirmDialog(this, 
-                         "The file \""+pnmlFile+"\" already exists! Overwrite it?", 
-                                                       "Overwrite file", 
-                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
-                                                       JOptionPane.WARNING_MESSAGE);
-                if (r == JOptionPane.NO_OPTION)
-                    repeatChooser = true;
-                else if (r == JOptionPane.CANCEL_OPTION)
-                    return;
-            }
-        } while (repeatChooser);
-        
-        try {
-            //StructInfo struct = StructInfo.computeStructInfo(mainInterface.getWindowFrame(), 
-            //                                                 (GspnPage)currPage, null, null);
-            String log = PNMLFormat.exportGspn((GspnPage)currPage, pnmlFile, true);
-            if (log != null)
-                new ModalLogDialog(this, log).setVisible(true);
-            mainInterface.setStatus("GSPN exported in PNML format.", true);
-        }
-        catch (Exception e) {
-            JOptionPane.showMessageDialog(this, 
-                                          "An error happened while exporting the page in PNML format.\n"
-                                          + "Reason: "+e.getMessage(),
-                                          "Export \""+currPage.getPageName()+"\" in PNML format...", 
-                                          JOptionPane.ERROR_MESSAGE);            
-            mainInterface.setStatus("could not export GSPN in PNML format.", true);
-        }       
-    }
-    
-    private void exportGspnInAPNNFormat() {
-        assert currPage instanceof GspnPage && currPage.isPageCorrect();
-        
-        File apnnFile;
-        boolean repeatChooser;
-        do {
-            repeatChooser = false;
-            final JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Export \""+currPage.getPageName()+"\" in APNN format...");
-            String curDir = Util.getPreferences().get("apnn-export-dir", System.getProperty("user.home"));
-            fileChooser.setCurrentDirectory(curDir!=null ? new File(curDir) : null);
-            fileChooser.setSelectedFile(curDir!=null ? new File(curDir+File.separator+currPage.getPageName()+".apnn") : null);
-            fileChooser.addChoosableFileFilter(ApnnFormat.fileFilter);
-            fileChooser.setFileFilter(ApnnFormat.fileFilter);
-            if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
-                return;
-            apnnFile = fileChooser.getSelectedFile();
-            curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
-            Util.getPreferences().put("apnn-export-dir", curDir);
-            if (apnnFile.exists()) {
-                int r = JOptionPane.showConfirmDialog(this, 
-                         "The file \""+apnnFile+"\" already exists! Overwrite it?", 
-                                                       "Overwrite file", 
-                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
-                                                       JOptionPane.WARNING_MESSAGE);
-                if (r == JOptionPane.NO_OPTION)
-                    repeatChooser = true;
-                else if (r == JOptionPane.CANCEL_OPTION)
-                    return;
-            }
-        } while (repeatChooser);
-        
-        try {
-            StructInfo struct = StructInfo.computeStructInfo(mainInterface.getWindowFrame(), 
-                                                             (GspnPage)currPage, null, null);
-            String log = ApnnFormat.exportGspn((GspnPage)currPage, apnnFile, struct, null);
-            if (log != null)
-                new ModalLogDialog(this, log).setVisible(true);
-            mainInterface.setStatus("GSPN exported in APNN format.", true);
-        }
-        catch (Exception e) {
-            JOptionPane.showMessageDialog(this, 
-                                          "An error happened while exporting the page in APNN format.\n"
-                                          + "Reason: "+e.getMessage(),
-                                          "Export \""+currPage.getPageName()+"\" in APNN format...", 
-                                          JOptionPane.ERROR_MESSAGE);            
-            mainInterface.setStatus("could not export GSPN in APNN format.", true);
-        }
-    }
-    
-    
-    private void exportInDtaFormat() {
-        assert currPage instanceof DtaPage && currPage.isPageCorrect();
-        
-        File dtaFile;
-        boolean repeatChooser;
-        do {
-            repeatChooser = false;
-            final JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Export \""+currPage.getPageName()+"\" in MC4CSLTA format...");
-            String curDir = Util.getPreferences().get("dta-export-dir", System.getProperty("user.home"));
-            fileChooser.setCurrentDirectory(curDir!=null ? new File(curDir) : null);
-            fileChooser.setSelectedFile(curDir!=null ? new File(curDir+File.separator+currPage.getPageName()+".dta") : null);
-            fileChooser.addChoosableFileFilter(DtaFormat.fileFilter);
-            fileChooser.setFileFilter(DtaFormat.fileFilter);
-            if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
-                return;
-            dtaFile = fileChooser.getSelectedFile();
-            
-            curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
-            Util.getPreferences().put("dta-export-dir", curDir);
-            if (dtaFile.exists()) {
-                int r = JOptionPane.showConfirmDialog(this, 
-                         "The file \""+dtaFile+"\" already exists! Overwrite it?", 
-                                                       "Overwrite file", 
-                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
-                                                       JOptionPane.WARNING_MESSAGE);
-                if (r == JOptionPane.NO_OPTION)
-                    repeatChooser = true;
-                else if (r == JOptionPane.CANCEL_OPTION)
-                    return;
-            }
-        } while (repeatChooser);
-        
-        try {
-            String log = DtaFormat.export((DtaPage)currPage, dtaFile);
-            if (log != null)
-                new ModalLogDialog(this, log).setVisible(true);
-            mainInterface.setStatus("DTA exported.", true);
-        }
-        catch (Exception e) {
-            JOptionPane.showMessageDialog(this, 
-                                          "An error happened while exporting the DTA in MC4CSLTA format.\n"
-                                          + "Reason: "+e.getMessage(),
-                                          "Export \""+currPage.getPageName()+"\" in MC4CSLTA format...", 
-                                          JOptionPane.ERROR_MESSAGE);            
-            mainInterface.setStatus("could not export DTA.", true);
-        }        
-    }
+//    private void showNetMatrices() {
+//        ShowNetMatricesDialog dlg = new ShowNetMatricesDialog(mainInterface.getWindowFrame(), true, (GspnPage)currPage);
+//        dlg.setVisible(true);
+//    }
+//
+//    
+//    private void exportGspnInGreatSPNFormat() {
+//        assert currPage instanceof GspnPage && currPage.isPageCorrect();
+//        
+//        File netFile, defFile;
+//        boolean repeatChooser;
+//        do {
+//            repeatChooser = false;
+//            final JFileChooser fileChooser = new JFileChooser();
+//            fileChooser.setDialogTitle("Export \""+currPage.getPageName()+"\" in GreatSPN format...");
+//            String curDir = Util.getPreferences().get("greatspn-export-dir", System.getProperty("user.home"));
+//            fileChooser.setCurrentDirectory(curDir!=null ? new File(curDir) : null);
+//            fileChooser.setSelectedFile(curDir!=null ? new File(curDir+File.separator+currPage.getPageName()+".net") : null);
+//            fileChooser.addChoosableFileFilter(GreatSpnFormat.fileFilter);
+//            fileChooser.setFileFilter(GreatSpnFormat.fileFilter);
+//            if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
+//                return;
+//            netFile = fileChooser.getSelectedFile();
+//            
+//            // Generate the .net and .def filenames
+//            String path = netFile.getPath();
+//            int lastDot = path.lastIndexOf(".");
+//            //System.out.println("path.substring(lastDot) = "+path.substring(lastDot));
+//            if (lastDot != -1 && path.substring(lastDot).equalsIgnoreCase(".net"))
+//                path = path.substring(0, lastDot);
+//            netFile = new File(path + ".net");
+//            defFile = new File(path + ".def");
+//            curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
+//            Util.getPreferences().put("greatspn-export-dir", curDir);
+//            if (netFile.exists()) {
+//                int r = JOptionPane.showConfirmDialog(this, 
+//                         "The file \""+netFile+"\" already exists! Overwrite it?", 
+//                                                       "Overwrite file", 
+//                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
+//                                                       JOptionPane.WARNING_MESSAGE);
+//                if (r == JOptionPane.NO_OPTION)
+//                    repeatChooser = true;
+//                else if (r == JOptionPane.CANCEL_OPTION)
+//                    return;
+//            }
+//        } while (repeatChooser);
+//        
+//        System.out.println("netFile = "+netFile);
+//        System.out.println("defFile = "+defFile);
+//        
+//        try {
+//            String log = GreatSpnFormat.exportGspn((GspnPage)currPage, netFile, defFile, 
+//                                                    Main.isGreatSPNExtAllowed(),
+//                                                    Main.areGreatSPNMdepArcsAllowed());
+//            if (log != null)
+//                new ModalLogDialog(this, log).setVisible(true);
+//            mainInterface.setStatus("GSPN exported.", true);
+//        }
+//        catch (Exception e) {
+//            JOptionPane.showMessageDialog(this, 
+//                                          "An error happened while exporting the page in GreatSPN format.\n"
+//                                          + "Reason: "+e.getMessage(),
+//                                          "Export \""+currPage.getPageName()+"\" in GreatSPN format...", 
+//                                          JOptionPane.ERROR_MESSAGE);            
+//            mainInterface.setStatus("could not export GSPN.", true);
+//        }
+//    }
+//    
+//    private void exportGspnInGRMLFormat() {
+//        assert currPage instanceof GspnPage && currPage.isPageCorrect();
+//        
+//        File grmlFile;
+//        boolean repeatChooser;
+//        do {
+//            repeatChooser = false;
+//            final JFileChooser fileChooser = new JFileChooser();
+//            fileChooser.setDialogTitle("Export \""+currPage.getPageName()+"\" in GrML format...");
+//            String curDir = Util.getPreferences().get("grml-export-dir", System.getProperty("user.home"));
+//            fileChooser.setCurrentDirectory(curDir!=null ? new File(curDir) : null);
+//            fileChooser.setSelectedFile(curDir!=null ? new File(curDir+File.separator+currPage.getPageName()+".grml") : null);
+//            fileChooser.addChoosableFileFilter(GRMLFormat.fileFilter);
+//            fileChooser.setFileFilter(GRMLFormat.fileFilter);
+//            if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
+//                return;
+//            grmlFile = fileChooser.getSelectedFile();
+//            curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
+//            Util.getPreferences().put("grml-export-dir", curDir);
+//            if (grmlFile.exists()) {
+//                int r = JOptionPane.showConfirmDialog(this, 
+//                         "The file \""+grmlFile+"\" already exists! Overwrite it?", 
+//                                                       "Overwrite file", 
+//                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
+//                                                       JOptionPane.WARNING_MESSAGE);
+//                if (r == JOptionPane.NO_OPTION)
+//                    repeatChooser = true;
+//                else if (r == JOptionPane.CANCEL_OPTION)
+//                    return;
+//            }
+//        } while (repeatChooser);
+//        
+//        try {
+//            //StructInfo struct = StructInfo.computeStructInfo(mainInterface.getWindowFrame(), 
+//            //                                                 (GspnPage)currPage, null, null);
+//            String log = GRMLFormat.exportGspn((GspnPage)currPage, grmlFile);
+//            if (log != null)
+//                new ModalLogDialog(this, log).setVisible(true);
+//            mainInterface.setStatus("GSPN exported in GrML format.", true);
+//        }
+//        catch (Exception e) {
+//            JOptionPane.showMessageDialog(this, 
+//                                          "An error happened while exporting the page in GrML format.\n"
+//                                          + "Reason: "+e.getMessage(),
+//                                          "Export \""+currPage.getPageName()+"\" in GrML format...", 
+//                                          JOptionPane.ERROR_MESSAGE);            
+//            mainInterface.setStatus("could not export GSPN in GrML format.", true);
+//        }        
+//    }
+//    
+//    private void exportGspnInPNMLFormat() {
+//        assert currPage instanceof GspnPage && currPage.isPageCorrect();
+//        
+//        File pnmlFile;
+//        boolean repeatChooser;
+//        do {
+//            repeatChooser = false;
+//            final JFileChooser fileChooser = new JFileChooser();
+//            fileChooser.setDialogTitle("Export \""+currPage.getPageName()+"\" in PNML format...");
+//            String curDir = Util.getPreferences().get("pnml-export-dir", System.getProperty("user.home"));
+//            fileChooser.setCurrentDirectory(curDir!=null ? new File(curDir) : null);
+//            fileChooser.setSelectedFile(curDir!=null ? new File(curDir+File.separator+currPage.getPageName()+".pnml") : null);
+//            fileChooser.addChoosableFileFilter(PNMLFormat.fileFilter);
+//            fileChooser.setFileFilter(PNMLFormat.fileFilter);
+//            if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
+//                return;
+//            pnmlFile = fileChooser.getSelectedFile();
+//            curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
+//            Util.getPreferences().put("pnml-export-dir", curDir);
+//            if (pnmlFile.exists()) {
+//                int r = JOptionPane.showConfirmDialog(this, 
+//                         "The file \""+pnmlFile+"\" already exists! Overwrite it?", 
+//                                                       "Overwrite file", 
+//                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
+//                                                       JOptionPane.WARNING_MESSAGE);
+//                if (r == JOptionPane.NO_OPTION)
+//                    repeatChooser = true;
+//                else if (r == JOptionPane.CANCEL_OPTION)
+//                    return;
+//            }
+//        } while (repeatChooser);
+//        
+//        try {
+//            //StructInfo struct = StructInfo.computeStructInfo(mainInterface.getWindowFrame(), 
+//            //                                                 (GspnPage)currPage, null, null);
+//            String log = PNMLFormat.exportGspn((GspnPage)currPage, pnmlFile, true);
+//            if (log != null)
+//                new ModalLogDialog(this, log).setVisible(true);
+//            mainInterface.setStatus("GSPN exported in PNML format.", true);
+//        }
+//        catch (Exception e) {
+//            JOptionPane.showMessageDialog(this, 
+//                                          "An error happened while exporting the page in PNML format.\n"
+//                                          + "Reason: "+e.getMessage(),
+//                                          "Export \""+currPage.getPageName()+"\" in PNML format...", 
+//                                          JOptionPane.ERROR_MESSAGE);            
+//            mainInterface.setStatus("could not export GSPN in PNML format.", true);
+//        }       
+//    }
+//    
+//    private void exportGspnInAPNNFormat() {
+//        assert currPage instanceof GspnPage && currPage.isPageCorrect();
+//        
+//        File apnnFile;
+//        boolean repeatChooser;
+//        do {
+//            repeatChooser = false;
+//            final JFileChooser fileChooser = new JFileChooser();
+//            fileChooser.setDialogTitle("Export \""+currPage.getPageName()+"\" in APNN format...");
+//            String curDir = Util.getPreferences().get("apnn-export-dir", System.getProperty("user.home"));
+//            fileChooser.setCurrentDirectory(curDir!=null ? new File(curDir) : null);
+//            fileChooser.setSelectedFile(curDir!=null ? new File(curDir+File.separator+currPage.getPageName()+".apnn") : null);
+//            fileChooser.addChoosableFileFilter(ApnnFormat.fileFilter);
+//            fileChooser.setFileFilter(ApnnFormat.fileFilter);
+//            if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
+//                return;
+//            apnnFile = fileChooser.getSelectedFile();
+//            curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
+//            Util.getPreferences().put("apnn-export-dir", curDir);
+//            if (apnnFile.exists()) {
+//                int r = JOptionPane.showConfirmDialog(this, 
+//                         "The file \""+apnnFile+"\" already exists! Overwrite it?", 
+//                                                       "Overwrite file", 
+//                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
+//                                                       JOptionPane.WARNING_MESSAGE);
+//                if (r == JOptionPane.NO_OPTION)
+//                    repeatChooser = true;
+//                else if (r == JOptionPane.CANCEL_OPTION)
+//                    return;
+//            }
+//        } while (repeatChooser);
+//        
+//        try {
+//            StructInfo struct = StructInfo.computeStructInfo(mainInterface.getWindowFrame(), 
+//                                                             (GspnPage)currPage, null, null);
+//            String log = ApnnFormat.exportGspn((GspnPage)currPage, apnnFile, struct, null);
+//            if (log != null)
+//                new ModalLogDialog(this, log).setVisible(true);
+//            mainInterface.setStatus("GSPN exported in APNN format.", true);
+//        }
+//        catch (Exception e) {
+//            JOptionPane.showMessageDialog(this, 
+//                                          "An error happened while exporting the page in APNN format.\n"
+//                                          + "Reason: "+e.getMessage(),
+//                                          "Export \""+currPage.getPageName()+"\" in APNN format...", 
+//                                          JOptionPane.ERROR_MESSAGE);            
+//            mainInterface.setStatus("could not export GSPN in APNN format.", true);
+//        }
+//    }
+//    
+//    
+//    private void exportInDtaFormat() {
+//        assert currPage instanceof DtaPage && currPage.isPageCorrect();
+//        
+//        File dtaFile;
+//        boolean repeatChooser;
+//        do {
+//            repeatChooser = false;
+//            final JFileChooser fileChooser = new JFileChooser();
+//            fileChooser.setDialogTitle("Export \""+currPage.getPageName()+"\" in MC4CSLTA format...");
+//            String curDir = Util.getPreferences().get("dta-export-dir", System.getProperty("user.home"));
+//            fileChooser.setCurrentDirectory(curDir!=null ? new File(curDir) : null);
+//            fileChooser.setSelectedFile(curDir!=null ? new File(curDir+File.separator+currPage.getPageName()+".dta") : null);
+//            fileChooser.addChoosableFileFilter(DtaFormat.fileFilter);
+//            fileChooser.setFileFilter(DtaFormat.fileFilter);
+//            if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
+//                return;
+//            dtaFile = fileChooser.getSelectedFile();
+//            
+//            curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
+//            Util.getPreferences().put("dta-export-dir", curDir);
+//            if (dtaFile.exists()) {
+//                int r = JOptionPane.showConfirmDialog(this, 
+//                         "The file \""+dtaFile+"\" already exists! Overwrite it?", 
+//                                                       "Overwrite file", 
+//                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
+//                                                       JOptionPane.WARNING_MESSAGE);
+//                if (r == JOptionPane.NO_OPTION)
+//                    repeatChooser = true;
+//                else if (r == JOptionPane.CANCEL_OPTION)
+//                    return;
+//            }
+//        } while (repeatChooser);
+//        
+//        try {
+//            String log = DtaFormat.export((DtaPage)currPage, dtaFile);
+//            if (log != null)
+//                new ModalLogDialog(this, log).setVisible(true);
+//            mainInterface.setStatus("DTA exported.", true);
+//        }
+//        catch (Exception e) {
+//            JOptionPane.showMessageDialog(this, 
+//                                          "An error happened while exporting the DTA in MC4CSLTA format.\n"
+//                                          + "Reason: "+e.getMessage(),
+//                                          "Export \""+currPage.getPageName()+"\" in MC4CSLTA format...", 
+//                                          JOptionPane.ERROR_MESSAGE);            
+//            mainInterface.setStatus("could not export DTA.", true);
+//        }        
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.

@@ -16,8 +16,10 @@ public interface PTFlows {
     public final char INFINITY_UNICODE = '\u221E';
     
     public enum Type {
-        PLACE_SEMIFLOW, PLACE_FLOW, 
-        TRANSITION_SEMIFLOWS, TRANSITION_FLOWS, 
+        PLACE_SEMIFLOW, 
+        PLACE_FLOW, 
+        TRANSITION_SEMIFLOWS, 
+        TRANSITION_FLOWS, 
         PLACE_BOUNDS_FROM_PINV;
         
         public String printableName() {

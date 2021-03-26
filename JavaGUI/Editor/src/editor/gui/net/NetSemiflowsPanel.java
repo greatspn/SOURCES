@@ -28,7 +28,6 @@ import editor.gui.SharedResourceProvider;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -42,7 +41,6 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import editor.domain.semiflows.PTFlows;
 
 /**
@@ -105,21 +103,15 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         
         jToolbarButtonChangeBindings.setHideActionText(false);
         
-        jList_flows.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent lse) {
-                highlightFlow(jList_flows.getSelectedIndex());
-                viewerPanel.repaint();
-            }
+        jList_flows.getSelectionModel().addListSelectionListener((ListSelectionEvent lse) -> {
+            highlightFlow(jList_flows.getSelectedIndex());
+            viewerPanel.repaint();
         });
         
-        showTimer = new Timer(100, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-//                System.out.println("timer!");
-                dashPhase++;
-                viewerPanel.repaint();
-            }
+        showTimer = new Timer(100, (ActionEvent ae) -> {
+            //                System.out.println("timer!");
+            dashPhase++;
+            viewerPanel.repaint();
         });
         showTimer.setDelay(300);
         showTimer.stop();

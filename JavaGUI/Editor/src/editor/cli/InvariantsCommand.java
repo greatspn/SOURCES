@@ -9,16 +9,10 @@ import editor.Main;
 import editor.domain.elements.GspnPage;
 import latex.DummyLatexProvider;
 import static editor.cli.Common.*;
-import editor.domain.Node;
-import editor.domain.elements.Place;
-import editor.domain.elements.Transition;
 import editor.domain.grammar.TemplateBinding;
 import editor.domain.semiflows.MartinezSilvaAlgorithm;
 import editor.domain.semiflows.NetIndex;
 import editor.domain.semiflows.StructuralAlgorithm;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import editor.domain.semiflows.PTFlows;
 
 

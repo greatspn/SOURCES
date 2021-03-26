@@ -81,6 +81,10 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
 //        scAlgo.setInitQuantity(i, quantity);
     }
     
+    public int numFlows() {
+        return mD.size();
+    }
+
     public int[] getFlowVector(int i) {
         return mD.get(i);
     }
@@ -279,10 +283,6 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
             }
         }        
     }
-
-    public int numFlows() {
-        return mD.size();
-    }
     
     @Override
     public String toString() {
@@ -356,9 +356,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
     
     
     
-    public String toLatexString(PTFlows.Type type, NetIndex netIndex,
-                                boolean showZeros) 
-    {
+    public String toLatexString(PTFlows.Type type, NetIndex netIndex, boolean showZeros) {
         StringBuilder sb = new StringBuilder();
         
         // header
@@ -435,8 +433,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
     public boolean hasNonIntegerInitMarks = false;
 
     // Initialize the matrices from a gspn page
-    public void initialize(PTFlows.Type type, TemplateBinding varBindings, NetIndex netIndex) 
-    {
+    public void initialize(PTFlows.Type type, TemplateBinding varBindings, NetIndex netIndex) {
         ParserContext context = new ParserContext(netIndex.net);
         context.templateVarsBinding = varBindings;
         context.bindingContext = context;
@@ -607,9 +604,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
 
     public static void main(String[] args) throws InterruptedException {
         MartinezSilvaAlgorithm msa = init1();
-        ProgressObserver obs = new ProgressObserver() {
-            @Override public void advance(int step, int total, int s, int t) { }
-        };
+        ProgressObserver obs = (int step, int total, int s, int t) -> { };
         msa.onlySemiflows = false;
         msa.buildBasis = true;
         msa.compute(true, obs);
