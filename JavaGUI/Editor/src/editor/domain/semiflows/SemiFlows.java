@@ -33,11 +33,20 @@ public interface SemiFlows {
         }
         
         public boolean isPlace() {
-            return this==PLACE_FLOW || this==PLACE_SEMIFLOW;
+            return this==PLACE_FLOW || this==PLACE_SEMIFLOW || this==PLACE_BOUNDS_FROM_PINV;
         }
         
         public boolean isTransition() {
             return this==TRANSITION_FLOWS || this==TRANSITION_SEMIFLOWS;
+        }
+        
+        public boolean isSemiflow() {
+            return this==TRANSITION_SEMIFLOWS || this==PLACE_SEMIFLOW || this==PLACE_BOUNDS_FROM_PINV;
+        }
+        
+        
+        public boolean isFlow() {
+            return this==TRANSITION_FLOWS || this==PLACE_FLOW;
         }
     }
     

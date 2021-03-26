@@ -29,9 +29,9 @@ import editor.domain.measures.FormulaLanguage;
 import editor.domain.measures.FormulaMeasure;
 import editor.domain.measures.MeasureEditorPanel;
 import editor.domain.measures.MeasurePage;
-import editor.domain.composition.AlgebraCompositionPage;
+import editor.domain.composition.TagBasedCompositionPage;
 import editor.domain.composition.ComposableNet;
-import editor.domain.composition.MultiNetCompositionPage;
+import editor.domain.composition.NameBasedCompositionPage;
 import editor.domain.composition.MultiNetEditorPanel;
 import editor.domain.composition.MultiNetPage;
 import editor.domain.composition.NetInstanceDescriptor;
@@ -1427,9 +1427,9 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jMenuItemNewDtaPage = new javax.swing.JMenuItem();
         jMenuItemNewMeasurePage = new javax.swing.JMenuItem();
         jSeparatorMultiPages = new javax.swing.JPopupMenu.Separator();
-        jMenuItemNewAlgebraPage = new javax.swing.JMenuItem();
+        jMenuItemNewTagCompPage = new javax.swing.JMenuItem();
+        jMenuItemNewNameCompPage = new javax.swing.JMenuItem();
         jMenuItemNewUnfoldingPage = new javax.swing.JMenuItem();
-        jMenuItemNewMultiPageOLD = new javax.swing.JMenuItem();
         jSeparatorLibraryModels = new javax.swing.JPopupMenu.Separator();
         jMenuLibraryModels = new javax.swing.JMenu();
         actionNewNetPage_FullGSPN = new common.Action();
@@ -1484,9 +1484,9 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         actionNewNetPage_CPN = new common.Action();
         actionNewNetPage_GSPN = new common.Action();
         actionNewNetPage_SWN = new common.Action();
-        actionNewMultiPage_Algebra = new common.Action();
+        actionNewMultiPage_TagBasedComposition = new common.Action();
+        actionNewMultiPage_NameBasedComposition = new common.Action();
         actionNewMultiPage_Unfolding = new common.Action();
-        actionNewMultiPage_multiNetOLD = new common.Action();
         resourceFactory = new editor.gui.ResourceFactory();
         rmcActionCTL = new common.Action();
         rmcActionBuildRG = new common.Action();
@@ -1824,14 +1824,14 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jPopupMenuAddPage.add(jMenuItemNewMeasurePage);
         jPopupMenuAddPage.add(jSeparatorMultiPages);
 
-        jMenuItemNewAlgebraPage.setAction(actionNewMultiPage_Algebra);
-        jPopupMenuAddPage.add(jMenuItemNewAlgebraPage);
+        jMenuItemNewTagCompPage.setAction(actionNewMultiPage_TagBasedComposition);
+        jPopupMenuAddPage.add(jMenuItemNewTagCompPage);
+
+        jMenuItemNewNameCompPage.setAction(actionNewMultiPage_NameBasedComposition);
+        jPopupMenuAddPage.add(jMenuItemNewNameCompPage);
 
         jMenuItemNewUnfoldingPage.setAction(actionNewMultiPage_Unfolding);
         jPopupMenuAddPage.add(jMenuItemNewUnfoldingPage);
-
-        jMenuItemNewMultiPageOLD.setAction(actionNewMultiPage_multiNetOLD);
-        jPopupMenuAddPage.add(jMenuItemNewMultiPageOLD);
         jPopupMenuAddPage.add(jSeparatorLibraryModels);
 
         jMenuLibraryModels.setText("Add library model...");
@@ -2193,11 +2193,19 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             }
         });
 
-        actionNewMultiPage_Algebra.setActionName("Add a new Net Composition page.");
-        actionNewMultiPage_Algebra.setIcon(resourceFactory.getNewAlgebraNet24());
-        actionNewMultiPage_Algebra.addActionListener(new java.awt.event.ActionListener() {
+        actionNewMultiPage_TagBasedComposition.setActionName("Add a new Tag-based Composition page.");
+        actionNewMultiPage_TagBasedComposition.setIcon(resourceFactory.getNewAlgebraNet24());
+        actionNewMultiPage_TagBasedComposition.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                actionNewMultiPage_AlgebraActionPerformed(evt);
+                actionNewMultiPage_TagBasedCompositionActionPerformed(evt);
+            }
+        });
+
+        actionNewMultiPage_NameBasedComposition.setActionName("Add a new Name-based Composition page.");
+        actionNewMultiPage_NameBasedComposition.setIcon(resourceFactory.getNewMultiNet24());
+        actionNewMultiPage_NameBasedComposition.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionNewMultiPage_NameBasedCompositionActionPerformed(evt);
             }
         });
 
@@ -2206,14 +2214,6 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         actionNewMultiPage_Unfolding.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 actionNewMultiPage_UnfoldingActionPerformed(evt);
-            }
-        });
-
-        actionNewMultiPage_multiNetOLD.setActionName("Add a new Multi net page.");
-        actionNewMultiPage_multiNetOLD.setIcon(resourceFactory.getNewMultiNet24());
-        actionNewMultiPage_multiNetOLD.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                actionNewMultiPage_multiNetOLDActionPerformed(evt);
             }
         });
 
@@ -3228,9 +3228,9 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 //        }
     }//GEN-LAST:event_actionStartUnfoldingActionPerformed
 
-    private void actionNewMultiPage_AlgebraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewMultiPage_AlgebraActionPerformed
+    private void actionNewMultiPage_TagBasedCompositionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewMultiPage_TagBasedCompositionActionPerformed
         executeUndoableCommand("new net composition page.", (ProjectData proj, ProjectPage elem) -> {
-            MultiNetPage newPage = new AlgebraCompositionPage();
+            MultiNetPage newPage = new TagBasedCompositionPage();
             newPage.viewProfile.setProfileForNetType(NewProjectDialog.PetriNetType.FullPN);
             newPage.setPageName(activeProject.generateUniquePageName("Composition"));
             newPage.netsDescr.add(new NetInstanceDescriptor());
@@ -3240,7 +3240,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             activeProject.getCurrent().addPage(newPage);
             switchToProjectPage(activeProject, newPage, null);
         });
-    }//GEN-LAST:event_actionNewMultiPage_AlgebraActionPerformed
+    }//GEN-LAST:event_actionNewMultiPage_TagBasedCompositionActionPerformed
 
     private void actionDuplicatePageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionDuplicatePageActionPerformed
         executeUndoableCommand("duplicate page.", (ProjectData proj, ProjectPage page) -> {
@@ -3421,9 +3421,9 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         });
     }//GEN-LAST:event_actionNewMultiPage_UnfoldingActionPerformed
 
-    private void actionNewMultiPage_multiNetOLDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewMultiPage_multiNetOLDActionPerformed
+    private void actionNewMultiPage_NameBasedCompositionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewMultiPage_NameBasedCompositionActionPerformed
         executeUndoableCommand("new net composition page.", (ProjectData proj, ProjectPage elem) -> {
-            MultiNetPage newPage = new MultiNetCompositionPage();
+            MultiNetPage newPage = new NameBasedCompositionPage();
             newPage.viewProfile.setProfileForNetType(NewProjectDialog.PetriNetType.FullPN);
             newPage.setPageName(activeProject.generateUniquePageName("MultiNet"));
             newPage.netsDescr.add(new NetInstanceDescriptor());
@@ -3433,7 +3433,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             activeProject.getCurrent().addPage(newPage);
             switchToProjectPage(activeProject, newPage, null);
         });
-    }//GEN-LAST:event_actionNewMultiPage_multiNetOLDActionPerformed
+    }//GEN-LAST:event_actionNewMultiPage_NameBasedCompositionActionPerformed
 
     
     
@@ -3655,9 +3655,9 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private common.Action actionMoveUp;
     private common.Action actionNewDtaPage;
     private common.Action actionNewMeasurePage;
-    private common.Action actionNewMultiPage_Algebra;
+    private common.Action actionNewMultiPage_NameBasedComposition;
+    private common.Action actionNewMultiPage_TagBasedComposition;
     private common.Action actionNewMultiPage_Unfolding;
-    private common.Action actionNewMultiPage_multiNetOLD;
     private common.Action actionNewNetPage_CPN;
     private common.Action actionNewNetPage_FullGSPN;
     private common.Action actionNewNetPage_GSPN;
@@ -3699,15 +3699,15 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private javax.swing.JMenu jMenuFile;
     private javax.swing.JMenu jMenuHelp;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItemNewAlgebraPage;
     private javax.swing.JMenuItem jMenuItemNewDtaPage;
     private javax.swing.JMenuItem jMenuItemNewMeasurePage;
-    private javax.swing.JMenuItem jMenuItemNewMultiPageOLD;
+    private javax.swing.JMenuItem jMenuItemNewNameCompPage;
     private javax.swing.JMenuItem jMenuItemNewNetPage_CPN;
     private javax.swing.JMenuItem jMenuItemNewNetPage_FullGSPN;
     private javax.swing.JMenuItem jMenuItemNewNetPage_GSPN;
     private javax.swing.JMenuItem jMenuItemNewNetPage_PT;
     private javax.swing.JMenuItem jMenuItemNewNetPage_SWN;
+    private javax.swing.JMenuItem jMenuItemNewTagCompPage;
     private javax.swing.JMenuItem jMenuItemNewUnfoldingPage;
     private javax.swing.JMenuItem jMenuItemOptions;
     private javax.swing.JMenuItem jMenuItem_ApnnFormat;

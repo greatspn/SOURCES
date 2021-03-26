@@ -3,20 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package editor;
+package editor.cli;
 
 import common.UnixPrintWriter;
+import editor.Main;
 import editor.domain.Node;
 import editor.domain.PageErrorWarning;
 import editor.domain.ProjectData;
 import editor.domain.ProjectFile;
 import editor.domain.ProjectPage;
-import editor.domain.elements.ColorClass;
-import editor.domain.elements.ColorVar;
-import editor.domain.elements.ConstantID;
 import editor.domain.elements.GspnPage;
 import editor.domain.elements.Place;
-import editor.domain.elements.TemplateVariable;
 import editor.domain.elements.Transition;
 import editor.domain.grammar.DomainElement;
 import editor.domain.grammar.SemanticParser;
@@ -36,12 +33,13 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 import latex.DummyLatexProvider;
+import static editor.cli.Common.*;
 
 /**
  *
  * @author elvio
  */
-public class UnfoldPNML2NetDefCommandLineTool {
+public class UnfoldingCommand {
     
     public static void main(String[] args) {
         try {
@@ -417,50 +415,5 @@ public class UnfoldPNML2NetDefCommandLineTool {
             saveNuPNUnit(out, subunit, level+1, pnmlId2name, plc2Index);
     }
     
-    // show stats of the GSPN
-    public static void printGspnStat(GspnPage gspn, PNMLFormat.NuPNUnit rootUnit) {
-        int numPlaces = 0;
-        int numColorClasses = 0;
-        int numColorVars = 0;
-        int numTransitions = 0;
-        int numConst = 0;
-        int numTemplateVars = 0;
-        int numOtherNodes = 0;
-        int numNuPNUnits = -1;
-        
-        for (Node node : gspn.nodes) {
-            if (node instanceof Place)
-                numPlaces++;
-            else if (node instanceof Transition) 
-                numTransitions++;
-            else if (node instanceof ColorClass)
-                numColorClasses++;
-            else if (node instanceof ColorVar)
-                numColorVars++;
-            else if (node instanceof ConstantID)
-                numConst++;
-            else if (node instanceof TemplateVariable)
-                numTemplateVars++;
-            else
-                numOtherNodes++;
-        }
-        
-        boolean hasColors = (numColorClasses + numColorVars) > 0;        
-        System.out.println("  MODEL CLASS:   "+(hasColors ? "SYMMETRIC NET" : "P/T NET")+
-                (rootUnit==null ? "" : " WITH NUPN EXTENSION"));
-        System.out.println("  PLACES:        "+numPlaces);
-        System.out.println("  TRANSITIONS:   "+numTransitions);
-        System.out.println("  CONSTANTS:     "+numConst);
-        System.out.println("  TEMPLATE VARS: "+numTemplateVars);
-        if (hasColors) {
-            System.out.println("  COLOR CLASSES: "+numColorClasses);
-            System.out.println("  COLOR VARS:    "+numColorVars);
-        }
-        if (numOtherNodes > 0)
-            System.out.println("  OTHER NODES:   "+numOtherNodes);
-        System.out.println("  ARCS:          "+gspn.edges.size());
-        if (rootUnit != null) {
-            System.out.println("  NUPN UNITS:    "+rootUnit.numUnits);
-        }
-    }
+
 }

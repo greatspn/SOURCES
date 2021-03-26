@@ -330,10 +330,17 @@
         </MenuItem>
         <Component class="javax.swing.JPopupMenu$Separator" name="jSeparatorMultiPages">
         </Component>
-        <MenuItem class="javax.swing.JMenuItem" name="jMenuItemNewAlgebraPage">
+        <MenuItem class="javax.swing.JMenuItem" name="jMenuItemNewTagCompPage">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="actionNewMultiPage_Algebra"/>
+              <ComponentRef name="actionNewMultiPage_TagBasedComposition"/>
+            </Property>
+          </Properties>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="jMenuItemNewNameCompPage">
+          <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+              <ComponentRef name="actionNewMultiPage_NameBasedComposition"/>
             </Property>
           </Properties>
         </MenuItem>
@@ -341,13 +348,6 @@
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
               <ComponentRef name="actionNewMultiPage_Unfolding"/>
-            </Property>
-          </Properties>
-        </MenuItem>
-        <MenuItem class="javax.swing.JMenuItem" name="jMenuItemNewMultiPageOLD">
-          <Properties>
-            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="actionNewMultiPage_multiNetOLD"/>
             </Property>
           </Properties>
         </MenuItem>
@@ -956,15 +956,26 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionNewNetPage_SWNActionPerformed"/>
       </Events>
     </Component>
-    <Component class="common.Action" name="actionNewMultiPage_Algebra">
+    <Component class="common.Action" name="actionNewMultiPage_TagBasedComposition">
       <Properties>
-        <Property name="actionName" type="java.lang.String" value="Add a new Net Composition page."/>
+        <Property name="actionName" type="java.lang.String" value="Add a new Tag-based Composition page."/>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
           <Connection component="resourceFactory" name="getNewAlgebraNet24" type="method"/>
         </Property>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionNewMultiPage_AlgebraActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionNewMultiPage_TagBasedCompositionActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionNewMultiPage_NameBasedComposition">
+      <Properties>
+        <Property name="actionName" type="java.lang.String" value="Add a new Name-based Composition page."/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getNewMultiNet24" type="method"/>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionNewMultiPage_NameBasedCompositionActionPerformed"/>
       </Events>
     </Component>
     <Component class="common.Action" name="actionNewMultiPage_Unfolding">
@@ -976,17 +987,6 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionNewMultiPage_UnfoldingActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="common.Action" name="actionNewMultiPage_multiNetOLD">
-      <Properties>
-        <Property name="actionName" type="java.lang.String" value="Add a new Multi net page."/>
-        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection component="resourceFactory" name="getNewMultiNet24" type="method"/>
-        </Property>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionNewMultiPage_multiNetOLDActionPerformed"/>
       </Events>
     </Component>
     <Component class="editor.gui.ResourceFactory" name="resourceFactory">

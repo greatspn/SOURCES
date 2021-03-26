@@ -113,21 +113,24 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
             }
         });
         
-        // Algebra Property Panel
+        // Tag-based composition Property Panel
         list_TagsP.setCellRenderer(new CellRenderer());
         list_TagsT.setCellRenderer(new CellRenderer());
         
-        Dimension minSize = scrollPane_TagsP.getMinimumSize();
+        Dimension minSize = scrollPane_TagsP.getPreferredSize();
         int minHeight = jLabel1.getFontMetrics(jLabel1.getFont()).getHeight() * 8;
         minSize.height = Math.max(minSize.height, minHeight);
-        scrollPane_TagsP.setMinimumSize(minSize);
+        minSize.width = 1;
+//        scrollPane_TagsP.setMinimumSize(minSize);
+        scrollPane_TagsP.setPreferredSize(minSize);
+        scrollPane_TagsT.setPreferredSize(minSize);
         
         alignDxCopy = new SolverParams.IntExpr("1");
         alignDyCopy = new SolverParams.IntExpr("1");
         exprField_algebraDx.setExprListener(new ExprField.ExprFieldListener() {
             @Override public void onExprModified() {
                 mainInterface.executeUndoableCommand("change dx offset.", (ProjectData proj, ProjectPage elem) -> {
-                    AlgebraCompositionPage acp = (AlgebraCompositionPage)currPage;
+                    TagBasedCompositionPage acp = (TagBasedCompositionPage)currPage;
                     acp.alignDx.setExpr(alignDxCopy.getExpr());
                 });
             }
@@ -136,7 +139,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         exprField_algebraDy.setExprListener(new ExprField.ExprFieldListener() {
             @Override public void onExprModified() {
                 mainInterface.executeUndoableCommand("change dy offset.", (ProjectData proj, ProjectPage elem) -> {
-                    AlgebraCompositionPage acp = (AlgebraCompositionPage)currPage;
+                    TagBasedCompositionPage acp = (TagBasedCompositionPage)currPage;
                     acp.alignDy.setExpr(alignDyCopy.getExpr());
                 });
             }
@@ -247,8 +250,8 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         
         //-----------------------------------------
         // Algebra Property Panel
-        if (currPage instanceof AlgebraCompositionPage) {
-            AlgebraCompositionPage acp = (AlgebraCompositionPage)currPage;
+        if (currPage instanceof TagBasedCompositionPage) {
+            TagBasedCompositionPage acp = (TagBasedCompositionPage)currPage;
             
             DefaultListModel<JCheckBox> modelP = new DefaultListModel<JCheckBox>();
             if (acp.commonTagsP != null) {
@@ -267,17 +270,17 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
                 }
             }
             list_TagsT.setModel(modelT);
-            toggle_horizontal.setSelected(acp.alignment == AlgebraCompositionPage.Alignment.HORIZONTAL);
-            toggle_vertical.setSelected(acp.alignment == AlgebraCompositionPage.Alignment.VERTICAL);
-            toggle_custom.setSelected(acp.alignment == AlgebraCompositionPage.Alignment.CUSTOM);
+            toggle_horizontal.setSelected(acp.alignment == TagBasedCompositionPage.Alignment.HORIZONTAL);
+            toggle_vertical.setSelected(acp.alignment == TagBasedCompositionPage.Alignment.VERTICAL);
+            toggle_custom.setSelected(acp.alignment == TagBasedCompositionPage.Alignment.CUSTOM);
             
             alignDxCopy.setExpr(acp.alignDx.getExpr());
             exprField_algebraDx.initializeFor(alignDxCopy.getEditableValue(), page);
             alignDyCopy.setExpr(acp.alignDy.getExpr());
             exprField_algebraDy.initializeFor(alignDyCopy.getEditableValue(), page);
             
-            exprField_algebraDx.setEnabled(acp.alignment == AlgebraCompositionPage.Alignment.CUSTOM);
-            exprField_algebraDy.setEnabled(acp.alignment == AlgebraCompositionPage.Alignment.CUSTOM);
+            exprField_algebraDx.setEnabled(acp.alignment == TagBasedCompositionPage.Alignment.CUSTOM);
+            exprField_algebraDy.setEnabled(acp.alignment == TagBasedCompositionPage.Alignment.CUSTOM);
             
             checkBox_useBrokenEdges.setSelected(acp.useBrokenEdges);
             
@@ -621,7 +624,6 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         label_operator = new javax.swing.JLabel();
         panel_algebra = new javax.swing.JPanel();
         panelTags = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         scrollPane_TagsT = new javax.swing.JScrollPane();
@@ -687,18 +689,10 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         gridBagConstraints.weightx = 1.0;
         propertyPanel.add(panel_operator, gridBagConstraints);
 
-        panel_algebra.setBorder(javax.swing.BorderFactory.createTitledBorder("Algebra Options"));
+        panel_algebra.setBorder(javax.swing.BorderFactory.createTitledBorder("Tag Options:"));
         panel_algebra.setLayout(new java.awt.GridBagLayout());
 
         panelTags.setLayout(new java.awt.GridBagLayout());
-
-        jLabel3.setText("Composition tags:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        panelTags.add(jLabel3, gridBagConstraints);
 
         jLabel2.setText("Transitions:");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1057,12 +1051,14 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         JList list = (JList)evt.getSource();
         if (evt.getClickCount() == 1 && evt.getButton()==MouseEvent.BUTTON1) {
             final int index = list.locationToIndex(evt.getPoint());
+            if (index == -1) 
+                return; // out of selection
             final JCheckBox box = (JCheckBox)list.getModel().getElementAt(index);
             final String tag = box.getText();
 //            System.out.println("list_TagsPMouseClicked "+index+" "+tag);
             
             mainInterface.executeUndoableCommand("change place tag selection.", (ProjectData proj, ProjectPage elem) -> {
-                AlgebraCompositionPage acp = (AlgebraCompositionPage)currPage;
+                TagBasedCompositionPage acp = (TagBasedCompositionPage)currPage;
                 if (acp.selTagsP.contains(tag))
                     acp.selTagsP.remove(tag);
                 else
@@ -1075,12 +1071,14 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         JList list = (JList)evt.getSource();
         if (evt.getClickCount() == 1 && evt.getButton()==MouseEvent.BUTTON1) {
             final int index = list.locationToIndex(evt.getPoint());
+            if (index == -1) 
+                return; // out of selection
             final JCheckBox box = (JCheckBox)list.getModel().getElementAt(index);
             final String tag = box.getText();
 //            System.out.println("list_TagsPMouseClicked "+index+" "+tag);
             
             mainInterface.executeUndoableCommand("change transition tag selection.", (ProjectData proj, ProjectPage elem) -> {
-                AlgebraCompositionPage acp = (AlgebraCompositionPage)currPage;
+                TagBasedCompositionPage acp = (TagBasedCompositionPage)currPage;
                 if (acp.selTagsT.contains(tag))
                     acp.selTagsT.remove(tag);
                 else
@@ -1091,28 +1089,28 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
 
     private void toggle_horizontalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggle_horizontalActionPerformed
         mainInterface.executeUndoableCommand("toggle horizontal alignment.", (ProjectData proj, ProjectPage elem) -> {
-            AlgebraCompositionPage acp = (AlgebraCompositionPage)currPage;
-            acp.alignment = AlgebraCompositionPage.Alignment.HORIZONTAL;
+            TagBasedCompositionPage acp = (TagBasedCompositionPage)currPage;
+            acp.alignment = TagBasedCompositionPage.Alignment.HORIZONTAL;
         });
     }//GEN-LAST:event_toggle_horizontalActionPerformed
 
     private void toggle_verticalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggle_verticalActionPerformed
         mainInterface.executeUndoableCommand("toggle vertical alignment.", (ProjectData proj, ProjectPage elem) -> {
-            AlgebraCompositionPage acp = (AlgebraCompositionPage)currPage;
-            acp.alignment = AlgebraCompositionPage.Alignment.VERTICAL;
+            TagBasedCompositionPage acp = (TagBasedCompositionPage)currPage;
+            acp.alignment = TagBasedCompositionPage.Alignment.VERTICAL;
         });
     }//GEN-LAST:event_toggle_verticalActionPerformed
 
     private void toggle_customActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggle_customActionPerformed
         mainInterface.executeUndoableCommand("toggle custom alignment.", (ProjectData proj, ProjectPage elem) -> {
-            AlgebraCompositionPage acp = (AlgebraCompositionPage)currPage;
-            acp.alignment = AlgebraCompositionPage.Alignment.CUSTOM;
+            TagBasedCompositionPage acp = (TagBasedCompositionPage)currPage;
+            acp.alignment = TagBasedCompositionPage.Alignment.CUSTOM;
         });
     }//GEN-LAST:event_toggle_customActionPerformed
 
     private void checkBox_useBrokenEdgesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBox_useBrokenEdgesActionPerformed
         mainInterface.executeUndoableCommand("change broken edge flag.", (ProjectData proj, ProjectPage elem) -> {
-            AlgebraCompositionPage acp = (AlgebraCompositionPage)currPage;
+            TagBasedCompositionPage acp = (TagBasedCompositionPage)currPage;
             acp.useBrokenEdges = checkBox_useBrokenEdges.isSelected();
         });
     }//GEN-LAST:event_checkBox_useBrokenEdgesActionPerformed
@@ -1144,7 +1142,6 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;

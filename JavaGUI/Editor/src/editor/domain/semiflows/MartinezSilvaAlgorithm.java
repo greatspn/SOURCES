@@ -4,10 +4,17 @@
  */
 package editor.domain.semiflows;
 
+import editor.domain.Edge;
+import editor.domain.Node;
+import editor.domain.elements.GspnEdge;
+import editor.domain.elements.GspnPage;
 import editor.domain.elements.Place;
 import editor.domain.elements.Transition;
+import editor.domain.grammar.ParserContext;
+import editor.domain.grammar.TemplateBinding;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 
 /** Martinez-Silva version of the Farkas algorithm for the computation
  *  of the minimal set of P(T)-semiflows in a Petri net.
@@ -33,6 +40,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
     
     // Will compute semiflows or integer flows
     public boolean onlySemiflows = true;
+    public boolean buildBasis = false;
     
     
 //    SilvaColom88Algorithm scAlgo;
@@ -119,6 +127,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
             // linear combination of row pairs from [D|A] whose sum zeroes
             // the i-th column of A.
             int nRows = numSemiflows();
+            int combined_with_i = 0;
             for (int r1 = 0; r1 < nRows; r1++) {
                 if (mA.get(r1)[i] == 0) {
                     continue;
@@ -131,13 +140,13 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
                         continue;
                     
                     int mult1, mult2;
-                    if (onlySemiflows) {
+                    if (onlySemiflows) { // (non-negative) semiflows
                         if (sign(mA.get(r1)[i]) == sign(mA.get(r2)[i]))
                             continue;
                         mult1 = Math.abs(mA.get(r1)[i]);
                         mult2 = Math.abs(mA.get(r2)[i]);
                     }
-                    else {
+                    else { // integer flows
                         mult1 = Math.abs(mA.get(r1)[i]);
                         mult2 = Math.abs(mA.get(r2)[i]);
                         int gcd12 = gcd(mult1, mult2);
@@ -180,12 +189,14 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
                     }
                     for (int k = 0; k < N; k++) {
                         nnzD += (nrD[k] != 0 ? 1 : 0);
-                    }
+                    }                    
+                    if (nnzD == 0)
+                        continue; // drop empty row
 
                     // Martinez-Silva optimization of the Farkas algorithm.
                     // The row is not a minimal support if the count of non-zero entries in D
                     // is greater than the number of TRUEs in B (for that row) + 1.
-                    // If this happen, the row is not a minimal P(T)-semiflow and
+                    // If this happens, the row is not a minimal P(T)-semiflow and
                     // can be safely discarded.
                     if (nnzD > ntrueB+1) {
                         continue;
@@ -197,7 +208,11 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
                     mA.add(nrA);
                     mD.add(nrD);
                     mB.add(nrB);
+                    ++combined_with_i;
                 }
+                    
+                if (buildBasis && combined_with_i>0)
+                    break;
             }
             checkInterrupted();
 
@@ -217,7 +232,8 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
             }
             
             // Eliminate frm [D|A] the rows that are not minimal, doing an exhaustive search.
-            removeNonMinimalSemiflows(log, obs);
+            if (!buildBasis)
+                removeNonMinimalSemiflows(log, obs);
         }
         if (log)
             System.out.println("\nRESULT:\n"+this);
@@ -248,7 +264,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
                 if (i == rr)
                     continue;
                 // Check if the semiflow D[rr] contains D[i]
-                // Check if the support(D[i]) subseteq support(D[rr])
+                // Check if support(D[i]) subseteq support(D[rr])
                 boolean support_included = true;
                 for (int k=0; k<N && support_included; k++) {
                     if (mD.get(i)[k] != 0) {
@@ -368,8 +384,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
     
     
     
-    public String toLatexString(SemiFlows.Type type, ArrayList<Place> places, 
-                                ArrayList<Transition> transitions,
+    public String toLatexString(SemiFlows.Type type, NetIndex netIndex,
                                 boolean showZeros) 
     {
         StringBuilder sb = new StringBuilder();
@@ -390,9 +405,9 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
         // row for a place/transition
         for (int row=0; row<N; row++) {
             if (type.isPlace())
-                sb.append(places.get(row).getUniqueNameDecor().getLatexFormula().getLatex());
+                sb.append(netIndex.places.get(row).getUniqueNameDecor().getLatexFormula().getLatex());
             else
-                sb.append(transitions.get(row).getUniqueNameDecor().getLatexFormula().getLatex());
+                sb.append(netIndex.transitions.get(row).getUniqueNameDecor().getLatexFormula().getLatex());
             
             for (int f=0; f<numSemiflows(); f++) {
                 int[] semiflow = getSemiflow(f);
@@ -436,6 +451,124 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
         
         sb.append("\\end{array}$");
         return sb.toString();
+    }
+    
+    
+    // Initialization status
+    public boolean hasInhibitorEdges = false;
+    public boolean hasMarkDepEdges = false;
+    public boolean hasEdgeWithZeroCard = false;
+    public boolean hasContinuousEdges = false;
+    public boolean hasColoredPlaces = false;
+    public boolean hasNonIntegerInitMarks = false;
+
+    // Initialize the matrices from a gspn page
+    public void initialize(SemiFlows.Type type, TemplateBinding varBindings, NetIndex netIndex) 
+    {
+        ParserContext context = new ParserContext(netIndex.net);
+        context.templateVarsBinding = varBindings;
+        context.bindingContext = context;
+        
+        for (Edge edge : netIndex.net.edges) {
+            if (edge instanceof GspnEdge) {
+                GspnEdge ge = (GspnEdge)edge;
+                int p, t, card;
+                
+                // Ignore inhibitor edges, but signal their presence.
+                if (ge.getEdgeKind() == GspnEdge.Kind.INHIBITOR) {
+                    hasInhibitorEdges = true;
+                    continue;
+                }
+                // Ignore flow edges, but signal their presence.
+                if (ge.isContinuous() || ge.isFiringFlow()) {
+                    hasContinuousEdges = true;
+                    continue;
+                }
+                // Ignore colored edges
+                if (!ge.getColorDomainOfConnectedPlace().isNeutralDomain()) {
+                    hasColoredPlaces = true;
+                    continue;
+                }
+                switch (ge.getEdgeKind()) {
+                    case INPUT:
+//                        System.out.println("head="+ge.getHeadNode().getUniqueName()+" tail="+ge.getTailNode().getUniqueName());
+                        p = netIndex.place2index.get((Place)ge.getTailNode());
+                        t = netIndex.trn2index.get((Transition)ge.getHeadNode());
+                        try {
+                            card = -ge.evaluateMultiplicity(context, null, null).getScalarInt();
+                        }
+                        catch (Exception e) {
+                            hasMarkDepEdges = true;
+                            card = 1;
+                        }
+                        break;
+                        
+                    case OUTPUT:
+                        p = netIndex.place2index.get((Place)ge.getHeadNode());
+                        t = netIndex.trn2index.get((Transition)ge.getTailNode());
+                        try {
+                            card = ge.evaluateMultiplicity(context, null, null).getScalarInt();
+                        }
+                        catch (Exception e) {
+                            hasMarkDepEdges = true;
+                            card = 1;
+                        }
+                        break;
+                        
+                    default:
+                        throw new IllegalStateException();
+                }
+                if (card == 0)
+                    hasEdgeWithZeroCard = true;
+                if (type.isPlace())
+                    addFlow(p, t, card);
+                else
+                    addFlow(t, p, card);
+            }            
+        }
+        
+        if (type.isPlace()) {
+            // Prepare also the initial place quantities (for bound computation)
+            for (Place plc : netIndex.places) {
+                int m0;
+                try {
+                    m0 = plc.evaluateInitMarking(context).getScalarInt();
+                }
+                catch (Exception e) {
+                    hasNonIntegerInitMarks = true;
+                    m0 = 0;
+                }
+                setInitQuantity(netIndex.place2index.get(plc), m0);
+            }
+        }
+        
+    }
+    
+    public String flowToString(int i, SemiFlows.Type type, NetIndex netIndex) {
+        int[] flow = getSemiflow(i);
+        
+        StringBuilder repr = new StringBuilder();
+        for (int k=0; k<flow.length; k++) {
+            if (flow[k] == 0)
+                continue;
+            if (repr.length() > 0)
+                repr.append(" ");
+            if (flow[k] > 0) {
+                if (flow[k] != 1)
+                    repr.append(flow[k]).append("*");
+            }
+            else {
+                if (flow[k] == -1)
+                    repr.append("-");
+                else
+                    repr.append(flow[k]).append("*");                
+            }
+            if (type.isPlace())
+                repr.append(netIndex.places.get(k).getUniqueName());
+            else
+                repr.append(netIndex.transitions.get(k).getUniqueName());
+        }
+        return repr.toString();
     }
 
 //    public static void main(String[] args) {
@@ -503,11 +636,10 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
     public static void main(String[] args) throws InterruptedException {
         MartinezSilvaAlgorithm msa = init1();
         ProgressObserver obs = new ProgressObserver() {
-            @Override
-            public void advance(int step, int total, int s, int t) {
-            }
+            @Override public void advance(int step, int total, int s, int t) { }
         };
         msa.onlySemiflows = false;
+        msa.buildBasis = true;
         msa.compute(true, obs);
     }
 }

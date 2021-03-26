@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package editor;
+package editor.cli;
 
 import common.Util;
-import static editor.UnfoldPNML2NetDefCommandLineTool.printGspnStat;
+import editor.Main;
 import editor.domain.ProjectFile;
 import editor.domain.ProjectPage;
 import editor.domain.ViewProfile;
@@ -21,12 +21,13 @@ import java.io.File;
 import java.util.Map;
 import java.util.TreeMap;
 import latex.DummyLatexProvider;
+import static editor.cli.Common.*;
 
 /**
  *
  * @author elvio
  */
-public class AlgebraCommandLineTool {
+public class AlgebraCommand {
     
     public static void main(String[] args) {
         try {
@@ -173,80 +174,5 @@ public class AlgebraCommandLineTool {
     }
  
     
-    private static GspnPage loadPage(String baseName) throws Exception {
-        GspnPage gspn = null;
-        PNMLFormat.NuPNUnit rootUnit[] = new PNMLFormat.NuPNUnit[1];
-        // Input files
-        String netName = new File(baseName).getName();
-        File inputPnpro = new File(baseName+".PNPRO");
-        File inputPnml = new File(baseName+".pnml");
-        File inputNet = new File(baseName+".net");
-        File inputDef = new File(baseName+".def");
-        
-        if (inputPnpro.exists()) {
-            ProjectFile pf = PnProFormat.readXML(inputPnpro);
-            ProjectPage page0 = pf.getCurrent().getPageAt(0);
-            if (!(page0 instanceof GspnPage)) {
-                System.out.println("The first page of the PNPRO file "+inputPnpro.getAbsolutePath()+" must be a GSPN.");
-                System.exit(1);
-            }
-            gspn = (GspnPage)page0;
-            gspn.setPageName(netName);
-        }
-        else if (inputPnml.canRead()) {
-            // Read input PNML file
-            System.out.println("LOADING "+inputPnml.getName()+" ...");
-            Map<String, String> pnmlId2name = new TreeMap<>();
-            gspn = new GspnPage();
-            String log = PNMLFormat.importPNML(gspn, inputPnml, pnmlId2name, rootUnit);
-            gspn.setPageName(netName);
-            if (log != null) {
-                System.out.println("Error loading PNML file "+inputPnml.getAbsolutePath()+".\n"+log);
-                System.exit(1);
-            }
-        }
-        else if (inputNet.canRead() && inputDef.canRead()) {
-            // Read net/def file
-            System.out.println("LOADING "+inputNet.getName()+"/def ...");
-            gspn = new GspnPage();
-            String log = GreatSpnFormat.importGspn(gspn, inputNet, inputDef);
-            gspn.setPageName(netName);
-            if (log != null) {
-                System.out.println("Error loading net/def file "+baseName+".(net/def).\n"+log);
-                System.exit(1);
-            }
-        }
-        else {
-            System.out.println("Cannot read file: "+baseName+".{PNPRO,pnml,net/def}");
-            System.exit(1);
-        }
-        
-        return gspn;
-    }
-    
-    
-    
-    private static void savePage(GspnPage gspn, String baseName, boolean saveAsPnml) throws Exception {
-        boolean savePnmlGfx = true;
-        if (saveAsPnml) {
-            File pnmlNet = new File(baseName+".pnml");
-            System.out.println("SAVING AS "+baseName+".pnml ...");
-            String ret = PNMLFormat.exportGspn(gspn, pnmlNet, savePnmlGfx);
-            if (ret != null) {
-                System.out.println("Problems exporting the PNML file:\n"+ret);
-                System.exit(1);
-            }
-        }
-        else { // Save in GreatSPN format
-            // Save in GreatSPN net/def format
-            File outNet = new File(baseName+".net");
-            File outDef = new File(baseName+".def");
-            System.out.println("SAVING AS "+baseName+".(net/def) ...");
-            String ret = GreatSpnFormat.exportGspn(gspn, outNet, outDef, true, true);
-            if (ret != null) {
-                System.out.println("Problems exporting the net/def files:\n"+ret);
-                System.exit(1);
-            }
-        }        
-    }
+
 }

@@ -19,10 +19,10 @@ import editor.domain.ProjectPage;
 import static editor.domain.ProjectPage.NO_ERRORS;
 import editor.domain.Selectable;
 import editor.domain.elements.Transition;
-import editor.domain.grammar.ParserContext;
 import editor.domain.semiflows.SemiFlows;
 import editor.domain.semiflows.MartinezSilvaAlgorithm;
 import editor.domain.composition.ComposableNet;
+import editor.domain.semiflows.NetIndex;
 import editor.gui.AbstractPageEditor;
 import editor.gui.MainWindowInterface;
 import editor.gui.SharedResourceProvider;
@@ -64,11 +64,8 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
     
     MainWindowInterface mainInterface;
     
-    // Place/Transition -> 0-based index
-    Map<Place, Integer> place2index;
-    Map<Transition, Integer> trn2index;
-    ArrayList<Place> places;
-    ArrayList<Transition> transitions;
+    // Indices for easy P/T objects manipulation
+    NetIndex netIndex;
     
     // The list of computed semiflows
     MartinezSilvaAlgorithm algo;
@@ -152,24 +149,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         gspn.viewProfile.viewRatesDelays = false;
         gspn.viewProfile.viewSuperPosTags = false;
         
-        place2index = new HashMap<>();
-        trn2index = new HashMap<>();
-        places = new ArrayList<>();
-        transitions = new ArrayList<>();
-        
-        // Prepare place/transition indexes for semiflow construction.
-        for (Node node : gspn.nodes) {
-            if (node instanceof Place) {
-                Place place = (Place)node;
-                place2index.put(place, place2index.size());
-                places.add(place);
-            }
-            else if (node instanceof Transition) {
-                Transition trn = (Transition)node;
-                trn2index.put(trn, trn2index.size());
-                transitions.add(trn);
-            }
-        }
+        netIndex = new NetIndex(gspn);
         
         // Setup the net viewer in the scrollpane
         viewerPanel = new SemiflowViewerPanel(jScrollPaneNet);
@@ -192,10 +172,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         jScrollPaneNet.setViewportView(null);
         viewerPanel = null;
         hasSemiflows = false;
-        place2index = null;
-        trn2index = null;
-        places = null;
-        transitions = null;
+        netIndex = null;
     }
 
     @Override
@@ -310,107 +287,16 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         sfType = type;
         
         // Both P-semiflows and Place bounds are initialized in the same way
-        boolean initializeForPsemiflows = (sfType == SemiFlows.Type.PLACE_SEMIFLOW ||
-                                           sfType == SemiFlows.Type.PLACE_FLOW ||
-                                           sfType == SemiFlows.Type.PLACE_BOUNDS_FROM_PINV);
         boolean initializeForBounds = (sfType == SemiFlows.Type.PLACE_BOUNDS_FROM_PINV);
-        boolean onlySemiflows = (sfType == SemiFlows.Type.PLACE_SEMIFLOW ||
-                                 sfType == SemiFlows.Type.TRANSITION_SEMIFLOWS ||
-                                 sfType == SemiFlows.Type.PLACE_BOUNDS_FROM_PINV);
         
-        if (initializeForPsemiflows)
-            algo = new MartinezSilvaAlgorithm(places.size(), transitions.size());
+        if (sfType.isPlace())
+            algo = new MartinezSilvaAlgorithm(netIndex.numPlaces(), netIndex.numTransition());
         else
-            algo = new MartinezSilvaAlgorithm(transitions.size(), places.size());
-        algo.onlySemiflows = onlySemiflows;
+            algo = new MartinezSilvaAlgorithm(netIndex.numTransition(), netIndex.numPlaces());
+        algo.onlySemiflows = sfType.isSemiflow();
+        algo.initialize(type, viewerPanel.getGspnBinding(), netIndex);
         
-        // Compute the (semi)flows
-        ParserContext context = new ParserContext(viewerPanel.getGspn());
-        context.templateVarsBinding = viewerPanel.getGspnBinding();
-        context.bindingContext = context;
-        boolean hasInhibitorEdges = false;
-        boolean hasMarkDepEdges = false;
-        boolean hasEdgeWithZeroCard = false;
-        boolean hasContinuousEdges = false;
-        boolean hasColoredPlaces = false;
-        boolean hasNonIntegerInitMarks = false;
-        for (Edge edge : viewerPanel.getGspn().edges) {
-            if (edge instanceof GspnEdge) {
-                GspnEdge ge = (GspnEdge)edge;
-                int p, t, card;
-                
-                // Ignore inhibitor edges, but signal their presence.
-                if (ge.getEdgeKind() == GspnEdge.Kind.INHIBITOR) {
-                    hasInhibitorEdges = true;
-                    continue;
-                }
-                // Ignore flow edges, but signal their presence.
-                if (ge.isContinuous() || ge.isFiringFlow()) {
-                    hasContinuousEdges = true;
-                    continue;
-                }
-                // Ignore colored edges
-                if (!ge.getColorDomainOfConnectedPlace().isNeutralDomain()) {
-                    hasColoredPlaces = true;
-                    continue;
-                }
-                switch (ge.getEdgeKind()) {
-                    case INPUT:
-//                        System.out.println("head="+ge.getHeadNode().getUniqueName()+" tail="+ge.getTailNode().getUniqueName());
-                        p = place2index.get((Place)ge.getTailNode());
-                        t = trn2index.get((Transition)ge.getHeadNode());
-                        try {
-                            card = -ge.evaluateMultiplicity(context, null, null).getScalarInt();
-                        }
-                        catch (Exception e) {
-                            hasMarkDepEdges = true;
-                            card = 1;
-                        }
-                        break;
-                        
-                    case OUTPUT:
-                        p = place2index.get((Place)ge.getHeadNode());
-                        t = trn2index.get((Transition)ge.getTailNode());
-                        try {
-                            card = ge.evaluateMultiplicity(context, null, null).getScalarInt();
-                        }
-                        catch (Exception e) {
-                            hasMarkDepEdges = true;
-                            card = 1;
-                        }
-                        break;
-                        
-                    default:
-                        throw new IllegalStateException();
-                }
-                if (card == 0)
-                    hasEdgeWithZeroCard = true;
-                if (initializeForPsemiflows)
-                    algo.addFlow(p, t, card);
-                else
-                    algo.addFlow(t, p, card);
-            }            
-        }
-        
-        if (initializeForPsemiflows) {
-            // Prepare also bound computation
-            for (Node node : viewerPanel.getGspn().nodes) {
-                if (node instanceof Place) {
-                    Place plc = (Place)node;
-                    int m0;
-                    try {
-                        m0 = plc.evaluateInitMarking(context).getScalarInt();
-                    }
-                    catch (Exception e) {
-                        hasNonIntegerInitMarks = true;
-                        m0 = 0;
-                    }
-                    algo.setInitQuantity(place2index.get(plc), m0);
-                }
-            }
-        }
-        
-        // Compute semiflows
+        // Compute semiflows (in a separate thread)
         SemiflowComputationDialog dlg = new SemiflowComputationDialog(mainInterface.getWindowFrame(), algo);
         dlg.showDialogAndStart();
 //        algo.compute(false /*log*/);
@@ -418,9 +304,9 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         // Update window
         DefaultListModel<String> model = new DefaultListModel<>();
         if (initializeForBounds) {
-            for (int p=0; p<places.size(); p++) {
+            for (int p=0; p<netIndex.numPlaces(); p++) {
                 StringBuilder name = new StringBuilder();
-                name.append("Bound of ").append(places.get(p).getUniqueName())
+                name.append("Bound of ").append(netIndex.places.get(p).getUniqueName())
                     .append(": [").append(algo.getLowerBoundOf(p)).append(", ");
                 if (algo.getUpperBoundOf(p) == Integer.MAX_VALUE)
                     name.append(SemiFlows.INFINITY_UNICODE);
@@ -432,23 +318,8 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         }
         else {
             final int numSemiflows = (algo.isComputed() ? algo.numSemiflows() : 0);
-            for (int i=0; i<numSemiflows; i++) {
-                int[] allSF = algo.getSemiflow(i);
-                StringBuilder name = new StringBuilder();
-                for (int k=0; k<allSF.length; k++) {
-                    if (allSF[k] == 0)
-                        continue;
-                    if (name.length() > 0)
-                        name.append(" + ");
-                    if (allSF[k] != 1)
-                        name.append(allSF[k]).append("*");
-                    if (initializeForPsemiflows)
-                        name.append(places.get(k).getUniqueName());
-                    else
-                        name.append(transitions.get(k).getUniqueName());
-                }
-                model.addElement(name.toString());
-            }
+            for (int i=0; i<numSemiflows; i++)
+                model.addElement(algo.flowToString(i, sfType, netIndex));
         }
         jListSemiflows.setModel(model);
         if (model.size() > 0)
@@ -468,30 +339,30 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
             errsWarns.add(PageErrorWarning.newWarning("Computation interrupted.", 
                           new Selectable.DummySelectable()));
         else {
-            if (hasInhibitorEdges)
+            if (algo.hasInhibitorEdges)
                 errsWarns.add(PageErrorWarning.newWarning("Inhibitor edges have no impact on this "
                               + "analysis, and are ignored.", new Selectable.DummySelectable()));
-            if (hasMarkDepEdges)
+            if (algo.hasMarkDepEdges)
                 errsWarns.add(PageErrorWarning.newWarning("Marking-dependent edges are not supported. "
                                 + "Using cardinality 1 for them.", new Selectable.DummySelectable()));
-            if (hasEdgeWithZeroCard)
+            if (algo.hasEdgeWithZeroCard)
                 errsWarns.add(PageErrorWarning.newWarning("The net has edges with cardinality 0.", 
                                                           new Selectable.DummySelectable()));
-            if (hasContinuousEdges)
+            if (algo.hasContinuousEdges)
                 errsWarns.add(PageErrorWarning.newWarning("Continuous transition/places/edges are ignored.", 
                               new Selectable.DummySelectable()));
-            if (hasColoredPlaces)
+            if (algo.hasColoredPlaces)
                 errsWarns.add(PageErrorWarning.newWarning("Colored places are not supported and are ignored.",
                               new Selectable.DummySelectable()));
             
-            if (hasNonIntegerInitMarks)
+            if (algo.hasNonIntegerInitMarks)
                 errsWarns.add(PageErrorWarning.newWarning("Place bounds can only be computed if all places "
                         + "have a scalar integer initial marking.",
                               new Selectable.DummySelectable()));
                 
             // Determine if all places/transitions are covered by P/T invariants
-            int numPT = (initializeForPsemiflows) ? 
-                         places.size() : transitions.size();
+            int numPT = (sfType.isPlace()) ? 
+                         netIndex.numPlaces() : netIndex.numTransition();
             boolean[] covered = new boolean[numPT];
             Arrays.fill(covered, false);
             for (int sf=0; sf<algo.numSemiflows(); sf++) {
@@ -506,13 +377,13 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
                     numUncover++;
             if (numUncover > 0) {
                 String err = ""+numUncover;
-                if (initializeForPsemiflows) {
+                if (sfType.isPlace()) {
                     err += ((numUncover==1) ? " place is " : " places are ")
                             +"not covered by P-semiflows: ";
                     int j = numUncover;
                     for (int i=0; i<numPT; i++)
                         if (!covered[i])
-                            err += places.get(i).getUniqueName() + (--j>0?", ":"");
+                            err += netIndex.places.get(i).getUniqueName() + (--j>0?", ":"");
                     if (initializeForBounds) 
                         err += (numUncover==1) ? ". No finite bound is available for this place" : 
                                     ". No finite bounds are available for these places.";
@@ -522,7 +393,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
                             +"not covered by T-semiflows: ";
                     for (int i=0; i<numPT; i++)
                         if (!covered[i])
-                            err += transitions.get(i).getUniqueName() + (--numUncover>0?", ":"");                    
+                            err += netIndex.transitions.get(i).getUniqueName() + (--numUncover>0?", ":"");                    
                 }
                 errsWarns.add(PageErrorWarning.newWarning(err, new Selectable.DummySelectable()));
             }
@@ -588,7 +459,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
                 // [1] Add all places of the semiflow into the list
                 for (int k=0; k<placeSF.length; k++)
                     if (placeSF[k] != 0)
-                        highlightedElems.add(places.get(k));
+                        highlightedElems.add(netIndex.places.get(k));
                 // [2] Add all transitions that have both an input and an output edge
                 //     between highlighted places
                 Set<Transition> inputTrns = new HashSet<>();
@@ -609,7 +480,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
                 // [1] Add all transitions of the semiflow into the list
                 for (int k=0; k<trnSF.length; k++)
                     if (trnSF[k] != 0)
-                        highlightedElems.add(transitions.get(k));
+                        highlightedElems.add(netIndex.transitions.get(k));
                 // [2] Add all places that have both an input and an output edge
                 //     between highlighted transitions
                 Set<Place> inputPlaces = new HashSet<>();
@@ -626,7 +497,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
                 
             case PLACE_BOUNDS_FROM_PINV: {
                 // highlight place number sfNum
-                highlightedElems.add(places.get(sfNum));
+                highlightedElems.add(netIndex.places.get(sfNum));
             }
             break;
         }
@@ -650,7 +521,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
     private void showSemiflowsMatrix() {
         ShowSemiflowsMatrixDialog dlg = new ShowSemiflowsMatrixDialog(mainInterface.getWindowFrame(), true, 
                                                                       algo, sfType, origGspn.getPageName(),
-                                                                      places, transitions);
+                                                                      netIndex);
         dlg.setVisible(true);
     }
     
@@ -737,7 +608,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
                     if (!hasSelSF)
                         return Integer.MAX_VALUE;
                     if (elem instanceof Place)
-                        return algo.getSemiflow(selSF)[place2index.get((Place)elem)];
+                        return algo.getSemiflow(selSF)[netIndex.place2index.get((Place)elem)];
                     break;
                     
                 case TRANSITION_SEMIFLOWS:
@@ -745,7 +616,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
                     if (!hasSelSF)
                         return Integer.MAX_VALUE;
                     if (elem instanceof Transition)
-                        return algo.getSemiflow(selSF)[trn2index.get((Transition)elem)];
+                        return algo.getSemiflow(selSF)[netIndex.trn2index.get((Transition)elem)];
                     break;
                     
                 case PLACE_BOUNDS_FROM_PINV:
@@ -764,9 +635,9 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
                 return -1;
             
             if (lower)
-                return algo.getLowerBoundOf(place2index.get((Place)elem));
+                return algo.getLowerBoundOf(netIndex.place2index.get((Place)elem));
             else
-                return algo.getUpperBoundOf(place2index.get((Place)elem));
+                return algo.getUpperBoundOf(netIndex.place2index.get((Place)elem));
         }
 
         @Override
@@ -830,7 +701,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
                 for (Node n : net.nodes) {
                     if (n instanceof Place && n.intersectRectangle(hitRect, net.viewProfile, true))
                     {
-                        jListSemiflows.setSelectedIndex(place2index.get((Place)n));
+                        jListSemiflows.setSelectedIndex(netIndex.place2index.get((Place)n));
                         return;
                     }
                 }

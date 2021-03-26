@@ -38,16 +38,16 @@ import org.w3c.dom.NodeList;
  *
  * @author elvio
  */
-public class AlgebraCompositionPage extends MultiNetPage implements Serializable {
+public class TagBasedCompositionPage extends MultiNetPage implements Serializable {
 
     @Override
     public String getPageTypeName() {
-        return "ALGEBRACOMPOSITIONPAGE";
+        return "TAGBASEDCOMPOSITIONPAGE";
     }
 
     @Override
     public String getOperatorName() {
-        return "Algebra";
+        return "Tag-based composition";
     }
 
     @Override

@@ -6,17 +6,11 @@
 package editor.gui.net;
 
 import editor.domain.NetObject;
-import editor.domain.elements.GspnPage;
-import editor.domain.elements.Place;
-import editor.domain.elements.Transition;
 import editor.domain.semiflows.MartinezSilvaAlgorithm;
+import editor.domain.semiflows.NetIndex;
 import editor.domain.semiflows.SemiFlows;
 import editor.gui.ResourceFactory;
 import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import java.util.ArrayList;
 import javax.swing.SwingUtilities;
 import latex.JLatexComponent;
 import latex.LatexFormula;
@@ -30,21 +24,19 @@ public class ShowSemiflowsMatrixDialog extends javax.swing.JDialog {
     private final SemiFlows.Type type;
     private final String netName;
     private final MartinezSilvaAlgorithm algo;
-    private final ArrayList<Place> places;
-    private final ArrayList<Transition> transitions;
+    private final NetIndex netIndex;
     JLatexComponent latexComp;
     
     /**
      * Creates new form ShowNetMatricesDialog
      */
     public ShowSemiflowsMatrixDialog(java.awt.Frame parent, boolean modal, MartinezSilvaAlgorithm algo,
-                                     SemiFlows.Type type, String netName, ArrayList<Place> places, ArrayList<Transition> transitions) {
+                                     SemiFlows.Type type, String netName, NetIndex netIndex) {
         super(parent, modal);
         this.algo = algo;
         this.type = type;
         this.netName = netName;
-        this.places = places;
-        this.transitions = transitions;
+        this.netIndex = netIndex;
         initComponents();
         
         latexComp = new JLatexComponent();
@@ -61,7 +53,7 @@ public class ShowSemiflowsMatrixDialog extends javax.swing.JDialog {
     }
     
     private void update() {
-        String latex = algo.toLatexString(type, places, transitions, checkBox_showZeros.isSelected());
+        String latex = algo.toLatexString(type, netIndex, checkBox_showZeros.isSelected());
         LatexFormula formula = new LatexFormula(latex, NetObject.getUnitToPixels());
         
         latexComp.setFormula(formula);

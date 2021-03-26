@@ -40,16 +40,16 @@ import org.w3c.dom.Element;
  *
  * @author elvio
  */
-public class MultiNetCompositionPage extends MultiNetPage implements Serializable {
+public class NameBasedCompositionPage extends MultiNetPage implements Serializable {
 
     @Override
     public String getPageTypeName() {
-        return "MULTINETCOMPOSITIONPAGE";
+        return "NAMEBASEDCOMPOSITIONPAGE";
     }
     
     @Override
     public String getOperatorName() {
-        return "MultiNet Composition";
+        return "Name-based Composition";
     }
 
     @Override
@@ -350,8 +350,8 @@ public class MultiNetCompositionPage extends MultiNetPage implements Serializabl
 //                    subNetPrefixes.add(netPrefix);
 
                 // Compose hierarchically
-                if (descr.net instanceof MultiNetCompositionPage) {
-                    MultiNetCompositionPage mncp = (MultiNetCompositionPage)descr.net;
+                if (descr.net instanceof NameBasedCompositionPage) {
+                    NameBasedCompositionPage mncp = (NameBasedCompositionPage)descr.net;
                     
 //                    if (isFirstLevel)
 //                        compSubNets.add(compPage);

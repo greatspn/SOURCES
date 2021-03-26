@@ -19,5 +19,5 @@ if [[ $# == 0 ]] ; then
 fi
 
 java -mx16000m -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar \
-	editor.UnfoldPNML2NetDefCommandLineTool "$@"
+	editor.cli.UnfoldingCommand "$@"
 
