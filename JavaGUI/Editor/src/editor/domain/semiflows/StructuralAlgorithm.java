@@ -22,9 +22,9 @@ public abstract class StructuralAlgorithm {
         this.M = M;
     }
     
-    public abstract void addFlow(int i, int j, int card);
-    
-    public abstract void setInitQuantity(int i, int quantity);
+//    public abstract void addFlow(int i, int j, int card);
+//    
+//    public abstract void setInitQuantity(int i, int quantity);
 
     public void setComputed() {
         this.computed = true;

@@ -367,8 +367,8 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
     }
 
     @Override
-    public JComponent getToolbar() {
-        return jToolBarEmpty;
+    public JComponent[] getToolbars() {
+        return new JComponent[]{};
     }
 
     @Override
@@ -1172,7 +1172,6 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
         actionAddActionTemplate = new common.Action();
         actionAddClockVar = new common.Action();
         actionAddTextBox = new common.Action();
-        jToolBarEmpty = new javax.swing.JToolBar();
         popupMenuViewProfile = new javax.swing.JPopupMenu();
         viewRatesMenuItem = new javax.swing.JCheckBoxMenuItem();
         viewGuardsMenuItem = new javax.swing.JCheckBoxMenuItem();
@@ -1420,7 +1419,7 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
             }
         });
 
-        actionAddIntTemplate.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.SHIFT_MASK));
+        actionAddIntTemplate.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.SHIFT_DOWN_MASK));
         actionAddIntTemplate.setActionName("New template integer Id.");
         actionAddIntTemplate.setIcon(resourceFactory.getToolTemplateN24());
         actionAddIntTemplate.setTooltipDesc("(Shift+N) Add a new integer template Id to the current page.");
@@ -1430,7 +1429,7 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
             }
         });
 
-        actionAddRealTemplate.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.SHIFT_MASK));
+        actionAddRealTemplate.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.SHIFT_DOWN_MASK));
         actionAddRealTemplate.setActionName("New template real Id.");
         actionAddRealTemplate.setIcon(resourceFactory.getToolTemplateR24());
         actionAddRealTemplate.setTooltipDesc("(Shift+R) Add a new real template Id to the current page.");
@@ -1450,7 +1449,7 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
             }
         });
 
-        actionAddActionTemplate.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.SHIFT_MASK));
+        actionAddActionTemplate.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.SHIFT_DOWN_MASK));
         actionAddActionTemplate.setActionName("New action Id.");
         actionAddActionTemplate.setIcon(resourceFactory.getToolTemplateAct24());
         actionAddActionTemplate.setTooltipDesc("(Shift+A) Add a new action Id to the current page.");
@@ -1479,9 +1478,6 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
                 actionAddTextBoxActionPerformed(evt);
             }
         });
-
-        jToolBarEmpty.setFloatable(false);
-        jToolBarEmpty.setRollover(true);
 
         viewRatesMenuItem.setSelected(true);
         viewRatesMenuItem.setText("Show rates/delays");
@@ -2260,7 +2256,6 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
     private javax.swing.JToolBar jToolBar;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBarEdgeCmd;
-    private javax.swing.JToolBar jToolBarEmpty;
     private common.JToolbarButton jToolbarButtonClearPoints;
     private common.JToolbarButton jToolbarButtonDeletePoint;
     private common.JToolbarButton jToolbarButtonNewPoint;

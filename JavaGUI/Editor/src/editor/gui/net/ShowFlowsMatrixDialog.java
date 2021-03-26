@@ -8,20 +8,20 @@ package editor.gui.net;
 import editor.domain.NetObject;
 import editor.domain.semiflows.MartinezSilvaAlgorithm;
 import editor.domain.semiflows.NetIndex;
-import editor.domain.semiflows.SemiFlows;
 import editor.gui.ResourceFactory;
 import java.awt.Dimension;
 import javax.swing.SwingUtilities;
 import latex.JLatexComponent;
 import latex.LatexFormula;
+import editor.domain.semiflows.PTFlows;
 
 /**
  *
  * @author elvio
  */
-public class ShowSemiflowsMatrixDialog extends javax.swing.JDialog {
+public class ShowFlowsMatrixDialog extends javax.swing.JDialog {
 
-    private final SemiFlows.Type type;
+    private final PTFlows.Type type;
     private final String netName;
     private final MartinezSilvaAlgorithm algo;
     private final NetIndex netIndex;
@@ -30,8 +30,8 @@ public class ShowSemiflowsMatrixDialog extends javax.swing.JDialog {
     /**
      * Creates new form ShowNetMatricesDialog
      */
-    public ShowSemiflowsMatrixDialog(java.awt.Frame parent, boolean modal, MartinezSilvaAlgorithm algo,
-                                     SemiFlows.Type type, String netName, NetIndex netIndex) {
+    public ShowFlowsMatrixDialog(java.awt.Frame parent, boolean modal, MartinezSilvaAlgorithm algo,
+                                 PTFlows.Type type, String netName, NetIndex netIndex) {
         super(parent, modal);
         this.algo = algo;
         this.type = type;

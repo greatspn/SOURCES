@@ -15,11 +15,11 @@ import editor.domain.elements.Transition;
 import editor.domain.grammar.TemplateBinding;
 import editor.domain.semiflows.MartinezSilvaAlgorithm;
 import editor.domain.semiflows.NetIndex;
-import editor.domain.semiflows.SemiFlows;
 import editor.domain.semiflows.StructuralAlgorithm;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import editor.domain.semiflows.PTFlows;
 
 
 /**
@@ -54,7 +54,7 @@ public class InvariantsCommand {
             System.out.println("Not enough arguments.");
             System.exit(1);
         }
-        SemiFlows.Type type = SemiFlows.Type.PLACE_SEMIFLOW;
+        PTFlows.Type type = PTFlows.Type.PLACE_SEMIFLOW;
         TemplateBinding bindings = new TemplateBinding();
         boolean verbose = false;
         boolean isBasis = false;
@@ -65,28 +65,28 @@ public class InvariantsCommand {
                 break; // end of options
             switch (args[c]) {
                 case "-ps":
-                    type = SemiFlows.Type.PLACE_SEMIFLOW;
+                    type = PTFlows.Type.PLACE_SEMIFLOW;
                     break;
                 
                 case "-ts":
-                    type = SemiFlows.Type.TRANSITION_SEMIFLOWS;
+                    type = PTFlows.Type.TRANSITION_SEMIFLOWS;
                     break;
                     
                 case "-pf":
-                    type = SemiFlows.Type.PLACE_FLOW;
+                    type = PTFlows.Type.PLACE_FLOW;
                     break;
                 
                 case "-tf":
-                    type = SemiFlows.Type.TRANSITION_FLOWS;
+                    type = PTFlows.Type.TRANSITION_FLOWS;
                     break;
 
                 case "-pb":
-                    type = SemiFlows.Type.PLACE_FLOW;
+                    type = PTFlows.Type.PLACE_FLOW;
                     isBasis = true;
                     break;
                 
                 case "-tb":
-                    type = SemiFlows.Type.TRANSITION_FLOWS;
+                    type = PTFlows.Type.TRANSITION_FLOWS;
                     isBasis = true;
                     break;
 
@@ -131,7 +131,7 @@ public class InvariantsCommand {
         StructuralAlgorithm.ProgressObserver obs = (int step, int total, int s, int t) -> { };
         algo.compute(verbose, obs);
         
-        for (int i=0; i<algo.numSemiflows(); i++) {
+        for (int i=0; i<algo.numFlows(); i++) {
             System.out.print("FLOW "+(i+1)+": ");
             System.out.println(algo.flowToString(i, type, netIndex));
         }

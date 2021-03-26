@@ -593,8 +593,8 @@ public class MeasureEditorPanel extends javax.swing.JPanel
     }
 
     @Override
-    public JComponent getToolbar() {
-        return jToolBarEmpty;
+    public JComponent[] getToolbars() {
+        return new JComponent[]{};
     }
 
     @Override
@@ -632,13 +632,12 @@ public class MeasureEditorPanel extends javax.swing.JPanel
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        jToolBarEmpty = new javax.swing.JToolBar();
         jPanelScrollContainer = new javax.swing.JPanel();
         jPanelGspn = new javax.swing.JPanel();
         jLabel_gspn = new javax.swing.JLabel();
-        jComboBox_gspn = new javax.swing.JComboBox<String>();
+        jComboBox_gspn = new javax.swing.JComboBox<>();
         jLabel_solver = new javax.swing.JLabel();
-        jComboBox_solver = new javax.swing.JComboBox<SolverParams.Solvers>();
+        jComboBox_solver = new javax.swing.JComboBox<>();
         jPanel_filler = new javax.swing.JPanel();
         jPanelTemplateParamsTitle = new javax.swing.JPanel();
         jPanelTemplateParams = new javax.swing.JPanel();
@@ -664,9 +663,6 @@ public class MeasureEditorPanel extends javax.swing.JPanel
         jToolbarButton_moveDown = new common.JToolbarButton();
         jToolbarButton_exportExcel = new common.JToolbarButton();
         jScrollPaneList = new javax.swing.JScrollPane();
-
-        jToolBarEmpty.setFloatable(false);
-        jToolBarEmpty.setRollover(true);
 
         jPanelScrollContainer.setLayout(new java.awt.GridBagLayout());
 
@@ -1034,7 +1030,6 @@ public class MeasureEditorPanel extends javax.swing.JPanel
     private javax.swing.JPanel jPanel_filler;
     private javax.swing.JScrollPane jScrollPaneList;
     private javax.swing.JToolBar jToolBar;
-    private javax.swing.JToolBar jToolBarEmpty;
     private common.JToolbarButton jToolbarButton_addMeasure;
     private common.JToolbarButton jToolbarButton_commentMeasure;
     private common.JToolbarButton jToolbarButton_exportExcel;

@@ -2,58 +2,6 @@
 
 <Form version="1.3" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <NonVisualComponents>
-    <Container class="javax.swing.JToolBar" name="jToolBar">
-      <Properties>
-        <Property name="rollover" type="boolean" value="true"/>
-      </Properties>
-
-      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
-      <SubComponents>
-        <Component class="common.JToolbarButton" name="jToolbarButtonChangeBindings">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="jToolbarButton3"/>
-          </Properties>
-        </Component>
-        <Component class="common.JToolbarButton" name="jToolbarButtonComputePlaceSemiflows">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="jToolbarButton1"/>
-          </Properties>
-        </Component>
-        <Component class="common.JToolbarButton" name="jToolbarButtonComputePlaceFlows">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="jToolbarButton1"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-        </Component>
-        <Component class="common.JToolbarButton" name="jToolbarButtonComputeTransitionSemiflows">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="jToolbarButton2"/>
-          </Properties>
-        </Component>
-        <Component class="common.JToolbarButton" name="jToolbarButtonComputeTransitionFlows">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="jToolbarButton2"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-        </Component>
-        <Component class="common.JToolbarButton" name="jToolbarButtonComputeBoundsFromPinv">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="jToolbarButton1"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-        </Component>
-        <Component class="common.JToolbarButton" name="jToolbarButtonShowMatrices">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="jToolbarButton1"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-        </Component>
-      </SubComponents>
-    </Container>
     <Container class="javax.swing.JPanel" name="jPanelNet">
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
@@ -66,6 +14,58 @@
     </Container>
     <Component class="editor.gui.ResourceFactory" name="resourceFactory">
     </Component>
+    <Container class="javax.swing.JToolBar" name="toolbar_basic">
+      <Properties>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+            <TitledBorder justification="2" position="5" title="Basic"/>
+          </Border>
+        </Property>
+        <Property name="floatable" type="boolean" value="false"/>
+        <Property name="rollover" type="boolean" value="true"/>
+      </Properties>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
+      <SubComponents>
+        <Component class="common.JToolbarButton" name="jToolbarButtonChangeBindings">
+        </Component>
+        <Component class="common.JToolbarButton" name="jToolbarButtonComputePlaceSemiflows">
+        </Component>
+        <Component class="common.JToolbarButton" name="jToolbarButtonComputeTransitionSemiflows">
+        </Component>
+        <Component class="common.JToolbarButton" name="jToolbarButtonComputeBoundsFromPinv">
+        </Component>
+        <Component class="common.JToolbarButton" name="jToolbarButtonShowMatrices">
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JToolBar" name="toolbar_advanced">
+      <Properties>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+            <TitledBorder justification="2" position="5" title="Advanced"/>
+          </Border>
+        </Property>
+        <Property name="floatable" type="boolean" value="false"/>
+        <Property name="rollover" type="boolean" value="true"/>
+      </Properties>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
+      <SubComponents>
+        <Component class="common.JToolbarButton" name="jToolbarButtonComputePlaceFlows">
+          <Properties>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
+        </Component>
+        <Component class="common.JToolbarButton" name="jToolbarButtonComputeTransitionFlows">
+          <Properties>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
   </NonVisualComponents>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
@@ -131,7 +131,7 @@
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel4">
           <Properties>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;When all parameters have been assigned correctly, start the computation of the minimal P or T semiflows by pressing the corresponding button on the application toolbar."/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;When all parameters have been assigned correctly, start the computation of the structural properties by pressing the corresponding button on the application toolbar."/>
             <Property name="verticalAlignment" type="int" value="1"/>
             <Property name="horizontalTextPosition" type="int" value="4"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
@@ -209,7 +209,7 @@
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
               <Connection component="resourceFactory" name="getTinv32" type="method"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="T-flows:"/>
+            <Property name="text" type="java.lang.String" value="T-semiflows:"/>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="org.netbeans.modules.form.compat2.border.BevelBorderInfo">
                 <BevelBorder/>
@@ -284,7 +284,7 @@
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
               <SubComponents>
-                <Component class="javax.swing.JList" name="jListSemiflows">
+                <Component class="javax.swing.JList" name="jList_flows">
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
                   </AuxValues>
@@ -316,7 +316,7 @@
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
               <Connection component="resourceFactory" name="getTinv32" type="method"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="T-semiflows:"/>
+            <Property name="text" type="java.lang.String" value="T-flows:"/>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="org.netbeans.modules.form.compat2.border.BevelBorderInfo">
                 <BevelBorder/>

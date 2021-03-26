@@ -11,7 +11,7 @@ import java.awt.Color;
  *
  * @author elvio
  */
-public interface SemiFlows {
+public interface PTFlows {
     
     public final char INFINITY_UNICODE = '\u221E';
     

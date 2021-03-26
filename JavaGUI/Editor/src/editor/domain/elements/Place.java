@@ -438,7 +438,7 @@ public class Place extends Node implements Serializable, ColorClass.DomainHolder
         EvaluatedFormula efMarking = null;
         PaintMode paintMode = null;
         boolean isError = false;
-        if (dh.semiflows != null) {
+        if (dh.selectedPTFlow != null) {
             // Do not draw any marking in P/T semiflow mode.
             return;
         }

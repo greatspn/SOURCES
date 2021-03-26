@@ -15,7 +15,6 @@ import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
 import editor.domain.io.XmlExchangeable;
 import editor.domain.measures.ComputedScalar;
 import editor.domain.play.ActivityState;
-import editor.domain.semiflows.SemiFlows;
 import editor.gui.NoOpException;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
@@ -40,6 +39,7 @@ import javax.swing.Icon;
 import javax.swing.SwingConstants;
 import latex.LatexFormula;
 import org.w3c.dom.Element;
+import editor.domain.semiflows.PTFlows;
 
 /** A Node in a graph (a place, a transition, a location, etc...)
  *
@@ -1016,10 +1016,10 @@ public abstract class Node extends SelectableObject
         
         // Highlighted in visualization mode
         int semiflowCard = -100;
-        if (dh.semiflows != null && dh.semiflows.contains(this)) {
-            semiflowCard = dh.semiflows.getNodeCardinality(this);
+        if (dh.selectedPTFlow != null && dh.selectedPTFlow.contains(this)) {
+            semiflowCard = dh.selectedPTFlow.getNodeCardinality(this);
             paintNodeActiveBorder(g, dh, nodeShape, DEFAULT_ACTIVITY_AURA_SIZE, 
-                                  dh.semiflows.getLineColor(semiflowCard));
+                                  dh.selectedPTFlow.getLineColor(semiflowCard));
         }
         
         // Fill the node interior
@@ -1061,20 +1061,20 @@ public abstract class Node extends SelectableObject
         paintNodeInterior(g, dh, borderColor, errorFlag, nodeShape);
         
         // P/T semiflows count
-        if (dh.semiflows != null) {
+        if (dh.selectedPTFlow != null) {
             String countText = null;
-            if (dh.semiflows.getType() == SemiFlows.Type.PLACE_BOUNDS_FROM_PINV) {
-                int upper = dh.semiflows.getNodeBound(this, false);
-                int lower = dh.semiflows.getNodeBound(this, true);
+            if (dh.selectedPTFlow.getType() == PTFlows.Type.PLACE_BOUNDS_FROM_PINV) {
+                int upper = dh.selectedPTFlow.getNodeBound(this, false);
+                int lower = dh.selectedPTFlow.getNodeBound(this, true);
                 if (upper >= 0 && lower >= 0) {
                     if (upper == Integer.MAX_VALUE)
-                        countText = "\\mathbf{["+lower+","+SemiFlows.INFINITY_UNICODE+"]}";
+                        countText = "\\mathbf{["+lower+","+PTFlows.INFINITY_UNICODE+"]}";
                     else
                         countText = "\\mathbf{["+lower+","+upper+"]}";
                 }
             }
             else {
-                if (dh.semiflows.contains(this)) {
+                if (dh.selectedPTFlow.contains(this)) {
 //                    int card = dh.semiflows.getNodeCardinality(this);
                     if (semiflowCard != 0 && semiflowCard != Integer.MAX_VALUE)
                         countText = "\\mathbf{"+semiflowCard+"}";
@@ -1082,7 +1082,7 @@ public abstract class Node extends SelectableObject
             }
             
             if (countText != null)
-                paintPTSemiflowsCardinality(g, dh, dh.semiflows.getTextColor(semiflowCard), 
+                paintPTSemiflowsCardinality(g, dh, dh.selectedPTFlow.getTextColor(semiflowCard), 
                                             oldAT, 0.95f, countText);
         }
         

@@ -5,19 +5,16 @@
 package editor.domain.semiflows;
 
 import editor.domain.Edge;
-import editor.domain.Node;
 import editor.domain.elements.GspnEdge;
-import editor.domain.elements.GspnPage;
 import editor.domain.elements.Place;
 import editor.domain.elements.Transition;
 import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.TemplateBinding;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
 
 /** Martinez-Silva version of the Farkas algorithm for the computation
- *  of the minimal set of P(T)-semiflows in a Petri net.
+ *  of the minimal set of P(T)-(semi)flows in a Petri net.
  *
  * @author elvio
  */
@@ -26,7 +23,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
     
     // Iteration matrix [ D(i) | A(i) ], where D(0)=I and A(0) = Flow matrix
     // In addition, keep the B matrix for the Martinez-Silva optimization.
-    // K starts with K=N. After the computation, K is the number of semiflows.
+    // K starts with K=N. After the computation, K is the number of flows.
     public ArrayList<int[]> mD;     // KxN matrix
     public ArrayList<int[]> mA;     // KxM matrix
     public ArrayList<boolean[]> mB; // KxM matrix
@@ -46,7 +43,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
 //    SilvaColom88Algorithm scAlgo;
     
 
-    // For P-semiflows: N=|P|, M=|T| (for T-semiflows: N=|T|, M=|P|)
+    // For P-flows: N=|P|, M=|T| (for T-flows: N=|T|, M=|P|)
     public MartinezSilvaAlgorithm(int N, int M) {
         super(N, M);
 //        System.out.println("M="+M+", N="+N);
@@ -62,9 +59,8 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
 //        scAlgo = new SilvaColom88Algorithm(N, M);
     }
 
-    // Add a flow from i to j with the specified cardinality
-    @Override
-    public void addFlow(int i, int j, int card) {
+    // Add an element to the incidence matrix from i to j with the specified cardinality
+    public void setIncidence(int i, int j, int card) {
 //        System.out.println("msa.addFlow("+i+", "+j+", "+card+");");
         mA.get(i)[j] += card;
         mB.get(i)[j] = (mA.get(i)[j] != 0);
@@ -73,7 +69,6 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
     }
     
     // Add the initial token of a place (only for P-invariant computation)
-    @Override
     public void setInitQuantity(int i, int quantity) {
         assert i < N && i >= 0;
         if (initQuantity == null) { // Not initialized yet
@@ -86,7 +81,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
 //        scAlgo.setInitQuantity(i, quantity);
     }
     
-    public int[] getSemiflow(int i) {
+    public int[] getFlowVector(int i) {
         return mD.get(i);
     }
 
@@ -126,7 +121,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
             // Append to the matrix [D|A] every rows resulting as a non-negative
             // linear combination of row pairs from [D|A] whose sum zeroes
             // the i-th column of A.
-            int nRows = numSemiflows();
+            int nRows = numFlows();
             int combined_with_i = 0;
             for (int r1 = 0; r1 < nRows; r1++) {
                 if (mA.get(r1)[i] == 0) {
@@ -196,7 +191,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
                     // Martinez-Silva optimization of the Farkas algorithm.
                     // The row is not a minimal support if the count of non-zero entries in D
                     // is greater than the number of TRUEs in B (for that row) + 1.
-                    // If this happens, the row is not a minimal P(T)-semiflow and
+                    // If this happens, the row is not a minimal P(T)-flow and
                     // can be safely discarded.
                     if (nnzD > ntrueB+1) {
                         continue;
@@ -233,7 +228,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
             
             // Eliminate frm [D|A] the rows that are not minimal, doing an exhaustive search.
             if (!buildBasis)
-                removeNonMinimalSemiflows(log, obs);
+                removeNonMinimalFlows(log, obs);
         }
         if (log)
             System.out.println("\nRESULT:\n"+this);
@@ -248,22 +243,21 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
         setComputed();
     }
     
-    // Test all semiflows exaustively to check if they are minimal
-    // To do so, we take every pair of semiflows and we test if one is a
-    // linear component of another. If it is so, subtract the component semiflow
-    // from the other. When a semiflow becomes zero, it is removed from A,D and B.
-    private void removeNonMinimalSemiflows(boolean log, ProgressObserver obs) 
+    // Test all flows exaustively to check if they are minimal
+    // To do so, we take every pair of flows and we test if one is a
+    // linear component of another. If it is so, subtract the component flow
+    // from the other. When a flow becomes zero, it is removed from A,D and B.
+    private void removeNonMinimalFlows(boolean log, ProgressObserver obs) 
             throws InterruptedException 
     {
-        int rr = numSemiflows();
+        int rr = numFlows();
         while (rr > 0) {
             rr--;
-            obs.advance(M, M+1, numSemiflows()-rr, numSemiflows());
-            for (int i=0; i<numSemiflows(); i++) {
+            obs.advance(M, M+1, numFlows()-rr, numFlows());
+            for (int i=0; i<numFlows(); i++) {
                 checkInterrupted();
                 if (i == rr)
                     continue;
-                // Check if the semiflow D[rr] contains D[i]
                 // Check if support(D[i]) subseteq support(D[rr])
                 boolean support_included = true;
                 for (int k=0; k<N && support_included; k++) {
@@ -272,31 +266,9 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
                             support_included = false;
                     } 
                 }
-//                int mult = -1;
-//                boolean isComp = true; // Says if i is a linear component of rr
-//                for (int k=0; k<N; k++) {
-//                    if (mD.get(i)[k] != 0) {
-//                        if (mD.get(i)[k] > mD.get(rr)[k]) {
-//                            isComp = false;
-//                            break; // i is not a linear component of rr
-//                        }
-//                        if (mult == -1)
-//                            mult = mD.get(rr)[k] / mD.get(i)[k];
-//                        else
-//                            mult = Math.min(mult, mD.get(rr)[k] / mD.get(i)[k]);
-//                    }
-//                }
-//                if (!isComp)
-//                    continue;
-//                // in matrix D:  D[rr] -= mult * D[i]
-//                assert mult > 0;
-//                boolean support_included = true;
-//                for (int k=0; k<N; k++) {
-//                    mD.get(rr)[k] -= mult * mD.get(i)[k];
-//                    support_included = support_included && (mD.get(rr)[k] == 0);
-//                }
+
                 if (support_included) {
-                    // rr was a linear combination of other semiflows. Remove it
+                    // rr was a linear combination of other flows. Remove it
                     if (log)
                         System.out.println("DEL row " + rr);
                     mA.remove(rr);
@@ -308,14 +280,14 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
         }        
     }
 
-    public int numSemiflows() {
+    public int numFlows() {
         return mD.size();
     }
     
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < numSemiflows(); i++) {
+        for (int i = 0; i < numFlows(); i++) {
             sb.append(i < 10 ? " " : "").append(i).append(":  ");
             for (int j = 0; j < N; j++) {
                 sb.append(mD.get(i)[j] < 0 ? "" : " ").append(mD.get(i)[j]).append(" ");
@@ -340,8 +312,8 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
         Arrays.fill(upperBnd, Integer.MAX_VALUE);
         
         // Read all place invariants
-        for (int i=0; i<numSemiflows(); i++) {
-            int[] inv = getSemiflow(i);
+        for (int i=0; i<numFlows(); i++) {
+            int[] inv = getFlowVector(i);
             int tokenCnt = 0;
             for (int p=0; p<N; p++) {
                 tokenCnt += inv[p] * initQuantity[p];
@@ -384,19 +356,19 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
     
     
     
-    public String toLatexString(SemiFlows.Type type, NetIndex netIndex,
+    public String toLatexString(PTFlows.Type type, NetIndex netIndex,
                                 boolean showZeros) 
     {
         StringBuilder sb = new StringBuilder();
         
         // header
         sb.append("$\\begin{array}{r");
-        for (int f=0; f<numSemiflows(); f++)
+        for (int f=0; f<numFlows(); f++)
             sb.append("|c");
         if (type.isPlace())
             sb.append("|r");
         sb.append("}\n ");
-        for (int f=0; f<numSemiflows(); f++)
+        for (int f=0; f<numFlows(); f++)
             sb.append("& i_{").append(f+1).append("}");
         if (type.isPlace())
             sb.append("& \\mathbf{m}_0");
@@ -409,19 +381,19 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
             else
                 sb.append(netIndex.transitions.get(row).getUniqueNameDecor().getLatexFormula().getLatex());
             
-            for (int f=0; f<numSemiflows(); f++) {
-                int[] semiflow = getSemiflow(f);
+            for (int f=0; f<numFlows(); f++) {
+                int[] flow = getFlowVector(f);
                 
                 sb.append(" &");
-                if (showZeros || semiflow[row]!=0) {
+                if (showZeros || flow[row]!=0) {
                     String color;
-                    if (semiflow[row] > 0)
+                    if (flow[row] > 0)
                         color = "Blue";
-                    else if (semiflow[row] < 0)
+                    else if (flow[row] < 0)
                         color = "Mahogany";
                     else
                         color = "Gray";
-                    sb.append("\\textcolor{").append(color).append("}{").append(semiflow[row]).append("}");
+                    sb.append("\\textcolor{").append(color).append("}{").append(flow[row]).append("}");
                 }
             } 
             
@@ -436,12 +408,12 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
         if (type.isPlace()) {
             sb.append("\n \\mathbf{m}_0 \\cdot I & ");
             
-            for (int f=0; f<numSemiflows(); f++) {
-                int[] semiflow = getSemiflow(f);
+            for (int f=0; f<numFlows(); f++) {
+                int[] flow = getFlowVector(f);
                 int sum = 0;
-                for (int j=0; j<semiflow.length; j++) {
+                for (int j=0; j<flow.length; j++) {
                     int initMark = initQuantity[j];
-                    sum += initMark * semiflow[j];
+                    sum += initMark * flow[j];
                 }
                 
                 sb.append("\\mathbf{").append(sum).append("} & ");
@@ -463,7 +435,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
     public boolean hasNonIntegerInitMarks = false;
 
     // Initialize the matrices from a gspn page
-    public void initialize(SemiFlows.Type type, TemplateBinding varBindings, NetIndex netIndex) 
+    public void initialize(PTFlows.Type type, TemplateBinding varBindings, NetIndex netIndex) 
     {
         ParserContext context = new ParserContext(netIndex.net);
         context.templateVarsBinding = varBindings;
@@ -521,9 +493,9 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
                 if (card == 0)
                     hasEdgeWithZeroCard = true;
                 if (type.isPlace())
-                    addFlow(p, t, card);
+                    setIncidence(p, t, card);
                 else
-                    addFlow(t, p, card);
+                    setIncidence(t, p, card);
             }            
         }
         
@@ -544,8 +516,8 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
         
     }
     
-    public String flowToString(int i, SemiFlows.Type type, NetIndex netIndex) {
-        int[] flow = getSemiflow(i);
+    public String flowToString(int i, PTFlows.Type type, NetIndex netIndex) {
+        int[] flow = getFlowVector(i);
         
         StringBuilder repr = new StringBuilder();
         for (int k=0; k<flow.length; k++) {
@@ -601,34 +573,34 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
     public static MartinezSilvaAlgorithm init1() {
         int M=10, N=14;
         MartinezSilvaAlgorithm msa = new MartinezSilvaAlgorithm(N, M);
-        msa.addFlow(0, 0, 1);
-        msa.addFlow(0, 4, -1);
-        msa.addFlow(1, 4, 1);
-        msa.addFlow(1, 3, -1);
-        msa.addFlow(12, 3, -1);
-        msa.addFlow(3, 3, 1);
-        msa.addFlow(3, 0, -1);
-        msa.addFlow(2, 0, 1);
-        msa.addFlow(4, 0, -1);
-        msa.addFlow(2, 5, -1);
-        msa.addFlow(13, 5, 1);
-        msa.addFlow(13, 1, -1);
-        msa.addFlow(5, 1, 1);
-        msa.addFlow(5, 6, -1);
-        msa.addFlow(4, 6, 1);
-        msa.addFlow(6, 1, -1);
-        msa.addFlow(7, 1, 1);
-        msa.addFlow(7, 7, -1);
-        msa.addFlow(8, 7, 1);
-        msa.addFlow(8, 2, -1);
-        msa.addFlow(9, 2, 1);
-        msa.addFlow(10, 2, 1);
-        msa.addFlow(10, 9, -1);
-        msa.addFlow(11, 9, 1);
-        msa.addFlow(12, 9, 1);
-        msa.addFlow(11, 8, -1);
-        msa.addFlow(9, 8, -1);
-        msa.addFlow(6, 8, 1);
+        msa.setIncidence(0, 0, 1);
+        msa.setIncidence(0, 4, -1);
+        msa.setIncidence(1, 4, 1);
+        msa.setIncidence(1, 3, -1);
+        msa.setIncidence(12, 3, -1);
+        msa.setIncidence(3, 3, 1);
+        msa.setIncidence(3, 0, -1);
+        msa.setIncidence(2, 0, 1);
+        msa.setIncidence(4, 0, -1);
+        msa.setIncidence(2, 5, -1);
+        msa.setIncidence(13, 5, 1);
+        msa.setIncidence(13, 1, -1);
+        msa.setIncidence(5, 1, 1);
+        msa.setIncidence(5, 6, -1);
+        msa.setIncidence(4, 6, 1);
+        msa.setIncidence(6, 1, -1);
+        msa.setIncidence(7, 1, 1);
+        msa.setIncidence(7, 7, -1);
+        msa.setIncidence(8, 7, 1);
+        msa.setIncidence(8, 2, -1);
+        msa.setIncidence(9, 2, 1);
+        msa.setIncidence(10, 2, 1);
+        msa.setIncidence(10, 9, -1);
+        msa.setIncidence(11, 9, 1);
+        msa.setIncidence(12, 9, 1);
+        msa.setIncidence(11, 8, -1);
+        msa.setIncidence(9, 8, -1);
+        msa.setIncidence(6, 8, 1);
         return msa;
     }
     

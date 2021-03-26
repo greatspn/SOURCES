@@ -21,7 +21,6 @@ import editor.domain.elements.ClockVar;
 import editor.domain.elements.DtaPage;
 import editor.domain.elements.GspnPage;
 import editor.domain.grammar.TemplateBinding;
-import editor.domain.semiflows.SemiFlows;
 import editor.domain.io.GreatSpnFormat;
 import editor.domain.io.PNMLFormat;
 import editor.domain.io.PnProFormat;
@@ -115,6 +114,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreePath;
 import latex.LatexProvider;
+import editor.domain.semiflows.PTFlows;
 
 /**
  *
@@ -175,8 +175,10 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         ape.getEditorComponent().setVisible(false);
         jPanelCenter.add(ape.getEditorComponent());
         
-        ape.getToolbar().setVisible(false);
-        jPanelToolBars.add(ape.getToolbar());
+        for (JComponent toolbar : ape.getToolbars()) {
+            toolbar.setVisible(false);
+            jPanelToolBars.add(toolbar);
+        }
         
         ape.getPropertyPanel().setVisible(false);
         if (ape.isModalEditor())
@@ -238,7 +240,8 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         if (changeEditor) {
             if (activeEditor != null) {
                 activeEditor.getEditorComponent().setVisible(false);
-                activeEditor.getToolbar().setVisible(false);
+                for (JComponent toolbar : activeEditor.getToolbars())
+                    toolbar.setVisible(false);
                 activeEditor.getPropertyPanel().setVisible(false);
                 activeEditor.setEditorDisabled();
                 activeEditor = null;
@@ -257,7 +260,8 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             if (changeEditor) {
                 // activate the new editor components.
                 activeEditor.getEditorComponent().setVisible(true);
-                activeEditor.getToolbar().setVisible(true);
+                for (JComponent toolbar : activeEditor.getToolbars())
+                    toolbar.setVisible(true);
                 activeEditor.getPropertyPanel().setVisible(true);
 
                 // Update Main GUI
@@ -2444,7 +2448,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         getContentPane().add(jPanelCenterLeft, java.awt.BorderLayout.CENTER);
 
         jPanelToolBars.setOpaque(false);
-        jPanelToolBars.setLayout(new javax.swing.BoxLayout(jPanelToolBars, javax.swing.BoxLayout.LINE_AXIS));
+        jPanelToolBars.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 2, 2));
 
         jAppToolBar_File.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "File", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jAppToolBar_File.setFloatable(false);
@@ -2586,6 +2590,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         jPanelToolBars.add(jAppToolBar_Advanced);
 
+        jPlayToolBar.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "Panel", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jPlayToolBar.setFloatable(false);
         jPlayToolBar.setRollover(true);
 
@@ -3051,7 +3056,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         assert page != null && page.isPageCorrect() && page.hasPlaceTransInv();
         if (netSemiflowsPanel == null)
             netSemiflowsPanel = new NetSemiflowsPanel(this);
-        netSemiflowsPanel.setSemiflowType(SemiFlows.Type.PLACE_SEMIFLOW);
+        netSemiflowsPanel.setAnalysisType(PTFlows.Type.PLACE_SEMIFLOW);
         // Activate the modal panel
         switchToProjectPage(activeProject, page, netSemiflowsPanel);
         setStatus(null, true);
@@ -3064,7 +3069,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         assert page != null && page.isPageCorrect() && page.hasPlaceTransInv();
         if (netSemiflowsPanel == null)
             netSemiflowsPanel = new NetSemiflowsPanel(this);
-        netSemiflowsPanel.setSemiflowType(SemiFlows.Type.TRANSITION_SEMIFLOWS);
+        netSemiflowsPanel.setAnalysisType(PTFlows.Type.TRANSITION_SEMIFLOWS);
         // Activate the modal panel
         switchToProjectPage(activeProject, page, netSemiflowsPanel);
         setStatus(null, true);
@@ -3337,7 +3342,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         assert page != null && page.isPageCorrect() && page.hasPlaceTransInv();
         if (netSemiflowsPanel == null)
             netSemiflowsPanel = new NetSemiflowsPanel(this);
-        netSemiflowsPanel.setSemiflowType(SemiFlows.Type.PLACE_BOUNDS_FROM_PINV);
+        netSemiflowsPanel.setAnalysisType(PTFlows.Type.PLACE_BOUNDS_FROM_PINV);
         // Activate the modal panel
         switchToProjectPage(activeProject, page, netSemiflowsPanel);
         setStatus(null, true);

@@ -756,8 +756,8 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
     }
 
     @Override
-    public JComponent getToolbar() {
-        return jToolBarPlayCommands;
+    public JComponent[] getToolbars() {
+        return new JComponent[]{jToolBarPlayCommands};
     }
 
     @Override
@@ -945,6 +945,7 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
 
+        jToolBarPlayCommands.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "Commands", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jToolBarPlayCommands.setFloatable(false);
         jToolBarPlayCommands.setRollover(true);
 

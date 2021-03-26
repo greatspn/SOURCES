@@ -542,8 +542,8 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
     }
 
     @Override
-    public JComponent getToolbar() {
-        return toolBarEmpty;
+    public JComponent[] getToolbars() {
+        return new JComponent[]{};
     }
 
     @Override
@@ -618,7 +618,6 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         java.awt.GridBagConstraints gridBagConstraints;
 
         resourceFactory = new editor.gui.ResourceFactory();
-        toolBarEmpty = new javax.swing.JToolBar();
         propertyPanel = new javax.swing.JPanel();
         panel_operator = new javax.swing.JPanel();
         label_operator = new javax.swing.JLabel();
@@ -663,8 +662,6 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         toolbar = new javax.swing.JToolBar();
         toolbarButton_addSubnet = new common.JToolbarButton();
         panel_netInstanceEditor = new javax.swing.JPanel();
-
-        toolBarEmpty.setRollover(true);
 
         propertyPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -1167,7 +1164,6 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
     private javax.swing.JToggleButton toggle_custom;
     private javax.swing.JToggleButton toggle_horizontal;
     private javax.swing.JToggleButton toggle_vertical;
-    private javax.swing.JToolBar toolBarEmpty;
     private javax.swing.JToolBar toolbar;
     private common.JToolbarButton toolbarButton_addSubnet;
     // End of variables declaration//GEN-END:variables

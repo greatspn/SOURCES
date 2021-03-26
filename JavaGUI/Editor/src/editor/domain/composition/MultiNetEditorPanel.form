@@ -4,13 +4,6 @@
   <NonVisualComponents>
     <Component class="editor.gui.ResourceFactory" name="resourceFactory">
     </Component>
-    <Container class="javax.swing.JToolBar" name="toolBarEmpty">
-      <Properties>
-        <Property name="rollover" type="boolean" value="true"/>
-      </Properties>
-
-      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
-    </Container>
     <Container class="javax.swing.JPanel" name="propertyPanel">
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout"/>

@@ -38,7 +38,7 @@ public interface AbstractPageEditor {
     public JComponent getPropertyPanel();
     
     // The additional toolbar
-    public JComponent getToolbar();
+    public JComponent[] getToolbars();
     
     // Get the list of errors and warnings to be shown in the error table
     public PageErrorWarning[] getAllErrorsAndWarnings();

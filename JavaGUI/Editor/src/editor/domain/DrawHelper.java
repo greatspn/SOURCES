@@ -9,7 +9,6 @@ package editor.domain;
 import editor.Main;
 import editor.domain.measures.AllMeasuresResult;
 import editor.domain.play.ActivityState;
-import editor.domain.semiflows.SemiFlows;
 import editor.domain.composition.MultiNetPage;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
@@ -18,6 +17,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import editor.domain.semiflows.PTFlows;
 
 //-------------------------------------------------------------------------
 
@@ -70,8 +70,8 @@ public class DrawHelper
     //        public static final String FONT_NAME = "Times New Roman";
     // Current state of the net in animation mode (play mode)
     public ActivityState activity;
-    // Currently visualized semiflow (semiflow panel)
-    public SemiFlows semiflows;
+    // Currently visualized flow (flow panel)
+    public PTFlows selectedPTFlow;
     // Currently visualized measures
     public AllMeasuresResult measures;
     // What is shown in this drawing

@@ -1851,7 +1851,11 @@
         </Constraint>
       </Constraints>
 
-      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+        <Property name="alignment" type="int" value="0"/>
+        <Property name="horizontalGap" type="int" value="2"/>
+        <Property name="verticalGap" type="int" value="2"/>
+      </Layout>
       <SubComponents>
         <Container class="javax.swing.JToolBar" name="jAppToolBar_File">
           <Properties>
@@ -2126,6 +2130,11 @@
         </Container>
         <Container class="javax.swing.JToolBar" name="jPlayToolBar">
           <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                <TitledBorder justification="2" position="5" title="Panel"/>
+              </Border>
+            </Property>
             <Property name="floatable" type="boolean" value="false"/>
             <Property name="rollover" type="boolean" value="true"/>
           </Properties>

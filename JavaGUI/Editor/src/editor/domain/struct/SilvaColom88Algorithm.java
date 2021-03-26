@@ -27,12 +27,10 @@ public class SilvaColom88Algorithm extends StructuralAlgorithm {
     }
 
 
-    @Override
-    public void addFlow(int i, int j, int card) {
+    public void setIncidence(int i, int j, int card) {
         mC[i][j] += card;
     }
 
-    @Override
     public void setInitQuantity(int i, int quantity) {
         m0[i] = quantity;
     }

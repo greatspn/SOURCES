@@ -63,7 +63,7 @@ public class MartinezSilvaTest_BridgeAndVehicles_V04_P05_N02_unf {
             { 18, 51, -1 }
         };
         for (int i=0; i<flows.length; i++)
-            msa.addFlow(flows[i][0], flows[i][1], flows[i][2]);
+            msa.setIncidence(flows[i][0], flows[i][1], flows[i][2]);
         return msa;
     }
     
