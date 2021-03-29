@@ -907,7 +907,7 @@ public abstract class EvaluatedFormula {
     
     public static final Map<DomainElement, EvaluatedFormula> EMPTY_MAP = new HashMap<>();
     public EvaluatedFormula makeZero() {
-        if (getDomain() == null) { // scalar
+        if (getDomain() == null || getDomain() == NeutralColorClass.INSTANCE) { // scalar
             switch (getType()) {
                 case INT:       return IntScalarValue.ZERO;
                 case REAL:      return RealScalarValue.ZERO;
