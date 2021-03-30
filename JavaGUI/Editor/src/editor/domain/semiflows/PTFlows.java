@@ -5,7 +5,9 @@
 package editor.domain.semiflows;
 
 import editor.domain.Selectable;
+import editor.gui.ResourceFactory;
 import java.awt.Color;
+import javax.swing.ImageIcon;
 
 /** Visualized P/T semiflows, or place bounds computed from P-semiflows.
  *
@@ -20,7 +22,11 @@ public interface PTFlows {
         PLACE_FLOW, 
         TRANSITION_SEMIFLOWS, 
         TRANSITION_FLOWS, 
-        PLACE_BOUNDS_FROM_PINV;
+        PLACE_BOUNDS_FROM_PINV,
+        PLACE_BASIS,
+        TRANSITION_BASIS,
+        TRAPS,
+        SIPHONS;
         
         public String printableName() {
             switch (this) {
@@ -29,26 +35,57 @@ public interface PTFlows {
                 case TRANSITION_SEMIFLOWS: return "Transition semiflows";
                 case TRANSITION_FLOWS: return "Transition flows";
                 case PLACE_BOUNDS_FROM_PINV: return "Place bounds";
+                case PLACE_BASIS: return "Place basis";
+                case TRANSITION_BASIS: return "Place basis";
+                case TRAPS: return "Minimal traps";
+                case SIPHONS: return "Minimal siphons";
                 default:
                     throw new IllegalStateException();
             }
         }
         
+        public ImageIcon getIcon32() {
+            ResourceFactory rf = ResourceFactory.getInstance();
+            switch (this) {
+                case PLACE_SEMIFLOW: return rf.getPinv_N32();
+                case PLACE_FLOW: return rf.getPinv_Z32();
+                case TRANSITION_SEMIFLOWS: return rf.getTinv_N32();
+                case TRANSITION_FLOWS: return rf.getTinv_Z32();
+                case PLACE_BOUNDS_FROM_PINV: return rf.getBound32();
+                case PLACE_BASIS: return rf.getPinv_B32();
+                case TRANSITION_BASIS: return rf.getTinv_B32();
+                case TRAPS: return rf.getTrap();
+                case SIPHONS: return rf.getSiphon();
+                default:
+                    throw new IllegalStateException();
+            }
+            
+        }
+        
         public boolean isPlace() {
-            return this==PLACE_FLOW || this==PLACE_SEMIFLOW || this==PLACE_BOUNDS_FROM_PINV;
+            return this==PLACE_FLOW || this==PLACE_SEMIFLOW || this==PLACE_BOUNDS_FROM_PINV
+                    || this==PLACE_BASIS || this==TRAPS || this==SIPHONS;
         }
         
         public boolean isTransition() {
-            return this==TRANSITION_FLOWS || this==TRANSITION_SEMIFLOWS;
+            return this==TRANSITION_FLOWS || this==TRANSITION_SEMIFLOWS || this==TRANSITION_BASIS;
         }
         
         public boolean isSemiflow() {
-            return this==TRANSITION_SEMIFLOWS || this==PLACE_SEMIFLOW || this==PLACE_BOUNDS_FROM_PINV;
+            return this==TRANSITION_SEMIFLOWS || this==PLACE_SEMIFLOW || this==PLACE_BOUNDS_FROM_PINV 
+                    || this==TRAPS || this==SIPHONS;
         }
         
-        
         public boolean isFlow() {
-            return this==TRANSITION_FLOWS || this==PLACE_FLOW;
+            return this==TRANSITION_FLOWS || this==PLACE_FLOW || this==PLACE_BASIS || this==TRANSITION_BASIS;
+        }
+        
+        public boolean isTrapsOrSiphons() {
+            return this==TRAPS || this==SIPHONS;
+        }
+        
+        public boolean isBasis() {
+            return this==PLACE_BASIS || this==TRANSITION_BASIS;
         }
     }
     

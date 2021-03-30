@@ -141,7 +141,7 @@ inline ssize_t traverse_both(typename Container1::const_iterator& it1,
 
 //-----------------------------------------------------------------------------
 
-const char* GetGreatSPN_FileExt(InvariantKind ik, FlowMatrixKind matk, int suppl_flags) {
+const char* GetGreatSPN_FileExt(InvariantKind ik, FlowMatrixKind matk, SystemMatrixType smt, int suppl_flags) {
     typedef const char*  T[4];
     size_t i = 0;
     if (suppl_flags & FM_POSITIVE_SUPPLEMENTARY)
@@ -151,6 +151,14 @@ const char* GetGreatSPN_FileExt(InvariantKind ik, FlowMatrixKind matk, int suppl
     const char *ext;
     switch (matk) {
         case FlowMatrixKind::SEMIFLOWS:
+            if (smt == SystemMatrixType::TRAPS) {
+                ext = ".traps";
+                break;
+            }
+            else if (smt == SystemMatrixType::SIPHONS) {
+                ext = ".siphons";
+                break;
+            }
             ext = (ik==InvariantKind::PLACE) ? T{ ".pin", ".pin+", ".pin-", ".pin+-" }[i] 
                                              : T{ ".tin", ".tin+", ".tin-", ".tin+-" }[i];
             break;
@@ -171,15 +179,20 @@ const char* GetGreatSPN_FileExt(InvariantKind ik, FlowMatrixKind matk, int suppl
 }
 //-----------------------------------------------------------------------------
 
-const char* GetFlowName(InvariantKind ik, FlowMatrixKind matk) {
+const char* GetFlowName(InvariantKind ik, FlowMatrixKind matk, SystemMatrixType smt) {
     bool p = (ik==InvariantKind::PLACE);
     switch (matk) {
         case FlowMatrixKind::EMPTY:         
             return "EMPTY";
         case FlowMatrixKind::INCIDENCE:     
             return "INCIDENCE MATRIX";
-        case FlowMatrixKind::SEMIFLOWS:     
-            return p ? "PLACE SEMIFLOWS" : "TRANSITION SEMIFLOWS";
+        case FlowMatrixKind::SEMIFLOWS:
+            if (smt == SystemMatrixType::REGULAR)
+                return p ? "PLACE SEMIFLOWS" : "TRANSITION SEMIFLOWS";
+            else if (smt == SystemMatrixType::TRAPS)
+                return p ? "TRAPS" : "????";
+            else // Siphons
+                return p ? "SIPHONS" : "????";
         case FlowMatrixKind::BASIS:         
             return p ? "PLACE FLOW BASIS" : "TRANSITION FLOW BASIS";
         case FlowMatrixKind::INTEGER_FLOWS: 
@@ -265,9 +278,9 @@ ostream& flow_matrix_t::print(ostream& os, bool highlight_annulled) const {
 //-----------------------------------------------------------------------------
 
 flow_matrix_t::flow_matrix_t(size_t _N, size_t _N0, size_t _M, InvariantKind _ik, 
-                             int _suppl_flags, bool _add_extra_vars, 
+                             SystemMatrixType smt, int _suppl_flags, bool _add_extra_vars, 
                              bool _use_Colom_pivoting, bool _extra_vars_in_support) 
-: N(_N), N0(_N0), M(_M), inv_kind(_ik), suppl_flags(_suppl_flags), 
+: N(_N), N0(_N0), M(_M), inv_kind(_ik), system_kind(smt), suppl_flags(_suppl_flags), 
 add_extra_vars(_add_extra_vars), use_Colom_pivoting(_use_Colom_pivoting), 
 extra_vars_in_support(_extra_vars_in_support), mat_kind(FlowMatrixKind::EMPTY) 
 { 
@@ -298,20 +311,20 @@ inline int flow_matrix_t::row_t::gcd_nnz_DA() const {
 
 //-----------------------------------------------------------------------------
 
-inline bool flow_matrix_t::row_t::test_minimal_support_D(const spintvector& D2, const size_t N0) const
+inline bool flow_matrix_t::row_t::test_minimal_support_D(const spintvector& D2, const size_t maxN) const
 {
     // Check if the support of D2 is included in D
     //   support(D2) subseteq support(D)    
     // where support(.) is the set of columns with non-zero entries
-    // The test checks all the nonzero entries up to N0
-    if (D2.nonzeros() > D.nonzeros())
+    // The test checks all the nonzero entries up to maxN
+    if (D2.nonzeros() > D.nonzeros() && (D.size()==maxN))
         return false;
 
-    if (D2.nonzeros() > 0 && D2.ith_nonzero(0).index >= N0)
+    if (D2.nonzeros() > 0 && D2.ith_nonzero(0).index >= maxN)
         return false; // do not test containment of empty vectors
 
     for (size_t i2=0, i=0; i2<D2.nonzeros(); i2++) {
-        if (D2.ith_nonzero(i2).index >= N0)
+        if (D2.ith_nonzero(i2).index >= maxN)
             break;
         while (i < D.nonzeros() && (D.ith_nonzero(i).index < D2.ith_nonzero(i2).index)) {
             i++;
@@ -655,7 +668,7 @@ void incidence_matrix_generator_t::add_flows_from(const PN& pn, bool print_warns
                 }
                 else {
                     int card = get_value(arc.getConstantMult()) * sign;
-                    if (f.inv_kind == InvariantKind::PLACE)
+                    if (f.inv_kind == InvariantKind::PLACE) 
                         add_flow_entry(arc.plc, trn.index, card);
                     else
                         add_flow_entry(trn.index, arc.plc, card);
@@ -663,7 +676,6 @@ void incidence_matrix_generator_t::add_flows_from(const PN& pn, bool print_warns
             }
         }
     }
-
 }
 
 //-----------------------------------------------------------------------------
@@ -691,6 +703,133 @@ void incidence_matrix_generator_t::generate_matrix() {
         f.mK.emplace_back(std::move(row));
     }
     initEntries.clear();
+    f.mat_kind = FlowMatrixKind::INCIDENCE;
+}
+
+//-----------------------------------------------------------------------------
+
+void incidence_matrix_generator_t::generate_matrix2(const PN& pn, bool print_warns) {
+    // Provide warnings to the user
+    if (print_warns) {
+        for (const Transition& trn : pn.trns) {
+            if (!trn.arcs[HA].empty()) {
+                cerr << console::beg_error() << "WARNING: " << console::end_error() 
+                    << "PETRI NET HAS INHIBITOR ARCS THAT WILL BE IGNORED." << endl;
+                break;
+            }
+        }
+        for (const Transition& trn : pn.trns) {
+            bool warned = false;
+            for (int k=0; k<2 && !warned; k++) {
+                ArcKind ak = (k==0 ? IA : OA);
+                for (const Arc& arc : trn.arcs[ak]) {
+                    if (arc.isMultMarkingDep()) {
+                        cerr << console::beg_error() << "WARNING: " << console::end_error() 
+                            << "PETRI NET HAS MARKING-DEPENDENT ARCS THAT WILL BE IGNORED." << endl;
+                        warned = true;
+                        break;
+                    }
+                }
+            }
+            if (warned)
+                break;
+        }
+    }
+
+    std::vector<flow_matrix_t::spintvector*> ptr_A(f.N);
+
+    // Initialize the N rows of matrix K
+    for (size_t i = 0; i < f.N; i++) {
+       flow_matrix_t::row_t row(f);
+        // Diagonal entry in D
+        row.D.insert_element(i, 1);
+        f.mK.emplace_back(std::move(row));
+        ptr_A[i] = &(f.mK.back().A);
+    }
+
+    // Initialize the rows of the A matrix
+    if (f.system_kind == SystemMatrixType::REGULAR) {
+        for (const Transition& trn : pn.trns) {
+            for (int k=0; k<2; k++) {
+                ArcKind ak = (k==0 ? IA : OA);
+                int sign = (ak==IA ? -1 : +1);
+                for (const Arc& arc : trn.arcs[ak]) {
+                    if (arc.isMultMarkingDep()) 
+                        continue;
+                    int card = get_value(arc.getConstantMult()), i, j;
+                    if (f.inv_kind == InvariantKind::PLACE) {
+                        i = arc.plc;
+                        j = trn.index;
+                    }
+                    else {
+                        i = trn.index;
+                        j = arc.plc;
+                    }
+                    ptr_A[i]->add_element(j, card * sign);
+                }
+            }
+        }
+
+        // Add initial supplementary variables
+        bool dynamic_extra_var_gen = 0 != (f.suppl_flags & FM_ON_THE_FLY_SUPPL_VARS);
+        if (f.suppl_flags != 0 && !dynamic_extra_var_gen) {
+            // add an arc for each place N0+i from transition i
+            verify(f.M == (f.N - f.N0) / 2);
+            for (size_t i=0; i < f.M; i++) {
+                if (f.suppl_flags & FM_NEGATIVE_SUPPLEMENTARY)
+                    ptr_A[f.N0 + i]->add_element(i, -1);
+                    // add_flow_entry(f.N0 + i, i, -1);
+
+                if (f.suppl_flags & FM_POSITIVE_SUPPLEMENTARY)
+                    ptr_A[f.N0 + f.M + i]->add_element(i, +1);
+                    // add_flow_entry(f.N0 + f.M + i, i, +1);
+            }
+        }
+    }
+    else { // traps, siphons
+        verify(f.inv_kind == InvariantKind::PLACE);
+        const ArcKind dup_type = (f.system_kind==SystemMatrixType::TRAPS ? IA : OA);
+        const ArcKind secondary_type = (f.system_kind==SystemMatrixType::TRAPS ? OA : IA);
+        int j_start=0, j_end;
+        for (const Transition& trn : pn.trns) {
+            int num_arcs = trn.arcs[dup_type].size();
+            j_end = j_start + num_arcs;
+            int jj = j_start;
+            cout << trn.name << " num_arcs="<<num_arcs<<endl;
+
+            for (const Arc& arc : trn.arcs[secondary_type]) {
+                if (arc.isMultMarkingDep()) 
+                    continue;
+                int i = arc.plc;
+                for (int j=j_start; j<j_end; j++)
+                    ptr_A[i]->set_element(j, -1);
+            }
+
+            for (const Arc& arc : trn.arcs[dup_type]) {
+                if (arc.isMultMarkingDep()) 
+                    continue;
+                int i = arc.plc;
+                if ((*ptr_A[i])[jj] == 0)
+                    ptr_A[i]->set_element(jj, 1);
+                jj++;
+            }
+            j_start = j_end;
+        }
+
+        // Add the identity matrix below the incidence. A = [C] over [I]
+        for (size_t i=0; i<f.M; i++) {
+            ptr_A[i + f.N0]->insert_element(i, 1);
+        }
+    }
+
+    // Drop empty rows from matrix K
+    size_t i = 0;
+    for (auto it = f.mK.begin(); it != f.mK.end(); i++) {
+        if (it->A.empty() && i >= f.N0) // empty supplementary variable row, can drop it
+            it = f.mK.erase(it);
+        else
+            ++it;
+    }
     f.mat_kind = FlowMatrixKind::INCIDENCE;
 }
 
@@ -1303,13 +1442,53 @@ void flows_generator_t::compute_basis()
 
 //-----------------------------------------------------------------------------
 
+void flows_generator_t::drop_slack_vars_in_D() {
+    for (auto row = f.mK.begin(); row != f.mK.end(); ++row) {
+        size_t i;
+        for (i=0; i<row->D.nonzeros(); i++)
+            if (row->D.ith_nonzero(i).index >= f.N0)
+                break;
+        row->D.truncate_nnz(i);
+    }
+}
+
+//-----------------------------------------------------------------------------
+
+void flows_generator_t::reduce_non_minimal() {
+    drop_slack_vars_in_D();
+
+    auto row = f.mK.begin();
+    while (row != f.mK.end()) {
+        // Test for minimal support excluding the slack variables
+        bool erased = false;
+        for (auto row2 = f.mK.begin(); row2 != f.mK.end(); ++row2) {
+            if (row == row2)
+                continue;
+            if (row->test_minimal_support_D(row2->D, /*f.extra_vars_in_support?f.N:*/f.N0)) {
+                if (verboseLvl >= VL_VERY_VERBOSE) {
+                    cout << console::red_fgnd() << "REDX" << console::default_disp();
+                    row->print(cout, f.M, f.N0, true) << endl;
+                }
+                row = f.mK.erase(row); // drop and continue;
+                erased = true;
+                break;
+            }
+        }
+        if (!erased)
+            ++row;
+    }
+}
+
+//-----------------------------------------------------------------------------
+
 shared_ptr<flow_matrix_t>
 ComputeFlows(const PN& pn, InvariantKind inv_kind, FlowMatrixKind mat_kind, 
-             bool detect_exp_growth, int suppl_flags, bool use_Colom_pivoting,
-             bool extra_vars_in_support, VerboseLevel verboseLvl) 
+             SystemMatrixType system_kind, bool detect_exp_growth, 
+             int suppl_flags, bool use_Colom_pivoting, 
+             bool extra_vars_in_support, VerboseLevel verboseLvl)
 {
     if (verboseLvl >= VL_BASIC) {
-        cout << "COMPUTING " << GetFlowName(inv_kind, mat_kind) << "..." << endl;
+        cout << "COMPUTING " << GetFlowName(inv_kind, mat_kind, system_kind) << "..." << endl;
     }
     bool has_suppl_vars = (suppl_flags != 0);
     bool dynamic_extra_var_gen = 0 != (suppl_flags & FM_ON_THE_FLY_SUPPL_VARS);
@@ -1328,16 +1507,33 @@ ComputeFlows(const PN& pn, InvariantKind inv_kind, FlowMatrixKind mat_kind,
             N += 2 * pn.plcs.size();
         M  = pn.plcs.size();
     }
-    pfm = make_shared<flow_matrix_t>(N, N0, M, inv_kind, suppl_flags, 
+    if (system_kind != SystemMatrixType::REGULAR) {
+        // for traps/siphons, the incidence matrix is modified:
+        // each IA/OA arc generates a duplicate transition with an
+        // associated supplementary variable.
+        const ArcKind dup_type = (system_kind==SystemMatrixType::TRAPS ? IA : OA);
+        M = 0; // reset transition count
+        N = N0; // start from 0 suppl. vars.
+        for (const Transition& trn : pn.trns) {
+            int num_arcs = trn.arcs[dup_type].size();
+            M += num_arcs;
+            N += num_arcs;
+        }
+    }
+    pfm = make_shared<flow_matrix_t>(N, N0, M, inv_kind, system_kind, suppl_flags, 
                                      dynamic_extra_var_gen, use_Colom_pivoting,
                                      extra_vars_in_support);
 
     // Initialize the flow matrix with the incidence matrix
     incidence_matrix_generator_t inc_gen(*pfm);
-    inc_gen.add_flows_from(pn, verboseLvl >= VL_BASIC);
-    if (has_suppl_vars && !dynamic_extra_var_gen)
-        inc_gen.add_increase_decrease_flows();
-    inc_gen.generate_matrix();
+    // if (reduce_non_minimal)
+    inc_gen.generate_matrix2(pn, verboseLvl >= VL_BASIC);
+    // else {
+    //     inc_gen.add_flows_from(pn, verboseLvl >= VL_BASIC);
+    //     if (has_suppl_vars && !dynamic_extra_var_gen)
+    //         inc_gen.add_increase_decrease_flows();
+    //     inc_gen.generate_matrix();
+    // }
 
     // Message printer
     class fa_printer_t : public flow_algorithm_printer_t {
@@ -1395,14 +1591,17 @@ ComputeFlows(const PN& pn, InvariantKind inv_kind, FlowMatrixKind mat_kind,
             throw program_exception("Unknown kind of flows!");
     }
 
+    if (system_kind != SystemMatrixType::REGULAR)
+        sf_gen.reduce_non_minimal();
+
     if (verboseLvl >= VL_BASIC) {
         if (mat_kind == FlowMatrixKind::BASIS) {
             cout << "FOUND " << pfm->num_flows()
-                 << " VECTORS IN THE " << GetFlowName(inv_kind, pfm->mat_kind);
+                 << " VECTORS IN THE " << GetFlowName(inv_kind, pfm->mat_kind, pfm->system_kind);
         }
         else {
             cout << "FOUND " << pfm->num_flows()
-                 << " " << GetFlowName(inv_kind, pfm->mat_kind);
+                 << " " << GetFlowName(inv_kind, pfm->mat_kind, pfm->system_kind);
         }
         size_t num_neg = 0;
         for (auto&& row : pfm->mK)

@@ -1053,6 +1053,10 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             case TRANS_FLOWS:               return sharedActionTransitionFlows;
             case TRANS_SEMIFLOWS:           return sharedActionTransitionSemiflows;
             case PLACE_BOUNDS_FROM_SEMIFLOWS: return sharedActionBoundsFromSemiflows;
+            case PLACE_BASIS:               return sharedActionComputePlaceBasis;
+            case TRANS_BASIS:               return sharedActionComputeTransitionBasis;
+            case TRAPS:                     return sharedActionComputeTraps;
+            case SIPHONS:                   return sharedActionComputeSiphons;
             case EXPORT_GREATSPN_FORMAT:    return sharedActionExportGreatSpn;
             case EXPORT_PNML_FORMAT:        return sharedActionExportPNML;
             case EXPORT_GRML_FORMAT:        return sharedActionExportGRML;
@@ -1514,6 +1518,10 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         sharedActionTransitionSemiflows = new common.Action();
         sharedActionTransitionFlows = new common.Action();
         sharedActionBoundsFromSemiflows = new common.Action();
+        sharedActionComputePlaceBasis = new common.Action();
+        sharedActionComputeTransitionBasis = new common.Action();
+        sharedActionComputeTraps = new common.Action();
+        sharedActionComputeSiphons = new common.Action();
         jStatusBar = new javax.swing.JPanel();
         jStatusLabel = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
@@ -2280,6 +2288,22 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         sharedActionBoundsFromSemiflows.setActionName("Compute place bounds from P-invariants");
         sharedActionBoundsFromSemiflows.setIcon(resourceFactory.getBound32());
         sharedActionBoundsFromSemiflows.setTooltipDesc("Recompute the place bounds using the P-invariants.");
+
+        sharedActionComputePlaceBasis.setActionName("Compute basis of P-flows");
+        sharedActionComputePlaceBasis.setIcon(resourceFactory.getPinv_B32());
+        sharedActionComputePlaceBasis.setTooltipDesc("Recompute a basis of the place flows.");
+
+        sharedActionComputeTransitionBasis.setActionName("Compute basis of T-flows");
+        sharedActionComputeTransitionBasis.setIcon(resourceFactory.getTinv_B32());
+        sharedActionComputeTransitionBasis.setTooltipDesc("Recompute a basis of the transition flows.");
+
+        sharedActionComputeTraps.setActionName("Compute minimal traps");
+        sharedActionComputeTraps.setIcon(resourceFactory.getTrap());
+        sharedActionComputeTraps.setTooltipDesc("Recompute the minimal traps of the GSPN.");
+
+        sharedActionComputeSiphons.setActionName("Compute minimal siphons");
+        sharedActionComputeSiphons.setIcon(resourceFactory.getSiphon());
+        sharedActionComputeSiphons.setTooltipDesc("Recompute the minimal siphons of the GSPN.");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Editor");
@@ -3840,8 +3864,12 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private common.Action sharedActionBoundsFromSemiflows;
     private common.Action sharedActionChangeBindings;
     private common.Action sharedActionComputeBoundsFromPinv;
+    private common.Action sharedActionComputePlaceBasis;
     private common.Action sharedActionComputePlaceSemiflows;
+    private common.Action sharedActionComputeSiphons;
+    private common.Action sharedActionComputeTransitionBasis;
     private common.Action sharedActionComputeTransitionSemiflows;
+    private common.Action sharedActionComputeTraps;
     private common.Action sharedActionDeleteSelected;
     private common.Action sharedActionDeselectAll;
     private common.Action sharedActionExportAPNN;

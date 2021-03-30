@@ -233,6 +233,11 @@ public:
         dbg_check();
     }
 
+    inline void truncate_nnz(size_t new_nnz) {
+        assert(new_nnz <= spvec.size());
+        spvec.resize(new_nnz);
+    }
+
     inline void clear() { spvec.clear(); }
 
     inline void reserve(size_t sz) { spvec.reserve(sz); }

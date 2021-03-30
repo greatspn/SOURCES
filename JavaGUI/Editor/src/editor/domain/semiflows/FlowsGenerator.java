@@ -13,12 +13,12 @@ import editor.domain.grammar.TemplateBinding;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/** Martinez-Silva version of the Farkas algorithm for the computation
+/** Farkas algorithm for the computation
  *  of the minimal set of P(T)-(semi)flows in a Petri net.
  *
  * @author elvio
  */
-public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
+public class FlowsGenerator extends StructuralAlgorithm {
 
     
     // Iteration matrix [ D(i) | A(i) ], where D(0)=I and A(0) = Flow matrix
@@ -36,16 +36,18 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
     public int[] lowerBnd, upperBnd; // place bounds
     
     // Will compute semiflows or integer flows
-    public boolean onlySemiflows = true;
-    public boolean buildBasis = false;
+    public final PTFlows.Type type;
+//    public boolean onlySemiflows = true;
+//    public boolean buildBasis = false;
     
     
 //    SilvaColom88Algorithm scAlgo;
     
 
     // For P-flows: N=|P|, M=|T| (for T-flows: N=|T|, M=|P|)
-    public MartinezSilvaAlgorithm(int N, int M) {
-        super(N, M);
+    public FlowsGenerator(int N, int N0, int M, PTFlows.Type type) {
+        super(N, N0, M);
+        this.type = type;
 //        System.out.println("M="+M+", N="+N);
         mD = new ArrayList<>();
         mA = new ArrayList<>();
@@ -60,12 +62,14 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
     }
 
     // Add an element to the incidence matrix from i to j with the specified cardinality
-    public void setIncidence(int i, int j, int card) {
-//        System.out.println("msa.addFlow("+i+", "+j+", "+card+");");
+    public void addIncidence(int i, int j, int card) {
         mA.get(i)[j] += card;
         mB.get(i)[j] = (mA.get(i)[j] != 0);
-        
-//        scAlgo.addFlow(i, j, card);
+    }
+    // Set an element to the incidence matrix from i to j with the specified cardinality
+    public void setIncidence(int i, int j, int value) {
+        mA.get(i)[j] = value;
+        mB.get(i)[j] = (mA.get(i)[j] != 0);
     }
     
     // Add the initial token of a place (only for P-invariant computation)
@@ -139,7 +143,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
                         continue;
                     
                     int mult1, mult2;
-                    if (onlySemiflows) { // (non-negative) semiflows
+                    if (type.isSemiflow()) { // (non-negative) semiflows
                         if (sign(mA.get(r1)[i]) == sign(mA.get(r2)[i]))
                             continue;
                         mult1 = Math.abs(mA.get(r1)[i]);
@@ -210,7 +214,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
                     ++combined_with_i;
                 }
                     
-                if (buildBasis && combined_with_i>0)
+                if (type.isBasis() && combined_with_i>0)
                     break;
             }
             checkInterrupted();
@@ -231,9 +235,13 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
             }
             
             // Eliminate frm [D|A] the rows that are not minimal, doing an exhaustive search.
-            if (!buildBasis)
+            if (!type.isBasis())
                 removeNonMinimalFlows(log, obs);
         }
+        
+        if (type.isTrapsOrSiphons())
+            dropSupplementaryVariablesAndReduce(log, obs);
+        
         if (log)
             System.out.println("\nRESULT:\n"+this);
 
@@ -282,6 +290,24 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
                 }
             }
         }        
+    }
+    
+    // Reduce all remaining flows after removing all supplementary variables
+    // Supplementary variable are located in D in the positions between N0 and N.
+    // Therefore reduce N to N0 (by truncating all rows), and then remove again all
+    // the non-minimal flows.
+    private void dropSupplementaryVariablesAndReduce(boolean log, ProgressObserver obs) 
+            throws InterruptedException 
+    {
+        // truncate and remove all supplementary variables in D
+        for (int i=0; i<numFlows(); i++) {
+            int[] newDi = new int[N0];
+            System.arraycopy(mD.get(i), 0, newDi, 0, N0);
+            mD.set(i, newDi);
+        }
+        reduceN(N0);
+        // reduce the flows that are not minimal after removing the suppl. vars.
+        removeNonMinimalFlows(log, obs);
     }
     
     @Override
@@ -431,6 +457,47 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
     public boolean hasContinuousEdges = false;
     public boolean hasColoredPlaces = false;
     public boolean hasNonIntegerInitMarks = false;
+    
+    // Compute the initial sizes of the N,M
+    public static FlowsGenerator makeFor(PTFlows.Type type, NetIndex netIndex) {
+        int N, N0, M;
+        
+        if (type.isTrapsOrSiphons()) {
+            N = N0 = netIndex.numPlaces();
+            M = 0;
+            // for traps/siphons, the incidence matrix is modified:
+            // each IA/OA arc generates a duplicate transition with an
+            // associated supplementary variable.
+            GspnEdge.Kind primaryKind = (type==PTFlows.Type.TRAPS ? GspnEdge.Kind.INPUT : GspnEdge.Kind.OUTPUT);
+            netIndex.trIndexStart = new int[netIndex.transitions.size()];
+            netIndex.trIndexEnd = new int[netIndex.transitions.size()];
+            int jj = 0;
+            for (int tt=0; tt<netIndex.transitions.size(); tt++) {
+                Transition trn = netIndex.transitions.get(tt);
+                netIndex.trIndexStart[tt] = jj;
+                for (Edge ee : netIndex.net.edges) {
+                    if (ee instanceof GspnEdge) {
+                        GspnEdge e = (GspnEdge)ee;
+                        if (e.getConnectedTransition() == trn && e.getEdgeKind() == primaryKind) {
+                            N++;
+                            M++;
+                            jj++;
+                        }
+                    }
+                }
+                netIndex.trIndexEnd[tt] = jj;
+            }
+        }
+        else if (type.isPlace()) {
+            N = N0 = netIndex.numPlaces();
+            M = netIndex.numTransition();
+        }
+        else {
+            N = N0 = netIndex.numTransition();
+            M = netIndex.numPlaces();
+        }
+        return new FlowsGenerator(N, N0, M, type);
+    }
 
     // Initialize the matrices from a gspn page
     public void initialize(PTFlows.Type type, TemplateBinding varBindings, NetIndex netIndex) {
@@ -438,10 +505,14 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
         context.templateVarsBinding = varBindings;
         context.bindingContext = context;
         
+        int[] trSecondaryIndex = null;
+        if (type.isTrapsOrSiphons())
+            trSecondaryIndex = new int[netIndex.numTransition()];
+        
         for (Edge edge : netIndex.net.edges) {
             if (edge instanceof GspnEdge) {
                 GspnEdge ge = (GspnEdge)edge;
-                int p, t, card;
+                int p, t, card, sign;
                 
                 // Ignore inhibitor edges, but signal their presence.
                 if (ge.getEdgeKind() == GspnEdge.Kind.INHIBITOR) {
@@ -461,10 +532,11 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
                 switch (ge.getEdgeKind()) {
                     case INPUT:
 //                        System.out.println("head="+ge.getHeadNode().getUniqueName()+" tail="+ge.getTailNode().getUniqueName());
-                        p = netIndex.place2index.get((Place)ge.getTailNode());
-                        t = netIndex.trn2index.get((Transition)ge.getHeadNode());
+                        p = netIndex.place2index.get(ge.getConnectedPlace());
+                        t = netIndex.trn2index.get(ge.getConnectedTransition());
+                        sign = -1;
                         try {
-                            card = -ge.evaluateMultiplicity(context, null, null).getScalarInt();
+                            card = ge.evaluateMultiplicity(context, null, null).getScalarInt();
                         }
                         catch (Exception e) {
                             hasMarkDepEdges = true;
@@ -473,8 +545,9 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
                         break;
                         
                     case OUTPUT:
-                        p = netIndex.place2index.get((Place)ge.getHeadNode());
-                        t = netIndex.trn2index.get((Transition)ge.getTailNode());
+                        p = netIndex.place2index.get(ge.getConnectedPlace());
+                        t = netIndex.trn2index.get(ge.getConnectedTransition());
+                        sign = 1;
                         try {
                             card = ge.evaluateMultiplicity(context, null, null).getScalarInt();
                         }
@@ -489,11 +562,38 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
                 }
                 if (card == 0)
                     hasEdgeWithZeroCard = true;
-                if (type.isPlace())
-                    setIncidence(p, t, card);
-                else
-                    setIncidence(t, p, card);
+                
+                if (!type.isTrapsOrSiphons()) {
+                    if (type.isPlace())
+                        addIncidence(p, t, card * sign);
+                    else
+                        addIncidence(t, p, card * sign);
+                }
+                else { // traps/siphons construction
+                    GspnEdge.Kind primaryKind = (type==PTFlows.Type.TRAPS ? GspnEdge.Kind.INPUT : GspnEdge.Kind.OUTPUT);
+                    int tt = netIndex.trn2index.get(ge.getConnectedTransition());
+                    if (ge.getEdgeKind() == primaryKind) {
+                        // on the primary edge kind (Input for traps, Output for siphons)
+                        // put a +1 on the jj-th transition column replica
+                        int jj = netIndex.trIndexStart[tt] + trSecondaryIndex[tt];
+                        if (mA.get(p)[jj] == 0)
+                            setIncidence(p, jj, 1);
+                        ++trSecondaryIndex[tt]; // increment replica counter
+                    }
+                    else {
+                        // set the value of the secondary edge kind on all replicas of transition tt
+                        for (int jj=netIndex.trIndexStart[tt]; jj<netIndex.trIndexEnd[tt]; jj++)
+                            setIncidence(p, jj, -1);
+                    }
+                }
             }            
+        }
+        
+        if (type.isTrapsOrSiphons()) {
+            // Add the supplementary variables, i.e. the identity matrix 
+            // below the incidence. A = [C] over [I]
+            for (int i=0; i<M; i++)
+                setIncidence(i + N0, i, 1);
         }
         
         if (type.isPlace()) {
@@ -513,7 +613,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
         
     }
     
-    public String flowToString(int i, PTFlows.Type type, NetIndex netIndex) {
+    public String flowToString(int i, NetIndex netIndex) {
         int[] flow = getFlowVector(i);
         
         StringBuilder repr = new StringBuilder();
@@ -542,7 +642,7 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
 
 //    public static void main(String[] args) {
 //        int NP = 14, MT = 10;
-//        MartinezSilvaAlgorithm msa = new MartinezSilvaAlgorithm(NP, MT);
+//        FlowsGenerator msa = new FlowsGenerator(NP, MT);
 //        int[][] flow = {
 //            {5, 4}, {1, 3}, // t1
 //            {14, 7}, {6, 8}, // t2
@@ -567,46 +667,44 @@ public class MartinezSilvaAlgorithm extends StructuralAlgorithm {
 //        msa.compute(true);
 //    }
     
-    public static MartinezSilvaAlgorithm init1() {
+    public static FlowsGenerator init1() {
         int M=10, N=14;
-        MartinezSilvaAlgorithm msa = new MartinezSilvaAlgorithm(N, M);
-        msa.setIncidence(0, 0, 1);
-        msa.setIncidence(0, 4, -1);
-        msa.setIncidence(1, 4, 1);
-        msa.setIncidence(1, 3, -1);
-        msa.setIncidence(12, 3, -1);
-        msa.setIncidence(3, 3, 1);
-        msa.setIncidence(3, 0, -1);
-        msa.setIncidence(2, 0, 1);
-        msa.setIncidence(4, 0, -1);
-        msa.setIncidence(2, 5, -1);
-        msa.setIncidence(13, 5, 1);
-        msa.setIncidence(13, 1, -1);
-        msa.setIncidence(5, 1, 1);
-        msa.setIncidence(5, 6, -1);
-        msa.setIncidence(4, 6, 1);
-        msa.setIncidence(6, 1, -1);
-        msa.setIncidence(7, 1, 1);
-        msa.setIncidence(7, 7, -1);
-        msa.setIncidence(8, 7, 1);
-        msa.setIncidence(8, 2, -1);
-        msa.setIncidence(9, 2, 1);
-        msa.setIncidence(10, 2, 1);
-        msa.setIncidence(10, 9, -1);
-        msa.setIncidence(11, 9, 1);
-        msa.setIncidence(12, 9, 1);
-        msa.setIncidence(11, 8, -1);
-        msa.setIncidence(9, 8, -1);
-        msa.setIncidence(6, 8, 1);
-        return msa;
+        FlowsGenerator fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOW);
+        fg.addIncidence(0, 0, 1);
+        fg.addIncidence(0, 4, -1);
+        fg.addIncidence(1, 4, 1);
+        fg.addIncidence(1, 3, -1);
+        fg.addIncidence(12, 3, -1);
+        fg.addIncidence(3, 3, 1);
+        fg.addIncidence(3, 0, -1);
+        fg.addIncidence(2, 0, 1);
+        fg.addIncidence(4, 0, -1);
+        fg.addIncidence(2, 5, -1);
+        fg.addIncidence(13, 5, 1);
+        fg.addIncidence(13, 1, -1);
+        fg.addIncidence(5, 1, 1);
+        fg.addIncidence(5, 6, -1);
+        fg.addIncidence(4, 6, 1);
+        fg.addIncidence(6, 1, -1);
+        fg.addIncidence(7, 1, 1);
+        fg.addIncidence(7, 7, -1);
+        fg.addIncidence(8, 7, 1);
+        fg.addIncidence(8, 2, -1);
+        fg.addIncidence(9, 2, 1);
+        fg.addIncidence(10, 2, 1);
+        fg.addIncidence(10, 9, -1);
+        fg.addIncidence(11, 9, 1);
+        fg.addIncidence(12, 9, 1);
+        fg.addIncidence(11, 8, -1);
+        fg.addIncidence(9, 8, -1);
+        fg.addIncidence(6, 8, 1);
+        return fg;
     }
     
 
     public static void main(String[] args) throws InterruptedException {
-        MartinezSilvaAlgorithm msa = init1();
+        FlowsGenerator fg = init1();
         ProgressObserver obs = (int step, int total, int s, int t) -> { };
-        msa.onlySemiflows = false;
-        msa.buildBasis = true;
-        msa.compute(true, obs);
+        fg.compute(true, obs);
     }
 }

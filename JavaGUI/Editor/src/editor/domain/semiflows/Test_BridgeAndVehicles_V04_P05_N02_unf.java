@@ -9,10 +9,10 @@ package editor.domain.semiflows;
  *
  * @author elvio
  */
-public class MartinezSilvaTest_BridgeAndVehicles_V04_P05_N02_unf {
-        public static MartinezSilvaAlgorithm initBridgeAndVehicles_V04_P05_N02_unf() {
+public class Test_BridgeAndVehicles_V04_P05_N02_unf {
+        public static FlowsGenerator initBridgeAndVehicles_V04_P05_N02_unf() {
         int M=52, N=28;
-        MartinezSilvaAlgorithm msa = new MartinezSilvaAlgorithm(N, M);
+        FlowsGenerator fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOW);
         final int flows[][] = {
             { 0, 0, 1 }, { 1, 0, 1 }, { 2, 0, -1 }, { 6, 0, -1 }, { 0, 1, 1 }, { 2, 1, 1 }, { 3, 1, -1 }, { 6, 1, -1 }, 
             { 0, 2, 1 }, { 3, 2, 1 }, { 4, 2, -1 }, { 6, 2, -1 }, { 0, 3, 1 }, { 4, 3, 1 }, { 5, 3, -1 }, { 6, 3, -1 }, 
@@ -63,18 +63,17 @@ public class MartinezSilvaTest_BridgeAndVehicles_V04_P05_N02_unf {
             { 18, 51, -1 }
         };
         for (int i=0; i<flows.length; i++)
-            msa.setIncidence(flows[i][0], flows[i][1], flows[i][2]);
-        return msa;
+            fg.addIncidence(flows[i][0], flows[i][1], flows[i][2]);
+        return fg;
     }
     
     public static void main(String[] args) throws InterruptedException {
-//        MartinezSilvaAlgorithm msa = init1();
-        MartinezSilvaAlgorithm msa = initBridgeAndVehicles_V04_P05_N02_unf();
+        FlowsGenerator fg = initBridgeAndVehicles_V04_P05_N02_unf();
         StructuralAlgorithm.ProgressObserver obs = new StructuralAlgorithm.ProgressObserver() {
             @Override
             public void advance(int step, int total, int s, int t) {
             }
         };
-        msa.compute(true, obs);
+        fg.compute(true, obs);
     }
 }

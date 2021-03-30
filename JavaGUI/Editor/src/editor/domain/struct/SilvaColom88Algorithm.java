@@ -20,7 +20,7 @@ public class SilvaColom88Algorithm extends StructuralAlgorithm {
     int[] m0;
 
     public SilvaColom88Algorithm(int N, int M) {
-        super(N, M);
+        super(N, N, M);
         
         m0 = new int[N];
         mC = new int[N][M];

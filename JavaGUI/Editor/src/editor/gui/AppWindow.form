@@ -1140,6 +1140,42 @@
         <Property name="tooltipDesc" type="java.lang.String" value="Recompute the place bounds using the P-invariants."/>
       </Properties>
     </Component>
+    <Component class="common.Action" name="sharedActionComputePlaceBasis">
+      <Properties>
+        <Property name="actionName" type="java.lang.String" value="Compute basis of P-flows"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getPinv_B32" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="Recompute a basis of the place flows."/>
+      </Properties>
+    </Component>
+    <Component class="common.Action" name="sharedActionComputeTransitionBasis">
+      <Properties>
+        <Property name="actionName" type="java.lang.String" value="Compute basis of T-flows"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getTinv_B32" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="Recompute a basis of the transition flows."/>
+      </Properties>
+    </Component>
+    <Component class="common.Action" name="sharedActionComputeTraps">
+      <Properties>
+        <Property name="actionName" type="java.lang.String" value="Compute minimal traps"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getTrap" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="Recompute the minimal traps of the GSPN."/>
+      </Properties>
+    </Component>
+    <Component class="common.Action" name="sharedActionComputeSiphons">
+      <Properties>
+        <Property name="actionName" type="java.lang.String" value="Compute minimal siphons"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getSiphon" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="Recompute the minimal siphons of the GSPN."/>
+      </Properties>
+    </Component>
     <Menu class="javax.swing.JMenuBar" name="jAppMenuBar">
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="jMenuFile">

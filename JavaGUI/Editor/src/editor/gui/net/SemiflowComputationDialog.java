@@ -6,7 +6,7 @@
 
 package editor.gui.net;
 
-import editor.domain.semiflows.MartinezSilvaAlgorithm;
+import editor.domain.semiflows.FlowsGenerator;
 import java.awt.Frame;
 import javax.swing.SwingUtilities;
 
@@ -14,9 +14,9 @@ import javax.swing.SwingUtilities;
  *
  * @author elvio
  */
-public class SemiflowComputationDialog extends javax.swing.JDialog implements MartinezSilvaAlgorithm.ProgressObserver {
+public class SemiflowComputationDialog extends javax.swing.JDialog implements FlowsGenerator.ProgressObserver {
 
-    MartinezSilvaAlgorithm algo;
+    FlowsGenerator algo;
     Thread thread;
     
     /**
@@ -24,7 +24,7 @@ public class SemiflowComputationDialog extends javax.swing.JDialog implements Ma
      * @param owner
      * @param algo
      */
-    public SemiflowComputationDialog(Frame owner, MartinezSilvaAlgorithm algo) {
+    public SemiflowComputationDialog(Frame owner, FlowsGenerator algo) {
         super(owner, true);
         this.algo = algo;
         initComponents();

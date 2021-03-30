@@ -6,7 +6,7 @@
 package editor.gui.net;
 
 import editor.domain.NetObject;
-import editor.domain.semiflows.MartinezSilvaAlgorithm;
+import editor.domain.semiflows.FlowsGenerator;
 import editor.domain.semiflows.NetIndex;
 import editor.gui.ResourceFactory;
 import java.awt.Dimension;
@@ -23,14 +23,14 @@ public class ShowFlowsMatrixDialog extends javax.swing.JDialog {
 
     private final PTFlows.Type type;
     private final String netName;
-    private final MartinezSilvaAlgorithm algo;
+    private final FlowsGenerator algo;
     private final NetIndex netIndex;
     JLatexComponent latexComp;
     
     /**
      * Creates new form ShowNetMatricesDialog
      */
-    public ShowFlowsMatrixDialog(java.awt.Frame parent, boolean modal, MartinezSilvaAlgorithm algo,
+    public ShowFlowsMatrixDialog(java.awt.Frame parent, boolean modal, FlowsGenerator algo,
                                  PTFlows.Type type, String netName, NetIndex netIndex) {
         super(parent, modal);
         this.algo = algo;
@@ -38,6 +38,7 @@ public class ShowFlowsMatrixDialog extends javax.swing.JDialog {
         this.netName = netName;
         this.netIndex = netIndex;
         initComponents();
+        setTitle(type.printableName()+" of "+netName);
         
         latexComp = new JLatexComponent();
         scrollPane.setViewportView(latexComp);

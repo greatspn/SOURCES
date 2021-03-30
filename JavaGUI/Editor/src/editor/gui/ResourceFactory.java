@@ -539,6 +539,10 @@ public class ResourceFactory {
     public ImageIcon getPinv_Z32() {
         return loadIcon32("pinv_Z");
     }
+    
+    public ImageIcon getPinv_B32() {
+        return loadIcon32("pinv_B");
+    }
 
     public ImageIcon getPlay16() {
         return loadIcon16("play");
@@ -615,6 +619,10 @@ public class ResourceFactory {
     public ImageIcon getShowMatrices32() {
         return loadIcon32("show_matrices");
     }
+    
+    public ImageIcon getSiphon() {
+        return loadIcon32("siphon");
+    }
 
     public ImageIcon getSnapToGrid24() {
         return loadIcon24("snap_to_grid");
@@ -690,6 +698,14 @@ public class ResourceFactory {
     
     public ImageIcon getTinv_Z32() {
         return loadIcon32("tinv_Z");
+    }
+    
+    public ImageIcon getTinv_B32() {
+        return loadIcon32("tinv_B");
+    }
+    
+    public ImageIcon getTrap() {
+        return loadIcon32("trap");
     }
     
     public ImageIcon getCheckBoxSelected16() {

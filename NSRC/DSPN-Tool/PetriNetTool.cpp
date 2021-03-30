@@ -148,6 +148,7 @@ static const char *s_AppBanner =
     "  {!-tfl}             Compute minimal Transition flows, saved as {$<file>.tfl}.\n"
     "  {!-pbasis}          Compute basis for Place invariants, saved as {$<file>.pba}.\n"
     "  {!-tbasis}          Compute basis for Transition invariants, saved as {$<file>.tba}.\n"
+    "  {!-traps}/{!-siphons}  Compute minimal traps/siphons.\n"
     "  {!-bnd}             Compute place bounds from P-semiflows, saved as {$<file>.bnd}.\n"
     "  {!-detect-exp}      Limit exponential growth in P/T flow generation.\n"
     "  {!-strict-support}  Slack variables are excluded from the flow support.\n"    
@@ -1071,28 +1072,36 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
                      cmdArg == "-pbasis" || cmdArg == "-pbasis+" || cmdArg == "-pbasis-" || cmdArg == "-pbasis+-" || cmdArg == "-pbasis*" ||
                      cmdArg == "-tbasis" || cmdArg == "-tbasis+" || cmdArg == "-tbasis-" || cmdArg == "-tbasis+-" || cmdArg == "-tbasis*" ||
                      cmdArg == "-pfl"    || cmdArg == "-pfl+"    || cmdArg == "-pfl-"    || cmdArg == "-pfl+-"    || cmdArg == "-pfl*"    ||
-                     cmdArg == "-tfl"    || cmdArg == "-tfl+"    || cmdArg == "-tfl-"    || cmdArg == "-tfl+-"    || cmdArg == "-tfl*") 
+                     cmdArg == "-tfl"    || cmdArg == "-tfl+"    || cmdArg == "-tfl-"    || cmdArg == "-tfl+-"    || cmdArg == "-tfl*"    ||
+                     cmdArg == "-traps"  || cmdArg == "-siphons") 
             {
                 RequirePetriNet();
                 size_t suppl_flags = 0;
-                InvariantKind invknd = (cmdArg[1]=='p' ? InvariantKind::PLACE : InvariantKind::TRANSITION);
+                InvariantKind invknd = InvariantKind::PLACE;
+                SystemMatrixType system_kind = SystemMatrixType::REGULAR;
                 FlowMatrixKind matk = FlowMatrixKind::SEMIFLOWS;
-                if (cmdArg[2] == 'b') // [b]asis
-                    matk = FlowMatrixKind::BASIS;
-                if (cmdArg[2] == 'f') // [f]l
-                    matk = FlowMatrixKind::INTEGER_FLOWS;
-                switch (cmdArg[strlen(cmdArg.c_str()) - 1]) {
-                    case '+': suppl_flags |= FM_POSITIVE_SUPPLEMENTARY; break;
-                    case '-': suppl_flags |= FM_NEGATIVE_SUPPLEMENTARY; break;
-                    case '*': suppl_flags |= FM_ON_THE_FLY_SUPPL_VARS | FM_POSITIVE_SUPPLEMENTARY | FM_NEGATIVE_SUPPLEMENTARY; break;
-                    default:  suppl_flags = 0;  break;
+                if (cmdArg == "-traps"  || cmdArg == "-siphons") {
+                    system_kind = (cmdArg == "-traps" ? SystemMatrixType::TRAPS : SystemMatrixType::SIPHONS);
                 }
-                if (cmdArg[strlen(cmdArg.c_str()) - 2] == '+')
-                    suppl_flags |= FM_POSITIVE_SUPPLEMENTARY;
+                else {
+                    invknd = (cmdArg[1]=='p' ? InvariantKind::PLACE : InvariantKind::TRANSITION);
+                    if (cmdArg[2] == 'b') // [b]asis
+                        matk = FlowMatrixKind::BASIS;
+                    if (cmdArg[2] == 'f') // [f]l
+                        matk = FlowMatrixKind::INTEGER_FLOWS;
+                    switch (cmdArg[strlen(cmdArg.c_str()) - 1]) {
+                        case '+': suppl_flags |= FM_POSITIVE_SUPPLEMENTARY; break;
+                        case '-': suppl_flags |= FM_NEGATIVE_SUPPLEMENTARY; break;
+                        case '*': suppl_flags |= FM_ON_THE_FLY_SUPPL_VARS | FM_POSITIVE_SUPPLEMENTARY | FM_NEGATIVE_SUPPLEMENTARY; break;
+                        default:  suppl_flags = 0;  break;
+                    }
+                    if (cmdArg[strlen(cmdArg.c_str()) - 2] == '+')
+                        suppl_flags |= FM_POSITIVE_SUPPLEMENTARY;
+                }
                 // if (cmdArg[3] == 'p') // s[p]an
                 //     matk = FlowMatrixKind::NESTED_FLOW_SPAN;
                 performance_timer timer;
-                shared_ptr<flow_matrix_t> psf = ComputeFlows(*pn, invknd, matk, detectExpFlows, 
+                shared_ptr<flow_matrix_t> psf = ComputeFlows(*pn, invknd, matk, system_kind, detectExpFlows, 
                                                              suppl_flags, use_Colom_pivoting, 
                                                              extra_vars_in_support, verboseLvl);
                 shared_ptr<flow_matrix_t> *dst;
@@ -1113,7 +1122,7 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
                 }
                 *dst = psf;
                 // Save the flows to the disk in GreatSPN format
-                string FlowFile(*netName + GetGreatSPN_FileExt(invknd, psf->mat_kind, suppl_flags));
+                string FlowFile(*netName + GetGreatSPN_FileExt(invknd, matk, system_kind, suppl_flags));
                 ofstream flow_os(FlowFile.c_str());
                 SaveFlows(*psf, flow_os);
                 PrintFlows(*pn, *psf, cmdArg.c_str(), verboseLvl);
@@ -2584,7 +2593,7 @@ void Experiment1()
 
 
     size_t MT = 16, NP= 12;
-    flow_matrix_t psfm(NP, NP, MT, InvariantKind::PLACE, 0, false, true, true);
+    flow_matrix_t psfm(NP, NP, MT, InvariantKind::PLACE, SystemMatrixType::REGULAR, 0, false, true, true);
     incidence_matrix_generator_t inc_gen(psfm);
     inc_gen.add_flow_entry(0, 0, 1);
     inc_gen.add_flow_entry(0, 2, 1);

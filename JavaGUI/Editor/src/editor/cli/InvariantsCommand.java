@@ -10,7 +10,7 @@ import editor.domain.elements.GspnPage;
 import latex.DummyLatexProvider;
 import static editor.cli.Common.*;
 import editor.domain.grammar.TemplateBinding;
-import editor.domain.semiflows.MartinezSilvaAlgorithm;
+import editor.domain.semiflows.FlowsGenerator;
 import editor.domain.semiflows.NetIndex;
 import editor.domain.semiflows.StructuralAlgorithm;
 import editor.domain.semiflows.PTFlows;
@@ -51,7 +51,6 @@ public class InvariantsCommand {
         PTFlows.Type type = PTFlows.Type.PLACE_SEMIFLOW;
         TemplateBinding bindings = new TemplateBinding();
         boolean verbose = false;
-        boolean isBasis = false;
         int c;
         for (c=0; c<args.length; c++) {
 //            System.out.println("args["+c+"]="+args[c]);
@@ -75,13 +74,19 @@ public class InvariantsCommand {
                     break;
 
                 case "-pb":
-                    type = PTFlows.Type.PLACE_FLOW;
-                    isBasis = true;
+                    type = PTFlows.Type.PLACE_BASIS;
                     break;
                 
                 case "-tb":
-                    type = PTFlows.Type.TRANSITION_FLOWS;
-                    isBasis = true;
+                    type = PTFlows.Type.TRANSITION_BASIS;
+                    break;
+
+                case "-traps":
+                    type = PTFlows.Type.TRAPS;
+                    break;
+
+                case "-siphons":
+                    type = PTFlows.Type.SIPHONS;
                     break;
 
                 case "-v":
@@ -114,20 +119,14 @@ public class InvariantsCommand {
         NetIndex netIndex = new NetIndex(net);
         
         // Initialize Farkas methos
-        MartinezSilvaAlgorithm algo;
-        if (type.isPlace())
-            algo = new MartinezSilvaAlgorithm(netIndex.numPlaces(), netIndex.numTransition());
-        else
-            algo = new MartinezSilvaAlgorithm(netIndex.numTransition(), netIndex.numPlaces());
-        algo.onlySemiflows = type.isSemiflow();
-        algo.buildBasis = isBasis;
+        FlowsGenerator algo = FlowsGenerator.makeFor(type, netIndex);
         algo.initialize(type, bindings, netIndex);
         StructuralAlgorithm.ProgressObserver obs = (int step, int total, int s, int t) -> { };
         algo.compute(verbose, obs);
         
         for (int i=0; i<algo.numFlows(); i++) {
             System.out.print("FLOW "+(i+1)+": ");
-            System.out.println(algo.flowToString(i, type, netIndex));
+            System.out.println(algo.flowToString(i, netIndex));
         }
         System.out.println();
     }

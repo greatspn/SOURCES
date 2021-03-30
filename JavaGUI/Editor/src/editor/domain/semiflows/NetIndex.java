@@ -26,6 +26,9 @@ public class NetIndex {
     public ArrayList<Place> places;
     public ArrayList<Transition> transitions;
     
+    // Support structures for building traps/siphons
+    public int[] trIndexStart, trIndexEnd;
+    
     public NetIndex(GspnPage net) {
         this.net = net;
         place2index = new HashMap<>();
