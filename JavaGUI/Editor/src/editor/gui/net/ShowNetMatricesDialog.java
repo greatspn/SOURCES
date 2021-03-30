@@ -11,9 +11,6 @@ import editor.domain.unfolding.IncidenceMatrixFormatter;
 import editor.domain.unfolding.MatrixMode;
 import editor.gui.ResourceFactory;
 import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.SwingUtilities;
 import latex.JLatexComponent;
@@ -34,6 +31,7 @@ public class ShowNetMatricesDialog extends javax.swing.JDialog {
     public ShowNetMatricesDialog(java.awt.Frame parent, boolean modal, GspnPage gspn) {
         super(parent, modal);
         initComponents();
+        setTitle("Net matrices of "+gspn.getPageName());
         
         latexComp = new JLatexComponent();
         scrollPane.setViewportView(latexComp);
@@ -44,7 +42,7 @@ public class ShowNetMatricesDialog extends javax.swing.JDialog {
         getRootPane().setDefaultButton(jButton_close);
         pack();
         setLocationRelativeTo(getOwner());
-        
+
         matFormatter = new IncidenceMatrixFormatter(gspn);
         DefaultComboBoxModel<MatrixMode> model = new DefaultComboBoxModel<>();
         for (MatrixMode m : MatrixMode.values())
