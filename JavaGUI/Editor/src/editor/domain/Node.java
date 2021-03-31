@@ -1039,15 +1039,23 @@ public abstract class Node extends SelectableObject
         
         // Draw the border of the shape
         Color borderColor = null;
+        Stroke borderStroke = sw.logicStroke; 
         if (errorFlag)
             borderColor = getBorderColorError();
         if (borderColor==null && isGrayed())
             borderColor = getBorderColorGrayed();
         if (borderColor==null)
             borderColor = getBorderColor();
+        if (borderColor != null && dh.selectedPTFlow != null) {
+            Color selBorderColor = dh.selectedPTFlow.getBorderColor(this);
+            if (selBorderColor != null) {
+                borderColor = selBorderColor;
+                borderStroke = sw.logicStrokeWider;
+            }
+        }
         if (borderColor != null) {
             Stroke sk = g.getStroke();
-            g.setStroke(sw.logicStroke);
+            g.setStroke(borderStroke);
             g.setColor(borderColor);
             g.draw(nodeShape);
             g.setStroke(sk);

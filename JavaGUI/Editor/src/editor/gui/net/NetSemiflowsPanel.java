@@ -73,6 +73,10 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
     private Timer showTimer = null;
     private int dashPhase = 0;
     
+    // selection management
+    private boolean updatingList = false;
+    private Node selectedNode = null;
+    
     private static final String CONTROLS_CARD = "controls";
     private static final String BINDING_CARD = "binding";
     
@@ -113,7 +117,10 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         jToolbarButtonChangeBindings.setHideActionText(false);
         
         jList_flows.getSelectionModel().addListSelectionListener((ListSelectionEvent lse) -> {
-            highlightFlow(jList_flows.getSelectedIndex());
+            if (updatingList)
+                return;
+            updateListPanel(false, jList_flows.getSelectedIndex());
+//            highlightFlow(jList_flows.getSelectedIndex());
             viewerPanel.repaint();
         });
         
@@ -172,6 +179,8 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         viewerPanel = null;
         hasSemiflows = false;
         netIndex = null;
+        selectedNode = null;
+        algo = null;
     }
 
     @Override
@@ -323,6 +332,48 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         });
     }
     
+    private void updateListPanel(boolean recomputed, int selIndex) {
+        if (recomputed) {
+            selectedNode = null;
+        }
+        updatingList = true;
+//        int selIndex = jList_flows.getSelectedIndex();
+        // Update window
+        DefaultListModel<String> model = new DefaultListModel<>();
+        if (algo != null) {
+            if (sfType.isBound()) {
+                for (int p=0; p<netIndex.numPlaces(); p++) {
+                    StringBuilder name = new StringBuilder();
+                    name.append("Bound of ").append(netIndex.places.get(p).getUniqueName())
+                        .append(": [").append(algo.getLowerBoundOf(p)).append(", ");
+                    if (algo.getUpperBoundOf(p) == Integer.MAX_VALUE)
+                        name.append(PTFlows.INFINITY_UNICODE);
+                    else
+                        name.append(algo.getUpperBoundOf(p));
+                    name.append("]");
+                    model.addElement(name.toString());
+                }
+            }
+            else {
+                final int numSemiflows = (algo.isComputed() ? algo.numFlows() : 0);
+                for (int i=0; i<numSemiflows; i++)
+                    model.addElement(algo.flowToString(i, netIndex, true, 
+                            UIManager.getColor("List.foreground"), 
+                            UIManager.getColor("List.background"),
+                            selectedNode));
+            }
+        }
+        jList_flows.setModel(model);
+        if (selIndex >= 0)
+            selIndex = Math.min(selIndex, model.size());
+        else
+            selIndex = -1;
+        if (model.size() > 0)
+            jList_flows.setSelectedIndex(selIndex);
+        highlightFlow(jList_flows.getSelectedIndex());
+        updatingList = false;
+    }
+    
     private void recomputeFlows(PTFlows.Type type) {
         this.sfType = type;
         
@@ -342,30 +393,31 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         dlg.showDialogAndStart();
 //        algo.compute(false /*log*/);
         
-        // Update window
-        DefaultListModel<String> model = new DefaultListModel<>();
-        if (initializeForBounds) {
-            for (int p=0; p<netIndex.numPlaces(); p++) {
-                StringBuilder name = new StringBuilder();
-                name.append("Bound of ").append(netIndex.places.get(p).getUniqueName())
-                    .append(": [").append(algo.getLowerBoundOf(p)).append(", ");
-                if (algo.getUpperBoundOf(p) == Integer.MAX_VALUE)
-                    name.append(PTFlows.INFINITY_UNICODE);
-                else
-                    name.append(algo.getUpperBoundOf(p));
-                name.append("]");
-                model.addElement(name.toString());
-            }
-        }
-        else {
-            final int numSemiflows = (algo.isComputed() ? algo.numFlows() : 0);
-            for (int i=0; i<numSemiflows; i++)
-                model.addElement(algo.flowToString(i, netIndex, true, UIManager.getColor("List.foreground")));
-        }
-        jList_flows.setModel(model);
-        if (model.size() > 0)
-            jList_flows.setSelectedIndex(0);
-        highlightFlow(jList_flows.getSelectedIndex());
+//        // Update window
+//        DefaultListModel<String> model = new DefaultListModel<>();
+//        if (initializeForBounds) {
+//            for (int p=0; p<netIndex.numPlaces(); p++) {
+//                StringBuilder name = new StringBuilder();
+//                name.append("Bound of ").append(netIndex.places.get(p).getUniqueName())
+//                    .append(": [").append(algo.getLowerBoundOf(p)).append(", ");
+//                if (algo.getUpperBoundOf(p) == Integer.MAX_VALUE)
+//                    name.append(PTFlows.INFINITY_UNICODE);
+//                else
+//                    name.append(algo.getUpperBoundOf(p));
+//                name.append("]");
+//                model.addElement(name.toString());
+//            }
+//        }
+//        else {
+//            final int numSemiflows = (algo.isComputed() ? algo.numFlows() : 0);
+//            for (int i=0; i<numSemiflows; i++)
+//                model.addElement(algo.flowToString(i, netIndex, true, UIManager.getColor("List.foreground")));
+//        }
+//        jList_flows.setModel(model);
+//        if (model.size() > 0)
+//            jList_flows.setSelectedIndex(0);
+//        highlightFlow(jList_flows.getSelectedIndex());
+        updateListPanel(true, 1);
 
         // Update titles and warnings
         jLabel_computedFlows.setVisible(true);
@@ -460,14 +512,15 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
     }
     
     private void restartFromBeginning(boolean reopenBindings) {
+        algo = null;
+        highlightedElems = null;
+        selectedNode = null;
         viewerPanel.reopenBindingForms();
         ((CardLayout)getLayout()).show(this, BINDING_CARD);
         jLabel_Binding.setVisible(true);
         jLabel_computedFlows.setVisible(false);
         jList_flows.setModel(new DefaultListModel<>());
-        algo = null;
         algoErrsWarns = NO_ERRORS;
-        highlightedElems = null;
         showTimer.stop();
 
         if (!viewerPanel.hasBindingForms() || !reopenBindings) {
@@ -720,6 +773,27 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
             }
             return null;
         }
+
+        @Override
+        public Color getBorderColor(Node node) {
+            if (selectedNode != node)
+                return null;
+            
+            switch (sfType) {
+                case PLACE_SEMIFLOWS:
+                case PLACE_FLOWS:
+                case PLACE_BASIS:
+                case PLACE_BOUNDS_FROM_PINV:
+                case TRAPS:
+                case SIPHONS:
+                    return Color.RED;
+                case TRANSITION_SEMIFLOWS:
+                case TRANSITION_FLOWS:
+                case TRANSITION_BASIS:
+                    return Color.BLUE;
+            }
+            return null;
+        }
         
         @Override
         public int getDashPhase() {
@@ -737,20 +811,40 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
 
         @Override
         public void netClicked(JNetPanel panel, NetPage net, MouseEvent evt) {
-            if (sfType == PTFlows.Type.PLACE_BOUNDS_FROM_PINV) {
-                int zoom = viewerPanel.getZoomLevel();
-                mousePt.setLocation(NetObject.screenToLogic(evt.getX(), zoom) + panel.pageBounds.getX(),
-                                     NetObject.screenToLogic(evt.getY(), zoom) + panel.pageBounds.getY());
-                // Search for a place that has been clicked, and activate its line
-                // in the flows panel (which shows the bound of the clicked place)
-                Rectangle2D hitRect = NetObject.makeHitRectangle(mousePt, zoom);
-                for (Node n : net.nodes) {
-                    if (n instanceof Place && n.intersectRectangle(hitRect, net.viewProfile, true))
-                    {
+            int zoom = viewerPanel.getZoomLevel();
+            mousePt.setLocation(NetObject.screenToLogic(evt.getX(), zoom) + panel.pageBounds.getX(),
+                                 NetObject.screenToLogic(evt.getY(), zoom) + panel.pageBounds.getY());
+            // Search for a place that has been clicked, and activate its line
+            // in the flows panel (which shows the bound of the clicked place)
+            Rectangle2D hitRect = NetObject.makeHitRectangle(mousePt, zoom);
+            for (Node n : net.nodes) {
+                if (sfType.isPlace() && n instanceof Place && 
+                        n.intersectRectangle(hitRect, net.viewProfile, true))
+                {
+                    if (sfType == PTFlows.Type.PLACE_BOUNDS_FROM_PINV) {
                         jList_flows.setSelectedIndex(netIndex.place2index.get((Place)n));
-                        return;
                     }
+                    else {
+                        selectedNode = n;
+                        updateListPanel(false, jList_flows.getSelectedIndex());
+                        repaint();    
+                    }
+                    return;
                 }
+                else if (sfType.isTransition()&& n instanceof Transition && 
+                        n.intersectRectangle(hitRect, net.viewProfile, true))
+                {
+                    selectedNode = n;
+                    updateListPanel(false, jList_flows.getSelectedIndex());
+                    repaint();
+                    return;
+                }
+            }
+            
+            if (selectedNode != null) {
+                selectedNode = null;
+                updateListPanel(false, jList_flows.getSelectedIndex());
+                repaint();
             }
         }
 
@@ -761,10 +855,10 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
 
         @Override
         public void setupDrawContext(NetPage net, DrawHelper dh) {
-            if (algo == null || !algo.isComputed())
-                return;
-            if (jList_flows.getModel().getSize() == 0)
-                return;
+//            if (algo == null || !algo.isComputed())
+//                return;
+//            if (jList_flows.getModel().getSize() == 0)
+//                return;
 
             dh.selectedPTFlow = selectedFlow;
         }

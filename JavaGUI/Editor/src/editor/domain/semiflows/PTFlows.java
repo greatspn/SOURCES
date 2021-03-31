@@ -4,6 +4,7 @@
  */
 package editor.domain.semiflows;
 
+import editor.domain.Node;
 import editor.domain.Selectable;
 import editor.gui.ResourceFactory;
 import java.awt.Color;
@@ -126,6 +127,7 @@ public interface PTFlows {
     // Preferred color in visualization mode
     public Color getLineColor(int card);
     public Color getTextColor(int card);
+    public Color getBorderColor(Node node);
     
     // Phase for animation of the dashed edges.
     public int getDashPhase();

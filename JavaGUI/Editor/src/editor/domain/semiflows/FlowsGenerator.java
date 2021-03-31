@@ -6,6 +6,7 @@ package editor.domain.semiflows;
 
 import common.Util;
 import editor.domain.Edge;
+import editor.domain.Node;
 import editor.domain.elements.GspnEdge;
 import editor.domain.elements.Place;
 import editor.domain.elements.Transition;
@@ -596,31 +597,54 @@ public class FlowsGenerator extends StructuralAlgorithm {
         
     }
     
-    public String flowToString(int i, NetIndex netIndex, boolean asInvariant, Color htmlTextColor) {
+    public String flowToString(int i, NetIndex netIndex, boolean asInvariant, 
+            Color htmlTextColor, Color htmlBackColor, Node selNode) 
+    {
         StringBuilder repr = new StringBuilder();
+        boolean selected = true;
+
+        int selK = -1;
+        if (selNode instanceof Place)
+            selK = netIndex.place2index.get((Place)selNode);
+        else if (selNode instanceof Transition)
+            selK = netIndex.trn2index.get((Transition)selNode);
+        int[] flow = getFlowVector(i);
+        if (selK != -1) {
+            selected = (flow[selK] != 0);
+//            if (flow[selK] == 0)
+//                repr.append("U ");
+//            else
+//                repr.append("S ");
+        }
+
+
         boolean useHtml = (htmlTextColor != null);
-        String negClrHex = null, eqClrHex = null;
+        String negClrHex = null, eqClrHex = null, foreClrHex = null;
         if (useHtml) {
-            Color negClr = Util.mix(htmlTextColor, Color.MAGENTA, 0.5f);
-            Color eqClr = Util.mix(htmlTextColor, Color.CYAN, 0.5f);
+            Color foreClr = selected ? htmlTextColor : Util.mix(htmlTextColor, htmlBackColor, 0.5f);
+            Color negClr = Util.mix(foreClr, Color.MAGENTA, 0.5f);
+            Color eqClr = Util.mix(foreClr, Color.CYAN, 0.5f);
+            foreClrHex = String.format("#%06x", foreClr.getRGB() & 0xFFFFFF);
             negClrHex = String.format("#%06x", negClr.getRGB() & 0xFFFFFF);
             eqClrHex = String.format("#%06x", eqClr.getRGB() & 0xFFFFFF);
             repr.append("<html>");
         }
         
-        int[] flow = getFlowVector(i);
         for (int k=0; k<flow.length; k++) {
             if (flow[k] == 0)
                 continue;
             if (repr.length() > 0)
                 repr.append(" ");
+            if (useHtml) {
+                repr.append("<font color='").append(flow[k] > 0 ? foreClrHex : negClrHex).append("'>");
+                if (k == selK)
+                    repr.append("<b>");
+            }
             if (flow[k] > 0) {
                 if (flow[k] != 1)
                     repr.append(flow[k]).append("*");
             }
             else {
-                if (useHtml)
-                    repr.append("<font color='").append(negClrHex).append("'>");
                 if (flow[k] == -1)
                     repr.append("-");
                 else
@@ -630,8 +654,11 @@ public class FlowsGenerator extends StructuralAlgorithm {
                 repr.append(netIndex.places.get(k).getUniqueName());
             else
                 repr.append(netIndex.transitions.get(k).getUniqueName());
-            if (flow[k] < 0 && useHtml)
+            if (useHtml) {
+                if (k == selK)
+                    repr.append("</b>");
                 repr.append("</font>");
+            }
         }
         
         String invSign = type.getInvariantSign();

@@ -45,6 +45,7 @@ public class DrawHelper
         String name;
 
         public final Stroke logicStroke;
+        public final Stroke logicStrokeWider;
         public final Stroke logicStrokeDashed;
         public final Stroke logicSelectStrokeEdges;
         public final Stroke logicSelectStrokeNodes;
@@ -57,6 +58,7 @@ public class DrawHelper
              
             float width = getWidth();
             logicStroke = new BasicStroke(width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 2f);
+            logicStrokeWider = new BasicStroke(width*2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 2f);
             logicStrokeDashed = new BasicStroke(width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 2f, new float[]{0.4f, 0.3f}, 0.0f);
             float selWidth = ((widthMult-1) * getBaseStrokeWidth()) + NetObject.SELECTION_STROKE_WIDTH;
             logicSelectStrokeEdges = new BasicStroke(2 * selWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
