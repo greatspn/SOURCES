@@ -1591,7 +1591,7 @@ ComputeFlows(const PN& pn, InvariantKind inv_kind, FlowMatrixKind mat_kind,
             throw program_exception("Unknown kind of flows!");
     }
 
-    if (system_kind != SystemMatrixType::REGULAR)
+    if (system_kind != SystemMatrixType::REGULAR || 0!=(suppl_flags & FM_REDUCE_SUPPLEMENTARY_VARS))
         sf_gen.reduce_non_minimal();
 
     if (verboseLvl >= VL_BASIC) {

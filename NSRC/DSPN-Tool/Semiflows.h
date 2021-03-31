@@ -71,6 +71,7 @@ public:
 const size_t FM_POSITIVE_SUPPLEMENTARY = 1;
 const size_t FM_NEGATIVE_SUPPLEMENTARY = 2;
 const size_t FM_ON_THE_FLY_SUPPL_VARS = 4;
+const size_t FM_REDUCE_SUPPLEMENTARY_VARS = 8;
 
 //-----------------------------------------------------------------------------
 

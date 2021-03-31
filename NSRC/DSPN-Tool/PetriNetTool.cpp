@@ -307,6 +307,64 @@ template<typename T> void set_null(shared_ptr<T> &ptr) {
     ptr.swap(empty);
 }
 
+//=============================================================================
+
+struct invariants_spec_t {
+    InvariantKind invknd;
+    SystemMatrixType system_kind;
+    FlowMatrixKind matk;
+    size_t suppl_flags;
+};
+
+bool is_invariants_cmd(std::string cmd, invariants_spec_t& is) {
+    if (cmd.size() < 3 || cmd[0] != '-')
+        return false;
+
+    is.invknd = InvariantKind::PLACE;
+    is.system_kind = SystemMatrixType::REGULAR;
+    is.suppl_flags = 0;
+    is.matk = FlowMatrixKind::SEMIFLOWS;
+
+    // extract the nominal command
+    int i=1;
+    while (i < cmd.size() && std::isalpha(cmd[i]))
+        i++;
+    std::string cmdName = cmd.substr(1, i-1);
+    // cout << "cmdName = " << cmdName << endl;
+
+    if (cmdName == "traps"  || cmdName == "siphons") {
+        is.system_kind = (cmdName == "traps" ? SystemMatrixType::TRAPS : SystemMatrixType::SIPHONS);
+        return true;
+    }
+    
+    if      (cmdName == "pinv" || cmdName == "psfl")  
+    { is.invknd=InvariantKind::PLACE;      is.matk=FlowMatrixKind::SEMIFLOWS;  }
+    else if (cmdName == "tinv" || cmdName == "tsfl")  
+    { is.invknd=InvariantKind::TRANSITION; is.matk=FlowMatrixKind::SEMIFLOWS;  }
+    else if (cmdName == "pfl")  
+    { is.invknd=InvariantKind::PLACE;      is.matk=FlowMatrixKind::INTEGER_FLOWS;  }
+    else if (cmdName == "tfl")  
+    { is.invknd=InvariantKind::TRANSITION; is.matk=FlowMatrixKind::INTEGER_FLOWS;  }
+    else if (cmdName == "pbasis")  
+    { is.invknd=InvariantKind::PLACE;      is.matk=FlowMatrixKind::BASIS;  }
+    else if (cmdName == "tbasis")  
+    { is.invknd=InvariantKind::TRANSITION; is.matk=FlowMatrixKind::BASIS;  }
+    else return false;
+
+    // read extra flags
+    while (i < cmd.size()) {
+        // cout << "extra: " << cmd[i] << endl;
+        switch (cmd[i]) {
+            case '+': is.suppl_flags |= FM_POSITIVE_SUPPLEMENTARY; break;
+            case '-': is.suppl_flags |= FM_NEGATIVE_SUPPLEMENTARY; break;
+            case '*': is.suppl_flags |= FM_ON_THE_FLY_SUPPL_VARS | FM_POSITIVE_SUPPLEMENTARY | FM_NEGATIVE_SUPPLEMENTARY; break;
+            case 'r': is.suppl_flags |= FM_REDUCE_SUPPLEMENTARY_VARS; break;
+            default:  return false;
+        }
+        i++;
+    } 
+    return true;
+}
 
 //=============================================================================
 
@@ -618,6 +676,7 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
     while (argNum < argc) {
         string cmdArg(argv[argNum++]);
         size_t remainedArgs = argc - argNum;
+        invariants_spec_t inv_spec;
 
         try {
             if (cmdArg == "-h" || cmdArg == "-help" ||
@@ -1065,55 +1124,57 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
                 cout << "EXCLUDING SLACK VARIABLES FROM FLOWS SUPPORT." << endl;
                 extra_vars_in_support = false;
             }
-            else if (cmdArg == "-pinv"   || cmdArg == "-pinv+"   || cmdArg == "-pinv-"   || cmdArg == "-pinv+-"   || cmdArg == "-pinv*"   ||
-                     cmdArg == "-tinv"   || cmdArg == "-tinv+"   || cmdArg == "-tinv-"   || cmdArg == "-tinv+-"   || cmdArg == "-tinv*"   ||
-                     cmdArg == "-psfl"   || cmdArg == "-psfl+"   || cmdArg == "-psfl-"   || cmdArg == "-psfl+-"   || cmdArg == "-psfl*"   ||
-                     cmdArg == "-tsfl"   || cmdArg == "-tsfl+"   || cmdArg == "-tsfl-"   || cmdArg == "-tsfl+-"   || cmdArg == "-tsfl*"   ||
-                     cmdArg == "-pbasis" || cmdArg == "-pbasis+" || cmdArg == "-pbasis-" || cmdArg == "-pbasis+-" || cmdArg == "-pbasis*" ||
-                     cmdArg == "-tbasis" || cmdArg == "-tbasis+" || cmdArg == "-tbasis-" || cmdArg == "-tbasis+-" || cmdArg == "-tbasis*" ||
-                     cmdArg == "-pfl"    || cmdArg == "-pfl+"    || cmdArg == "-pfl-"    || cmdArg == "-pfl+-"    || cmdArg == "-pfl*"    ||
-                     cmdArg == "-tfl"    || cmdArg == "-tfl+"    || cmdArg == "-tfl-"    || cmdArg == "-tfl+-"    || cmdArg == "-tfl*"    ||
-                     cmdArg == "-traps"  || cmdArg == "-siphons") 
+            // else if (cmdArg == "-pinv"   || cmdArg == "-pinv+"   || cmdArg == "-pinv-"   || cmdArg == "-pinv+-"   || cmdArg == "-pinv*"   ||
+            //          cmdArg == "-tinv"   || cmdArg == "-tinv+"   || cmdArg == "-tinv-"   || cmdArg == "-tinv+-"   || cmdArg == "-tinv*"   ||
+            //          cmdArg == "-psfl"   || cmdArg == "-psfl+"   || cmdArg == "-psfl-"   || cmdArg == "-psfl+-"   || cmdArg == "-psfl*"   ||
+            //          cmdArg == "-tsfl"   || cmdArg == "-tsfl+"   || cmdArg == "-tsfl-"   || cmdArg == "-tsfl+-"   || cmdArg == "-tsfl*"   ||
+            //          cmdArg == "-pbasis" || cmdArg == "-pbasis+" || cmdArg == "-pbasis-" || cmdArg == "-pbasis+-" || cmdArg == "-pbasis*" ||
+            //          cmdArg == "-tbasis" || cmdArg == "-tbasis+" || cmdArg == "-tbasis-" || cmdArg == "-tbasis+-" || cmdArg == "-tbasis*" ||
+            //          cmdArg == "-pfl"    || cmdArg == "-pfl+"    || cmdArg == "-pfl-"    || cmdArg == "-pfl+-"    || cmdArg == "-pfl*"    ||
+            //          cmdArg == "-tfl"    || cmdArg == "-tfl+"    || cmdArg == "-tfl-"    || cmdArg == "-tfl+-"    || cmdArg == "-tfl*"    ||
+            //          cmdArg == "-traps"  || cmdArg == "-siphons") 
+            else if (is_invariants_cmd(cmdArg, inv_spec))
             {
                 RequirePetriNet();
-                size_t suppl_flags = 0;
-                InvariantKind invknd = InvariantKind::PLACE;
-                SystemMatrixType system_kind = SystemMatrixType::REGULAR;
-                FlowMatrixKind matk = FlowMatrixKind::SEMIFLOWS;
-                if (cmdArg == "-traps"  || cmdArg == "-siphons") {
-                    system_kind = (cmdArg == "-traps" ? SystemMatrixType::TRAPS : SystemMatrixType::SIPHONS);
-                }
-                else {
-                    invknd = (cmdArg[1]=='p' ? InvariantKind::PLACE : InvariantKind::TRANSITION);
-                    if (cmdArg[2] == 'b') // [b]asis
-                        matk = FlowMatrixKind::BASIS;
-                    if (cmdArg[2] == 'f') // [f]l
-                        matk = FlowMatrixKind::INTEGER_FLOWS;
-                    switch (cmdArg[strlen(cmdArg.c_str()) - 1]) {
-                        case '+': suppl_flags |= FM_POSITIVE_SUPPLEMENTARY; break;
-                        case '-': suppl_flags |= FM_NEGATIVE_SUPPLEMENTARY; break;
-                        case '*': suppl_flags |= FM_ON_THE_FLY_SUPPL_VARS | FM_POSITIVE_SUPPLEMENTARY | FM_NEGATIVE_SUPPLEMENTARY; break;
-                        default:  suppl_flags = 0;  break;
-                    }
-                    if (cmdArg[strlen(cmdArg.c_str()) - 2] == '+')
-                        suppl_flags |= FM_POSITIVE_SUPPLEMENTARY;
-                }
+                // size_t suppl_flags = 0;
+                // InvariantKind invknd = InvariantKind::PLACE;
+                // SystemMatrixType system_kind = SystemMatrixType::REGULAR;
+                // FlowMatrixKind matk = FlowMatrixKind::SEMIFLOWS;
+                // if (cmdArg == "-traps"  || cmdArg == "-siphons") {
+                //     system_kind = (cmdArg == "-traps" ? SystemMatrixType::TRAPS : SystemMatrixType::SIPHONS);
+                // }
+                // else {
+                //     invknd = (cmdArg[1]=='p' ? InvariantKind::PLACE : InvariantKind::TRANSITION);
+                //     if (cmdArg[2] == 'b') // [b]asis
+                //         matk = FlowMatrixKind::BASIS;
+                //     if (cmdArg[2] == 'f') // [f]l
+                //         matk = FlowMatrixKind::INTEGER_FLOWS;
+                //     switch (cmdArg[strlen(cmdArg.c_str()) - 1]) {
+                //         case '+': suppl_flags |= FM_POSITIVE_SUPPLEMENTARY; break;
+                //         case '-': suppl_flags |= FM_NEGATIVE_SUPPLEMENTARY; break;
+                //         case '*': suppl_flags |= FM_ON_THE_FLY_SUPPL_VARS | FM_POSITIVE_SUPPLEMENTARY | FM_NEGATIVE_SUPPLEMENTARY; break;
+                //         default:  suppl_flags = 0;  break;
+                //     }
+                //     if (cmdArg[strlen(cmdArg.c_str()) - 2] == '+')
+                //         suppl_flags |= FM_POSITIVE_SUPPLEMENTARY;
+                // }
                 // if (cmdArg[3] == 'p') // s[p]an
                 //     matk = FlowMatrixKind::NESTED_FLOW_SPAN;
                 performance_timer timer;
-                shared_ptr<flow_matrix_t> psf = ComputeFlows(*pn, invknd, matk, system_kind, detectExpFlows, 
-                                                             suppl_flags, use_Colom_pivoting, 
+                shared_ptr<flow_matrix_t> psf = ComputeFlows(*pn, inv_spec.invknd, inv_spec.matk, 
+                                                             inv_spec.system_kind, detectExpFlows, 
+                                                             inv_spec.suppl_flags, use_Colom_pivoting, 
                                                              extra_vars_in_support, verboseLvl);
                 shared_ptr<flow_matrix_t> *dst;
-                switch (matk) {
+                switch (inv_spec.matk) {
                     case FlowMatrixKind::SEMIFLOWS:
-                        dst = (invknd == InvariantKind::PLACE ? &pinv : &tinv);
+                        dst = (inv_spec.invknd == InvariantKind::PLACE ? &pinv : &tinv);
                         break;
                     case FlowMatrixKind::BASIS:
-                        dst = (invknd == InvariantKind::PLACE ? &pbasis : &tbasis);
+                        dst = (inv_spec.invknd == InvariantKind::PLACE ? &pbasis : &tbasis);
                         break;
                     case FlowMatrixKind::INTEGER_FLOWS:
-                        dst = (invknd == InvariantKind::PLACE ? &pminflows : &tminflows);
+                        dst = (inv_spec.invknd == InvariantKind::PLACE ? &pminflows : &tminflows);
                         break;
                     // case FlowMatrixKind::NESTED_FLOW_SPAN:
                     //     dst = (invknd == InvariantKind::PLACE ? &pnestflspan : &tnestflspan);
@@ -1122,7 +1183,8 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
                 }
                 *dst = psf;
                 // Save the flows to the disk in GreatSPN format
-                string FlowFile(*netName + GetGreatSPN_FileExt(invknd, matk, system_kind, suppl_flags));
+                string FlowFile(*netName + GetGreatSPN_FileExt(inv_spec.invknd, inv_spec.matk, 
+                                                               inv_spec.system_kind, inv_spec.suppl_flags));
                 ofstream flow_os(FlowFile.c_str());
                 SaveFlows(*psf, flow_os);
                 PrintFlows(*pn, *psf, cmdArg.c_str(), verboseLvl);
