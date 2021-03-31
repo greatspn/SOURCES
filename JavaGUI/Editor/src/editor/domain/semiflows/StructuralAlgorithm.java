@@ -18,6 +18,7 @@ public abstract class StructuralAlgorithm {
     
     // Has already been computed?
     private boolean computed = false;
+    private String failureReason = "";
 
     public StructuralAlgorithm(int N, int N0, int M) {
         assert N0 <= N;
@@ -36,6 +37,15 @@ public abstract class StructuralAlgorithm {
 
     public boolean isComputed() {
         return computed;
+    }
+    
+    public void setFailed(String reason) {
+        this.computed = false;
+        this.failureReason = reason;
+    }
+    
+    public String getFailureReason() {
+        return failureReason;
     }
     
     protected void reduceN(int N) {

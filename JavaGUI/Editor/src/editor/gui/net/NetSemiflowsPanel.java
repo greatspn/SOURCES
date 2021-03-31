@@ -426,9 +426,10 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         
         // Make the list of errors
         ArrayList<PageErrorWarning> errsWarns = new ArrayList<>();
-        if (!algo.isComputed())
-            errsWarns.add(PageErrorWarning.newWarning("Computation interrupted.", 
+        if (!algo.isComputed()) {
+            errsWarns.add(PageErrorWarning.newWarning(algo.getFailureReason(), 
                           new Selectable.DummySelectable()));
+        }
         else {
             if (algo.hasInhibitorEdges)
                 errsWarns.add(PageErrorWarning.newWarning("Inhibitor edges have no impact on this "

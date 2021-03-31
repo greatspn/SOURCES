@@ -160,12 +160,18 @@ public class FlowsGenerator extends StructuralAlgorithm {
                     int[] nrD = new int[N];
                     int gcdAD = -1;
                     for (int k = 0; k < M; k++) {
-                        nrA[k] = mult2 * mA.get(r1)[k] + mult1 * mA.get(r2)[k];
+                        // Compute (with arithmetic overflow check):
+                        //   nrA[k] = mult2 * mA.get(r1)[k] + mult1 * mA.get(r2)[k];
+                        nrA[k] = Math.addExact(Math.multiplyExact(mult2, mA.get(r1)[k]),
+                                               Math.multiplyExact(mult1, mA.get(r2)[k]));
                         gcdAD = (k == 0) ? Math.abs(nrA[k]) : gcd(gcdAD, Math.abs(nrA[k]));
                     }
                     assert nrA[i] == 0;
                     for (int k = 0; k < N; k++) {
-                        nrD[k] = mult2 * mD.get(r1)[k] + mult1 * mD.get(r2)[k];
+                        // Compute (with arithmetic overflow check):
+                        //   nrD[k] = mult2 * mD.get(r1)[k] + mult1 * mD.get(r2)[k];
+                        nrD[k] = Math.addExact(Math.multiplyExact(mult2, mD.get(r1)[k]),
+                                               Math.multiplyExact(mult1, mD.get(r2)[k]));
                         gcdAD = gcd(gcdAD, Math.abs(nrD[k]));
                     }
                     if (gcdAD != 1) {
@@ -185,8 +191,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
                         continue; // drop empty row
 
                     if (log)
-                        System.out.println(i + ": ADD row " + r1 + " + row " + r2 +
-                                           "  nnz(D)=" + nnzD);
+                        System.out.println(i + ": ADD row " + r1 + " + row " + r2 + "  nnz(D)=" + nnzD);
 
                     mA.add(nrA);
                     mD.add(nrD);
@@ -598,10 +603,9 @@ public class FlowsGenerator extends StructuralAlgorithm {
     }
     
     public String flowToString(int i, NetIndex netIndex, boolean asInvariant, 
-            Color htmlTextColor, Color htmlBackColor, Node selNode) 
+            Color htmlForegroundColor, Color htmlBackgroundColor, Node selNode) 
     {
         StringBuilder repr = new StringBuilder();
-        boolean selected = true;
 
         int selK = -1;
         if (selNode instanceof Place)
@@ -609,19 +613,14 @@ public class FlowsGenerator extends StructuralAlgorithm {
         else if (selNode instanceof Transition)
             selK = netIndex.trn2index.get((Transition)selNode);
         int[] flow = getFlowVector(i);
-        if (selK != -1) {
-            selected = (flow[selK] != 0);
-//            if (flow[selK] == 0)
-//                repr.append("U ");
-//            else
-//                repr.append("S ");
-        }
+        
+        boolean selected = (selK == -1) || (flow[selK] != 0);
 
 
-        boolean useHtml = (htmlTextColor != null);
+        boolean useHtml = (htmlForegroundColor != null);
         String negClrHex = null, eqClrHex = null, foreClrHex = null;
         if (useHtml) {
-            Color foreClr = selected ? htmlTextColor : Util.mix(htmlTextColor, htmlBackColor, 0.5f);
+            Color foreClr = selected ? htmlForegroundColor : Util.mix(htmlForegroundColor, htmlBackgroundColor, 0.5f);
             Color negClr = Util.mix(foreClr, Color.MAGENTA, 0.5f);
             Color eqClr = Util.mix(foreClr, Color.CYAN, 0.5f);
             foreClrHex = String.format("#%06x", foreClr.getRGB() & 0xFFFFFF);

@@ -1007,24 +1007,24 @@ Using multiplicities and inhibitor arcs.</text-box>
   </gspn>
   <gspn name="ExpPTInv">
     <nodes>
-      <place label-x="-1.5" label-y="1.0" marking="1" name="P7" x="6.0" y="20.0"/>
-      <place label-x="-2.0" label-y="0.0" name="P9" x="3.0" y="13.0"/>
-      <place label-x="2.0" label-y="0.0" name="P8" x="9.0" y="13.0"/>
-      <transition label-x="-1.0" label-y="-1.0" name="t8" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="3.55" y="17.0"/>
-      <transition label-x="1.0" label-y="-1.0" name="t7" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="9.549999999999999" y="17.0"/>
-      <transition label-x="-1.0" label-y="-1.0" name="t9" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="6.55" y="10.0"/>
-      <place label-y="-2.0" name="P1" x="6.0" y="4.0"/>
-      <transition name="t1" nservers-x="0.5" type="EXP" x="10.549999999999999" y="2.0"/>
-      <transition name="t2" nservers-x="0.5" type="EXP" x="10.549999999999999" y="7.0"/>
-      <place name="P2" x="15.0" y="2.0"/>
-      <place name="P3" x="15.0" y="7.0"/>
-      <transition name="t3" nservers-x="0.5" type="EXP" x="19.55" y="5.0"/>
-      <place name="P4" x="22.0" y="10.0"/>
-      <transition label-x="-0.5" name="t5" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="19.55" y="13.0"/>
-      <transition label-x="0.5" name="t4" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="25.55" y="13.0"/>
-      <place name="P6" x="19.0" y="17.0"/>
-      <place name="P5" x="25.0" y="17.0"/>
-      <transition name="t6" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="22.55" y="21.0"/>
+      <place label-x="-1.5" label-y="1.0" marking="1" name="P7" x="6.0" y="21.0"/>
+      <place label-x="-2.0" label-y="0.0" name="P9" x="3.0" y="14.0"/>
+      <place label-x="2.0" label-y="0.0" name="P8" x="9.0" y="14.0"/>
+      <transition label-x="-1.0" label-y="-1.0" name="t8" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="3.55" y="18.0"/>
+      <transition label-x="1.0" label-y="-1.0" name="t7" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="9.549999999999999" y="18.0"/>
+      <transition label-x="-1.0" label-y="-1.0" name="t9" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="6.55" y="11.0"/>
+      <place label-y="-2.0" name="P1" x="6.0" y="5.0"/>
+      <transition name="t1" nservers-x="0.5" type="EXP" x="9.549999999999999" y="2.0"/>
+      <transition name="t2" nservers-x="0.5" type="EXP" x="9.549999999999999" y="8.0"/>
+      <place name="P2" x="13.0" y="2.0"/>
+      <place name="P3" x="13.0" y="8.0"/>
+      <transition name="t3" nservers-x="0.5" type="EXP" x="16.55" y="5.0"/>
+      <place name="P4" x="20.0" y="11.0"/>
+      <transition label-x="-0.5" name="t5" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="17.55" y="14.0"/>
+      <transition label-x="0.5" name="t4" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="23.55" y="14.0"/>
+      <place name="P6" x="17.0" y="18.0"/>
+      <place name="P5" x="23.0" y="18.0"/>
+      <transition name="t6" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="20.55" y="22.0"/>
     </nodes>
     <edges>
       <arc head="t8" kind="INPUT" tail="P7"/>
@@ -1045,7 +1045,7 @@ Using multiplicities and inhibitor arcs.</text-box>
       <arc head="t3" kind="INPUT" tail="P3"/>
       <arc head="t3" kind="INPUT" tail="P2"/>
       <arc head="P4" kind="OUTPUT" tail="t3">
-        <point x="23.0" y="6.0"/>
+        <point x="21.0" y="6.0"/>
       </arc>
       <arc head="t5" kind="INPUT" tail="P4"/>
       <arc head="P6" kind="OUTPUT" tail="t5"/>
@@ -1055,9 +1055,9 @@ Using multiplicities and inhibitor arcs.</text-box>
       <arc head="P6" kind="OUTPUT" tail="t4"/>
       <arc head="t6" kind="INPUT" tail="P6"/>
       <arc head="t6" kind="INPUT" tail="P5"/>
-      <arc head="P7" kind="OUTPUT" tail="t6">
-        <point x="23.0" y="25.0"/>
-        <point x="7.0" y="25.0"/>
+      <arc head="P7" kind="OUTPUT" mult-k="1.5340820312499996" mult-x="1.457558476266506" mult-y="-0.5636622856002447" tail="t6">
+        <point x="21.0" y="26.0"/>
+        <point x="7.0" y="26.0"/>
       </arc>
     </edges>
   </gspn>
@@ -1984,6 +1984,150 @@ Using multiplicities and inhibitor arcs.</text-box>
       <arc head="sell_steel" kind="INPUT" mult="10" mult-x="0.0" mult-y="-0.5" tail="steel"/>
       <arc head="tons_sold_slag" kind="OUTPUT" mult-k="0.37509765625" mult-x="-3.906250000014211E-4" mult-y="0.5" tail="sell_slag"/>
       <arc head="tons_sold_steel" kind="OUTPUT" mult-x="-0.5" mult-y="-0.5" tail="sell_steel"/>
+    </edges>
+  </gspn>
+  <gspn name="GPPP-PT-C1000N0000001000" view-rates="false">
+    <nodes>
+      <place label-y="0.0" name="Pi" x="23.0" y="14.0"/>
+      <place label-y="-1.0" marking="4000" name="ATP" x="27.0" y="14.0"/>
+      <place label-y="-1.0" marking="2000" name="NADplus" x="22.0" y="11.0"/>
+      <place label-y="0.0" name="NADH" x="16.0" y="16.0"/>
+      <place label-y="-1.0" marking="2000" name="NADPplus" x="31.0" y="12.0"/>
+      <place label-y="0.0" name="NADPH" x="24.0" y="17.0"/>
+      <place label-x="-0.5" label-y="-1.0" marking="1000" name="GSSG" x="11.0" y="16.0"/>
+      <place label-y="0.0" name="GSH" x="13.0" y="14.0"/>
+      <place label-y="0.0" name="Ru5P" x="35.0" y="22.0"/>
+      <place label-x="0.5" label-y="1.0" name="Xu5P" x="30.0" y="29.0"/>
+      <place label-y="0.0" name="R5P" x="32.0" y="16.0"/>
+      <place label-y="0.0" name="S7P" x="19.0" y="12.0"/>
+      <place label-y="0.0" name="GAP" x="26.0" y="19.0"/>
+      <place label-y="0.0" name="E4P" x="17.0" y="30.0"/>
+      <place label-y="0.0" name="F6P" x="5.0" y="14.0"/>
+      <place label-y="0.0" name="G6P" x="35.0" y="6.0"/>
+      <place label-y="0.0" name="FBP" x="22.0" y="19.0"/>
+      <place label-y="0.0" name="DHAP" x="10.0" y="19.0"/>
+      <place label-y="0.0" name="_1_3_BPG" x="14.0" y="29.0"/>
+      <place label-y="0.0" name="ADP" x="28.0" y="16.0"/>
+      <place label-x="0.5" label-y="1.0" name="_3PG" x="43.0" y="23.0"/>
+      <place label-x="0.5" label-y="1.0" name="_2PG" x="44.0" y="18.0"/>
+      <place label-y="0.0" name="PEP" x="39.0" y="30.0"/>
+      <place label-y="0.0" name="Pyr" x="8.0" y="24.0"/>
+      <place label-y="0.0" marking="1" name="start" x="23.0" y="2.0"/>
+      <place label-y="0.0" name="Lac" x="13.0" y="9.0"/>
+      <place label-y="0.0" name="Gluc" x="29.0" y="6.0"/>
+      <place label-x="-0.5" label-y="-1.5" marking="3000" name="b1" x="19.0" y="2.0"/>
+      <place label-y="0.0" name="b2" x="28.0" y="25.0"/>
+      <place label-y="-1.0" marking="2000" name="a1" x="35.0" y="11.0"/>
+      <place label-y="0.0" name="a2" x="30.0" y="19.0"/>
+      <place label-y="1.0" marking="7000" name="c1" x="24.0" y="29.0"/>
+      <place label-y="0.0" name="c2" x="43.0" y="8.0"/>
+      <transition label-x="0.5" label-y="-1.0" name="GAP_dehydrogenase" nservers-x="0.5" type="EXP" x="17.55" y="14.0"/>
+      <transition label-y="0.0" name="TIM_forward" nservers-x="0.5" type="EXP" x="14.55" y="18.0"/>
+      <transition label-y="0.0" name="TIM_backward" nservers-x="0.5" type="EXP" x="31.55" y="24.0"/>
+      <transition label-y="0.0" name="Aldolase" nservers-x="0.5" type="EXP" x="24.55" y="22.0"/>
+      <transition label-y="0.0" name="Phosphofructokinase" nservers-x="0.5" type="EXP" x="19.55" y="21.0"/>
+      <transition label-y="0.0" name="Phosphoclucose_isomerase" nservers-x="0.5" type="EXP" x="20.55" y="6.0"/>
+      <transition label-y="0.0" name="Hexokinase" nservers-x="0.5" type="EXP" x="25.55" y="6.0"/>
+      <transition label-y="0.0" name="Glutathione_reductose" nservers-x="0.5" type="EXP" x="16.55" y="12.0"/>
+      <transition label-y="0.0" name="Glutathione_oxidation" nservers-x="0.5" type="EXP" x="14.55" y="22.0"/>
+      <transition label-y="0.0" name="G6P_dehydrogenase" nservers-x="0.5" type="EXP" x="38.55" y="18.0"/>
+      <transition label-y="0.0" name="Ru5P_epimerase" nservers-x="0.5" type="EXP" x="32.55" y="23.0"/>
+      <transition label-y="0.0" name="Ru5P_isomerase" nservers-x="0.5" type="EXP" x="23.55" y="25.0"/>
+      <transition label-y="0.0" name="Transaldolase" nservers-x="0.5" type="EXP" x="18.55" y="24.0"/>
+      <transition label-y="0.0" name="Transketolase2" nservers-x="0.5" type="EXP" x="20.55" y="28.0"/>
+      <transition label-y="0.0" name="Phosphoglycerate_kinase" nservers-x="0.5" type="EXP" x="35.55" y="27.0"/>
+      <transition label-y="0.0" name="Phosphoglycerate_mutase" nservers-x="0.5" type="EXP" x="41.55" y="14.0"/>
+      <transition label-y="0.0" name="Enolase" nservers-x="0.5" type="EXP" x="37.55" y="23.0"/>
+      <transition label-y="0.0" name="Pyruvate_kinase" nservers-x="0.5" type="EXP" x="26.55" y="26.0"/>
+      <transition label-x="0.5" label-y="1.0" name="Lactate_dehydrogenase" nservers-x="0.5" type="EXP" x="19.55" y="16.0"/>
+      <transition label-y="0.0" name="remove" nservers-x="0.5" type="EXP" x="17.55" y="10.0"/>
+      <transition label-y="0.0" name="generate" nservers-x="0.5" type="EXP" x="31.55" y="9.0"/>
+      <transition label-y="0.0" name="Transketolase1" nservers-x="0.5" type="EXP" x="23.55" y="8.0"/>
+    </nodes>
+    <edges>
+      <arc head="Pyr" head-magnet="0" kind="OUTPUT" tail="Pyruvate_kinase" tail-magnet="0"/>
+      <arc head="Lactate_dehydrogenase" head-magnet="0" kind="INPUT" tail="Pyr" tail-magnet="0"/>
+      <arc head="PEP" head-magnet="0" kind="OUTPUT" tail="Enolase" tail-magnet="0"/>
+      <arc head="Pyruvate_kinase" head-magnet="0" kind="INPUT" tail="PEP" tail-magnet="0"/>
+      <arc head="_2PG" head-magnet="0" kind="OUTPUT" tail="Phosphoglycerate_mutase" tail-magnet="0"/>
+      <arc head="Enolase" head-magnet="0" kind="INPUT" tail="_2PG" tail-magnet="0"/>
+      <arc head="_3PG" head-magnet="0" kind="OUTPUT" tail="Phosphoglycerate_kinase" tail-magnet="0"/>
+      <arc head="Phosphoglycerate_mutase" head-magnet="0" kind="INPUT" tail="_3PG" tail-magnet="0"/>
+      <arc head="GAP_dehydrogenase" head-magnet="0" kind="INPUT" tail="GAP" tail-magnet="0"/>
+      <arc head="GAP_dehydrogenase" head-magnet="0" kind="INPUT" tail="NADplus" tail-magnet="0"/>
+      <arc head="GAP_dehydrogenase" head-magnet="0" kind="INPUT" tail="Pi" tail-magnet="0"/>
+      <arc head="_1_3_BPG" head-magnet="0" kind="OUTPUT" tail="GAP_dehydrogenase" tail-magnet="0"/>
+      <arc head="NADH" head-magnet="0" kind="OUTPUT" tail="GAP_dehydrogenase" tail-magnet="0"/>
+      <arc head="Phosphoglycerate_kinase" head-magnet="0" kind="INPUT" tail="ADP" tail-magnet="0"/>
+      <arc head="ATP" head-magnet="0" kind="OUTPUT" tail="Phosphoglycerate_kinase" tail-magnet="0"/>
+      <arc head="Phosphoglycerate_kinase" head-magnet="0" kind="INPUT" tail="_1_3_BPG" tail-magnet="0"/>
+      <arc head="Pyruvate_kinase" head-magnet="0" kind="INPUT" tail="ADP" tail-magnet="0"/>
+      <arc head="ATP" head-magnet="0" kind="OUTPUT" tail="Pyruvate_kinase" tail-magnet="0"/>
+      <arc head="Lac" head-magnet="0" kind="OUTPUT" tail="Lactate_dehydrogenase" tail-magnet="0"/>
+      <arc head="Lactate_dehydrogenase" head-magnet="0" kind="INPUT" tail="NADH" tail-magnet="0"/>
+      <arc head="NADplus" head-magnet="0" kind="OUTPUT" tail="Lactate_dehydrogenase" tail-magnet="0"/>
+      <arc head="GAP" head-magnet="0" kind="OUTPUT" tail="TIM_forward" tail-magnet="0"/>
+      <arc head="TIM_backward" head-magnet="0" kind="INPUT" tail="GAP" tail-magnet="0"/>
+      <arc head="DHAP" head-magnet="0" kind="OUTPUT" tail="TIM_backward" tail-magnet="0"/>
+      <arc head="TIM_forward" head-magnet="0" kind="INPUT" tail="DHAP" tail-magnet="0"/>
+      <arc head="GAP" head-magnet="0" kind="OUTPUT" tail="Aldolase" tail-magnet="0"/>
+      <arc head="DHAP" head-magnet="0" kind="OUTPUT" tail="Aldolase" tail-magnet="0"/>
+      <arc head="FBP" head-magnet="0" kind="OUTPUT" tail="Phosphofructokinase" tail-magnet="0"/>
+      <arc head="Aldolase" head-magnet="0" kind="INPUT" tail="FBP" tail-magnet="0"/>
+      <arc head="Phosphoclucose_isomerase" head-magnet="0" kind="INPUT" tail="G6P" tail-magnet="0"/>
+      <arc head="F6P" head-magnet="0" kind="OUTPUT" tail="Phosphoclucose_isomerase" tail-magnet="0"/>
+      <arc head="Phosphofructokinase" head-magnet="0" kind="INPUT" tail="F6P" tail-magnet="0"/>
+      <arc head="Phosphofructokinase" head-magnet="0" kind="INPUT" tail="ATP" tail-magnet="0"/>
+      <arc head="Hexokinase" head-magnet="0" kind="INPUT" tail="ATP" tail-magnet="0"/>
+      <arc head="Hexokinase" head-magnet="0" kind="INPUT" tail="Gluc" tail-magnet="0"/>
+      <arc head="G6P" head-magnet="0" kind="OUTPUT" tail="Hexokinase" tail-magnet="0"/>
+      <arc head="GSSG" head-magnet="0" kind="OUTPUT" tail="Glutathione_oxidation" tail-magnet="0"/>
+      <arc head="Glutathione_reductose" head-magnet="0" kind="INPUT" tail="GSSG" tail-magnet="0"/>
+      <arc head="GSH" head-magnet="0" kind="OUTPUT" mult="2" tail="Glutathione_reductose" tail-magnet="0"/>
+      <arc head="Glutathione_oxidation" head-magnet="0" kind="INPUT" mult="2" tail="GSH" tail-magnet="0"/>
+      <arc head="Glutathione_reductose" head-magnet="0" kind="INPUT" tail="NADPH" tail-magnet="0"/>
+      <arc head="NADPplus" head-magnet="0" kind="OUTPUT" tail="Glutathione_reductose" tail-magnet="0"/>
+      <arc head="G6P_dehydrogenase" head-magnet="0" kind="INPUT" mult="2" tail="NADPplus" tail-magnet="0"/>
+      <arc head="NADPH" head-magnet="0" kind="OUTPUT" mult="2" tail="G6P_dehydrogenase" tail-magnet="0"/>
+      <arc head="G6P_dehydrogenase" head-magnet="0" kind="INPUT" tail="G6P" tail-magnet="0"/>
+      <arc head="Ru5P" head-magnet="0" kind="OUTPUT" tail="G6P_dehydrogenase" tail-magnet="0"/>
+      <arc head="Ru5P_epimerase" head-magnet="0" kind="INPUT" tail="Ru5P" tail-magnet="0"/>
+      <arc head="Xu5P" head-magnet="0" kind="OUTPUT" tail="Ru5P_epimerase" tail-magnet="0"/>
+      <arc head="Ru5P_isomerase" head-magnet="0" kind="INPUT" tail="Ru5P" tail-magnet="0"/>
+      <arc head="R5P" head-magnet="0" kind="OUTPUT" tail="Ru5P_isomerase" tail-magnet="0"/>
+      <arc head="Transketolase1" head-magnet="0" kind="INPUT" tail="Xu5P" tail-magnet="0"/>
+      <arc head="Transketolase1" head-magnet="0" kind="INPUT" tail="R5P" tail-magnet="0"/>
+      <arc head="S7P" head-magnet="0" kind="OUTPUT" tail="Transketolase1" tail-magnet="0"/>
+      <arc head="GAP" head-magnet="0" kind="OUTPUT" tail="Transketolase1" tail-magnet="0"/>
+      <arc head="Transaldolase" head-magnet="0" kind="INPUT" tail="S7P" tail-magnet="0"/>
+      <arc head="Transaldolase" head-magnet="0" kind="INPUT" tail="GAP" tail-magnet="0"/>
+      <arc head="E4P" head-magnet="0" kind="OUTPUT" tail="Transaldolase" tail-magnet="0"/>
+      <arc head="Transketolase2" head-magnet="0" kind="INPUT" tail="E4P" tail-magnet="0"/>
+      <arc head="F6P" head-magnet="0" kind="OUTPUT" tail="Transaldolase" tail-magnet="0"/>
+      <arc head="F6P" head-magnet="0" kind="OUTPUT" tail="Transketolase2" tail-magnet="0"/>
+      <arc head="Transketolase2" head-magnet="0" kind="INPUT" tail="Xu5P" tail-magnet="0"/>
+      <arc head="GAP" head-magnet="0" kind="OUTPUT" tail="Transketolase2" tail-magnet="0"/>
+      <arc head="ADP" head-magnet="0" kind="OUTPUT" tail="Hexokinase" tail-magnet="0"/>
+      <arc head="ADP" head-magnet="0" kind="OUTPUT" tail="Phosphofructokinase" tail-magnet="0"/>
+      <arc head="remove" head-magnet="0" kind="INPUT" mult="7000" tail="ATP" tail-magnet="0"/>
+      <arc head="ADP" head-magnet="0" kind="OUTPUT" mult="7000" tail="generate" tail-magnet="0"/>
+      <arc head="start" head-magnet="0" kind="OUTPUT" tail="remove" tail-magnet="0"/>
+      <arc head="generate" head-magnet="0" kind="INPUT" tail="start" tail-magnet="0"/>
+      <arc head="Gluc" head-magnet="0" kind="OUTPUT" mult="4000" tail="generate" tail-magnet="0"/>
+      <arc head="Pi" head-magnet="0" kind="OUTPUT" mult="7000" tail="generate" tail-magnet="0"/>
+      <arc head="remove" head-magnet="0" kind="INPUT" mult="7000" tail="Lac" tail-magnet="0"/>
+      <arc head="Phosphoclucose_isomerase" head-magnet="0" kind="INPUT" mult="3000" tail="b1" tail-magnet="0"/>
+      <arc head="b2" head-magnet="0" kind="OUTPUT" mult="3000" tail="Phosphoclucose_isomerase" tail-magnet="0"/>
+      <arc head="G6P_dehydrogenase" head-magnet="0" kind="INPUT" tail="b2" tail-magnet="0"/>
+      <arc head="b1" head-magnet="0" kind="OUTPUT" tail="G6P_dehydrogenase" tail-magnet="0"/>
+      <arc head="Ru5P_isomerase" head-magnet="0" kind="INPUT" mult="2000" tail="a1" tail-magnet="0"/>
+      <arc head="a2" head-magnet="0" kind="OUTPUT" mult="2000" tail="Ru5P_isomerase" tail-magnet="0"/>
+      <arc head="Ru5P_epimerase" head-magnet="0" kind="INPUT" tail="a2" tail-magnet="0"/>
+      <arc head="a1" head-magnet="0" kind="OUTPUT" tail="Ru5P_epimerase" tail-magnet="0"/>
+      <arc head="Transaldolase" head-magnet="0" kind="INPUT" mult="7000" tail="c1" tail-magnet="0"/>
+      <arc head="c2" head-magnet="0" kind="OUTPUT" mult="7000" tail="Transaldolase" tail-magnet="0"/>
+      <arc head="c1" head-magnet="0" kind="OUTPUT" tail="GAP_dehydrogenase" tail-magnet="0"/>
+      <arc head="GAP_dehydrogenase" head-magnet="0" kind="INPUT" tail="c2" tail-magnet="0"/>
     </edges>
   </gspn>
   <resource-list>
