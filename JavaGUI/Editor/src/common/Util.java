@@ -109,14 +109,17 @@ public final class Util {
             String laf = System.getProperty("swing.defaultlaf");
             if (laf == null)
                 laf = UIManager.getSystemLookAndFeelClassName();
-            switch (Main.getUiSize()) {
-                case LARGE:
-                    setDefaultUIFontSize(1.5f);
-                    break;
-                case LARGER:
-                    setDefaultUIFontSize(2.0f);
-                    break;
-            }
+            Main.UiSize uiSize = Main.getUiSize();
+            if (uiSize.getScaleMultiplier() > 1.0f)
+                setDefaultUIFontSize(uiSize.getScaleMultiplier());
+//            switch (Main.getUiSize()) {
+//                case LARGE:
+//                    setDefaultUIFontSize(1.25f);
+//                    break;
+//                case LARGER:
+//                    setDefaultUIFontSize(1.5f);
+//                    break;
+//            }
             UIManager.setLookAndFeel(laf);
         } catch (Exception ex) { }
         
@@ -353,6 +356,10 @@ public final class Util {
         return new Color((int)(clr1.getRed() * coeff   + clr2.getRed() * (1-coeff)),
                          (int)(clr1.getGreen() * coeff + clr2.getGreen() * (1-coeff)),
                          (int)(clr1.getBlue() * coeff  + clr2.getBlue() * (1-coeff)));
+    }
+    // convert color in html hex form #RRGGBB
+    public static String clrToHex(Color clr) {
+        return String.format("#%06x", clr.getRGB() & 0xFFFFFF);
     }
     
     // Deep copy of objects through serialization

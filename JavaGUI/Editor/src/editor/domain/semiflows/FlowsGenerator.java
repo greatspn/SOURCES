@@ -109,7 +109,6 @@ public class FlowsGenerator extends StructuralAlgorithm {
             return -1;
         return 0;
     }
-    
 
     @Override
     public void compute(boolean log, ProgressObserver obs) throws InterruptedException {
@@ -282,10 +281,23 @@ public class FlowsGenerator extends StructuralAlgorithm {
             throws InterruptedException 
     {
         // truncate and remove all supplementary variables in D
-        for (int i=0; i<numFlows(); i++) {
+        for (int rr=numFlows()-1; rr>=0; rr--) {
             int[] newDi = new int[N0];
-            System.arraycopy(mD.get(i), 0, newDi, 0, N0);
-            mD.set(i, newDi);
+            System.arraycopy(mD.get(rr), 0, newDi, 0, N0);
+            
+            int nnz = 0;
+            for (int k = 0; k < N0; k++)
+                nnz += (newDi[k] != 0 ? 1 : 0);
+            
+            if (nnz > 0) {
+                mD.set(rr, newDi);
+            }
+            else {
+                if (log)
+                    System.out.println("DEL row " + rr);
+                mA.remove(rr);
+                mD.remove(rr);
+            }
         }
         reduceN(N0);
         // reduce the flows that are not minimal after removing the suppl. vars.
@@ -618,14 +630,14 @@ public class FlowsGenerator extends StructuralAlgorithm {
 
 
         boolean useHtml = (htmlForegroundColor != null);
-        String negClrHex = null, eqClrHex = null, foreClrHex = null;
+        String negClrHex = null, eqClrHex = null, posClrHex = null;
         if (useHtml) {
-            Color foreClr = selected ? htmlForegroundColor : Util.mix(htmlForegroundColor, htmlBackgroundColor, 0.5f);
-            Color negClr = Util.mix(foreClr, Color.MAGENTA, 0.5f);
-            Color eqClr = Util.mix(foreClr, Color.CYAN, 0.5f);
-            foreClrHex = String.format("#%06x", foreClr.getRGB() & 0xFFFFFF);
-            negClrHex = String.format("#%06x", negClr.getRGB() & 0xFFFFFF);
-            eqClrHex = String.format("#%06x", eqClr.getRGB() & 0xFFFFFF);
+            Color posClr = selected ? htmlForegroundColor : Util.mix(htmlForegroundColor, htmlBackgroundColor, 0.5f);
+            Color negClr = Util.mix(posClr, Color.MAGENTA, 0.5f);
+            Color eqClr = Util.mix(posClr, Color.CYAN, 0.5f);
+            posClrHex = Util.clrToHex(posClr);
+            negClrHex = Util.clrToHex(negClr);
+            eqClrHex = Util.clrToHex(eqClr);
             repr.append("<html>");
         }
         
@@ -635,7 +647,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
             if (repr.length() > 0)
                 repr.append(" ");
             if (useHtml) {
-                repr.append("<font color='").append(flow[k] > 0 ? foreClrHex : negClrHex).append("'>");
+                repr.append("<font color='").append(flow[k] > 0 ? posClrHex : negClrHex).append("'>");
                 if (k == selK)
                     repr.append("<b>");
             }
@@ -660,8 +672,8 @@ public class FlowsGenerator extends StructuralAlgorithm {
             }
         }
         
-        String invSign = type.getInvariantSign();
-        if (asInvariant && invSign!=null && initQuantity!=null) {
+        String equationSign = type.getInvariantSign();
+        if (asInvariant && equationSign!=null && initQuantity!=null) {
             // Compute the invariant quantity
             int q = 0;
             for (int k=0; k<flow.length; k++)
@@ -669,7 +681,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
             
             if (useHtml)
                 repr.append("<font color='").append(eqClrHex).append("'>");
-            repr.append(" ").append(invSign).append(" ").append(q);
+            repr.append(" ").append(equationSign).append(" ").append(q);
             if (useHtml)
                 repr.append("</font>");
         }

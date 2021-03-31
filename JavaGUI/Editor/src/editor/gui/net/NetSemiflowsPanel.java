@@ -376,6 +376,8 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
     
     private void recomputeFlows(PTFlows.Type type) {
         this.sfType = type;
+        highlightedElems = null;
+        selectedNode = null;
         
         // Both P-flows and Place bounds are initialized in the same way
         boolean initializeForBounds = (sfType == PTFlows.Type.PLACE_BOUNDS_FROM_PINV);
@@ -417,7 +419,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
 //        if (model.size() > 0)
 //            jList_flows.setSelectedIndex(0);
 //        highlightFlow(jList_flows.getSelectedIndex());
-        updateListPanel(true, 1);
+        updateListPanel(true, 0);
 
         // Update titles and warnings
         jLabel_computedFlows.setVisible(true);

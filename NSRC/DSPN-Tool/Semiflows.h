@@ -35,8 +35,17 @@ enum class SystemMatrixType {
 
 //-----------------------------------------------------------------------------
 
+struct invariants_spec_t {
+    InvariantKind invknd;
+    SystemMatrixType system_kind;
+    FlowMatrixKind matk;
+    size_t suppl_flags;
+};
+
+//-----------------------------------------------------------------------------
+
 // Returns the GreatSPN file extension for the given type of flow (like .pin, .tin, etc...)
-const char* GetGreatSPN_FileExt(InvariantKind fk, FlowMatrixKind matk, SystemMatrixType smt, int suppl_flags);
+std::string GetGreatSPN_FileExt(invariants_spec_t is);
 // Return the name of the type of flows (like "PLACE SEMIFLOWS" or "TRANSITIONS FLOW BASIS")
 const char* GetFlowName(InvariantKind fk, FlowMatrixKind matk, SystemMatrixType smt);
 
@@ -237,17 +246,17 @@ public:
     incidence_matrix_generator_t(incidence_matrix_generator_t&&) = default;
 
     // Add an entry of the incidence matrix from i to j with the given cardinality
-    void add_flow_entry(size_t i, size_t j, int cardinality);
+    // void add_flow_entry(size_t i, size_t j, int cardinality);
 
     // Insert flows from Petri net arcs
-    void add_flows_from(const PN& pn, bool print_warns = true);
+    // void add_flows_from(const PN& pn, bool print_warns = true);
 
     // Initialize the flow matrix from the inserted entries
-    void generate_matrix();
+    // void generate_matrix();
     void generate_matrix2(const PN& pn, bool print_warns);
 
     // Add increasing/decreasing flows (for I/D invariants)
-    void add_increase_decrease_flows();
+    // void add_increase_decrease_flows();
 };
 
 //-----------------------------------------------------------------------------

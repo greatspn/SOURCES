@@ -141,40 +141,69 @@ inline ssize_t traverse_both(typename Container1::const_iterator& it1,
 
 //-----------------------------------------------------------------------------
 
-const char* GetGreatSPN_FileExt(InvariantKind ik, FlowMatrixKind matk, SystemMatrixType smt, int suppl_flags) {
-    typedef const char*  T[4];
-    size_t i = 0;
-    if (suppl_flags & FM_POSITIVE_SUPPLEMENTARY)
-        i += 1;
-    if (suppl_flags & FM_NEGATIVE_SUPPLEMENTARY)
-        i += 2;
-    const char *ext;
-    switch (matk) {
-        case FlowMatrixKind::SEMIFLOWS:
-            if (smt == SystemMatrixType::TRAPS) {
-                ext = ".traps";
+std::string GetGreatSPN_FileExt(invariants_spec_t is) {
+    std::string ext;
+
+    if (is.system_kind == SystemMatrixType::SIPHONS)
+        ext = ".siphons";
+    else if (is.system_kind == SystemMatrixType::TRAPS)
+        ext = ".traps";
+    else {
+        switch (is.matk) {
+            case FlowMatrixKind::SEMIFLOWS:
+                ext = (is.invknd == InvariantKind::PLACE) ? ".pin" : ".tin";
                 break;
-            }
-            else if (smt == SystemMatrixType::SIPHONS) {
-                ext = ".siphons";
+            case FlowMatrixKind::BASIS:
+                ext = (is.invknd == InvariantKind::PLACE) ? ".pba" : ".tba";
                 break;
-            }
-            ext = (ik==InvariantKind::PLACE) ? T{ ".pin", ".pin+", ".pin-", ".pin+-" }[i] 
-                                             : T{ ".tin", ".tin+", ".tin-", ".tin+-" }[i];
-            break;
-        case FlowMatrixKind::BASIS:
-            ext = (ik==InvariantKind::PLACE) ? T{ ".pba", ".pba+", ".pba-", ".pba+-" }[i] 
-                                             : T{ ".tba", ".tba+", ".tba-", ".tba+-" }[i];
-            break;
-        case FlowMatrixKind::INTEGER_FLOWS:
-            ext = (ik==InvariantKind::PLACE) ? T{ ".pfl", ".pfl+", ".pfl-", ".pfl+-" }[i] 
-                                             : T{ ".tfl", ".tfl+", ".tfl-", ".tfl+-" }[i];
-            break;
-        // case FlowMatrixKind::NESTED_FLOW_SPAN:
-        //     return (ik==InvariantKind::PLACE) ? ".pspan" : ".tspan";
-        default:
-            throw program_exception("Internal error in GetGreatSPN_FileExt");
+            case FlowMatrixKind::INTEGER_FLOWS:
+                ext = (is.invknd == InvariantKind::PLACE) ? ".pfl" : ".tfl";
+                break;
+            default:
+                throw program_exception("Internal error in GetGreatSPN_FileExt");
+        }
+        if (is.suppl_flags & FM_POSITIVE_SUPPLEMENTARY)
+            ext += "+";
+        if (is.suppl_flags & FM_NEGATIVE_SUPPLEMENTARY)
+            ext += "-";
+        if (is.suppl_flags & FM_ON_THE_FLY_SUPPL_VARS)
+            ext += "o";
+        if (is.suppl_flags & FM_REDUCE_SUPPLEMENTARY_VARS)
+            ext += "r";
     }
+    // typedef const char*  T[4];
+    // size_t i = 0;
+    // if (suppl_flags & FM_POSITIVE_SUPPLEMENTARY)
+    //     i += 1;
+    // if (suppl_flags & FM_NEGATIVE_SUPPLEMENTARY)
+    //     i += 2;
+    // const char *ext;
+    // switch (matk) {
+    //     case FlowMatrixKind::SEMIFLOWS:
+    //         if (smt == SystemMatrixType::TRAPS) {
+    //             ext = ".traps";
+    //             break;
+    //         }
+    //         else if (smt == SystemMatrixType::SIPHONS) {
+    //             ext = ".siphons";
+    //             break;
+    //         }
+    //         ext = (ik==InvariantKind::PLACE) ? T{ ".pin", ".pin+", ".pin-", ".pin+-" }[i] 
+    //                                          : T{ ".tin", ".tin+", ".tin-", ".tin+-" }[i];
+    //         break;
+    //     case FlowMatrixKind::BASIS:
+    //         ext = (ik==InvariantKind::PLACE) ? T{ ".pba", ".pba+", ".pba-", ".pba+-" }[i] 
+    //                                          : T{ ".tba", ".tba+", ".tba-", ".tba+-" }[i];
+    //         break;
+    //     case FlowMatrixKind::INTEGER_FLOWS:
+    //         ext = (ik==InvariantKind::PLACE) ? T{ ".pfl", ".pfl+", ".pfl-", ".pfl+-" }[i] 
+    //                                          : T{ ".tfl", ".tfl+", ".tfl-", ".tfl+-" }[i];
+    //         break;
+    //     // case FlowMatrixKind::NESTED_FLOW_SPAN:
+    //     //     return (ik==InvariantKind::PLACE) ? ".pspan" : ".tspan";
+    //     default:
+    //         throw program_exception("Internal error in GetGreatSPN_FileExt");
+    // }
     return ext;
 }
 //-----------------------------------------------------------------------------
@@ -237,12 +266,12 @@ ostream& flow_matrix_t::row_t::print(ostream& os, const ssize_t M, const ssize_t
     if (D.size() > MAX_DENSE_REPR) { // sparse representation
         for (size_t i = 0, cnt = 0; i < D.nonzeros(); i++)
             if (D.ith_nonzero(i).value)
-                os << (cnt++ > 0 ? ", " : "") << (D.ith_nonzero(i).index+1) 
+                os << (cnt++ > 0 ? ", " : " ") << (D.ith_nonzero(i).index+1) 
                    << ":" << D.ith_nonzero(i).value;
-        os << " | ";
+        os << " |";
         for (size_t i = 0, cnt = 0; i < A.nonzeros(); i++)
             if (A.ith_nonzero(i).value)
-                os << (cnt++ > 0 ? ", " : "") << (A.ith_nonzero(i).index+1) 
+                os << (cnt++ > 0 ? ", " : " ") << (A.ith_nonzero(i).index+1) 
                    << ":" << A.ith_nonzero(i).value;
     }
     else { // dense representation
@@ -629,82 +658,82 @@ void flow_matrix_t::clear_A_vectors() {
 
 //-----------------------------------------------------------------------------
 
-void incidence_matrix_generator_t::add_flow_entry(size_t i, size_t j, int cardinality) {
-    assert(i < f.N && j < f.M);
-    auto elem = initEntries.lower_bound(flow_entry_t(i, j, numeric_limits<int>::min()));
-    if (elem != initEntries.end() && elem->i == i && elem->j == j) {
-        cardinality += elem->card;
-        initEntries.erase(elem);
-    }
-        // initEntries.insert(Flow(i, j, elem->card + cardinality));
-    // else
-    initEntries.insert(flow_entry_t(i, j, cardinality));
-    // cout << "msa.add_flow_entry("<<i<<", "<<j<<", "<<cardinality<<");"<<endl;
-}
+// void incidence_matrix_generator_t::add_flow_entry(size_t i, size_t j, int cardinality) {
+//     assert(i < f.N && j < f.M);
+//     auto elem = initEntries.lower_bound(flow_entry_t(i, j, numeric_limits<int>::min()));
+//     if (elem != initEntries.end() && elem->i == i && elem->j == j) {
+//         cardinality += elem->card;
+//         initEntries.erase(elem);
+//     }
+//         // initEntries.insert(Flow(i, j, elem->card + cardinality));
+//     // else
+//     initEntries.insert(flow_entry_t(i, j, cardinality));
+//     // cout << "msa.add_flow_entry("<<i<<", "<<j<<", "<<cardinality<<");"<<endl;
+// }
 
 //-----------------------------------------------------------------------------
 
-// Insert flows from Petri net
-void incidence_matrix_generator_t::add_flows_from(const PN& pn, bool print_warns) {
-    // Load the incidence matrix into the flows_generator_t class
-    bool warnForInhibitor = print_warns;
-    bool warnForMarkingDep = print_warns;
-    for (const Transition& trn : pn.trns) {
-        if (warnForInhibitor && !trn.arcs[HA].empty()) {
-            cerr << console::beg_error() << "WARNING: " << console::end_error() 
-                 << "PETRI NET HAS INHIBITOR ARCS THAT WILL BE IGNORED." << endl;
-            warnForInhibitor = false;
-        }
-        for (int k=0; k<2; k++) {
-            ArcKind ak = (k==0 ? IA : OA);
-            int sign = (ak==IA ? -1 : +1);
-            for (const Arc& arc : trn.arcs[ak]) {
-                if (arc.isMultMarkingDep()) {
-                    if (warnForMarkingDep) {
-                        cerr << console::beg_error() << "WARNING: " << console::end_error() 
-                             << "PETRI NET HAS MARKING-DEPENDENT ARCS THAT WILL BE IGNORED." << endl;
-                         warnForMarkingDep = false;
-                    }
-                }
-                else {
-                    int card = get_value(arc.getConstantMult()) * sign;
-                    if (f.inv_kind == InvariantKind::PLACE) 
-                        add_flow_entry(arc.plc, trn.index, card);
-                    else
-                        add_flow_entry(trn.index, arc.plc, card);
-                }
-            }
-        }
-    }
-}
+// // Insert flows from Petri net
+// void incidence_matrix_generator_t::add_flows_from(const PN& pn, bool print_warns) {
+//     // Load the incidence matrix into the flows_generator_t class
+//     bool warnForInhibitor = print_warns;
+//     bool warnForMarkingDep = print_warns;
+//     for (const Transition& trn : pn.trns) {
+//         if (warnForInhibitor && !trn.arcs[HA].empty()) {
+//             cerr << console::beg_error() << "WARNING: " << console::end_error() 
+//                  << "PETRI NET HAS INHIBITOR ARCS THAT WILL BE IGNORED." << endl;
+//             warnForInhibitor = false;
+//         }
+//         for (int k=0; k<2; k++) {
+//             ArcKind ak = (k==0 ? IA : OA);
+//             int sign = (ak==IA ? -1 : +1);
+//             for (const Arc& arc : trn.arcs[ak]) {
+//                 if (arc.isMultMarkingDep()) {
+//                     if (warnForMarkingDep) {
+//                         cerr << console::beg_error() << "WARNING: " << console::end_error() 
+//                              << "PETRI NET HAS MARKING-DEPENDENT ARCS THAT WILL BE IGNORED." << endl;
+//                          warnForMarkingDep = false;
+//                     }
+//                 }
+//                 else {
+//                     int card = get_value(arc.getConstantMult()) * sign;
+//                     if (f.inv_kind == InvariantKind::PLACE) 
+//                         add_flow_entry(arc.plc, trn.index, card);
+//                     else
+//                         add_flow_entry(trn.index, arc.plc, card);
+//                 }
+//             }
+//         }
+//     }
+// }
 
 //-----------------------------------------------------------------------------
 
-void incidence_matrix_generator_t::generate_matrix() {
-    // Initialize matrix K with the initEntries
-    for (size_t i = 0; i < f.N; i++) {
-        flow_matrix_t::row_t row(f);
-        // Diagonal entry in D
-        row.D.insert_element(i, 1);
+// void incidence_matrix_generator_t::generate_matrix() {
+//     // Initialize matrix K with the initEntries
+//     for (size_t i = 0; i < f.N; i++) {
+//         flow_matrix_t::row_t row(f);
+//         // Diagonal entry in D
+//         row.D.insert_element(i, 1);
 
-        // Insert the flows in the A matrix, which starts as the incidence matrix
-        auto it1 = initEntries.lower_bound(flow_entry_t(i, 0, numeric_limits<int>::min()));
-        auto it2 = initEntries.lower_bound(flow_entry_t(i, numeric_limits<size_t>::max(), 0));
-        if (it1 == it2 && i >= f.N0 && f.add_extra_vars)
-            continue;
-        for (; it1 != it2; ++it1) {
-            assert(it1->i == i && it1->j < f.M);
-            row.A.add_element(it1->j, it1->card);
-        }
+//         // Insert the flows in the A matrix, which starts as the incidence matrix
+//         auto it1 = initEntries.lower_bound(flow_entry_t(i, 0, numeric_limits<int>::min()));
+//         auto it2 = initEntries.lower_bound(flow_entry_t(i, numeric_limits<size_t>::max(), 0));
+//         if (it1 == it2 && i >= f.N0 && f.add_extra_vars)
+//             continue;
+//         for (; it1 != it2; ++it1) {
+//             assert(it1->i == i && it1->j < f.M);
+//             row.A.add_element(it1->j, it1->card);
+//         }
 
-        if (row.A.empty() && i >= f.N0) // empty supplementary variable row, can drop it
-            continue;
+//         if (row.A.empty() && i >= f.N0) // empty supplementary variable row, can drop it
+//             continue;
 
-        f.mK.emplace_back(std::move(row));
-    }
-    initEntries.clear();
-    f.mat_kind = FlowMatrixKind::INCIDENCE;
-}
+//         f.mK.emplace_back(std::move(row));
+//     }
+//     initEntries.clear();
+//     f.mat_kind = FlowMatrixKind::INCIDENCE;
+// }
 
 //-----------------------------------------------------------------------------
 
@@ -835,19 +864,19 @@ void incidence_matrix_generator_t::generate_matrix2(const PN& pn, bool print_war
 
 //-----------------------------------------------------------------------------
 
-void incidence_matrix_generator_t::add_increase_decrease_flows() {
-    assert(f.M == (f.N - f.N0) / 2);
-    // assert(f.inc_dec == 1 || f.inc_dec == -1);
+// void incidence_matrix_generator_t::add_increase_decrease_flows() {
+//     assert(f.M == (f.N - f.N0) / 2);
+//     // assert(f.inc_dec == 1 || f.inc_dec == -1);
 
-    // add an arc for each place N0+i from transition i
-    for (size_t i=0; i < f.M; i++) {
-        if (f.suppl_flags & FM_NEGATIVE_SUPPLEMENTARY)
-            add_flow_entry(f.N0 + i, i, -1);
+//     // add an arc for each place N0+i from transition i
+//     for (size_t i=0; i < f.M; i++) {
+//         if (f.suppl_flags & FM_NEGATIVE_SUPPLEMENTARY)
+//             add_flow_entry(f.N0 + i, i, -1);
 
-        if (f.suppl_flags & FM_POSITIVE_SUPPLEMENTARY)
-            add_flow_entry(f.N0 + f.M + i, i, +1);
-    }
-}
+//         if (f.suppl_flags & FM_POSITIVE_SUPPLEMENTARY)
+//             add_flow_entry(f.N0 + f.M + i, i, +1);
+//     }
+// }
 
 //-----------------------------------------------------------------------------
 
@@ -1443,12 +1472,22 @@ void flows_generator_t::compute_basis()
 //-----------------------------------------------------------------------------
 
 void flows_generator_t::drop_slack_vars_in_D() {
-    for (auto row = f.mK.begin(); row != f.mK.end(); ++row) {
+    for (auto row = f.mK.begin(); row != f.mK.end(); ) {
         size_t i;
         for (i=0; i<row->D.nonzeros(); i++)
             if (row->D.ith_nonzero(i).index >= f.N0)
                 break;
-        row->D.truncate_nnz(i);
+        if (i > 0) {
+            row->D.truncate_nnz(i);
+            ++row;
+        }
+        else {
+            if (verboseLvl >= VL_VERY_VERBOSE) {
+                cout << console::red_fgnd() << "TRNC" << console::default_disp();
+                row->print(cout, f.M, f.N0, true) << endl;
+            }
+            row = f.mK.erase(row);
+        }
     }
 }
 

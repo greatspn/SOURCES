@@ -309,13 +309,6 @@ template<typename T> void set_null(shared_ptr<T> &ptr) {
 
 //=============================================================================
 
-struct invariants_spec_t {
-    InvariantKind invknd;
-    SystemMatrixType system_kind;
-    FlowMatrixKind matk;
-    size_t suppl_flags;
-};
-
 bool is_invariants_cmd(std::string cmd, invariants_spec_t& is) {
     if (cmd.size() < 3 || cmd[0] != '-')
         return false;
@@ -326,7 +319,7 @@ bool is_invariants_cmd(std::string cmd, invariants_spec_t& is) {
     is.matk = FlowMatrixKind::SEMIFLOWS;
 
     // extract the nominal command
-    int i=1;
+    size_t i=1;
     while (i < cmd.size() && std::isalpha(cmd[i]))
         i++;
     std::string cmdName = cmd.substr(1, i-1);
@@ -1183,8 +1176,7 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
                 }
                 *dst = psf;
                 // Save the flows to the disk in GreatSPN format
-                string FlowFile(*netName + GetGreatSPN_FileExt(inv_spec.invknd, inv_spec.matk, 
-                                                               inv_spec.system_kind, inv_spec.suppl_flags));
+                string FlowFile(*netName + GetGreatSPN_FileExt(inv_spec));
                 ofstream flow_os(FlowFile.c_str());
                 SaveFlows(*psf, flow_os);
                 PrintFlows(*pn, *psf, cmdArg.c_str(), verboseLvl);
@@ -2654,68 +2646,68 @@ void Experiment1()
     // }
 
 
-    size_t MT = 16, NP= 12;
-    flow_matrix_t psfm(NP, NP, MT, InvariantKind::PLACE, SystemMatrixType::REGULAR, 0, false, true, true);
-    incidence_matrix_generator_t inc_gen(psfm);
-    inc_gen.add_flow_entry(0, 0, 1);
-    inc_gen.add_flow_entry(0, 2, 1);
-    inc_gen.add_flow_entry(0, 7, -1);
-    inc_gen.add_flow_entry(0, 8, 1);
-    inc_gen.add_flow_entry(1, 0, 1);
-    inc_gen.add_flow_entry(1, 1, 1);
-    inc_gen.add_flow_entry(1, 4, -1);
-    inc_gen.add_flow_entry(1, 5, 1);
-    inc_gen.add_flow_entry(10, 13, -1);
-    inc_gen.add_flow_entry(10, 14, 1);
-    inc_gen.add_flow_entry(10, 3, -1);
-    inc_gen.add_flow_entry(11, 12, 1);
-    inc_gen.add_flow_entry(11, 15, -1);
-    inc_gen.add_flow_entry(11, 3, -1);
-    inc_gen.add_flow_entry(2, 1, 1);
-    inc_gen.add_flow_entry(2, 11, 1);
-    inc_gen.add_flow_entry(2, 12, -1);
-    inc_gen.add_flow_entry(2, 3, 1);
-    inc_gen.add_flow_entry(3, 10, -1);
-    inc_gen.add_flow_entry(3, 13, 1);
-    inc_gen.add_flow_entry(3, 2, 1);
-    inc_gen.add_flow_entry(3, 3, 1);
-    inc_gen.add_flow_entry(4, 1, -1);
-    inc_gen.add_flow_entry(4, 4, 1);
-    inc_gen.add_flow_entry(4, 6, -1);
-    inc_gen.add_flow_entry(5, 10, 1);
-    inc_gen.add_flow_entry(5, 14, -1);
-    inc_gen.add_flow_entry(5, 2, -1);
-    inc_gen.add_flow_entry(6, 2, -1);
-    inc_gen.add_flow_entry(6, 8, -1);
-    inc_gen.add_flow_entry(6, 9, 1);
-    inc_gen.add_flow_entry(7, 1, -1);
-    inc_gen.add_flow_entry(7, 11, -1);
-    inc_gen.add_flow_entry(7, 15, 1);
-    inc_gen.add_flow_entry(8, 0, -1);
-    inc_gen.add_flow_entry(8, 5, -1);
-    inc_gen.add_flow_entry(8, 6, 1);
-    inc_gen.add_flow_entry(9, 0, -1);
-    inc_gen.add_flow_entry(9, 7, 1);
-    inc_gen.add_flow_entry(9, 9, -1);
-    inc_gen.generate_matrix();
+    // size_t MT = 16, NP= 12;
+    // flow_matrix_t psfm(NP, NP, MT, InvariantKind::PLACE, SystemMatrixType::REGULAR, 0, false, true, true);
+    // incidence_matrix_generator_t inc_gen(psfm);
+    // inc_gen.add_flow_entry(0, 0, 1);
+    // inc_gen.add_flow_entry(0, 2, 1);
+    // inc_gen.add_flow_entry(0, 7, -1);
+    // inc_gen.add_flow_entry(0, 8, 1);
+    // inc_gen.add_flow_entry(1, 0, 1);
+    // inc_gen.add_flow_entry(1, 1, 1);
+    // inc_gen.add_flow_entry(1, 4, -1);
+    // inc_gen.add_flow_entry(1, 5, 1);
+    // inc_gen.add_flow_entry(10, 13, -1);
+    // inc_gen.add_flow_entry(10, 14, 1);
+    // inc_gen.add_flow_entry(10, 3, -1);
+    // inc_gen.add_flow_entry(11, 12, 1);
+    // inc_gen.add_flow_entry(11, 15, -1);
+    // inc_gen.add_flow_entry(11, 3, -1);
+    // inc_gen.add_flow_entry(2, 1, 1);
+    // inc_gen.add_flow_entry(2, 11, 1);
+    // inc_gen.add_flow_entry(2, 12, -1);
+    // inc_gen.add_flow_entry(2, 3, 1);
+    // inc_gen.add_flow_entry(3, 10, -1);
+    // inc_gen.add_flow_entry(3, 13, 1);
+    // inc_gen.add_flow_entry(3, 2, 1);
+    // inc_gen.add_flow_entry(3, 3, 1);
+    // inc_gen.add_flow_entry(4, 1, -1);
+    // inc_gen.add_flow_entry(4, 4, 1);
+    // inc_gen.add_flow_entry(4, 6, -1);
+    // inc_gen.add_flow_entry(5, 10, 1);
+    // inc_gen.add_flow_entry(5, 14, -1);
+    // inc_gen.add_flow_entry(5, 2, -1);
+    // inc_gen.add_flow_entry(6, 2, -1);
+    // inc_gen.add_flow_entry(6, 8, -1);
+    // inc_gen.add_flow_entry(6, 9, 1);
+    // inc_gen.add_flow_entry(7, 1, -1);
+    // inc_gen.add_flow_entry(7, 11, -1);
+    // inc_gen.add_flow_entry(7, 15, 1);
+    // inc_gen.add_flow_entry(8, 0, -1);
+    // inc_gen.add_flow_entry(8, 5, -1);
+    // inc_gen.add_flow_entry(8, 6, 1);
+    // inc_gen.add_flow_entry(9, 0, -1);
+    // inc_gen.add_flow_entry(9, 7, 1);
+    // inc_gen.add_flow_entry(9, 9, -1);
+    // inc_gen.generate_matrix();
 
-    class Printer : public flow_algorithm_printer_t {
-    public:
-        virtual void advance(const char*, size_t step, size_t totalSteps, size_t, ssize_t) {
-            cout << "Step " << (step + 1) << "/" << totalSteps << endl;
-        }
+    // class Printer : public flow_algorithm_printer_t {
+    // public:
+    //     virtual void advance(const char*, size_t step, size_t totalSteps, size_t, ssize_t) {
+    //         cout << "Step " << (step + 1) << "/" << totalSteps << endl;
+    //     }
 
-    } printer;
-    flows_generator_t sf_gen(psfm, printer, VL_VERBOSE);
-    sf_gen.compute_semiflows();
+    // } printer;
+    // flows_generator_t sf_gen(psfm, printer, VL_VERBOSE);
+    // sf_gen.compute_semiflows();
 
-    cout << "# semiflows : " << psfm.num_flows() << endl;
-    for (auto sf = psfm.begin(); sf != psfm.end(); ++sf) {
-        for (size_t n=0; n<sf->nonzeros(); n++)
-            if (sf->ith_nonzero(n).value != 0)
-                cout << sf->ith_nonzero(n).value << "*P" << (sf->ith_nonzero(n).index+1) << " ";
-        cout << endl;
-    }
+    // cout << "# semiflows : " << psfm.num_flows() << endl;
+    // for (auto sf = psfm.begin(); sf != psfm.end(); ++sf) {
+    //     for (size_t n=0; n<sf->nonzeros(); n++)
+    //         if (sf->ith_nonzero(n).value != 0)
+    //             cout << sf->ith_nonzero(n).value << "*P" << (sf->ith_nonzero(n).index+1) << " ";
+    //     cout << endl;
+    // }
 }
 
 //-----------------------------------------------------------------------------
