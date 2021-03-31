@@ -3080,7 +3080,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         assert page != null && page.isPageCorrect() && page.hasPlaceTransInv();
         if (netSemiflowsPanel == null)
             netSemiflowsPanel = new NetSemiflowsPanel(this);
-        netSemiflowsPanel.setAnalysisType(PTFlows.Type.PLACE_SEMIFLOW);
+        netSemiflowsPanel.setAnalysisType(PTFlows.Type.PLACE_SEMIFLOWS);
         // Activate the modal panel
         switchToProjectPage(activeProject, page, netSemiflowsPanel);
         setStatus(null, true);

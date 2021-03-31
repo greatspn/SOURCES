@@ -12,7 +12,7 @@ package editor.domain.semiflows;
 public class Test_BridgeAndVehicles_V04_P05_N02_unf {
         public static FlowsGenerator initBridgeAndVehicles_V04_P05_N02_unf() {
         int M=52, N=28;
-        FlowsGenerator fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOW);
+        FlowsGenerator fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
         final int flows[][] = {
             { 0, 0, 1 }, { 1, 0, 1 }, { 2, 0, -1 }, { 6, 0, -1 }, { 0, 1, 1 }, { 2, 1, 1 }, { 3, 1, -1 }, { 6, 1, -1 }, 
             { 0, 2, 1 }, { 3, 2, 1 }, { 4, 2, -1 }, { 6, 2, -1 }, { 0, 3, 1 }, { 4, 3, 1 }, { 5, 3, -1 }, { 6, 3, -1 }, 

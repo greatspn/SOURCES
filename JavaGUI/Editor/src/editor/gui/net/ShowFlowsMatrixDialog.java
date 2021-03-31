@@ -21,7 +21,6 @@ import editor.domain.semiflows.PTFlows;
  */
 public class ShowFlowsMatrixDialog extends javax.swing.JDialog {
 
-    private final PTFlows.Type type;
     private final String netName;
     private final FlowsGenerator algo;
     private final NetIndex netIndex;
@@ -31,14 +30,13 @@ public class ShowFlowsMatrixDialog extends javax.swing.JDialog {
      * Creates new form ShowNetMatricesDialog
      */
     public ShowFlowsMatrixDialog(java.awt.Frame parent, boolean modal, FlowsGenerator algo,
-                                 PTFlows.Type type, String netName, NetIndex netIndex) {
+                                 String netName, NetIndex netIndex) {
         super(parent, modal);
         this.algo = algo;
-        this.type = type;
         this.netName = netName;
         this.netIndex = netIndex;
         initComponents();
-        setTitle(type.printableName()+" of "+netName);
+        setTitle(algo.type.printableName()+" of "+netName);
         
         latexComp = new JLatexComponent();
         scrollPane.setViewportView(latexComp);
@@ -54,7 +52,7 @@ public class ShowFlowsMatrixDialog extends javax.swing.JDialog {
     }
     
     private void update() {
-        String latex = algo.toLatexString(type, netIndex, checkBox_showZeros.isSelected());
+        String latex = algo.toLatexString(netIndex, checkBox_showZeros.isSelected());
         LatexFormula formula = new LatexFormula(latex, NetObject.getUnitToPixels());
         
         latexComp.setFormula(formula);
@@ -168,7 +166,7 @@ public class ShowFlowsMatrixDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_button_copyToClipboardActionPerformed
 
     private void button_saveAsPdfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_saveAsPdfActionPerformed
-        latexComp.saveAsPdf(type.printableName()+" of "+netName);
+        latexComp.saveAsPdf(algo.type.printableName()+" of "+netName);
     }//GEN-LAST:event_button_saveAsPdfActionPerformed
 
 

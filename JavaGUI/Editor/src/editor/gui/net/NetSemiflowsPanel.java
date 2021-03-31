@@ -42,6 +42,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import editor.domain.semiflows.PTFlows;
+import javax.swing.UIManager;
 
 /**
  *
@@ -191,12 +192,12 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
                     
                 case PLACE_SEMIFLOWS:
                     act.setEnabled((viewerPanel.isInBindingPhase() && viewerPanel.areAllBindingsOk()) ||
-                                   (!viewerPanel.isInBindingPhase() && sfType != PTFlows.Type.PLACE_SEMIFLOW));
+                                   (!viewerPanel.isInBindingPhase() && sfType != PTFlows.Type.PLACE_SEMIFLOWS));
                     break;
                     
                 case PLACE_FLOWS:
                     act.setEnabled((viewerPanel.isInBindingPhase() && viewerPanel.areAllBindingsOk()) ||
-                                   (!viewerPanel.isInBindingPhase() && sfType != PTFlows.Type.PLACE_FLOW));
+                                   (!viewerPanel.isInBindingPhase() && sfType != PTFlows.Type.PLACE_FLOWS));
                     break;
                     
                 case TRANS_SEMIFLOWS:
@@ -255,13 +256,13 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
             case PLACE_SEMIFLOWS:
                 if (viewerPanel.isInBindingPhase())
                     closeBindingForm();
-                recomputeFlowsLater(PTFlows.Type.PLACE_SEMIFLOW);
+                recomputeFlowsLater(PTFlows.Type.PLACE_SEMIFLOWS);
                 break;
                 
             case PLACE_FLOWS:
                 if (viewerPanel.isInBindingPhase())
                     closeBindingForm();
-                recomputeFlowsLater(PTFlows.Type.PLACE_FLOW);
+                recomputeFlowsLater(PTFlows.Type.PLACE_FLOWS);
                 break;
                 
             case TRANS_SEMIFLOWS:
@@ -359,7 +360,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         else {
             final int numSemiflows = (algo.isComputed() ? algo.numFlows() : 0);
             for (int i=0; i<numSemiflows; i++)
-                model.addElement(algo.flowToString(i, netIndex));
+                model.addElement(algo.flowToString(i, netIndex, true, UIManager.getColor("List.foreground")));
         }
         jList_flows.setModel(model);
         if (model.size() > 0)
@@ -544,7 +545,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
     private void showFlowsMatrix() {
         ShowFlowsMatrixDialog dlg;
         dlg = new ShowFlowsMatrixDialog(mainInterface.getWindowFrame(), true, 
-                                        algo, sfType, origGspn.getPageName(), netIndex);
+                                        algo, origGspn.getPageName(), netIndex);
         dlg.setVisible(true);
     }
     
@@ -632,8 +633,8 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
                 hasSelSF = false;
             
             switch (sfType) {
-                case PLACE_SEMIFLOW:
-                case PLACE_FLOW:
+                case PLACE_SEMIFLOWS:
+                case PLACE_FLOWS:
                 case PLACE_BASIS:
                 case TRAPS: 
                 case SIPHONS:
@@ -681,8 +682,8 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         @Override
         public Color getLineColor(int card) {
             switch (sfType) {
-                case PLACE_SEMIFLOW:
-                case PLACE_FLOW:
+                case PLACE_SEMIFLOWS:
+                case PLACE_FLOWS:
                 case PLACE_BASIS:
                     return (card > 0 ? POSITIVE_PLACE_LINE_CLR : NEGATIVE_PLACE_LINE_CLR);
                 case TRANSITION_SEMIFLOWS:
@@ -702,8 +703,8 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         @Override
         public Color getTextColor(int card) {
             switch (sfType) {
-                case PLACE_SEMIFLOW:
-                case PLACE_FLOW:
+                case PLACE_SEMIFLOWS:
+                case PLACE_FLOWS:
                 case PLACE_BASIS:
                     return (card > 0 ? POSITIVE_PLACE_TEXT_CLR : NEGATIVE_PLACE_TEXT_CLR);
                 case TRANSITION_SEMIFLOWS:

@@ -16,7 +16,7 @@ import editor.domain.semiflows.StructuralAlgorithm.ProgressObserver;
 public class GPPPTest {
     public static FlowsGenerator init() {
         int M=22, N=33;        
-        FlowsGenerator fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOW);
+        FlowsGenerator fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
         fg.addIncidence(12, 0, 1);
         fg.addIncidence(2, 0, 1);
         fg.addIncidence(0, 0, 1);

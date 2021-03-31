@@ -18,8 +18,8 @@ public interface PTFlows {
     public final char INFINITY_UNICODE = '\u221E';
     
     public enum Type {
-        PLACE_SEMIFLOW, 
-        PLACE_FLOW, 
+        PLACE_SEMIFLOWS, 
+        PLACE_FLOWS, 
         TRANSITION_SEMIFLOWS, 
         TRANSITION_FLOWS, 
         PLACE_BOUNDS_FROM_PINV,
@@ -30,8 +30,8 @@ public interface PTFlows {
         
         public String printableName() {
             switch (this) {
-                case PLACE_SEMIFLOW: return "Place semiflows";
-                case PLACE_FLOW: return "Place flows";
+                case PLACE_SEMIFLOWS: return "Place semiflows";
+                case PLACE_FLOWS: return "Place flows";
                 case TRANSITION_SEMIFLOWS: return "Transition semiflows";
                 case TRANSITION_FLOWS: return "Transition flows";
                 case PLACE_BOUNDS_FROM_PINV: return "Place bounds";
@@ -47,8 +47,8 @@ public interface PTFlows {
         public ImageIcon getIcon32() {
             ResourceFactory rf = ResourceFactory.getInstance();
             switch (this) {
-                case PLACE_SEMIFLOW: return rf.getPinv_N32();
-                case PLACE_FLOW: return rf.getPinv_Z32();
+                case PLACE_SEMIFLOWS: return rf.getPinv_N32();
+                case PLACE_FLOWS: return rf.getPinv_Z32();
                 case TRANSITION_SEMIFLOWS: return rf.getTinv_N32();
                 case TRANSITION_FLOWS: return rf.getTinv_Z32();
                 case PLACE_BOUNDS_FROM_PINV: return rf.getBound32();
@@ -63,7 +63,7 @@ public interface PTFlows {
         }
         
         public boolean isPlace() {
-            return this==PLACE_FLOW || this==PLACE_SEMIFLOW || this==PLACE_BOUNDS_FROM_PINV
+            return this==PLACE_FLOWS || this==PLACE_SEMIFLOWS || this==PLACE_BOUNDS_FROM_PINV
                     || this==PLACE_BASIS || this==TRAPS || this==SIPHONS;
         }
         
@@ -72,12 +72,12 @@ public interface PTFlows {
         }
         
         public boolean isSemiflow() {
-            return this==TRANSITION_SEMIFLOWS || this==PLACE_SEMIFLOW || this==PLACE_BOUNDS_FROM_PINV 
+            return this==TRANSITION_SEMIFLOWS || this==PLACE_SEMIFLOWS || this==PLACE_BOUNDS_FROM_PINV 
                     || this==TRAPS || this==SIPHONS;
         }
         
         public boolean isFlow() {
-            return this==TRANSITION_FLOWS || this==PLACE_FLOW || this==PLACE_BASIS || this==TRANSITION_BASIS;
+            return this==TRANSITION_FLOWS || this==PLACE_FLOWS || this==PLACE_BASIS || this==TRANSITION_BASIS;
         }
         
         public boolean isTrapsOrSiphons() {
@@ -86,6 +86,28 @@ public interface PTFlows {
         
         public boolean isBasis() {
             return this==PLACE_BASIS || this==TRANSITION_BASIS;
+        }
+        
+        public boolean isBound() {
+            return this==PLACE_BOUNDS_FROM_PINV;
+        }
+        
+        public String getInvariantSign() {
+            switch (this) {
+                case PLACE_SEMIFLOWS:
+                case PLACE_FLOWS:
+                case PLACE_BASIS: 
+                    return "=";
+                case TRANSITION_SEMIFLOWS: 
+                case TRANSITION_FLOWS: 
+                case PLACE_BOUNDS_FROM_PINV:
+                case TRANSITION_BASIS: 
+                case TRAPS:
+                case SIPHONS: 
+                    return null;
+                default:
+                    throw new IllegalStateException();
+            }
         }
     }
     

@@ -48,7 +48,7 @@ public class InvariantsCommand {
             System.out.println("Not enough arguments.");
             System.exit(1);
         }
-        PTFlows.Type type = PTFlows.Type.PLACE_SEMIFLOW;
+        PTFlows.Type type = PTFlows.Type.PLACE_SEMIFLOWS;
         TemplateBinding bindings = new TemplateBinding();
         boolean verbose = false;
         int c;
@@ -58,7 +58,7 @@ public class InvariantsCommand {
                 break; // end of options
             switch (args[c]) {
                 case "-ps":
-                    type = PTFlows.Type.PLACE_SEMIFLOW;
+                    type = PTFlows.Type.PLACE_SEMIFLOWS;
                     break;
                 
                 case "-ts":
@@ -66,7 +66,7 @@ public class InvariantsCommand {
                     break;
                     
                 case "-pf":
-                    type = PTFlows.Type.PLACE_FLOW;
+                    type = PTFlows.Type.PLACE_FLOWS;
                     break;
                 
                 case "-tf":
@@ -121,12 +121,14 @@ public class InvariantsCommand {
         // Initialize Farkas methos
         FlowsGenerator algo = FlowsGenerator.makeFor(type, netIndex);
         algo.initialize(type, bindings, netIndex);
+        
+        // Compute invariants
         StructuralAlgorithm.ProgressObserver obs = (int step, int total, int s, int t) -> { };
         algo.compute(verbose, obs);
         
         for (int i=0; i<algo.numFlows(); i++) {
             System.out.print("FLOW "+(i+1)+": ");
-            System.out.println(algo.flowToString(i, netIndex));
+            System.out.println(algo.flowToString(i, netIndex, true, null));
         }
         System.out.println();
     }

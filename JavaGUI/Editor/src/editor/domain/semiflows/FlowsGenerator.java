@@ -4,12 +4,14 @@
  */
 package editor.domain.semiflows;
 
+import common.Util;
 import editor.domain.Edge;
 import editor.domain.elements.GspnEdge;
 import editor.domain.elements.Place;
 import editor.domain.elements.Transition;
 import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.TemplateBinding;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -19,43 +21,36 @@ import java.util.Arrays;
  * @author elvio
  */
 public class FlowsGenerator extends StructuralAlgorithm {
-
     
     // Iteration matrix [ D(i) | A(i) ], where D(0)=I and A(0) = Flow matrix
-    // In addition, keep the B matrix for the Martinez-Silva optimization.
-    // K starts with K=N. After the computation, K is the number of flows.
+    // At the beginning, K=N. After the computation, K is the number of flows.
     public ArrayList<int[]> mD;     // KxN matrix
     public ArrayList<int[]> mA;     // KxM matrix
-    public ArrayList<boolean[]> mB; // KxM matrix
     
     // This extra informations keep the initial place marking, when
     // the method is used for P-invariants. It allows to derive the place bounds
     // from the P-invariants
-    public boolean computeBounds = false;
     public int[] initQuantity; // array of N elements
     public int[] lowerBnd, upperBnd; // place bounds
     
     // Will compute semiflows or integer flows
     public final PTFlows.Type type;
-//    public boolean onlySemiflows = true;
-//    public boolean buildBasis = false;
-    
     
 //    SilvaColom88Algorithm scAlgo;
     
 
     // For P-flows: N=|P|, M=|T| (for T-flows: N=|T|, M=|P|)
+    // If supplementary variables are added, N0 keeps the value of N(|P| or |T|) 
+    // while N will count the basic variables plus the supplementary ones.
     public FlowsGenerator(int N, int N0, int M, PTFlows.Type type) {
         super(N, N0, M);
         this.type = type;
 //        System.out.println("M="+M+", N="+N);
         mD = new ArrayList<>();
         mA = new ArrayList<>();
-        mB = new ArrayList<>();
         for (int i = 0; i < N; i++) {
             mD.add(new int[N]);
             mA.add(new int[M]);
-            mB.add(new boolean[M]);
             mD.get(i)[i] = 1;
         }
 //        scAlgo = new SilvaColom88Algorithm(N, M);
@@ -64,12 +59,10 @@ public class FlowsGenerator extends StructuralAlgorithm {
     // Add an element to the incidence matrix from i to j with the specified cardinality
     public void addIncidence(int i, int j, int card) {
         mA.get(i)[j] += card;
-        mB.get(i)[j] = (mA.get(i)[j] != 0);
     }
     // Set an element to the incidence matrix from i to j with the specified cardinality
     public void setIncidence(int i, int j, int value) {
         mA.get(i)[j] = value;
-        mB.get(i)[j] = (mA.get(i)[j] != 0);
     }
     
     // Add the initial token of a place (only for P-invariant computation)
@@ -77,7 +70,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
         assert i < N && i >= 0;
         if (initQuantity == null) { // Not initialized yet
             initQuantity = new int[N];
-            computeBounds = true;
+//            computeBounds = true;
         }
         assert initQuantity[i] == 0;
         initQuantity[i] = quantity;
@@ -162,15 +155,12 @@ public class FlowsGenerator extends StructuralAlgorithm {
                     // Create a new row nr' such that:
                     //   nr = |r2[i]| * r1 + |ri[i]| * r2
                     //   nr' = nr / gcd(nr)
-                    //   nr(B) = logical union of B[r1] and B[r2]
                     int[] nrA = new int[M];
                     int[] nrD = new int[N];
-                    boolean[] nrB = new boolean[M];
                     int gcdAD = -1;
                     for (int k = 0; k < M; k++) {
                         nrA[k] = mult2 * mA.get(r1)[k] + mult1 * mA.get(r2)[k];
                         gcdAD = (k == 0) ? Math.abs(nrA[k]) : gcd(gcdAD, Math.abs(nrA[k]));
-                        nrB[k] = mB.get(r1)[k] || mB.get(r2)[k];
                     }
                     assert nrA[i] == 0;
                     for (int k = 0; k < N; k++) {
@@ -186,31 +176,19 @@ public class FlowsGenerator extends StructuralAlgorithm {
                             nrD[k] /= gcdAD;
                         }
                     }
-                    int nnzD = 0, ntrueB = 0;
-                    for (int k = 0; k < M; k++) {
-                        ntrueB += (nrB[k] ? 1 : 0);
-                    }
+                    int nnzD = 0;
                     for (int k = 0; k < N; k++) {
                         nnzD += (nrD[k] != 0 ? 1 : 0);
                     }                    
                     if (nnzD == 0)
                         continue; // drop empty row
 
-                    // Martinez-Silva optimization of the Farkas algorithm.
-                    // The row is not a minimal support if the count of non-zero entries in D
-                    // is greater than the number of TRUEs in B (for that row) + 1.
-                    // If this happens, the row is not a minimal P(T)-flow and
-                    // can be safely discarded.
-                    if (nnzD > ntrueB+1) {
-                        continue;
-                    }
                     if (log)
                         System.out.println(i + ": ADD row " + r1 + " + row " + r2 +
-                                           "  nnz(D)=" + nnzD + " r'=" + ntrueB);
+                                           "  nnz(D)=" + nnzD);
 
                     mA.add(nrA);
                     mD.add(nrD);
-                    mB.add(nrB);
                     ++combined_with_i;
                 }
                     
@@ -231,7 +209,6 @@ public class FlowsGenerator extends StructuralAlgorithm {
                     System.out.println(i + ": DEL row " + rr);
                 mA.remove(rr);
                 mD.remove(rr);
-                mB.remove(rr);
             }
             
             // Eliminate frm [D|A] the rows that are not minimal, doing an exhaustive search.
@@ -247,7 +224,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
 
         obs.advance(M+1, M+1, 1, 1);
         
-        if (computeBounds) {
+        if (type.isBound()) {
             computeBoundsFromInvariants();
 //            scAlgo.compute(log, obs);
         }
@@ -258,7 +235,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
     // Test all flows exaustively to check if they are minimal
     // To do so, we take every pair of flows and we test if one is a
     // linear component of another. If it is so, subtract the component flow
-    // from the other. When a flow becomes zero, it is removed from A,D and B.
+    // from the other. When a flow becomes zero, it is removed from A|D.
     private void removeNonMinimalFlows(boolean log, ProgressObserver obs) 
             throws InterruptedException 
     {
@@ -285,7 +262,6 @@ public class FlowsGenerator extends StructuralAlgorithm {
                         System.out.println("DEL row " + rr);
                     mA.remove(rr);
                     mD.remove(rr);
-                    mB.remove(rr);
                     break;
                 }
             }
@@ -321,10 +297,6 @@ public class FlowsGenerator extends StructuralAlgorithm {
             sb.append("| ");
             for (int j = 0; j < M; j++) {
                 sb.append(mA.get(i)[j] < 0 ? "" : " ").append(mA.get(i)[j]).append(" ");
-            }
-            sb.append("|");
-            for (int j = 0; j < M; j++) {
-                sb.append(mB.get(i)[j] ? " T" : " .");
             }
             sb.append("\n");
         }
@@ -370,19 +342,19 @@ public class FlowsGenerator extends StructuralAlgorithm {
     }
     
     public int getUpperBoundOf(int p) {
-        assert isComputed() && computeBounds && initQuantity != null && p >= 0 && p < N;
+        assert isComputed() && type.isBound() && initQuantity != null && p >= 0 && p < N;
         return upperBnd[p];
     }
     
     public int getLowerBoundOf(int p) {
-        assert isComputed() && computeBounds && initQuantity != null && p >= 0 && p < N;
+        assert isComputed() && type.isBound() && initQuantity != null && p >= 0 && p < N;
         return lowerBnd[p];
     }
     
     
     
     
-    public String toLatexString(PTFlows.Type type, NetIndex netIndex, boolean showZeros) {
+    public String toLatexString(NetIndex netIndex, boolean showZeros) {
         StringBuilder sb = new StringBuilder();
         
         // header
@@ -458,9 +430,14 @@ public class FlowsGenerator extends StructuralAlgorithm {
     public boolean hasColoredPlaces = false;
     public boolean hasNonIntegerInitMarks = false;
     
+    // Support structures for building traps/siphons
+    private int[] trIndexStart, trIndexEnd;
+
+    
     // Compute the initial sizes of the N,M
     public static FlowsGenerator makeFor(PTFlows.Type type, NetIndex netIndex) {
         int N, N0, M;
+        int[] trIndexStart = null, trIndexEnd = null;
         
         if (type.isTrapsOrSiphons()) {
             N = N0 = netIndex.numPlaces();
@@ -469,23 +446,23 @@ public class FlowsGenerator extends StructuralAlgorithm {
             // each IA/OA arc generates a duplicate transition with an
             // associated supplementary variable.
             GspnEdge.Kind primaryKind = (type==PTFlows.Type.TRAPS ? GspnEdge.Kind.INPUT : GspnEdge.Kind.OUTPUT);
-            netIndex.trIndexStart = new int[netIndex.transitions.size()];
-            netIndex.trIndexEnd = new int[netIndex.transitions.size()];
+            trIndexStart = new int[netIndex.transitions.size()];
+            trIndexEnd = new int[netIndex.transitions.size()];
             int jj = 0;
             for (int tt=0; tt<netIndex.transitions.size(); tt++) {
                 Transition trn = netIndex.transitions.get(tt);
-                netIndex.trIndexStart[tt] = jj;
+                trIndexStart[tt] = jj;
                 for (Edge ee : netIndex.net.edges) {
                     if (ee instanceof GspnEdge) {
                         GspnEdge e = (GspnEdge)ee;
                         if (e.getConnectedTransition() == trn && e.getEdgeKind() == primaryKind) {
-                            N++;
-                            M++;
-                            jj++;
+                            N++; // add a supplementary variable
+                            M++; // add a new transition replica
+                            jj++; // increment the replication index
                         }
                     }
                 }
-                netIndex.trIndexEnd[tt] = jj;
+                trIndexEnd[tt] = jj;
             }
         }
         else if (type.isPlace()) {
@@ -496,7 +473,10 @@ public class FlowsGenerator extends StructuralAlgorithm {
             N = N0 = netIndex.numTransition();
             M = netIndex.numPlaces();
         }
-        return new FlowsGenerator(N, N0, M, type);
+        FlowsGenerator fg = new FlowsGenerator(N, N0, M, type);
+        fg.trIndexStart = trIndexStart;
+        fg.trIndexEnd = trIndexEnd;
+        return fg;
     }
 
     // Initialize the matrices from a gspn page
@@ -575,19 +555,22 @@ public class FlowsGenerator extends StructuralAlgorithm {
                     if (ge.getEdgeKind() == primaryKind) {
                         // on the primary edge kind (Input for traps, Output for siphons)
                         // put a +1 on the jj-th transition column replica
-                        int jj = netIndex.trIndexStart[tt] + trSecondaryIndex[tt];
+                        int jj = trIndexStart[tt] + trSecondaryIndex[tt];
+                        assert jj < trIndexEnd[tt];
                         if (mA.get(p)[jj] == 0)
                             setIncidence(p, jj, 1);
                         ++trSecondaryIndex[tt]; // increment replica counter
                     }
                     else {
                         // set the value of the secondary edge kind on all replicas of transition tt
-                        for (int jj=netIndex.trIndexStart[tt]; jj<netIndex.trIndexEnd[tt]; jj++)
+                        for (int jj=trIndexStart[tt]; jj<trIndexEnd[tt]; jj++)
                             setIncidence(p, jj, -1);
                     }
                 }
             }            
         }
+        trIndexStart = null;
+        trIndexEnd = null;
         
         if (type.isTrapsOrSiphons()) {
             // Add the supplementary variables, i.e. the identity matrix 
@@ -613,10 +596,19 @@ public class FlowsGenerator extends StructuralAlgorithm {
         
     }
     
-    public String flowToString(int i, NetIndex netIndex) {
-        int[] flow = getFlowVector(i);
-        
+    public String flowToString(int i, NetIndex netIndex, boolean asInvariant, Color htmlTextColor) {
         StringBuilder repr = new StringBuilder();
+        boolean useHtml = (htmlTextColor != null);
+        String negClrHex = null, eqClrHex = null;
+        if (useHtml) {
+            Color negClr = Util.mix(htmlTextColor, Color.MAGENTA, 0.5f);
+            Color eqClr = Util.mix(htmlTextColor, Color.CYAN, 0.5f);
+            negClrHex = String.format("#%06x", negClr.getRGB() & 0xFFFFFF);
+            eqClrHex = String.format("#%06x", eqClr.getRGB() & 0xFFFFFF);
+            repr.append("<html>");
+        }
+        
+        int[] flow = getFlowVector(i);
         for (int k=0; k<flow.length; k++) {
             if (flow[k] == 0)
                 continue;
@@ -627,6 +619,8 @@ public class FlowsGenerator extends StructuralAlgorithm {
                     repr.append(flow[k]).append("*");
             }
             else {
+                if (useHtml)
+                    repr.append("<font color='").append(negClrHex).append("'>");
                 if (flow[k] == -1)
                     repr.append("-");
                 else
@@ -636,7 +630,24 @@ public class FlowsGenerator extends StructuralAlgorithm {
                 repr.append(netIndex.places.get(k).getUniqueName());
             else
                 repr.append(netIndex.transitions.get(k).getUniqueName());
+            if (flow[k] < 0 && useHtml)
+                repr.append("</font>");
         }
+        
+        String invSign = type.getInvariantSign();
+        if (asInvariant && invSign!=null && initQuantity!=null) {
+            // Compute the invariant quantity
+            int q = 0;
+            for (int k=0; k<flow.length; k++)
+                q += flow[k] * initQuantity[k];
+            
+            if (useHtml)
+                repr.append("<font color='").append(eqClrHex).append("'>");
+            repr.append(" ").append(invSign).append(" ").append(q);
+            if (useHtml)
+                repr.append("</font>");
+        }
+        
         return repr.toString();
     }
 
@@ -669,7 +680,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
     
     public static FlowsGenerator init1() {
         int M=10, N=14;
-        FlowsGenerator fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOW);
+        FlowsGenerator fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
         fg.addIncidence(0, 0, 1);
         fg.addIncidence(0, 4, -1);
         fg.addIncidence(1, 4, 1);
