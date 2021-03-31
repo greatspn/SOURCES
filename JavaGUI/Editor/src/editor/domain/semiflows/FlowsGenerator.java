@@ -374,6 +374,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
     
     public String toLatexString(NetIndex netIndex, boolean showZeros) {
         StringBuilder sb = new StringBuilder();
+        String[] symbols = type.getLatexFlowName();
         
         // header
         sb.append("$\\begin{array}{r");
@@ -383,7 +384,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
             sb.append("|r");
         sb.append("}\n ");
         for (int f=0; f<numFlows(); f++)
-            sb.append("& i_{").append(f+1).append("}");
+            sb.append("& ").append(symbols[0]).append("_{").append(f+1).append("}");
         if (type.isPlace())
             sb.append("& \\mathbf{m}_0");
         sb.append("\\\\ \n\\hline\n");
@@ -420,7 +421,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
         
         // final row
         if (type.isPlace()) {
-            sb.append("\n \\mathbf{m}_0 \\cdot I & ");
+            sb.append("\n \\mathbf{m}_0 \\cdot ").append(symbols[1]).append(" & ");
             
             for (int f=0; f<numFlows(); f++) {
                 int[] flow = getFlowVector(f);

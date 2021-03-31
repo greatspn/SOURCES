@@ -31,15 +31,15 @@ public interface PTFlows {
         
         public String printableName() {
             switch (this) {
-                case PLACE_SEMIFLOWS: return "Place semiflows";
-                case PLACE_FLOWS: return "Place flows";
-                case TRANSITION_SEMIFLOWS: return "Transition semiflows";
-                case TRANSITION_FLOWS: return "Transition flows";
+                case PLACE_SEMIFLOWS:        return "Place semiflows";
+                case PLACE_FLOWS:            return "Place flows";
+                case TRANSITION_SEMIFLOWS:   return "Transition semiflows";
+                case TRANSITION_FLOWS:       return "Transition flows";
                 case PLACE_BOUNDS_FROM_PINV: return "Place bounds";
-                case PLACE_BASIS: return "Place basis";
-                case TRANSITION_BASIS: return "Place basis";
-                case TRAPS: return "Minimal traps";
-                case SIPHONS: return "Minimal siphons";
+                case PLACE_BASIS:            return "Place basis";
+                case TRANSITION_BASIS:       return "Place basis";
+                case TRAPS:                  return "Minimal traps";
+                case SIPHONS:                return "Minimal siphons";
                 default:
                     throw new IllegalStateException();
             }
@@ -48,19 +48,34 @@ public interface PTFlows {
         public ImageIcon getIcon32() {
             ResourceFactory rf = ResourceFactory.getInstance();
             switch (this) {
-                case PLACE_SEMIFLOWS: return rf.getPinv_N32();
-                case PLACE_FLOWS: return rf.getPinv_Z32();
-                case TRANSITION_SEMIFLOWS: return rf.getTinv_N32();
-                case TRANSITION_FLOWS: return rf.getTinv_Z32();
+                case PLACE_SEMIFLOWS:        return rf.getPinv_N32();
+                case PLACE_FLOWS:            return rf.getPinv_Z32();
+                case TRANSITION_SEMIFLOWS:   return rf.getTinv_N32();
+                case TRANSITION_FLOWS:       return rf.getTinv_Z32();
                 case PLACE_BOUNDS_FROM_PINV: return rf.getBound32();
-                case PLACE_BASIS: return rf.getPinv_B32();
-                case TRANSITION_BASIS: return rf.getTinv_B32();
-                case TRAPS: return rf.getTrap();
-                case SIPHONS: return rf.getSiphon();
+                case PLACE_BASIS:            return rf.getPinv_B32();
+                case TRANSITION_BASIS:       return rf.getTinv_B32();
+                case TRAPS:                  return rf.getTrap();
+                case SIPHONS:                return rf.getSiphon();
                 default:
                     throw new IllegalStateException();
             }
-            
+        }
+        
+        public String[] getLatexFlowName() {
+            switch (this) {
+                case PLACE_SEMIFLOWS:        return new String[]{"\\phi", "\\boldsymbol{\\Phi}"};
+                case PLACE_FLOWS:            return new String[]{"f", "\\mathbf{F}"};
+                case TRANSITION_SEMIFLOWS:   return new String[]{"\\psi"/*, "\\boldsymbol{\\Psi}"*/};
+                case TRANSITION_FLOWS:       return new String[]{"y"/*, "\\mathbf{Y}"*/};
+                case PLACE_BOUNDS_FROM_PINV: return null;
+                case PLACE_BASIS:            return new String[]{"b", "\\mathbf{B}"};
+                case TRANSITION_BASIS:       return new String[]{"d"/*, "\\mathbf{D}"*/};
+                case TRAPS:                  return new String[]{"t", "\\mathbf{T}"};
+                case SIPHONS:                return new String[]{"s", "\\mathbf{S}"};
+                default:
+                    throw new IllegalStateException();
+            }
         }
         
         public boolean isPlace() {
