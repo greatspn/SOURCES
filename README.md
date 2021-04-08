@@ -72,7 +72,7 @@ A sample installation procedure could be the following:
 wget http://www.lrde.epita.fr/dload/spot/spot-2.9.6.tar.gz  # The URL could be different
 tar xzf spot-2.9.6.tar.gz
 cd spot-2.9.6
-./configure
+./configure # --disable-python
 make
 sudo make install
 ```

@@ -824,7 +824,7 @@ void incidence_matrix_generator_t::generate_matrix2(const PN& pn, bool print_war
             int num_arcs = trn.arcs[dup_type].size();
             j_end = j_start + num_arcs;
             int jj = j_start;
-            cout << trn.name << " num_arcs="<<num_arcs<<endl;
+            // cout << trn.name << " num_arcs="<<num_arcs<<endl;
 
             for (const Arc& arc : trn.arcs[secondary_type]) {
                 if (arc.isMultMarkingDep()) 
