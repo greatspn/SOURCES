@@ -1607,7 +1607,7 @@ void QuantifiedFormula::createMDD(Context& ctx) {
         }
     }
 
-    cout << "Using SatELTL." << endl;
+    // cout << "Using SatELTL." << endl;
 
     // Get the maximal path subformula and the list of subformula pointers
     std::stringstream path_formula;
