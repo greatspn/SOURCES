@@ -665,10 +665,13 @@ public abstract class Node extends SelectableObject
                 boolean isPrinter = false;
                 if (g != null) {
                     GraphicsConfiguration gc = g.getDeviceConfiguration();
-                    if (gc != null)
+                    if (gc != null) {
                         isPrinter = (gc.getDevice().getType() == GraphicsDevice.TYPE_PRINTER);
+                    }
+                    else isPrinter = true; // for instance, PDF printer has no device
                 }
                 if (isPrinter) {
+//                    System.out.println("isPrinter");
                     shapeRoundRect.setRoundRect(getX(), getY(), getWidth(), getHeight(), 0, 0);
                     return shapeRoundRect;
                 }
