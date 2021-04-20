@@ -196,6 +196,18 @@ public abstract class NetPage extends ProjectPage implements Serializable, Compo
         return count;
     }
     
+    public Selectable[] getAllSelectedObjects() {
+        Selectable[] sel = new Selectable[countSelectedEdges() + countSelectedNodes()];
+        int k = 0;
+        for (Node node : nodes)
+            if (node.isSelected())
+                sel[k++] = node;
+        for (Edge edge : edges)
+            if (edge.isSelected())
+                sel[k++] = edge;
+        return sel;
+    }
+    
     // =========== Resource management ============
     
     @Override

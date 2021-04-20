@@ -6,7 +6,6 @@ package editor.domain;
 
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
-import javax.swing.JComponent;
 
 /** Objects in the graph editor that can be selected
  *

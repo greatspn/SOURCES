@@ -104,6 +104,9 @@ public abstract class Node extends SelectableObject
     public void setNodePosition(double x, double y) {
         pos.setLocation(x, y);
     }
+    public void setNodeCenterPosition(double x, double y) {
+        pos.setLocation(x - getWidth()/2.0, y - getHeight()/2.0);
+    }
     
     
     public final String getUniqueName() { return uniqueName; }
@@ -556,7 +559,7 @@ public abstract class Node extends SelectableObject
     }
     
     // Rotation handle
-    private class RotationHandlePosition implements HandlePosition {
+    private static class RotationHandlePosition implements HandlePosition {
         public double rotation;
         public Point2D handlePos;
         public RotationHandlePosition(double rotation, Point2D handlePos) {
@@ -567,7 +570,7 @@ public abstract class Node extends SelectableObject
         @Override public double getRefY() { return handlePos.getY(); }
         @Override public Point2D getRefPoint() { return new Point2D.Double(handlePos.getX(), handlePos.getY()); }
     }
-    private static final Color ROTATION_HANDLE_COLOR = new Color(0, 171, 14);
+    public static final Color ROTATION_HANDLE_COLOR = new Color(0, 171, 14);
     public MovementHandle getRotationHandle(final NetPage page) {
         assert mayRotate();
         return new DraggableHandle() {
@@ -620,7 +623,8 @@ public abstract class Node extends SelectableObject
             @Override
             public MeshGridSize getPreferredMeshGridSize(double Dx, double Dy, boolean isMultiSelMove) { 
                 return new MeshGridSize(new Point2D.Double(getCenterX(), getCenterY()), 
-                                        getRotationShaftLen());
+                                        getRotationShaftLen(), 
+                                        NetObject.DEFAULT_GRID_ANGLE_SNAPPING_DEGREES);
             }
         };
     }

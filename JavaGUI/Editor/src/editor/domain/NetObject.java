@@ -153,7 +153,7 @@ public class NetObject implements Serializable {
         return out;
     }
 
-    protected double distance(Point2D p1, Point2D p2) {
+    public static double distance(Point2D p1, Point2D p2) {
         double dx = p2.getX() - p1.getX();
         double dy = p2.getY() - p1.getY();
         return Math.sqrt(dx*dx + dy*dy);
@@ -202,14 +202,19 @@ public class NetObject implements Serializable {
     public static final double DEG_TO_RAD = Math.PI / 180.0;
     public static final double RAD_TO_DEG = 180.0 / Math.PI;
     
+    public static final double DEFAULT_GRID_ANGLE_SNAPPING_DEGREES = 15.0;
+    public static final double DEFAULT_MULTISEL_GRID_SNAPPING_DEGREES = 15.0;
+    
     // Grid management
     public static class MeshGridSize {
         public Point2D rotationCenter;
         public double rotationShaft;
+        public double gridSnapping;
 
-        public MeshGridSize(Point2D rotationCenter, double rotationShaft) {
+        public MeshGridSize(Point2D rotationCenter, double rotationShaft, double gridSnapping) {
             this.rotationCenter = rotationCenter;
             this.rotationShaft = rotationShaft;
+            this.gridSnapping = gridSnapping;
         }
         public boolean isRotation() {
             return this != NODE_GRID && this != POINT_GRID;
@@ -218,8 +223,8 @@ public class NetObject implements Serializable {
 //    public enum MeshGridSize {
 //        NODE_GRID, POINT_GRID
 //    }
-    public static final MeshGridSize NODE_GRID = new MeshGridSize(null, 0);
-    public static final MeshGridSize POINT_GRID = new MeshGridSize(null, 0);
+    public static final MeshGridSize NODE_GRID = new MeshGridSize(null, 0, 0);
+    public static final MeshGridSize POINT_GRID = new MeshGridSize(null, 0, 0);
             
     public static MeshGridSize mcdGridSize(MeshGridSize mgs1, MeshGridSize mgs2) {
         if (mgs1 == POINT_GRID && mgs2 == POINT_GRID)
