@@ -239,6 +239,8 @@ $(call search_library,MEDDLY_LIB,libmeddly.*,"Meddly library(github.com/asminer/
 
 $(call search_library,OGDF_LIB,libOGDF.*,"Open Graph Drawing Framework (ogdf.uos.de)",-lOGDF)
 
+$(call search_library,COIN_LIB,libCOIN.*,"Coin CLP solver (projects.coin-or.org/Clp)",-lCOIN)
+
 
 ##############################################################################
 
@@ -2224,10 +2226,12 @@ ogdf_SOURCES := NSRC/ogdf/ogdf.cpp
 
 ogdf_CPPFLAGS := $(CPPFLAGS) -Wall $(ENABLE_Cxx17)
 ogdf_LD := $(LDPP)
-ogdf_LDFLAGS := $(LDFLAGS) $(LINK_OGDF_LIB) $(ENABLE_Cxx17) -pthread
+ogdf_LDFLAGS := $(LDFLAGS) $(LINK_OGDF_LIB) $(LINK_COIN_LIB) $(ENABLE_Cxx17) -pthread
 
 ifdef HAS_OGDF_LIB
+ ifdef HAS_COIN_LIB
   TARGETS += ogdf
+ endif
 endif
 
 ######################################

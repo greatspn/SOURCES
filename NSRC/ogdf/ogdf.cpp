@@ -177,11 +177,11 @@ int main(int argc, char **argv)
         pl.setDesLength(separation);
         pl.call(GA);
     }
-    // else if (0==strcmp(layout_algo, "Sugiyama")) {
-    //     SugiyamaLayout pl;
-    //     pl.setRanking(new OptimalRanking());
-    //     pl.call(GA);
-    // }
+    else if (0==strcmp(layout_algo, "Sugiyama")) {
+        SugiyamaLayout pl;
+        pl.setRanking(new OptimalRanking());
+        pl.call(GA);
+    }
     else if (0==strcmp(layout_algo, "Visibility")) {
         VisibilityLayout pl;
         pl.setMinGridDistance(separation);
