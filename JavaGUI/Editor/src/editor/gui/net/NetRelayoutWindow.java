@@ -12,6 +12,9 @@ import editor.domain.NetPage;
 import editor.domain.Node;
 import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
+import editor.domain.elements.DtaLocation;
+import editor.domain.elements.Place;
+import editor.domain.elements.Transition;
 import editor.domain.measures.SolverInvokator;
 import static editor.domain.measures.SolverInvokator.cmdToString;
 import static editor.domain.measures.SolverInvokator.startOfCommand;
@@ -58,7 +61,7 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
         DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>)comboBox_layout.getModel();
         model.addElement("Basic Planarization");
         model.addElement("Grid Planarization");
-        model.addElement("Straight Planarization");
+//        model.addElement("Straight Planarization");
 //        model.addElement("Draw Planarization");
         model.addElement("FMMM");
         model.addElement("FMME");
@@ -66,7 +69,7 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
 //        model.addElement("GEM");
 //        model.addElement("Spring Layout");
 //        model.addElement("SpringKK Layout");
-//        model.addElement("Sugiyama");
+        model.addElement("Sugiyama");
         model.addElement("Visibility");
         model.addElement("Dominance");
         model.addElement("Balloon");
@@ -83,12 +86,20 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
         button_stop.setEnabled(false);
         
         Dimension dim = comboBox_layout.getPreferredSize();
-        dim.width = Math.max(dim.width, NetObject.getUnitToPixels()*40);
+        dim.width = Math.max(dim.width, NetObject.getUnitToPixels()*20);
         comboBox_layout.setMinimumSize(dim);
+        comboBox_layout.setPreferredSize(dim);
         
         pack();
         setLocationRelativeTo(parent);
         getRootPane().setDefaultButton(button_start);
+    }
+    
+    private boolean isNodeRepositionable(Node node) {
+        return ((node instanceof Place) ||
+                (node instanceof Transition) ||
+                (node instanceof DtaLocation));
+        
     }
     
     public boolean startRelayout(String layoutAlgo) {
@@ -101,6 +112,8 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
             outWriter.append("graph [\n");
             Map<Node, Integer> node2id = new HashMap<>();
             for (Node node : net.nodes) {
+                if (!isNodeRepositionable(node))
+                    continue;
                 int id = node2id.size();
                 node2id.put(node, id);
                 outWriter.append(" node [ id "+id+" w 2 h 2 ]\n");
@@ -137,6 +150,8 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
             edgeLines = new ArrayList<>();
             
             for (Node node : net.nodes) {
+                if (!isNodeRepositionable(node))
+                    continue;
                 nodePos.add(new Point2D.Double(scanDouble(sc), scanDouble(sc)));
                 System.out.println(nodePos.get(nodePos.size()-1).getX()+" "+
                                    nodePos.get(nodePos.size()-1).getY());
@@ -189,8 +204,13 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
         else {
             // apply the layout
             mainInterface.executeUndoableCommand("net re-layout", (ProjectData proj, ProjectPage page) -> {
-                for (int i=0; i<net.nodes.size(); i++)
-                    net.nodes.get(i).setNodeCenterPosition(nodePos.get(i).getX(), nodePos.get(i).getY());
+                int nodeIndex = 0;
+                for (Node node : net.nodes) {
+                    if (!isNodeRepositionable(node))
+                        continue;
+                    node.setNodeCenterPosition(nodePos.get(nodeIndex).getX(), nodePos.get(nodeIndex).getY());
+                    nodeIndex++;
+                }
 
                 for (int i=0; i<net.edges.size(); i++) {
                     Edge edge = net.edges.get(i);
@@ -246,7 +266,7 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Layout Algorithm Selection"));
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        jLabel1.setText("Layout: ");
+        jLabel1.setText("Algorithm: ");
         jPanel1.add(jLabel1, new java.awt.GridBagConstraints());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;

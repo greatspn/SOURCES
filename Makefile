@@ -2226,12 +2226,15 @@ ogdf_SOURCES := NSRC/ogdf/ogdf.cpp
 
 ogdf_CPPFLAGS := $(CPPFLAGS) -Wall $(ENABLE_Cxx17)
 ogdf_LD := $(LDPP)
-ogdf_LDFLAGS := $(LDFLAGS) $(LINK_OGDF_LIB) $(LINK_COIN_LIB) $(ENABLE_Cxx17) -pthread
+ogdf_LDFLAGS := $(LDFLAGS) $(LINK_OGDF_LIB) $(ENABLE_Cxx17) -pthread
+
+ifdef HAS_COIN_LIB
+	ogdf_LDFLAGS := $(ogdf_LDFLAGS)  $(LINK_COIN_LIB)
+	ogdf_CPPFLAGS := $(ogdf_CPPFLAGS) -DHAS_COIN_LIB
+endif
 
 ifdef HAS_OGDF_LIB
- ifdef HAS_COIN_LIB
   TARGETS += ogdf
- endif
 endif
 
 ######################################

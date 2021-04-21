@@ -99,15 +99,15 @@ int main(int argc, char **argv)
         FastMultipoleMultilevelEmbedder pl;
         pl.call(GA);
     }
-    // else if (0==strcmp(layout_algo, "FPP")) {
-    //     FPPLayout pl;
-    //     pl.call(GA);
-    // }
-    // else if (0==strcmp(layout_algo, "GEM")) {
-    //     GEMLayout pl;
-    //     pl.minDistCC(separation);
-    //     pl.call(GA);
-    // }
+    else if (0==strcmp(layout_algo, "FPP")) {
+        FPPLayout pl;
+        pl.call(GA);
+    }
+    else if (0==strcmp(layout_algo, "GEM")) {
+        GEMLayout pl;
+        pl.minDistCC(separation);
+        pl.call(GA);
+    }
     // else if (0==strcmp(layout_algo, "Mixed Force Layout")) {
     //     MixedForceLayout pl;
     //     pl.call(GA);
@@ -162,26 +162,28 @@ int main(int argc, char **argv)
         do_round = true;
         pl.call(GA);
     }
-    else if (0==strcmp(layout_algo, "Draw Planarization")) {
-        PlanarDrawLayout pl;
-        do_round = true;
-        pl.call(GA);
-    }
-    else if (0==strcmp(layout_algo, "Spring Layout")) {
-        SpringEmbedderFRExact pl;
-        pl.minDistCC(separation);
-        pl.call(GA);
-    }
-    else if (0==strcmp(layout_algo, "SpringKK Layout")) {
-        SpringEmbedderKK pl;
-        pl.setDesLength(separation);
-        pl.call(GA);
-    }
+    // else if (0==strcmp(layout_algo, "Draw Planarization")) {
+    //     PlanarDrawLayout pl;
+    //     do_round = true;
+    //     pl.call(GA);
+    // }
+    // else if (0==strcmp(layout_algo, "Spring Layout")) {
+    //     SpringEmbedderFRExact pl;
+    //     pl.minDistCC(separation);
+    //     pl.call(GA);
+    // }
+    // else if (0==strcmp(layout_algo, "SpringKK Layout")) {
+    //     SpringEmbedderKK pl;
+    //     pl.setDesLength(separation);
+    //     pl.call(GA);
+    // }
+#ifdef HAS_COIN_LIB
     else if (0==strcmp(layout_algo, "Sugiyama")) {
         SugiyamaLayout pl;
         pl.setRanking(new OptimalRanking());
         pl.call(GA);
     }
+#endif
     else if (0==strcmp(layout_algo, "Visibility")) {
         VisibilityLayout pl;
         pl.setMinGridDistance(separation);
