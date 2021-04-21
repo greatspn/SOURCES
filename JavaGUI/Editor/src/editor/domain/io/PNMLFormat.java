@@ -474,8 +474,8 @@ public class PNMLFormat {
     }
     
     private static String extractGraphicsLabelAndPosition(Element elem, Point2D pos, Point2D labelOffset) {
-        if (labelOffset != null)
-            labelOffset.setLocation(0, 0);
+//        if (labelOffset != null)
+//            labelOffset.setLocation(0, 0);
 
         if (pos != null) {
             pos.setLocation(0, 0);
@@ -766,6 +766,7 @@ public class PNMLFormat {
 	doc.getDocumentElement().normalize();
         Point2D.Double pos = new Point2D.Double();
         Point2D.Double labelOffset = new Point2D.Double();
+        Point2D.Double tagsOffset = new Point2D.Double();
 
         if (!doc.getDocumentElement().getNodeName().equals("pnml"))
             throw new UnsupportedOperationException("Cannot find PNML XML root.");
@@ -982,6 +983,7 @@ public class PNMLFormat {
                 Element plcElem = (Element)placeList.item(i);
      
                 String id = plcElem.getAttribute("id");
+                labelOffset.setLocation(Place.DEFAULT_UNIQUE_NAME_POS);
                 String name = extractGraphicsLabelAndPosition(plcElem, pos, labelOffset);
                 name = saveIdName(id, name, id2name, knownNames);
                 
@@ -1019,7 +1021,7 @@ public class PNMLFormat {
                 }
                                 
                 Place plc = new Place(name, initMarkExpr, TokenType.DISCRETE, colorDomain, "", pos);
-                extractTags(plcElem, plc, labelOffset);
+                extractTags(plcElem, plc, tagsOffset);
                 LabelDecor lab = plc.getUniqueNameDecor();
                 lab.setInternalPos(labelOffset.x, labelOffset.y);
                 gspn.nodes.add(plc);
@@ -1032,6 +1034,7 @@ public class PNMLFormat {
                 Element trnElem = (Element)trnList.item(i);
      
                 String id = trnElem.getAttribute("id");
+                labelOffset.setLocation(Transition.DEFAULT_UNIQUE_NAME_POS);
                 String name = extractGraphicsLabelAndPosition(trnElem, pos, labelOffset);
                 name = saveIdName(id, name, id2name, knownNames);;
                 

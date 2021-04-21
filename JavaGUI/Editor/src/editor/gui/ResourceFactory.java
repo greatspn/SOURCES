@@ -456,7 +456,7 @@ public class ResourceFactory {
     public ImageIcon getOk16() {
         return loadIcon16("ok");
     }
-
+    
     public ImageIcon getOpen16() {
         return loadIcon16("open");
     }
@@ -543,6 +543,11 @@ public class ResourceFactory {
     public ImageIcon getPinv_B32() {
         return loadIcon32("pinv_B");
     }
+    
+    public ImageIcon getPlanarize32() {
+        return loadIcon32("planarize");
+    }
+
 
     public ImageIcon getPlay16() {
         return loadIcon16("play");

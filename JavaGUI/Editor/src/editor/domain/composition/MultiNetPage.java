@@ -16,7 +16,6 @@ import editor.domain.ProjectFile;
 import editor.domain.ProjectPage;
 import editor.domain.ProjectResource;
 import editor.domain.ViewProfile;
-import static editor.domain.composition.UnfoldingCompositionPage.NUM_OFFSET_ROWS;
 import editor.domain.elements.ColorClass;
 import editor.domain.elements.ConstantID;
 import editor.domain.elements.GspnPage;

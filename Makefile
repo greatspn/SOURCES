@@ -203,7 +203,6 @@ $(call search_library,LIBXMLPP2-6_LIB,libxml++-2.6,"libXML++-2.6 library")
 
 $(call search_library,GLIBMM2-4_LIB,libglibmm-2.4.*,"glibmm-2.4 library")
 
-
 $(call search_library,GLPK_LIB,libglpk.*,"GLPK library",-lglpk)
 
 
@@ -237,6 +236,9 @@ $(call search_library,SPOT_LIB,libspot.*,"Spot library(spot.lrde.epita.fr/)")
 
 
 $(call search_library,MEDDLY_LIB,libmeddly.*,"Meddly library(github.com/asminer/meddly)")
+
+$(call search_library,OGDF_LIB,libOGDF.*,"Open Graph Drawing Framework (ogdf.uos.de)",-lOGDF)
+
 
 ##############################################################################
 
@@ -2213,6 +2215,20 @@ TARGETS += DSPN-Tool-Debug
 endif
 # endif
 
+
+######################################
+# OGDF Tool
+######################################
+
+ogdf_SOURCES := NSRC/ogdf/ogdf.cpp
+
+ogdf_CPPFLAGS := $(CPPFLAGS) -Wall $(ENABLE_Cxx17)
+ogdf_LD := $(LDPP)
+ogdf_LDFLAGS := $(LDFLAGS) $(LINK_OGDF_LIB) $(ENABLE_Cxx17) -pthread
+
+ifdef HAS_OGDF_LIB
+  TARGETS += ogdf
+endif
 
 ######################################
 ##### MAIN PACKAGE LOCATOR SCRIPT #####

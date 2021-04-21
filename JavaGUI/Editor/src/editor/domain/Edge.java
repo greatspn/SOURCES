@@ -11,7 +11,6 @@ import static editor.domain.NetObject.ACTIVE_COLOR;
 import static editor.domain.NetObject.ALPHA_50;
 import static editor.domain.NetObject.SELECTION_COLOR;
 import static editor.domain.NetObject.linearInterp;
-import editor.domain.elements.GspnEdge;
 import editor.domain.grammar.ExprRewriter;
 import editor.domain.grammar.ParserContext;
 import editor.domain.io.XmlExchangeDirection;
@@ -37,7 +36,6 @@ import java.util.Map;
 import java.util.UUID;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import editor.domain.semiflows.PTFlows;
 
 /** An edge in a graph connecting two nodes.
  *

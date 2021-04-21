@@ -539,6 +539,13 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
         boolean isGspn = (currPage instanceof GspnPage);
         boolean isDta = (currPage instanceof DtaPage);
         boolean inSelectMode = (currTool.activeTool == Tool.SELECT);
+        boolean hasIncompleteEdges = false;
+        for (Edge edge : currPage.edges) {
+            if (edge.getHeadNode()==null || edge.getTailNode()==null) {
+                hasIncompleteEdges = true;
+                break;
+            }
+        }
         
         for (SharedResourceProvider.ActionName actName : SharedResourceProvider.ActionName.values()) {
             common.Action act = shResProv.getSharedAction(actName);
@@ -573,6 +580,10 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
                 case EXPORT_AS_PDF:
                 case EXPORT_AS_PNG:
                     act.setEnabled(true);
+                    break;
+                    
+                case RELAYOUT_OGDF:
+                    act.setEnabled(inSelectMode && currPage.nodes.size()>2 &&!hasIncompleteEdges);
                     break;
 
                 default:
@@ -630,6 +641,13 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
                 
             case SHOW_NET_MATRICES:
                 PagePrintExportManager.showNetMatrices(mainInterface, (GspnPage)currPage);
+                return;
+                
+            case RELAYOUT_OGDF:
+                NetRelayoutWindow nrw = new NetRelayoutWindow(mainInterface.getWindowFrame(), 
+                                                              mainInterface, currPage);
+                nrw.setVisible(true);
+//                OgdfLayout.relayout(mainInterface, (GspnPage)currPage);
                 return;
                         
             default:

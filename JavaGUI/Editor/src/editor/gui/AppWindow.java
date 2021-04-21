@@ -835,6 +835,10 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
                         selectedElem instanceof ComposableNet && ((ComposableNet)selectedElem).hasSubnets();
                 jToolbarButtonMakeEditable.setVisible(hasSubnets);
                 
+                boolean canRelayout = canEdit && selectedElem != null &&
+                        selectedElem instanceof ComposableNet && !((ComposableNet)selectedElem).hasSubnets();
+                jToolbarButtonRelayoutOgdf.setVisible(canRelayout);
+                
                 boolean canShowNetMatrices = selectedElem != null && selectedElem.hasNetMatrices();
                 boolean isShowNetMatricesEnabled = canEdit && canShowNetMatrices && selectedElem.isPageCorrect();
                 jToolbarButtonShowNetMatrices.setVisible(canShowNetMatrices);
@@ -886,6 +890,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
                 jToolbarButtonClearMeasureDir.setVisible(false);
                 actionClearMeasureDir.setEnabled(false);
                 jToolbarButtonMakeEditable.setVisible(false);
+                jToolbarButtonRelayoutOgdf.setVisible(false);
                 jToolbarButtonShowNetMatrices.setVisible(false);
                 jDropdownToolbarButtonRapidMeasure.setVisible(false);
             }
@@ -1043,6 +1048,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             case PLAY_PREVIOUS:             return sharedActionPrev;
             case PLAY_RESTART:              return sharedActionRestart;
             case MAKE_EDITABLE_NET:         return sharedActionMakeEditableNet;
+            case RELAYOUT_OGDF:             return sharedActionRelayoutOgdf;
             case SHOW_NET_MATRICES:         return sharedActionShowNetMatrices;
             case CHANGE_BINDINGS:           return sharedActionChangeBindings;
             case COMPUTE_PLACE_SEMIFLOWS:   return sharedActionComputePlaceSemiflows;
@@ -1487,6 +1493,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         sharedActionComputeBoundsFromPinv = new common.Action();
         sharedActionMakeEditableNet = new common.Action();
         sharedActionShowNetMatrices = new common.Action();
+        sharedActionRelayoutOgdf = new common.Action();
         actionCaptureSVG = new common.Action();
         actionNewNetPage_PT = new common.Action();
         actionNewNetPage_CPN = new common.Action();
@@ -1577,6 +1584,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jAppToolBar_Advanced = new javax.swing.JToolBar();
         jToolbarButtonAlgebra = new common.JToolbarButton();
         jToolbarButtonMakeEditable = new common.JToolbarButton();
+        jToolbarButtonRelayoutOgdf = new common.JToolbarButton();
         jDropdownToolbarButtonRapidMeasure = new common.JDropdownToolbarButton();
         jPlayToolBar = new javax.swing.JToolBar();
         jToolbarButtonEndPlay = new common.JToolbarButton();
@@ -2165,6 +2173,10 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         sharedActionShowNetMatrices.setIcon(resourceFactory.getShowMatrices32());
         sharedActionShowNetMatrices.setTooltipDesc("Show the net matrices.");
 
+        sharedActionRelayoutOgdf.setActionName("Re-layout the net.");
+        sharedActionRelayoutOgdf.setIcon(resourceFactory.getPlanarize32());
+        sharedActionRelayoutOgdf.setTooltipDesc("Re-layout the net elements automatically using a graph planarization algorithm.");
+
         actionCaptureSVG.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_J, java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
         actionCaptureSVG.setActionName("Save an SVG capture of the main window.");
         actionCaptureSVG.addActionListener(new java.awt.event.ActionListener() {
@@ -2605,6 +2617,11 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jToolbarButtonMakeEditable.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jToolbarButtonMakeEditable.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jAppToolBar_Advanced.add(jToolbarButtonMakeEditable);
+
+        jToolbarButtonRelayoutOgdf.setAction(sharedActionRelayoutOgdf);
+        jToolbarButtonRelayoutOgdf.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jToolbarButtonRelayoutOgdf.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jAppToolBar_Advanced.add(jToolbarButtonRelayoutOgdf);
 
         jDropdownToolbarButtonRapidMeasure.setAction(actionAdvRapidMeasurePopup);
         jDropdownToolbarButtonRapidMeasure.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -3830,6 +3847,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private common.JToolbarButton jToolbarButtonOpen;
     private common.JToolbarButton jToolbarButtonPaste;
     private common.JToolbarButton jToolbarButtonRedo;
+    private common.JToolbarButton jToolbarButtonRelayoutOgdf;
     private common.JToolbarButton jToolbarButtonRenamePage;
     private common.JToolbarButton jToolbarButtonSaveAll;
     private common.JToolbarButton jToolbarButtonShowCTMC;
@@ -3885,6 +3903,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private common.Action sharedActionPlaceFlows;
     private common.Action sharedActionPlaceSemiflows;
     private common.Action sharedActionPrev;
+    private common.Action sharedActionRelayoutOgdf;
     private common.Action sharedActionRestart;
     private common.Action sharedActionSelectAll;
     private common.Action sharedActionShowNetMatrices;
