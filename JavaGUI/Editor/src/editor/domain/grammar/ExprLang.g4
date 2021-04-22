@@ -6,6 +6,10 @@
 // CLASSPATH=.:/usr/local/lib/antlr-4.2.1-complete.jar:../dist/Editor.jar 
 //        grun editor.domain.grammar.ExprLang mainBoolExpr -gui
 
+// To copy as HTML:
+// Use Sublime (with SublimeHighlighter installed)
+//  select all -> ctrl+shift+P -> copy as HTML
+
 // Define a grammar called ExprLang
 grammar ExprLang;
 

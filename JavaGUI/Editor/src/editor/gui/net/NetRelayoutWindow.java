@@ -28,6 +28,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFrame;
@@ -48,6 +49,8 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
     ArrayList<Point2D> nodePos = null;
     ArrayList<ArrayList<Point2D>> edgeLines = null;
     String errorMsg = null;
+    ArrayList<Node> repositionedNodes;
+    ArrayList<Edge> repositionedEdges;
 
     /**
      * Creates new form NetRelayoutWindow
@@ -83,7 +86,8 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
 
         model.setSelectedItem(model.getElementAt(0));
         
-        button_stop.setEnabled(false);
+//        button_stop.setEnabled(false);
+        changeWindowForComputation(false);
         
         Dimension dim = comboBox_layout.getPreferredSize();
         dim.width = Math.max(dim.width, NetObject.getUnitToPixels()*20);
@@ -95,30 +99,58 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
         getRootPane().setDefaultButton(button_start);
     }
     
+    private void changeWindowForComputation(boolean computing) {
+        button_start.setEnabled(!computing);
+        button_stop.setEnabled(computing);
+        button_close.setEnabled(!computing);
+        progressBar.setIndeterminate(computing);
+        checkBox_randomize.setEnabled(!computing);
+        comboBox_layout.setEnabled(!computing);
+    }
+    
     private boolean isNodeRepositionable(Node node) {
         return ((node instanceof Place) ||
                 (node instanceof Transition) ||
                 (node instanceof DtaLocation));
         
     }
-    
-    public boolean startRelayout(String layoutAlgo) {
+        
+    public boolean startRelayout(String layoutAlgo, boolean randomize) {
         errorMsg = null;
         File outFile=null, inFile=null;
         try {
-            outFile = File.createTempFile("gml", "");
-            inFile = File.createTempFile("coords", "");
-            PrintWriter outWriter = new UnixPrintWriter(new BufferedWriter(new FileWriter(outFile)));
-            outWriter.append("graph [\n");
+            repositionedNodes = new ArrayList<>();
+            repositionedEdges = new ArrayList<>();
             Map<Node, Integer> node2id = new HashMap<>();
+            // Determine which nodes/edges can be repositioned
             for (Node node : net.nodes) {
                 if (!isNodeRepositionable(node))
                     continue;
                 int id = node2id.size();
                 node2id.put(node, id);
-                outWriter.append(" node [ id "+id+" w 2 h 2 ]\n");
+                repositionedNodes.add(node);
             }
             for (Edge edge : net.edges) {
+                repositionedEdges.add(edge);
+            }
+            if (randomize) {
+                Random rand = new Random();
+                for (int i=0; i<repositionedNodes.size(); i++)
+                    randomSwap(repositionedNodes, rand);
+                for (int i=0; i<repositionedEdges.size(); i++)
+                    randomSwap(repositionedEdges, rand);
+            }
+            
+            outFile = File.createTempFile("gml", "");
+            inFile = File.createTempFile("coords", "");
+            PrintWriter outWriter = new UnixPrintWriter(new BufferedWriter(new FileWriter(outFile)));
+            outWriter.append("graph [\n");
+
+            
+            for (Node node : repositionedNodes) {
+                outWriter.append(" node [ id "+node2id.get(node)+" w 2 h 2 ]\n");
+            }
+            for (Edge edge : repositionedEdges) {
                 outWriter.append(" edge [ source "+node2id.get(edge.getHeadNode())+
                                  " target "+node2id.get(edge.getTailNode())+" ]\n");
             }
@@ -149,14 +181,12 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
             nodePos = new ArrayList<>();
             edgeLines = new ArrayList<>();
             
-            for (Node node : net.nodes) {
-                if (!isNodeRepositionable(node))
-                    continue;
+            for (Node node : repositionedNodes) {
                 nodePos.add(new Point2D.Double(scanDouble(sc), scanDouble(sc)));
                 System.out.println(nodePos.get(nodePos.size()-1).getX()+" "+
                                    nodePos.get(nodePos.size()-1).getY());
             }
-            for (Edge edge : net.edges) {
+            for (Edge edge : repositionedEdges) {
                 int src = sc.nextInt();
                 int tgt = sc.nextInt();
                 int numPoints = sc.nextInt();
@@ -192,28 +222,27 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(this, 
                               "An error happened during layout operation.\n"
                               + "Reason: "+errorMsg,
-                              "Export \""+net.getPageName()+"\" in PNG format...", 
+                              "Net relayout error", 
                               JOptionPane.ERROR_MESSAGE);            
 //            mainInterface.setStatus("could not re-layout the net.", true);
             
-            button_start.setEnabled(true);
-            button_stop.setEnabled(false);
-            button_close.setEnabled(true);
-            progressBar.setIndeterminate(false);
+            changeWindowForComputation(false);
+//            button_start.setEnabled(true);
+//            button_stop.setEnabled(false);
+//            button_close.setEnabled(true);
+//            progressBar.setIndeterminate(false);
         }
         else {
             // apply the layout
             mainInterface.executeUndoableCommand("net re-layout", (ProjectData proj, ProjectPage page) -> {
                 int nodeIndex = 0;
-                for (Node node : net.nodes) {
-                    if (!isNodeRepositionable(node))
-                        continue;
+                for (Node node : repositionedNodes) {
                     node.setNodeCenterPosition(nodePos.get(nodeIndex).getX(), nodePos.get(nodeIndex).getY());
                     nodeIndex++;
                 }
 
-                for (int i=0; i<net.edges.size(); i++) {
-                    Edge edge = net.edges.get(i);
+                for (int i=0; i<repositionedEdges.size(); i++) {
+                    Edge edge = repositionedEdges.get(i);
                     ArrayList<Point2D> line = edgeLines.get(i);
 
                     edge.points.clear();
@@ -241,6 +270,14 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
 //        System.out.println("scanDouble "+next);
         return Double.parseDouble(next);
     }
+    
+    private static <T> void randomSwap(ArrayList<T> arr, Random rand) {
+        int i = rand.nextInt(arr.size());
+        int j = rand.nextInt(arr.size());
+        T oi = arr.get(i);
+        arr.set(i, arr.get(j));
+        arr.set(j, oi);                
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -256,6 +293,7 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
         jLabel1 = new javax.swing.JLabel();
         comboBox_layout = new javax.swing.JComboBox<>();
         progressBar = new javax.swing.JProgressBar();
+        checkBox_randomize = new javax.swing.JCheckBox();
         jPanel2 = new javax.swing.JPanel();
         button_start = new javax.swing.JButton();
         button_stop = new javax.swing.JButton();
@@ -280,6 +318,15 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
         gridBagConstraints.weightx = 0.1;
         gridBagConstraints.insets = new java.awt.Insets(11, 0, 11, 0);
         jPanel1.add(progressBar, gridBagConstraints);
+
+        checkBox_randomize.setText("Randomize.");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
+        jPanel1.add(checkBox_randomize, gridBagConstraints);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
@@ -324,9 +371,22 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void button_startActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_startActionPerformed
+        // verify the presence of the command-line layout application
+        try {
+            SolverInvokator.useGreatSPN_binary("ogdf");
+        }
+        catch (IllegalStateException e) {
+            JOptionPane.showMessageDialog(this, 
+                  "The ogdf tool of the GreatSPN framework is not installed.",
+                  "Net relayout error", 
+                  JOptionPane.ERROR_MESSAGE);  
+            return;            
+        }
+        
         final String layoutAlgo = (String)comboBox_layout.getSelectedItem();
+        final boolean randomize = checkBox_randomize.isSelected();
         thread = new Thread(() -> {
-            if (startRelayout(layoutAlgo)) {
+            if (startRelayout(layoutAlgo, randomize)) {
                 SwingUtilities.invokeLater(() -> {
                     completeRelayout();
                 });
@@ -334,10 +394,11 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
         });
         thread.start();
         
-        button_start.setEnabled(false);
-        button_stop.setEnabled(true);
-        button_close.setEnabled(false);
-        progressBar.setIndeterminate(true);
+        changeWindowForComputation(true);
+//        button_start.setEnabled(false);
+//        button_stop.setEnabled(true);
+//        button_close.setEnabled(false);
+//        progressBar.setIndeterminate(true);
     }//GEN-LAST:event_button_startActionPerformed
 
     private void button_stopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_stopActionPerformed
@@ -348,10 +409,11 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
         thread.interrupt();
         errorMsg = "Interrupted.";
         
-        button_start.setEnabled(true);
-        button_stop.setEnabled(false);
-        button_close.setEnabled(true);
-        progressBar.setIndeterminate(false);
+        changeWindowForComputation(false);
+//        button_start.setEnabled(true);
+//        button_stop.setEnabled(false);
+//        button_close.setEnabled(true);
+//        progressBar.setIndeterminate(false);
 
         //setVisible(false);
     }//GEN-LAST:event_button_stopActionPerformed
@@ -364,6 +426,7 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
     private javax.swing.JButton button_close;
     private javax.swing.JButton button_start;
     private javax.swing.JButton button_stop;
+    private javax.swing.JCheckBox checkBox_randomize;
     private javax.swing.JComboBox<String> comboBox_layout;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;

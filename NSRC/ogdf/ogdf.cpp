@@ -266,7 +266,7 @@ int main(int argc, char **argv)
     // pl.setPreferredEdgeLength (4000);
     // pl.call(GA);
 
-    // find min x/y below zero
+    // Find min x/y
     double minX = std::numeric_limits<double>::max();
     double minY = std::numeric_limits<double>::max();
     for (node v : G.nodes) {
@@ -280,6 +280,7 @@ int main(int argc, char **argv)
             minY = std::min(minY, point.m_y * scaleY);
         }
     }
+    // Set the new net to start in (4,4)
     minX -= 4;
     minY -= 4;
 
@@ -287,11 +288,13 @@ int main(int argc, char **argv)
 	// GraphIO::write(GA, out_file, GraphIO::writeGML);
     ofstream fout(out_file);
 
+    // write nodes positions
     for (node v : G.nodes) {
         fout << sctr(GA.x(v), minX, scaleX, do_round) << " " 
              << sctr(GA.y(v), minY, scaleY, do_round) << endl;
 	}
 
+    // write edges positions
     for (edge e : G.edges) {
         fout << e->source() << " " << e->target() << " ";
         const DPolyline &dpl = GA.bends(e);
