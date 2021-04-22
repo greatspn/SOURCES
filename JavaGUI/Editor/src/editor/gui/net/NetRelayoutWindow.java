@@ -6,6 +6,7 @@
 package editor.gui.net;
 
 import common.UnixPrintWriter;
+import common.Util;
 import editor.domain.Edge;
 import editor.domain.NetObject;
 import editor.domain.NetPage;
@@ -51,6 +52,9 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
     String errorMsg = null;
     ArrayList<Node> repositionedNodes;
     ArrayList<Edge> repositionedEdges;
+    
+    private static final String KEY_ALGO = "relayout.algo";
+    private static final String KEY_RANDOMIZE = "relayout.randomize";
 
     /**
      * Creates new form NetRelayoutWindow
@@ -84,7 +88,11 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
 //        model.addElement("Orthogonal Tree Layout");
 //        model.addElement("Upward Planarization");
 
-        model.setSelectedItem(model.getElementAt(0));
+        String defaultAlgo = Util.getPreferences().get(KEY_ALGO, model.getElementAt(0));
+        boolean defaultRandomize = Util.getPreferences().getBoolean(KEY_RANDOMIZE, false);
+
+        model.setSelectedItem(defaultAlgo);
+        checkBox_randomize.setSelected(defaultRandomize);
         
 //        button_stop.setEnabled(false);
         changeWindowForComputation(false);
@@ -136,9 +144,9 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
             if (randomize) {
                 Random rand = new Random();
                 for (int i=0; i<repositionedNodes.size(); i++)
-                    randomSwap(repositionedNodes, rand);
+                    randomSwap(repositionedNodes, i, rand);
                 for (int i=0; i<repositionedEdges.size(); i++)
-                    randomSwap(repositionedEdges, rand);
+                    randomSwap(repositionedEdges, i, rand);
             }
             
             outFile = File.createTempFile("gml", "");
@@ -261,6 +269,9 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
                 }
             });
 
+            // Success. Close the window.
+            Util.getPreferences().put(KEY_ALGO, comboBox_layout.getSelectedItem().toString());
+            Util.getPreferences().putBoolean(KEY_RANDOMIZE, checkBox_randomize.isSelected());
             setVisible(false);
         }
     }
@@ -271,12 +282,14 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
         return Double.parseDouble(next);
     }
     
-    private static <T> void randomSwap(ArrayList<T> arr, Random rand) {
-        int i = rand.nextInt(arr.size());
+    // swap arr[i] with a random element in @arr
+    private static <T> void randomSwap(ArrayList<T> arr, int i, Random rand) {
+        if (arr.size() == 0)
+            return;
         int j = rand.nextInt(arr.size());
-        T oi = arr.get(i);
+        T objAt_i = arr.get(i);
         arr.set(i, arr.get(j));
-        arr.set(j, oi);                
+        arr.set(j, objAt_i);                
     }
 
     /**
@@ -312,7 +325,7 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
         jPanel1.add(comboBox_layout, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 0.1;
@@ -321,9 +334,8 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
 
         checkBox_randomize.setText("Randomize.");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
         jPanel1.add(checkBox_randomize, gridBagConstraints);
