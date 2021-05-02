@@ -458,6 +458,7 @@ bool build_graph(class RSRG &rs) {
         if (rs.has_RS()) {
             const char* rtest = regression_test_eps(rs, rs_card, "STATES", &failed_regression);
             cout << " Cardinality(RS):         " << left << setw(15) << out_card(rs_card) << rtest << endl;
+            // cout << " Cardinality(RS):         " << left << setw(15) << get_double(rs_card) << rtest << endl;
         }
     }
     
@@ -590,6 +591,7 @@ bool build_graph(class RSRG &rs) {
         if (rg_edges != UNKNOWN_CARD) {
             cout << " # fired transitions:     " << left << setw(15) << out_card(rg_edges)
                     << regression_test_eps(rs, rg_edges, "TRANSITIONS", &failed_regression) << endl;
+            // cout << " # fired transitions:     " << left << setw(15) << get_double(rg_edges) << endl;
         }
         const char *rtest_max_place_bound = "", *rtest_token_sum_bound = "";
         if (rs.has_RS()) {

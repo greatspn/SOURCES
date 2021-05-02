@@ -73,7 +73,7 @@ public class MC4CSLTASolver extends SolverInvokator {
             performanceIndexTime.add("-s");
         else {
             params.timeT.checkExprCorrectness(getContext(), getPage().targetGspn, null);
-            performanceIndexTime.add("-t ");
+            performanceIndexTime.add("-t");
             performanceIndexTime.add(""+params.timeT.evaluate(getContext(), EvaluationArguments.NO_ARGS).getScalarReal());
         }
         

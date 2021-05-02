@@ -1,3 +1,6 @@
+// Interface to OGDF
+// Read a net file (in gml format), apply a layout algorithm,
+// and save the result in an easy-to-parse format for the JavaGUI.
 #include <ogdf/fileformats/GraphIO.h>
 #include <ogdf/orthogonal/OrthoLayout.h>
 #include <ogdf/planarity/EmbedderMinDepthMaxFaceLayers.h>
