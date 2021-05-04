@@ -19,12 +19,12 @@ import java.io.Serializable;
 public abstract class SolverParams implements Serializable, XmlExchangeable {
     
     public static enum Solvers {
-        GREATSPN("GreatSPN", GreatSPNSolverParams.class),
+        GREATSPN("GreatSPN Legacy", GreatSPNSolverParams.class),
         MC4CSLTA("<html>MC<font color=blue>4</font>CSLTA</html>", MC4CSLTASolverParams.class),
 //        RGMEDD("RGMEDD", RGMEDDSolverParams.class),
-        RGMEDD2("RGMEDD Model Checker", RGMEDD2SolverParams.class),
-        NSOLVE("NSolve", NSolveParams.class),
-        COSMOS("Cosmos", CosmosSolverParams.class),
+        RGMEDD2("StarMC Model Checker", RGMEDD2SolverParams.class),
+        NSOLVE("NSolve (3rd-party solver)", NSolveParams.class),
+        COSMOS("Cosmos  (3rd-party solver)", CosmosSolverParams.class),
         ;
         
         private String text;

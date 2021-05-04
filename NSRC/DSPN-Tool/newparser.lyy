@@ -154,7 +154,7 @@
 parser_entry ::= GREATSPN_MEASURE measure(B) opt_semicolon END.			{ Accept(B); }
 parser_entry ::= GREATSPN_MDEPDELAY real_mdexpr(B) opt_semicolon END.	{ Accept(B); }
 parser_entry ::= GREATSPN_MDEARCMULT int_mdexpr(B) opt_semicolon END.	{ Accept(B); }
-parser_entry ::= GREATSPN_TRNGUARD logic_mdcond(B) opt_semicolon END.	{ Accept(B); }
+parser_entry ::= GREATSPN_TRNGUARD OP_SQPAR logic_mdcond(B) CL_SQPAR opt_semicolon END.	{ Accept(B); }
 parser_entry ::= GREATSPN_GENERALPDF real_mdexpr(B) opt_semicolon END.	{ Accept(B); }
 parser_entry ::= DTA_EDGE_DEF dta_edge(B) END.							{ Accept(B); }
 parser_entry ::= DTA_STATE_PROPOSITION cslta_expr(B) END.				{ Accept(B); }
