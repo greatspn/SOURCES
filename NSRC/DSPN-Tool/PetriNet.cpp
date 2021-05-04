@@ -302,10 +302,24 @@ void ReadGreatSPN_File(ifstream &ifsNet, ifstream &ifsDef, PN &pn, VerboseLevel 
         }
 
         if (enabDegree == 1 && trnPrGroup > 0) {
-            double delay = atof(delayText.c_str());
             trn.distrib = IMM;
             trn.prio = prioGroups[trnPrGroup - 1];
-            trn.delayFn = NewMultipleServerDelayFn(1, DelayObject(pn, delay));
+
+            double delay = -1;
+            if (!delayExpr) {
+                delay = atof(delayText.c_str());
+                if (delay == -5.100000e+02) {
+                    // Read the marking-dependent function from the .def file
+                    delayText = read_mdep_fn_from_def(def, i);
+                    delayExpr = true;
+                }
+            }
+            if (delayExpr) {
+                trn.delayFn = NewMultipleServerDelayFn(1, ParseMarkDepDelayExpr(pn, delayText.c_str(), verboseLvl));
+            }
+            else {
+                trn.delayFn = NewMultipleServerDelayFn(1, DelayObject(pn, delay));
+            }
         }
         else if (enabDegree == 0 && trnPrGroup == 127) {
             if (!delayExpr) { // It is a deterministic event with duration = delayText
@@ -868,7 +882,7 @@ print_transition(const PN &pn, transition_t trn) {
 
 std::function<ostream& (ostream &)>
 print_petrinetobj(const PetriNetObject &pnobj, bool expandParamNames) {
-    return [&](ostream & os) -> ostream& {
+    return [&pnobj, expandParamNames](ostream & os) -> ostream& {
         pnobj.Print(os, expandParamNames);
         return os;
     };

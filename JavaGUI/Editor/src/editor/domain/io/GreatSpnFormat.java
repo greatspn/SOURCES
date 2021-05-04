@@ -429,6 +429,7 @@ public class GreatSpnFormat {
         if (!gspn.isPageCorrect()) {
             throw new UnsupportedOperationException("GSPN must be correct before exporting.");
         }
+        System.out.println("exportGspn useExt="+useExt);
 
         Properties sysProps = System.getProperties();
         Object oldLineSep = null;
@@ -682,13 +683,20 @@ public class GreatSpnFormat {
                 }
 
                 if (trn.isExponential()) {
-                    String delayExpr = delay;
-                    delay = realOrRpar(delayExpr, "transition coefficient", gspn, null);
+                    delay = realOrRpar(delay, "transition coefficient", gspn, null);
                     if (delay == null) { // marking-dependent rate
                         delay = trn.convertDelayLang(context, null, ExpressionLanguage.GREATSPN);
                         markDepDefs.add("|"+(trnNum+1)+"\n"+delay);
                         delay = "-5.100000e+02";
                         enabDeg = 1;
+                    }
+                }
+                else if (trn.isImmediate() && useExt) {
+                    delay = realOrRpar(delay, "transition coefficient", gspn, null);
+                    if (delay == null) { // marking-dependent rate
+                        delay = trn.convertWeightLang(context, null, ExpressionLanguage.GREATSPN);
+                        markDepDefs.add("|"+(trnNum+1)+"\n"+delay);
+                        delay = "-5.100000e+02";
                     }
                 }
                 else // can only be a constant or a rate parameter
