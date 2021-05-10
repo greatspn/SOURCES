@@ -437,6 +437,8 @@ dd_edge Context::AUfair(dd_edge f1, dd_edge f2) const {
 
 
 //----------------------------------------------------------------------------
+// Fairness constraints management
+//----------------------------------------------------------------------------
 
 // add a new fairness constraint and update fair_states
 void Context::add_fairness_constraint(dd_edge fair_set) {
@@ -453,6 +455,133 @@ dd_edge Context::get_fair_states() const {
     }
     return fair_states;
 }
+
+//-----------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------
+// Trace generation algorithms
+//-----------------------------------------------------------------------------
+
+// check if a DD contains a specific marking
+bool sat_set_contains(const dd_edge &dd, const std::vector<int> &marking) {
+    bool isContained;
+    dd.getForest()->evaluate(dd, marking.data(), isContained);
+    return isContained;
+}
+
+//-----------------------------------------------------------------------------
+
+// create the DD corresponding to a single marking
+dd_edge dd_of_marking(const std::vector<int> &marking, MEDDLY::forest *mdd_forest) {
+    dd_edge dd_of_state(mdd_forest);
+    const int *vlist = marking.data();
+    mdd_forest->createEdge(&vlist, 1, dd_of_state);
+    return dd_of_state;
+}
+
+//-----------------------------------------------------------------------------
+
+// generate a trace in the form:
+//  s0 -> s1 -> s2 -> ... -> sN
+// from a vector of M>=N intermediate DD. 
+// sN \subsetof steps[M-1]
+// the first step is the first DD that contains s0.
+void generate_sequential_trace(const std::vector<int> &s0, 
+                               const std::vector<dd_edge> steps, 
+                               const Context& ctx,
+                               std::list<std::vector<int>> &trace_states) 
+{
+    // follow back the intermediate DD steps, and find the one that contains s0
+    int start_i;
+    for (start_i=steps.size()-1; start_i>=0; start_i--) {
+        if (sat_set_contains(steps[start_i], s0))
+            break;
+    }
+    if (start_i < 0)
+        throw rgmedd_exception(" Could not find s0 in the trace");
+
+    // Generate the trace from steps[i] to the end, starting from state s0 and picking
+    // arbitrary successor states
+    std::vector<int> state = s0;
+    trace_states.push_back(state);
+    for (int i = start_i+1; i<steps.size(); i++) {
+        dd_edge dd_state = dd_of_marking(state, ctx.get_MDD_forest());
+        // generate the successors of @state
+        dd_edge dd_succ = ctx.vNSF->post_image(dd_state);
+        // take only those that are also in step[i]
+        MEDDLY::apply(INTERSECTION, dd_succ, steps[i], dd_succ);
+        if (ctx.is_false(dd_succ))
+            throw rgmedd_exception("Problem generating the trace successors");
+        // get one successor state for the trace
+        enumerator it(dd_succ);
+        const int *tmp = it.getAssignments();
+        std::copy(tmp, tmp + npl + 1, state.begin());
+        trace_states.push_back(state);
+    }
+}
+
+//-----------------------------------------------------------------------------
+
+// generate a rho trace in the form:
+//  s0 -> s1 -> s2 -> ... -> sk -> ... -> sN --\ 
+//                            ^----------------/
+// that contains a self loop going back to itself.
+// States in the trace belong to the M steps DDs.
+void generate_rho_trace(const std::vector<int> &s0, 
+                        const std::vector<dd_edge> steps, 
+                        const Context& ctx,
+                        std::list<std::vector<int>> &trace_states,
+                        size_t& start_of_loop) 
+{
+    // first generate a sequence from s0 to sk in the last steps[] DD,
+    // which is assumed to be a SCC.
+    generate_sequential_trace(s0, steps, ctx, trace_states);
+    start_of_loop = trace_states.size();
+
+    std::vector<int> sk = trace_states.back();
+    dd_edge dd_sk = dd_of_marking(sk, ctx.get_MDD_forest());
+
+    // find a loop that goes back to sk, while remaining in the SCC. 
+    // Generate all intermediate DDs
+    std::vector<dd_edge> loop_steps;
+    loop_steps.push_back(dd_sk);
+
+    while (true) {
+        dd_edge succs = ctx.vNSF->post_image(loop_steps.back());
+        MEDDLY::apply(INTERSECTION, succs, steps.back(), succs);
+        loop_steps.push_back(succs);
+        if (sat_set_contains(succs, sk))
+            break;
+    }
+    auto iter = loop_steps.rbegin();
+    while (true) {
+        dd_edge preds = *iter;
+        iter++;
+        if (iter == loop_steps.rend())
+            break;
+
+        preds = ctx.vNSF->pre_image(preds);
+        MEDDLY::apply(INTERSECTION, *iter, preds, *iter);
+    }
+
+    trace_states.resize(trace_states.size() - 1); // remove the last state
+    // Now generate a self loop visiting the succs_lst DDs.
+    generate_sequential_trace(sk, loop_steps, ctx, trace_states);
+}
+
+//-----------------------------------------------------------------------------
+
+
+
+
+
 
 //-----------------------------------------------------------------------------
 } // end namespace ctlmdd

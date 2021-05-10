@@ -1,6 +1,11 @@
-// Interface to OGDF
+//----------------------------------------------------------------------------
+// Interface to OGDF library for graph planarization
+//----------------------------------------------------------------------------
 // Read a net file (in gml format), apply a layout algorithm,
 // and save the result in an easy-to-parse format for the JavaGUI.
+// This tool is used by the JavaGUI editor to implement the net 
+// planarization functionality.
+//----------------------------------------------------------------------------
 #include <ogdf/fileformats/GraphIO.h>
 #include <ogdf/orthogonal/OrthoLayout.h>
 #include <ogdf/planarity/EmbedderMinDepthMaxFaceLayers.h>

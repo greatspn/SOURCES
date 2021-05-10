@@ -152,11 +152,11 @@ public:
 
     void print_state(const int *marking) const;
 
-    inline bool SatSetContains(const dd_edge &dd, const int *marking) {
-        bool isContained;
-        rsrg->getForestMDD()->evaluate(dd, marking, isContained);
-        return isContained;
-    }
+    // inline bool SatSetContains(const dd_edge &dd, const int *marking) {
+    //     bool isContained;
+    //     rsrg->getForestMDD()->evaluate(dd, marking, isContained);
+    //     return isContained;
+    // }
 
     bool cache_contains(BaseFormula* f) const;
     BaseFormula* cache_insert(BaseFormula* f);
@@ -601,83 +601,6 @@ public:
     virtual bool isPathFormula() const override;
     virtual bool isAtomicPropos() const override;
 };
-
-
-/*-------------------------
- ---	CTLStateFormula	---
- --------------------------*/
-/**
- * Representing operation CTL.
- * Representing operation CTL:
- * EX formula
- * E formula U formula
- * EG formula
- * */
-// class CTLStateFormula: public Formula {
-// public:
-//     /**
-//      * This is the type of CTL operator.
-//      * */
-//     enum op_type {
-//         CTLOP_EX = 0, CTLOP_EU = 1, CTLOP_EG = 2, CTLOP_EF = 3
-//     };
-// private:
-//     Formula *formula1;
-//     Formula *formula2;
-//     op_type op;
-//     virtual void createMDD(Context& ctx) override;
-//     virtual void print(std::ostream &os) const override;
-
-//     void createEXMDD();
-//     void createEGMDD();
-//     void createEUMDD();
-//     void createEFMDD(Formula *formula);
-// public:
-//     virtual TreeTraceNode *generateTrace(const vector<int> &state, TraceType traceTy) override;
-//     /**
-//      * Constructor for CTL formula with binary operator EU.
-//      * @param formula1 value of the first CTL formula
-//      * @param formula2 value of the second CTL formula
-//      * */
-//     CTLStateFormula(Formula *formula1, Formula *formula2);
-//     *
-//      * Constructor for CTL formula with unary operator.
-//      * @param formula1 value of the CTL formula
-//      * @param op value of operator (EX or EG)
-//      * 
-//     CTLStateFormula(Formula *formula1, CTLStateFormula::op_type op);
-//     virtual ~CTLStateFormula();
-//     /**
-//      * Return the first CTL formula.
-//      * @return formula1
-//      * */
-//     Formula *getFormula1() const;
-//     /**
-//      * Set the first formula.
-//      * @param formula1 the CTL formula to set
-//      * */
-//     void setFormula1(Formula *formula1);
-//     /**
-//      * Return the second formula.
-//      * @return formula2
-//      * */
-//     Formula *getFormula2() const;
-//     /**
-//      * Set the second formula.
-//      * @param formula2 the CTL formula to set
-//      * */
-//     void setFormula2(Formula *formula2);
-//     /**
-//      * Return the operator value.
-//      * @return op
-//      * */
-//     CTLStateFormula::op_type getOp() const;
-//     /**
-//      * Set the operator value.
-//      *@param op value to set
-//      * */
-//     void setOp(CTLStateFormula::op_type op);
-// };
 
 /*-----------------------------
  ---	AtomicProposition	---
