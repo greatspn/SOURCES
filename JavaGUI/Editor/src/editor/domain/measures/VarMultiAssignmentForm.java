@@ -20,7 +20,9 @@ public abstract class VarMultiAssignmentForm extends javax.swing.JPanel
             implements ExprField.ExprFieldListener 
 {
     
-    public static final Color BKGND_DISABLED = new Color(240, 240, 240);
+    public static final Color BKGND_DISABLED = Util.mix(editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR, 
+                                                        editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_COLOR,
+                                                        0.80f); //new Color(240, 240, 240);
     
     VarMultiAssignment assignment;
     int numVar, totalVars;
@@ -56,6 +58,11 @@ public abstract class VarMultiAssignmentForm extends javax.swing.JPanel
         exprField_rangeFrom.setExprListener(this);
         exprField_rangeTo.setExprListener(this);
         exprField_rangeStep.setExprListener(this);
+        
+        jLabel_eq.setForeground(editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR);
+        jLabel_rangeFrom.setForeground(editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR);
+        jLabel_rangeStep.setForeground(editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR);
+        jLabel_rangeTo.setForeground(editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR);
         
         initializing = false;
     }
@@ -114,7 +121,7 @@ public abstract class VarMultiAssignmentForm extends javax.swing.JPanel
         jButtonUp.setEnabled(isEnabled() && numVar > 0);
         jButtonDown.setEnabled(isEnabled() && numVar < totalVars-1);
         
-        Color bkgnd = (enabled ? Color.WHITE : BKGND_DISABLED);
+        Color bkgnd = (enabled ? editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR : BKGND_DISABLED);
         setBackground(bkgnd);
         exprField_singleVal.setBackground(bkgnd);
         exprField_multiVals.setBackground(bkgnd);
@@ -168,7 +175,7 @@ public abstract class VarMultiAssignmentForm extends javax.swing.JPanel
 
         resourceFactory = new editor.gui.ResourceFactory();
         jLabel_eq = new javax.swing.JLabel();
-        jComboBox_assignModel = new javax.swing.JComboBox<editor.domain.grammar.VarMultiAssignment.BindingModel>();
+        jComboBox_assignModel = new javax.swing.JComboBox<>();
         exprField_singleVal = new editor.domain.measures.ExprField();
         exprField_multiVals = new editor.domain.measures.ExprField();
         jLabel_rangeFrom = new javax.swing.JLabel();
@@ -181,6 +188,7 @@ public abstract class VarMultiAssignmentForm extends javax.swing.JPanel
         jButtonDown = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 255, 255));
+        setOpaque(false);
         setLayout(new java.awt.GridBagLayout());
 
         jLabel_eq.setText(" = ");

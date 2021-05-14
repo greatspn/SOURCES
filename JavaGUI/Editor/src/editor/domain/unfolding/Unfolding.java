@@ -56,6 +56,10 @@ public class Unfolding {
     // Attach long name or short color indices
     public boolean useLongUnfoldedNames = true;
     
+    // dx/dy multipliers
+    public double[][] gfxMultipliers = { {0, 3}, {3, 0} };
+//    public double dxMult = 3.0, dyMult = 3.0;
+    
     // Support structure that remembers the original colored place,
     // and its unfolding for a given color domain element.
     public Map<Place, Map<DomainElement, Place>> placeUnfolding = new HashMap<>();
@@ -73,11 +77,13 @@ public class Unfolding {
         unfolded = new GspnPage();
     }
     
-    private static double next_dx(double dx, int comp, int color) {
-        return dx + ((comp&1)==1 ? 3*color : 0);
+    private double next_dx(double dx, int comp, int color) {
+        return dx + color * gfxMultipliers[comp % gfxMultipliers.length][0];
+//        return dx + ((comp&1)==1 ? dxMult*color : 0);
     }
-    private static double next_dy(double dy, int comp, int color) {
-        return dy + ((comp&1)==0 ? 3*color : 0);
+    private double next_dy(double dy, int comp, int color) {
+        return dy + color * gfxMultipliers[comp % gfxMultipliers.length][1];
+//        return dy + ((comp&1)==0 ? dyMult*color : 0);
     }
     private String getColorSuffixName(ColorClass domain, int color) {
         if (useLongUnfoldedNames)
@@ -266,8 +272,11 @@ public class Unfolding {
                             for (int el=0; el < vmset.numElements(); el++) {
                                 DomainElement elem = vmset.getElement(el);
                                 EvaluatedFormula newArcMult = vmset.getValue(el);
-                                if (newArcMult.equalsZero())
+                                if (newArcMult.equalsZero()) {
+//                                    System.out.println("Arc of "+trn.getUniqueName()+" has mult=0 after unfolding.");
+                                    //return;
                                     continue;
+                                }
 //                                Place unfPlc = placeUnfolding.get(new Tuple<>(plc, elem));
                                 Place unfPlc = placeUnfolding.get(plc).get(elem);
 
@@ -339,7 +348,7 @@ public class Unfolding {
         }
         catch (Exception e) {
             gspn.compileParsedInfo(null);
-            throw new IllegalStateException("Color class definitions are parametric "
+            throw new CouldNotUnfoldException("Color class definitions are parametric "
                     + "and not unfoldable.\nReason: "+e.getMessage());
         }
         try {

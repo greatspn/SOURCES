@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="New project" version="121">
+  <gspn name="PN1" show-fluid-cmd="false">
+    <nodes>
+      <place marking="1" name="P0" superposition-tags="pp|aa|bb|cc" x="5.0" y="4.0"/>
+      <transition name="T0" nservers-x="0.5" superposition-tags="tt" type="EXP" x="11.55" y="4.0"/>
+      <template name="n" type="INTEGER" x="5.0" y="1.0"/>
+      <place name="P1" x="19.0" y="4.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="T0"/>
+    </edges>
+  </gspn>
+  <gspn name="PN2">
+    <nodes>
+      <place marking="2" name="P0" superposition-tags="pp|cc|bb|dd" x="6.0" y="5.0"/>
+      <transition name="T2" nservers-x="0.5" superposition-tags="tt" type="EXP" x="12.55" y="5.0"/>
+      <template name="r" type="REAL" x="9.0" y="1.0"/>
+      <template name="n" type="INTEGER" x="7.0" y="1.0"/>
+      <template name="m" type="INTEGER" x="11.0" y="1.0"/>
+    </nodes>
+    <edges>
+      <arc head="T2" kind="INPUT" tail="P0"/>
+    </edges>
+  </gspn>
+  <algebra align-dy="6" alignment="CUSTOM" name="Composition" use-broken-edges="true">
+    <bindings-list>
+      <binding value="5" variable="r"/>
+      <binding value="3" variable="m"/>
+      <binding value="4" variable="n"/>
+    </bindings-list>
+    <place-tags>
+      <tag name="cc"/>
+    </place-tags>
+    <transition-tags/>
+    <subnet netname="PN2"/>
+    <subnet netname="PN1"/>
+  </algebra>
+</project>

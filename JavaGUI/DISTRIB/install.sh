@@ -1,4 +1,9 @@
 #!/bin/bash
+if [[ $(id -u) -ne 0 ]] ; then 
+    echo "Please run install.sh as root"
+    exit 1 
+fi
+
 APP="pnpro-editor"
 LONGNAME="New GreatSPN Editor"
 EXT="pnpro"
@@ -8,7 +13,7 @@ COMMENT="Petri Net Project"
 if [[ $EUID -eq 0 ]]; then
     PREFIX=${INSTALLDIR}
     if [ -z $PREFIX ]; then
-        PREFIX=/usr/local/GreatSPN/
+        PREFIX=/usr/local/GreatSPN
     fi
 	if [ -z $XDG_DIR ]; then
     	XDG_DIR=/usr/local/share
@@ -30,6 +35,9 @@ do
             ;;
         -silent) 
             SILENT=1
+            ;;
+        -nc) 
+            NO_COPY=1
             ;;
         -*) 
             echo "Unknown argument $1"
@@ -62,59 +70,72 @@ if [ -z "${SILENT}" ]; then
 	read -p "Press [Enter] key to start."
 fi
 
+# Install the application
+if [ -z "${NO_COPY}" ]; then
+    echo "Copying application data..."
+    cp -R bin/*  ${APP_PATH}/
+fi
+
+#---------------------------------------------------------------------------------
+# XDG Integration
+#---------------------------------------------------------------------------------
+if ! [ -x "$(command -v xdg-icon-resource)" ]; then
+  echo 'Missing XDG (X Desktop Group) utils. Could not perform XDG integration.' >&2
+  exit 0
+fi
+
 # Create directories if missing
 mkdir -p ${XDG_DIR}/mime/packages
 mkdir -p ${XDG_DIR}/applications
 mkdir -p ${XDG_DIR}/pixmaps
-mkdir -p $APP_PATH
-
-# Install the application
-# echo "Copying application data..."
-# cp -R bin/*  ${APP_PATH}/
+mkdir -p ${APP_PATH}
 
 # Install the icons
-xdg-icon-resource install --novendor --size 48 $APP_PATH/$APP.png $APP
-xdg-icon-resource install --novendor --size 48 $APP_PATH/application-x-$APP.png application-x-$APP
+xdg-icon-resource install --novendor --size 48 ${APP_PATH}/${APP}.png ${APP}
+xdg-icon-resource install --novendor --size 48 ${APP_PATH}/application-x-${APP}.png application-x-${APP}
 
 # Create mime xml 
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <mime-info xmlns=\"http://www.freedesktop.org/standards/shared-mime-info\">
-    <mime-type type=\"application/x-$APP\">
-        <comment>$COMMENT</comment>
-        <icon name=\"application-x-$APP\"/>
-        <glob pattern=\"*.$EXT\"/>
+    <mime-type type=\"application/x-${APP}\">
+        <comment>${COMMENT}</comment>
+        <icon name=\"application-x-${APP}\"/>
+        <glob pattern=\"*.${EXT}\"/>
     </mime-type>
-</mime-info>" > ${XDG_DIR}/mime/packages/application-x-$APP.xml
+</mime-info>" > ${XDG_DIR}/mime/packages/application-x-${APP}.xml
 
-echo "Creating desktop entry..."
+echo "  [XDG]  Creating desktop entry..."
 
-# Create application desktop
+# Create application desktop entry
 echo "[Desktop Entry]
 Name=$LONGNAME
-Exec=java -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel -splash:$APP_PATH/lib/splash.png -jar $APP_PATH/Editor.jar %F
-MimeType=application/x-$APP
-Icon=$APP
-Path=$APP_PATH
+Exec=java -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel -splash:${APP_PATH}/lib/splash.png -jar ${APP_PATH}/Editor.jar %F
+MimeType=application/x-${APP}
+Icon=${APP}
+Path=${APP_PATH}
 Terminal=false
 Type=Application
 Categories=
 Comment=The New GreatSPN Editor.
-"> ${XDG_DIR}/applications/$APP.desktop
+"> ${XDG_DIR}/applications/${APP}.desktop
 
-echo "Installing menu entry..."
-xdg-desktop-menu install --novendor --mode system ${XDG_DIR}/applications/$APP.desktop
+echo "  [XDG]  Installing menu entry..."
+xdg-desktop-menu install --novendor --mode system ${XDG_DIR}/applications/${APP}.desktop
 
-#rm -f ~/Desktop/New\ GreatSPN\ Editor.desktop
-#ln ${XDG_DIR}/applications/$APP.desktop ~/Desktop/New\ GreatSPN\ Editor.desktop
+# install the link in the user Desktop menu
+# NOTE: when run as root, $(xdg-user-dir DESKTOP)  is the root desktop, not the user one.
+# XDG_USER_DIR=$(xdg-user-dir DESKTOP)
+# rm -f ${XDG_USER_DIR}/New\ GreatSPN\ Editor.desktop
+# ln ${XDG_DIR}/applications/${APP}.desktop ${XDG_USER_DIR}/New\ GreatSPN\ Editor.desktop
 
-echo "Updating application/mime databases..."
+echo "  [XDG]  Updating application/mime databases..."
 
 # update databases for both application and mime
 update-desktop-database ${XDG_DIR}/applications
 update-mime-database    ${XDG_DIR}/mime
 
 # copy associated icons to pixmaps
-# cp $APP_PATH/$APP.png                ${XDG_DIR}/pixmaps
-# cp $APP_PATH/application-x-$APP.png  ${XDG_DIR}/pixmaps
+cp ${APP_PATH}/${APP}.png                ${XDG_DIR}/pixmaps
+cp ${APP_PATH}/application-x-${APP}.png  ${XDG_DIR}/pixmaps
 
 

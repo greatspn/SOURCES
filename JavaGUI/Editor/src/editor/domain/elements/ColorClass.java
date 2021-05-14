@@ -21,9 +21,9 @@ import editor.domain.grammar.ParserContext;
 import editor.domain.io.XmlExchangeDirection;
 import editor.domain.io.XmlExchangeException;
 import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
-import editor.domain.superposition.GroupClass;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.Set;
 import org.w3c.dom.Element;
 
 /** A color class (or domain) definition, with form:  class ID = definition
@@ -111,7 +111,8 @@ public class ColorClass extends BaseID implements Serializable, FormulaPayload {
     @Override
     public int getUniqueNameFontStyle() { return STYLE_ITALIC; }
     
-    @Override public GroupClass getGroupClass() { return GroupClass.COLOR_CLASS; }
+//    @Override public GroupClass getGroupClass() { return GroupClass.COLOR_CLASS; }
+    @Override public boolean hasSuperPosTags() { return false; }
     
     
     //=========================================================================
@@ -338,6 +339,22 @@ public class ColorClass extends BaseID implements Serializable, FormulaPayload {
             if (scd.testHasColorNamed(nspace, colorName))
                 return true;
         return false;
+    }
+    
+    // Extract the variables that are used by the colorclass definition
+    // only intervals of static subclasses (simple classes) may be parametric.
+    public void getDependentVariables(Set<String> varNames) {
+        if (isParseDataOk() && isSimpleClass()) {
+            for (int sb=0; sb<numSubClasses(); sb++) {
+                ParsedColorSubclass pcs = getSubclass(sb);
+                if (pcs.isInterval()) {
+                    if (isAlphanumericIdentifier(pcs.getStartRangeExpr()))
+                        varNames.add(pcs.getStartRangeExpr());
+                    if (isAlphanumericIdentifier(pcs.getEndRangeExpr()))
+                        varNames.add(pcs.getEndRangeExpr());
+                }
+            }
+        }
     }
     
     

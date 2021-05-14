@@ -10,6 +10,7 @@ import editor.domain.elements.DtaEdge;
 import editor.domain.elements.DtaLocation;
 import editor.domain.elements.DtaPage;
 import editor.domain.Edge;
+import editor.domain.Expr;
 import editor.domain.elements.GspnEdge;
 import editor.domain.elements.GspnPage;
 import editor.domain.NetPage;
@@ -43,6 +44,11 @@ import editor.domain.measures.ScalarResultEntry;
 import editor.domain.measures.SolverParams;
 import editor.domain.measures.StatResultEntry;
 import editor.domain.measures.StochasticMcResult;
+import editor.domain.composition.TagBasedCompositionPage;
+import editor.domain.composition.NameBasedCompositionPage;
+import editor.domain.composition.MultiNetPage;
+import editor.domain.composition.NetInstanceDescriptor;
+import editor.domain.composition.UnfoldingCompositionPage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,6 +78,7 @@ public class PnProFormat {
     public static final Map<Class, String> XML_CLASS_TO_NODE;    
     public static final Map<String, Class> XML_NODE_TO_CLASS;    
     private static final Set<String> XML_NET_PAGES;
+    private static final Set<String> XML_COMPOSITION_PAGES;
     private static final Set<String> XML_NODES;
     private static final Set<String> XML_EDGES;
     private static final Set<String> XML_SOLVER_PARAMS;
@@ -95,6 +102,9 @@ public class PnProFormat {
         XML_CLASS_TO_NODE.put(GspnEdge.class, "arc");
         XML_CLASS_TO_NODE.put(DtaEdge.class, "edge");
         XML_CLASS_TO_NODE.put(MeasurePage.class, "measures");
+        XML_CLASS_TO_NODE.put(TagBasedCompositionPage.class, "algebra");
+        XML_CLASS_TO_NODE.put(UnfoldingCompositionPage.class, "unfolding");
+        XML_CLASS_TO_NODE.put(NameBasedCompositionPage.class, "multinet");
         XML_CLASS_TO_NODE.put(VarMultiAssignment.class, "assignment");
         XML_CLASS_TO_NODE.put(MC4CSLTASolverParams.class, "mc4cslta");
 //        XML_CLASS_TO_NODE.put(RGMEDD2SolverParams.class, "rgmedd");
@@ -120,6 +130,11 @@ public class PnProFormat {
         XML_NET_PAGES = new HashSet<>();
         XML_NET_PAGES.add("gspn");
         XML_NET_PAGES.add("dta");
+        
+        XML_COMPOSITION_PAGES = new HashSet<>();
+        XML_COMPOSITION_PAGES.add("algebra");
+        XML_COMPOSITION_PAGES.add("unfolding");
+        XML_COMPOSITION_PAGES.add("multinet");
 
         XML_NODES = new HashSet<>();
         XML_NODES.add("place");
@@ -255,6 +270,30 @@ public class PnProFormat {
                     Element measElem = doc.createElement(XML_CLASS_TO_NODE.get(meas.getClass()));                    
                     measListElem.appendChild(measElem);
                     meas.exchangeXML(measElem, exDir);
+                }
+            }
+            else if (page instanceof MultiNetPage) {
+                MultiNetPage mnPage = (MultiNetPage)page;
+                Element pageElem = doc.createElement(XML_CLASS_TO_NODE.get(mnPage.getClass()));
+                projectElem.appendChild(pageElem);
+                pageElem.setAttribute("name", mnPage.getPageName());
+                
+                // Save page data
+                mnPage.viewProfile.exchangeXML(pageElem, exDir);
+                mnPage.exchangeXML(pageElem, exDir);
+                
+                // Save subnets
+                for (NetInstanceDescriptor nid : mnPage.netsDescr) {
+                    Element subnetElem = doc.createElement("subnet");
+                    pageElem.appendChild(subnetElem);
+                    nid.exchangeXML(subnetElem, exDir);
+
+                    for (Map.Entry<String, Expr> binding : nid.instParams.binding.entrySet()) {
+                        Element assignElem = doc.createElement("assignments");                    
+                        subnetElem.appendChild(assignElem);
+                        assignElem.setAttribute("varname", binding.getKey());
+                        assignElem.setAttribute("value", binding.getValue().getExpr());
+                    }
                 }
             }
             else throw new UnsupportedOperationException("Unknown page type.");
@@ -428,6 +467,42 @@ public class PnProFormat {
                 
                 pages.add(measPage);
             }
+            else if (XML_COMPOSITION_PAGES.contains(pageElem.getNodeName())) {
+                MultiNetPage mnPage = (MultiNetPage)
+                        XML_NODE_TO_CLASS.get(pageElem.getNodeName()).newInstance();
+                
+                // Read page data
+                mnPage.setPageName(pageElem.getAttribute("name"));
+                mnPage.viewProfile.exchangeXML(pageElem, exDir);
+                mnPage.exchangeXML(pageElem, exDir);
+                
+                // Read subnets
+                NodeList subnetList = pageElem.getElementsByTagName("subnet");
+                for (int i=0; i<subnetList.getLength(); i++) {
+                    org.w3c.dom.Node subnetItem = subnetList.item(i);
+                    if (subnetItem.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE)
+                        continue;
+                    Element subnetElem = (Element)subnetItem;
+                    NetInstanceDescriptor nid = new NetInstanceDescriptor();
+                    nid.exchangeXML(subnetElem, exDir);
+                    mnPage.netsDescr.add(nid);
+                    
+                    // Read bindings
+                    NodeList bindingList = subnetElem.getChildNodes();
+                    for (int j=0; j<bindingList.getLength(); j++) {
+                        org.w3c.dom.Node bindingItem = bindingList.item(j);
+                        if (bindingItem.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE)
+                            continue;
+                        Element bindingElem = (Element)bindingItem;
+                        String varName = safeParseString(bindingElem.getAttribute("varname"), "");
+                        String expr = safeParseString(bindingElem.getAttribute("value"), "");
+//                        ConstantID c = new ConstantID(ConstantID.ConstType.INTEGER, "dummy", expr, "", new Point2D.Double());
+                        nid.bindParam(varName, new SolverParams.IntExpr(expr));
+                    }
+                }
+                
+                pages.add(mnPage);
+            }
             else if (pageElem.getTagName().equals("resource-list")) {
                 NodeList resourceList = pageElem.getChildNodes();
                 for (int i=0; i<resourceList.getLength(); i++) {
@@ -484,7 +559,7 @@ public class PnProFormat {
         return UUID.fromString(str);
     }
     
-    private static String safeParseString(String str, String defaultVal) {
+    public static String safeParseString(String str, String defaultVal) {
         if (str == null || str.length() == 0)
             return defaultVal;
         return str;

@@ -572,7 +572,7 @@ raff_key(gconstpointer value) {
     return  key;
 }
 
-int cnt = 0;
+extern int cnt; // defined in main.c ??? = 0;
 inline
 static gboolean
 raff_key_equal(gconstpointer a,

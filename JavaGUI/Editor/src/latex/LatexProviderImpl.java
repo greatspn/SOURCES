@@ -127,16 +127,19 @@ public class LatexProviderImpl extends LatexProvider {
     // Get the graphics command corresponding to a LaTeX formula, or a
     // LatexParseException if the formula is not parseable.
     @Override
-    MetaCommands typesetLatexFormula(String latex, float size) 
+    MetaCommands typesetLatexFormula(String latex, float size, boolean useCache) 
     {
-        MetaCommands mc = typesetCacheLRU.searchCache(latex, size);
+        MetaCommands mc = null;
+        if (useCache)
+            mc = typesetCacheLRU.searchCache(latex, size);
         if (mc != null)
             return mc;
         mc = typesetLatexFormulaImpl(latex, size);
         if (mc == null) {
             mc = MetaCommands.drawSimpleString(deLatexify(latex), (int)size);
         }
-        typesetCacheLRU.addToCache(latex, size, mc);
+        if (useCache)
+            typesetCacheLRU.addToCache(latex, size, mc);
         return mc;
     }
     
@@ -198,7 +201,10 @@ public class LatexProviderImpl extends LatexProvider {
         g2.saveCommands(mc);
         
         double totTime = (System.currentTimeMillis() - startTime) / 1000.0;
-        System.out.println("LaTeX formula \""+latex+"\" typesetted in " + totTime + " sec.");
+        final int MAX_OUT_SZ = 100;
+        System.out.println("LaTeX formula \""+
+                           (latex.length()>MAX_OUT_SZ ? latex.substring(0, MAX_OUT_SZ)+"..." : latex).replace("\n", "")+
+                           "\" typesetted in " + totTime + " sec.");
         
         if (doLog) {
             g2.printObjectTables();

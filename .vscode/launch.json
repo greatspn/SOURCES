@@ -1,0 +1,126 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+
+
+        {
+            "name": "RGMEDD5 DEBUG",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/RGMEDD5",
+            "args": [ 
+                // "~/nets/ATPN2020", "-NR", "-C", "-f", "/home/elvio/ownCloud/ICATPN2020/NuovoEsempioJournal/query.ctl"
+                "/home/elvio/MCC/2020/MODELS/Angiogenesis-PT-01/model",
+                // "-ACM", "-refine-psf", "-metrics", "-no-rs"
+                // "-sat-impl",
+                // "-sat-impl",
+                // "-old-nsf-gen",
+                // "-h", "100000"
+                // "-lrs",
+                // "-extra-lvls", "10", 
+                // "-lrs-equiv",
+                "-Cv", "-f", "/home/elvio/MCC/2020/MODELS/Angiogenesis-PT-01/LTLCardinality.formulas", "-impl-next", "-no-rs"
+             ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Abilita la riformattazione per gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "make RGMEDD5",
+            "miDebuggerPath": "/usr/bin/gdb"
+        },
+
+        {
+            "name": "algebra DEBUG",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/algebra",
+            "args": [ 
+                "-no_ba",
+                "-g",
+                "/home/elvio/nets/GRID1",
+                "/home/elvio/nets/GRID2",
+                "b",
+                "/home/elvio/nets/restfile",
+                "/home/elvio/nets/AABB"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Abilita la riformattazione per gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "make all",
+            "miDebuggerPath": "/usr/bin/gdb"
+        },
+
+
+        // {
+        //     "name": "algebra DEBUG",
+        //     "type": "lldb",
+        //     "request": "launch",
+        //     "program": "${workspaceFolder}/bin/algebra",
+        //     "args": [ 
+        //         "-no_ba",
+        //         "/Users/elvio/nets/A1",
+        //         "/Users/elvio/nets/B1",
+        //         "p",
+        //         "/Users/elvio/nets/restfile",
+        //         "/Users/elvio/nets/AB"
+        //      ],
+        //     // "stopAtEntry": false,
+        //     "cwd": "${workspaceFolder}",
+        //     // "environment": [],
+        //     // "externalConsole": false,
+        //     // "MIMode": "lldb",
+        //     // "setupCommands": [
+        //     //     {
+        //     //         "description": "Abilita la riformattazione per lldb",
+        //     //         "text": "-enable-pretty-printing",
+        //     //         "ignoreFailures": true
+        //     //     }
+        //     // ],
+        //     "preLaunchTask": "make all",
+        //     // "miDebuggerPath": "/usr/bin/lldb"
+        // },
+
+        // {
+        //     "name": "g++ - Compila ed esegui il debug del file attivo",
+        //     "type": "cppdbg",
+        //     "request": "launch",
+        //     "program": "${fileDirname}/${fileBasenameNoExtension}",
+        //     "args": [],
+        //     "stopAtEntry": false,
+        //     "cwd": "${workspaceFolder}",
+        //     "environment": [],
+        //     "externalConsole": false,
+        //     "MIMode": "gdb",
+        //     "setupCommands": [
+        //         {
+        //             "description": "Abilita la riformattazione per gdb",
+        //             "text": "-enable-pretty-printing",
+        //             "ignoreFailures": true
+        //         }
+        //     ],
+        //     "preLaunchTask": "C/C++: g++ build active file",
+        //     "miDebuggerPath": "/usr/bin/gdb"
+        // }
+    ]
+}

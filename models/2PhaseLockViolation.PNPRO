@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="ClientsAndServersMCC" version="121">
+  <gspn name="2PhaseLockViolation" view-rates="false" zoom="125">
+    <nodes>
+      <place label-x="1.0" label-y="-1.5" marking="1" name="resB" x="20.0" y="20.0"/>
+      <place label-x="2.5" label-y="0.0" name="haveA" x="13.0" y="8.0"/>
+      <place alt-name-fn="PLAIN" label-x="2.5" label-y="0.0" name="haveA2" x="13.0" y="32.0"/>
+      <place label-y="-1.5" marking="1" name="resA" x="5.0" y="20.0"/>
+      <place label-x="-2.5" label-y="0.0" name="haveAB" x="13.0" y="14.0"/>
+      <place label-y="-1.5" marking="2" name="Clients" x="13.0" y="2.0"/>
+      <transition alt-name-fn="PLAIN" label-x="2.5" label-y="1.0" name="lockA2_relB" nservers-x="0.5" rotation="4.71238898038469" type="EXP" x="13.55" y="29.0"/>
+      <transition label-x="2.5" label-y="-1.0" name="lockB_relA" nservers-x="0.5" rotation="4.71238898038469" type="EXP" x="13.55" y="11.0"/>
+      <transition label-x="-1.5" label-y="-1.0" name="lockA" nservers-x="0.5" rotation="4.71238898038469" type="EXP" x="13.55" y="5.0"/>
+      <transition alt-name-fn="PLAIN" label-x="1.5" label-y="-1.0" name="relA2" nservers-x="0.5" rotation="4.71238898038469" type="EXP" x="13.55" y="35.0"/>
+      <text-box bold="true" border-color="none" fill-color="none" height="1.5" name="__textBox0" shadow="true" shape="ROUND_RECTANGLE" text-color="#000000" vert-pos="0" width="25.75" x="1.125" y="38.25">When Clients $\geq$ resA + resB, the net has deadlocks.</text-box>
+      <transition label-x="1.5" label-y="-1.0" name="relA" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="13.55" y="17.0"/>
+      <place label-x="-2.5" label-y="0.0" name="haveB" x="13.0" y="20.0"/>
+      <transition alt-name-fn="PLAIN" label-x="1.5" label-y="-1.0" name="lockA2" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="13.55" y="23.0"/>
+      <place alt-name-fn="PLAIN" label-x="-3.0" label-y="-0.5" name="haveA2B" x="13.0" y="26.0"/>
+    </nodes>
+    <edges>
+      <arc head="resB" head-magnet="0" kind="OUTPUT" mult-k="0.6821289062500001" tail="lockA2_relB"/>
+      <arc head="lockB_relA" head-magnet="0" kind="INPUT" mult-k="0.73525390625" tail="resB" tail-magnet="0"/>
+      <arc head="haveA" head-magnet="0" kind="OUTPUT" tail="lockA"/>
+      <arc head="lockA2" kind="INPUT" tail="resA" tail-magnet="0"/>
+      <arc head="resA" head-magnet="0" kind="OUTPUT" tail="relA"/>
+      <arc head="Clients" head-magnet="0" kind="OUTPUT" mult-k="0.29853515625000004" tail="relA2">
+        <point x="3.0" y="36.0"/>
+        <point x="3.0" y="3.0"/>
+      </arc>
+      <arc head="resA" head-magnet="0" kind="OUTPUT" mult-k="0.11376953125" tail="relA2" tail-magnet="0"/>
+      <arc head="lockA" head-magnet="0" kind="INPUT" mult-k="0.67451171875" tail="resA" tail-magnet="0"/>
+      <arc head="haveA2" kind="OUTPUT" tail="lockA2_relB"/>
+      <arc head="lockA" kind="INPUT" tail="Clients"/>
+      <arc head="relA2" kind="INPUT" tail="haveA2"/>
+      <arc head="lockB_relA" kind="INPUT" tail="haveA"/>
+      <arc head="haveAB" kind="OUTPUT" tail="lockB_relA"/>
+      <arc head="relA" kind="INPUT" tail="haveAB"/>
+      <arc head="haveB" kind="OUTPUT" tail="relA"/>
+      <arc head="lockA2" kind="INPUT" tail="haveB"/>
+      <arc head="haveA2B" kind="OUTPUT" tail="lockA2"/>
+      <arc head="lockA2_relB" kind="INPUT" tail="haveA2B"/>
+    </edges>
+  </gspn>
+</project>

@@ -4,19 +4,24 @@
  */
 package editor.gui.net;
 
+import editor.domain.DraggableHandle;
+import editor.domain.DraggableHandle.BoxShape;
 import editor.domain.DrawHelper;
 import editor.domain.Edge;
 import editor.domain.EditableCell;
 import editor.domain.HandlePosition;
 import editor.domain.MovementHandle;
 import editor.domain.NetObject;
+import editor.domain.NetObject.MeshGridSize;
+import static editor.domain.NetObject.NODE_GRID;
+import static editor.domain.NetObject.sanitizeRadiants;
 import editor.domain.NetPage;
 import editor.domain.Node;
+import static editor.domain.Node.ROTATION_HANDLE_COLOR;
 import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
 import editor.domain.Selectable;
 import editor.gui.NoOpException;
-import editor.gui.UndoableCommand;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -61,8 +66,14 @@ class SelectMoveTool extends NetToolBase {
             // A single object is selected. Get object handles
             visibleHandles = singleSelObject.getSubObjectHandles(page, editor.currPage.viewProfile);
         }
-        else 
+        else {
             visibleHandles = null;
+            int selectedNodes = page.countSelectedNodes();
+            if (selectedNodes > 1) {
+                // Add multi-node rotation handle
+                visibleHandles = new MovementHandle[]{ getMultiObjectRotationHandle(page.getAllSelectedObjects(), page)} ;
+            }
+        }
     }
     
     // Minimum number of pixels before starting a drag selection
@@ -202,16 +213,20 @@ class SelectMoveTool extends NetToolBase {
         Point2D ec = editable.getEditorCenter();
         Point p = new Point(NetObject.logicToScreen(ec.getX(), page.viewProfile.zoom),
                             NetObject.logicToScreen(ec.getY(), page.viewProfile.zoom));
-        final BaseCellEditor cellEditor = new TextCellEditor(editor.currProject.getCurrent(), editor.currPage, editable, p);
+        
+        BaseCellEditor bcEditor;
+        if (editable.editAsMultiline())
+            bcEditor = new MultilineTextCellEditor(editor.currProject.getCurrent(), editor.currPage, editable, p);
+        else
+            bcEditor = new TextCellEditor(editor.currProject.getCurrent(), editor.currPage, editable, p);
+        final BaseCellEditor cellEditor = bcEditor;
+        
         cellEditor.addCellEditorListener(new CellEditorListener() {
             @Override
             public void editingStopped(ChangeEvent ce) {
                 // Modify the edited value
-                editor.mainInterface.executeUndoableCommand("change value.", new UndoableCommand() {
-                    @Override
-                    public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                        editable.setValue(editor.currProject.getCurrent(), (NetPage)page, cellEditor.getEditedString());
-                    }
+                editor.mainInterface.executeUndoableCommand("change value.", (ProjectData proj, ProjectPage page1) -> {
+                    editable.setValue(editor.currProject.getCurrent(), (NetPage) page1, cellEditor.getEditedString());
                 });
 
                 // Disable the cell editor
@@ -262,14 +277,12 @@ class SelectMoveTool extends NetToolBase {
             // End handle movement
             isDragHandle = false;
             editor.mainInterface.executeUndoableCommand("move selected object(s).", 
-                                                        new UndoableCommand() {
-                @Override
-                public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                    double deltaX = currDragPos.getX() - startDragPos.getX();
-                    double deltaY = currDragPos.getY() - startDragPos.getY();
-                    if (!moveDraggedHandles(deltaX, deltaY))
-                        throw new NoOpException();
-                }
+                    (ProjectData proj, ProjectPage page1) -> 
+            {
+                double deltaX = currDragPos.getX() - startDragPos.getX();
+                double deltaY = currDragPos.getY() - startDragPos.getY();
+                if (!moveDraggedHandles(deltaX, deltaY))
+                    throw new NoOpException();
             });
         }
     }
@@ -280,7 +293,8 @@ class SelectMoveTool extends NetToolBase {
         int dragDistance = Math.abs(e.getX()-startDragX) + Math.abs(e.getY()-startDragY);
         
             // Test if we can start a new drag
-        if (dragDistance > SELECT_START_TOLERANCE && !isDragSelecting && !isDragHandle) {
+        double selectStartTol = NetObject.getUnitToPixels() / 16.0 * SELECT_START_TOLERANCE;
+        if (dragDistance > selectStartTol && !isDragSelecting && !isDragHandle) {
             // Hit test
             MovementHandle[] handles = getHitHandles(startDragX, startDragY);
             if (handles != null) {
@@ -450,24 +464,21 @@ class SelectMoveTool extends NetToolBase {
             if (newPtPos.distance(edge.points.get(i)) < MIN_DISTANCE)
                 return false;
         
-        editor.mainInterface.executeUndoableCommand("add new edge point.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                // Save decor positions
-                Point2D[] decorAnchors = new Point2D[edge.getNumDecors()];
-                for (int d=0; d<edge.getNumDecors(); d++)
-                    decorAnchors[d] = edge.getPointAlongTheLine(new Point2D.Double(), 
-                                                                edge.getDecor(d).getEdgeK());
-                // Add the new point
-                int ptPos = (int)Math.ceil(nearK);
-                edge.points.add(ptPos, newPtPos);
-                edge.setSubObjectSelection(false);
-                edge.setSelectedSubObject(ptPos, true);
-                edge.invalidateEffectiveEdgePath();
-                // Compute new anchor points (near the old anchors)
-                for (int d=0; d<edge.getNumDecors(); d++)
-                    edge.getDecor(d).setEdgeK(edge.getNearestK(decorAnchors[d]));
-            }
+        editor.mainInterface.executeUndoableCommand("add new edge point.", (ProjectData proj, ProjectPage page) -> {
+            // Save decor positions
+            Point2D[] decorAnchors = new Point2D[edge.getNumDecors()];
+            for (int d=0; d<edge.getNumDecors(); d++)
+                decorAnchors[d] = edge.getPointAlongTheLine(new Point2D.Double(),
+                        edge.getDecor(d).getEdgeK());
+            // Add the new point
+            int ptPos = (int)Math.ceil(nearK);
+            edge.points.add(ptPos, newPtPos);
+            edge.setSubObjectSelection(false);
+            edge.setSelectedSubObject(ptPos, true);
+            edge.invalidateEffectiveEdgePath();
+            // Compute new anchor points (near the old anchors)
+            for (int d=0; d<edge.getNumDecors(); d++)
+                edge.getDecor(d).setEdgeK(edge.getNearestK(decorAnchors[d]));
         });
         return true;
     }
@@ -598,5 +609,163 @@ class SelectMoveTool extends NetToolBase {
         }
     }
 
+    //=========================================================================
+    // Rotation handle
+    private static class MultiRotationHandlePosition implements HandlePosition {
+        public double rotation;
+        public Point2D handlePos;
+        HandlePosition[] savedPos;
+        HandlePosition[] savedRot;
+        public MultiRotationHandlePosition(double rotation, Point2D handlePos, 
+                                           HandlePosition[] savedPos, HandlePosition[] savedRot) 
+        {
+            this.rotation = rotation;
+            this.handlePos = handlePos;
+            this.savedPos = savedPos;
+            this.savedRot = savedRot;
+        }
+        @Override public double getRefX() { return handlePos.getX(); }
+        @Override public double getRefY() { return handlePos.getY(); }
+        @Override public Point2D getRefPoint() { return new Point2D.Double(handlePos.getX(), handlePos.getY()); }
+    }
+    
+    private MovementHandle getMultiObjectRotationHandle(final Selectable[] sel, final NetPage page) {
+        // Determine center and radius
+        final Point2D.Double center = new Point2D.Double();
+        int count = 0;
+        for (Selectable s : sel) {
+            if (s instanceof Node) {
+                Node node = (Node)s;
+                center.x += node.getCenterX();
+                center.y += node.getCenterY();
+                count++;
+            }
+        }
+        if (count > 0) {
+            center.x /= count;
+            center.y /= count;
+            snapPointToGrid(center, NODE_GRID);
+        }
+        double distFromCenter = 3.0;
+        for (Selectable s : sel) {
+            if (s instanceof Node) {
+                Node node = (Node)s;
+                double dx = node.getCenterX() - center.x;
+                double dy = node.getCenterY() - center.y;
+                double distance = Math.ceil(Math.sqrt(dx*dx + dy*dy));
+                distFromCenter = Math.max(distFromCenter, distance + 2.0);
+            }
+        }
+        final double radius = distFromCenter;
+                
+        final MovementHandle[] selMh = new MovementHandle[sel.length];
+        final MovementHandle[] selRh = new MovementHandle[sel.length];
+        for (int i=0; i<sel.length; i++) {
+            selMh[i] = sel[i].getCenterHandle(page);
+            if (sel[i] instanceof Node && ((Node)sel[i]).mayRotate())
+                selRh[i] = ((Node)sel[i]).getRotationHandle(page);
+        }
+        
+        return new DraggableHandle() {
+            double rotation = 0; //3*Math.PI/2;
+            @Override
+            protected DraggableHandle.BoxShape getBoxShape() { return BoxShape.LIGHT_CIRCLE; }
 
+            @Override
+            protected Color getHandleColor() { return ROTATION_HANDLE_COLOR; }
+
+            @Override
+            protected Point2D getGizmoCenter() {
+                return center;
+            }
+            
+            @Override
+            public HandlePosition savePosition() {
+                HandlePosition[] savedPos = new HandlePosition[sel.length];
+                HandlePosition[] savedRot = new HandlePosition[sel.length];
+                for (int i=0; i<sel.length; i++) {
+                    savedPos[i] = selMh[i].savePosition();
+                    if (selRh[i] != null)
+                        savedRot[i] = selRh[i].savePosition();
+                }
+                // rotation handle pos
+                Point2D p = new Point2D.Double(center.x + getRotationShaftLen(), center.y);
+                rotatePointAroundCenter(p, p, rotation);
+                return new MultiRotationHandlePosition(rotation, p, savedPos, savedRot);
+            }
+
+            @Override
+            public void restorePosition(HandlePosition hp) {
+                MultiRotationHandlePosition rhp = (MultiRotationHandlePosition)hp;
+                rotation = rhp.rotation;
+                for (int i=0; i<sel.length; i++) {
+                    selMh[i].restorePosition(rhp.savedPos[i]);
+                    if (selRh[i] != null)
+                        selRh[i].restorePosition(rhp.savedRot[i]);
+                }
+                // Update connected edges
+                for (Selectable s : sel)
+                    if (s instanceof Edge)
+                        for (Selectable s2 : sel)
+                            if (s2 instanceof Node)
+                                ((Edge)s).invalidateIfConnectedTo((Node)s2);
+            }
+
+            @Override
+            public void moveTo(double x, double y, boolean isMultiSelMove) {
+                double newTheta = -Math.atan2(y - center.y, x - center.x);
+                rotation = sanitizeRadiants(newTheta);
+                for (int i=0; i<sel.length; i++) {
+                    if (sel[i] instanceof Node) {
+                        Node node = (Node)sel[i];
+                        Point2D.Double p = new Point2D.Double(node.getCenterX(), node.getCenterY());
+                        rotatePointAroundCenter(p, p, rotation);
+                        node.setNodeCenterPosition(p.x, p.y);
+                        if (node.mayRotate())
+                            node.setRotation(node.getRotation() + rotation);
+                    }
+                    else if (sel[i] instanceof Edge) {
+                        Edge edge = (Edge)sel[i];
+                        for (int k=1; k<edge.points.size()-1; k++) {
+                            Point2D.Double p = new Point2D.Double(edge.points.get(k).getX(), edge.points.get(k).getY());
+                            rotatePointAroundCenter(p, p, rotation);
+                            edge.points.get(k).setLocation(p);
+                        }
+                    }
+                }
+                // Update connected edges
+                for (Selectable s : sel)
+                    if (s instanceof Edge)
+                        for (Selectable s2 : sel)
+                            if (s2 instanceof Node)
+                                ((Edge)s).invalidateIfConnectedTo((Node)s2);
+            }
+            
+            private double getRotationShaftLen() {
+                return radius;
+            }
+
+            @Override
+            public boolean canMoveTo() { return true; }
+
+            @Override
+            public EditableCell getEditable() { return null; }
+
+            @Override
+            public MeshGridSize getPreferredMeshGridSize(double Dx, double Dy, boolean isMultiSelMove) { 
+                return new MeshGridSize(center, getRotationShaftLen(), NetObject.DEFAULT_MULTISEL_GRID_SNAPPING_DEGREES);
+//                return NODE_GRID;
+            }
+            
+            private Point2D rotatePointAroundCenter(Point2D in, Point2D out, double theta) {
+                double sinTheta = Math.sin(theta), cosTheta = Math.cos(theta);
+                double inX = in.getX() - center.x;
+                double inY = in.getY() - center.y;
+                double x = inX * cosTheta - inY * sinTheta;
+                double y = inX * sinTheta + inY * cosTheta;
+                out.setLocation(x + center.x, y + center.y);
+                return out;
+            }
+        };
+    }
 }

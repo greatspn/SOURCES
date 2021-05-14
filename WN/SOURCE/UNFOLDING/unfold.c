@@ -8,7 +8,7 @@
 #define READ_DOMAIN(pl) ( ((pl)->lisp != NULL) ? ((pl)->lisp)->text : (pl)->color)
 
 
-list gListSubClasses;
+extern list gListSubClasses;
 list gListDomain;
 list gListMarking;
 list gListParsedArcs;

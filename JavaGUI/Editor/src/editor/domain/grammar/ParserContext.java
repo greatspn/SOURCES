@@ -106,6 +106,11 @@ public class ParserContext implements NodeNamespace {
 
     public ColorClass colorDomainOfExpr = null;
 
+    // ======= "This" entry used by multiset filter expressions =======
+    
+    public DomainElement filterThisDomain = null;
+    public EvaluatedFormula filterThisValue = null;
+
     // ================ State of the ANTLR parser ===============
 
     // Parser object, available when building the parse tree.

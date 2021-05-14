@@ -250,6 +250,10 @@ public class GspnDtaPlayEngine {
                             break;
                         
                         EvaluatedFormula inMult = e.evaluateMultiplicity(gspnContext, state, binding);
+                        if (inMult.equalsZero()) {
+                            //enabled = false;
+                            break;
+                        }
                         if (p.isDiscrete()) {
                             enabled = state.getMarkingOfPlace(p).greaterEqual(inMult).getScalarBoolean();
                         }

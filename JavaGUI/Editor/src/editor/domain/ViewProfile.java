@@ -49,6 +49,35 @@ public class ViewProfile implements Serializable, XmlExchangeable {
     // The single selected object, available only during a paintNet cycle
     public transient Selectable singleSelObject = null;
 //    public transient boolean hasSingleSelObject = false;
+    
+    // Combine two profiles into a new one
+    public ViewProfile combineWith(ViewProfile vp) {
+        ViewProfile newProfile = new ViewProfile();
+        
+        newProfile.zoom = this.zoom;
+        newProfile.viewRatesDelays   = this.viewRatesDelays   || vp.viewRatesDelays;
+        newProfile.viewGuards        = this.viewGuards        || vp.viewGuards;
+        newProfile.viewPriorities    = this.viewPriorities    || vp.viewPriorities;
+        newProfile.viewNames         = this.viewNames         || vp.viewNames;
+        newProfile.viewSuperPosTags  = this.viewSuperPosTags  || vp.viewSuperPosTags;
+        newProfile.showTimedCommands = this.showTimedCommands || vp.showTimedCommands;
+        newProfile.showColorCommands = this.showColorCommands || vp.showColorCommands;
+        newProfile.showFluidCommands = this.showFluidCommands || vp.showFluidCommands;
+        
+        return newProfile;
+    }
+    
+    public void copyFrom(ViewProfile vp) {
+        this.zoom              = vp.zoom;
+        this.viewRatesDelays   = vp.viewRatesDelays;
+        this.viewGuards        = vp.viewGuards;
+        this.viewPriorities    = vp.viewPriorities;
+        this.viewNames         = vp.viewNames;
+        this.viewSuperPosTags  = vp.viewSuperPosTags;
+        this.showTimedCommands = vp.showTimedCommands;
+        this.showColorCommands = vp.showColorCommands;
+        this.showFluidCommands = vp.showFluidCommands;
+    }
 
     
     // Profile for type of petri nets

@@ -36,7 +36,6 @@ import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
 import editor.domain.play.AbstractMarking;
 import editor.domain.play.ActivityState;
 import editor.domain.play.Firable;
-import editor.domain.superposition.GroupClass;
 import editor.domain.values.ListOfBounds;
 import editor.domain.values.RealScalarValue;
 import java.awt.Color;
@@ -219,6 +218,7 @@ public class Transition extends Node implements Serializable, Firable {
         @Override public boolean isVisible(ViewProfile vp)  { 
             return vp.viewRatesDelays && hasDelay(); 
         }
+        @Override public boolean editAsMultiline() { return false; }
     }
 
     class PriorityLabel extends NodeLabelDecor {
@@ -240,6 +240,7 @@ public class Transition extends Node implements Serializable, Firable {
         @Override public boolean isVisible(ViewProfile vp)  { 
             return vp.viewPriorities && hasPriority() && !priorityExpr.getExpr().equals("1");
         }
+        @Override public boolean editAsMultiline() { return false; }
     }
     
     class WeightLabel extends NodeLabelDecor {
@@ -261,6 +262,7 @@ public class Transition extends Node implements Serializable, Firable {
         @Override public boolean isVisible(ViewProfile vp)  { 
             return vp.viewRatesDelays && hasWeight() && !(weightExpr.getExpr().equals("1.0") || weightExpr.getExpr().equals("1"));
         }
+        @Override public boolean editAsMultiline() { return false; }
     }
     
     class NumServersLabel extends NodeLabelDecor {
@@ -290,6 +292,7 @@ public class Transition extends Node implements Serializable, Firable {
         @Override public boolean isVisible(ViewProfile vp)  { 
             return vp.viewRatesDelays && hasNumServers() && !isInfiniteServers();
         }
+        @Override public boolean editAsMultiline() { return false; }
     }
     
     class GuardLabel extends NodeLabelDecor {
@@ -313,6 +316,7 @@ public class Transition extends Node implements Serializable, Firable {
         @Override public boolean isVisible(ViewProfile vp)  { 
             return vp.viewGuards && hasGuard() && !getGuard().equals("True"); 
         }
+        @Override public boolean editAsMultiline() { return false; }
     }
 
     public static final Point2D.Double DEFAULT_UNIQUE_NAME_POS = new Point2D.Double(0.0, -1.5);
@@ -696,10 +700,11 @@ public class Transition extends Node implements Serializable, Firable {
     }
     
     @Override public EditableValue getSuperPosTagsLabelEditable() { return superPosTagLabel; }
-    @Override public GroupClass getGroupClass() { return GroupClass.TRANSITION; }
+//    @Override public GroupClass getGroupClass() { return GroupClass.TRANSITION; }
+    @Override public boolean hasSuperPosTags() { return true; }
     @Override public String getSuperPosTags() { return superPosTags; }
     @Override public void setSuperPosTags(String superPosTags) { 
-        assert isValidTagList(superPosTags);
+//        assert isValidTagList(superPosTags);
         this.superPosTags = superPosTags;
         invalidateTagList();
     }

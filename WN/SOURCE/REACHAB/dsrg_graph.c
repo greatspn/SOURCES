@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 #include "../../INCLUDE/const.h"
 #include "../../INCLUDE/struct.h"
 #include "../../INCLUDE/var_ext.h"
@@ -12,6 +13,48 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <math.h>
+#endif
+
+#include "../DSRG/src/refDsrg.h"
+
+extern int COMPARE_EVENTUALITIES(int to_compare_ptr, int length_to_compare);
+extern void INIT_RESULT_STRUCT(int *** event);
+extern void set_ref(TYPE_P** PM,TYPE_P NbElPM );
+extern void RAF_INIT_ARRAYS(TO_MERGEP *merg, STORE_STATICS_ARRAY NEW_CONF);
+extern int       get_refined_eventualities_prob(TYPE_P **PM_mark ,
+        TYPE_P NbElPM_mark,
+        TYPE_P **PM , TYPE_P NbElPM,
+        pDecomp   *EVENT_ARRAY_ ,
+        int *SIZE_OF_EVENT_ARR_);
+extern int       adjust_priority(int cur_priority,
+                                 Result_p enabled_head);
+extern Result_p  trait_gurded_transitions(Result_p enabled_head,
+        PART_MAT_P s_prop_Part);
+extern Tree_p treenode_pop();
+extern void add_free_candidate_part(TYPE_P **PART_MAT, TYPE_P NbElPM);
+int get_refined_eventualities(TYPE_P **PM_mark , TYPE_P NbElPM_mark,
+                              TYPE_P **PM , TYPE_P NbElPM,
+                              Tree_Esrg_p   *EVENT_ARRAY_ ,
+                              int *SIZE_OF_EVENT_ARR_);
+extern Tree_p my_treenode_pop(int buff, int length);
+int Inclusion(Tree_Esrg_p  event_array_inclued ,
+              int size_event_array_inclued,
+              Tree_Esrg_p  event_array_inclued_in ,
+              int size_event_array_inclued_in);
+Tree_Esrg_p
+Get_Diff_Mark_DSRG(Tree_Esrg_p  event_array_inclued,
+                   int size_event_array_inclued,
+                   Tree_Esrg_p  event_array_inclued_in,
+                   int size_event_array_inclued_in);
+extern void my_en_list(int);
+extern void hash_table_garbage();
+
+
+#ifdef LIBMCDSRG
+void GROUP_MARKINGS_MC(Tree_Esrg_p EventArr,
+                       STORE_STATICS_ARRAY ASYM_CONF,
+                       STORE_STATICS_ARRAY SYM_CONF,
+                       char *** MTCL, int gr);
 #endif
 
 #ifdef REACHABILITY
@@ -121,7 +164,7 @@ static int    NB_SR = 0;
 static int    NOT_YET = true;
 TO_MERGEP    *MERG_ALL  = NULL;
 STORE_STATICS_ARRAY Sym_StaticConf = NULL;
-int                 stop = false;
+static int                 stop = false;
 double             *tab_corr = NULL;
 int                 nb_tab_corr = 0;
 State               d_srg_top = NULL;
@@ -836,7 +879,7 @@ extern int initial_state(pState M0) {
         insert_tree(&root, &h, f_mark, length, d_ptr);
 
         /******* Compute the eventuality, *******************/
-        /******* corresponding to the asymétric marking *****/
+        /******* corresponding to the asymï¿½tric marking *****/
         GET_EVENT_FROM_MARKING(tabc, tot, num, card, MERGING_MAPPE,
                                initial_statics, STORED_CARD, MERG);
         /******************************************************/
@@ -1471,7 +1514,7 @@ void mc_dsrg_insert_tree(int *** event, double rate,
         EVENTUALITIE_TO_STRING(Sym_StaticConf);
         ADD_EVENTUALITIE_TO_FILE(LEGTH_OF_CACHE);
         last_ptr->Head_Next_Event =
-            (Tree_p)my_treenode_pop(FILE_POS_PTR, LEGTH_OF_CACHE, 0);
+            (Tree_p)my_treenode_pop(FILE_POS_PTR, LEGTH_OF_CACHE);
         last_ptr->Head_Next_Event->Head_Next_Event = NULL;
         set_ref(PART_MAT, NbElPM);
         last_ptr->Head_Next_Event->PM = PART_MAT;
@@ -1504,7 +1547,7 @@ void mc_dsrg_insert_tree(int *** event, double rate,
         ADD_EVENTUALITIE_TO_FILE(LEGTH_OF_CACHE);
         reached_marking->marking->cont_tang = NB_SR ; NB_SR++;
         reached_marking->Head_Next_Event =
-            (Tree_p)my_treenode_pop(FILE_POS_PTR, LEGTH_OF_CACHE, 0);
+            (Tree_p)my_treenode_pop(FILE_POS_PTR, LEGTH_OF_CACHE);
         reached_marking->Head_Next_Event->Head_Next_Event = NULL;
         set_ref(PART_MAT, NbElPM);
         reached_marking->Head_Next_Event->PM = PART_MAT;
@@ -1558,7 +1601,7 @@ void dsrg_insert_tree(int *** event,
         ADD_EVENTUALITIE_TO_FILE(LEGTH_OF_CACHE);
         reached_marking->marking->cont_tang = NB_SR ; NB_SR++;
         reached_marking->Head_Next_Event =
-            (Tree_p)my_treenode_pop(FILE_POS_PTR, LEGTH_OF_CACHE, 0);
+            (Tree_p)my_treenode_pop(FILE_POS_PTR, LEGTH_OF_CACHE);
         reached_marking->Head_Next_Event->Head_Next_Event = NULL;
         reached_marking->Head_Next_Event->PM = PART_MAT;
         reached_marking->Head_Next_Event->NbElPM = NbElPM;
@@ -1714,7 +1757,7 @@ void dsrg_insert_tree(int *** event,
         EVENTUALITIE_TO_STRING(Sym_StaticConf);
         ADD_EVENTUALITIE_TO_FILE(LEGTH_OF_CACHE);
         last_ptr->Head_Next_Event = (Tree_p)my_treenode_pop
-                                    (FILE_POS_PTR, LEGTH_OF_CACHE, 0);
+                                    (FILE_POS_PTR, LEGTH_OF_CACHE);
         last_ptr->Head_Next_Event->Head_Next_Event = NULL;
         last_ptr->Head_Next_Event->PM = PART_MAT;
         last_ptr->Head_Next_Event->NbElPM = NbElPM;
@@ -2137,7 +2180,7 @@ d_srg_asym_succ_arc(State s,
                         AFTER_CANONISATION(sfl_h->min, &MERGING_MAPPE);
 
                         /******* Compute the eventuality,      ********************/
-                        /*******  corresponding to the asymétric marking *****/
+                        /*******  corresponding to the asymï¿½tric marking *****/
                         GET_EVENT_FROM_MARKING(tabc, tot, num, card, MERGING_MAPPE,
                                                s_prop_StaticConf, STORED_CARD, MERG);
                         /**********************************************************/
@@ -2305,7 +2348,7 @@ d_srg_sym_succ_arc(State s, MarkSym **TAB_SYM, int *NbTAB_SYM) {
                 /*** end compute symetrical representation ******************/
 
                 /************** Compute the eventuality,             *******/
-                /************** corresponding to the asymétric marking *****/
+                /************** corresponding to the asymï¿½tric marking *****/
                 GET_EVENT_FROM_MARKING(tabc, tot, num, card, MERGING_MAPPE,
                                        old_StaticConf, STORED_CARD, MERG);
                 /**********************************************************/

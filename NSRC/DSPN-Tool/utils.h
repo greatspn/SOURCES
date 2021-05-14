@@ -28,6 +28,8 @@
 
 void verify_thr(const char *expr, const char *file, const size_t line);
 
+void verify(bool x); // make compiler happy
+
 #define verify(x)   if (!(x)) verify_thr(#x, __FILE__, __LINE__)
 
 //=============================================================================

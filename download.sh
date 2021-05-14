@@ -166,14 +166,14 @@ cd GreatSPN
 # Setup public repository URLs
 GREATSPN_SOURCES=https://github.com/greatspn/SOURCES.git
 
-if [[ $DEVMODE == "Y" ]] ; then
-	if [[ ! -e ~/.ssh/id_rsa.pub ]] ; then
-		fail "Cannot find the SSH key in ~/.ssh/id_rsa.pub . Cannot clone the repositories in developer mode."
-	fi
-	# Use SSH repositories (require developer access and a valid ~/.ssh/id_rsa key)
-	# GREATSPN_SOURCES=git@gitlab.di.unito.it:amparore/GreatSPN-public.git
-	GREATSPN_PRIVATE=git@gitlab.di.unito.it:amparore/GreatSPN-private.git
-fi
+# if [[ $DEVMODE == "Y" ]] ; then
+# 	if [[ ! -e ~/.ssh/id_rsa.pub ]] ; then
+# 		fail "Cannot find the SSH key in ~/.ssh/id_rsa.pub . Cannot clone the repositories in developer mode."
+# 	fi
+# 	# Use SSH repositories (require developer access and a valid ~/.ssh/id_rsa key)
+# 	# GREATSPN_SOURCES=git@gitlab.di.unito.it:amparore/GreatSPN-public.git
+# 	GREATSPN_PRIVATE=git@gitlab.di.unito.it:amparore/GreatSPN-private.git
+# fi
 
 
 #==============================================================================
@@ -189,7 +189,7 @@ if [[ $BUILD_MEDDLY == "Y" ]] ; then
 			git pull || fail "Cannot pull from the Meddly repository" 
 		else 
 			print_header "Downloading the Meddly repository..." 
-			git clone git://git.code.sf.net/p/meddly/code-git meddly \
+			git clone https://github.com/asminer/meddly.git meddly \
 						|| fail "Cannot clone the Meddly repository."  
 		fi
 	) || fail "Could not download the Meddly repository."
@@ -236,19 +236,19 @@ if [[ $BUILD_GREATSPN == "Y" ]] ; then
 		fi
 	) || fail "Could not download the GreatSPN repository."
 
-	if [[ $DEVMODE == "Y" ]] ; then
-		(
-			if cd PRIVATE ;
-			then
-				print_header "Updating the internal GreatSPN repository..." 
-				git checkout master || fail "Cannot checkout to master"
-				git pull || fail "Cannot pull from the internal GreatSPN repository"
-			else
-				print_header "Downloading the internal GreatSPN repository..." 
-				git clone ${GREATSPN_PRIVATE} PRIVATE || fail "Cannot clone the internal GreatSPN repository."
-			fi
-		) || fail "Could not download the internal GreatSPN repository."
-	fi 
+	# if [[ $DEVMODE == "Y" ]] ; then
+	# 	(
+	# 		if cd PRIVATE ;
+	# 		then
+	# 			print_header "Updating the internal GreatSPN repository..." 
+	# 			git checkout master || fail "Cannot checkout to master"
+	# 			git pull || fail "Cannot pull from the internal GreatSPN repository"
+	# 		else
+	# 			print_header "Downloading the internal GreatSPN repository..." 
+	# 			git clone ${GREATSPN_PRIVATE} PRIVATE || fail "Cannot clone the internal GreatSPN repository."
+	# 		fi
+	# 	) || fail "Could not download the internal GreatSPN repository."
+	# fi 
 
 	print_header "Compiling and installing GreatSPN from sources..."
 	# Compile twice to avoid missing dependencies...

@@ -11,6 +11,7 @@ import java.util.UUID;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JTree;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
@@ -59,11 +60,11 @@ public class ProjPageTreeCellRenderer extends DefaultTreeCellRenderer {
         //selectedFlag = selected;
         //comp.setForeground(selected Color.white);
         if (isActive && selected)
-            comp.setForeground(Color.white);
+            comp.setForeground(UIManager.getColor("Tree.selectionForeground"));// (Color.white);
         else if (isActive || nodeObj instanceof UuidString)
-            comp.setForeground(Color.black);
+            comp.setForeground(UIManager.getColor("Tree.textForeground"));//(Color.black);
         else
-            comp.setForeground(Color.gray);
+            comp.setForeground(Color.gray);//(Color.gray);
         //comp.setFont(selected ? boldFont : normalFont);
         
         Icon icon = node.getIcon();

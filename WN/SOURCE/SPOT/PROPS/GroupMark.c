@@ -14,6 +14,8 @@ extern int GET_NB_SOLUTIONS_SYS_EQUA();
 extern int get_max_cardinality();
 extern int GetStaticInd();
 extern void TreatOrdredClasses();
+extern int GetIndObj(char *id, char *** MTCL, int *Cl);
+
 #ifdef LIBMCDSRG
 extern double probability();
 #endif
@@ -30,7 +32,7 @@ int *DSCBIS1 = NULL;
 int *SSCBIS1 = NULL;
 int *DSCBIS2 = NULL;
 int *SSCBIS2 = NULL;
-int count = 0, count1 = 0;;
+static int count = 0, count1 = 0;;
 
 void DSC_DSCBIS1() {
     DSCBIS1 = DSC;
@@ -691,7 +693,7 @@ void Search_All_Groups() {
 }
 
 void GET_PARTITIONS_AFTER_GROUPING(STORE_STATICS_ARRAY ASYM_CONF, char *** MTCL) {
-    /* cette fonction est à revoir */
+    /* cette fonction est ï¿½ revoir */
     int i, cl, sb, k, CL, gr;
     Obj_p ptr;
     for (i = 0; i < NbResList; i++) {
@@ -798,7 +800,7 @@ void GROUP_MARKINGS_MC(Tree_Esrg_p EventArr,
         mcgroup = 1;
 }
 void GET_PARTITIONS_AFTER_GROUPING_PART(STORE_STATICS_ARRAY ASYM_CONF, char *** MTCL) {
-    /* cette fonction est à revoir */
+    /* cette fonction est ï¿½ revoir */
     int i, cl, sb, k, CL, gr;
     Obj_p ptr;
     for (i = 0; i < NbResList; i++) {

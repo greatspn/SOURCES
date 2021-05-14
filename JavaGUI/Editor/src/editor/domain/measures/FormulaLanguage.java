@@ -23,6 +23,8 @@ public enum FormulaLanguage {
             ParserContext.ParserEntryPoint.BOOLEAN_EXPR, ParserContext.PF_LTL_KEYWORDS),
     CTLSTAR("CTL* formula", null, "property_ctlstar.png", 
             ParserContext.ParserEntryPoint.BOOLEAN_EXPR, ParserContext.PF_CTLSTAR_KEYWORDS),
+    FAIRNESS("Fairness constraint", null, "property_fair.png", 
+            ParserContext.ParserEntryPoint.BOOLEAN_EXPR, ParserContext.PF_CTLSTAR_KEYWORDS),
     CSL("CSL formula", null, "property_csl.png", 
             ParserContext.ParserEntryPoint.INT_EXPR, 0),
     CSLTA("<html>CSL<font size=-1><sup>TA</sup></font> formula</html>", "CSLTA formula", "property_cslta.png", 

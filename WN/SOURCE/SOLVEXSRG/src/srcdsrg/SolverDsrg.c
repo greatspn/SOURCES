@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+
 #include "const.h"
 #include "SCONSSPOT.h"
 #include "struct.h"
@@ -8,12 +10,48 @@
 #include "SVAR_EXTSPOT.h"
 #include "macros.h"
 #include "structSolv.h"
+#include "service.h"
+#include "gspnlib.h"
+
+#include "../../../DSRG/src/refDsrg.h"
 
 #undef  NORMAL
 
 #define true 1
 #define false 0
 #define MAXSTR 256
+
+
+extern void write_on_srg();
+extern void create_canonical_data_structure();
+extern TO_MERGEP   *TO_MERGE();
+extern void   GROUPING_ALL_STATICS();
+extern STORE_STATICS_ARRAY CREATE_STORE_STATIC_STRUCTURE();
+extern void   NEW_SIM_STATIC_CONF();
+extern void       FREE_ALL_LMS_ELEMS();
+extern void compose_name(char  *name,  const char  *path,  const char  *postfix);
+extern int perf_index_parser(FILE* f);
+extern void CHAR_LOAD_COMPACT(unsigned long *);
+extern TYPE_P AllocateBV();
+extern void   POP_STATIC_CONF();
+extern void string_to_marking();
+extern STORE_STATICS_ARRAY
+NewTabc__(TYPE_P **PM, TYPE_P NbElPM, char *** MTCL);
+extern void SPECIAL_CANISATION();
+extern void DynDistOfObjects(TYPE_P **PM, TYPE *NbElPM,
+                 int *** Card, int **num, int **DynDis);
+extern CToken_p ParcourtArbreProp(TreeNode_p root, int **DynDis);
+extern int my_get_ordinary_tokens(CToken_p tk_p);
+extern void FreeList(CToken_p tk);
+extern int INCLUDE(TYPE_P CONJ1, TYPE_P CONJ2);
+extern int       get_refined_eventualities_prob(TYPE_P **PM_mark ,
+        TYPE_P NbElPM_mark,
+        TYPE_P **PM , TYPE_P NbElPM,
+        pDecomp   *EVENT_ARRAY_ ,
+        int *SIZE_OF_EVENT_ARR_);
+extern void my_garbage_collect(Tree_Esrg_p fire_ptr);
+extern void free_mtrx(mtrx *U, unsigned long nb);
+
 
 typedef struct SR_SM {
   int* ord;

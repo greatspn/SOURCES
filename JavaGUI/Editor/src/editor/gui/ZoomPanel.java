@@ -17,10 +17,10 @@ import java.awt.event.ActionListener;
 public class ZoomPanel extends javax.swing.JPanel {
         
     public static final int zooms[] = { 
-        25, 50, 75, 100, 125, 150, 200
+        12, 25, 50, 75, 100, 125, 150, 200, 400
     };
     public static final String zoomLabels[] = { 
-        "25 %", "50 %", "75 %", "100 %", "125%", "150 %", "200 %"
+        "12%", "25 %", "50 %", "75 %", "100 %", "125%", "150 %", "200 %", "400%"
     };
     
     private Action actionZoomIn, actionZoomOut, actionNormalZoom;
@@ -57,7 +57,7 @@ public class ZoomPanel extends javax.swing.JPanel {
         }
         jSlider.setMaximum(zoomLabels.length - 1);
         setZoom(100);
-        jSlider.setPreferredSize(new Dimension(100, jSlider.getPreferredSize().height));
+        jSlider.setPreferredSize(new Dimension(zooms.length*15, jSlider.getPreferredSize().height));
         jLabelZoom.setVisible(false);
     }
 

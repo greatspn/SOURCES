@@ -42,7 +42,13 @@ public class VarMultiAssignmentListPanel extends javax.swing.JPanel {
     public VarMultiAssignmentListPanel() {
         initComponents();
         setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY));
-        setBackground(Color.WHITE);
+        setBackground(editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_COLOR);
+        
+        label_name.setForeground(editor.gui.net.NetEditorPanel.PAGE_TITLE_FOREGROUND);
+        label_name.setBackground(editor.gui.net.NetEditorPanel.PAGE_TITLE_BACKGROUND);
+        label_assignedValue.setForeground(editor.gui.net.NetEditorPanel.PAGE_TITLE_FOREGROUND);
+        label_assignedValue.setBackground(editor.gui.net.NetEditorPanel.PAGE_TITLE_BACKGROUND);
+        panel_horizBar.setBackground(editor.gui.net.NetEditorPanel.PAGE_TITLE_BACKGROUND);
     }
 
     @Override
@@ -51,7 +57,8 @@ public class VarMultiAssignmentListPanel extends javax.swing.JPanel {
         
         for (VarMultiAssignmentForm aef : allForms)
             aef.setEnabled(enabled);
-        setBackground(enabled ? Color.WHITE : VarMultiAssignmentForm.BKGND_DISABLED);
+        setBackground(enabled ? editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_COLOR : 
+                       VarMultiAssignmentForm.BKGND_DISABLED);
     }
 
     public void setMultiAssignmentListListener(MultiAssignmentListListener listener) {
@@ -91,6 +98,7 @@ public class VarMultiAssignmentListPanel extends javax.swing.JPanel {
                 TemplateVariable tvar = (TemplateVariable)page.getNodeByUniqueName(vma.varName);
                 LatexFormula lf = tvar.getTemplateVariableLatexFormula();
                 allLabels[pos] = new JLabel("", SwingConstants.RIGHT);
+                allLabels[pos].setForeground(editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR);
                 allForms[pos] = new VarMultiAssignmentForm(vma.allowMultipleValues, allowMovements) {
                     @Override
                     public void onNewAssignment(VarMultiAssignment expr) {
@@ -118,8 +126,8 @@ public class VarMultiAssignmentListPanel extends javax.swing.JPanel {
                         listener.onEditingListAssignment();
                     }
                 };
-                add(allLabels[count], getGBCNormal(0, count+2, 0));
-                add(allForms[count], getGBCHorixFill(1, count+2, 0));
+                add(allLabels[count], getGBCNormal(0, count+3, 0));
+                add(allForms[count], getGBCHorixFill(1, count+3, 0));
                 count++;
             }
             setVisible(varList.assigns.size() > 0);
@@ -201,29 +209,58 @@ public class VarMultiAssignmentListPanel extends javax.swing.JPanel {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        label_name = new javax.swing.JLabel();
+        label_assignedValue = new javax.swing.JLabel();
+        panel_horizBar = new javax.swing.JPanel();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setLayout(new java.awt.GridBagLayout());
 
-        jLabel1.setText("Name:");
+        label_name.setText("Name:");
+        label_name.setOpaque(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-        add(jLabel1, gridBagConstraints);
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 3;
+        gridBagConstraints.ipady = 3;
+        add(label_name, gridBagConstraints);
 
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("Assigned Value:");
+        label_assignedValue.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        label_assignedValue.setText("Assigned Value:");
+        label_assignedValue.setOpaque(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 3;
+        gridBagConstraints.ipady = 3;
+        gridBagConstraints.weightx = 0.1;
+        add(label_assignedValue, gridBagConstraints);
+
+        panel_horizBar.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(0, 0, 0)));
+
+        javax.swing.GroupLayout panel_horizBarLayout = new javax.swing.GroupLayout(panel_horizBar);
+        panel_horizBar.setLayout(panel_horizBarLayout);
+        panel_horizBarLayout.setHorizontalGroup(
+            panel_horizBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 357, Short.MAX_VALUE)
+        );
+        panel_horizBarLayout.setVerticalGroup(
+            panel_horizBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 0.1;
-        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-        add(jLabel2, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+        add(panel_horizBar, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel label_assignedValue;
+    private javax.swing.JLabel label_name;
+    private javax.swing.JPanel panel_horizBar;
     // End of variables declaration//GEN-END:variables
 }

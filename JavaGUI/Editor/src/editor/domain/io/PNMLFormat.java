@@ -99,6 +99,23 @@ public class PNMLFormat {
         return sb.toString();
     }
     
+    private static void writeTags(PrintWriter pnml, Node n, boolean saveGraphics) {
+        if (n.numTags() > 0) {
+            pnml.println("\t\t\t\t<toolspecific tool=\"GreatSPN-tags\" version=\"3\">");
+            for (int i=0; i<n.numTags(); i++)
+                pnml.println("\t\t\t\t\t<tag>"+n.getTag(i)+"</tag>");
+            
+            if (saveGraphics) {
+                int labelX = scaleCoord(n.getSuperPosTagsDecor().getInternalPosX());
+                int labelY = scaleCoord(n.getSuperPosTagsDecor().getInternalPosY());
+                pnml.println("\t\t\t\t\t<graphics>");
+                pnml.println("\t\t\t\t\t\t<offset x=\""+labelX+"\" y=\""+labelY+"\"/>");
+                pnml.println("\t\t\t\t\t</graphics>");
+            }
+            pnml.println("\t\t\t\t</toolspecific>");
+        }
+    }
+    
     public static String exportGspn(GspnPage gspn, File pnmlFile, boolean saveGraphics) throws Exception {
         if (!gspn.isPageCorrect())
             throw new UnsupportedOperationException("GSPN must be correct before exporting.");
@@ -140,13 +157,14 @@ public class PNMLFormat {
                 pnml.println("\t\t\t\t\t<!-- Declaration of user-defined color classes (sorts) -->");                
                 // Dot color class (if any place is neutral)
                 for (Node node : gspn.nodes) {
-                    if (node instanceof Place)
+                    if (node instanceof Place) {
                         if (((Place) node).isInNeutralDomain()) {
                             pnml.println("\t\t\t\t\t<namedsort id=\"dot\" name=\"Dot\">");
                             pnml.println("\t\t\t\t\t\t<dot/>");
                             pnml.println("\t\t\t\t\t</namedsort>");
                             break;
                         }
+                    }
                 }
                 // Color classes
                 for (Node node : gspn.nodes) {
@@ -271,13 +289,11 @@ public class PNMLFormat {
                             String initMark = ensureInt(plc.getInitMarkingEditable().getValue().toString(), 
                                                         "initial marking", log);
                             pnml.println("\t\t\t\t<initialMarking>");
-            //                pnml.println("\t\t\t\t\t<graphics>");
-            //                pnml.println("\t\t\t\t\t\t<offset x=\"0\" y=\"0\"/>");
-            //                pnml.println("\t\t\t\t\t</graphics>");
                             pnml.println("\t\t\t\t\t<text>"+initMark+"</text>");
                             pnml.println("\t\t\t\t</initialMarking>");
                         }
                     }
+                    writeTags(pnml, plc, saveGraphics);
                     pnml.println("\t\t\t</place>");
                 }
             }
@@ -319,6 +335,7 @@ public class PNMLFormat {
                         pnml.println("\t\t\t\t</condition>");
                     }
                     
+                    writeTags(pnml, trn, saveGraphics);
                     pnml.println("\t\t\t</transition>");
                 }
             }
@@ -457,8 +474,8 @@ public class PNMLFormat {
     }
     
     private static String extractGraphicsLabelAndPosition(Element elem, Point2D pos, Point2D labelOffset) {
-        if (labelOffset != null)
-            labelOffset.setLocation(0, 0);
+//        if (labelOffset != null)
+//            labelOffset.setLocation(0, 0);
 
         if (pos != null) {
             pos.setLocation(0, 0);
@@ -476,6 +493,26 @@ public class PNMLFormat {
             }
         }
         return null;
+    }
+    
+    private static void extractTags(Element elem, Node node, Point2D labelOffset) {
+        String tags = "";
+        NodeList subElems = elem.getElementsByTagName("toolspecific");
+        for (int i=0; i<subElems.getLength(); i++) {
+            Element toolSpec = (Element)subElems.item(i);
+            if (toolSpec.hasAttribute("tool") && toolSpec.getAttribute("tool").equals("GreatSPN-tags")) {
+                // read tags
+                NodeList allTags = elem.getElementsByTagName("tag");
+                for (int j=0; j<allTags.getLength(); j++) {
+                    Element tag = (Element)allTags.item(j);
+                    if (tag.getTextContent() != null && !tag.getTextContent().isEmpty())
+                        tags += (tags.isEmpty()?"":"|") + tag.getTextContent();
+                }
+                if (extractGraphicPosition(toolSpec, labelOffset, "offset"))
+                    node.getSuperPosTagsDecor().setInternalPos(labelOffset.getX(), labelOffset.getY());
+            }
+        }
+        node.setSuperPosTags(tags);
     }
     
     // convert PNML identifiers into PNML names
@@ -729,6 +766,7 @@ public class PNMLFormat {
 	doc.getDocumentElement().normalize();
         Point2D.Double pos = new Point2D.Double();
         Point2D.Double labelOffset = new Point2D.Double();
+        Point2D.Double tagsOffset = new Point2D.Double();
 
         if (!doc.getDocumentElement().getNodeName().equals("pnml"))
             throw new UnsupportedOperationException("Cannot find PNML XML root.");
@@ -945,8 +983,9 @@ public class PNMLFormat {
                 Element plcElem = (Element)placeList.item(i);
      
                 String id = plcElem.getAttribute("id");
+                labelOffset.setLocation(Place.DEFAULT_UNIQUE_NAME_POS);
                 String name = extractGraphicsLabelAndPosition(plcElem, pos, labelOffset);
-                name = saveIdName(id, name, id2name, knownNames);;
+                name = saveIdName(id, name, id2name, knownNames);
                 
                 // Read color domain
                 String colorDomain = "";
@@ -982,6 +1021,7 @@ public class PNMLFormat {
                 }
                                 
                 Place plc = new Place(name, initMarkExpr, TokenType.DISCRETE, colorDomain, "", pos);
+                extractTags(plcElem, plc, tagsOffset);
                 LabelDecor lab = plc.getUniqueNameDecor();
                 lab.setInternalPos(labelOffset.x, labelOffset.y);
                 gspn.nodes.add(plc);
@@ -994,6 +1034,7 @@ public class PNMLFormat {
                 Element trnElem = (Element)trnList.item(i);
      
                 String id = trnElem.getAttribute("id");
+                labelOffset.setLocation(Transition.DEFAULT_UNIQUE_NAME_POS);
                 String name = extractGraphicsLabelAndPosition(trnElem, pos, labelOffset);
                 name = saveIdName(id, name, id2name, knownNames);;
                 
@@ -1008,6 +1049,7 @@ public class PNMLFormat {
                 
                 Transition trn = new Transition(name, Transition.Type.EXP, "1.0", "0",
                                                 "1.0", "Infinite", guard, 0.0, pos);
+                extractTags(trnElem, trn, labelOffset);
                 LabelDecor lab = trn.getUniqueNameDecor();
                 lab.setInternalPos(labelOffset.x, labelOffset.y);
                 gspn.nodes.add(trn);

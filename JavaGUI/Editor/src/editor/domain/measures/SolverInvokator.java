@@ -59,12 +59,12 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
     
     
     private static class StepCmd {
-        // The command line
-        public String cmd;
+        // The command line, split into separate arguments
+        public ArrayList<String> cmd;
         // Is it optional? (i.e. it may fail and the computation is not stopped)
         public boolean mayFail;
 
-        public StepCmd(String cmd, boolean mayFail) {
+        public StepCmd(ArrayList<String> cmd, boolean mayFail) {
             this.cmd = cmd;
             this.mayFail = mayFail;
         }
@@ -91,11 +91,11 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
             this.theInvokator = theInvokator;
         }
         
-        public void addCmd(String cmd) {
+        public void addCmd(ArrayList<String> cmd) {
             cmdLines.add(new StepCmd(cmd, false));
         }
 
-        public void addOptionalCmd(String cmd) {
+        public void addOptionalCmd(ArrayList<String> cmd) {
             cmdLines.add(new StepCmd(cmd, true));
         }
         
@@ -111,9 +111,9 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
             boolean interrupted = false;
             int numCompletedCmds = 0;
             for (StepCmd step : cmdLines) {
-                asyncLogStdout("\033[0mEXEC: "+step.cmd+"\n");
+                asyncLogStdout("\033[0mEXEC: "+cmdToString(step.cmd)+"\n");
 
-                proc = Runtime.getRuntime().exec(splitCommandLine(step.cmd), envp);
+                proc = Runtime.getRuntime().exec(step.cmd.toArray(new String[step.cmd.size()]), envp);
 
                 errStrm = new BufferedInputStream(proc.getErrorStream());
                 outStrm = new BufferedInputStream(proc.getInputStream());
@@ -212,40 +212,40 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         };
     }
     
-    // Create the argument array from a single command line String
-    private static String[] splitCommandLine(String str) {
-        boolean runFromBash = true;
-        
-        // Indirectly invoke the command using bash
-        // Only for Windows 10+ 64bit with Linux Subsystem installed.
-        if (Util.isWindows()) {
-            return new String[] { "bash", "-c", "FROM_GUI=1 "+str.replace("\"", "\\\"") };
-        }
-        
-        str += " "; // To detect last token when not quoted...
-        ArrayList<String> strings = new ArrayList<>();
-        char inQuote = 0;
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < str.length(); i++) {
-            char c = str.charAt(i);
-            if (((c == '\"' || c == '\'') && inQuote==0) || // opening quote
-                    (c == inQuote) || // closing quote
-                    (c == ' ' && inQuote==0)) // closing non-quoted argument
-            {
-                if (c == inQuote)
-                    inQuote = 0;
-                else if (inQuote == 0 && (c == '\"' || c == '\''))
-                    inQuote = c;
-                if (inQuote == 0 && sb.length() > 0) {
-                    strings.add(sb.toString());
-                    sb.delete(0, sb.length());
-                }
-            } 
-            else
-                sb.append(c);
-        }
-        return strings.toArray(new String[strings.size()]);
-    }
+//    // Create the argument array from a single command line String
+//    public static String[] splitCommandLine(String str) {
+////        boolean runFromBash = true;
+//        
+//        // Indirectly invoke the command using bash
+//        // Only for Windows 10+ 64bit with Linux Subsystem installed.
+////        if (Util.isWindows()) {
+////            return new String[] { "bash", "-c", "FROM_GUI=1 "+str.replace("\"", "\\\"") };
+////        }
+//        
+//        str += " "; // To detect last token when not quoted...
+//        ArrayList<String> strings = new ArrayList<>();
+//        char inQuote = 0;
+//        StringBuilder sb = new StringBuilder();
+//        for (int i = 0; i < str.length(); i++) {
+//            char c = str.charAt(i);
+//            if (((c == '\"' || c == '\'') && inQuote==0) || // opening quote
+//                    (c == inQuote) || // closing quote
+//                    (c == ' ' && inQuote==0)) // closing non-quoted argument
+//            {
+//                if (c == inQuote)
+//                    inQuote = 0;
+//                else if (inQuote == 0 && (c == '\"' || c == '\''))
+//                    inQuote = c;
+//                if (inQuote == 0 && sb.length() > 0) {
+//                    strings.add(sb.toString());
+//                    sb.delete(0, sb.length());
+//                }
+//            } 
+//            else
+//                sb.append(c);
+//        }
+//        return strings.toArray(new String[strings.size()]);
+//    }
     
 //    public static void main(String[] args) {
 //        splitCommandLine("start start 'in in \" inside \" in  ' end end");
@@ -386,7 +386,8 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         String err = GreatSpnFormat.exportGspn(page.targetGspn, 
                                   new File(gspnFile.getAbsolutePath()+".net"), 
                                   new File(gspnFile.getAbsolutePath()+".def"),
-                                  true);
+                                  true,
+                                  enableSupportForMDepArcsInNetDef());
         if (err != null) {
             asyncLogStdout("Encountered the following problems during GSPN exportation:\n"+err+"\n");
         }
@@ -516,6 +517,8 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
     
     abstract void endOfStep(SolutionStep step, boolean interrupted, boolean allStepsCompleted);
     
+    abstract boolean enableSupportForMDepArcsInNetDef();
+    
     //==========================================================================
     
     private void computeMeasuresWithBinding() 
@@ -563,37 +566,57 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
     }
     
     //==========================================================================
-    // Helper methods for derived solver classes
+    // Wrapping of filenames
     //==========================================================================
     
-    // Print a quoted net filename with the specified extension
-    protected String quotedFn(String ext, String quote) {
-        String fn = quote + getGspnFile().getAbsolutePath() + (ext==null ? "" : ext) + quote;
+    public static String makeFilenameForCmd(String fname, String ext) {
+        String fn = fname + (ext==null ? "" : ext);
         if (Util.isWindows()) {
-            fn = fn.replace("\\", "/").replace("C:", "/mnt/c");
+            // step 1:    C:  ->  /mnt/c/
+            if (fn.length()>2 && fn.charAt(1)==':') {
+                char devLetter = Character.toLowerCase(fn.charAt(0));
+                fn = "/mnt/"+devLetter+"/"+fn.substring(2);
+            }
+            // step 2:   replace backslash with slash
+            fn = fn.replace("\\", "/");
         }
-        return fn;
+        return fn;        
     }
-    protected String quotedFn(String ext) {
-        return quotedFn(ext, "\"");
+    public static String makeFilenameForCmd(String fname) {
+        return makeFilenameForCmd(fname, null);
+    }
+    public static String makeFilenameForCmd(File fname) {
+        return makeFilenameForCmd(fname.getAbsolutePath(), null);
     }
 
+    protected String makeDefaultModelFilenameForCmd(String ext) {
+        return makeFilenameForCmd(getGspnFile().getAbsolutePath(), ext);
+    }
+
+    //==========================================================================
+    // Helper methods for derived solver classes
+    //==========================================================================
+
     // Compose the argument list with the parametric mark/rate parameters
-    protected String getParamBindingCmd(TemplateBinding currBind, boolean writeMarkPars, boolean writeRatePars) {
-        StringBuilder sb = new StringBuilder();
+    protected ArrayList<String> getParamBindingCmdArgs(TemplateBinding currBind, boolean writeMarkPars, boolean writeRatePars) {
+        ArrayList<String> cmdArgs = new ArrayList<>();
         // Prepare the bindings
         for (Map.Entry<String, Expr> bind : currBind.binding.entrySet()) {
             TemplateVariable var = (TemplateVariable)getPage().targetGspn.getNodeByUniqueName(bind.getKey());
             if (var.getType() == TemplateVariable.Type.INTEGER && writeMarkPars) {
                 int value = bind.getValue().evaluate(getContext(), EvaluationArguments.NO_ARGS).getScalarInt();
-                sb.append(" -mpar ").append(var.getUniqueName()).append(" ").append(value);
+                cmdArgs.add("-mpar");
+                cmdArgs.add(var.getUniqueName());
+                cmdArgs.add(""+value);
             }
             else if (var.getType() == TemplateVariable.Type.REAL && writeRatePars) {
                 double value = bind.getValue().evaluate(getContext(), EvaluationArguments.NO_ARGS).getScalarRealOrIntAsReal();
-                sb.append(" -rpar ").append(var.getUniqueName()).append(" ").append(value);
+                cmdArgs.add("-rpar");
+                cmdArgs.add(var.getUniqueName());
+                cmdArgs.add(""+value);
             }
         }
-        return sb.toString();
+        return cmdArgs;
     }
     
     // Standard readCommand implementation
@@ -673,7 +696,8 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
     private static boolean checkWSL() {
         try {
             Process p = Runtime.getRuntime().exec(new String[]{
-                "bash" ,"-c" ,"exit 25"
+                //"bash" ,"-c" ,"exit 25"
+                "wsl", "exit", "25"
             });
             int exitcode = p.waitFor();
 //            JOptionPane.showMessageDialog(null, "exit = "+exitcode);
@@ -689,7 +713,8 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
     private static boolean checkWSLcanExecute(String file) {
         try {
             Process p = Runtime.getRuntime().exec(new String[]{
-                "bash", "-c", "test -x \""+file+"\""
+//                "bash", "-c", "test -x \""+file+"\""
+                "wsl", "test", "-x", file
             });
             int exitcode = p.waitFor();
             return exitcode == 0; // 0 means it has the x flag, otherwise test returns 1
@@ -735,6 +760,27 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         }
         return cmd;
     }
+        
+    public static ArrayList<String> startOfCommand() {
+        ArrayList<String> cmd = new ArrayList<>();
+        if (Util.isWindows()) {
+            cmd.add("wsl");
+            cmd.add("--");
+        }
+        return cmd;
+    }
+    
+    public static String cmdToString(ArrayList<String> cmd) {
+        StringBuffer sb =  new StringBuffer();
+        for (String s : cmd) {
+            if (s.contains(" "))
+                sb.append("\"").append(s).append("\"");
+            else
+                sb.append(s);
+            sb.append(" ");
+        }
+        return sb.toString();
+    }
     
     //==========================================================================
     // ADDITIONAL PATHS for the toolchain invokation
@@ -748,10 +794,19 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         return Util.getPreferences().get(ADDPATH_DIR, "");
     }
     
+    private static final String ADD_LD_LIBRARY_PATH_DIR = "additional_ld_library_path_dir";
+    public static void setAdditionalLibraryPathDir(String path) {
+        Util.getPreferences().put(ADD_LD_LIBRARY_PATH_DIR, path);
+    }
+    public static String getAdditionalLibraryPathDir() {
+        return Util.getPreferences().get(ADD_LD_LIBRARY_PATH_DIR, "/usr/local/lib");
+    }
+    
+    //==========================================================================
     public static String[] prepareRuntimeEnvironmentVars() {
         return prepareRuntimeEnvironmentVars(null);
     }
-    
+
     public static String[] prepareRuntimeEnvironmentVars(SolverInvokator solver) {
         // Prepare the environment variables
         Map<String, String> env = System.getenv(), nenv = new HashMap<>();
@@ -760,6 +815,16 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         nenv.put("TERM", "xterm");   // Accept VT-100 escape sequences
         nenv.put("FREQUENCY", "10"); // Frequency of terminal updates, in tenths of seconds
         nenv.put("FROM_GUI", "1");   // Tell the solver that is being called from the GUI
+        
+        if (Util.isWindows()) {
+//            nenv.put("LD_LIBRARY_PATH", "/usr/local/lib");
+            nenv.put("WSLENV", "TERM:FREQUENCY:FROM_GUI:LD_LIBRARY_PATH");
+        }
+        
+        if (!nenv.containsKey("PATH"))
+            nenv.put("PATH", "");
+        if (!nenv.containsKey("LD_LIBRARY_PATH"))
+            nenv.put("LD_LIBRARY_PATH", "");
         
         if (solver != null)
             solver.modifyEnvironmentVars(nenv);
@@ -770,14 +835,30 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
             String value = e.getValue();
             if (e.getKey().equalsIgnoreCase("PATH")) {
                 if (!getAdditionalPathDir().isEmpty())
-                    value += File.pathSeparator + getAdditionalPathDir();
+                    value += (value.isEmpty() ? "" : File.pathSeparator) + getAdditionalPathDir();
 //                System.out.println("PATH="+value);
+            }
+            if (e.getKey().equalsIgnoreCase("LD_LIBRARY_PATH")) {
+                if (!getAdditionalLibraryPathDir().isEmpty())
+                    value += (value.isEmpty() ? "" : File.pathSeparator) + getAdditionalLibraryPathDir();
+//                System.out.println("LD_LIBRARY_PATH="+value);
             }
             envp[pos++] = e.getKey()+"="+value;
         }
+        
+//        for (String envset : envp)
+//            System.out.println("export "+envset);
+        
         return envp;
     }
     
+    private static final String RGMEDD_EXECNAME = "rgmedd_exec_name";
+    public static void setRGMEDDName(String path) {
+        Util.getPreferences().put(RGMEDD_EXECNAME, path);
+    }
+    public static String getRGMEDDName() {
+        return Util.getPreferences().get(RGMEDD_EXECNAME, "RGMEDD3");
+    }
     
     //==========================================================================
     // Cosmos tool installation directory finder

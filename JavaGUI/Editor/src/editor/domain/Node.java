@@ -15,9 +15,6 @@ import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
 import editor.domain.io.XmlExchangeable;
 import editor.domain.measures.ComputedScalar;
 import editor.domain.play.ActivityState;
-import editor.domain.semiflows.SemiFlows;
-import editor.domain.superposition.GroupClass;
-import editor.domain.superposition.NodeGroup;
 import editor.gui.NoOpException;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
@@ -42,13 +39,14 @@ import javax.swing.Icon;
 import javax.swing.SwingConstants;
 import latex.LatexFormula;
 import org.w3c.dom.Element;
+import editor.domain.semiflows.PTFlows;
 
 /** A Node in a graph (a place, a transition, a location, etc...)
  *
  * @author Elvio
  */
 public abstract class Node extends SelectableObject 
-        implements Serializable, DecorHolder, PlaceableObject, ResourceHolder, XmlExchangeable, NodeGroup
+        implements Serializable, DecorHolder, PlaceableObject, ResourceHolder, XmlExchangeable//, NodeGroup
 {
     // Position
     private Point2D pos = new Point2D.Double();
@@ -106,6 +104,9 @@ public abstract class Node extends SelectableObject
     public void setNodePosition(double x, double y) {
         pos.setLocation(x, y);
     }
+    public void setNodeCenterPosition(double x, double y) {
+        pos.setLocation(x - getWidth()/2.0, y - getHeight()/2.0);
+    }
     
     
     public final String getUniqueName() { return uniqueName; }
@@ -130,23 +131,24 @@ public abstract class Node extends SelectableObject
         this.altNameFn = altNameFn;
     }
 
-    public final boolean hasSuperPosTags() { return getGroupClass().hasTagSuperposition(); }
+//    public final boolean hasSuperPosTags() { return getGroupClass().hasTagSuperposition(); }
+    public abstract boolean hasSuperPosTags();
     public abstract Point2D getSuperPosTagsDefaultPos();
     public String getSuperPosTags() { throw new IllegalStateException(); }
     public void setSuperPosTags(String superPosTags) { throw new IllegalStateException(); }
     public LabelDecor getSuperPosTagsDecor() { throw new IllegalStateException(); }
-    @Override
-    public abstract GroupClass getGroupClass();
-
-    @Override public int numSynchNodes() { return 1; }
-    @Override public NodeGroup getSynchNode(int i) { return this; }
-    @Override public int getSynchNodeNetIndex(int i) { return 0; }
+//    @Override
+//    public abstract GroupClass getGroupClass();
+//
+//    @Override public int numSynchNodes() { return 1; }
+//    @Override public NodeGroup getSynchNode(int i) { return this; }
+//    @Override public int getSynchNodeNetIndex(int i) { return 0; }
 
     // Precomputed set of splitted tags
     private transient String[] tagList = null;
-    @Override public int numTags() { rebuiltTagList(); return tagList.length; }
-    @Override public String getTag(int i) { rebuiltTagList(); return tagList[i]; }
-    @Override public boolean hasTag(String tag) { 
+    public int numTags() { rebuiltTagList(); return tagList.length; }
+    public String getTag(int i) { rebuiltTagList(); return tagList[i]; }
+    public boolean hasTag(String tag) { 
         rebuiltTagList();
         for (String s : tagList)
             if (s.equals(tag))
@@ -161,7 +163,7 @@ public abstract class Node extends SelectableObject
             tagList = new String[0];
             return;
         }
-        tagList = getSuperPosTags().split(",");
+        tagList = getSuperPosTags().split("\\|"); // | is escaped since it is a regex
         int nonEmpty = 0;
         for (int i=0; i<tagList.length; i++) {
             tagList[i] = tagList[i].trim();
@@ -197,7 +199,24 @@ public abstract class Node extends SelectableObject
     public boolean canConnectEdges() { return true; }
     
     // Should this node be checked for correctness before the other nodes (used for type nodes, like ColorClass'es)
-    public void checkNodeCorrectness(NetPage page, ParserContext context) { /* add PageError's to the page */ }
+    public void checkNodeCorrectness(NetPage page, ParserContext context) { 
+        // Validate super-position tags (if exists)
+        if (hasSuperPosTags()) {
+            boolean ok = true;
+            for (int t=0; t<numTags() && ok; t++) {
+                String tag = getTag(t);
+                for (int c=0; c<tag.length() && ok; c++) {
+                    if (!Character.isLetterOrDigit(tag.charAt(c))) {
+                        page.addErrorWarningObject(PageErrorWarning.newError(
+                                "Invalid tag '"+tag+"'. "+
+                                "Tags list must be a '|'-separated list of alphanumeric identifiers. ", this));
+                        ok = false;
+                    }
+                }
+            }
+        }
+        /* add PageError's to the page */ 
+    }
     
     // Apply a rewriting rule to this node
     public abstract void rewriteNode(ParserContext context, ExprRewriter rewriter);
@@ -247,10 +266,13 @@ public abstract class Node extends SelectableObject
             ExprIdReplacer rewriter = new ExprIdReplacer(oldName, newName);
             ParserContext context = new ParserContext(page);
             ((NetPage)page).applyRewriteRule(context, rewriter);
+            for (int i=0; i<project.getPageCount(); i++)
+                project.getPageAt(i).onAnotherPageNodeRenaming(page, oldName, newName);
             setUniqueName(newName);
         }
         @Override public boolean isEditable() { return true; }
         @Override public boolean isCurrentValueValid() { return true; }
+        @Override public boolean editAsMultiline() { return false; }
 
         @Override 
         public boolean isVisible(ViewProfile vp) {
@@ -311,8 +333,9 @@ public abstract class Node extends SelectableObject
         
         @Override
         public boolean isValueValid(ProjectData proj, ProjectPage page, Object value) {
-            String taglist = (String)value;
-            return isValidTagList(taglist);
+            return true;
+//            String taglist = (String)value;
+//            return isValidTagList(taglist);
         }
         @Override
         public void setValue(ProjectData project, ProjectPage page, Object value) { 
@@ -320,6 +343,7 @@ public abstract class Node extends SelectableObject
         }
         @Override public boolean isCurrentValueValid() { return true; }
         @Override public boolean isEditable() { return true; }
+        @Override public boolean editAsMultiline() { return false; }
 
         @Override
         public boolean isVisible(ViewProfile vp) { 
@@ -535,7 +559,7 @@ public abstract class Node extends SelectableObject
     }
     
     // Rotation handle
-    private class RotationHandlePosition implements HandlePosition {
+    private static class RotationHandlePosition implements HandlePosition {
         public double rotation;
         public Point2D handlePos;
         public RotationHandlePosition(double rotation, Point2D handlePos) {
@@ -546,7 +570,7 @@ public abstract class Node extends SelectableObject
         @Override public double getRefY() { return handlePos.getY(); }
         @Override public Point2D getRefPoint() { return new Point2D.Double(handlePos.getX(), handlePos.getY()); }
     }
-    private static final Color ROTATION_HANDLE_COLOR = new Color(0, 171, 14);
+    public static final Color ROTATION_HANDLE_COLOR = new Color(0, 171, 14);
     public MovementHandle getRotationHandle(final NetPage page) {
         assert mayRotate();
         return new DraggableHandle() {
@@ -599,7 +623,8 @@ public abstract class Node extends SelectableObject
             @Override
             public MeshGridSize getPreferredMeshGridSize(double Dx, double Dy, boolean isMultiSelMove) { 
                 return new MeshGridSize(new Point2D.Double(getCenterX(), getCenterY()), 
-                                        getRotationShaftLen());
+                                        getRotationShaftLen(), 
+                                        NetObject.DEFAULT_GRID_ANGLE_SNAPPING_DEGREES);
             }
         };
     }
@@ -644,10 +669,13 @@ public abstract class Node extends SelectableObject
                 boolean isPrinter = false;
                 if (g != null) {
                     GraphicsConfiguration gc = g.getDeviceConfiguration();
-                    if (gc != null)
+                    if (gc != null) {
                         isPrinter = (gc.getDevice().getType() == GraphicsDevice.TYPE_PRINTER);
+                    }
+                    else isPrinter = true; // for instance, PDF printer has no device
                 }
                 if (isPrinter) {
+//                    System.out.println("isPrinter");
                     shapeRoundRect.setRoundRect(getX(), getY(), getWidth(), getHeight(), 0, 0);
                     return shapeRoundRect;
                 }
@@ -987,11 +1015,18 @@ public abstract class Node extends SelectableObject
             if (activity > 0) 
                 paintNodeActiveBorder(g, dh, nodeShape, activity, ACTIVE_COLOR);
         }
+        if (dh.multiNet != null) {
+            Color clr = dh.multiNet.colorOfMergedNode(this);
+            if (clr != null)
+                paintNodeActiveBorder(g, dh, nodeShape, 0.2, clr);
+        }
         
         // Highlighted in visualization mode
-        if (dh.semiflows != null && dh.semiflows.contains(this)) {
+        int semiflowCard = -100;
+        if (dh.selectedPTFlow != null && dh.selectedPTFlow.contains(this)) {
+            semiflowCard = dh.selectedPTFlow.getNodeCardinality(this);
             paintNodeActiveBorder(g, dh, nodeShape, DEFAULT_ACTIVITY_AURA_SIZE, 
-                                  dh.semiflows.getLineColor());
+                                  dh.selectedPTFlow.getLineColor(semiflowCard));
         }
         
         // Fill the node interior
@@ -1010,16 +1045,24 @@ public abstract class Node extends SelectableObject
         }
         
         // Draw the border of the shape
-        Color borderColor;
+        Color borderColor = null;
+        Stroke borderStroke = sw.logicStroke; 
         if (errorFlag)
             borderColor = getBorderColorError();
-        else if (isGrayed())
+        if (borderColor==null && isGrayed())
             borderColor = getBorderColorGrayed();
-        else
+        if (borderColor==null)
             borderColor = getBorderColor();
+        if (borderColor != null && dh.selectedPTFlow != null) {
+            Color selBorderColor = dh.selectedPTFlow.getBorderColor(this);
+            if (selBorderColor != null) {
+                borderColor = selBorderColor;
+                borderStroke = sw.logicStrokeWider;
+            }
+        }
         if (borderColor != null) {
             Stroke sk = g.getStroke();
-            g.setStroke(sw.logicStroke);
+            g.setStroke(borderStroke);
             g.setColor(borderColor);
             g.draw(nodeShape);
             g.setStroke(sk);
@@ -1033,28 +1076,28 @@ public abstract class Node extends SelectableObject
         paintNodeInterior(g, dh, borderColor, errorFlag, nodeShape);
         
         // P/T semiflows count
-        if (dh.semiflows != null) {
+        if (dh.selectedPTFlow != null) {
             String countText = null;
-            if (dh.semiflows.getType() == SemiFlows.Type.PLACE_BOUNDS_FROM_PINV) {
-                int upper = dh.semiflows.getNodeCardinality(this);
-                int lower = dh.semiflows.getNodeLowerBound(this);
+            if (dh.selectedPTFlow.getType() == PTFlows.Type.PLACE_BOUNDS_FROM_PINV) {
+                int upper = dh.selectedPTFlow.getNodeBound(this, false);
+                int lower = dh.selectedPTFlow.getNodeBound(this, true);
                 if (upper >= 0 && lower >= 0) {
                     if (upper == Integer.MAX_VALUE)
-                        countText = "\\mathbf{["+lower+","+SemiFlows.INFINITY_UNICODE+"]}";
+                        countText = "\\mathbf{["+lower+","+PTFlows.INFINITY_UNICODE+"]}";
                     else
                         countText = "\\mathbf{["+lower+","+upper+"]}";
                 }
             }
             else {
-                if (dh.semiflows.contains(this)) {
-                    int card = dh.semiflows.getNodeCardinality(this);
-                    if (card >= 1)
-                        countText = "\\mathbf{"+card+"}";
+                if (dh.selectedPTFlow.contains(this)) {
+//                    int card = dh.semiflows.getNodeCardinality(this);
+                    if (semiflowCard != 0 && semiflowCard != Integer.MAX_VALUE)
+                        countText = "\\mathbf{"+semiflowCard+"}";
                 }
             }
             
             if (countText != null)
-                paintPTSemiflowsCardinality(g, dh, dh.semiflows.getTextColor(), 
+                paintPTSemiflowsCardinality(g, dh, dh.selectedPTFlow.getTextColor(semiflowCard), 
                                             oldAT, 0.95f, countText);
         }
         

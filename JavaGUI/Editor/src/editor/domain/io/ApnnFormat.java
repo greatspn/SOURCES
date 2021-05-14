@@ -6,6 +6,7 @@
 
 package editor.domain.io;
 
+import common.UnixPrintWriter;
 import editor.domain.Edge;
 import editor.domain.NetObject;
 import editor.domain.Node;
@@ -214,7 +215,7 @@ public class ApnnFormat {
         int entityCnt = 0;
         ArrayList<String> log = new ArrayList<>();
         Map<Node, Integer> node2entity = new HashMap<>();
-        PrintWriter apnn = new PrintWriter(new BufferedOutputStream(new FileOutputStream(apnnFile)));
+        PrintWriter apnn = new UnixPrintWriter(new BufferedOutputStream(new FileOutputStream(apnnFile)));
         ParserContext context = optionalContext;
         if (context == null)
             context = new ParserContext(gspn);

@@ -329,8 +329,8 @@ public class PetriNetMeasuresPanel extends javax.swing.JPanel
     }
 
     @Override
-    public JComponent getToolbar() {
-        return toolBar;
+    public JComponent[] getToolbars() {
+        return new JComponent[]{};
     }
 
     private static final PageErrorWarning[] emptyErrorList = new PageErrorWarning[0];
@@ -400,8 +400,8 @@ public class PetriNetMeasuresPanel extends javax.swing.JPanel
         @Override
         public Color getNetBackground(String overlayMsg) {
             if (tableVars.getSelectedRowCount()== 0)
-                return Color.LIGHT_GRAY;
-            return Color.WHITE;
+                return editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_DISABLED_COLOR;
+            return editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_COLOR;
         }
     }
     
@@ -418,7 +418,6 @@ public class PetriNetMeasuresPanel extends javax.swing.JPanel
 
         panelNet = new javax.swing.JPanel();
         jScrollPaneNet = new javax.swing.JScrollPane();
-        toolBar = new javax.swing.JToolBar();
         resourceFactory = new editor.gui.ResourceFactory();
         jLabel_TemplateVar = new javax.swing.JLabel();
         jScrollPaneTableVars = new javax.swing.JScrollPane();
@@ -430,14 +429,11 @@ public class PetriNetMeasuresPanel extends javax.swing.JPanel
         jLabel_avgTokens = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        listDistrib = new javax.swing.JList<String>();
+        listDistrib = new javax.swing.JList<>();
         jPanelNoSel = new javax.swing.JPanel();
 
         panelNet.setLayout(new java.awt.GridLayout(1, 0));
         panelNet.add(jScrollPaneNet);
-
-        toolBar.setFloatable(false);
-        toolBar.setRollover(true);
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -566,6 +562,5 @@ public class PetriNetMeasuresPanel extends javax.swing.JPanel
     private javax.swing.JList<String> listDistrib;
     private javax.swing.JPanel panelNet;
     private editor.gui.ResourceFactory resourceFactory;
-    private javax.swing.JToolBar toolBar;
     // End of variables declaration//GEN-END:variables
 }

@@ -7,7 +7,6 @@ package common;
 import editor.Main;
 import editor.domain.ProjectResource;
 import editor.domain.ResourceHolder;
-import editor.gui.OSXAdapter;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -73,6 +72,24 @@ public final class Util {
     public static ImageIcon loadIcon(String iconName) {
         return new ImageIcon(loadImage(iconName));
     }
+    
+//    public static void main(String[] args) throws Exception {
+    // combine two images into a single one
+//        ImageIcon icon1 = new ImageIcon(ImageIO.read(new File("/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/icons/page_net16.png")));
+//        ImageIcon icon2 = new ImageIcon(ImageIO.read(new File("/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/icons/overlay_plus16.png")));
+//        
+//        ImageIcon icon3 = new ImageIcon(icon1.getImage());
+//        Graphics2D g2 = (Graphics2D)icon3.getImage().getGraphics();
+//        g2.drawImage(icon2.getImage(), 0, 0, null);
+//        g2.dispose();
+//        
+//        Image img = icon3.getImage();
+//        BufferedImage bi = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+//        Graphics2D g3 = bi.createGraphics();
+//        g3.drawImage(img, 0, 0, null);
+//        g3.dispose();
+//        ImageIO.write(bi, "png", new File("/home/elvio/test.png"));
+//    }
 
     
     // Prepara l'avvio dell'applicazione
@@ -92,14 +109,17 @@ public final class Util {
             String laf = System.getProperty("swing.defaultlaf");
             if (laf == null)
                 laf = UIManager.getSystemLookAndFeelClassName();
-            switch (Main.getUiSize()) {
-                case LARGE:
-                    setDefaultUIFontSize(1.5f);
-                    break;
-                case LARGER:
-                    setDefaultUIFontSize(2.0f);
-                    break;
-            }
+            Main.UiSize uiSize = Main.getUiSize();
+            if (uiSize.getScaleMultiplier() > 1.0f)
+                setDefaultUIFontSize(uiSize.getScaleMultiplier());
+//            switch (Main.getUiSize()) {
+//                case LARGE:
+//                    setDefaultUIFontSize(1.25f);
+//                    break;
+//                case LARGER:
+//                    setDefaultUIFontSize(1.5f);
+//                    break;
+//            }
             UIManager.setLookAndFeel(laf);
         } catch (Exception ex) { }
         
@@ -145,18 +165,8 @@ public final class Util {
             platformOSX = System.getProperty("os.name").equals("Mac OS X"); 
         return platformOSX;
     }
-    public static void setupOSXIntegration(JFrame mainWnd) {
-        if (isOSX()) {
-            System.setProperty("com.apple.mrj.application.apple.menu.about.name", Main.APP_NAME);
-            try {
-                OSXAdapter.setAboutHandler(mainWnd, mainWnd.getClass().getMethod("showAboutDialog"));
-                OSXAdapter.setFileHandler(mainWnd, mainWnd.getClass().getMethod("openFileHandler", String.class));
-                OSXAdapter.setPreferencesHandler(mainWnd, mainWnd.getClass().getMethod("openPreferences"));
-                OSXAdapter.setQuitHandler(mainWnd, mainWnd.getClass().getMethod("quitHandler"));
-            }
-            catch (Exception e) { Main.logException(e, true); }
-        }
-    }
+    
+    
     public static final Color UNIFIED_GRAY_PANEL_BKGND = new Color(237, 237, 237);
     private static final boolean unifiedToolbar = true;
     public static boolean useUnifiedToolbar() {
@@ -340,6 +350,16 @@ public final class Util {
         grayscale /= 256;
         grayscale = 255 - (int)((255 - grayscale) * coeff);
         return new Color(grayscale, grayscale, grayscale);
+    }
+    // mix colors
+    public static Color mix(Color clr1, Color clr2, float coeff) {
+        return new Color((int)(clr1.getRed() * coeff   + clr2.getRed() * (1-coeff)),
+                         (int)(clr1.getGreen() * coeff + clr2.getGreen() * (1-coeff)),
+                         (int)(clr1.getBlue() * coeff  + clr2.getBlue() * (1-coeff)));
+    }
+    // convert color in html hex form #RRGGBB
+    public static String clrToHex(Color clr) {
+        return String.format("#%06x", clr.getRGB() & 0xFFFFFF);
     }
     
     // Deep copy of objects through serialization

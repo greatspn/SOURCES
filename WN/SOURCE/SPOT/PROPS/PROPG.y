@@ -13,7 +13,7 @@
 
 /***************** Variables *******************/
 
-struct Token_Domains TD; 
+static struct Token_Domains TD; 
 char*   Ptr_Cur=NULL;
 int     Lim_Pos=0;
 

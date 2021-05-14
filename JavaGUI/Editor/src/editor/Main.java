@@ -27,7 +27,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import latex.LatexProvider;
 import latex.LatexProviderImpl;
 
 /**
@@ -41,6 +40,7 @@ public class Main {
     public static final String VERSION_URL = "http://www.di.unito.it/~amparore/mc4cslta/VERSION";
     public static final String APP_NAME = "New GreatSPN Editor";
     public static final String PREF_ROOT_KEY = "New Editor";
+    public static int JAVA_VERSION_REQUIRED_MAJOR = 11;
 
     // The main application instance
     static AppWindow wnd;
@@ -52,6 +52,7 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(final String[] args) {
+        requireJavaVersion(JAVA_VERSION_REQUIRED_MAJOR);
         Util.initApplication(PREF_ROOT_KEY, "/org/unito/mainprefs");
         
         // For debug purposes
@@ -74,7 +75,6 @@ public class Main {
                 //Util.loadFont("/editor/gui/icons/cmr10.ttf");
                 
                 wnd.setVisible(true);                
-                Util.setupOSXIntegration(wnd);
                 
                 // Open the files passed on the command line
                 for (String arg : args) {
@@ -287,16 +287,22 @@ public class Main {
 //        }
     }
     
-    public static void requireJavaVersion(double versionNum) {
+    public static void requireJavaVersion(int reqMajor) {
         String currVer = System.getProperty("java.version");
         try {
-            double ver = Double.parseDouble(currVer);
-            if (ver >= versionNum)
+            String[] verNum = currVer.split("\\.");
+            int major = Integer.parseInt(verNum[0]);
+//            System.out.println("currVer="+currVer+" major="+major+" reqMajor="+reqMajor);
+            if (reqMajor <= major)
                 return;
         }
         catch (Exception e) { }
         
-        throw new UnsupportedOperationException("Java version "+versionNum+" is required, found version "+currVer);
+        String err = "Java version "+reqMajor+"+ is required, currently running on version "+currVer+".\n"
+                + "If you have already installed Java version "+reqMajor+" or greater, please verify\n"
+                + "that it is correctly set as the default Java version.";
+        System.err.println(err);
+        JOptionPane.showMessageDialog(null, err, "Java Version Error", JOptionPane.ERROR_MESSAGE);
     }
     
     // Open a PDF file with an external viewer
@@ -313,7 +319,7 @@ public class Main {
                 pdfFile.getAbsolutePath(), 
                 "Could not open PDF", JOptionPane.ERROR_MESSAGE);
     }
-    
+
     //-------------------------------------------------------------------------
     // Application preferences
     //-------------------------------------------------------------------------
@@ -324,6 +330,14 @@ public class Main {
     }
     public static boolean isCheckForUpdatesAutomatic() {
         return Util.getPreferences().getBoolean(AUTOMATIC_CHECK_KEY, false);
+    }
+    
+    private static final String REOPEN_FILES_AT_STARTUP = "repen_files_at_startup";
+    public static void setReopenPrevOpenFilesAtStartup(boolean ok) {
+        Util.getPreferences().putBoolean(REOPEN_FILES_AT_STARTUP, ok);
+    }
+    public static boolean isReopenPrevOpenFilesAtStartup() {
+        return Util.getPreferences().getBoolean(REOPEN_FILES_AT_STARTUP, false);
     }
 
     private static final String MAX_UNDO_KEY = "max_undo2";
@@ -368,7 +382,14 @@ public class Main {
         return Util.getPreferences().getBoolean(ALLOW_GSPN_EXT_KEY, false);
     }
     
-    
+    private static final String ALLOW_GSPN_MDEP_ARCS_KEY = "allow_greatspn_mdep_arcs";
+    public static void setGreatSPNMdepArcsAllowed(boolean ok) {
+        Util.getPreferences().putBoolean(ALLOW_GSPN_MDEP_ARCS_KEY, ok);
+    }
+    public static boolean areGreatSPNMdepArcsAllowed() {
+        return Util.getPreferences().getBoolean(ALLOW_GSPN_MDEP_ARCS_KEY, false);
+    }
+
     private static final String MODEL_LIBRARY_DIR = "model_library_dir";
     public static String getModelLibraryDirectory() {
         return Util.getPreferences().get(MODEL_LIBRARY_DIR, "/usr/local/GreatSPN/models");
@@ -377,4 +398,16 @@ public class Main {
         Util.getPreferences().put(MODEL_LIBRARY_DIR, dir);
     }
 
+    //-------------------------------------------------------------------------
+    // Developer switch
+    //-------------------------------------------------------------------------
+    
+    private static final String DEVELOPER_SWITCH = "developer_switch";
+    public static void setDeveloperMachine(boolean ok) {
+        Util.getPreferences().putBoolean(DEVELOPER_SWITCH, ok);
+    }
+    public static boolean isDeveloperMachine() {
+//        setDeveloperMachine(true);
+        return Util.getPreferences().getBoolean(DEVELOPER_SWITCH, false);
+    }
 }

@@ -345,8 +345,8 @@ int tr;
         for (ind = 0; ind < comp_check ; ind++) {
             tabt[tr].dominio[ind] = occ[tr][ind].cclass;
             tabt[tr].rip[tabt[tr].dominio[ind]]++;
-            tabt[tr].names[ind] = (char *)ecalloc(strlen(occ[tr][ind].fun_name) + 1, sizeof(char));
-            strcpy(tabt[tr].names[ind], occ[tr][ind].fun_name);
+            tabt[tr].names[ind] = (char *)ecalloc(strlen(occ[tr][ind].p_fun_name) + 1, sizeof(char));
+            strcpy(tabt[tr].names[ind], occ[tr][ind].p_fun_name);
             if (tabt[tr].rip[tabt[tr].dominio[ind]] > MAX_COL_RIP)
                 out_error(ERROR_LOW_MAX_COL_RIP, 0, tr, 0, 0, NULL, NULL);
         }
@@ -487,7 +487,7 @@ Pred_p pred;
                 /* Check of function name */
                 not_found = TRUE;
                 for (occ_ind = 0 ; occ_ind < comp_check && not_found ; occ_ind++)
-                    if (!strcmp(c->fun_name, occ[tr][occ_ind].fun_name))
+                    if (!strcmp(c->fun_name, occ[tr][occ_ind].p_fun_name))
                         not_found = FALSE;
                 if (not_found) {
                     /* Occorrenza inesistente */
@@ -518,7 +518,7 @@ Pred_p pred;
                 /* Check of function name */
                 not_found = TRUE;
                 for (occ_ind = 0 ; occ_ind < comp_check && not_found ; occ_ind++)
-                    if (!strcmp(n->fun_name, occ[tr][occ_ind].fun_name))
+                    if (!strcmp(n->fun_name, occ[tr][occ_ind].p_fun_name))
                         not_found = FALSE;
                 if (not_found) {
                     /* Occorrenza inesistente */

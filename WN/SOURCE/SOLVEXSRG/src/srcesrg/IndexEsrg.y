@@ -9,13 +9,14 @@
 #include "var_ext.h"
 #include "SVAR_EXTSPOT.h"
 #include "macros.h"
+#include "../../../../INCLUDE/ealloc.h"
 
 /***************** Variables *******************/
 
-struct Token_Domains TD; 
+static struct Token_Domains TD; 
 char*   Ptr_Cur_index=NULL;
 int     Lim_Pos_index=0;
-int     ind=0;
+static int     ind =0;
 /**********************************************/
 
 /**************** flex functions ************************/

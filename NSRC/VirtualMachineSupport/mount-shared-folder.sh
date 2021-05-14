@@ -20,12 +20,16 @@ echo "${B1}  Mounting shared folder ...${B0}"
 echo $LN
 echo
 RUN=/home/user/GreatSPN/SOURCES/NSRC/VirtualMachineSupport/run_as_root.sh
-${RUN} mount -t vboxsf /media/shared /media/vbox_Dati -o uid=`id -u user`
+${RUN} mount -t vboxsf shared /home/user/Desktop/SharedFolder -o uid=`id -u user`
 
 if [ $? -eq 0 ]; then
 	echo "${B1}  Shared folder mounted. ${B0}"
 	sleep 1
 else
 	echo "${B1}  Error: Shared folder NOT mounted. ${B0}"
+	echo
+	echo "Verify that a shared folder is properly defined in the virtual machine configuration."
+	echo "${B1}NOTE:${B0} the mount point must be called 'shared' to be auto-mounted."
+	echo
 	read -p "Press any key to quit..." -n1 -s
 fi

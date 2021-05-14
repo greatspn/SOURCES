@@ -7,12 +7,14 @@
 # include "../../INCLUDE/macros.h"
 # include "../../INCLUDE/service.h"
 
+extern int evaluate_expression(Expr_p  code,  Event_p  ev_p);
+
 #ifdef SWN
 #ifdef SYMBOLIC
 extern int get_dynamic_from_total();
 #endif
 
-extern int evaluate_expression();
+// extern int evaluate_expression();
 extern int verify_predicate_constraint();
 extern int lesser();
 extern int greater();

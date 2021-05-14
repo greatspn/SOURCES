@@ -27,10 +27,27 @@ enum class FlowMatrixKind {
     // NESTED_FLOW_SPAN
 };
 
+//-----------------------------------------------------------------------------
+
+enum class SystemMatrixType {
+    REGULAR, TRAPS, SIPHONS
+};
+
+//-----------------------------------------------------------------------------
+
+struct invariants_spec_t {
+    InvariantKind invknd;
+    SystemMatrixType system_kind;
+    FlowMatrixKind matk;
+    size_t suppl_flags;
+};
+
+//-----------------------------------------------------------------------------
+
 // Returns the GreatSPN file extension for the given type of flow (like .pin, .tin, etc...)
-const char* GetGreatSPN_FileExt(InvariantKind fk, FlowMatrixKind matk, int suppl_flags);
+std::string GetGreatSPN_FileExt(invariants_spec_t is);
 // Return the name of the type of flows (like "PLACE SEMIFLOWS" or "TRANSITIONS FLOW BASIS")
-const char* GetFlowName(InvariantKind fk, FlowMatrixKind matk);
+const char* GetFlowName(InvariantKind fk, FlowMatrixKind matk, SystemMatrixType smt);
 
 //-----------------------------------------------------------------------------
 
@@ -63,6 +80,7 @@ public:
 const size_t FM_POSITIVE_SUPPLEMENTARY = 1;
 const size_t FM_NEGATIVE_SUPPLEMENTARY = 2;
 const size_t FM_ON_THE_FLY_SUPPL_VARS = 4;
+const size_t FM_REDUCE_SUPPLEMENTARY_VARS = 8;
 
 //-----------------------------------------------------------------------------
 
@@ -80,7 +98,7 @@ public:
     typedef sparsevector<spvec_int_tag>    spintvector;
     // typedef sparsevector<size_t, bool>   spboolvector;
 
-    flow_matrix_t(size_t N, size_t N0, size_t M, InvariantKind k, int suppl_flags, 
+    flow_matrix_t(size_t N, size_t N0, size_t M, InvariantKind k, SystemMatrixType smt, int suppl_flags, 
                   bool add_extra_vars, bool use_Colom_pivoting, bool extra_vars_in_support);
     flow_matrix_t(const flow_matrix_t&) = delete;
     flow_matrix_t(flow_matrix_t&&) = default;
@@ -159,6 +177,9 @@ public:
     // Stores P or T flows?
     const InvariantKind inv_kind;
 
+    // How the system was built
+    SystemMatrixType system_kind;
+
     // Columns for the supplementary variables
     const size_t suppl_flags; // 0 means normal P/T flows, otherwise have supplementary vars.
     // Extra variables should be added dynamically during flow generation?
@@ -225,16 +246,17 @@ public:
     incidence_matrix_generator_t(incidence_matrix_generator_t&&) = default;
 
     // Add an entry of the incidence matrix from i to j with the given cardinality
-    void add_flow_entry(size_t i, size_t j, int cardinality);
+    // void add_flow_entry(size_t i, size_t j, int cardinality);
 
     // Insert flows from Petri net arcs
-    void add_flows_from(const PN& pn, bool print_warns = true);
+    // void add_flows_from(const PN& pn, bool print_warns = true);
 
     // Initialize the flow matrix from the inserted entries
-    void generate_matrix();
+    // void generate_matrix();
+    void generate_matrix2(const PN& pn, bool print_warns);
 
     // Add increasing/decreasing flows (for I/D invariants)
-    void add_increase_decrease_flows();
+    // void add_increase_decrease_flows();
 };
 
 //-----------------------------------------------------------------------------
@@ -254,6 +276,10 @@ public:
     void compute_basis();
     // Compute the minimal general flows (both positive and negative)
     void compute_integer_flows();
+    // Reduce non-minimal flows (excluding slack variables for the support check)
+    void reduce_non_minimal();
+    // drop all entries for the slack variables in D
+    void drop_slack_vars_in_D();
     // Compute a span of flows which maximizes the nested property
     // Nesting: if we have A+B, A+C and B=C, then drop the 1st (or the 2nd), because it is
     // easily derived from a single sum (A+B)-(B+C), and B subset {A,B}  (nesting property).
@@ -305,12 +331,16 @@ typedef std::vector<PlaceBounds> place_bounds_t;
 
 shared_ptr<flow_matrix_t>
 ComputeFlows(const PN& pn, InvariantKind kind, FlowMatrixKind mat_kind, 
-             bool detect_exp_growth, int suppl_flags, bool use_Colom_pivoting, 
+             SystemMatrixType system_kind, bool detect_exp_growth, 
+             int suppl_flags, bool use_Colom_pivoting, 
              bool extra_vars_in_support, VerboseLevel verboseLvl);
 
 void SaveFlows(const flow_matrix_t& msa, ofstream& file);
 
 void PrintFlows(const PN& pn, const flow_matrix_t& msa, const char* cmd, VerboseLevel verboseLvl);
+
+// are all places of a net covered by at least one flow?
+bool IsNetCoveredByFlows(const PN& pn, const flow_matrix_t& flows);
 
 //-----------------------------------------------------------------------------
 
@@ -324,6 +354,17 @@ void SaveBounds(const place_bounds_t& bounds, ofstream& file);
 void LoadBounds(const PN& pn, place_bounds_t& bounds, ifstream& file);
 
 void PrintBounds(const PN& pn, const place_bounds_t& bounds, VerboseLevel verboseLvl);
+
+//-----------------------------------------------------------------------------
+
+// Compute the minimal number of tokens to satisfy each (semi)flow
+void ComputeMinimalTokensFromFlows(const PN& pn, 
+                                   const flow_matrix_t& semiflows, 
+                                   std::vector<int>& m0min);
+
+void SaveMinimalTokens(const std::vector<int>& m0min, ofstream& file);
+
+void PrintMinimalTokens(const PN& pn, const std::vector<int>& m0min, VerboseLevel verboseLvl);
 
 //=============================================================================
 #endif // __SEMIFLOWS_H__

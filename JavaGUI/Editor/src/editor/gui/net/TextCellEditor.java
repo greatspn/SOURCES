@@ -18,6 +18,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.DocumentEvent;
@@ -49,8 +50,10 @@ public class TextCellEditor extends JTextField implements BaseCellEditor {
         isTextValid = editable.isValueValid(proj, page, getText());
         Dimension dim = getPreferredSize();
         dim.width += dim.height/2;
-        setBounds(screenPos.x - dim.width/2, screenPos.y - dim.height/2, 
+        setBounds(Math.max(0, screenPos.x - dim.width / 2),
+                  screenPos.y - dim.height / 2,
                   dim.width, dim.height);
+        
         addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent fe) { 
@@ -88,7 +91,8 @@ public class TextCellEditor extends JTextField implements BaseCellEditor {
                     dim.width += dim.height;
                 dim.width = Math.max(dim.width, dim2.width);
                 dim.height = Math.max(dim.height, dim2.height);
-                setBounds(screenPos.x - dim.width/2, screenPos.y - dim.height/2, 
+                setBounds(Math.max(0, screenPos.x - dim.width / 2),
+                          screenPos.y - dim.height / 2,
                           dim.width, dim.height);
             }
 
@@ -124,7 +128,7 @@ public class TextCellEditor extends JTextField implements BaseCellEditor {
     public void onTextChange() {
         isTextValid = editable.isValueValid(proj, page, getText());
         if (isTextValid) {
-            setForeground(Color.BLACK);
+            setForeground(UIManager.getColor("TextField.foreground"));
         }
         else {
             setForeground(Color.RED);

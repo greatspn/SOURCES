@@ -30,18 +30,15 @@ import editor.domain.io.XmlExchangeDirection;
 import editor.domain.io.XmlExchangeException;
 import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
 import editor.domain.play.ActivityState;
-import editor.domain.superposition.GroupClass;
 import editor.domain.values.IntScalarValue;
 import editor.domain.values.MultiSet;
 import editor.domain.values.RealScalarValue;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.GlyphVector;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -265,6 +262,7 @@ public class Place extends Node implements Serializable, ColorClass.DomainHolder
         @Override public boolean isVisible(ViewProfile vp)  { 
             return vp.viewNames && isInColorDomain(); 
         }
+        @Override public boolean editAsMultiline() { return false; }
     }
         
     // A simple string that denotes the Kronecker partition (used in hierarchical PN)
@@ -295,6 +293,7 @@ public class Place extends Node implements Serializable, ColorClass.DomainHolder
         @Override public String getVisualizedValue() { 
             return AlternateNameFunction.NUMBERS_AS_SUBSCRIPTS.prepareLatexText(partitionName, null, STYLE_ROMAN);
         }
+        @Override public boolean editAsMultiline() { return false; }
     }
     
     // Return the domain name, or null if it is neutral
@@ -378,16 +377,27 @@ public class Place extends Node implements Serializable, ColorClass.DomainHolder
         {},
         {new Point2D.Double(0, 0)},
         {new Point2D.Double(-1.5, 0), new Point2D.Double(1.5, 0)},
-        {new Point2D.Double(-1.5, 1), new Point2D.Double(1.5, 1),
-         new Point2D.Double(0, -1.5)},
+        {new Point2D.Double(0.000, -1.600), new Point2D.Double(1.386, 0.800),
+         new Point2D.Double(-1.386, 0.800)},
         {new Point2D.Double(-1.5, -1.5), new Point2D.Double(1.5, -1.5),
          new Point2D.Double(-1.5, 1.5), new Point2D.Double(1.5, 1.5)},
-        {new Point2D.Double(-1.3, 1.6), new Point2D.Double(1.3, 1.6),
-         new Point2D.Double(-1.9, -0.7), new Point2D.Double(1.9, -0.7),
-         new Point2D.Double(0, -2.1)},
-        {new Point2D.Double(-1.9, -1.1), new Point2D.Double(1.9, -1.1),
-         new Point2D.Double(0, -2.2), new Point2D.Double(0, 2.2),
-         new Point2D.Double(-1.9, 1.1), new Point2D.Double(1.9, 1.1)}
+        {new Point2D.Double(0.000, -2.100), new Point2D.Double(1.997, -0.649),
+         new Point2D.Double(1.234, 1.699), new Point2D.Double(-1.234, 1.699),
+         new Point2D.Double(-1.997, -0.649)},
+        {new Point2D.Double(0.000, -2.400), new Point2D.Double(2.078, -1.200),
+         new Point2D.Double(2.078, 1.200), new Point2D.Double(0.000, 2.400),
+         new Point2D.Double(-2.078, 1.200), new Point2D.Double(-2.078, -1.200)},
+        {new Point2D.Double(0.000, -2.400), new Point2D.Double(2.078, -1.200),
+         new Point2D.Double(2.078, 1.200), new Point2D.Double(0.000, 2.400),
+         new Point2D.Double(-2.078, 1.200), new Point2D.Double(-2.078, -1.200),
+         new Point2D.Double(0, 0)},
+        {new Point2D.Double(1.148, -2.772), new Point2D.Double(2.772, -1.148),
+         new Point2D.Double(2.772, 1.148), new Point2D.Double(1.148, 2.772),
+         new Point2D.Double(-1.148, 2.772), new Point2D.Double(-2.772, 1.148),
+         new Point2D.Double(-2.772, -1.148), new Point2D.Double(-1.148, -2.772)},
+        {new Point2D.Double(-0.000, -3.111), new Point2D.Double(-1.556, -1.556), new Point2D.Double(-3.111, 0.000),
+         new Point2D.Double(1.556, -1.556), new Point2D.Double(0.000, 0.000), new Point2D.Double(-1.556, 1.556),
+         new Point2D.Double(3.111, -0.000), new Point2D.Double(1.556, 1.556), new Point2D.Double(0.000, 3.111)}
     };
     
     @Override public Color getFillColor(ActivityState activity)        { return Color.WHITE; }
@@ -428,7 +438,7 @@ public class Place extends Node implements Serializable, ColorClass.DomainHolder
         EvaluatedFormula efMarking = null;
         PaintMode paintMode = null;
         boolean isError = false;
-        if (dh.semiflows != null) {
+        if (dh.selectedPTFlow != null) {
             // Do not draw any marking in P/T semiflow mode.
             return;
         }
@@ -599,10 +609,11 @@ public class Place extends Node implements Serializable, ColorClass.DomainHolder
         return tokenText;
     }
 
-    @Override public GroupClass getGroupClass() { return GroupClass.PLACE; }
+    @Override public boolean hasSuperPosTags() { return true; }
+//    @Override public GroupClass getGroupClass() { return GroupClass.PLACE; }
     @Override public String getSuperPosTags() { return superPosTags; }
     @Override public void setSuperPosTags(String superPosTags) { 
-        assert isValidTagList(superPosTags);
+//        assert isValidTagList(superPosTags);
         this.superPosTags = superPosTags;
         invalidateTagList();
     }
@@ -665,6 +676,10 @@ public class Place extends Node implements Serializable, ColorClass.DomainHolder
         return initMarkingExpr.convertLang(context, EvaluationArguments.NO_ARGS, lang);
     }
     
+    public String getInitMarkingExpr() {
+        return initMarkingExpr.getExpr();
+    }
+    
     
     public EditableCell getInitMarkingEditable() {
         return new EditableCell() {
@@ -688,6 +703,7 @@ public class Place extends Node implements Serializable, ColorClass.DomainHolder
             {
                 return Place.this.intersectRectangle(rect, viewProfile, includeDecors);
             }
+            @Override public boolean editAsMultiline() { return false; }
         };
     }
     

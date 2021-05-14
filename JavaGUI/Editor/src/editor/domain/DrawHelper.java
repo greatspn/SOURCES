@@ -9,8 +9,7 @@ package editor.domain;
 import editor.Main;
 import editor.domain.measures.AllMeasuresResult;
 import editor.domain.play.ActivityState;
-import editor.domain.semiflows.SemiFlows;
-import editor.domain.superposition.MultiNetPage;
+import editor.domain.composition.MultiNetPage;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
@@ -18,6 +17,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import editor.domain.semiflows.PTFlows;
 
 //-------------------------------------------------------------------------
 
@@ -45,6 +45,7 @@ public class DrawHelper
         String name;
 
         public final Stroke logicStroke;
+        public final Stroke logicStrokeWider;
         public final Stroke logicStrokeDashed;
         public final Stroke logicSelectStrokeEdges;
         public final Stroke logicSelectStrokeNodes;
@@ -57,6 +58,7 @@ public class DrawHelper
              
             float width = getWidth();
             logicStroke = new BasicStroke(width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 2f);
+            logicStrokeWider = new BasicStroke(width*2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 2f);
             logicStrokeDashed = new BasicStroke(width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 2f, new float[]{0.4f, 0.3f}, 0.0f);
             float selWidth = ((widthMult-1) * getBaseStrokeWidth()) + NetObject.SELECTION_STROKE_WIDTH;
             logicSelectStrokeEdges = new BasicStroke(2 * selWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
@@ -70,8 +72,8 @@ public class DrawHelper
     //        public static final String FONT_NAME = "Times New Roman";
     // Current state of the net in animation mode (play mode)
     public ActivityState activity;
-    // Currently visualized semiflow (semiflow panel)
-    public SemiFlows semiflows;
+    // Currently visualized flow (flow panel)
+    public PTFlows selectedPTFlow;
     // Currently visualized measures
     public AllMeasuresResult measures;
     // What is shown in this drawing

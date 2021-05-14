@@ -342,7 +342,8 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
         public Color getNetBackground(String overlayMsg) {
             boolean isWhite = (isEnabled() && currStateIndex >= 0 && 
                                !viewerPanel.isInBindingPhase());
-            return isWhite ? Color.WHITE : VERY_LIGHT_GRAY_BKGND;
+            return isWhite ? editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_COLOR : 
+                             editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_DISABLED_COLOR;
         }
     }
     
@@ -415,19 +416,22 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
     
     private void setupTimeStepPanel(boolean enabled) {
         boolean isTimedStep = false;
-        boolean hasExpTransition = false;
+        boolean hasEnabledTimedTransition = false;
+        //double nextTime = currentState().time;
+        
         if (currStateIndex >= 0) {
             isTimedStep = enabled && isTimedSimulation() && currentState().isTangible();
             // Check if the time step panel is effectively used by some transition.
             if (currStateIndex >= 0 && currentState().isTangible()) {
                 for (FirableWithBindings<Transition> fwb : currentState().enabledTransitions) {
-                    if (fwb.firable.isTimed() && currentState().countBindingsWithLimitedTimeSupport(fwb.firable, false) == 0) {
+                    if (fwb.firable.isTimed()) {
+//                        if (currentState().countBindingsWithLimitedTimeSupport(fwb.firable, false) == 0) {
                         // There is some enabled transition that depends on the time panel
-                        hasExpTransition = true;
+                        hasEnabledTimedTransition = true;
                         break;
                     }
                 }
-                if (!hasExpTransition) {
+                if (!hasEnabledTimedTransition) {
                     isTimedStep = false;
                 }
             }
@@ -440,10 +444,10 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
 //        jButtonSwitchToUntimed.setEnabled(enabled);
         if (isTimedSimulation() && currStateIndex >= 0) {
             if (enabled) {
-                if (currentState().isTangible() && hasExpTransition) {
+                if (currentState().isTangible() && hasEnabledTimedTransition) {
                     setRandomTimeStep();
                 }
-                else if (!hasExpTransition) {
+                else if (!hasEnabledTimedTransition) {
                     textFieldTimeStep.setText(" -");
                 }
                 else if (currentState().isVanishing()) {
@@ -583,7 +587,7 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
         // Flow transitions do not fire with a mouse click.
         if (fwb.firable.isFiringFlow())
             return;
-        assert fwb != null && fwb.bindings.size() >= 1;
+        assert fwb.bindings.size() >= 1;
         if (fwb.bindings.size() == 1) {
             // Just one single choice, do not open the popup menu.
             startNodeFiring(fwb.firable, fwb.bindings.iterator().next());
@@ -752,8 +756,8 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
     }
 
     @Override
-    public JComponent getToolbar() {
-        return jToolBarPlayCommands;
+    public JComponent[] getToolbars() {
+        return new JComponent[]{jToolBarPlayCommands};
     }
 
     @Override
@@ -941,6 +945,7 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
 
+        jToolBarPlayCommands.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "Commands", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jToolBarPlayCommands.setFloatable(false);
         jToolBarPlayCommands.setRollover(true);
 

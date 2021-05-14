@@ -173,6 +173,10 @@ public class ResourceFactory {
         return loadIcon32("bound");
     }
 
+    public ImageIcon getBrick16() { // generic icon
+        return loadIcon16("brick");
+    }
+    
     public ImageIcon getBroom32() {
         return loadIcon32("broom");
     }
@@ -368,6 +372,10 @@ public class ResourceFactory {
     public ImageIcon getLockOpen16() {
         return loadIcon16("lock_open");
     }
+    
+    public ImageIcon getMakeEditable32() {
+        return loadIcon32("make_editable");
+    }
 
     public ImageIcon getMeasure16() {
         return loadIcon16("measure");
@@ -404,6 +412,10 @@ public class ResourceFactory {
     public ImageIcon getMultiBindings32() {
         return loadIcon32("multi_bindings");
     }
+    
+    public ImageIcon getMultiNetAdd24() {
+        return loadIcon24("multinet_add");
+    }
 
     public ImageIcon getNewDta24() {
         return loadIcon24("new_dta");
@@ -415,6 +427,14 @@ public class ResourceFactory {
     
     public ImageIcon getNewMultiNet24() {
         return loadIcon24("new_multinet");
+    }
+    
+    public ImageIcon getNewAlgebraNet24() {
+        return loadIcon24("new_algebranet");
+    }
+    
+    public ImageIcon getNewUnfoldingNet24() {
+        return loadIcon24("new_unfoldingnet");
     }
     
     public ImageIcon getNewNet24() {
@@ -436,7 +456,7 @@ public class ResourceFactory {
     public ImageIcon getOk16() {
         return loadIcon16("ok");
     }
-
+    
     public ImageIcon getOpen16() {
         return loadIcon16("open");
     }
@@ -464,7 +484,15 @@ public class ResourceFactory {
     public ImageIcon getPageMultiNet16() {
         return loadIcon16("page_multinet");
     }
-
+    
+    public ImageIcon getPageAlgebra16() {
+        return loadIcon16("page_algebra");
+    }
+    
+    public ImageIcon getPageUnfolding16() {
+        return loadIcon16("page_unfolding");
+    }
+    
     public ImageIcon getPageNet16() {
         return loadIcon16("page_net");
     }
@@ -503,6 +531,23 @@ public class ResourceFactory {
     public ImageIcon getPinv32() {
         return loadIcon32("pinv");
     }
+    
+    public ImageIcon getPinv_N32() {
+        return loadIcon32("pinv_N");
+    }
+    
+    public ImageIcon getPinv_Z32() {
+        return loadIcon32("pinv_Z");
+    }
+    
+    public ImageIcon getPinv_B32() {
+        return loadIcon32("pinv_B");
+    }
+    
+    public ImageIcon getPlanarize32() {
+        return loadIcon32("planarize");
+    }
+
 
     public ImageIcon getPlay16() {
         return loadIcon16("play");
@@ -575,6 +620,14 @@ public class ResourceFactory {
     public ImageIcon getRuler24() {
         return loadIcon24("ruler");
     }
+    
+    public ImageIcon getShowMatrices32() {
+        return loadIcon32("show_matrices");
+    }
+    
+    public ImageIcon getSiphon() {
+        return loadIcon32("siphon");
+    }
 
     public ImageIcon getSnapToGrid24() {
         return loadIcon24("snap_to_grid");
@@ -642,6 +695,22 @@ public class ResourceFactory {
 
     public ImageIcon getTinv32() {
         return loadIcon32("tinv");
+    }
+    
+    public ImageIcon getTinv_N32() {
+        return loadIcon32("tinv_N");
+    }
+    
+    public ImageIcon getTinv_Z32() {
+        return loadIcon32("tinv_Z");
+    }
+    
+    public ImageIcon getTinv_B32() {
+        return loadIcon32("tinv_B");
+    }
+    
+    public ImageIcon getTrap() {
+        return loadIcon32("trap");
     }
     
     public ImageIcon getCheckBoxSelected16() {

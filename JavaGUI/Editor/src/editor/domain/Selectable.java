@@ -5,7 +5,7 @@
 package editor.domain;
 
 import java.awt.geom.Rectangle2D;
-import javax.swing.JComponent;
+import java.io.Serializable;
 
 /** Objects in the graph editor that can be selected
  *
@@ -51,26 +51,35 @@ public interface Selectable extends HitTestable, PlaceableObject {
         @Override public boolean isLocked() { return false; }
     }
     
-    public class SwingSelectable extends BaseSelectable {
-        JComponent component;
-        String compName;
-
-        public SwingSelectable(JComponent component, String compName) {
-            this.component = component;
-            this.compName = compName;
-        }
+    public class DummyNamedSelectable extends DummySelectable implements Serializable {
+        String name;
         
-        @Override
-        public boolean isSelected() {
-            return component.hasFocus();
-        }
-
-        @Override
-        public void setSelected(boolean s) {
-            if (s)
-                component.requestFocusInWindow();
-        }
-        @Override public String toString() { return compName==null ? "---" : compName; }
-        @Override public boolean isLocked() { return false; }
+        public DummyNamedSelectable(String name) { this.name = name; }
+        @Override public String toString() { return name; }
     }
+    
+    // Beware: this class will be serialized: therefore it cannot directly contain
+    // the Swing object reference
+//    public class SwingSelectable extends BaseSelectable {
+//        JComponent component;
+//        String compName;
+//
+//        public SwingSelectable(JComponent component, String compName) {
+//            this.component = component;
+//            this.compName = compName;
+//        }
+//        
+//        @Override
+//        public boolean isSelected() {
+//            return component.hasFocus();
+//        }
+//
+//        @Override
+//        public void setSelected(boolean s) {
+//            if (s)
+//                component.requestFocusInWindow();
+//        }
+//        @Override public String toString() { return compName==null ? "---" : compName; }
+//        @Override public boolean isLocked() { return false; }
+//    }
 }

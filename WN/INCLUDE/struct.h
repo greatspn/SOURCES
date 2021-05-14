@@ -39,7 +39,7 @@ struct PRED {
 typedef struct PRED *Pred_p;
 /***** BUFFER PER LA LETTURA DEL DOMINIO DI TRANSIZIONE *****/
 struct FUNBUF {
-    char fun_name[MAX_TAG_SIZE];
+    char *p_fun_name; //[MAX_TAG_SIZE];
     int cclass; /* class is a reserved C++ keyword */
     int occ_num;
 } ;

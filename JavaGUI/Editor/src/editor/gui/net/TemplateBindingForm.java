@@ -5,7 +5,6 @@
 package editor.gui.net;
 
 import static common.Util.UIscaleFactor;
-import editor.Main;
 import editor.domain.EditableValue;
 import editor.domain.Expr;
 import editor.domain.NetPage;
@@ -19,10 +18,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map.Entry;
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.EventListenerList;
@@ -37,7 +36,7 @@ public class TemplateBindingForm extends javax.swing.JPanel {
     private TemplateBinding tbind;
     private ExprTextField[] allTextFields;
         
-    private static final Color BKGND_DISABLED = new Color(240, 240, 240);
+//    private static final Color BKGND_DISABLED = new Color(240, 240, 240);
     
     /**
      * Creates new form TemplateBindingForm
@@ -45,7 +44,7 @@ public class TemplateBindingForm extends javax.swing.JPanel {
     public TemplateBindingForm() {
         initComponents();
         setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY));
-        setBackground(Color.WHITE);
+        setBackground(editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_COLOR);
     }
 
     @Override
@@ -55,7 +54,8 @@ public class TemplateBindingForm extends javax.swing.JPanel {
         for (ExprTextField etf : allTextFields) {
             etf.setEnabled(enabled);
         }
-        setBackground(enabled ? Color.WHITE : BKGND_DISABLED);
+        setBackground(enabled ? editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_COLOR : 
+                    editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_DISABLED_COLOR);
     }
     
     static final int XDIST = 3, YDIST = 2;
@@ -77,8 +77,12 @@ public class TemplateBindingForm extends javax.swing.JPanel {
         removeAll();
         
         // Make the table header
-        add(new JLabel("Name", SwingConstants.CENTER), getGBCNormal(0, 0, YDIST));
-        add(new JLabel("Assigned value:", SwingConstants.LEFT), getGBCHorixFill(2, 0, YDIST));
+        JLabel nameLabel = new JLabel("Name", SwingConstants.CENTER);
+        JLabel assignedValueLabel = new JLabel("Assigned value:", SwingConstants.LEFT);
+        nameLabel.setForeground(editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR);
+        assignedValueLabel.setForeground(editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR);
+        add(nameLabel, getGBCNormal(0, 0, YDIST));
+        add(assignedValueLabel, getGBCHorixFill(2, 0, YDIST));
         
         // Construct the editing table
         boolean allOk = true;
@@ -88,13 +92,17 @@ public class TemplateBindingForm extends javax.swing.JPanel {
             TemplateVariable tvar = (TemplateVariable)page.getNodeByUniqueName(entry.getKey());
             LatexFormula lf = tvar.getTemplateVariableLatexFormula();
             JLabel varLabel = new JLabel(lf.getAsIcon(UIscaleFactor), SwingConstants.RIGHT);
+            varLabel.setForeground(editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR);
             JLabel okLabel = new JLabel(ResourceFactory.getInstance().getExclamation16());
+            okLabel.setForeground(editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR);
             ExprTextField textField = new ExprTextField(entry.getValue().getEditableValue(), evalPage, okLabel);
             boolean startValid = textField.isValueValid();
             allTextFields[row-1] = textField;
+            JLabel equalLabel = new JLabel(" = ");
+            equalLabel.setForeground(editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR);
             
             add(varLabel, getGBCNormal(0, row, 0));
-            add(new JLabel(" = "), getGBCNormal(1, row, 0));
+            add(equalLabel, getGBCNormal(1, row, 0));
             add(textField, getGBCHorixFill(2, row, 0));
             add(okLabel, getGBCNormal(3, row, 0));
             
@@ -159,7 +167,7 @@ public class TemplateBindingForm extends javax.swing.JPanel {
             editable.setValue(null, page, getText());
             lastIsValid = editable.isValueValid(null, page, editable.getValue());
             
-            setForeground(lastIsValid ? Color.BLACK : Color.RED);
+            setForeground(lastIsValid ? UIManager.getColor("TextField.foreground") : Color.RED);
             okNoLabel.setIcon(lastIsValid ? ResourceFactory.getInstance().getOk16() : 
                                             ResourceFactory.getInstance().getExclamation16());
             fireAction(null);

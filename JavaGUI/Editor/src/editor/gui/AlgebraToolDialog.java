@@ -7,6 +7,7 @@
 package editor.gui;
 
 import common.EnabledJComboBoxRenderer;
+import common.UnixPrintWriter;
 import common.Util;
 import editor.Main;
 import editor.domain.Node;
@@ -18,6 +19,8 @@ import editor.domain.elements.Place;
 import editor.domain.elements.Transition;
 import editor.domain.io.GreatSpnFormat;
 import editor.domain.measures.SolverInvokator;
+import static editor.domain.measures.SolverInvokator.cmdToString;
+import static editor.domain.measures.SolverInvokator.startOfCommand;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -36,6 +39,13 @@ import javax.swing.DefaultListModel;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
+import static editor.domain.measures.SolverInvokator.makeFilenameForCmd;
+import editor.domain.unfolding.Algebra;
+import editor.domain.unfolding.MergePolicy;
+import java.awt.Dimension;
+import java.awt.geom.Rectangle2D;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 /**
  *
@@ -90,6 +100,8 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
     public static final String KEY_TRANS_TAGS = "algebra.transition_tags";
     public static final String KEY_PLACEMENT = "algebra.placement";
     public static final String KEY_BROKEN_EDGES = "algebra.broken_edges";
+    public static final String KEY_COMBINE_TAGS = "algebra.combine_tags";
+    public static final String KEY_JAVA_IMPL = "algebra.use_java_impl";
     public static final String KEY_DX_SHIFT = "algebra.dx";
     public static final String KEY_DY_SHIFT = "algebra.dy";
 
@@ -106,6 +118,8 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
             String propTransTags = Util.getPreferences().get(KEY_TRANS_TAGS, "");
             int propPlacement = Util.getPreferences().getInt(KEY_PLACEMENT, 1);
             boolean propBrokenEdges = Util.getPreferences().getBoolean(KEY_BROKEN_EDGES, false);
+            boolean propCombineTags = Util.getPreferences().getBoolean(KEY_COMBINE_TAGS, false);
+            boolean propJavaImpl = Util.getPreferences().getBoolean(KEY_JAVA_IMPL, false);
             int propDxShift = Util.getPreferences().getInt(KEY_DX_SHIFT, 5);
             int propDyShift = Util.getPreferences().getInt(KEY_DY_SHIFT, 5);
             
@@ -139,6 +153,11 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
             textFieldPlaceTags.setText(propPlaceTags);
             textFieldTransitionTags.setText(propTransTags);
             checkBoxBrokenEdges.setSelected(propBrokenEdges);
+            checkBoxCombineTags.setSelected(propCombineTags);
+            checkBoxNewImplementation.setSelected(propJavaImpl);
+//            checkBoxNewImplementation.setVisible(Main.isDeveloperMachine());
+//            if (Main.isDeveloperMachine())
+//                System.out.println("\nDEVELOPER SWITCH ON!!\n");
             switch (propPlacement) {
                 case 1:  radioHorizontal.setSelected(true); break;
                 case 2:  radioVertical.setSelected(true); break;
@@ -168,11 +187,12 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                     break; // user pressed the 'Cancel' button
 
                 try {
-                    StringBuilder cmd = new StringBuilder();
-                    cmd.append(SolverInvokator.useGreatSPN_binary("algebra")).append(" ");
+                    ArrayList<String> cmd = startOfCommand();
+                    cmd.add(SolverInvokator.useGreatSPN_binary("algebra"));
                     String transitionTags = "", placeTags = "";
 
                     // Read properties from the dialog controls
+                    boolean onPl = false, onTr = false;
                     if (radioPlaceAndTransitionSuperpos.isSelected())
                         propOperator = 'b';
                     if (radioPlaceSuperpos.isSelected())
@@ -183,93 +203,150 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                     if (propOperator == 'p' || propOperator == 'b') {
                         propPlaceTags = textFieldPlaceTags.getText();
                         placeTags = "place={"+propPlaceTags.replace(",", "|").replace(" ", "") + "}\n";
+                        onPl = true;
                     }
                     if (propOperator == 't' || propOperator == 'b') {
                         propTransTags = textFieldTransitionTags.getText();
                         transitionTags = "transition={"+propTransTags.replace(",", "|").replace(" ", "") + "}\n";
+                        onTr = true;
                     }
                     propBrokenEdges = checkBoxBrokenEdges.isSelected();
+                    propCombineTags = checkBoxCombineTags.isSelected();
+                    propJavaImpl = checkBoxNewImplementation.isSelected();
 
                     if (radioHorizontal.isSelected())   propPlacement = 1;
                     if (radioVertical.isSelected())   propPlacement = 2;
                     if (radioShift.isSelected())   propPlacement = 3;
                     
-                    // Save the two nets and the restfile into temporary files
-                    File tmpName1 = File.createTempFile("net1", "");
-                    File tmpNet1 = new File(tmpName1.getAbsolutePath()+".net");
-                    File tmpDef1 = new File(tmpName1.getAbsolutePath()+".def");
-                    File tmpName2 = File.createTempFile("net2", "");
-                    File tmpNet2 = new File(tmpName2.getAbsolutePath()+".net");
-                    File tmpDef2 = new File(tmpName2.getAbsolutePath()+".def");
+                    GspnPage netComp;
                     GspnPage net2 = listOfNets2.get(comboNet2Name.getSelectedIndex());
-                    GreatSpnFormat.exportGspn(net1, tmpNet1, tmpDef1, false);
-                    GreatSpnFormat.exportGspn(net2, tmpNet2, tmpDef2, false);
-
-                    File tmpRestfile = File.createTempFile("tags", ".restfile");
-                    PrintWriter restFileOut = new PrintWriter(new BufferedWriter(new FileWriter(tmpRestfile)));
-                    restFileOut.print(transitionTags);
-                    restFileOut.print(placeTags);
-                    restFileOut.close();
                     
-                    File tmpResult = File.createTempFile("netResult", "");
-                    File tmpNetRes = new File(tmpResult.getAbsolutePath()+".net");
-                    File tmpDefRes = new File(tmpResult.getAbsolutePath()+".def");
-                    
-                    // Compose the algebra command
-                    if (!propBrokenEdges)
-                        cmd.append("-no_ba ");
-                    cmd.append(tmpName1.getAbsolutePath()).append(" ");
-                    cmd.append(tmpName2.getAbsolutePath()).append(" ");
-                    cmd.append(propOperator).append(" ");
-                    cmd.append(tmpRestfile.getAbsolutePath()).append(" ");
-                    cmd.append(tmpResult.getAbsolutePath()).append(" ");
-                    cmd.append(propPlacement).append(" ");
-                    if (propPlacement == 3) {
-                        propDxShift = Integer.parseInt(textFieldDxShift.getText());
-                        propDyShift = Integer.parseInt(textFieldDyShift.getText());
-                        cmd.append(propDxShift).append(" ").append(propDyShift).append(" ");
-                    }
-//                    System.out.println("NET1: "+tmpName1.getAbsolutePath());
-//                    System.out.println("NET2: "+tmpName2.getAbsolutePath());
-//                    System.out.println("REST: "+tmpRestfile.getAbsolutePath());
-//                    System.out.println("RESULT: "+tmpResult.getAbsolutePath());
-//                    System.out.println("CMD: "+cmd.toString());
-                    
-                    // Run the tool
-                    String[] envp = SolverInvokator.prepareRuntimeEnvironmentVars();
-                    Process pr = Runtime.getRuntime().exec(cmd.toString(), envp);
-                    int retVal = pr.waitFor();
-                    if (retVal != 0)
-                        throw new IllegalStateException("algebra returned an exit code of "+retVal);
-                    
-                    // Read back the composed GSPN
-                    GspnPage netComp = new GspnPage();
-                    netComp.setPageName(net1.getPageName()+"+"+net2.getPageName());
-                    GreatSpnFormat.importGspn(netComp, tmpNetRes, tmpDefRes);
-                    netComp.viewProfile = (ViewProfile)Util.deepCopy(net1.viewProfile);
-                    
-                    // Make all place/transition names unique
-                    Set<String> names = new HashSet<>();
-                    for (Node node : netComp.nodes) {
-                        if (names.contains(node.getUniqueName())) {
-                            int i=0;
-                            String newName;
-                            do {
-                                newName = node.getUniqueName() + "_" + (i++);
-                            } while (names.contains(newName));
-                            node.setUniqueName(newName);
+                    if (propJavaImpl) {
+                        // New Java-based Algebra implementation
+                        int dx2shift = 0, dy2shift = 0;
+                        Rectangle2D pageBounds1 = net1.getPageBounds();
+                        switch (propPlacement) {
+                            case 1: // horizontal
+                                dx2shift = (int)pageBounds1.getWidth() + 5;
+                                break;
+                            case 2: // vertical
+                                dy2shift = (int)pageBounds1.getHeight() + 5;
+                                break;
+                            case 3: // user-specified
+                                dx2shift = Integer.parseInt(textFieldDxShift.getText());
+                                dy2shift = Integer.parseInt(textFieldDyShift.getText());
+                                break;
                         }
-                        names.add(node.getUniqueName());
+                        
+                        Algebra a = new Algebra(MergePolicy.BY_TAG, net1, net2, 
+                                        onTr ? propTransTags.replace(" ", "").split(",") : null, 
+                                        onPl ? propPlaceTags.replace(" ", "").split(",") : null, 
+                                        dx2shift, dy2shift, propBrokenEdges, false);
+                        a.compose();
+                        netComp = a.result;
+                        netComp.setPageName(net1.getPageName()+"+"+net2.getPageName());
+                        netComp.viewProfile = (ViewProfile)Util.deepCopy(net1.viewProfile);
+                        
+                        if (!a.warnings.isEmpty()) {
+                            StringBuilder sb = new StringBuilder();
+                            sb.append("Some object compositions generated attribute conflicts:\n");
+                            for (String w : a.warnings)
+                                sb.append(w).append('\n');
+                            
+                            JTextArea textArea = new JTextArea(sb.toString());
+                            textArea.setLineWrap(true);  
+                            textArea.setWrapStyleWord(true); 
+                            textArea.setEditable(false);
+                            JScrollPane scrollPane = new JScrollPane(textArea);  
+                            scrollPane.setPreferredSize(new Dimension(500, 300));                            
+                            JOptionPane.showMessageDialog(getParent(), scrollPane,
+                                "Algebra Output", JOptionPane.INFORMATION_MESSAGE);
+                        }
                     }
-                    
-                    // Clear intermediate temporary files.
-                    tmpNet1.delete();
-                    tmpDef1.delete();
-                    tmpNet2.delete();
-                    tmpDef2.delete();
-                    tmpRestfile.delete();
-                    tmpNetRes.delete();
-                    tmpDefRes.delete();
+                    else {
+                        // Call the algebra tool.
+                        // Save the two nets and the restfile into temporary files
+                        File tmpName1 = File.createTempFile("net1", "");
+                        File tmpNet1 = new File(tmpName1.getAbsolutePath()+".net");
+                        File tmpDef1 = new File(tmpName1.getAbsolutePath()+".def");
+                        File tmpName2 = File.createTempFile("net2", "");
+                        File tmpNet2 = new File(tmpName2.getAbsolutePath()+".net");
+                        File tmpDef2 = new File(tmpName2.getAbsolutePath()+".def");
+                        GreatSpnFormat.exportGspn(net1, tmpNet1, tmpDef1, false, false);
+                        GreatSpnFormat.exportGspn(net2, tmpNet2, tmpDef2, false, false);
+
+                        File tmpRestfile = File.createTempFile("tags", ".restfile");
+                        PrintWriter restFileOut = new UnixPrintWriter(new BufferedWriter(new FileWriter(tmpRestfile)));
+                        restFileOut.print(transitionTags);
+                        restFileOut.print(placeTags);
+                        restFileOut.close();
+                        System.out.print(transitionTags);
+                        System.out.println(placeTags);
+
+                        File tmpResult = File.createTempFile("netResult", "");
+                        File tmpNetRes = new File(tmpResult.getAbsolutePath()+".net");
+                        File tmpDefRes = new File(tmpResult.getAbsolutePath()+".def");
+
+                        // Compose the algebra command
+                        if (!propBrokenEdges)
+                            cmd.add("-no_ba");
+                        if (propCombineTags)
+                            cmd.add("-g");
+                        cmd.add(makeFilenameForCmd(tmpName1));
+                        cmd.add(makeFilenameForCmd(tmpName2));
+                        cmd.add(""+propOperator);
+                        cmd.add(makeFilenameForCmd(tmpRestfile));
+                        cmd.add(makeFilenameForCmd(tmpResult));
+                        cmd.add(""+propPlacement);
+                        if (propPlacement == 3) {
+                            propDxShift = Integer.parseInt(textFieldDxShift.getText());
+                            propDyShift = Integer.parseInt(textFieldDyShift.getText());
+                            cmd.add(""+propDxShift);
+                            cmd.add(""+propDyShift);
+                        }
+    //                    System.out.println("NET1: "+tmpName1.getAbsolutePath());
+    //                    System.out.println("NET2: "+tmpName2.getAbsolutePath());
+    //                    System.out.println("REST: "+tmpRestfile.getAbsolutePath());
+    //                    System.out.println("RESULT: "+tmpResult.getAbsolutePath());
+    //                    System.out.println("CMD: "+cmd.toString());
+
+                        // Run the tool
+                        String[] envp = SolverInvokator.prepareRuntimeEnvironmentVars();
+                        System.out.println("cmd = " + cmdToString(cmd));
+                        Process pr = Runtime.getRuntime().exec(cmd.toArray(new String[cmd.size()]), envp);
+                        int retVal = pr.waitFor();
+                        if (retVal != 0)
+                            throw new IllegalStateException("algebra returned an exit code of "+retVal);
+
+                        // Read back the composed GSPN
+                        netComp = new GspnPage();
+                        netComp.setPageName(net1.getPageName()+"+"+net2.getPageName());
+                        GreatSpnFormat.importGspn(netComp, tmpNetRes, tmpDefRes);
+                        netComp.viewProfile = (ViewProfile)Util.deepCopy(net1.viewProfile);
+
+                        // Make all place/transition names unique
+                        Set<String> names = new HashSet<>();
+                        for (Node node : netComp.nodes) {
+                            if (names.contains(node.getUniqueName())) {
+                                int i=0;
+                                String newName;
+                                do {
+                                    newName = node.getUniqueName() + "_" + (i++);
+                                } while (names.contains(newName));
+                                node.setUniqueName(newName);
+                            }
+                            names.add(node.getUniqueName());
+                        }
+
+                        // Clear intermediate temporary files.
+                        tmpNet1.delete();
+                        tmpDef1.delete();
+                        tmpNet2.delete();
+                        tmpDef2.delete();
+                        tmpRestfile.delete();
+                        tmpNetRes.delete();
+                        tmpDefRes.delete();
+                    } // end of algebra tool run
 
                     // Save preferences back
                     Util.getPreferences().put(KEY_NET2, comboNet2Name.getSelectedItem().toString());
@@ -277,6 +354,8 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                     Util.getPreferences().put(KEY_PLACE_TAGS, propPlaceTags);
                     Util.getPreferences().put(KEY_TRANS_TAGS, propTransTags);
                     Util.getPreferences().putBoolean(KEY_BROKEN_EDGES, propBrokenEdges);
+                    Util.getPreferences().putBoolean(KEY_COMBINE_TAGS, propCombineTags);
+                    Util.getPreferences().putBoolean(KEY_JAVA_IMPL, propJavaImpl);
                     Util.getPreferences().putInt(KEY_PLACEMENT, propPlacement);
                     Util.getPreferences().putInt(KEY_DX_SHIFT, propDxShift);
                     Util.getPreferences().putInt(KEY_DY_SHIFT, propDyShift);
@@ -286,7 +365,7 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                     break;
                 }
                 catch (Exception e) {
-                    JOptionPane.showMessageDialog(this, 
+                    JOptionPane.showMessageDialog(getParent(), 
                             "Could not complete the operation:\n"+e.getMessage(), 
                             "Algebra error", JOptionPane.ERROR_MESSAGE);
                     Main.logException(e, true);
@@ -403,7 +482,7 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
         jPanel1 = new javax.swing.JPanel();
         labelNet1Name = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        comboNet2Name = new javax.swing.JComboBox<String>();
+        comboNet2Name = new javax.swing.JComboBox<>();
         jPanel2 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         textFieldPlaceTags = new javax.swing.JTextField();
@@ -412,9 +491,11 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
         radioPlaceSuperpos = new javax.swing.JRadioButton();
         radioTransitionSuperpos = new javax.swing.JRadioButton();
         radioPlaceAndTransitionSuperpos = new javax.swing.JRadioButton();
+        checkBoxCombineTags = new javax.swing.JCheckBox();
+        checkBoxNewImplementation = new javax.swing.JCheckBox();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        listOfMessages = new javax.swing.JList<String>();
+        listOfMessages = new javax.swing.JList<>();
         jPanel4 = new javax.swing.JPanel();
         radioHorizontal = new javax.swing.JRadioButton();
         jLabel5 = new javax.swing.JLabel();
@@ -503,6 +584,10 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
             }
         });
 
+        checkBoxCombineTags.setText("Final net combines all tags from operands (EXPERIMENTAL)");
+
+        checkBoxNewImplementation.setText("Use new Java-based implementation (EXPERIMENTAL)");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -512,6 +597,7 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(textFieldPlaceTags)
                     .addComponent(textFieldTransitionTags)
+                    .addComponent(checkBoxCombineTags, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
@@ -519,7 +605,8 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                             .addComponent(radioPlaceSuperpos)
                             .addComponent(radioTransitionSuperpos)
                             .addComponent(radioPlaceAndTransitionSuperpos))
-                        .addGap(0, 2, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(checkBoxNewImplementation, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -539,7 +626,11 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(textFieldTransitionTags, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(checkBoxCombineTags)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(checkBoxNewImplementation)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Messages"));
@@ -793,6 +884,8 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
     private javax.swing.ButtonGroup buttonGroupPlacement;
     private javax.swing.JButton buttonRun;
     private javax.swing.JCheckBox checkBoxBrokenEdges;
+    private javax.swing.JCheckBox checkBoxCombineTags;
+    private javax.swing.JCheckBox checkBoxNewImplementation;
     private javax.swing.JComboBox<String> comboNet2Name;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

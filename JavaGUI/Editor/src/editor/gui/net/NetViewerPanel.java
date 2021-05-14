@@ -19,7 +19,6 @@ import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.TemplateBinding;
 import editor.gui.MainWindowInterface;
 import editor.gui.NoOpException;
-import editor.gui.UndoableCommand;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -70,7 +69,7 @@ public abstract class NetViewerPanel extends JPanel implements Scrollable {
         wrapLayout.setAlignOnBaseline(true);
         setLayout(wrapLayout);
         setFocusable(false);
-        setOpaque(false);
+//        setOpaque(false);
         scrollPane.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent ce) {
@@ -265,41 +264,41 @@ public abstract class NetViewerPanel extends JPanel implements Scrollable {
     
     public void zoomChanged(int newZoomLevel) {
 //        System.out.println("zoomChanged "+newZoomLevel+"   old="+commonZoomLevel);
+        if (viewProfile == null)
+            return;
         if (newZoomLevel != viewProfile.zoom) {
             viewProfile.zoom = newZoomLevel;
             //allNetsPanel.revalidate();
             for (JNetPanel panel : netPanels)
-                panel.resizeToAccomodate();;
+                panel.resizeToAccomodate();
         }
         setSize(getPreferredSize());
     }
     
     public void saveBindingParameters(MainWindowInterface mainInterface, final GspnPage origGspn, final DtaPage origDta) {
         // Save the template bindings
-        mainInterface.executeUndoableCommand("Update template parameter assignments.", new UndoableCommand() {
-            @Override public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                boolean changed = false;
-                if (origGspn != null && getGspnBinding() != null) {
-                    for (Entry<String, Expr> entry : getGspnBinding().binding.entrySet()) {
-                        TemplateVariable tvar = (TemplateVariable)origGspn.getNodeByUniqueName(entry.getKey());
-                        if (!tvar.getLastBindingExpr().getExpr().equals(entry.getValue().getExpr())) {
-                            tvar.getLastBindingExpr().setExpr(entry.getValue().getExpr());
-                            changed = true;
-                        }
+        mainInterface.executeUndoableCommand("Update template parameter assignments.", (ProjectData proj, ProjectPage page) -> {
+            boolean changed = false;
+            if (origGspn != null && getGspnBinding() != null) {
+                for (Entry<String, Expr> entry : getGspnBinding().binding.entrySet()) {
+                    TemplateVariable tvar = (TemplateVariable)origGspn.getNodeByUniqueName(entry.getKey());
+                    if (!tvar.getLastBindingExpr().getExpr().equals(entry.getValue().getExpr())) {
+                        tvar.getLastBindingExpr().setExpr(entry.getValue().getExpr());
+                        changed = true;
                     }
                 }
-                if (origDta != null && getDtaBinding() != null) {
-                    for (Entry<String, Expr> entry : getDtaBinding().binding.entrySet()) {
-                        TemplateVariable tvar = (TemplateVariable)origDta.getNodeByUniqueName(entry.getKey());
-                        if (!tvar.getLastBindingExpr().getExpr().equals(entry.getValue().getExpr())) {
-                            tvar.getLastBindingExpr().setExpr(entry.getValue().getExpr());
-                            changed = true;
-                        }
-                    }
-                }
-                if (!changed)
-                    throw new NoOpException();
             }
+            if (origDta != null && getDtaBinding() != null) {
+                for (Entry<String, Expr> entry : getDtaBinding().binding.entrySet()) {
+                    TemplateVariable tvar = (TemplateVariable)origDta.getNodeByUniqueName(entry.getKey());
+                    if (!tvar.getLastBindingExpr().getExpr().equals(entry.getValue().getExpr())) {
+                        tvar.getLastBindingExpr().setExpr(entry.getValue().getExpr());
+                        changed = true;
+                    }
+                }
+            }
+            if (!changed)
+                throw new NoOpException();
         });
     }
     
@@ -346,8 +345,9 @@ public abstract class NetViewerPanel extends JPanel implements Scrollable {
             setLayout(new BorderLayout());
             
             title = new JLabel(panel.netName, panel.net.getPageIcon(), SwingConstants.LEFT);
-            title.setBackground(TITLE_GRAY_BKGND);
-            title.setBorder(BorderFactory.createMatteBorder(2, 10, 2, 2, TITLE_GRAY_BKGND));
+            title.setBackground(editor.gui.net.NetEditorPanel.PAGE_TITLE_BACKGROUND);
+            title.setForeground(editor.gui.net.NetEditorPanel.PAGE_TITLE_FOREGROUND);
+            title.setBorder(BorderFactory.createMatteBorder(2, 10, 2, 2, editor.gui.net.NetEditorPanel.PAGE_TITLE_BACKGROUND));
             title.setOpaque(true);
             
             header = new JPanel();
@@ -373,9 +373,6 @@ public abstract class NetViewerPanel extends JPanel implements Scrollable {
     
     public abstract Color getNetBackground(String overlayMsg);
     
-    public final Color VERY_LIGHT_GRAY_BKGND = new Color(240, 240, 240);
-    public final Color TITLE_GRAY_BKGND = new Color(224, 224, 230);
-    
     public class JNetPanel extends JPanel {
         NetPage net;
         String netName;
@@ -385,7 +382,7 @@ public abstract class NetViewerPanel extends JPanel implements Scrollable {
         public JNetPanel(NetPage _net, String _netName) {
             this.net = _net;
             this.netName = _netName;
-            setBackground(Color.WHITE);
+            setBackground(Color.BLUE);
             setFocusable(true);
             setOpaque(true);
             pageBounds = net.getPageBounds();
@@ -416,9 +413,14 @@ public abstract class NetViewerPanel extends JPanel implements Scrollable {
             assert net != null;
             
             String overlayMsg = getOverlayMessage(net);
-            setBackground(getNetBackground(overlayMsg));
+//            setBackground(getNetBackground(overlayMsg));
 //            setBackground(isEnabled() && overlayMsg==null ? Color.WHITE : VERY_LIGHT_GRAY_BKGND);
-            super.paintComponent(g); 
+//            super.paintComponent(g); 
+            Color bkgndColor = getNetBackground(overlayMsg);
+            Color oldClr = g.getColor();
+            g.setColor(bkgndColor);
+            g.fillRect(0, 0, getWidth(), getHeight());
+            g.setColor(oldClr);
             
             // Render the page content
             Graphics2D g2 = (Graphics2D)g;

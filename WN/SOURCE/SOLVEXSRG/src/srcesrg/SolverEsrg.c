@@ -9,11 +9,84 @@
 #include "macros.h"
 #include "structSolv.h"
 #include "service.h"
+
 #undef  NORMAL
 
 #define true 1
 #define false 0
 #define MAXSTR 256
+
+#include "../../../../INCLUDE/struct.h"
+#include "../../../../INCLUDE/var_ext.h"
+#include "../../../../INCLUDE/const.h"
+//#include "../../../../INCLUDE/decl.h"
+//#include "../../../../INCLUDE/macros.h"
+//#include "../../../../INCLUDE/fun_ext.h"
+#include "../../../../INCLUDE/ealloc.h"
+
+extern char *emalloc(size_t sz);
+extern FILE *efopen(const char *file, const char *mode);
+extern void *ecalloc(size_t nitm, size_t sz);
+extern Event_p get_new_event(int);
+extern TO_MERGEP *TO_MERGE(int, struct COLORS *);
+extern int  initialize(int  argc,  char **);
+extern void INIT_GLOBAL_VARS();
+extern void STORE_STATIC_CONF(STORE_STATICS_ARRAY *, struct COLORS *);
+extern void GROUPING_ALL_STATICS(TO_MERGEP *, struct COLORS *, int **);
+extern void NEW_SIM_STATIC_CONF(STORE_STATICS_ARRAY *);
+extern void MY_INIT_ALLOC();
+extern void create_canonical_data_structure();
+extern void CHAR_LOAD_COMPACT(unsigned long *);
+extern void POP_STATIC_CONF(STORE_STATICS_ARRAY, struct COLORS **);
+extern void string_to_marking(unsigned long,  unsigned long,  unsigned long);
+extern void GET_EVENTUALITIE_FROM_FILE(int, int);
+extern void COPY_CACHE(int);
+extern void STRING_TO_EVENTUALITIE();
+extern int  X_L_MOINS_1(int, int, int, int);
+extern int  C_L_PLUS_1(int, int, int);
+extern int  X_2(int, int, int, int);
+extern int  X_I_MOINS_1(int, int, int, int);
+extern void NEW_ASYM_MARKING(struct COLORS **, struct NET_MARKING **, int ** **, int ** *, int **,
+                             DECOMP_TO *, STORE_STATICS_ARRAY, int ** **);
+extern void my_en_list(int);
+extern void copy_event(Event_p,  Event_p);
+extern void fire_trans(Event_p);
+extern void SPECIAL_CANISATION();
+extern void STORE_CARD(int ** *, int ** **);
+extern void GET_SYMETRIC_MARKING(struct COLORS **, struct NET_MARKING **, int ** **, int ** *, int **,
+                                 STORE_STATICS_ARRAY, TO_MERGEP *);
+extern void ALL_MY_GROUP(int ** *);
+extern void get_canonical_marking();
+extern void AFTER_CANONISATION(int **, int ** *);
+extern void GET_EVENT_FROM_MARKING(struct COLORS *tabc, int *, int **, int ** *, int **,
+                                   STORE_STATICS_ARRAY, int ** *, TO_MERGEP *);
+extern void INIT_ARRAYS(TO_MERGEP *, int **, int ** *, STORE_STATICS_ARRAY);
+extern void dispose_old_event(Event_p);
+extern void EVENTUALITIE_TO_STRING();
+extern void ADD_EVENTUALITIE_TO_FILE(int);
+extern void MY_CHAR_STORE(unsigned long);
+extern void INIT_4D_MATRIX(MATRIX **);
+extern void INIT_ARRAYS(TO_MERGEP *, int **, int ** *, STORE_STATICS_ARRAY);
+
+extern void write_on_srg(FILE *, int);
+extern void write_ctrs(FILE *);
+extern void store_compact(int, FILE *);
+extern void store_double(double *, FILE *);
+extern void code_marking(void);
+extern int my_strcmp(unsigned long, unsigned long, unsigned long, unsigned long);
+extern unsigned long marking_to_string();
+extern void WRITE_ON_ESRG(FILE *);
+
+extern void compose_name(char  *name,  const char  *path,  const char  *postfix);
+extern int perf_index_parser(FILE* f);
+extern void push_result(Result_p  result_ptr);
+struct Marking;
+struct MarkingStruct;
+extern struct Marking *_seach_event_marking(struct MarkingStruct *tab, int tab_size, char *s_string, int s_size);
+extern int _copy_cache_string(char **new_string);
+extern void _free_event_marking(marking_struct *tab, int tab_size);
+extern void free_mtrx(mtrx *U, unsigned long nb);
+
 
 typedef struct Event {
     unsigned long  len;

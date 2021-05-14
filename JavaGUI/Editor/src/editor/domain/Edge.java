@@ -878,13 +878,19 @@ public abstract class Edge extends SelectableObject
         }
         
         // Highlighted edge (semiflow visualization)
-        if (dh.semiflows != null && dh.semiflows.contains(this)) {
+        if (dh.selectedPTFlow != null && dh.selectedPTFlow.contains(this)) {
             Stroke sk = g.getStroke();
             Color clr = g.getColor();
             Composite comp = g.getComposite();
-            g.setColor(dh.semiflows.getLineColor());
+//            int card;
+//            if (dh.semiflows.getType() == SemiFlows.Type.PLACE_FLOW || 
+//                dh.semiflows.getType() == SemiFlows.Type.PLACE_SEMIFLOW)
+//                card = dh.semiflows.getNodeCardinality(((GspnEdge)this).getConnectedPlace());
+//            else
+//                card = dh.semiflows.getNodeCardinality(((GspnEdge)this).getConnectedTransition());
+            g.setColor(dh.selectedPTFlow.getLineColor(1));
             g.setComposite(ALPHA_75);
-            int phase = NUM_HIGHLIGHT_PHASES - (dh.semiflows.getDashPhase() % NUM_HIGHLIGHT_PHASES);
+            int phase = NUM_HIGHLIGHT_PHASES - (dh.selectedPTFlow.getDashPhase() % NUM_HIGHLIGHT_PHASES);
             g.setStroke(new BasicStroke((float)(2 * DEFAULT_ACTIVITY_AURA_SIZE), BasicStroke.CAP_SQUARE,
                                         BasicStroke.JOIN_ROUND, 10f, HIGHLIGHT_DASHES, 
                                         HIGHLIGHT_DASH_PHASE_MULT * phase));

@@ -224,7 +224,9 @@ void out_error(int  code,  int  pl,  int  tr,  int  cl,  int  sb,  char  *name1,
         break;
 #endif
     case ERROR_MARKING_CODING:
-        fprintf(stdout, "marking of place %s >= 255\n", PLACE_NAME(pl));
+        fprintf(stdout, "reached a marking where place %s has >= 255 tokens. "
+                        "The -m option stores toke count as bytes, and is limited "
+                        "to max 255 tokens per place.\n", PLACE_NAME(pl));
         break;
     case ERROR_UNKNOWN_MARKING_PARAMETER :
         fprintf(stdout, "unknown marking parameter \"%s\" in function of place %s and transition %s\n",

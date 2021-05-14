@@ -3,15 +3,23 @@
 //
 
 #include<string.h>
+#include<stdlib.h>
 
+#include "rescale.h"
 #include "global.h"
 #include "layer.h"
 #include "load.h"
 #include "save.h"
 #include "alloc.h"
 
+int yyparse();
+
 //#define DEBUG
 #define SHIFT 25.0
+
+extern FILE *yyin;
+FILE *fp;
+char *pfname;
 
 // Structure to describe labeling of transition and places
 struct Desc {
@@ -50,11 +58,19 @@ int *MapTr1, *MapTr2;            // Mapping transitions from Operand_i to Result
 int *MapPl1, *MapPl2;            // Mapping places from Operand_i to Result
 int GlCountTr1, GlCountTr2;      // Used to build Map vectors for tr.s
 struct Desc *PDesc;              // structure filled by parser
-char *lexstr;                    // string analysed by parser
+const char *lexstr = "alma|bela"; // string analysed by parser
 char **Translations;             // redefinition info for variables
-int TLength = 0;                   // Number of Translations
+int TLength = 0;                 // Number of Translations
 int Mode;
 int ArcCount;
+
+// Variables given by switches
+int no_ba = 0;                   // To use broken arcs or not
+float rs = 1.0;        // Rescale factor for operands
+
+void yyerror(char *s) {
+    printf("%s\n", s);
+}
 
 // -----------------
 // memory allocation
@@ -244,7 +260,7 @@ float MaxXCoor(struct net_object *N) {
 char *ConcComments(char *c1, char *c2) {
     char *c;
 
-    c = (char *)emalloc(sizeof(char) * (strlen(c1) + strlen(c2) + 1));
+    c = (char *)emalloc(sizeof(char) * (strlen(c1) + strlen(c2) + 10));
     strcpy(c, c1);
     strcat(c, c2);
 
@@ -262,6 +278,7 @@ char *ConcComments(char *c1, char *c2) {
 int FillJoinTr(int **J, struct Desc *dd1, struct Desc *dd2) {
     int i = 0, j, k, l, join, count = 0;
     struct Desc *d1, *d2;
+
 
     d1 = dd1;
     while (d1 != NULL) {
@@ -395,28 +412,43 @@ struct Desc *FillDescTr(struct trans_object *tr, struct group_object *group) {
             gr = gr->next;
         }
     }
+    else {
+        //printf("\n Exponential Transitions:\n");
+    }
     while (t != NULL) {
+        //printf("1\n");
         if (first) {
             d = (struct Desc *) emalloc(sizeof(struct Desc));
             tmp = d;
             first = 0;
         }
         else {
-            tmp->next = (struct Desc *) emalloc(sizeof(struct Desc));
+            //printf("12\n");
+            tmp->next = (struct Desc *)emalloc(sizeof(struct Desc));
+            //printf("13\n");
             tmp = tmp->next;
         }
+        //printf("2\n");
         tmp->nl = 0;
         tmp->labels = NULL;
         tmp->end = NULL;
+        tmp->next = NULL;
 
         // copy whole tag;
         tmp->wholetag = (char *)emalloc(sizeof(char) * (strlen(t->tag) + 1));
         strcpy(tmp->wholetag, t->tag);
 
         // parse whole tag;
-        lexstr = tmp->wholetag;
+
+        fp = fopen(pfname, "w");
+        fprintf(fp, "%s", t->tag);
+        fclose(fp);
+        fp = fopen(pfname, "r");
+        yyin = fp;
+
         PDesc = tmp;
         yyparse();
+        fclose(fp);
 
 #ifdef DEBUG
         printf(" %d. Full Tag: '%s'\n", count, t->tag);
@@ -427,19 +459,28 @@ struct Desc *FillDescTr(struct trans_object *tr, struct group_object *group) {
         if (tmp->end != NULL) printf("'%s'", tmp->end);
         printf("\n");
         count++;
-#endif DEBUG
+#endif // DEBUG
 
+        //printf("Step for next\n");
         if (t->next == NULL && gr != NULL) {
             t = gr->trans;
+            if (t != NULL) {
+                //printf("\n Group %s: %d\n", gr->tag, gr->pri);
+            }
             gr = gr->next;
             while (t == NULL && gr != NULL) {
                 t = gr->trans;
+                if (t != NULL) {
+                    //printf("\n Group %s: %d\n", gr->tag, gr->pri);
+                }
                 gr = gr->next;
             }
         }
         else {
             t = t->next;
         }
+        //printf("Step for next done\n");
+
     }
     if (d != NULL) tmp->next = NULL;
     return d;
@@ -475,9 +516,15 @@ struct Desc *FillDescPl(struct place_object *pl) {
         strcpy(tmp->wholetag, t->tag);
 
         // parse whole tag;
-        lexstr = tmp->wholetag;
+        fp = fopen(pfname, "w");
+        fprintf(fp, "%s", t->tag);
+        fclose(fp);
+        fp = fopen(pfname, "r");
+        yyin = fp;
+
         PDesc = tmp;
         yyparse();
+        fclose(fp);
 
 #ifdef DEBUG
         printf(" %d.  FullTag: %s\n  Tag: '%s'\n  NofLabels: %d, Labels: ", count, tmp->wholetag, tmp->tag, tmp->nl);
@@ -487,7 +534,7 @@ struct Desc *FillDescPl(struct place_object *pl) {
         if (tmp->end != NULL) printf("'%s'", tmp->end);
         printf("\n");
         count++;
-#endif DEBUG
+#endif // DEBUG
 
         t = t->next;
     }
@@ -1171,8 +1218,8 @@ void SimpleArcs(struct trans_object *tr1, struct trans_object *tr2, int op1) {
                         ccp2->x = place->center.x + pospl.x;
                         ccp2->y = place->center.y + pospl.y;
 
-                        if (new->mult > 0)
-                            new->mult *= -1;
+                        if (!no_ba)
+                            if (new->mult > 0) new->mult *= -1;
 
                         ccp2->next = (struct coordinate *) emalloc(sizeof(struct coordinate));
                         ccp2->next->next = NULL;
@@ -1297,7 +1344,7 @@ char **CollectVariables(struct trans_object *tr, int *n, struct net_object *net)
     var = (char *) emalloc(sizeof(char) * 100);
     a = net->arcs;
     while (a != NULL || trpred) {
-        if (!trpred && a->trans == tr && a->color != NULL || trpred && tr->color != NULL) {
+        if ((!trpred && a->trans == tr && a->color != NULL) || (trpred && tr->color != NULL)) {
             if (!trpred) str = a->color;
             if (trpred) str = tr->color;
             pos = 0;
@@ -1331,7 +1378,7 @@ char **CollectVariables(struct trans_object *tr, int *n, struct net_object *net)
                         if (toadd) {
                             //printf("  Variable %s is added to list\n",var);
                             res = (char **)realloc(res, (count + 1) * sizeof(char *));
-                            res[count] = (char *)emalloc(sizeof(char) * strlen(var) + 1);
+                            res[count] = (char *)emalloc(sizeof(char) * (strlen(var) + 1));
                             strcpy(res[count], var);
                             count++;
                         }
@@ -1353,6 +1400,22 @@ char **CollectVariables(struct trans_object *tr, int *n, struct net_object *net)
 }
 
 
+// ================================
+// convert an integer into a string
+// ================================
+void mylltostr(int i, char *s) {
+    int digits, i1, num = i, pos = 0;
+
+    digits = (int)floor(log10((double)i));
+    for (i1 = digits; i1 >= 0; i1--, pos++) {
+        s[pos] = '0';
+        s[pos] += (int)floor((double)num / pow(10, i1));
+        num -= (int)pow(10, i1) * (int)floor((double)num / pow(10, i1));
+    }
+    s[pos] = '\0';
+}
+
+
 // ======================================================
 // Redefine variables in order to avoid unwanted matching
 // ======================================================
@@ -1366,7 +1429,6 @@ char *RedefineVariables(int nofvar, char **varset, char *oldcolor) {
     newvar = (char *)emalloc(sizeof(char) * 100);
     var = (char *)emalloc(sizeof(char) * 100);
     end = (char *)emalloc(sizeof(char) * 6);
-    end += 5;
 
     pos = 0;
     pos2 = 0;
@@ -1418,9 +1480,8 @@ char *RedefineVariables(int nofvar, char **varset, char *oldcolor) {
                     i2 = 1;
                     while (tochange) {
                         strcpy(newvar, "x");
-                        num = lltostr((long)i2, end);
-                        end[0] = '\0';
-                        strcat(newvar, num);
+                        mylltostr(i2, end);
+                        strcat(newvar, end);
                         //printf(" New Var: %s\n", newvar);
                         tochange = 0;
                         for (i1 = 0; i1 < nofvar; i1++)
@@ -1455,7 +1516,6 @@ char *RedefineVariables(int nofvar, char **varset, char *oldcolor) {
 
     free(newvar);
     free(var);
-    end -= 5;
     free(end);
     return newcolor;
 }
@@ -1506,7 +1566,6 @@ char *SelfRedefineVariables(int nofvar, char **varset, char *oldcolor) {
     newvar = (char *)emalloc(sizeof(char) * 100);
     var = (char *)emalloc(sizeof(char) * 100);
     end = (char *)emalloc(sizeof(char) * 6);
-    end += 5;
 
     pos = 0;
     pos2 = 0;
@@ -1558,9 +1617,8 @@ char *SelfRedefineVariables(int nofvar, char **varset, char *oldcolor) {
                     i2 = 1;
                     while (tochange) {
                         strcpy(newvar, "x");
-                        num = lltostr((long)i2, end);
-                        end[0] = '\0';
-                        strcat(newvar, num);
+                        mylltostr(i2, end);
+                        strcat(newvar, end);
                         //printf(" New Var: %s\n", newvar);
                         tochange = 0;
                         for (i1 = 0; i1 < nofvar; i1++)
@@ -1596,7 +1654,6 @@ char *SelfRedefineVariables(int nofvar, char **varset, char *oldcolor) {
 
     free(newvar);
     free(var);
-    end -= 5;
     free(end);
     return newcolor;
 }
@@ -1653,7 +1710,6 @@ int BuildTranslations(int nv, char **vs) {
 
     newvar = (char *)emalloc(sizeof(char) * 100);
     end = (char *)emalloc(sizeof(char) * 6);
-    end += 5;
 
     for (i1 = 0; i1 < TLength * 2; i1++) free(Translations[i1]);
     free(Translations);
@@ -1671,9 +1727,8 @@ int BuildTranslations(int nv, char **vs) {
             while (problem) {
                 //printf(" Problem with %s\n", vs[i1]);
                 strcpy(newvar, "x");
-                num = lltostr((long)i3, end);
-                end[0] = '\0';
-                strcat(newvar, num);
+                mylltostr(i3, end);
+                strcat(newvar, end);
                 //printf(" New Var: %s\n", newvar);
                 problem = 0;
                 for (i2 = 0; i2 < nv; i2++)
@@ -1697,7 +1752,6 @@ int BuildTranslations(int nv, char **vs) {
             }
         }
     free(newvar);
-    end -= 5;
     free(end);
     return r;
 }
@@ -1825,7 +1879,6 @@ void ArcsofArg2(struct trans_object *tr2, int op1index, int specimen, struct tra
     newpredicate = (char *)emalloc(sizeof(char) * 1000);
     warn = (char *)emalloc(sizeof(char) * 1000);
     end = (char *)emalloc(sizeof(char) * 10);
-    end += 5;
     nofplayers = CountPlayers(op1index);
     players = (int *)emalloc(sizeof(int) * nofplayers);
     LookforPlayers(op1index, specimen, players);
@@ -1844,7 +1897,7 @@ void ArcsofArg2(struct trans_object *tr2, int op1index, int specimen, struct tra
                 if (strcmp(vs[i5], varset[i6]) == 0) found = 1;
             if (!found) {
                 varset = (char **)realloc(varset, (nofvar + 1) * sizeof(char *));
-                varset[nofvar] = (char *)emalloc(sizeof(char) * strlen(vs[i5]) + 1);
+                varset[nofvar] = (char *)emalloc(sizeof(char) * (strlen(vs[i5]) + 1));
                 strcpy(varset[nofvar], vs[i5]);
                 nofvar++;
             }
@@ -1947,16 +2000,14 @@ void ArcsofArg2(struct trans_object *tr2, int op1index, int specimen, struct tra
                                         if (arcs->color == NULL && a3->color != NULL) {
                                             strcpy(newpredicate, a3->color);
                                             strcat(newpredicate, "+");
-                                            num = lltostr((long)abs(arcs->mult), end);
-                                            end[0] = '\0';
-                                            strcat(newpredicate, num);
+                                            mylltostr((int)abs(arcs->mult), end);
+                                            strcat(newpredicate, end);
                                         }
-                                        if (arcs->color != NULL && a3->color == NULL) {
+                                        if (arcs->color != NULL && a3->color == NULL) 			 	{
                                             strcpy(newpredicate, arcs->color);
                                             strcat(newpredicate, "+");
-                                            num = lltostr((long)abs(a3->mult), end);
-                                            end[0] = '\0';
-                                            strcat(newpredicate, num);
+                                            mylltostr((int)abs(a3->mult), end);
+                                            strcat(newpredicate, end);
                                         }
                                         free(a3->color);
                                         a3->color = (char *)emalloc(sizeof(char) * (strlen(newpredicate) + 1));
@@ -2034,8 +2085,8 @@ void ArcsofArg2(struct trans_object *tr2, int op1index, int specimen, struct tra
                             ccp2->next = (struct coordinate *) emalloc(sizeof(struct coordinate));
                             ccp2->next->next = NULL;
 
-                            if (new->mult > 0)
-                                new->mult *= -1;
+                            if (!no_ba)
+                                if (new->mult > 0) new->mult *= -1;
                         }
                     }
                 }
@@ -2055,7 +2106,6 @@ void ArcsofArg2(struct trans_object *tr2, int op1index, int specimen, struct tra
     free(players);
     free(newpredicate);
     free(warn);
-    end -= 5;
     free(end);
 }
 
@@ -2415,19 +2465,24 @@ struct group_object *JoinImmTrans(struct group_object *group1, struct group_obje
                 }
             }
             if (firstgroup) {
+                //printf("\n\n ****** First group allocated ******\n\n");
                 r = (struct group_object *)emalloc(sizeof(struct group_object));
                 gr4 = r;
-                gr4->trans = (struct trans_object *)emalloc(sizeof(struct trans_object));
-                tr2 = gr4->trans;
+                gr4->trans = NULL;
+                //gr4->trans=(struct trans_object *)emalloc(sizeof(struct trans_object));
+                //tr2=gr4->trans;
                 firstgroup = 0;
                 first = 1;
             }
             else {
+                //printf("\n\n ***** gr4->pri: %d, gr3->pri: %d ********\n\n", gr4->pri, gr3->pri);
                 if (gr4->pri < gr3->pri) {
+                    //printf(" A New group allocated\n");
                     gr4->next = (struct group_object *)emalloc(sizeof(struct group_object));
                     gr4 = gr4->next;
-                    gr4->trans = (struct trans_object *)emalloc(sizeof(struct trans_object));
-                    tr2 = gr4->trans;
+                    gr4->trans = NULL;
+                    //gr4->trans=(struct trans_object *)emalloc(sizeof(struct trans_object));
+                    //tr2=gr4->trans;
                     first = 1;
                 }
             }
@@ -2462,7 +2517,11 @@ struct group_object *JoinImmTrans(struct group_object *group1, struct group_obje
                         tr2->next = (struct trans_object *)emalloc(sizeof(struct trans_object));
                         tr2 = tr2->next;
                     }
-                    first = 0;
+                    else {
+                        gr4->trans = (struct trans_object *)emalloc(sizeof(struct trans_object));
+                        tr2 = gr4->trans;
+                        first = 0;
+                    }
                     CopyTrProperties(tr1, tr2, j, gr3 != gr2);
                     tr2->brokenin = 0;
                     tr2->brokenout = 0;
@@ -2973,16 +3032,20 @@ void CommonStart(void) {
     Result->rpars = JoinRPars(Op1->rpars, Op2->rpars);
     Result->lisps = JoinLisps(Op1->lisps, Op2->lisps);
 
-    JoinTr = (int **)emalloc(Ntr1 * sizeof(int));
+
+    JoinTr = (int **)emalloc(Ntr1 * sizeof(int *));
     for (i = 0; i < Ntr1; i++) {
         JoinTr[i] = (int *)emalloc(sizeof(int) * Ntr2);
         for (j = 0; j < Ntr2; j++) JoinTr[i][j] = 0;
     }
-    JoinPl = (int **)emalloc(Npl1 * sizeof(int));
+    JoinPl = (int **)emalloc(Npl1 * sizeof(int *));
     for (i = 0; i < Npl1; i++) {
         JoinPl[i] = (int *)emalloc(sizeof(int) * Npl2);
-        for (j = 0; j < Npl2; j++) JoinPl[i][j] = 0;
+        for (j = 0; j < Npl2; j++) {
+            JoinPl[i][j] = 0;
+        }
     }
+
 
     MapTr1 = (int *)emalloc(sizeof(int) * Ntr1);
     for (i = 0; i < Ntr1; i++) MapTr1[i] = 0;
@@ -3216,8 +3279,16 @@ void Restrictions(char *fn) {
     while (!feof(f)) {
         if (fscanf(f, "%s\n", ss) != 0) {
             // printf(" Parsed '%s'\n", ss);
-            lexstr = ss;
+
+            fp = fopen(pfname, "w");
+            fprintf(fp, "%s", ss);
+            fclose(fp);
+            fp = fopen(pfname, "r");
+            yyin = fp;
+
             yyparse();
+            fclose(fp);
+
         }
     }
 
@@ -3273,7 +3344,7 @@ void ReadOperands(char *op1, char *op2) {
 #ifdef DEBUG
     printf(" \nThere are %d layers in the result:\n", Nlayer1 + Nlayer2);
     for (i = 1; i <= Nlayer1 + Nlayer2; i++) printf("   %s\n", GetLayerName(i));
-#endif DEBUG
+#endif // DEBUG
 }
 
 
@@ -3291,6 +3362,8 @@ void PlaceTags(void) {
     end = (char *)emalloc(sizeof(char) * 6);
     end += 5;
 
+    Pl_Rest = 0;
+
     D = FillDescPl(Result->places);
     act = D;
 
@@ -3300,9 +3373,8 @@ void PlaceTags(void) {
         while (!ok) {
             strcpy(newtag, act->tag);
             if (n != 0) {
-                num = lltostr((long)n, end);
-                end[0] = '\0';
-                strcat(newtag, num);
+                mylltostr(n, end);
+                strcat(newtag, end);
             }
             ok = 1;
             tmp = D;
@@ -3362,12 +3434,19 @@ void TransitionTags(void) {
     int n, ok, trindex = 0, i1, c;
     struct trans_object *tr;
 
+    //printf("Hihi1\n");
     newtag = (char *)emalloc(sizeof(char) * 100);
     newname = (char *)emalloc(sizeof(char) * 100);
     end = (char *)emalloc(sizeof(char) * 6);
     end += 5;
+    //printf("Hihi2\n");
+
+    // printf( "Making Tags Different for Transitions\n);
+    Tr_Rest = 0;
+    //printf("Hihi3\n");
 
     D = FillDescTr(Result->trans, Result->groups);
+    //printf("Hihi4\n");
     act = D;
 
     while (act != NULL) {
@@ -3376,9 +3455,8 @@ void TransitionTags(void) {
         while (!ok) {
             strcpy(newtag, act->tag);
             if (n != 0) {
-                num = lltostr((long)n, end);
-                end[0] = '\0';
-                strcat(newtag, num);
+                mylltostr(n, end);
+                strcat(newtag, end);
             }
             ok = 1;
             tmp = D;
@@ -3432,14 +3510,47 @@ void TransitionTags(void) {
 // MAIN
 // ====
 int main(int argc, char *argv[]) {
-    if (argc < 6) {
+    int ns = 0, i1 = 1, found = 1, more = 1;
+
+    if (i1 != argc)
+        while (argv[i1][0] == '-' && found && more) {
+            found = 0;
+            if (strcmp(argv[i1], "-no_ba") == 0) {
+                ns++;
+                found = 1;
+                no_ba = 1;
+                printf("\n -no_ba: no broken arcs will be used between subnets\n");
+            }
+            if (strcmp(argv[i1], "-rs") == 0) {
+                ns += 2;
+                found = 1;
+                if (i1 + 1 == argc) more = 0;
+                if (more) {
+                    i1++;
+                    if (sscanf(argv[i1], "%f", &rs) != 1) found = 0;
+                    if (found)
+                        printf("\n -rs %f: rescale factor for result is %f\n", rs, rs);
+                }
+            }
+            if (i1 + 1 == argc) more = 0;
+            if (found && more)
+                i1++;
+        }
+
+    if (argc - ns < 6 || !found) {
         printf("\n Tool to Compose SWN Nets\n");
         printf("\n Usage:\n");
-        printf("  algebra net1 net2 operator restfile resultname [placement shiftx shifty]\n\n");
+        printf("  algebra [swithces] net1 net2 operator restfile resultname [placement shiftx shifty]\n\n");
+        printf(" Switches: -no_ba: no broken arcs will be used between subnets\n");
+        printf("           -rs number: result will be rescaled by number\n");
         printf(" Operators: 't': Superposition Over Transitions\n");
         printf("            'p': Superposition Over Places\n");
         printf("            'b': Superposition Over Places & Transitions\n");
-        printf(" restfile: contains the labels to be used for synchronization\n");
+        printf(" restfile: contains the labels to be used for synchronization.\n");
+        printf("           Sample syntax for this file:\n");
+        printf("                 transition={tl1|tl2}\n");
+        printf("                 place={pl1|pl2|pl3}\n");
+        printf("\n");
         printf(" placement: 1 ---> net1 net2\n");
         printf("            2 ---> net1\n");
         printf("                   net2\n");
@@ -3449,14 +3560,17 @@ int main(int argc, char *argv[]) {
 
     mem_alloc();
 
-    ReadOperands(argv[1], argv[2]);
-    Restrictions(argv[4]);
+    ReadOperands(argv[ns + 1], argv[ns + 2]);
+    pfname = (char *)emalloc(sizeof(char) * strlen(argv[ns + 1]) + 10);
+    strcpy(pfname, argv[ns + 1]);
+    strcat(pfname, ".parsing");
+    Restrictions(argv[ns + 4]);
 
     // define shifting of net2
     shifty = MaxYCoor(Op1);
     shiftx = MaxXCoor(Op1);
-    if (argc > 6) {
-        switch (atoi(argv[6])) {
+    if (argc - ns > 6) {
+        switch (atoi(argv[ns + 6])) {
         case 1:
             shifty = 0;
             break;
@@ -3464,24 +3578,28 @@ int main(int argc, char *argv[]) {
             shiftx = 0;
             break;
         case 3:
-            shiftx = IN_TO_PIX(atof(argv[7]));
-            shifty = IN_TO_PIX(atof(argv[8]));
+            shiftx = IN_TO_PIX(atof(argv[ns + 7]));
+            shifty = IN_TO_PIX(atof(argv[ns + 8]));
         }
     }
     else shifty = 0;
 
-    switch (argv[3][0]) {
+    switch (argv[ns + 3][0]) {
     case 't':
         Mode = 1;
         Transitions();
+        TransitionTags();
         break;
     case 'p':
         Mode = 2;
         Places();
+        PlaceTags();
         break;
     case 'b':
         Mode = 3;
         Transitions_Places();
+        TransitionTags();
+        PlaceTags();
         break;
     default:  printf("\n Unknown operator, type 'algebra' to see list of operators.\n\n");
         exit(0);
@@ -3489,16 +3607,13 @@ int main(int argc, char *argv[]) {
 
     // printf(" AC: %d\n", ArcCount);
 
-    TransitionTags();
-    PlaceTags();
     netobj = Result;
-    write_file(argv[5]);
-
+    RescaleNet(Result, (double)rs);
+    write_file(argv[ns + 5]);
     mem_free();
-
+    free(pfname);
     return 0;
 }
-
 
 
 

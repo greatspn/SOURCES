@@ -12,19 +12,24 @@ package editor.domain.semiflows;
  */
 public abstract class StructuralAlgorithm {
     // For P-semiflows: N=|P|, M=|T| (for T-semiflows: N=|T|, M=|P|)
-    public final int N, M;
+    // when there are supplementary variables, N0 is the original N.
+    public int N;
+    public final int N0, M;
     
     // Has already been computed?
     private boolean computed = false;
+    private String failureReason = "";
 
-    public StructuralAlgorithm(int N, int M) {
+    public StructuralAlgorithm(int N, int N0, int M) {
+        assert N0 <= N;
         this.N = N;
+        this.N0 = N0;
         this.M = M;
     }
     
-    public abstract void addFlow(int i, int j, int card);
-    
-    public abstract void setInitQuantity(int i, int quantity);
+//    public abstract void addFlow(int i, int j, int card);
+//    
+//    public abstract void setInitQuantity(int i, int quantity);
 
     public void setComputed() {
         this.computed = true;
@@ -34,6 +39,19 @@ public abstract class StructuralAlgorithm {
         return computed;
     }
     
+    public void setFailed(String reason) {
+        this.computed = false;
+        this.failureReason = reason;
+    }
+    
+    public String getFailureReason() {
+        return failureReason;
+    }
+    
+    protected void reduceN(int N) {
+        assert N >= this.N0;
+        this.N = N;
+    }
     
     public interface ProgressObserver {
         public void advance(int step, int total, int subStep, int subTotal);

@@ -1,5 +1,9 @@
-#include "refDsrg.h"
 #include <string.h>
+#include <unistd.h>
+#include <time.h>
+
+#include "refDsrg.h"
+
 extern int                  nb_sr;
 extern int                  nb_sm;
 extern FILE                *dsrg ;
@@ -46,6 +50,35 @@ extern void      GROUP_MARKINGS_MC_PART(Tree_Esrg_p EventArr,
                                         STORE_STATICS_ARRAY ASYM_CONF,
                                         STORE_STATICS_ARRAY SYM_CONF,
                                         char *** MTCL, int gr);
+
+extern void CHAR_LOAD_COMPACT(unsigned long *);
+extern void   POP_STATIC_CONF();
+extern void string_to_marking();
+extern void SPECIAL_CANISATION();
+extern STORE_STATICS_ARRAY
+NewTabc__(TYPE_P **PM, TYPE_P NbElPM, char *** MTCL);
+extern void my_en_list(int);
+extern TO_MERGEP   *TO_MERGE();
+extern void   GROUPING_ALL_STATICS();
+extern void       FREE_ALL_LMS_ELEMS();
+extern void fire_trans();
+extern void my_garbage_collect(Tree_Esrg_p fire_ptr);
+extern void INIT_RESULT_STRUCT(int *** event);
+extern void TO_STORE_INIT_ARRAYS(STORE_STATICS_ARRAY STORED_CONF);
+extern void Free_ResList(int i);
+extern void       Free_DSC_SSC();
+extern void local_free_temp_ord(Tree_Esrg_p  sr_ordinary, int sr_size_ordinary);
+extern void free_a_ref_elements(pDtmcN nd);
+extern void eleminate_arcs(pDtmcN nd, pDtmcN end, int SrOrDs);
+extern void marking_treated_ev(pDtmcA *head, int start, int end, pDtmcN nd, int srOrds);
+extern void free_a_ref_elements(pDtmcN nd);
+extern void free_temp_in(pDtmcN nd);
+extern void free_temp_cur(pDtmcN nd);
+extern void free_node(pDtmcN nd);
+extern void store_dtmc(char     *net_name, pDtmcN  **mtx_el, int      *nb_mtx_el);
+extern void print_dtmc(char     *net_name, pDtmcN  **mtx_el, int      *nb_mtx_el);
+extern void finalize_session();
+
 
 pDtmcN head = NULL;
 pDtmcN headinc = NULL;

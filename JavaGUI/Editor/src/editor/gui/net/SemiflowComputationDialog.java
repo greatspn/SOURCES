@@ -6,7 +6,7 @@
 
 package editor.gui.net;
 
-import editor.domain.semiflows.MartinezSilvaAlgorithm;
+import editor.domain.semiflows.FlowsGenerator;
 import java.awt.Frame;
 import javax.swing.SwingUtilities;
 
@@ -14,9 +14,9 @@ import javax.swing.SwingUtilities;
  *
  * @author elvio
  */
-public class SemiflowComputationDialog extends javax.swing.JDialog implements MartinezSilvaAlgorithm.ProgressObserver {
+public class SemiflowComputationDialog extends javax.swing.JDialog implements FlowsGenerator.ProgressObserver {
 
-    MartinezSilvaAlgorithm algo;
+    FlowsGenerator algo;
     Thread thread;
     
     /**
@@ -24,7 +24,7 @@ public class SemiflowComputationDialog extends javax.swing.JDialog implements Ma
      * @param owner
      * @param algo
      */
-    public SemiflowComputationDialog(Frame owner, MartinezSilvaAlgorithm algo) {
+    public SemiflowComputationDialog(Frame owner, FlowsGenerator algo) {
         super(owner, true);
         this.algo = algo;
         initComponents();
@@ -90,8 +90,11 @@ public class SemiflowComputationDialog extends javax.swing.JDialog implements Ma
             try {
                 algo.compute(false, SemiflowComputationDialog.this);
             }
+            catch (ArithmeticException e) {
+                algo.setFailed("Computation failed: Arithmetic overflow.");
+            }
             catch (InterruptedException ie) {
-                System.out.println("Algorithm interrupted!");
+                algo.setFailed("Computation interrupted.");
             }
             finally {
                 SwingUtilities.invokeLater(new Runnable() {
@@ -123,7 +126,7 @@ public class SemiflowComputationDialog extends javax.swing.JDialog implements Ma
 
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        jLabel1.setText("Computing semi-flows with the Martinez-Silva algorithm. Please, wait.");
+        jLabel1.setText("Computing flows. Please, wait.");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;

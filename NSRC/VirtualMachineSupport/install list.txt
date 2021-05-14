@@ -63,3 +63,20 @@ ADD /usr/local/lib  to /etc/ld.so.conf  and re-run ldconfig
 
 dnf install system-config-printer
 Poi Menu > Administration > Printer e aggiungere una stampante CUPS-pdf di default
+
+
+-----------------------------------------------------------------
+VBOX 2021a su Ubuntu20.04LTS
+
+sudo apt update
+
+# per le guest additions
+sudo apt install -y gcc make perl printer-driver-cups-pdf
+
+settings > power > remove screensaver
+ 
+settings > internationalization > installa italiano & layout 
+
+touch /home/user/.greatspn-on-vbox
+echo 'export PATH=$PATH:/usr/local/GreatSPN/scripts' >> ~/.bashrc
+echo 'export LD_LIBRARY_PATH=/usr/local/lib' >> ~/.bashrc

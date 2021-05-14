@@ -1,0 +1,103 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "make RGMEDD5",
+            "command": "/usr/bin/make",
+            "args": [
+                "-f",
+                "${workspaceFolder}/Makefile",
+                "RGMEDD5",
+                "CFLAGS='-O0 -g'",
+                "LDFLAGS='-O0 -g'",
+                "-j8"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "make DSPN-Tool Debug",
+            "command": "/usr/bin/make",
+            "args": [
+                "-f",
+                "${workspaceFolder}/Makefile",
+                "DSPN-Tool-Debug",
+                "CFLAGS='-O0 -g'",
+                "LDFLAGS='-O0 -g'",
+                "-j8"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "make all",
+            "command": "/usr/bin/make",
+            "args": [
+                "-f",
+                "${workspaceFolder}/Makefile",
+                "all",
+                "CFLAGS='-O0 -g'",
+                "LDFLAGS='-O0 -g'",
+                "-j8"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "C/C++: g++ build active file",
+            "command": "/usr/lib64/ccache/g++",
+            "args": [
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "type": "shell",
+            "label": "C/C++: clang build active file",
+            "command": "/usr/lib64/ccache/clang",
+            "args": [
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build"
+        }
+    ],
+    "version": "2.0.0"
+}

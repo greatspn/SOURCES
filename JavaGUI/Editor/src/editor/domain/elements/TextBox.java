@@ -26,7 +26,6 @@ import editor.domain.io.XmlExchangeException;
 import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
 import static editor.domain.io.XmlExchangeUtils.bindXMLContent;
 import editor.domain.play.ActivityState;
-import editor.domain.superposition.GroupClass;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -53,7 +52,7 @@ public class TextBox extends Node implements Serializable {
     
     // The image shown aside the text (the effective image data is a project resource)
     ProjectResourceRef<ProjectImageResource> image = new ProjectResourceRef<>();
-    private double imageScale = 1.0;
+    private static final double imageScale = 1.0;
     
     // Various formatting/styling flags and parameters
     private TextSize textSize = TextSize.NORMAL;
@@ -62,7 +61,7 @@ public class TextBox extends Node implements Serializable {
     private Color textClr = Color.BLACK;
     private double width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT, rotation = 0.0;
     private ShapeType shapeType = ShapeType.ROUND_RECTANGLE;
-    private double roundRectXY = 1.0;
+    private static final double roundRectXY = 1.0;
     private boolean shadow = true;
     private boolean boldText = true;
     private boolean italicText = false;
@@ -121,7 +120,8 @@ public class TextBox extends Node implements Serializable {
     
     @Override public double getActivityValue(ActivityState activity) { return 0.0; }
 
-    @Override public GroupClass getGroupClass() { return GroupClass.NON_GROUPABLE; }
+//    @Override public GroupClass getGroupClass() { return GroupClass.NON_GROUPABLE; }
+    @Override public boolean hasSuperPosTags() { return false; }
     @Override public Point2D getSuperPosTagsDefaultPos() { throw new UnsupportedOperationException(""); }
     
 
@@ -184,6 +184,7 @@ public class TextBox extends Node implements Serializable {
                 setText(value.toString());
             }
             @Override public boolean isCurrentValueValid() { return true; }
+            @Override public boolean editAsMultiline() { return true; }
         };
     }
 
@@ -226,7 +227,7 @@ public class TextBox extends Node implements Serializable {
                 fmt += "\\textbf{";
             if (italicText)
                 fmt += "\\textit{";
-            fmt += text;
+            fmt += text.replace("\n", "\\\\");
             fmt += "}";
             if (boldText)
                 fmt += "}";

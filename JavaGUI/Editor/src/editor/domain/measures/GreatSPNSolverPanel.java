@@ -116,6 +116,12 @@ public class GreatSPNSolverPanel extends SolverPanel {
             }
         }
 
+        // always hide transient/steady state for current GreatSPN simulator
+        if (params.mode == GreatSPNSolverParams.SolverMode.EGSPN_SIMUL ||
+            params.mode == GreatSPNSolverParams.SolverMode.SWN_ORD_SIMUL ||
+            params.mode == GreatSPNSolverParams.SolverMode.SWN_SYM_SIMUL)
+            hasTimedAnalysis = false; 
+        
         panel_Timed.setVisible(hasTimedAnalysis);
         panel_showRG.setVisible(showRG && !params.mode.isSimulation());
         panel_WNRG_Timed.setVisible(hasTimedAnalysis && !params.mode.isSimulation());

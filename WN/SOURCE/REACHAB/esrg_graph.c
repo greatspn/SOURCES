@@ -157,7 +157,7 @@ int count_arc = 0;
 extern void create_canonical_data_structure();
 extern void get_canonical_marking();
 
-// double mark_ordinarie;	    /* num. marc. ord. per marc. simbolica  */
+double mark_ordinarie;	    /* num. marc. ord. per marc. simbolica  */
 double ord_tang = 0.0;
 double ord_evan = 0.0;
 double ord_dead = 0.0;

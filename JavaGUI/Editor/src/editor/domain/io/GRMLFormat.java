@@ -6,6 +6,7 @@
 
 package editor.domain.io;
 
+import common.UnixPrintWriter;
 import editor.domain.Edge;
 import editor.domain.Node;
 import editor.domain.elements.ColorClass;
@@ -62,7 +63,7 @@ public class GRMLFormat {
             
             ArrayList<String> log = new ArrayList<>();
 
-            PrintWriter grml = new PrintWriter(new BufferedOutputStream(new FileOutputStream(grmlFile)));
+            PrintWriter grml = new UnixPrintWriter(new BufferedOutputStream(new FileOutputStream(grmlFile)));
             
             int idCounter =2;
             grml.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");

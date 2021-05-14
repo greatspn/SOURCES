@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="New project" version="121">
+  <gspn name="Clients" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place label-y="-1.5" name="CA" x="16.0" y="30.0"/>
+      <place label-y="-1.5" name="CF" x="16.0" y="22.0"/>
+      <place label-y="-1.5" name="CG" x="16.0" y="14.0"/>
+      <place label-y="-1.5" name="CR" x="16.0" y="5.0"/>
+      <place label-x="-1.5" label-y="-1.5" name="CwA" x="10.0" y="26.0"/>
+      <place label-x="-1.0" label-y="-1.5" name="Cb" x="10.0" y="18.0"/>
+      <place label-x="-1.5" label-y="-1.5" name="CwG" x="10.0" y="10.0"/>
+      <place label-y="-1.5" marking="6" name="Ci" x="5.0" y="5.0"/>
+      <transition label-x="-1.0" label-y="-1.0" name="crA" nservers-x="0.5" rotation="4.71238898038469" type="EXP" x="10.55" y="30.0"/>
+      <transition label-x="-1.5" label-y="-1.0" name="csF" nservers-x="0.5" rotation="4.71238898038469" type="EXP" x="10.55" y="22.0"/>
+      <transition label-x="-1.5" name="crG" nservers-x="0.5" rotation="4.71238898038469" type="EXP" x="10.55" y="14.0"/>
+      <transition name="csR" nservers-x="0.5" rotation="4.71238898038469" type="EXP" x="10.55" y="5.0"/>
+    </nodes>
+    <edges>
+      <arc head="crA" head-magnet="0" kind="INPUT" tail="CA" tail-magnet="0"/>
+      <arc head="CF" head-magnet="0" kind="OUTPUT" tail="csF" tail-magnet="0"/>
+      <arc head="crG" head-magnet="0" kind="INPUT" tail="CG" tail-magnet="0"/>
+      <arc head="CR" head-magnet="0" kind="OUTPUT" tail="csR" tail-magnet="0"/>
+      <arc head="CwA" head-magnet="0" kind="OUTPUT" tail="csF" tail-magnet="0"/>
+      <arc head="Ci" head-magnet="0" kind="OUTPUT" mult-k="1.2069335937499996" tail="crA" tail-magnet="0">
+        <point x="6.0" y="31.0"/>
+      </arc>
+      <arc head="crG" head-magnet="0" kind="INPUT" tail="CwG" tail-magnet="0"/>
+      <arc head="csF" head-magnet="0" kind="INPUT" tail="Cb" tail-magnet="0"/>
+      <arc head="Cb" head-magnet="0" kind="OUTPUT" tail="crG" tail-magnet="0"/>
+      <arc head="crA" head-magnet="0" kind="INPUT" tail="CwA" tail-magnet="0"/>
+      <arc head="CwG" head-magnet="0" kind="OUTPUT" tail="csR" tail-magnet="0"/>
+      <arc head="csR" head-magnet="0" kind="INPUT" tail="Ci" tail-magnet="0"/>
+    </edges>
+  </gspn>
+  <gspn name="Servers" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place label-y="-1.5" name="SA" x="18.0" y="39.0"/>
+      <place label-y="-1.5" name="SF" x="18.0" y="33.0"/>
+      <place label-y="-1.5" name="SR" x="18.0" y="9.0"/>
+      <place label-y="-1.5" name="CA" x="6.0" y="46.0"/>
+      <place label-y="-1.5" name="CF" x="6.0" y="27.0"/>
+      <place label-x="-1.5" label-y="-1.0" name="StF" x="11.0" y="30.0"/>
+      <place label-y="-1.5" name="CG" x="6.0" y="21.0"/>
+      <place label-y="-1.5" name="CR" x="6.0" y="3.0"/>
+      <place label-y="-1.5" name="SG" x="18.0" y="15.0"/>
+      <place label-x="1.0" label-y="-1.5" marking="2" name="Si" x="15.0" y="24.0"/>
+      <place label-x="-1.0" label-y="-1.5" name="StR" x="11.0" y="6.0"/>
+      <place label-x="-1.5" label-y="-1.5" name="SwG" x="11.0" y="12.0"/>
+      <place label-x="-1.5" label-y="-1.5" name="SpG" x="11.0" y="18.0"/>
+      <place label-x="-1.5" label-y="-1.0" name="SwA" x="11.0" y="36.0"/>
+      <place label-x="-1.5" label-y="-1.0" name="SpA" x="11.0" y="42.0"/>
+      <transition label-x="-1.5" label-y="-1.0" name="ssF" nservers-x="0.5" rotation="4.71238898038469" type="EXP" x="11.55" y="33.0"/>
+      <transition label-x="-1.0" label-y="-1.0" name="srF" nservers-x="0.5" rotation="4.71238898038469" type="EXP" x="11.55" y="27.0"/>
+      <transition label-x="0.5" label-y="-1.0" name="srR" nservers-x="0.5" rotation="4.71238898038469" type="EXP" x="11.55" y="3.0"/>
+      <transition label-x="-1.5" label-y="-1.0" name="ssR" nservers-x="0.5" rotation="4.71238898038469" type="EXP" x="11.55" y="9.0"/>
+      <transition label-x="-1.5" label-y="-1.0" name="srG" nservers-x="0.5" rotation="4.71238898038469" type="EXP" x="11.55" y="15.0"/>
+      <transition label-x="-1.5" label-y="-1.0" name="ssG" nservers-x="0.5" rotation="4.71238898038469" type="EXP" x="11.55" y="21.0"/>
+      <transition label-x="-1.5" label-y="-1.0" name="srA" nservers-x="0.5" rotation="4.71238898038469" type="EXP" x="11.55" y="39.0"/>
+      <transition label-x="-1.0" label-y="-1.0" name="ssA" nservers-x="0.5" rotation="4.71238898038469" type="EXP" x="11.55" y="46.0"/>
+    </nodes>
+    <edges>
+      <arc head="srG" head-magnet="0" kind="INPUT" tail="SG" tail-magnet="0"/>
+      <arc head="srA" head-magnet="0" kind="INPUT" tail="SA" tail-magnet="0"/>
+      <arc head="SF" head-magnet="0" kind="OUTPUT" tail="ssF" tail-magnet="0"/>
+      <arc head="SR" head-magnet="0" kind="OUTPUT" tail="ssR" tail-magnet="0"/>
+      <arc head="SwA" head-magnet="0" kind="OUTPUT" tail="ssF" tail-magnet="0"/>
+      <arc head="CA" head-magnet="0" kind="OUTPUT" tail="ssA" tail-magnet="0"/>
+      <arc head="srF" head-magnet="0" kind="INPUT" tail="Si" tail-magnet="0"/>
+      <arc head="srF" head-magnet="0" kind="INPUT" tail="CF" tail-magnet="0"/>
+      <arc head="ssF" head-magnet="0" kind="INPUT" tail="StF" tail-magnet="0"/>
+      <arc head="StF" head-magnet="0" kind="OUTPUT" tail="srF" tail-magnet="0"/>
+      <arc head="Si" head-magnet="0" kind="OUTPUT" tail="ssG" tail-magnet="0"/>
+      <arc head="CG" head-magnet="0" kind="OUTPUT" tail="ssG" tail-magnet="0"/>
+      <arc head="srR" head-magnet="0" kind="INPUT" tail="CR" tail-magnet="0"/>
+      <arc head="Si" head-magnet="0" kind="OUTPUT" mult-k="1.11513671875" tail="ssA" tail-magnet="0">
+        <point x="16.0" y="47.0"/>
+      </arc>
+      <arc head="ssG" head-magnet="0" kind="INPUT" tail="SpG" tail-magnet="0"/>
+      <arc head="SpG" head-magnet="0" kind="OUTPUT" tail="srG" tail-magnet="0"/>
+      <arc head="ssA" head-magnet="0" kind="INPUT" tail="SpA" tail-magnet="0"/>
+      <arc head="SpA" head-magnet="0" kind="OUTPUT" tail="srA" tail-magnet="0"/>
+      <arc head="srA" head-magnet="0" kind="INPUT" tail="SwA" tail-magnet="0"/>
+      <arc head="srG" head-magnet="0" kind="INPUT" tail="SwG" tail-magnet="0"/>
+      <arc head="SwG" head-magnet="0" kind="OUTPUT" tail="ssR" tail-magnet="0"/>
+      <arc head="ssR" head-magnet="0" kind="INPUT" tail="StR" tail-magnet="0"/>
+      <arc head="StR" head-magnet="0" kind="OUTPUT" tail="srR" tail-magnet="0"/>
+      <arc head="srR" head-magnet="0" kind="INPUT" mult-k="0.80732421875" tail="Si" tail-magnet="0">
+        <point x="16.0" y="4.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="ResManagers" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place label-x="1.0" label-y="-1.5" marking="4" name="Uf" x="19.0" y="11.0"/>
+      <place label-y="-1.5" name="SR" x="6.0" y="5.0"/>
+      <place label-y="-1.5" name="SG" x="6.0" y="17.0"/>
+      <place label-x="-1.5" label-y="-1.0" name="MpG" x="11.0" y="14.0"/>
+      <place label-x="-2.0" label-y="-1.0" name="MwU" x="11.0" y="8.0"/>
+      <place label-x="1.0" label-y="-1.5" marking="3" name="Mi" x="19.0" y="5.0"/>
+      <transition label-x="-1.5" label-y="-1.0" name="msG" nservers-x="0.5" rotation="4.71238898038469" type="EXP" x="11.55" y="17.0"/>
+      <transition label-x="-2.0" label-y="-0.5" name="maU" nservers-x="0.5" rotation="4.71238898038469" type="EXP" x="11.55" y="11.0"/>
+      <transition name="mrR" nservers-x="0.5" rotation="4.71238898038469" type="EXP" x="11.55" y="5.0"/>
+    </nodes>
+    <edges>
+      <arc head="maU" head-magnet="0" kind="INPUT" mult-k="0.74482421875" tail="Uf" tail-magnet="0"/>
+      <arc head="Mi" head-magnet="0" kind="OUTPUT" tail="msG" tail-magnet="0"/>
+      <arc head="mrR" head-magnet="0" kind="INPUT" tail="SR" tail-magnet="0"/>
+      <arc head="SG" head-magnet="0" kind="OUTPUT" tail="msG" tail-magnet="0"/>
+      <arc head="msG" head-magnet="0" kind="INPUT" tail="MpG" tail-magnet="0"/>
+      <arc head="MpG" head-magnet="0" kind="OUTPUT" tail="maU" tail-magnet="0"/>
+      <arc head="maU" head-magnet="0" kind="INPUT" tail="MwU" tail-magnet="0"/>
+      <arc head="MwU" head-magnet="0" kind="OUTPUT" tail="mrR" tail-magnet="0"/>
+      <arc head="mrR" head-magnet="0" kind="INPUT" mult-k="0.7075195312500001" tail="Mi" tail-magnet="0"/>
+    </edges>
+  </gspn>
+  <gspn name="ResUnits" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place label-x="1.0" label-y="-1.5" marking="4" name="Uf" x="19.0" y="12.0"/>
+      <place label-y="-1.5" name="SA" x="7.0" y="18.0"/>
+      <place label-y="-1.5" name="SF" x="7.0" y="6.0"/>
+      <place label-x="-1.5" label-y="-1.5" name="MpA" x="12.0" y="15.0"/>
+      <place label-x="-1.5" label-y="-1.0" name="MtF" x="12.0" y="9.0"/>
+      <place label-x="1.0" label-y="-1.5" marking="3" name="Mi" x="19.0" y="6.0"/>
+      <transition label-x="-1.5" label-y="-1.0" name="msA" nservers-x="0.5" rotation="4.71238898038469" type="EXP" x="12.55" y="18.0"/>
+      <transition label-x="-1.5" label-y="-1.0" name="mfU" nservers-x="0.5" rotation="4.71238898038469" type="EXP" x="12.55" y="12.0"/>
+      <transition label-x="-1.5" label-y="-1.0" name="mrF" nservers-x="0.5" rotation="4.71238898038469" type="EXP" x="12.55" y="6.0"/>
+    </nodes>
+    <edges>
+      <arc head="Uf" head-magnet="0" kind="OUTPUT" mult-k="0.26669921875" tail="mfU" tail-magnet="0"/>
+      <arc head="mrF" head-magnet="0" kind="INPUT" tail="Mi" tail-magnet="0"/>
+      <arc head="SA" head-magnet="0" kind="OUTPUT" tail="msA" tail-magnet="0"/>
+      <arc head="mrF" head-magnet="0" kind="INPUT" tail="SF" tail-magnet="0"/>
+      <arc head="Mi" head-magnet="0" kind="OUTPUT" mult-k="0.25830078125" tail="msA" tail-magnet="0"/>
+      <arc head="msA" head-magnet="0" kind="INPUT" tail="MpA" tail-magnet="0"/>
+      <arc head="MpA" head-magnet="0" kind="OUTPUT" tail="mfU" tail-magnet="0"/>
+      <arc head="mfU" head-magnet="0" kind="INPUT" tail="MtF" tail-magnet="0"/>
+      <arc head="MtF" head-magnet="0" kind="OUTPUT" tail="mrF" tail-magnet="0"/>
+    </edges>
+  </gspn>
+  <multinet name="ClientsAndServers" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <bindings-list/>
+    <subnet netname="Clients"/>
+    <subnet netname="Servers"/>
+    <subnet netname="ResManagers"/>
+    <subnet netname="ResUnits"/>
+  </multinet>
+</project>

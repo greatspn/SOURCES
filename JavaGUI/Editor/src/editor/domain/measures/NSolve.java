@@ -6,6 +6,7 @@
 
 package editor.domain.measures;
 
+import common.UnixPrintWriter;
 import common.Util;
 import editor.Main;
 import editor.domain.elements.GspnPage;
@@ -18,6 +19,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -65,7 +67,7 @@ public class NSolve extends SolverInvokator {
         params.epsilon.checkExprCorrectness(getContext(), gspn, null);
         
         // Save the parameter file
-        PrintWriter paramOut = new PrintWriter(paramFile);
+        PrintWriter paramOut = new UnixPrintWriter(paramFile);
         paramOut.println("MODELFILE "+baseName);
         paramOut.println("TRS_EXPLORATION NO");
         paramOut.println("TRS_FORMAT NO");
@@ -113,7 +115,12 @@ public class NSolve extends SolverInvokator {
         }
         
         // Setup the NSolve command
-        step.addCmd("/bin/sh "+useNSolve_binary("nsolvefornm.sh")+" "+baseName);
+        ArrayList<String> cmd = startOfCommand();
+        cmd.add("/bin/sh");
+        cmd.add(useNSolve_binary("nsolvefornm.sh"));
+        cmd.add(baseName);
+        step.addCmd(cmd);
+//        step.addCmd("/bin/sh "+useNSolve_binary("nsolvefornm.sh")+" "+baseName);
     }
 
     @Override
@@ -156,6 +163,11 @@ public class NSolve extends SolverInvokator {
     @Override
     void endOfStep(SolutionStep step, boolean interrupted, boolean allStepsCompleted) {
         step.completed = (!interrupted && allStepsCompleted);
+    }
+    
+    @Override
+    boolean enableSupportForMDepArcsInNetDef() {
+        return false;
     }
     
     //==========================================================================

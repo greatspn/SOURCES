@@ -1348,7 +1348,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 
     @Override
     public FormattedFormula visitBoolExprCTLdeadlocks(ExprLangParser.BoolExprCTLdeadlocksContext ctx) {
-       switch (lang) {
+        switch (lang) {
             case LATEX:
                 return format(true, ctx.DEADLOCK() != null ? "\\mathrm{deadlock}" : "\\mathrm{ndeadlock}");
             case GREATSPN:
@@ -1358,6 +1358,21 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 throw new UnsupportedOperationException();
         }
     }
+
+    @Override
+    public FormattedFormula visitBoolExprCTLinitState(ExprLangParser.BoolExprCTLinitStateContext ctx) {
+        switch (lang) {
+            case LATEX:
+                return format(true, "\\mathrm{initial}");
+            case GREATSPN:
+            case PNPRO:
+                return format(true, "initial");
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+    
+    
     
     //==========================================================================
     //  CTLSTAR terms:
@@ -1685,6 +1700,82 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         return formatUnaryFn(op, term).addPayload(term.getPayload());        
     }
 
+    @Override
+    public FormattedFormula visitColorTermFilterThis(ExprLangParser.ColorTermFilterThisContext ctx) {
+        switch (lang) {
+            case PNPRO:
+            case LATEX:
+            case GREATSPN: {
+                int index = (ctx.INT()!= null ? Integer.parseInt(ctx.INT().getText()) : 0);
+                String className = (ctx.SIMPLECOLORCLASS_ID()!=null ? ctx.SIMPLECOLORCLASS_ID().getText() : null);
+                MultiSetElemType ty = null;
+                
+                if (className!=null && ctx.INT()==null) {
+                    // if only the color class is provided and not an index, the color name
+                    // should appear only once in the color domain
+                    int colorCount = 0;
+                    for (int cc = 0; cc < context.colorDomainOfExpr.getNumClassesInDomain(); cc++) {
+                        if (className.equals(context.colorDomainOfExpr.getColorClassName(cc))) {
+                            ++colorCount;
+                            if (colorCount > 1) {
+                                context.addNewError("Color domain "+context.colorDomainOfExpr.getUniqueName()+
+                                                    " have multiple instances of "+className+": an index must be specified.");
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (className==null && ctx.INT()==null) {
+                    context.addNewError("'@': either a class name or an index in the color domain tuple (or both) must be specified");
+                }
+                
+                // find the element index in the color tuple
+                int found = -1;
+                for (int cc = 0, index2 = index; cc < context.colorDomainOfExpr.getNumClassesInDomain(); cc++) {
+                    if (className!=null && !className.equals(context.colorDomainOfExpr.getColorClassName(cc)))
+                        continue; // not the same class
+                    if (index2 > 0) {
+                        --index2;
+                        continue; // not the i-th instance
+                    }
+                    found = cc;
+                    break;
+                }
+                if (found == -1) {
+                    if (className != null) {
+                        context.addNewError("Color domain "+context.colorDomainOfExpr.getUniqueName()+
+                                            " does not have "+index+" of color class "+className);
+                    } else {
+                        context.addNewError("Color domain "+context.colorDomainOfExpr.getUniqueName()+
+                                            " does not have "+index+" color classes.");                        
+                    }
+//                    context.addNewError("Domain index "+index+" must be in range [0, "
+//                                        +context.colorDomainOfExpr.getNumClassesInDomain()+").");
+                    ty = new MultiSetElemType(ALL_COLORS);
+                }
+                else
+                    ty = new MultiSetElemType(context.colorDomainOfExpr.getColorClass(found));
+//                if (index < 0 || index >= context.colorDomainOfExpr.getNumClassesInDomain()) {
+//                    context.addNewError("Domain index "+index+" must be in range [0, "
+//                                        +context.colorDomainOfExpr.getNumClassesInDomain()+").");
+//                    ty = new MultiSetElemType(ALL_COLORS);
+//                }
+//                else {
+//                    ty = new MultiSetElemType(context.colorDomainOfExpr.getColorClass(index));
+//                }
+                
+                FormattedFormula f = format(true, '@');
+                if (ctx.SIMPLECOLORCLASS_ID()!=null)
+                    f = format(true, f, className);
+                if (ctx.INT()!= null)
+                    f = format(true, f, "[", index, "]");
+                return f.addPayload(ty);
+            }
+            default:
+                throw new UnsupportedOperationException("Multiset Filter Predicates are not supported");
+        }
+    }
+
     //==========================================================================
     //  Payloads of multiset expressions:
     //==========================================================================
@@ -1737,7 +1828,19 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 throw new UnsupportedOperationException("MultiSet predicates are not supported.");
         }
     }
-    
+
+    @Override
+    public FormattedFormula visitMSetElemBoolPredicate(ExprLangParser.MSetElemBoolPredicateContext ctx) {
+        switch (lang) {
+            case PNPRO:
+            case LATEX:
+            case GREATSPN:
+                return format(true, "\\bigl[", visit(ctx.boolExpr()), "\\bigr]");
+                
+            default:
+                throw new UnsupportedOperationException("MultiSet filter predicates are not supported.");
+        }
+    }
     
   
     //==========================================================================
@@ -1746,7 +1849,8 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     
     
     public FormattedFormula visitMultiSetDef(ParseTree mult, ParseTree pred, 
-                                             List<ExprLangParser.MultiSetElemContext> msetElemList) 
+                                             List<ExprLangParser.MultiSetElemContext> msetElemList,
+                                             ParseTree filterPred) 
     {
         final ColorClass fixedDomain = context.colorDomainOfExpr;
         StringBuilder buffer = new StringBuilder();
@@ -1865,11 +1969,18 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         switch (lang) {
             case LATEX:
                 buffer.append("\\rangle ");
+                if (filterPred != null) {
+                    FormattedFormula predFF = visit(filterPred);
+                    buffer.append(predFF.getFormula());
+                }
                 break;
             case PNML:
                 buffer.append("</tuple>");
                 if (mult != null)
                     buffer.append("</subterm></numberof>");
+                if (filterPred != null) {
+                    context.addNewError("Multiset filter predicates are not supported in PNML.");
+                }
                 break;
             case GRML:
                 buffer.append("</attribute></attribute>"); // tokenProfile, token
@@ -1931,7 +2042,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     
     @Override
     public FormattedFormula visitIntMSetExprElemProduct(ExprLangParser.IntMSetExprElemProductContext ctx) {
-        return visitMultiSetDef(ctx.intExpr(), ctx.mSetPredicate(), ctx.multiSetElem());
+        return visitMultiSetDef(ctx.intExpr(), ctx.mSetPredicate(), ctx.multiSetElem(), ctx.mSetElemPredicate());
     }
 
     @Override
@@ -1990,7 +2101,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 
     @Override
     public FormattedFormula visitRealMSetExprElemProduct(ExprLangParser.RealMSetExprElemProductContext ctx) {
-        return visitMultiSetDef(ctx.realExpr(), ctx.mSetPredicate(), ctx.multiSetElem());
+        return visitMultiSetDef(ctx.realExpr(), ctx.mSetPredicate(), ctx.multiSetElem(), ctx.mSetElemPredicate());
     }
     
     @Override

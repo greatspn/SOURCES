@@ -85,10 +85,11 @@ ifeq ($(UNAME_S),Darwin)
    CPP := g++ -g -c -std=c++17 -Wno-unused-local-typedef -Wno-deprecated-register
    LD := gcc -g 
    LDPP := g++ -g 
-   CFLAGS += -I/usr/include/malloc -I/usr/local/include/
-   LDFLAGS += -L/usr/local/lib/
+   CFLAGS += -I/usr/include/malloc -I/usr/local/include/ -I/opt/homebrew/include
+   CPPFLAGS += -I/usr/include/malloc -I/usr/local/include/ -I/opt/homebrew/include
+   LDFLAGS += -L/usr/local/lib/ -L/opt/homebrew/lib
    ENABLE_Cxx17 := -std=c++17 -stdlib=libc++ -U__STRICT_ANSI__
-   LAUNCH4J := java -jar JavaGUI/launch4j-macosx/launch4j.jar
+   LAUNCH4J := java -jar JavaGUI/launch4j-3.13-macosx/launch4j.jar
 
    
 	# CFLAGS += -Wno-implicit-function-declaration \
@@ -106,14 +107,24 @@ ifeq ($(UNAME_S),Darwin)
 
 endif
 
+ifeq ($(UNAME_S),Linux)
+	LAUNCH4J := java -jar JavaGUI/launch4j-3.13-linux-x64/launch4j.jar
+endif
+
 ### - Platform-specific variations - ###
-ifneq (,$(findstring Microsoft,$(UNAME_R)))
+ifneq (,$(findstring Microsoft,$(UNAME_R))) 
   ifeq ($(UNAME_S),Linux)
     IS_WSL := 1
-    #$(info "Running on WSL.")
+    $(info "Running on WSL.")
   endif
 endif
 ###
+
+ifdef IS_WSL
+	LAUNCH4J := 
+	#EXCLUDE_GUI = 1
+endif
+
 
 # # REMOVE THESE LINES
 # ifeq "Linux" "$(shell uname)"
@@ -127,38 +138,57 @@ endif
 ##############################################################################
 # Macros used to simplify the work
 
+# remove quotes from $(1)
+define unquote 
+$(subst $\",,$(1))
+endef
 # search for a file $(2). If it exists, define variable HAS_$(1) to 1
 define search_file
-	$(if $(HAS_$(1)), , $(if $(wildcard $(2)), $(eval HAS_$(1):=1) ))
+$(if $(HAS_$(1)), , $(if $(wildcard $(2)), $(eval HAS_$(1):=1) ))
 endef
 # search for a library in path $(2). If it exists, define two variables:
 #  HAS_$(1) to 1,  LINK_$(1) to the -L/path and the additional rules $(3)
 define search_lib
-	$(if $(HAS_$(1)), , \
-	  $(if $(wildcard $(2)), \
-	    $(eval HAS_$(1):=1) ; $(eval LINK_$(1):=-L$(dir $(2)) $(3))  )\
-	 )
+$(if $(HAS_$(1)), , \
+  $(if $(wildcard $(2)), \
+    $(eval HAS_$(1):=1) ; \
+    $(eval LINK_$(1):=-L$(dir $(2)) $(3)) ; \
+    $(eval PATH_TO_$(1):=$(dir $(2))) )\
+ )
+endef
+# define warn_missing
+# 	$(if $(HAS_$(1)), , $(warning Missing $(2). Some packages will not be compiled.) )
+# endef
+define info_missing
+$(if $(HAS_$(1)), \
+	$(info $(call unquote,"  [DEP]  ")Found $(call unquote,$(2)) in $(PATH_TO_$(1))), \
+	$(info $(call unquote,"  [DEP]  ")Missing $(call unquote,$(2)). Some packages will not be compiled.) )
 endef
 define warn_missing
-	$(if $(HAS_$(1)), , $(warning Missing $(2). Some packages will not be compiled.) )
+$(if $(HAS_$(1)),, \
+	$(info $(call unquote,"  [DEP]  ")Missing $(call unquote,$(2)). Some packages will not be compiled.) )
+endef
+# directories where libraries will be searched for
+LIBRARY_SEARCH_DIRS := /usr/local/lib \
+					   /usr/lib \
+					   /usr/lib64 \
+					   /opt/homebrew/lib \
+					   /usr/lib/x86_64-linux-gnu
+# define HAS_$(1) if file $(2) of library named $(3) is found in any library search path
+define search_library
+$(foreach libdir,$(LIBRARY_SEARCH_DIRS),  \
+	      $(call search_lib,$(1),$(libdir)/$(2),$(4))) ;  \
+$(call warn_missing,$(1),$(3))
 endef
 ##############################################################################
 
 $(call search_file,OPENMOTIF,$(UIL))
 $(call warn_missing,OPENMOTIF,OpenMotif)
 
-# ifneq ($(shell which $(UIL)),$(UIL))
-#   $(warning "OpenMotif is not installed. Some packages will not compile properly.")
-# else
-#   HAS_OPENMOTIF_LIB := 1
-# endif
 
 $(call search_file,PKGCONFIG,$(shell which pkg-config))
 $(call warn_missing,PKGCONFIG,pkg-config tool)
 
-# ifeq ($(shell which pkg-config),)
-#   $(warning "The pkg-config tool is not installed. Some packages will not compile properly.")
-# endif
 
 ifeq ($(GLIB-INCLUDE),)
   $(warning "The glib-2.0 library is not installed. Some packages will not compile properly.")
@@ -168,167 +198,51 @@ endif
 
 $(call search_file,GRAPHMDP_LIB,/usr/local/lib/libgraphmdp.*,-lgraphmdp)
 $(call warn_missing,GRAPHMDP_LIB,GraphMDP library)
-# GRAPHMDP_LIB := /usr/local/lib/libgraphmdp.a
-# ifeq ($(wildcard $(GRAPHMDP_LIB)),)
-#   $(warning "The GraphMDP library is not installed. Some packages will not be compiled.")
-# else
-#   HAS_GRAPHMDP_LIB := 1
-# endif
+
+$(call search_library,LIBXMLPP2-6_LIB,libxml++-2.6,"libXML++-2.6 library")
+
+$(call search_library,GLIBMM2-4_LIB,libglibmm-2.4.*,"glibmm-2.4 library")
+
+$(call search_library,GLPK_LIB,libglpk.*,"GLPK library",-lglpk)
 
 
-$(call search_lib,LIBXMLPP2-6_LIB,/usr/local/lib/libxml++-2.6)
-$(call search_lib,LIBXMLPP2-6_LIB,/usr/lib/libxml++-2.6)
-$(call search_lib,LIBXMLPP2-6_LIB,/usr/lib64/libxml++-2.6)
-$(call warn_missing,LIBXMLPP2-6_LIB,libXML++-2.6 library)
-# LIBXMLPP2-6_LIB := /usr/local/lib/libxml++-2.6
-# LIBXMLPP2-6_LIB_2 := /usr/lib/libxml++-2.6
-# ifneq ($(wildcard $(LIBXMLPP2-6_LIB)),)
-#   HAS_LIBXMLPP2-6_LIB := 1
-# else ifneq ($(wildcard $(LIBXMLPP2-6_LIB_2)),)
-#   HAS_LIBXMLPP2-6_LIB := 1
-# else
-#   $(warning "The libXML++-2.6 library is not installed. Some packages will not be compiled.")
-# endif
-
-$(call search_lib,GLIBMM2-4_LIB,/usr/local/lib/libglibmm-2.4.*)
-$(call search_lib,GLIBMM2-4_LIB,/usr/lib/libglibmm-2.4.*)
-$(call search_lib,GLIBMM2-4_LIB,/usr/lib64/libglibmm-2.4.*)
-$(call warn_missing,GLIBMM2-4_LIB,glibmm-2.4 library)
-# GLIBMM2-4_LIB := /usr/local/lib/libglibmm-2.4.*
-# GLIBMM2-4_LIB_2 := /usr/lib/libglibmm-2.4.*
-# ifneq ($(wildcard $(GLIBMM2-4_LIB)),)
-#   HAS_GLIBMM2-4_LIB := 1
-# else ifneq ($(wildcard $(GLIBMM2-4_LIB_2)),)
-#   HAS_GLIBMM2-4_LIB := 1
-# else
-#   $(warning "The glibmm-2.4 library is not installed. Some packages will not be compiled.")
-# endif
-
-$(call search_lib,GLPK_LIB,/usr/local/lib/libglpk.*,-lglpk)
-$(call search_lib,GLPK_LIB,/usr/lib/libglpk.*,-lglpk)
-$(call search_lib,GLPK_LIB,/usr/lib64/libglpk.*,-lglpk)
-$(call warn_missing,GLPK_LIB,GLPK library)
-# $(info GLPK_LIB  $(HAS_GLPK_LIB)  $(LINK_GLPK_LIB))
-# GLPK_LIB := /usr/local/lib/libglpk.a
-# GLPK_LIB_2 := /usr/lib/libglpk.a
-# ifneq ($(wildcard $(GLPK_LIB)),)
-#   HAS_GLPK_LIB := 1
-# else ifneq ($(wildcard $(GLPK_LIB)),)
-#   HAS_GLPK_LIB := 1
-# else
-#   $(warning "The GLPJ library is not installed. Some packages will not be compiled.")
-# endif
-
-
-# LP_SOLVE_LIB := /usr/local/lib/liblpsolve55.a
-# ifeq ($(wildcard $(LP_SOLVE_LIB)),)
-#   $(warning "The lp_solve dynamic library is not installed. Some packages will not be compiled.")
-# else
-#   HAS_LP_SOLVE_LIB := 1
-# endif
-
-$(call search_lib,LP_SOLVE_LIB,/usr/local/lib/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
-$(call search_lib,LP_SOLVE_LIB,/usr/lib/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
-$(call search_lib,LP_SOLVE_LIB,/usr/lib64/liblpsolve55.*,-llpsolve55 -ldl -lcolamd)
-$(call warn_missing,LP_SOLVE_LIB,lp_solve55 library)
+$(call search_library,LP_SOLVE_LIB,liblpsolve55.*,"lp_solve55 library",-llpsolve55 -ldl -lcolamd)
 ifdef HAS_LP_SOLVE_LIB
-	INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I/usr/local/include/lpsolve/ -I/usr/include/lpsolve/
+  INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I$(PATH_TO_LP_SOLVE_LIB)../include/lpsolve
 endif
-# $(info LP_SOLVE_LIB  $(HAS_LP_SOLVE_LIB)  $(LINK_LP_SOLVE_LIB)  $(INCLUDE_LP_SOLVE_LIB))
 
-# LP_SOLVE_LIB_1 := /usr/include/lpsolve/lp_lib.h
-# LP_SOLVE_LIB_2 := /usr/local/include/lp_lib.h
-# LP_SOLVE_LIB_3 := /usr/local/include/lpsolve/lp_lib.h
-# ifeq ($(wildcard $(LP_SOLVE_LIB_1)),)
-#   ifeq ($(wildcard $(LP_SOLVE_LIB_2)),)
-#     ifeq ($(wildcard $(LP_SOLVE_LIB_3)),)
-#       $(warning "The lp-solve package is not installed. Some packages will not be compiled.")
-#     else
-#       HAS_LP_SOLVE_LIB := 1
-#       LINK_LP_SOLVE_LIB := -L/usr/local/lib -llpsolve55
-#       INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I/usr/local/include/lpsolve/
-#     endif
-#   else
-#     HAS_LP_SOLVE_LIB := 1
-#     LINK_LP_SOLVE_LIB := -L/usr/local/lib -llpsolve55 -lcolamd
-#     INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1
-#   endif
-# else
-#   HAS_LP_SOLVE_LIB := 1
-#   LINK_LP_SOLVE_LIB := -L/usr/lib64 -L/usr/lib/lp_solve/ -llpsolve55 -ldl -lcolamd
-#   INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I/usr/include/lpsolve/
-# endif
 
-$(call search_lib,GMP_LIB,/usr/local/lib/libgmpxx.*,-lgmpxx -lgmp)
-$(call search_lib,GMP_LIB,/usr/lib/libgmpxx.*,-lgmpxx -lgmp)
-$(call search_lib,GMP_LIB,/usr/lib64/libgmpxx.*,-lgmpxx -lgmp)
-$(call warn_missing,GMP_LIB,GMP library)
+$(call search_library,GMP_LIB,/libgmpxx.*,"GMP library",-lgmpxx -lgmp)
 ifdef HAS_GMP_LIB
 	INCLUDE_GMP_LIB := -DHAS_GMP_LIB=1
 endif
-# $(info GMP_LIB  $(HAS_GMP_LIB)  $(LINK_GMP_LIB)  $(INCLUDE_GMP_LIB))
 
-
-# GMP_LIB_1 := /usr/include/gmpxx.h
-# GMP_LIB_2 := /usr/local/include/gmpxx.h
-# ifeq ($(wildcard $(GMP_LIB_1)),)
-#   ifeq ($(wildcard $(GMP_LIB_2)),)
-#     $(warning "The GMP library is not installed. Some packages will not be compiled.")
-#   else
-#     HAS_GMP_LIB := 1
-#     LINK_GMP_LIB := -L/usr/local/lib -lgmpxx -lgmp
-#     INCLUDE_GMP_LIB := -DHAS_GMP_LIB=1
-#   endif
-# else
-#   HAS_GMP_LIB := 1
-#   LINK_GMP_LIB := -L/usr/lib64 -lgmpxx -lgmp
-#   INCLUDE_GMP_LIB := -DHAS_GMP_LIB=1
-# endif
 
 $(call search_file,JAVA_DEVELOPMENT_KIT,$(shell which javac))
 $(call warn_missing,JAVA_DEVELOPMENT_KIT,Java JDK)
+ifndef JAVA_HOME
+  $(info $(call unquote,"  [DEP]  JAVA_HOME environment variable is undefined. Please define it."))
+endif
+
 
 $(call search_file,APACHE_ANT,$(shell which ant))
 $(call warn_missing,APACHE_ANT,Apache ANT)
 
-# ifeq ($(shell which javac),)
-#   $(warning "Java JDK is not installed. Some packages will not compile properly.")
-# else
-#   HAS_JAVA_DEVELOPMENT_KIT := 1
-#   # Test for Apache ANT
-#   ifeq ($(shell which ant),)
-#     $(warning "Apache ANT build system is not installed. Some packages will not compile properly.")
-#   else
-#     HAS_APACHE_ANT := 1
-#   endif
-#   # Test for ANTLR version 4
-#   # ifeq ($(shell which antlr4),)
-#   #   $(warning "ANTLRv4 is not installed. Some packages will not compile properly.")
-#   # else
-#   #   HAS_ANTLRv4 := 1
-#   # endif
-# endif
 
-$(call search_lib,BOOST_CXX_LIB,/usr/local/lib/libboost_context.*)
-$(call search_lib,BOOST_CXX_LIB,/usr/lib/libboost_context.*)
-$(call search_lib,BOOST_CXX_LIB,/usr/lib64/libboost_context.*)
-$(call warn_missing,BOOST_CXX_LIB,Boost C++ library)
-# $(info BOOST_CXX_LIB  $(HAS_BOOST_CXX_LIB)  $(LINK_BOOST_CXX_LIB)  $(INCLUDE_BOOST_CXX_LIB))
+$(call search_library,BOOST_CXX_LIB,libboost_context*,"Boost C++ library")
 
-# ifeq ($(wildcard $(BOOST_Cxx)/boost/config.hpp), )
-#   $(warning "Boost C++ is not installed. Some packages will not be compiled.")
-# else
-#   HAS_BOOST_CXX_LIB := 1
-# endif
 
-# ifeq ($(wildcard JavaGUI/launch4j-macosx/launch4j.jar), )
-#   #$(warning ".")
-# else
-#   ifdef LAUNCH4J
-#     HAVE_LAUNCH4J := 1
-#   endif
-# endif
+$(call search_library,SPOT_LIB,libspot.*,"Spot library(spot.lrde.epita.fr/)")
 
+
+$(call search_library,MEDDLY_LIB,libmeddly.*,"Meddly library(github.com/asminer/meddly)")
+
+$(call search_library,OGDF_LIB,libOGDF.*,"Open Graph Drawing Framework (ogdf.uos.de)",-lOGDF)
+
+$(call search_library,COIN_LIB,libCOIN.*,"Coin CLP solver (projects.coin-or.org/Clp)",-lCOIN)
+
+
+##############################################################################
 
 ifneq ("$(wildcard /home/user/Desktop/HowToODE-SDE)","")
   IS_VBOX_VERSION71 := 1
@@ -356,14 +270,14 @@ ifneq ("$(wildcard ~/.extra-greatspn-solvers)","")
   INCLUDE_ELVIO_CPP_SOLVER := 1
 endif
 
-ifeq ($(INCLUDE_ELVIO_CPP_SOLVER),1)
-  ifneq ($(wildcard JavaGUI/launch4j-macosx/launch4j.jar), )
-    ifdef LAUNCH4J
-      $(info Have Launch4j)
-      HAVE_LAUNCH4J := 1
-    endif
-  endif
+# ifeq ($(INCLUDE_ELVIO_CPP_SOLVER),1)
+# ifneq ($(wildcard JavaGUI/launch4j-macosx/launch4j.jar), )
+ifdef LAUNCH4J
+#   $(info Have Launch4j)
+  HAVE_LAUNCH4J := 1
 endif
+# endif
+# endif
 
 ifneq ("$(wildcard ../PRIVATE)","")
   ifeq ("$(wildcard PRIV)","")
@@ -388,6 +302,8 @@ endif
 # prova:
 # 	@echo $(HAVE_PKG_CONFIG)
 # 	@echo $(call have_command,HAVE_PKG_CONFIG2,pkg-config) $(HAVE_PKG_CONFIG2)
+
+##############################################################################
 
 ### Note on variable definitions: ###
 # The makefile evaluates compilation variables from the most specific
@@ -852,162 +768,161 @@ WNESRG_SOURCES := WN/SOURCE/SHARED/service.c \
 				  WN/TRANSL/wn_grammar.y \
 				  WN/TRANSL/wn.l
 
-RGMEDD_CFLAGS := $(call generate_WN_FLAGS,TOOL_RGMEDD,RGMEDD) \
-				 $(FLEX-INCLUDE) 
-RGMEDD_CPPFLAGS := $(RGMEDD_CFLAGS) -I/usr/local/include
-RGMEDD_LDFLAGS := $(LDFLAGS) -L/usr/local/lib -lmeddly $(FLEX-LIB)
-RGMEDD_SOURCES := WN/SOURCE/SHARED/service.c \
-				  WN/SOURCE/SHARED/ealloc.c \
-				  WN/SOURCE/SHARED/token.c \
-				  WN/SOURCE/SHARED/dimensio.c \
-				  WN/SOURCE/SHARED/errors.c \
-				  WN/SOLVE/compact.c \
-				  WN/SOURCE/SHARED/common.c \
-				  WN/SOURCE/SHARED/enabling.c \
-				  WN/SOURCE/SHARED/fire.c \
-				  WN/SOURCE/SHARED/shared1.c \
-				  WN/SOURCE/SHARED/shared2.c \
-				  WN/SOURCE/SHARED/outdom.c \
-				  WN/SOURCE/SHARED/report.c \
-				  WN/SOURCE/SHARED/precheck.c \
-				  WN/SOURCE/SHARED/flush.c \
-				  WN/SOURCE/SHARED/degree.c \
-				  WN/SOURCE/SHARED/mainMEDD.cpp \
-				  WN/SOURCE/SHARED/meddEv.cpp \
-				  WN/SOURCE/SHARED/general.cpp \
-				  WN/SOURCE/REACHAB/graph_se.c \
-				  WN/SOURCE/REACHAB/graphMEDD.cpp \
-				  WN/SOURCE/REACHAB/stack.c \
-				  WN/SOURCE/REACHAB/convert.c \
-				  WN/SOURCE/REACHAB/rg_files.c \
-				  WN/SOURCE/REACHAB/rgengwn.c \
-				  WN/SOURCE/READNET/read_arc.c \
-				  WN/SOURCE/READNET/read_t_c.c \
-				  WN/SOURCE/READNET/read_DEF.c \
-				  WN/SOURCE/READNET/read_NET.c \
-				  WN/SOURCE/READNET/read_PIN.c \
-				  WN/SOURCE/READNET/read_t_s.c \
-				  WN/SOURCE/READNET/wn_yac.c \
-				  WN/TRANSL/wn_grammar.y \
-				  WN/TRANSL/wn.l \
-				  WN/SOURCE/CTL/CTL.cpp \
-				  WN/SOURCE/CTL/CTLParser.yy \
-				  WN/SOURCE/CTL/CTLLexer.ll 
-				  # WN/SOURCE/AUTOMA/AutoParser.yy \
-				  # WN/SOURCE/AUTOMA/AutoLexer.l
+# RGMEDD_CFLAGS := $(call generate_WN_FLAGS,TOOL_RGMEDD,RGMEDD) \
+# 				 $(FLEX-INCLUDE) 
+# RGMEDD_CPPFLAGS := $(RGMEDD_CFLAGS) -I/usr/local/include
+# RGMEDD_LDFLAGS := $(LDFLAGS) -L/usr/local/lib -lmeddly $(FLEX-LIB)
+# RGMEDD_SOURCES := WN/SOURCE/SHARED/service.c \
+# 				  WN/SOURCE/SHARED/ealloc.c \
+# 				  WN/SOURCE/SHARED/token.c \
+# 				  WN/SOURCE/SHARED/dimensio.c \
+# 				  WN/SOURCE/SHARED/errors.c \
+# 				  WN/SOLVE/compact.c \
+# 				  WN/SOURCE/SHARED/common.c \
+# 				  WN/SOURCE/SHARED/enabling.c \
+# 				  WN/SOURCE/SHARED/fire.c \
+# 				  WN/SOURCE/SHARED/shared1.c \
+# 				  WN/SOURCE/SHARED/shared2.c \
+# 				  WN/SOURCE/SHARED/outdom.c \
+# 				  WN/SOURCE/SHARED/report.c \
+# 				  WN/SOURCE/SHARED/precheck.c \
+# 				  WN/SOURCE/SHARED/flush.c \
+# 				  WN/SOURCE/SHARED/degree.c \
+# 				  WN/SOURCE/SHARED/mainMEDD.cpp \
+# 				  WN/SOURCE/SHARED/meddEv.cpp \
+# 				  WN/SOURCE/SHARED/general.cpp \
+# 				  WN/SOURCE/REACHAB/graph_se.c \
+# 				  WN/SOURCE/REACHAB/graphMEDD.cpp \
+# 				  WN/SOURCE/REACHAB/stack.c \
+# 				  WN/SOURCE/REACHAB/convert.c \
+# 				  WN/SOURCE/REACHAB/rg_files.c \
+# 				  WN/SOURCE/REACHAB/rgengwn.c \
+# 				  WN/SOURCE/READNET/read_arc.c \
+# 				  WN/SOURCE/READNET/read_t_c.c \
+# 				  WN/SOURCE/READNET/read_DEF.c \
+# 				  WN/SOURCE/READNET/read_NET.c \
+# 				  WN/SOURCE/READNET/read_PIN.c \
+# 				  WN/SOURCE/READNET/read_t_s.c \
+# 				  WN/SOURCE/READNET/wn_yac.c \
+# 				  WN/TRANSL/wn_grammar.y \
+# 				  WN/TRANSL/wn.l \
+# 				  WN/SOURCE/CTL/CTL.cpp \
+# 				  WN/SOURCE/CTL/CTLParser.yy \
+# 				  WN/SOURCE/CTL/CTLLexer.ll 
+# 				  # WN/SOURCE/AUTOMA/AutoParser.yy \
+# 				  # WN/SOURCE/AUTOMA/AutoLexer.l
 
-# Modify the lexer and the parser generators used by the
-RGMEDD_LEX_WN/SOURCE/AUTOMA/AutoLexer.l = $(LEX) -P kk --header-file=$(@:.c=.h)
-RGMEDD_YACCPP_WN/SOURCE/AUTOMA/AutoParser.yy := byacc -v -p kk -d
-RGMEDD_YACCPP_WN/SOURCE/CTL/CTLParser.yy := byacc -p mm -v -d
-RGMEDD_LEXPP_WN/SOURCE/CTL/CTLLexer.ll = $(LEXPP) -+ --header-file=$(@:.cpp=.h)
-RGMEDD_LD := $(LDPP)
+# # Modify the lexer and the parser generators used by the
+# RGMEDD_LEX_WN/SOURCE/AUTOMA/AutoLexer.l = $(LEX) -P kk --header-file=$(@:.c=.h)
+# RGMEDD_YACCPP_WN/SOURCE/AUTOMA/AutoParser.yy := byacc -v -p kk -d
+# RGMEDD_YACCPP_WN/SOURCE/CTL/CTLParser.yy := byacc -p mm -v -d
+# RGMEDD_LEXPP_WN/SOURCE/CTL/CTLLexer.ll = $(LEXPP) -+ --header-file=$(@:.cpp=.h)
+# RGMEDD_LD := $(LDPP)
 
-$(OBJDIR)/RGMEDD/WN/SOURCE/CTL/CTLParser.yy.o: $(OBJDIR)/RGMEDD/WN/SOURCE/CTL/CTLLexer.ll.cpp
+# $(OBJDIR)/RGMEDD/WN/SOURCE/CTL/CTLParser.yy.o: $(OBJDIR)/RGMEDD/WN/SOURCE/CTL/CTLLexer.ll.cpp
 
-$(OBJDIR)/RGMEDD/WN/SOURCE/CTL/CTLLexer.ll.o: $(OBJDIR)/RGMEDD/WN/SOURCE/CTL/CTLParser.yy.cpp
+# $(OBJDIR)/RGMEDD/WN/SOURCE/CTL/CTLLexer.ll.o: $(OBJDIR)/RGMEDD/WN/SOURCE/CTL/CTLParser.yy.cpp
 
-$(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoLexer.l.o: $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoParser.yy.cpp
+# $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoLexer.l.o: $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoParser.yy.cpp
 
-$(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoParser.yy.o: $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoLexer.l.c
+# $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoParser.yy.o: $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoLexer.l.c
 
 #### RGMEDD version 2 ########################################
 
-RGMEDD2_CFLAGS := $(CFLAGS) $(call generate_WN_FLAGS,TOOL_RGMEDD2,RGMEDD2) \
-				          $(FLEX-INCLUDE) 
-RGMEDD2_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx17) -Wno-deprecated-register \
-                    -I/usr/local/include $(INCLUDE_GMP_LIB) \
-                    $(RGMEDD2_CFLAGS) -I/usr/local/include 
+# RGMEDD2_CFLAGS := $(CFLAGS) $(call generate_WN_FLAGS,TOOL_RGMEDD2,RGMEDD2) \
+# 				          $(FLEX-INCLUDE) 
+# RGMEDD2_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx17) -Wno-deprecated-register \
+#                     -I/usr/local/include $(INCLUDE_GMP_LIB) \
+#                     $(RGMEDD2_CFLAGS) -I/usr/local/include 
                     
-                    # -D_GLIBCXX_DEBUG=1
-RGMEDD2_LDFLAGS := -L/usr/local/lib $(LDFLAGS) $(FLEX-LIB) -lmeddly $(LINK_GMP_LIB)
-RGMEDD2_SOURCES := WN/SOURCE/SHARED/service.c \
-				   WN/SOURCE/SHARED/ealloc.c \
-				   WN/SOURCE/SHARED/token.c \
-				   WN/SOURCE/SHARED/dimensio.c \
-				   WN/SOURCE/SHARED/errors.c \
-				   WN/SOLVE/compact.c \
-				   WN/SOURCE/SHARED/common.c \
-				   WN/SOURCE/SHARED/enabling.c \
-				   WN/SOURCE/SHARED/fire.c \
-				   WN/SOURCE/SHARED/shared1.c \
-				   WN/SOURCE/SHARED/shared2.c \
-				   WN/SOURCE/SHARED/outdom.c \
-				   WN/SOURCE/SHARED/report.c \
-				   WN/SOURCE/SHARED/precheck.c \
-				   WN/SOURCE/SHARED/flush.c \
-				   WN/SOURCE/SHARED/degree.c \
-				   WN/SOURCE/REACHAB/graph_se.c \
-				   WN/SOURCE/REACHAB/stack.c \
-				   WN/SOURCE/REACHAB/convert.c \
-				   WN/SOURCE/REACHAB/rg_files.c \
-				   WN/SOURCE/REACHAB/rgengwn.c \
-				   WN/SOURCE/READNET/read_arc.c \
-				   WN/SOURCE/READNET/read_t_c.c \
-				   WN/SOURCE/READNET/read_DEF.c \
-				   WN/SOURCE/READNET/read_NET.c \
-				   WN/SOURCE/READNET/read_PIN.c \
-				   WN/SOURCE/READNET/read_t_s.c \
-				   WN/SOURCE/READNET/wn_yac.c \
-				   WN/TRANSL/wn_grammar.y \
-				   WN/TRANSL/wn.l \
-				   WN/SOURCE/SHARED/mainMEDD2.cpp \
-				   WN/SOURCE/RGMEDD2/nsf_subtree.cpp \
-				   WN/SOURCE/RGMEDD2/varorders.cpp \
-				   WN/SOURCE/RGMEDD2/varorders_bgl.cpp \
-				   WN/SOURCE/RGMEDD2/varorders_meta.cpp \
-				   WN/SOURCE/RGMEDD2/meddEv.cpp \
-				   WN/SOURCE/RGMEDD2/general.cpp \
-				   WN/SOURCE/RGMEDD2/graphMEDD.cpp \
-				   WN/SOURCE/RGMEDD2/CTL.cpp \
-				   WN/SOURCE/RGMEDD2/CTLParser.yy \
-				   WN/SOURCE/RGMEDD2/CTLLexer.ll 
+#                     # -D_GLIBCXX_DEBUG=1
+# RGMEDD2_LDFLAGS := -L/usr/local/lib $(LDFLAGS) $(FLEX-LIB) -lmeddly $(LINK_GMP_LIB)
+# RGMEDD2_SOURCES := WN/SOURCE/SHARED/service.c \
+# 				   WN/SOURCE/SHARED/ealloc.c \
+# 				   WN/SOURCE/SHARED/token.c \
+# 				   WN/SOURCE/SHARED/dimensio.c \
+# 				   WN/SOURCE/SHARED/errors.c \
+# 				   WN/SOLVE/compact.c \
+# 				   WN/SOURCE/SHARED/common.c \
+# 				   WN/SOURCE/SHARED/enabling.c \
+# 				   WN/SOURCE/SHARED/fire.c \
+# 				   WN/SOURCE/SHARED/shared1.c \
+# 				   WN/SOURCE/SHARED/shared2.c \
+# 				   WN/SOURCE/SHARED/outdom.c \
+# 				   WN/SOURCE/SHARED/report.c \
+# 				   WN/SOURCE/SHARED/precheck.c \
+# 				   WN/SOURCE/SHARED/flush.c \
+# 				   WN/SOURCE/SHARED/degree.c \
+# 				   WN/SOURCE/REACHAB/graph_se.c \
+# 				   WN/SOURCE/REACHAB/stack.c \
+# 				   WN/SOURCE/REACHAB/convert.c \
+# 				   WN/SOURCE/REACHAB/rg_files.c \
+# 				   WN/SOURCE/REACHAB/rgengwn.c \
+# 				   WN/SOURCE/READNET/read_arc.c \
+# 				   WN/SOURCE/READNET/read_t_c.c \
+# 				   WN/SOURCE/READNET/read_DEF.c \
+# 				   WN/SOURCE/READNET/read_NET.c \
+# 				   WN/SOURCE/READNET/read_PIN.c \
+# 				   WN/SOURCE/READNET/read_t_s.c \
+# 				   WN/SOURCE/READNET/wn_yac.c \
+# 				   WN/TRANSL/wn_grammar.y \
+# 				   WN/TRANSL/wn.l \
+# 				   WN/SOURCE/SHARED/mainMEDD2.cpp \
+# 				   WN/SOURCE/RGMEDD2/nsf_subtree.cpp \
+# 				   WN/SOURCE/RGMEDD2/varorders.cpp \
+# 				   WN/SOURCE/RGMEDD2/varorders_bgl.cpp \
+# 				   WN/SOURCE/RGMEDD2/varorders_meta.cpp \
+# 				   WN/SOURCE/RGMEDD2/meddEv.cpp \
+# 				   WN/SOURCE/RGMEDD2/general.cpp \
+# 				   WN/SOURCE/RGMEDD2/graphMEDD.cpp \
+# 				   WN/SOURCE/RGMEDD2/CTL.cpp \
+# 				   WN/SOURCE/RGMEDD2/CTLParser.yy \
+# 				   WN/SOURCE/RGMEDD2/CTLLexer.ll 
 
-# Modify the lexer and the parser generators used by the
-# RGMEDD2_LEX_WN/SOURCE/AUTOMA/AutoLexer.l = $(LEX) -P kk --header-file=$(@:.c=.h)
-# RGMEDD2_YACCPP_WN/SOURCE/AUTOMA/AutoParser.yy := byacc -v -p kk -d
-RGMEDD2_YACCPP_WN/SOURCE/RGMEDD2/CTLParser.yy := byacc -p mm -v -d
-RGMEDD2_LEXPP_WN/SOURCE/RGMEDD2/CTLLexer.ll = $(LEXPP) -+ -P mm --header-file=$(@:.cpp=.h)
-RGMEDD2_LD := $(LDPP) -shared-libgcc
+# # Modify the lexer and the parser generators used by the
+# # RGMEDD2_LEX_WN/SOURCE/AUTOMA/AutoLexer.l = $(LEX) -P kk --header-file=$(@:.c=.h)
+# # RGMEDD2_YACCPP_WN/SOURCE/AUTOMA/AutoParser.yy := byacc -v -p kk -d
+# RGMEDD2_YACCPP_WN/SOURCE/RGMEDD2/CTLParser.yy := byacc -p mm -v -d
+# RGMEDD2_LEXPP_WN/SOURCE/RGMEDD2/CTLLexer.ll = $(LEXPP) -+ -P mm --header-file=$(@:.cpp=.h)
+# RGMEDD2_LD := $(LDPP) -shared-libgcc
 
-$(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLParser.yy.o: $(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLLexer.ll.cpp
+# $(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLParser.yy.o: $(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLLexer.ll.cpp
 
-$(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLLexer.ll.o: $(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLParser.yy.cpp
+# $(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLLexer.ll.o: $(OBJDIR)/RGMEDD2/WN/SOURCE/RGMEDD2/CTLParser.yy.cpp
 
-# $(OBJDIR)/RGMEDD2/WN/SOURCE/CTL/CTLLexer.ll.o: $(OBJDIR)/RGMEDD2/WN/SOURCE/CTL/CTLParser.yy.cpp
+# # $(OBJDIR)/RGMEDD2/WN/SOURCE/CTL/CTLLexer.ll.o: $(OBJDIR)/RGMEDD2/WN/SOURCE/CTL/CTLParser.yy.cpp
 
-# $(OBJDIR)/RGMEDD2/WN/SOURCE/AUTOMA/AutoLexer.l.o: $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoParser.yy.cpp
+# # $(OBJDIR)/RGMEDD2/WN/SOURCE/AUTOMA/AutoLexer.l.o: $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoParser.yy.cpp
 
-# $(OBJDIR)/RGMEDD2/WN/SOURCE/AUTOMA/AutoParser.yy.o: $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoLexer.l.c
+# # $(OBJDIR)/RGMEDD2/WN/SOURCE/AUTOMA/AutoParser.yy.o: $(OBJDIR)/RGMEDD/WN/SOURCE/AUTOMA/AutoLexer.l.c
 
-# ifdef HAS_LP_SOLVE_LIB
-#   RGMEDD2_CPPFLAGS := $(RGMEDD2_CPPFLAGS) $(INCLUDE_LP_SOLVE_LIB)
-#   RGMEDD2_LDFLAGS := $(RGMEDD2_LDFLAGS) $(LINK_LP_SOLVE_LIB) 
-# endif
+# # ifdef HAS_LP_SOLVE_LIB
+# #   RGMEDD2_CPPFLAGS := $(RGMEDD2_CPPFLAGS) $(INCLUDE_LP_SOLVE_LIB)
+# #   RGMEDD2_LDFLAGS := $(RGMEDD2_LDFLAGS) $(LINK_LP_SOLVE_LIB) 
+# # endif
 
-# ifdef USE_RGMEDD2
-# TARGETS += RGMEDD2
- #  ifneq ("$(wildcard ~/.elvio-temporary-hack)","")
- #  	 $(warning "Using both RGMEDD & RGMEDD2.")
- #  	RGMEDD2_CPPFLAGS := -I/Users/elvio/Desktop/meddly2015/src/ $(RGMEDD2_CPPFLAGS) 
-	# RGMEDD2_LDFLAGS := -L/Users/elvio/Desktop/meddly2015/src/.libs/ $(RGMEDD2_LDFLAGS) 
+# # ifdef USE_RGMEDD2
+# # TARGETS += RGMEDD2
+#  #  ifneq ("$(wildcard ~/.elvio-temporary-hack)","")
+#  #  	 $(warning "Using both RGMEDD & RGMEDD2.")
+#  #  	RGMEDD2_CPPFLAGS := -I/Users/elvio/Desktop/meddly2015/src/ $(RGMEDD2_CPPFLAGS) 
+# 	# RGMEDD2_LDFLAGS := -L/Users/elvio/Desktop/meddly2015/src/.libs/ $(RGMEDD2_LDFLAGS) 
 
- #  	TARGETS += RGMEDD
- #  endif
-# else
-#   TARGETS += RGMEDD
-# endif
+#  #  	TARGETS += RGMEDD
+#  #  endif
+# # else
+# #   TARGETS += RGMEDD
+# # endif
 
 #### RGMEDD version 3 ########################################
 
 RGMEDD3_CFLAGS := $(CFLAGS) $(call generate_WN_FLAGS,TOOL_RGMEDD3,RGMEDD3) \
                   $(FLEX-INCLUDE) 
-RGMEDD3_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx14) \
-                    -I/usr/local/include $(INCLUDE_GMP_LIB) \
-                    $(RGMEDD3_CFLAGS) -I/usr/local/include 
+RGMEDD3_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx14) $(INCLUDE_GMP_LIB) \
+                    $(RGMEDD3_CFLAGS) $(INCLUDE_MEDDLY_LIB)
                     
                     # -D_GLIBCXX_DEBUG=1 /usr/local/lib/libmeddly.a
-RGMEDD3_LDFLAGS := -L/usr/local/lib $(LDFLAGS) $(FLEX-LIB) -lmeddly $(LINK_GMP_LIB)
+RGMEDD3_LDFLAGS := $(LDFLAGS) $(FLEX-LIB) $(LINK_MEDDLY_LIB) -lmeddly $(LINK_GMP_LIB)
           #-lmeddly 
 RGMEDD3_SOURCES := WN/SOURCE/SHARED/service.c \
            WN/SOURCE/SHARED/ealloc.c \
@@ -1070,12 +985,183 @@ $(OBJDIR)/RGMEDD3/WN/SOURCE/RGMEDD3/CTLLexer.ll.o: $(OBJDIR)/RGMEDD3/WN/SOURCE/R
 
 ifdef HAS_LP_SOLVE_LIB
   RGMEDD3_CPPFLAGS := $(RGMEDD3_CPPFLAGS) $(INCLUDE_LP_SOLVE_LIB)
-  RGMEDD3_LDFLAGS := $(RGMEDD3_LDFLAGS) $(LINK_LP_SOLVE_LIB) 
+  RGMEDD3_LDFLAGS := $(RGMEDD3_LDFLAGS) $(LINK_LP_SOLVE_LIB)
 endif
 
-# ifdef USE_RGMEDD3
-TARGETS += RGMEDD3
-# endif
+ifdef HAS_MEDDLY_LIB
+  TARGETS += RGMEDD3
+endif
+
+#### RGMEDD version 4 ########################################
+
+# -DDEBUG_BUILD enables verbose logging, MDD.show() methods, dumping svg / pdf
+RGMEDD4_CFLAGS := $(CFLAGS) $(call generate_WN_FLAGS,TOOL_RGMEDD4,RGMEDD4) \
+          $(FLEX-INCLUDE) #-g #-DDEBUG_BUILD
+
+RGMEDD4_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx17) $(INCLUDE_GMP_LIB) \
+          $(RGMEDD4_CFLAGS) $(INCLUDE_MEDDLY_LIB) $(INCLUDE_SPOT_LIB)
+
+RGMEDD4_LDFLAGS := $(LDFLAGS) $(FLEX-LIB) $(LINK_GMP_LIB) \
+          $(LINK_MEDDLY_LIB) $(LINK_SPOT_LIB) -lmeddly -lspot
+
+RGMEDD4_SOURCES := WN/SOURCE/SHARED/service.c \
+           WN/SOURCE/SHARED/ealloc.c \
+           WN/SOURCE/SHARED/token.c \
+           WN/SOURCE/SHARED/dimensio.c \
+           WN/SOURCE/SHARED/errors.c \
+           WN/SOLVE/compact.c \
+           WN/SOURCE/SHARED/common.c \
+           WN/SOURCE/SHARED/enabling.c \
+           WN/SOURCE/SHARED/fire.c \
+           WN/SOURCE/SHARED/shared1.c \
+           WN/SOURCE/SHARED/shared2.c \
+           WN/SOURCE/SHARED/outdom.c \
+           WN/SOURCE/SHARED/report.c \
+           WN/SOURCE/SHARED/precheck.c \
+           WN/SOURCE/SHARED/flush.c \
+           WN/SOURCE/SHARED/degree.c \
+           WN/SOURCE/REACHAB/graph_se.c \
+           WN/SOURCE/REACHAB/stack.c \
+           WN/SOURCE/REACHAB/convert.c \
+           WN/SOURCE/REACHAB/rg_files.c \
+           WN/SOURCE/REACHAB/rgengwn.c \
+           WN/SOURCE/READNET/read_arc.c \
+           WN/SOURCE/READNET/read_t_c.c \
+           WN/SOURCE/READNET/read_DEF.c \
+           WN/SOURCE/READNET/read_NET.c \
+           WN/SOURCE/READNET/read_PIN.c \
+           WN/SOURCE/READNET/read_t_s.c \
+           WN/SOURCE/READNET/wn_yac.c \
+           WN/TRANSL/wn_grammar.y \
+           WN/TRANSL/wn.l \
+           WN/SOURCE/RGMEDD4/parallel.cpp \
+           WN/SOURCE/RGMEDD4/mainMEDD4.cpp \
+           WN/SOURCE/RGMEDD4/utils/mt19937-64.c \
+           WN/SOURCE/RGMEDD4/varorders.cpp \
+           WN/SOURCE/RGMEDD4/varorders_bgl.cpp \
+           WN/SOURCE/RGMEDD4/varorders_meta.cpp \
+           WN/SOURCE/RGMEDD4/varorders_soups.cpp \
+           WN/SOURCE/RGMEDD4/varorders_pbasis.cpp \
+           WN/SOURCE/RGMEDD4/meddEv.cpp \
+           WN/SOURCE/RGMEDD4/general.cpp \
+           WN/SOURCE/RGMEDD4/graphMEDD.cpp \
+           WN/SOURCE/RGMEDD4/FormulaEval.cpp \
+           WN/SOURCE/RGMEDD4/CTL.cpp \
+           WN/SOURCE/RGMEDD4/LTL.cpp \
+           WN/SOURCE/RGMEDD4/CTLParser.yy \
+           WN/SOURCE/RGMEDD4/CTLLexer.ll
+
+# Modify the lexer and the parser generators used by the
+# RGMEDD4_LEX_WN/SOURCE/AUTOMA/AutoLexer.l = $(LEX) -P kk --header-file=$(@:.c=.h)
+# RGMEDD4_YACCPP_WN/SOURCE/AUTOMA/AutoParser.yy := byacc -v -p kk -d
+RGMEDD4_YACCPP_WN/SOURCE/RGMEDD4/CTLParser.yy := byacc -p mm -v -d
+RGMEDD4_LEXPP_WN/SOURCE/RGMEDD4/CTLLexer.ll = $(LEXPP) -+ -P mm --header-file=$(@:.cpp=.h)
+RGMEDD4_LD := $(LDPP) -shared-libgcc
+RGMEDD4_CPPFLAGS := $(RGMEDD4_CPPFLAGS) -I.
+
+$(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/FormulaEval.o: $(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/CTLLexer.ll.cpp
+
+$(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/CTLParser.yy.o: $(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/CTLLexer.ll.cpp
+
+$(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/CTLLexer.ll.o: $(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/CTLParser.yy.cpp
+
+
+ifdef HAS_LP_SOLVE_LIB
+  RGMEDD4_CPPFLAGS := $(RGMEDD4_CPPFLAGS) $(INCLUDE_LP_SOLVE_LIB)
+  RGMEDD4_LDFLAGS := $(RGMEDD4_LDFLAGS) $(LINK_LP_SOLVE_LIB) 
+endif
+
+ifdef HAS_MEDDLY_LIB
+  ifdef HAS_SPOT_LIB
+    TARGETS += RGMEDD4
+  endif
+endif
+
+# #### RGMEDD version 5 ########################################
+
+# -DDEBUG_BUILD enables verbose logging, MDD.show() methods, dumping svg / pdf
+RGMEDD5_CFLAGS := $(CFLAGS) $(call generate_WN_FLAGS,TOOL_RGMEDD5,RGMEDD5) \
+					$(FLEX-INCLUDE) #-g #-DDEBUG_BUILD
+
+RGMEDD5_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx17) $(INCLUDE_GMP_LIB) \
+					$(RGMEDD5_CFLAGS) $(INCLUDE_MEDDLY_LIB) $(INCLUDE_SPOT_LIB)
+
+RGMEDD5_LDFLAGS := $(LDFLAGS) $(FLEX-LIB) $(LINK_GMP_LIB) \
+					$(LINK_MEDDLY_LIB) $(LINK_SPOT_LIB) -lmeddly -lspot
+
+RGMEDD5_SOURCES := WN/SOURCE/SHARED/service.c \
+				   WN/SOURCE/SHARED/ealloc.c \
+				   WN/SOURCE/SHARED/token.c \
+				   WN/SOURCE/SHARED/dimensio.c \
+				   WN/SOURCE/SHARED/errors.c \
+				   WN/SOLVE/compact.c \
+				   WN/SOURCE/SHARED/common.c \
+				   WN/SOURCE/SHARED/enabling.c \
+				   WN/SOURCE/SHARED/fire.c \
+				   WN/SOURCE/SHARED/shared1.c \
+				   WN/SOURCE/SHARED/shared2.c \
+				   WN/SOURCE/SHARED/outdom.c \
+				   WN/SOURCE/SHARED/report.c \
+				   WN/SOURCE/SHARED/precheck.c \
+				   WN/SOURCE/SHARED/flush.c \
+				   WN/SOURCE/SHARED/degree.c \
+				   WN/SOURCE/REACHAB/graph_se.c \
+				   WN/SOURCE/REACHAB/stack.c \
+				   WN/SOURCE/REACHAB/convert.c \
+				   WN/SOURCE/REACHAB/rg_files.c \
+				   WN/SOURCE/REACHAB/rgengwn.c \
+				   WN/SOURCE/READNET/read_arc.c \
+				   WN/SOURCE/READNET/read_t_c.c \
+				   WN/SOURCE/READNET/read_DEF.c \
+				   WN/SOURCE/READNET/read_NET.c \
+				   WN/SOURCE/READNET/read_PIN.c \
+				   WN/SOURCE/READNET/read_t_s.c \
+				   WN/SOURCE/READNET/wn_yac.c \
+				   WN/TRANSL/wn_grammar.y \
+				   WN/TRANSL/wn.l \
+				   WN/SOURCE/RGMEDD5/implicit_postimage.cpp \
+				   WN/SOURCE/RGMEDD5/parallel.cpp \
+				   WN/SOURCE/RGMEDD5/mainMEDD5.cpp \
+				   WN/SOURCE/RGMEDD5/mc_core.cpp \
+				   WN/SOURCE/RGMEDD5/utils/mt19937-64.c \
+				   WN/SOURCE/RGMEDD5/varorders.cpp \
+				   WN/SOURCE/RGMEDD5/varorders_bgl.cpp \
+				   WN/SOURCE/RGMEDD5/varorders_meta.cpp \
+				   WN/SOURCE/RGMEDD5/varorders_soups.cpp \
+				   WN/SOURCE/RGMEDD5/varorders_pbasis.cpp \
+				   WN/SOURCE/RGMEDD5/meddEv.cpp \
+				   WN/SOURCE/RGMEDD5/graphMEDD.cpp \
+				   WN/SOURCE/RGMEDD5/FormulaEval.cpp \
+				   WN/SOURCE/RGMEDD5/CTL.cpp \
+				   WN/SOURCE/RGMEDD5/LTL.cpp \
+				   WN/SOURCE/RGMEDD5/CTLParser.yy \
+				   WN/SOURCE/RGMEDD5/CTLLexer.ll
+
+# Modify the lexer and the parser generators used by the
+# RGMEDD5_LEX_WN/SOURCE/AUTOMA/AutoLexer.l = $(LEX) -P kk --header-file=$(@:.c=.h)
+# RGMEDD5_YACCPP_WN/SOURCE/AUTOMA/AutoParser.yy := byacc -v -p kk -d
+RGMEDD5_YACCPP_WN/SOURCE/RGMEDD5/CTLParser.yy := byacc -p mm -v -d
+RGMEDD5_LEXPP_WN/SOURCE/RGMEDD5/CTLLexer.ll = $(LEXPP) -+ -P mm --header-file=$(@:.cpp=.h)
+RGMEDD5_LD := $(LDPP) -shared-libgcc
+RGMEDD5_CPPFLAGS := $(RGMEDD5_CPPFLAGS) -I.
+
+$(OBJDIR)/RGMEDD5/WN/SOURCE/RGMEDD5/CTLParser.yy.o: $(OBJDIR)/RGMEDD5/WN/SOURCE/RGMEDD5/CTLLexer.ll.cpp
+
+$(OBJDIR)/RGMEDD5/WN/SOURCE/RGMEDD5/CTLLexer.ll.o: $(OBJDIR)/RGMEDD5/WN/SOURCE/RGMEDD5/CTLParser.yy.cpp
+
+$(OBJDIR)/RGMEDD5/WN/SOURCE/RGMEDD5/FormulaEval.o: $(OBJDIR)/RGMEDD5/WN/SOURCE/RGMEDD5/CTLLexer.ll.cpp
+
+
+ifdef HAS_LP_SOLVE_LIB
+  RGMEDD5_CPPFLAGS := $(RGMEDD5_CPPFLAGS) $(INCLUDE_LP_SOLVE_LIB)
+  RGMEDD5_LDFLAGS := $(RGMEDD5_LDFLAGS) $(LINK_LP_SOLVE_LIB) 
+endif
+
+ifdef HAS_MEDDLY_LIB
+	ifdef HAS_SPOT_LIB
+		TARGETS += RGMEDD5
+	endif
+endif
 
 ###################################################################################
 
@@ -1753,8 +1839,10 @@ $(BINDIR)/GreatSPN.uid: UIL/Great.uil $(UIL_FILES)
 	@LANG=C $(UIL) -o $@ UIL/Great.uil
 
 ifdef HAS_OPENMOTIF_LIB
+ifndef EXCLUDE_GUI
 EXTRA_INSTALLED_BINARIES += $(BINDIR)/GreatSPN.uid
 EXTRA_INSTALLED_SCRIPTS += gsrc2/GreatConfig
+endif
 endif
 
 ######################################
@@ -1771,7 +1859,8 @@ endif
 ######################################
 
 GUI_ZIP_DIR := .
-GUI_NAMEVER := GreatSPN-Editor-v1.5
+GUI_VERSION := 1.6
+GUI_NAMEVER := GreatSPN-Editor-v$(GUI_VERSION)
 JAVA_BUILD_DIR += JavaGUI/Editor/build
 # JAVA_BUILD_DIR += JavaGUI/MathProvider/build 
 
@@ -1804,7 +1893,7 @@ JavaGUI/Editor/dist/Editor.jar: $(wildcard JavaGUI/Editor/src/*/*.java \
 	                                       JavaGUI/Editor/src/*/*/*/*/*/*.java ) \
                                  $(JAVA_GUI_DEPS)
 	@echo "  [ANT] " $@                             
-	@ant -quiet -buildfile  JavaGUI/Editor/build.xml  jar bundle-app
+	@ant -quiet -Dplatforms.JDK_15.home=${JAVA_HOME} -buildfile  JavaGUI/Editor/build.xml  jar bundle-app
 
 
 # java-jars: JavaGUI/MathProvider/dist/MathProvider.jar
@@ -1816,7 +1905,7 @@ $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Mac.zip: JavaGUI/Editor/dist/GreatSPN\ Editor.app
 	@(cd JavaGUI/Editor/dist/ && zip -q -r - GreatSPN\ Editor.app ) > $@
 
 # Application package objects
-$(OBJDIR)/JavaGUI/bin/Editor.jar: JavaGUI/Editor/dist/Editor.jar
+$(OBJDIR)/JavaGUI/bin/Editor.jar: JavaGUI/Editor/dist/Editor.jar JavaGUI/DISTRIB/install.sh
 	@echo "  [JAR] " $@
 	@$(MKDIR) $(dir $@)/lib
 	@rm -f $@
@@ -1836,11 +1925,30 @@ $(OBJDIR)/JavaGUI/bin/Editor.jar: JavaGUI/Editor/dist/Editor.jar
 	@cp JavaGUI/Additional/splash.png  $(OBJDIR)/JavaGUI/bin/lib/
 	@cp JavaGUI/Additional/greatspn48.png  $(OBJDIR)/JavaGUI/bin/pnpro-editor.png
 	@cp JavaGUI/Additional/pnpro-doc48.png  $(OBJDIR)/JavaGUI/bin/application-x-pnpro-editor.png
+	@cp JavaGUI/DISTRIB/install.sh $(OBJDIR)/JavaGUI/
 
-# $(OBJDIR)/JavaGUI/bin/MathProvider.jar: JavaGUI/MathProvider/dist/MathProvider.jar
-# 	@echo "  [CP]  " $<
-# 	@$(MKDIR) $(dir $@)
-# 	@cp $<  $@
+
+
+# Builds the macOS native application using the jpackage tool
+# objects/JavaGUI/GreatSPN\ Editor.app: JavaGUI
+# 	@echo "  [JPACKAGE] " $@
+# 	@jpackage --input JavaGUI/Editor/dist --name GreatSPN\ Editor \
+# 		--main-jar Editor.jar --main-class editor.Main  \
+# 		--java-options "-Djava.library.path=Contents/Java/" \
+# 		--java-options "-Dapple.laf.useScreenMenuBar=true" \
+# 		--java-options "-Dcom.apple.macos.useScreenMenuBar=true" \
+# 		--java-options "-enableassertions" \
+# 		--java-options "-splash:Contents/Java/splash.png" \
+# 		--type app-image \
+# 		--app-version "$(GUI_VERSION)" \
+# 		--copyright "University of Torino, Italy" \
+# 		--description "The GUI of the GreatSPN framework. Visit https://github.com/greatspn/SOURCES for more informations." \
+# 		--dest objects/JavaGUI/ \
+# 		--icon "JavaGUI/Additional/greatspn.icns" \
+# 		--file-associations JavaGUI/DISTRIB/PNPRO-macos-FileAssoc.txt
+
+
+
 
 $(OBJDIR)/JavaGUI/bin/lib/splash.png: JavaGUI/Additional/splash.png
 	@echo "  [CP]  " $<
@@ -1855,7 +1963,9 @@ JAVA_GUI_OBJECTS := $(OBJDIR)/JavaGUI/bin/Editor.jar \
 $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Win.zip: $(JAVA_GUI_OBJECTS) \
 	                                   JavaGUI/DISTRIB/GreatSPN\ Editor.exe
 	@echo "  [MAKE] Java GUI (Windows)"
-	@(cd $(OBJDIR)/JavaGUI && zip -q -r - *.exe bin/* ) > $@
+	@cp JavaGUI/DISTRIB/UPDATE-ON-WINDOWS-WSL.bat $(OBJDIR)/JavaGUI/
+	@(cd $(OBJDIR)/JavaGUI && zip -q -r - *.exe *.bat bin/* ) > $@
+	@rm $(OBJDIR)/JavaGUI/UPDATE-ON-WINDOWS-WSL.bat
 
 JavaGUI/DISTRIB/GreatSPN\ Editor.exe: JavaGUI/DISTRIB/launch4j-config.cfg.xml \
                                       $(OBJDIR)/JavaGUI/bin/Editor.jar
@@ -1867,7 +1977,6 @@ JavaGUI/DISTRIB/GreatSPN\ Editor.exe: JavaGUI/DISTRIB/launch4j-config.cfg.xml \
 $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Linux.tgz: $(JAVA_GUI_OBJECTS) \
 	                                     JavaGUI/DISTRIB/install.sh
 	@echo "  [MAKE] Java GUI (Linux Tar)"
-	@cp JavaGUI/DISTRIB/install.sh $(OBJDIR)/JavaGUI/
 	@(cd $(OBJDIR)/JavaGUI && tar cz *.sh bin/* ) > $@
 
 # Generic Jar installer
@@ -1892,25 +2001,37 @@ ifdef HAVE_LAUNCH4J
   JAVA_GUI_ARCHIVES += $(GUI_ZIP_DIR)/$(GUI_NAMEVER)-Win.zip
 endif
 
-JavaGUI: java-jars $(JAVA_GUI_ARCHIVES)
+JavaGUI: java-jars $(JAVA_GUI_OBJECTS)
 
-SCRIPTS += unfolding2 greatspn_editor
+BUILD_NUMBER_FILE := JavaGUI/Editor/src/common/build_number.txt
+GUI_VERSION_FILE := JavaGUI/Editor/src/common/version_number.txt
+GUI_REPO_BRANCH := JavaGUI/Editor/src/common/repo_branch.txt
+GUI_REPO_HASH := JavaGUI/Editor/src/common/repo_hash.txt
+GUI_REPO_COUNT := JavaGUI/Editor/src/common/repo_count.txt
+
+# Increase the version number file by one
+JavaGUI-increase-version-number: clean_JavaGUI_x
+	@echo "  [VER]  JavaGUI"
+	@echo $$(( $$(cat $(BUILD_NUMBER_FILE)) + 1 )) > $(BUILD_NUMBER_FILE)
+	@echo "$(GUI_VERSION)" > $(GUI_VERSION_FILE)
+	@git branch --show-current > $(GUI_REPO_BRANCH)
+	@git log -1 --pretty=format:%h > $(GUI_REPO_HASH)
+	@git rev-list --count HEAD > $(GUI_REPO_COUNT)
+
+JavaGUI-archives: $(JAVA_GUI_ARCHIVES)
 
 unfolding2_SOURCEFILE := JavaGUI/unfolding2.sh
+algebra2_SOURCEFILE := JavaGUI/algebra2.sh
 greatspn_editor_SOURCEFILE := JavaGUI/greatspn_editor.sh
 
 
-upload_JavaGUI: JavaGUI
+upload_JavaGUI: JavaGUI-increase-version-number JavaGUI JavaGUI-archives
 	scp $(JAVA_GUI_ARCHIVES) amparore@pianeta.di.unito.it:/docsrv/amparore/public_html/mc4cslta/EditorBinaries/
 
 clean_JavaGUI_x:
 	@echo "  [CLEAN]  Editor.jar"
 	@rm -rf  JavaGUI/Editor/build
 	@rm -f 	 JavaGUI/Editor/dist/Editor.jar
-	#@ant -quiet -silent -buildfile  JavaGUI/Editor/build.xml  clean
-	# @echo "  [CLEAN]  MathProvider.jar"
-	# @rm -rf  JavaGUI/MathProvider/build
-	#@ant -quiet -silent -buildfile  JavaGUI/MathProvider/build.xml  clean
 	@echo "  [CLEAN]  GUI Installers"                              
 	@rm -rf $(OBJDIR)/JavaGUI/*
 	@rm -f $(JAVA_GUI_ARCHIVES)
@@ -1926,7 +2047,7 @@ install_JavaGUI_jars: JavaGUI
 # On Linux,also install the JavaGUI in the system menu using the XDG tools
 linux-install-JavaGUI: install_JavaGUI_jars
 	@echo "  [INSTALL] JavaGUI XDG resources"
-	@(cd $(OBJDIR)/JavaGUI/ && export INSTALLDIR=$(INSTALLDIR) && bash install.sh -silent )
+	@(cd $(OBJDIR)/JavaGUI/ && export INSTALLDIR=$(INSTALLDIR) && bash install.sh -silent -nc )
 
 # Install GUI library of models
 install_JavaGUI_models:
@@ -1935,25 +2056,30 @@ install_JavaGUI_models:
 
 
 # On Linux, make install automatically re-installs the Java GUI
-ifeq ($(UNAME_S),Linux)
- ifdef HAS_APACHE_ANT
-install: linux-install-JavaGUI
+# ifeq ($(UNAME_S),Linux)
+ ifdef HAS_JAVA_DEVELOPMENT_KIT
+  ifdef HAS_APACHE_ANT
+   ifndef EXCLUDE_GUI
 
- endif
+ifeq ($(UNAME_S),Linux)
+install: linux-install-JavaGUI
 endif
 
-ifdef HAS_JAVA_DEVELOPMENT_KIT
- ifdef HAS_APACHE_ANT
 all: JavaGUI
 
 clean: clean_JavaGUI
 
 install: install_JavaGUI_models install_JavaGUI_jars
 
- endif
-endif
+SCRIPTS += unfolding2 algebra2 greatspn_editor
 
-.PHONY += JavaGUI clean_JavaGUI JavaGUI-antlr java-jars clean_java-gui linux-install-JavaGUI
+   endif
+  endif
+ endif
+# endif
+
+.PHONY += JavaGUI clean_JavaGUI JavaGUI-antlr java-jars clean_java-gui linux-install-JavaGUI 
+.PHONY += JavaGUI-increase-version-number JavaGUI-archives
 .PHONY += JavaGUI-win JavaGUI-macosx JavaGUI-linux JavaGUI-jar upload_JavaGUI install_JavaGUI_jars
 
 
@@ -2046,7 +2172,7 @@ NSRC/DSPN-Tool/lexer.ll: $(OBJDIR)/DSPN-Tool/NSRC/DSPN-Tool/newparser.lyy.o bin/
 DSPN-Tool_CPPFLAGS := -O2 -Wall $(ENABLE_Cxx17) \
                       -Iobjects/DSPN-Tool/NSRC/DSPN-Tool/ \
                       -Wno-unused-function \
-                      -DNDEBUG=1 
+                      -DNDEBUG=1 $(CPPFLAGS)
 DSPN-Tool_LD := $(LDPP)
 DSPN-Tool_LEXPP := $(LEX)
 
@@ -2066,7 +2192,7 @@ DSPN-Tool-Debug_CPPFLAGS := -Wall $(ENABLE_Cxx17) \
                       		-Iobjects/DSPN-Tool-Debug/NSRC/DSPN-Tool/ \
                       		-g -Wall -Wextra -Wno-unused-parameter \
                       		-Wno-unused-function \
-                       		-DUSE_PRIVATE_TYPES=1 -D_GLIBCXX_DEBUG=1
+                       		-DUSE_PRIVATE_TYPES=1 -D_GLIBCXX_DEBUG=1 $(CPPFLAGS)
 DSPN-Tool-Debug_LD := $(DSPN-Tool_LD) -g
 DSPN-Tool-Debug_LEXPP := $(LEX)
 
@@ -2091,6 +2217,25 @@ TARGETS += DSPN-Tool-Debug
 endif
 # endif
 
+
+######################################
+# OGDF Tool
+######################################
+
+ogdf_SOURCES := NSRC/ogdf/ogdf.cpp
+
+ogdf_CPPFLAGS := $(CPPFLAGS) -Wall $(ENABLE_Cxx17)
+ogdf_LD := $(LDPP)
+ogdf_LDFLAGS := $(LDFLAGS) $(LINK_OGDF_LIB) $(ENABLE_Cxx17) -pthread
+
+ifdef HAS_COIN_LIB
+	ogdf_LDFLAGS := $(ogdf_LDFLAGS)  $(LINK_COIN_LIB)
+	ogdf_CPPFLAGS := $(ogdf_CPPFLAGS) -DHAS_COIN_LIB
+endif
+
+ifdef HAS_OGDF_LIB
+  TARGETS += ogdf
+endif
 
 ######################################
 ##### MAIN PACKAGE LOCATOR SCRIPT #####
@@ -2379,7 +2524,13 @@ distclean:
 	@echo "  [DISTCLEAN]"
 	@$(RMDIR) $(BINDIR) $(SCRIPTDIR) $(LIBDIR) $(OBJDIR) $(JAVA_BUILD_DIR) $(CLEAN_INSTALLEDSOURCE)
 
-install: all
+require-root:
+ifneq ($(shell id -u), 0)
+	@echo "You are not root, run 'install' as root please."
+	@exit 1
+endif
+
+install: all | require-root
 	@echo "  [INSTALL]"
 	@$(MKDIR) $(INSTALLDIR)/$(BINDIR)/
 	@cp $(BINARIES) $(EXTRA_INSTALLED_BINARIES)  $(INSTALLDIR)/$(BINDIR)/
@@ -2418,6 +2569,9 @@ print:
 	@echo "YACC++DERIVEDHEADERS = " $(YACCPPDERIVEDHEADERS)
 	@echo "SCRIPT_FILES = " $(SCRIPT_FILES)
 	@echo "SCRIPT_SOURCES = " $(SCRIPT_SOURCES)
+
+print_binaries:
+	@echo "BINARIES = " $(BINARIES)
 
 print2:
 	@echo "DERIVEDSOURCES = " $(DERIVEDSOURCES)

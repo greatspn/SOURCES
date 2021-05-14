@@ -23,6 +23,7 @@ public class ModelCheckingResultEntry extends ResultEntry {
     // Can be either a boolean for standard CTL/LTL results, or an Integer
     // for bound CTL queries (like:  bound(Place1,Place2) ).
     private Object response;
+    private String additionals = null;
     
     public ModelCheckingResultEntry() { }
 
@@ -42,17 +43,29 @@ public class ModelCheckingResultEntry extends ResultEntry {
 
     @Override
     protected String resultToString() {
-        return response.toString();
+        String out = response.toString();
+        if (additionals!=null)
+            out = out + " ("+additionals+")";
+        return out;
     }
 
     @Override
     protected void parseResult(Scanner scanner, NetPage targetNet) {
         String resp = scanner.next();
         
-        if (resp.equalsIgnoreCase("true"))
-            setSatValue(true);
-        else if (resp.equalsIgnoreCase("false"))
-            setSatValue(false);
+        boolean isTrue = resp.equalsIgnoreCase("true");
+        boolean isFalse = resp.equalsIgnoreCase("false");
+        if (isTrue || isFalse) {
+            setSatValue(isTrue);
+            
+            if (scanner.hasNext()) {
+                additionals = scanner.next();
+            }
+        }
+//        if (resp.equalsIgnoreCase("true"))
+//            setSatValue(true);
+//        else if (resp.equalsIgnoreCase("false"))
+//            setSatValue(false);
         else {
             // Must be an integer value.
             int result = Integer.parseInt(resp);
@@ -70,8 +83,10 @@ public class ModelCheckingResultEntry extends ResultEntry {
         super.exchangeXML(el, exDir); 
         
         if (isComputedOk()) {
-            if (exDir.FieldsToXml())
-                el.setAttribute("value", resultToString());
+            if (exDir.FieldsToXml()) {
+                String out = response.toString() + (additionals==null ? "" : " "+additionals);
+                el.setAttribute("value", out);
+            }
             else {
                 Scanner sc = new Scanner(el.getAttribute("value"));
                 parseResult(sc, null);

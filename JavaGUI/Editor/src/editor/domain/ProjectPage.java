@@ -73,6 +73,9 @@ public abstract class ProjectPage implements Serializable, UuidObject, ResourceH
     // called when another page in the project has been renamed
     public void onAnotherPageRenaming(String oldName, String newName) { }
     
+    // called when a node changes its unique ID in another page
+    public void onAnotherPageNodeRenaming(ProjectPage otherPage, String oldId, String newId) { }
+    
     // Syntax/semantic analysis of the page content
     public final boolean isPageCorrect() { return numRealErrors == 0; }
     
@@ -194,6 +197,8 @@ public abstract class ProjectPage implements Serializable, UuidObject, ResourceH
     public abstract boolean pageSupportsUnfolding();
     // Page data can be unfolded
     public abstract boolean canBeUnfolded();
+    // net amtrices (incidence, I,O,H) can be extracted and shown
+    public abstract boolean hasNetMatrices();
     
     public enum RgType {
         RG, SRG, CTMC

@@ -6,6 +6,10 @@
 // CLASSPATH=.:/usr/local/lib/antlr-4.2.1-complete.jar:../dist/Editor.jar 
 //        grun editor.domain.grammar.ExprLang mainBoolExpr -gui
 
+// To copy as HTML:
+// Use Sublime (with SublimeHighlighter installed)
+//  select all -> ctrl+shift+P -> copy as HTML
+
 // Define a grammar called ExprLang
 grammar ExprLang;
 
@@ -27,7 +31,7 @@ tokens {
     EXISTS, FORALL, NEXT, FUTURE, GLOBALLY, UNTIL,
     EXISTS_NEXT, EXISTS_FUTURE, EXISTS_GLOBALLY,
     FORALL_NEXT, FORALL_FUTURE, FORALL_GLOBALLY,
-    POSSIBLY, IMPOSSIBLY, INVARIANTLY, ENABLED, BOUNDS, DEADLOCK, NO_DEADLOCK,
+    POSSIBLY, IMPOSSIBLY, INVARIANTLY, ENABLED, BOUNDS, DEADLOCK, NO_DEADLOCK, INITIAL_STATE,
 
     CTLSTAR_NEXT, CTLSTAR_FUTURE, CTLSTAR_GLOBALLY, CTLSTAR_UNTIL,
     CTLSTAR_EXISTS, CTLSTAR_FORALL,
@@ -152,6 +156,7 @@ boolExpr : '!' boolExpr                                          # BoolExprNot
          | pin=(POSSIBLY|IMPOSSIBLY|INVARIANTLY) boolExpr        # BoolExprCTLpin
          | ENABLED '(' TRANSITION_ID ')'                         # BoolExprCTLenabled
          | (DEADLOCK|NO_DEADLOCK)                                # BoolExprCTLdeadlocks
+         | INITIAL_STATE                                         # BoolExprCTLinitState
          /* LTL/CTL* language */
          | op=(CTLSTAR_NEXT | CTLSTAR_FUTURE | CTLSTAR_GLOBALLY) boolExpr  # BoolExprCTLStar
          | '(' boolExpr CTLSTAR_UNTIL boolExpr ')'               # BoolExprCTLStarUntil
@@ -184,16 +189,19 @@ unaryRealFn : fn=(SIN_FN | COS_FN | TAN_FN | EXP_FN | SQRT_FN | ARCSIN_FN | ARCC
 mSetPredicate : '[' boolExpr ']'                                 # MSetBoolPredicate
               ;
 
+mSetElemPredicate : '[' boolExpr ']'                             # MSetElemBoolPredicate
+                  ;
+
 realMSetExpr : '(' realMSetExpr ')'                                # RealMSetExprParen 
              | realMSetExpr op=('+'|'-') realMSetExpr              # RealMSetExprAddSub
-             | realExpr? mSetPredicate? '<' multiSetElem (',' multiSetElem)* '>'  # RealMSetExprElemProduct
+             | realExpr? mSetPredicate? '<' multiSetElem (',' multiSetElem)* '>' mSetElemPredicate?  # RealMSetExprElemProduct
              | '#' REAL_MSET_PLACE_ID                              # RealMsetExprPlaceMarking
              | REAL_MSET_CONST_ID                                  # RealMsetExprConst
              ;
 
 intMSetExpr :  '(' intMSetExpr ')'                               # IntMSetExprParen
             | intMSetExpr op=('+'|'-') intMSetExpr               # IntMSetExprAddSub
-            | intExpr? mSetPredicate? '<' multiSetElem (',' multiSetElem)* '>'  # IntMSetExprElemProduct
+            | intExpr? mSetPredicate? '<' multiSetElem (',' multiSetElem)* '>' mSetElemPredicate?  # IntMSetExprElemProduct
             | '#' INT_MSET_PLACE_ID                              # IntMsetExprPlaceMarking
             | INT_MSET_CONST_ID                                  # IntMSetExprConst
             ;
@@ -210,6 +218,7 @@ colorTerm : colorTerm op=('++'|'--')               # ColorTermNextPrev
           //| op=('!'|'^') colorTerm                 # ColorTermNextPrev2
           | colorVar                               # ColorTermVar
           | COLOR_ID                               # ColorTermColor
+          | '@' SIMPLECOLORCLASS_ID? ('[' INT ']')?  # ColorTermFilterThis
           ;
 
 colorSet : colorTerm                               # ColorSetTerm
@@ -617,6 +626,7 @@ ID : ID_LETTER (ID_LETTER | DIGIT)* {
             case "bounds":       setType(ExprLangParser.BOUNDS);      return;
             case "deadlock":     setType(ExprLangParser.DEADLOCK);    return;
             case "ndeadlock":    setType(ExprLangParser.NO_DEADLOCK); return;
+            case "initial":      setType(ExprLangParser.INITIAL_STATE);    return;
             // If new context-dependent keywords are added to this list,
             // they must also be added in NetObject.extraKeyWords[].
         }

@@ -8,7 +8,6 @@ import editor.gui.SharedResourceProvider;
 import common.Action;
 import common.Condition;
 import common.JToggleTriState;
-import common.ModalLogDialog;
 import common.Util;
 import editor.Main;
 import editor.domain.Decor;
@@ -27,15 +26,9 @@ import editor.domain.PageErrorWarning;
 import editor.domain.ProjectData;
 import editor.domain.Selectable;
 import editor.domain.ViewProfile;
-import editor.domain.io.ApnnFormat;
-import editor.domain.io.DtaFormat;
-import editor.domain.io.GRMLFormat;
-import editor.domain.io.GreatSpnFormat;
-import editor.domain.io.PNMLFormat;
-import editor.domain.struct.StructInfo;
 import editor.gui.CutCopyPasteEngine;
+import editor.gui.PagePrintExportManager;
 import editor.gui.ResourceFactory;
-import editor.gui.UndoableCommand;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -55,7 +48,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -66,13 +58,12 @@ import javax.swing.AbstractButton;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.PopupMenuEvent;
@@ -279,7 +270,7 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
         jScrollPane.setColumnHeaderView(horizRuler);
         jScrollPane.setRowHeaderView(vertRuler);
         JPanel corner = new JPanel();
-        corner.setBackground(Color.WHITE);
+        corner.setBackground(horizRuler.BKGND);
         jScrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, corner);
         
         // Add actions to the input map manually
@@ -366,8 +357,8 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
     }
 
     @Override
-    public JComponent getToolbar() {
-        return jToolBarEmpty;
+    public JComponent[] getToolbars() {
+        return new JComponent[]{};
     }
 
     @Override
@@ -548,6 +539,13 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
         boolean isGspn = (currPage instanceof GspnPage);
         boolean isDta = (currPage instanceof DtaPage);
         boolean inSelectMode = (currTool.activeTool == Tool.SELECT);
+        boolean hasIncompleteEdges = false;
+        for (Edge edge : currPage.edges) {
+            if (edge.getHeadNode()==null || edge.getTailNode()==null) {
+                hasIncompleteEdges = true;
+                break;
+            }
+        }
         
         for (SharedResourceProvider.ActionName actName : SharedResourceProvider.ActionName.values()) {
             common.Action act = shResProv.getSharedAction(actName);
@@ -578,6 +576,15 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
                 case EXPORT_DTA_FORMAT:
                     act.setEnabled(isDta && currPage.isPageCorrect());
                     break;
+                    
+                case EXPORT_AS_PDF:
+                case EXPORT_AS_PNG:
+                    act.setEnabled(true);
+                    break;
+                    
+                case RELAYOUT_OGDF:
+                    act.setEnabled(inSelectMode && currPage.nodes.size()>2 &&!hasIncompleteEdges);
+                    break;
 
                 default:
                     act.setEnabled(false);
@@ -605,23 +612,42 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
                 return;
                 
             case EXPORT_GREATSPN_FORMAT:
-                exportGspnInGreatSPNFormat();
+                PagePrintExportManager.exportGspnInGreatSPNFormat(mainInterface, (GspnPage)currPage);
                 return;
                 
             case EXPORT_PNML_FORMAT:
-                exportGspnInPNMLFormat();
+                PagePrintExportManager.exportGspnInPNMLFormat(mainInterface, (GspnPage)currPage);
                 return;
                 
             case EXPORT_GRML_FORMAT:
-                exportGspnInGRMLFormat();
+                PagePrintExportManager.exportGspnInGRMLFormat(mainInterface, (GspnPage)currPage);
                 return;
                 
             case EXPORT_APNN_FORMAT:
-                exportGspnInAPNNFormat();
+                PagePrintExportManager.exportGspnInAPNNFormat(mainInterface, (GspnPage)currPage);
                 return;
                         
             case EXPORT_DTA_FORMAT:
-                exportInDtaFormat();
+                PagePrintExportManager.exportInDtaFormat(mainInterface, (DtaPage)currPage);
+                return;
+                
+            case EXPORT_AS_PDF:
+                PagePrintExportManager.printAsPdf(mainInterface, currPage);
+                return;
+                
+            case EXPORT_AS_PNG:
+                PagePrintExportManager.printAsPng(mainInterface, currPage);
+                return;
+                
+            case SHOW_NET_MATRICES:
+                PagePrintExportManager.showNetMatrices(mainInterface, (GspnPage)currPage);
+                return;
+                
+            case RELAYOUT_OGDF:
+                NetRelayoutWindow nrw = new NetRelayoutWindow(mainInterface.getWindowFrame(), 
+                                                              mainInterface, currPage);
+                nrw.setVisible(true);
+//                OgdfLayout.relayout(mainInterface, (GspnPage)currPage);
                 return;
                         
             default:
@@ -645,22 +671,39 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
     @Override
     public boolean isZoomPanelUsed() { return true; }
     
-    public static final Color OUTSIDE_PAGE_COLOR = new Color(230,230,230);
+    public static final Color OUTSIDE_PAGE_COLOR = Util.mix(UIManager.getColor("Panel.background"), Color.gray, 0.90f);
+    public static final Color PAGE_SHADOW_COLOR = new Color(140, 140, 140);
     public static final Color[] PAGE_BORDER = new Color[] {
-        new Color(140, 140, 140),
+        PAGE_SHADOW_COLOR,
         // fade progressively to OUTSIDE_PAGE_COLOR
-        new Color(190, 190, 190),
-        new Color(200, 200, 200),
-        new Color(210, 210, 210),
-        new Color(220, 220, 220),
+//        new Color(190, 190, 190),
+//        new Color(200, 200, 200),
+//        new Color(210, 210, 210),
+//        new Color(220, 220, 220),
+        Util.mix(PAGE_SHADOW_COLOR, OUTSIDE_PAGE_COLOR, 0.80f),
+        Util.mix(PAGE_SHADOW_COLOR, OUTSIDE_PAGE_COLOR, 0.60f),
+        Util.mix(PAGE_SHADOW_COLOR, OUTSIDE_PAGE_COLOR, 0.40f),
+        Util.mix(PAGE_SHADOW_COLOR, OUTSIDE_PAGE_COLOR, 0.20f),
     };
+    
+    public static final Color PAGE_BACKGROUND_COLOR = Util.mix(UIManager.getColor("TextField.background"), Color.WHITE, 0.20f);
+    public static final Color PAGE_FOREGROUND_COLOR = Util.mix(UIManager.getColor("TextField.foreground"), Color.BLACK, 0.20f);
+    public static final Color PAGE_BACKGROUND_DISABLED_COLOR = Util.mix(PAGE_BACKGROUND_COLOR, Color.BLACK, 0.80f);
+//    static{
+//        System.out.println("Util.mix(UIManager.getColor(\"TextField.inactiveBackground\") = "+UIManager.getColor("TextField.inactiveBackground"));
+//        System.out.println("PAGE_BACKGROUND_DISABLED_COLOR = "+PAGE_BACKGROUND_DISABLED_COLOR);
+//    }
+    
+    public static final Color PAGE_TITLE_BACKGROUND = Util.mix(UIManager.getColor("TextField.background"), new Color(223, 223, 255), 0.20f);
+    public static final Color PAGE_TITLE_FOREGROUND = Color.BLACK;
+    
 
     class JNetPanel extends JPanel implements Scrollable, 
             CutCopyPasteEngine.CutCopyPasteActivation,
             CutCopyPasteEngine.CutCopyPasteActuator
     {
         public JNetPanel() {
-            setBackground(Color.WHITE);
+            setBackground(PAGE_BACKGROUND_COLOR);
             setFocusable(true);
             setAutoscrolls(true); // Enable syntetic scroll events
             setOpaque(false);
@@ -807,7 +850,7 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
             int pX = dh.logicToScreen(currPage.getPageWidthForEditor());
             int pY = dh.logicToScreen(currPage.getPageHeightForEditor());
             int rX = (getWidth() - pX), rY = (getHeight() - pY);
-            g.setColor(Color.WHITE);
+            g.setColor(PAGE_BACKGROUND_COLOR);
             g.fillRect(0, 0, pX, pY);
             g.setColor(OUTSIDE_PAGE_COLOR);
             g.fillRect(pX, 0, rX, pY);
@@ -831,269 +874,275 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
             g2.setTransform(oldAT);
         }
     }
-    
 
-    
-    private void exportGspnInGreatSPNFormat() {
-        assert currPage instanceof GspnPage && currPage.isPageCorrect();
-        
-        File netFile, defFile;
-        boolean repeatChooser;
-        do {
-            repeatChooser = false;
-            final JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Export \""+currPage.getPageName()+"\" in GreatSPN format...");
-            String curDir = Util.getPreferences().get("greatspn-export-dir", System.getProperty("user.home"));
-            fileChooser.setCurrentDirectory(curDir!=null ? new File(curDir) : null);
-            fileChooser.setSelectedFile(curDir!=null ? new File(curDir+File.separator+currPage.getPageName()+".net") : null);
-            fileChooser.addChoosableFileFilter(GreatSpnFormat.fileFilter);
-            fileChooser.setFileFilter(GreatSpnFormat.fileFilter);
-            if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
-                return;
-            netFile = fileChooser.getSelectedFile();
-            
-            // Generate the .net and .def filenames
-            String path = netFile.getPath();
-            int lastDot = path.lastIndexOf(".");
-            //System.out.println("path.substring(lastDot) = "+path.substring(lastDot));
-            if (lastDot != -1 && path.substring(lastDot).equalsIgnoreCase(".net"))
-                path = path.substring(0, lastDot);
-            netFile = new File(path + ".net");
-            defFile = new File(path + ".def");
-            curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
-            Util.getPreferences().put("greatspn-export-dir", curDir);
-            if (netFile.exists()) {
-                int r = JOptionPane.showConfirmDialog(this, 
-                         "The file \""+netFile+"\" already exists! Overwrite it?", 
-                                                       "Overwrite file", 
-                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
-                                                       JOptionPane.WARNING_MESSAGE);
-                if (r == JOptionPane.NO_OPTION)
-                    repeatChooser = true;
-                else if (r == JOptionPane.CANCEL_OPTION)
-                    return;
-            }
-        } while (repeatChooser);
-        
-        System.out.println("netFile = "+netFile);
-        System.out.println("defFile = "+defFile);
-        
-        try {
-            String log = GreatSpnFormat.exportGspn((GspnPage)currPage, netFile, defFile, 
-                                                    Main.isGreatSPNExtAllowed());
-            if (log != null)
-                new ModalLogDialog(this, log).setVisible(true);
-            mainInterface.setStatus("GSPN exported.", true);
-        }
-        catch (Exception e) {
-            JOptionPane.showMessageDialog(this, 
-                                          "An error happened while exporting the page in GreatSPN format.\n"
-                                          + "Reason: "+e.getMessage(),
-                                          "Export \""+currPage.getPageName()+"\" in GreatSPN format...", 
-                                          JOptionPane.ERROR_MESSAGE);            
-            mainInterface.setStatus("could not export GSPN.", true);
-        }
-    }
-    
-    private void exportGspnInGRMLFormat() {
-        assert currPage instanceof GspnPage && currPage.isPageCorrect();
-        
-        File grmlFile;
-        boolean repeatChooser;
-        do {
-            repeatChooser = false;
-            final JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Export \""+currPage.getPageName()+"\" in GrML format...");
-            String curDir = Util.getPreferences().get("grml-export-dir", System.getProperty("user.home"));
-            fileChooser.setCurrentDirectory(curDir!=null ? new File(curDir) : null);
-            fileChooser.setSelectedFile(curDir!=null ? new File(curDir+File.separator+currPage.getPageName()+".grml") : null);
-            fileChooser.addChoosableFileFilter(GRMLFormat.fileFilter);
-            fileChooser.setFileFilter(GRMLFormat.fileFilter);
-            if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
-                return;
-            grmlFile = fileChooser.getSelectedFile();
-            curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
-            Util.getPreferences().put("grml-export-dir", curDir);
-            if (grmlFile.exists()) {
-                int r = JOptionPane.showConfirmDialog(this, 
-                         "The file \""+grmlFile+"\" already exists! Overwrite it?", 
-                                                       "Overwrite file", 
-                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
-                                                       JOptionPane.WARNING_MESSAGE);
-                if (r == JOptionPane.NO_OPTION)
-                    repeatChooser = true;
-                else if (r == JOptionPane.CANCEL_OPTION)
-                    return;
-            }
-        } while (repeatChooser);
-        
-        try {
-            //StructInfo struct = StructInfo.computeStructInfo(mainInterface.getWindowFrame(), 
-            //                                                 (GspnPage)currPage, null, null);
-            String log = GRMLFormat.exportGspn((GspnPage)currPage, grmlFile);
-            if (log != null)
-                new ModalLogDialog(this, log).setVisible(true);
-            mainInterface.setStatus("GSPN exported in GrML format.", true);
-        }
-        catch (Exception e) {
-            JOptionPane.showMessageDialog(this, 
-                                          "An error happened while exporting the page in GrML format.\n"
-                                          + "Reason: "+e.getMessage(),
-                                          "Export \""+currPage.getPageName()+"\" in GrML format...", 
-                                          JOptionPane.ERROR_MESSAGE);            
-            mainInterface.setStatus("could not export GSPN in GrML format.", true);
-        }        
-    }
-    
-    private void exportGspnInPNMLFormat() {
-        assert currPage instanceof GspnPage && currPage.isPageCorrect();
-        
-        File pnmlFile;
-        boolean repeatChooser;
-        do {
-            repeatChooser = false;
-            final JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Export \""+currPage.getPageName()+"\" in PNML format...");
-            String curDir = Util.getPreferences().get("pnml-export-dir", System.getProperty("user.home"));
-            fileChooser.setCurrentDirectory(curDir!=null ? new File(curDir) : null);
-            fileChooser.setSelectedFile(curDir!=null ? new File(curDir+File.separator+currPage.getPageName()+".pnml") : null);
-            fileChooser.addChoosableFileFilter(PNMLFormat.fileFilter);
-            fileChooser.setFileFilter(PNMLFormat.fileFilter);
-            if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
-                return;
-            pnmlFile = fileChooser.getSelectedFile();
-            curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
-            Util.getPreferences().put("pnml-export-dir", curDir);
-            if (pnmlFile.exists()) {
-                int r = JOptionPane.showConfirmDialog(this, 
-                         "The file \""+pnmlFile+"\" already exists! Overwrite it?", 
-                                                       "Overwrite file", 
-                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
-                                                       JOptionPane.WARNING_MESSAGE);
-                if (r == JOptionPane.NO_OPTION)
-                    repeatChooser = true;
-                else if (r == JOptionPane.CANCEL_OPTION)
-                    return;
-            }
-        } while (repeatChooser);
-        
-        try {
-            //StructInfo struct = StructInfo.computeStructInfo(mainInterface.getWindowFrame(), 
-            //                                                 (GspnPage)currPage, null, null);
-            String log = PNMLFormat.exportGspn((GspnPage)currPage, pnmlFile, true);
-            if (log != null)
-                new ModalLogDialog(this, log).setVisible(true);
-            mainInterface.setStatus("GSPN exported in PNML format.", true);
-        }
-        catch (Exception e) {
-            JOptionPane.showMessageDialog(this, 
-                                          "An error happened while exporting the page in PNML format.\n"
-                                          + "Reason: "+e.getMessage(),
-                                          "Export \""+currPage.getPageName()+"\" in PNML format...", 
-                                          JOptionPane.ERROR_MESSAGE);            
-            mainInterface.setStatus("could not export GSPN in PNML format.", true);
-        }       
-    }
-    
-    private void exportGspnInAPNNFormat() {
-        assert currPage instanceof GspnPage && currPage.isPageCorrect();
-        
-        File apnnFile;
-        boolean repeatChooser;
-        do {
-            repeatChooser = false;
-            final JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Export \""+currPage.getPageName()+"\" in APNN format...");
-            String curDir = Util.getPreferences().get("apnn-export-dir", System.getProperty("user.home"));
-            fileChooser.setCurrentDirectory(curDir!=null ? new File(curDir) : null);
-            fileChooser.setSelectedFile(curDir!=null ? new File(curDir+File.separator+currPage.getPageName()+".apnn") : null);
-            fileChooser.addChoosableFileFilter(ApnnFormat.fileFilter);
-            fileChooser.setFileFilter(ApnnFormat.fileFilter);
-            if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
-                return;
-            apnnFile = fileChooser.getSelectedFile();
-            curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
-            Util.getPreferences().put("apnn-export-dir", curDir);
-            if (apnnFile.exists()) {
-                int r = JOptionPane.showConfirmDialog(this, 
-                         "The file \""+apnnFile+"\" already exists! Overwrite it?", 
-                                                       "Overwrite file", 
-                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
-                                                       JOptionPane.WARNING_MESSAGE);
-                if (r == JOptionPane.NO_OPTION)
-                    repeatChooser = true;
-                else if (r == JOptionPane.CANCEL_OPTION)
-                    return;
-            }
-        } while (repeatChooser);
-        
-        try {
-            StructInfo struct = StructInfo.computeStructInfo(mainInterface.getWindowFrame(), 
-                                                             (GspnPage)currPage, null, null);
-            String log = ApnnFormat.exportGspn((GspnPage)currPage, apnnFile, struct, null);
-            if (log != null)
-                new ModalLogDialog(this, log).setVisible(true);
-            mainInterface.setStatus("GSPN exported in APNN format.", true);
-        }
-        catch (Exception e) {
-            JOptionPane.showMessageDialog(this, 
-                                          "An error happened while exporting the page in APNN format.\n"
-                                          + "Reason: "+e.getMessage(),
-                                          "Export \""+currPage.getPageName()+"\" in APNN format...", 
-                                          JOptionPane.ERROR_MESSAGE);            
-            mainInterface.setStatus("could not export GSPN in APNN format.", true);
-        }
-    }
-    
-    
-    private void exportInDtaFormat() {
-        assert currPage instanceof DtaPage && currPage.isPageCorrect();
-        
-        File dtaFile;
-        boolean repeatChooser;
-        do {
-            repeatChooser = false;
-            final JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Export \""+currPage.getPageName()+"\" in MC4CSLTA format...");
-            String curDir = Util.getPreferences().get("dta-export-dir", System.getProperty("user.home"));
-            fileChooser.setCurrentDirectory(curDir!=null ? new File(curDir) : null);
-            fileChooser.setSelectedFile(curDir!=null ? new File(curDir+File.separator+currPage.getPageName()+".dta") : null);
-            fileChooser.addChoosableFileFilter(DtaFormat.fileFilter);
-            fileChooser.setFileFilter(DtaFormat.fileFilter);
-            if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
-                return;
-            dtaFile = fileChooser.getSelectedFile();
-            
-            curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
-            Util.getPreferences().put("dta-export-dir", curDir);
-            if (dtaFile.exists()) {
-                int r = JOptionPane.showConfirmDialog(this, 
-                         "The file \""+dtaFile+"\" already exists! Overwrite it?", 
-                                                       "Overwrite file", 
-                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
-                                                       JOptionPane.WARNING_MESSAGE);
-                if (r == JOptionPane.NO_OPTION)
-                    repeatChooser = true;
-                else if (r == JOptionPane.CANCEL_OPTION)
-                    return;
-            }
-        } while (repeatChooser);
-        
-        try {
-            String log = DtaFormat.export((DtaPage)currPage, dtaFile);
-            if (log != null)
-                new ModalLogDialog(this, log).setVisible(true);
-            mainInterface.setStatus("DTA exported.", true);
-        }
-        catch (Exception e) {
-            JOptionPane.showMessageDialog(this, 
-                                          "An error happened while exporting the DTA in MC4CSLTA format.\n"
-                                          + "Reason: "+e.getMessage(),
-                                          "Export \""+currPage.getPageName()+"\" in MC4CSLTA format...", 
-                                          JOptionPane.ERROR_MESSAGE);            
-            mainInterface.setStatus("could not export DTA.", true);
-        }        
-    }
+
+//    private void showNetMatrices() {
+//        ShowNetMatricesDialog dlg = new ShowNetMatricesDialog(mainInterface.getWindowFrame(), true, (GspnPage)currPage);
+//        dlg.setVisible(true);
+//    }
+//
+//    
+//    private void exportGspnInGreatSPNFormat() {
+//        assert currPage instanceof GspnPage && currPage.isPageCorrect();
+//        
+//        File netFile, defFile;
+//        boolean repeatChooser;
+//        do {
+//            repeatChooser = false;
+//            final JFileChooser fileChooser = new JFileChooser();
+//            fileChooser.setDialogTitle("Export \""+currPage.getPageName()+"\" in GreatSPN format...");
+//            String curDir = Util.getPreferences().get("greatspn-export-dir", System.getProperty("user.home"));
+//            fileChooser.setCurrentDirectory(curDir!=null ? new File(curDir) : null);
+//            fileChooser.setSelectedFile(curDir!=null ? new File(curDir+File.separator+currPage.getPageName()+".net") : null);
+//            fileChooser.addChoosableFileFilter(GreatSpnFormat.fileFilter);
+//            fileChooser.setFileFilter(GreatSpnFormat.fileFilter);
+//            if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
+//                return;
+//            netFile = fileChooser.getSelectedFile();
+//            
+//            // Generate the .net and .def filenames
+//            String path = netFile.getPath();
+//            int lastDot = path.lastIndexOf(".");
+//            //System.out.println("path.substring(lastDot) = "+path.substring(lastDot));
+//            if (lastDot != -1 && path.substring(lastDot).equalsIgnoreCase(".net"))
+//                path = path.substring(0, lastDot);
+//            netFile = new File(path + ".net");
+//            defFile = new File(path + ".def");
+//            curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
+//            Util.getPreferences().put("greatspn-export-dir", curDir);
+//            if (netFile.exists()) {
+//                int r = JOptionPane.showConfirmDialog(this, 
+//                         "The file \""+netFile+"\" already exists! Overwrite it?", 
+//                                                       "Overwrite file", 
+//                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
+//                                                       JOptionPane.WARNING_MESSAGE);
+//                if (r == JOptionPane.NO_OPTION)
+//                    repeatChooser = true;
+//                else if (r == JOptionPane.CANCEL_OPTION)
+//                    return;
+//            }
+//        } while (repeatChooser);
+//        
+//        System.out.println("netFile = "+netFile);
+//        System.out.println("defFile = "+defFile);
+//        
+//        try {
+//            String log = GreatSpnFormat.exportGspn((GspnPage)currPage, netFile, defFile, 
+//                                                    Main.isGreatSPNExtAllowed(),
+//                                                    Main.areGreatSPNMdepArcsAllowed());
+//            if (log != null)
+//                new ModalLogDialog(this, log).setVisible(true);
+//            mainInterface.setStatus("GSPN exported.", true);
+//        }
+//        catch (Exception e) {
+//            JOptionPane.showMessageDialog(this, 
+//                                          "An error happened while exporting the page in GreatSPN format.\n"
+//                                          + "Reason: "+e.getMessage(),
+//                                          "Export \""+currPage.getPageName()+"\" in GreatSPN format...", 
+//                                          JOptionPane.ERROR_MESSAGE);            
+//            mainInterface.setStatus("could not export GSPN.", true);
+//        }
+//    }
+//    
+//    private void exportGspnInGRMLFormat() {
+//        assert currPage instanceof GspnPage && currPage.isPageCorrect();
+//        
+//        File grmlFile;
+//        boolean repeatChooser;
+//        do {
+//            repeatChooser = false;
+//            final JFileChooser fileChooser = new JFileChooser();
+//            fileChooser.setDialogTitle("Export \""+currPage.getPageName()+"\" in GrML format...");
+//            String curDir = Util.getPreferences().get("grml-export-dir", System.getProperty("user.home"));
+//            fileChooser.setCurrentDirectory(curDir!=null ? new File(curDir) : null);
+//            fileChooser.setSelectedFile(curDir!=null ? new File(curDir+File.separator+currPage.getPageName()+".grml") : null);
+//            fileChooser.addChoosableFileFilter(GRMLFormat.fileFilter);
+//            fileChooser.setFileFilter(GRMLFormat.fileFilter);
+//            if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
+//                return;
+//            grmlFile = fileChooser.getSelectedFile();
+//            curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
+//            Util.getPreferences().put("grml-export-dir", curDir);
+//            if (grmlFile.exists()) {
+//                int r = JOptionPane.showConfirmDialog(this, 
+//                         "The file \""+grmlFile+"\" already exists! Overwrite it?", 
+//                                                       "Overwrite file", 
+//                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
+//                                                       JOptionPane.WARNING_MESSAGE);
+//                if (r == JOptionPane.NO_OPTION)
+//                    repeatChooser = true;
+//                else if (r == JOptionPane.CANCEL_OPTION)
+//                    return;
+//            }
+//        } while (repeatChooser);
+//        
+//        try {
+//            //StructInfo struct = StructInfo.computeStructInfo(mainInterface.getWindowFrame(), 
+//            //                                                 (GspnPage)currPage, null, null);
+//            String log = GRMLFormat.exportGspn((GspnPage)currPage, grmlFile);
+//            if (log != null)
+//                new ModalLogDialog(this, log).setVisible(true);
+//            mainInterface.setStatus("GSPN exported in GrML format.", true);
+//        }
+//        catch (Exception e) {
+//            JOptionPane.showMessageDialog(this, 
+//                                          "An error happened while exporting the page in GrML format.\n"
+//                                          + "Reason: "+e.getMessage(),
+//                                          "Export \""+currPage.getPageName()+"\" in GrML format...", 
+//                                          JOptionPane.ERROR_MESSAGE);            
+//            mainInterface.setStatus("could not export GSPN in GrML format.", true);
+//        }        
+//    }
+//    
+//    private void exportGspnInPNMLFormat() {
+//        assert currPage instanceof GspnPage && currPage.isPageCorrect();
+//        
+//        File pnmlFile;
+//        boolean repeatChooser;
+//        do {
+//            repeatChooser = false;
+//            final JFileChooser fileChooser = new JFileChooser();
+//            fileChooser.setDialogTitle("Export \""+currPage.getPageName()+"\" in PNML format...");
+//            String curDir = Util.getPreferences().get("pnml-export-dir", System.getProperty("user.home"));
+//            fileChooser.setCurrentDirectory(curDir!=null ? new File(curDir) : null);
+//            fileChooser.setSelectedFile(curDir!=null ? new File(curDir+File.separator+currPage.getPageName()+".pnml") : null);
+//            fileChooser.addChoosableFileFilter(PNMLFormat.fileFilter);
+//            fileChooser.setFileFilter(PNMLFormat.fileFilter);
+//            if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
+//                return;
+//            pnmlFile = fileChooser.getSelectedFile();
+//            curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
+//            Util.getPreferences().put("pnml-export-dir", curDir);
+//            if (pnmlFile.exists()) {
+//                int r = JOptionPane.showConfirmDialog(this, 
+//                         "The file \""+pnmlFile+"\" already exists! Overwrite it?", 
+//                                                       "Overwrite file", 
+//                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
+//                                                       JOptionPane.WARNING_MESSAGE);
+//                if (r == JOptionPane.NO_OPTION)
+//                    repeatChooser = true;
+//                else if (r == JOptionPane.CANCEL_OPTION)
+//                    return;
+//            }
+//        } while (repeatChooser);
+//        
+//        try {
+//            //StructInfo struct = StructInfo.computeStructInfo(mainInterface.getWindowFrame(), 
+//            //                                                 (GspnPage)currPage, null, null);
+//            String log = PNMLFormat.exportGspn((GspnPage)currPage, pnmlFile, true);
+//            if (log != null)
+//                new ModalLogDialog(this, log).setVisible(true);
+//            mainInterface.setStatus("GSPN exported in PNML format.", true);
+//        }
+//        catch (Exception e) {
+//            JOptionPane.showMessageDialog(this, 
+//                                          "An error happened while exporting the page in PNML format.\n"
+//                                          + "Reason: "+e.getMessage(),
+//                                          "Export \""+currPage.getPageName()+"\" in PNML format...", 
+//                                          JOptionPane.ERROR_MESSAGE);            
+//            mainInterface.setStatus("could not export GSPN in PNML format.", true);
+//        }       
+//    }
+//    
+//    private void exportGspnInAPNNFormat() {
+//        assert currPage instanceof GspnPage && currPage.isPageCorrect();
+//        
+//        File apnnFile;
+//        boolean repeatChooser;
+//        do {
+//            repeatChooser = false;
+//            final JFileChooser fileChooser = new JFileChooser();
+//            fileChooser.setDialogTitle("Export \""+currPage.getPageName()+"\" in APNN format...");
+//            String curDir = Util.getPreferences().get("apnn-export-dir", System.getProperty("user.home"));
+//            fileChooser.setCurrentDirectory(curDir!=null ? new File(curDir) : null);
+//            fileChooser.setSelectedFile(curDir!=null ? new File(curDir+File.separator+currPage.getPageName()+".apnn") : null);
+//            fileChooser.addChoosableFileFilter(ApnnFormat.fileFilter);
+//            fileChooser.setFileFilter(ApnnFormat.fileFilter);
+//            if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
+//                return;
+//            apnnFile = fileChooser.getSelectedFile();
+//            curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
+//            Util.getPreferences().put("apnn-export-dir", curDir);
+//            if (apnnFile.exists()) {
+//                int r = JOptionPane.showConfirmDialog(this, 
+//                         "The file \""+apnnFile+"\" already exists! Overwrite it?", 
+//                                                       "Overwrite file", 
+//                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
+//                                                       JOptionPane.WARNING_MESSAGE);
+//                if (r == JOptionPane.NO_OPTION)
+//                    repeatChooser = true;
+//                else if (r == JOptionPane.CANCEL_OPTION)
+//                    return;
+//            }
+//        } while (repeatChooser);
+//        
+//        try {
+//            StructInfo struct = StructInfo.computeStructInfo(mainInterface.getWindowFrame(), 
+//                                                             (GspnPage)currPage, null, null);
+//            String log = ApnnFormat.exportGspn((GspnPage)currPage, apnnFile, struct, null);
+//            if (log != null)
+//                new ModalLogDialog(this, log).setVisible(true);
+//            mainInterface.setStatus("GSPN exported in APNN format.", true);
+//        }
+//        catch (Exception e) {
+//            JOptionPane.showMessageDialog(this, 
+//                                          "An error happened while exporting the page in APNN format.\n"
+//                                          + "Reason: "+e.getMessage(),
+//                                          "Export \""+currPage.getPageName()+"\" in APNN format...", 
+//                                          JOptionPane.ERROR_MESSAGE);            
+//            mainInterface.setStatus("could not export GSPN in APNN format.", true);
+//        }
+//    }
+//    
+//    
+//    private void exportInDtaFormat() {
+//        assert currPage instanceof DtaPage && currPage.isPageCorrect();
+//        
+//        File dtaFile;
+//        boolean repeatChooser;
+//        do {
+//            repeatChooser = false;
+//            final JFileChooser fileChooser = new JFileChooser();
+//            fileChooser.setDialogTitle("Export \""+currPage.getPageName()+"\" in MC4CSLTA format...");
+//            String curDir = Util.getPreferences().get("dta-export-dir", System.getProperty("user.home"));
+//            fileChooser.setCurrentDirectory(curDir!=null ? new File(curDir) : null);
+//            fileChooser.setSelectedFile(curDir!=null ? new File(curDir+File.separator+currPage.getPageName()+".dta") : null);
+//            fileChooser.addChoosableFileFilter(DtaFormat.fileFilter);
+//            fileChooser.setFileFilter(DtaFormat.fileFilter);
+//            if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
+//                return;
+//            dtaFile = fileChooser.getSelectedFile();
+//            
+//            curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
+//            Util.getPreferences().put("dta-export-dir", curDir);
+//            if (dtaFile.exists()) {
+//                int r = JOptionPane.showConfirmDialog(this, 
+//                         "The file \""+dtaFile+"\" already exists! Overwrite it?", 
+//                                                       "Overwrite file", 
+//                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
+//                                                       JOptionPane.WARNING_MESSAGE);
+//                if (r == JOptionPane.NO_OPTION)
+//                    repeatChooser = true;
+//                else if (r == JOptionPane.CANCEL_OPTION)
+//                    return;
+//            }
+//        } while (repeatChooser);
+//        
+//        try {
+//            String log = DtaFormat.export((DtaPage)currPage, dtaFile);
+//            if (log != null)
+//                new ModalLogDialog(this, log).setVisible(true);
+//            mainInterface.setStatus("DTA exported.", true);
+//        }
+//        catch (Exception e) {
+//            JOptionPane.showMessageDialog(this, 
+//                                          "An error happened while exporting the DTA in MC4CSLTA format.\n"
+//                                          + "Reason: "+e.getMessage(),
+//                                          "Export \""+currPage.getPageName()+"\" in MC4CSLTA format...", 
+//                                          JOptionPane.ERROR_MESSAGE);            
+//            mainInterface.setStatus("could not export DTA.", true);
+//        }        
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -1131,7 +1180,6 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
         actionAddActionTemplate = new common.Action();
         actionAddClockVar = new common.Action();
         actionAddTextBox = new common.Action();
-        jToolBarEmpty = new javax.swing.JToolBar();
         popupMenuViewProfile = new javax.swing.JPopupMenu();
         viewRatesMenuItem = new javax.swing.JCheckBoxMenuItem();
         viewGuardsMenuItem = new javax.swing.JCheckBoxMenuItem();
@@ -1379,7 +1427,7 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
             }
         });
 
-        actionAddIntTemplate.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.SHIFT_MASK));
+        actionAddIntTemplate.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.SHIFT_DOWN_MASK));
         actionAddIntTemplate.setActionName("New template integer Id.");
         actionAddIntTemplate.setIcon(resourceFactory.getToolTemplateN24());
         actionAddIntTemplate.setTooltipDesc("(Shift+N) Add a new integer template Id to the current page.");
@@ -1389,7 +1437,7 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
             }
         });
 
-        actionAddRealTemplate.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.SHIFT_MASK));
+        actionAddRealTemplate.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.SHIFT_DOWN_MASK));
         actionAddRealTemplate.setActionName("New template real Id.");
         actionAddRealTemplate.setIcon(resourceFactory.getToolTemplateR24());
         actionAddRealTemplate.setTooltipDesc("(Shift+R) Add a new real template Id to the current page.");
@@ -1409,7 +1457,7 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
             }
         });
 
-        actionAddActionTemplate.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.SHIFT_MASK));
+        actionAddActionTemplate.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.SHIFT_DOWN_MASK));
         actionAddActionTemplate.setActionName("New action Id.");
         actionAddActionTemplate.setIcon(resourceFactory.getToolTemplateAct24());
         actionAddActionTemplate.setTooltipDesc("(Shift+A) Add a new action Id to the current page.");
@@ -1438,9 +1486,6 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
                 actionAddTextBoxActionPerformed(evt);
             }
         });
-
-        jToolBarEmpty.setFloatable(false);
-        jToolBarEmpty.setRollover(true);
 
         viewRatesMenuItem.setSelected(true);
         viewRatesMenuItem.setText("Show rates/delays");
@@ -1844,27 +1889,24 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
     }//GEN-LAST:event_actionAddGspnInhibArcActionPerformed
 
     private void deleteSelected() {
-        mainInterface.executeUndoableCommand("delete selected.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                Set<Node> deletedNodes = new HashSet<>();
-                Iterator<Node> nodeIt = currPage.nodes.iterator();
-                while (nodeIt.hasNext()) {
-                    Node n = nodeIt.next();
-                    if (n.isSelected()) {
-                        // Remove the node
-                        deletedNodes.add(n);
-                        nodeIt.remove();
-                    }
+        mainInterface.executeUndoableCommand("delete selected.", (ProjectData proj, ProjectPage page) -> {
+            Set<Node> deletedNodes = new HashSet<>();
+            Iterator<Node> nodeIt = currPage.nodes.iterator();
+            while (nodeIt.hasNext()) {
+                Node n = nodeIt.next();
+                if (n.isSelected()) {
+                    // Remove the node
+                    deletedNodes.add(n);
+                    nodeIt.remove();
                 }
-                Iterator<Edge> edgeIt = currPage.edges.iterator();
-                while (edgeIt.hasNext()) {
-                    Edge e  = edgeIt.next();
-                    if (e.isSelected() || 
-                        deletedNodes.contains(e.getHeadNode()) || 
+            }
+            Iterator<Edge> edgeIt = currPage.edges.iterator();
+            while (edgeIt.hasNext()) {
+                Edge e  = edgeIt.next();
+                if (e.isSelected() || 
+                        deletedNodes.contains(e.getHeadNode()) ||
                         deletedNodes.contains(e.getTailNode()))
-                        edgeIt.remove();
-                }
+                    edgeIt.remove();
             }
         });
     }
@@ -1894,36 +1936,33 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
         Selectable selEdge = currPage.getSingleSelectedObject();
         assert selEdge != null && selEdge instanceof Edge;
         final Edge edge = (Edge)selEdge;
-        mainInterface.executeUndoableCommand("add intermediate edge points.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                // Save decor positions
-                Point2D[] decorAnchors = new Point2D[edge.getNumDecors()];
-                for (int d=0; d<edge.getNumDecors(); d++)
-                    decorAnchors[d] = edge.getPointAlongTheLine(new Point2D.Double(), 
-                                                                edge.getDecor(d).getEdgeK());
-                // create a new set of points
-                ArrayList<Point2D> npoints = new ArrayList<>();
-                npoints.add((Point2D)edge.points.get(0).clone());
-                Point2D.Double p1 = new Point2D.Double(), p2 = new Point2D.Double();
-                for (int i=1; i<edge.numPoints(); i++) {
-                    if (edge.isSubObjectSelected(i-1) && 
+        mainInterface.executeUndoableCommand("add intermediate edge points.", (ProjectData proj, ProjectPage page) -> {
+            // Save decor positions
+            Point2D[] decorAnchors = new Point2D[edge.getNumDecors()];
+            for (int d=0; d<edge.getNumDecors(); d++)
+                decorAnchors[d] = edge.getPointAlongTheLine(new Point2D.Double(),
+                        edge.getDecor(d).getEdgeK());
+            // create a new set of points
+            ArrayList<Point2D> npoints = new ArrayList<>();
+            npoints.add((Point2D)edge.points.get(0).clone());
+            Point2D.Double p1 = new Point2D.Double(), p2 = new Point2D.Double();
+            for (int i=1; i<edge.numPoints(); i++) {
+                if (edge.isSubObjectSelected(i-1) && 
                         edge.isSubObjectSelected(i))
-                    {
-                        // Add a new point
-                        edge.getPoint(p1, i-1);
-                        edge.getPoint(p2, i);
-                        npoints.add(NetObject.linearInterp(p1, p2, new Point2D.Double(), 0.5)); 
-                    }
-                    npoints.add((Point2D)edge.points.get(i).clone());
+                {
+                    // Add a new point
+                    edge.getPoint(p1, i-1);
+                    edge.getPoint(p2, i);
+                    npoints.add(NetObject.linearInterp(p1, p2, new Point2D.Double(), 0.5));
                 }
-                edge.points = npoints;
-                edge.setSubObjectSelection(false);
-                edge.invalidateEffectiveEdgePath();
-                // Compute new anchor points (near the old anchors)
-                for (int d=0; d<edge.getNumDecors(); d++)
-                    edge.getDecor(d).setEdgeK(edge.getNearestK(decorAnchors[d]));
+                npoints.add((Point2D)edge.points.get(i).clone());
             }
+            edge.points = npoints;
+            edge.setSubObjectSelection(false);
+            edge.invalidateEffectiveEdgePath();
+            // Compute new anchor points (near the old anchors)
+            for (int d=0; d<edge.getNumDecors(); d++)
+                edge.getDecor(d).setEdgeK(edge.getNearestK(decorAnchors[d]));
         });
     }//GEN-LAST:event_actionNewEdgePointActionPerformed
 
@@ -1931,27 +1970,24 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
         Selectable selEdge = currPage.getSingleSelectedObject();
         assert selEdge != null && selEdge instanceof Edge;
         final Edge edge = (Edge)selEdge;
-        mainInterface.executeUndoableCommand("delete edge points.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                // Save decor positions
-                Point2D[] decorAnchors = new Point2D[edge.getNumDecors()];
-                for (int d=0; d<edge.getNumDecors(); d++)
-                    decorAnchors[d] = edge.getPointAlongTheLine(new Point2D.Double(), 
-                                                                edge.getDecor(d).getEdgeK());
-                // make a new point by deleting the selected points
-                ArrayList<Point2D> npoints = new ArrayList<>();
-                for (int i=0; i<edge.numPoints(); i++) {
-                    if (i == 0 || i == edge.numPoints()-1 || !edge.isSubObjectSelected(i))
-                        npoints.add(edge.points.get(i));
-                }
-                edge.points = npoints;
-                edge.setSubObjectSelection(false);
-                edge.invalidateEffectiveEdgePath();
-                // Compute new anchor points (near the old anchors)
-                for (int d=0; d<edge.getNumDecors(); d++)
-                    edge.getDecor(d).setEdgeK(edge.getNearestK(decorAnchors[d]));
+        mainInterface.executeUndoableCommand("delete edge points.", (ProjectData proj, ProjectPage page) -> {
+            // Save decor positions
+            Point2D[] decorAnchors = new Point2D[edge.getNumDecors()];
+            for (int d=0; d<edge.getNumDecors(); d++)
+                decorAnchors[d] = edge.getPointAlongTheLine(new Point2D.Double(),
+                        edge.getDecor(d).getEdgeK());
+            // make a new point by deleting the selected points
+            ArrayList<Point2D> npoints = new ArrayList<>();
+            for (int i=0; i<edge.numPoints(); i++) {
+                if (i == 0 || i == edge.numPoints()-1 || !edge.isSubObjectSelected(i))
+                    npoints.add(edge.points.get(i));
             }
+            edge.points = npoints;
+            edge.setSubObjectSelection(false);
+            edge.invalidateEffectiveEdgePath();
+            // Compute new anchor points (near the old anchors)
+            for (int d=0; d<edge.getNumDecors(); d++)
+                edge.getDecor(d).setEdgeK(edge.getNearestK(decorAnchors[d]));
         });
     }//GEN-LAST:event_actionDeleteEdgePointActionPerformed
 
@@ -1983,20 +2019,17 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
 //        Selectable selEdge = currPage.getSingleSelectedObject();
 //        assert selEdge != null && selEdge instanceof Edge;
 //        final Edge edge = (Edge)selEdge;
-        mainInterface.executeUndoableCommand("set edge broken state.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                for (Edge edge : currPage.edges) {
-                    if (!edge.isSelected())
-                        continue;
-                    assert edge.canBeBroken();
-                    edge.isBroken = jToggleButtonBrokenEdge.isSelected();
-                    edge.invalidateEffectiveEdgePath();
-                    if (edge.isBroken) {
-                        for (int d=0; d<edge.getNumDecors(); d++) {
-                            Decor decor = edge.getDecor(d);
-                            decor.setEdgeK(edge.sanitizeK_ForBrokenEdges(decor.getEdgeK()));
-                        }
+        mainInterface.executeUndoableCommand("set edge broken state.", (ProjectData proj, ProjectPage page) -> {
+            for (Edge edge : currPage.edges) {
+                if (!edge.isSelected())
+                    continue;
+                assert edge.canBeBroken();
+                edge.isBroken = jToggleButtonBrokenEdge.isSelected();
+                edge.invalidateEffectiveEdgePath();
+                if (edge.isBroken) {
+                    for (int d=0; d<edge.getNumDecors(); d++) {
+                        Decor decor = edge.getDecor(d);
+                        decor.setEdgeK(edge.sanitizeK_ForBrokenEdges(decor.getEdgeK()));
                     }
                 }
             }
@@ -2134,34 +2167,31 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
     }//GEN-LAST:event_showFluidCmdMenuItemActionPerformed
 
     private void actionClearAllEdgePointsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionClearAllEdgePointsActionPerformed
-        mainInterface.executeUndoableCommand("delete intermediate edge points.", new UndoableCommand() {
-            @Override
-            public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                assert page == currPage;
-                for (Edge edge : currPage.edges) {
-                    if (!edge.isSelected())
-                        continue; // not selected
-                    if (edge.numPoints() <= 2)
-                        continue; // nothing to delete
-                    boolean isSelfLoop = (edge.getHeadNode() == edge.getTailNode());
-                    // Save decor positions
-                    Point2D[] decorAnchors = new Point2D[edge.getNumDecors()];
-                    for (int d=0; d<edge.getNumDecors(); d++)
-                        decorAnchors[d] = edge.getPointAlongTheLine(new Point2D.Double(), 
-                                                                    edge.getDecor(d).getEdgeK());
-                    // make a new pointList by deleting the selected points
-                    ArrayList<Point2D> npoints = new ArrayList<>(isSelfLoop ? 3 : 2);
-                    npoints.add(edge.points.get(0));
-                    if (isSelfLoop)
-                        npoints.add(edge.points.get(1));
-                    npoints.add(edge.points.get(edge.numPoints() - 1));
-                    edge.points = npoints;
-                    edge.setSubObjectSelection(false);
-                    edge.invalidateEffectiveEdgePath();
-                    // Compute new anchor points (near the old anchors)
-                    for (int d=0; d<edge.getNumDecors(); d++)
-                        edge.getDecor(d).setEdgeK(edge.getNearestK(decorAnchors[d]));
-                }
+        mainInterface.executeUndoableCommand("delete intermediate edge points.", (ProjectData proj, ProjectPage page) -> {
+            assert page == currPage;
+            for (Edge edge : currPage.edges) {
+                if (!edge.isSelected())
+                    continue; // not selected
+                if (edge.numPoints() <= 2)
+                    continue; // nothing to delete
+                boolean isSelfLoop = (edge.getHeadNode() == edge.getTailNode());
+                // Save decor positions
+                Point2D[] decorAnchors = new Point2D[edge.getNumDecors()];
+                for (int d=0; d<edge.getNumDecors(); d++)
+                    decorAnchors[d] = edge.getPointAlongTheLine(new Point2D.Double(),
+                            edge.getDecor(d).getEdgeK());
+                // make a new pointList by deleting the selected points
+                ArrayList<Point2D> npoints = new ArrayList<>(isSelfLoop ? 3 : 2);
+                npoints.add(edge.points.get(0));
+                if (isSelfLoop)
+                    npoints.add(edge.points.get(1));
+                npoints.add(edge.points.get(edge.numPoints() - 1));
+                edge.points = npoints;
+                edge.setSubObjectSelection(false);
+                edge.invalidateEffectiveEdgePath();
+                // Compute new anchor points (near the old anchors)
+                for (int d=0; d<edge.getNumDecors(); d++)
+                    edge.getDecor(d).setEdgeK(edge.getNearestK(decorAnchors[d]));
             }
         });
     }//GEN-LAST:event_actionClearAllEdgePointsActionPerformed
@@ -2234,7 +2264,6 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
     private javax.swing.JToolBar jToolBar;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBarEdgeCmd;
-    private javax.swing.JToolBar jToolBarEmpty;
     private common.JToolbarButton jToolbarButtonClearPoints;
     private common.JToolbarButton jToolbarButtonDeletePoint;
     private common.JToolbarButton jToolbarButtonNewPoint;

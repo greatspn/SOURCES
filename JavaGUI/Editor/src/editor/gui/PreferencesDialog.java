@@ -34,9 +34,11 @@ public class PreferencesDialog extends javax.swing.JDialog {
         Util.reformatPanelsForPlatformLookAndFeel(this);
         setLocationRelativeTo(frame);
         getRootPane().setDefaultButton(jButtonCloseDialog);
+        jPanelAutoUpdate.setVisible(false);
 
         // General
         jCheckBoxCheckUpdates.setSelected(Main.isCheckForUpdatesAutomatic());
+        jCheckBoxReopenFiles.setSelected(Main.isReopenPrevOpenFilesAtStartup());
         SpinnerModel sm = new SpinnerNumberModel(Main.getMaxUndo(), 3, 100, 1);
         jSpinnerMaxUndo.setModel(sm);
         sm = new SpinnerNumberModel(Main.getMaxLatexCacheEntries(), 50, 10000, 10);
@@ -57,12 +59,16 @@ public class PreferencesDialog extends javax.swing.JDialog {
         filenameNSolve.setText(NSolve.getPathToNSolve());
         filenameNSolve.setDirPrefKey("nsolve-dir-pref");
         
-        textFiledAdditionalPaths.setText(SolverInvokator.getAdditionalPathDir());
+        textField_rgmeddVer.setText(RGMEDD2Solver.getRGMEDDName());
+        
+        textFieldAdditionalPaths.setText(SolverInvokator.getAdditionalPathDir());
+        textFieldLibraryPath.setText(SolverInvokator.getAdditionalLibraryPathDir());
         
         filenameModelLibrary.setText(Main.getModelLibraryDirectory());
         filenameModelLibrary.setDirPrefKey("model-library-dir-prefkey");
         
         checkBox_allowGreatSPNExt.setSelected(Main.isGreatSPNExtAllowed());
+        checkBox_allowGreatSPNMdepArcs.setSelected(Main.areGreatSPNMdepArcsAllowed());
         
         updateLatexCacheCount();
         
@@ -96,20 +102,21 @@ public class PreferencesDialog extends javax.swing.JDialog {
         jLabel2 = new javax.swing.JLabel();
         jLabelNumLatexCacheEntries = new javax.swing.JLabel();
         jButtonClearLaTeXCache = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
+        jPanelAutoUpdate = new javax.swing.JPanel();
         jCheckBoxCheckUpdates = new javax.swing.JCheckBox();
         jPanel2 = new javax.swing.JPanel();
         jButtonCheckUpdates = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        comboBoxUiSizes = new javax.swing.JComboBox<Main.UiSize>();
+        comboBoxUiSizes = new javax.swing.JComboBox<>();
         labelUiNote = new javax.swing.JLabel();
+        jCheckBoxReopenFiles = new javax.swing.JCheckBox();
         tabSolverPath = new javax.swing.JPanel();
         jLabelGreatSPN = new javax.swing.JLabel();
         filenameGreatSPN = new common.JFilenameField();
         checkBox_allowGreatSPNExt = new javax.swing.JCheckBox();
         jLabel4 = new javax.swing.JLabel();
-        textFiledAdditionalPaths = new javax.swing.JTextField();
+        textFieldAdditionalPaths = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         filenameModelLibrary = new common.JFilenameField();
         jLabel6 = new javax.swing.JLabel();
@@ -118,6 +125,11 @@ public class PreferencesDialog extends javax.swing.JDialog {
         filenameNSolve = new common.JFilenameField();
         jLabelCosmos = new javax.swing.JLabel();
         filenameCosmos = new common.JFilenameField();
+        textField_rgmeddVer = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        textFieldLibraryPath = new javax.swing.JTextField();
+        checkBox_allowGreatSPNMdepArcs = new javax.swing.JCheckBox();
 
         setTitle("Preferences");
         setResizable(false);
@@ -170,7 +182,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
                         .add(jLabelNumLatexCacheEntries)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(jButtonClearLaTeXCache)
-                        .add(0, 194, Short.MAX_VALUE)))
+                        .add(0, 333, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -191,8 +203,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Automatic check for updates..."));
-        jPanel1.setOpaque(false);
+        jPanelAutoUpdate.setBorder(javax.swing.BorderFactory.createTitledBorder("Automatic check for updates..."));
+        jPanelAutoUpdate.setOpaque(false);
 
         jCheckBoxCheckUpdates.setText("Automatically check for updates at startup.");
 
@@ -211,20 +223,20 @@ public class PreferencesDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 6, 6);
         jPanel2.add(jButtonCheckUpdates, gridBagConstraints);
 
-        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout jPanelAutoUpdateLayout = new org.jdesktop.layout.GroupLayout(jPanelAutoUpdate);
+        jPanelAutoUpdate.setLayout(jPanelAutoUpdateLayout);
+        jPanelAutoUpdateLayout.setHorizontalGroup(
+            jPanelAutoUpdateLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanelAutoUpdateLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jCheckBoxCheckUpdates, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
+                .add(jPanelAutoUpdateLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jCheckBoxCheckUpdates, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 806, Short.MAX_VALUE)
                     .add(jPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel1Layout.createSequentialGroup()
+        jPanelAutoUpdateLayout.setVerticalGroup(
+            jPanelAutoUpdateLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanelAutoUpdateLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(jCheckBoxCheckUpdates)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -232,7 +244,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("UI size"));
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("General Options"));
         jPanel3.setOpaque(false);
 
         jLabel3.setText("SIze of the UI fonts and graphics:");
@@ -244,6 +256,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
         });
 
         labelUiNote.setText("<html><b>Note:</b> Changes to UI size will take effect the next time you start the application.");
+
+        jCheckBoxReopenFiles.setText("Reopen previously open projects at startup.");
 
         org.jdesktop.layout.GroupLayout jPanel3Layout = new org.jdesktop.layout.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -258,7 +272,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
                         .add(comboBoxUiSizes, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .add(jPanel3Layout.createSequentialGroup()
                         .add(labelUiNote, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .add(0, 0, Short.MAX_VALUE)))
+                        .add(0, 185, Short.MAX_VALUE))
+                    .add(jCheckBoxReopenFiles, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -269,7 +284,9 @@ public class PreferencesDialog extends javax.swing.JDialog {
                     .add(jLabel3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 27, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(labelUiNote, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(0, 10, Short.MAX_VALUE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jCheckBoxReopenFiles)
+                .add(0, 163, Short.MAX_VALUE))
         );
 
         org.jdesktop.layout.GroupLayout tabGeneralLayout = new org.jdesktop.layout.GroupLayout(tabGeneral);
@@ -280,14 +297,14 @@ public class PreferencesDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .add(tabGeneralLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                     .add(jPanel3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, jPanelAutoUpdate, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel4, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         tabGeneralLayout.setVerticalGroup(
             tabGeneralLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(tabGeneralLayout.createSequentialGroup()
-                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(jPanelAutoUpdate, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -307,7 +324,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
 
         jLabel5.setText("Model Library:");
 
-        jLabel6.setText("<html><i>\nWhen the editor calls the external commands, it adds the 'Additional PATH' to the PATH environment variable.\n</i></html>");
+        jLabel6.setText("<html><i> When the editor calls the external commands, it adds the 'Additional PATH' to the PATH environment variable, and the 'Additional Library Paths' to the LD_LIBRARY_PATH variable. </i></html>");
 
         jLabel7.setText("<html><i>\nThe directory where the example models are stored. You may add a library model to your projects using\nAdd new Page (toolbar icon) > Add Library Model.\n</i></html>");
 
@@ -327,32 +344,44 @@ public class PreferencesDialog extends javax.swing.JDialog {
             }
         });
 
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel8.setText("RGMEDD version:");
+
+        jLabel9.setText("Additional Library Paths:");
+
+        checkBox_allowGreatSPNMdepArcs.setText("Export marking-dependent arcs in GreatSPN format (extension only support by DSPN-Tool)");
+
         org.jdesktop.layout.GroupLayout tabSolverPathLayout = new org.jdesktop.layout.GroupLayout(tabSolverPath);
         tabSolverPath.setLayout(tabSolverPathLayout);
         tabSolverPathLayout.setHorizontalGroup(
             tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(tabSolverPathLayout.createSequentialGroup()
-                .add(28, 28, 28)
+                .addContainerGap()
                 .add(tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabelGreatSPN)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabelNSolve)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabel5)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabel4)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabelCosmos))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(filenameGreatSPN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 495, Short.MAX_VALUE)
-                    .add(filenameModelLibrary, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(jLabel7, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabel6, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .add(textFiledAdditionalPaths)
-                    .add(filenameNSolve, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, filenameCosmos, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .add(checkBox_allowGreatSPNExt, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(tabSolverPathLayout.createSequentialGroup()
+                        .add(tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                            .add(jLabel9)
+                            .add(tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+                                .add(jLabelGreatSPN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .add(jLabelNSolve)
+                                .add(jLabel5)
+                                .add(jLabel4)
+                                .add(jLabelCosmos)
+                                .add(jLabel8, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(filenameGreatSPN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 634, Short.MAX_VALUE)
+                            .add(filenameModelLibrary, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(jLabel7, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabel6, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .add(textFieldAdditionalPaths)
+                            .add(filenameNSolve, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(org.jdesktop.layout.GroupLayout.TRAILING, filenameCosmos, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(textField_rgmeddVer)
+                            .add(textFieldLibraryPath)))
+                    .add(checkBox_allowGreatSPNMdepArcs, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
-            .add(tabSolverPathLayout.createSequentialGroup()
-                .add(15, 15, 15)
-                .add(checkBox_allowGreatSPNExt)
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         tabSolverPathLayout.setVerticalGroup(
             tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -371,19 +400,29 @@ public class PreferencesDialog extends javax.swing.JDialog {
                     .add(filenameCosmos, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(textFiledAdditionalPaths, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(textFieldAdditionalPaths, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(jLabel4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 28, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jLabel6, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel9, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 27, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(textFieldLibraryPath, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jLabel6, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 69, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                     .add(filenameModelLibrary, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(jLabel5, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 28, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jLabel7, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(39, 39, 39)
+                .add(tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(textField_rgmeddVer, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(jLabel8))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 90, Short.MAX_VALUE)
                 .add(checkBox_allowGreatSPNExt)
-                .addContainerGap(50, Short.MAX_VALUE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(checkBox_allowGreatSPNMdepArcs)
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("Solvers", tabSolverPath);
@@ -404,6 +443,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private void jButtonCloseDialogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCloseDialogActionPerformed
         // General
         Main.setAutomaticCheckForUpdates(jCheckBoxCheckUpdates.isSelected());
+        Main.setReopenPrevOpenFilesAtStartup(jCheckBoxReopenFiles.isSelected());
         Main.setMaxUndo((Integer)jSpinnerMaxUndo.getValue());
         Main.setMaxLatexCacheEntries((Integer)jSpinnerMaxLatexCache.getValue());
         Main.setStartupUiSize((Main.UiSize)comboBoxUiSizes.getSelectedItem());
@@ -413,20 +453,15 @@ public class PreferencesDialog extends javax.swing.JDialog {
         CosmosSolver.setPathToCosmos(filenameCosmos.getText());
         NSolve.setPathToNSolve(filenameNSolve.getText());
         Main.setGreatSPNExtAllowed(checkBox_allowGreatSPNExt.isSelected());
+        Main.setGreatSPNMdepArcsAllowed(checkBox_allowGreatSPNMdepArcs.isSelected());
         Main.setModelLibraryDirectory(filenameModelLibrary.getText());
+        RGMEDD2Solver.setRGMEDDName(textField_rgmeddVer.getText());
         
-        SolverInvokator.setAdditionalPathDir(textFiledAdditionalPaths.getText());
+        SolverInvokator.setAdditionalPathDir(textFieldAdditionalPaths.getText());
+        SolverInvokator.setAdditionalLibraryPathDir(textFieldLibraryPath.getText());
         
         setVisible(false);
     }//GEN-LAST:event_jButtonCloseDialogActionPerformed
-
-    private void filenameCosmosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filenameCosmosActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_filenameCosmosActionPerformed
-
-    private void filenameNSolveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filenameNSolveActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_filenameNSolveActionPerformed
 
     private void jButtonCheckUpdatesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCheckUpdatesActionPerformed
         Main.verifyNewVersion(this, true);
@@ -442,9 +477,18 @@ public class PreferencesDialog extends javax.swing.JDialog {
         labelUiNote.setVisible(!isCurrent);
     }//GEN-LAST:event_comboBoxUiSizesActionPerformed
 
+    private void filenameCosmosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filenameCosmosActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_filenameCosmosActionPerformed
+
+    private void filenameNSolveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filenameNSolveActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_filenameNSolveActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox checkBox_allowGreatSPNExt;
+    private javax.swing.JCheckBox checkBox_allowGreatSPNMdepArcs;
     private javax.swing.JComboBox<Main.UiSize> comboBoxUiSizes;
     private common.JFilenameField filenameCosmos;
     private common.JFilenameField filenameGreatSPN;
@@ -454,6 +498,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JButton jButtonClearLaTeXCache;
     private javax.swing.JButton jButtonCloseDialog;
     private javax.swing.JCheckBox jCheckBoxCheckUpdates;
+    private javax.swing.JCheckBox jCheckBoxReopenFiles;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -461,20 +506,24 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel jLabelCosmos;
     private javax.swing.JLabel jLabelGreatSPN;
     private javax.swing.JLabel jLabelNSolve;
     private javax.swing.JLabel jLabelNumLatexCacheEntries;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanelAutoUpdate;
     private javax.swing.JSpinner jSpinnerMaxLatexCache;
     private javax.swing.JSpinner jSpinnerMaxUndo;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel labelUiNote;
     private javax.swing.JPanel tabGeneral;
     private javax.swing.JPanel tabSolverPath;
-    private javax.swing.JTextField textFiledAdditionalPaths;
+    private javax.swing.JTextField textFieldAdditionalPaths;
+    private javax.swing.JTextField textFieldLibraryPath;
+    private javax.swing.JTextField textField_rgmeddVer;
     // End of variables declaration//GEN-END:variables
 }

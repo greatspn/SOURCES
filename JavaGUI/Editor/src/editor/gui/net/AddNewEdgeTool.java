@@ -18,7 +18,6 @@ import editor.domain.elements.Place;
 import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
 import editor.domain.elements.Transition;
-import editor.gui.UndoableCommand;
 import static editor.gui.net.NetEditorPanel.Tool.NEW_GSPN_ARC;
 import static editor.gui.net.NetEditorPanel.Tool.NEW_GSPN_INHIB_ARC;
 import java.awt.Composite;
@@ -175,13 +174,10 @@ class AddNewEdgeTool extends NetToolBase {
             if (!hitNodeIsConnectible)
                 return;
             newEdge.connectToNode(hitNode, hitMagnet, appendEndPoint);
-            editor.mainInterface.executeUndoableCommand("edge added.", new UndoableCommand() {
-                @Override
-                public void Execute(ProjectData proj, ProjectPage page) throws Exception {
-                    editor.currPage.edges.add(newEdge);
-                    newEdge = null;
-                    editor.toolEnds(false);
-                }
+            editor.mainInterface.executeUndoableCommand("edge added.", (ProjectData proj, ProjectPage page) -> {
+                editor.currPage.edges.add(newEdge);
+                newEdge = null;
+                editor.toolEnds(false);
             });
         }
     }

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="FilteredMultiSetExpr" version="121">
+  <gspn name="FilteredSymCPN">
+    <nodes>
+      <color-class definition="circular c{1..3} " name="C" x="1.125" y="2.0"/>
+      <color-var domain="C" name="x" x="1.25" y="4.0"/>
+      <color-var domain="C" name="y" x="6.25" y="4.0"/>
+      <place domain="C" name="P0" x="22.0" y="10.0"/>
+      <transition name="T0" nservers-x="0.5" type="EXP" x="29.55" y="10.0"/>
+      <place domain="C" name="P1" x="36.0" y="10.0"/>
+      <transition name="T1" nservers-x="0.5" type="EXP" x="29.55" y="16.0"/>
+      <place domain="C" marking="&lt;All&gt;" name="P2" x="2.0" y="10.0"/>
+      <transition name="T2" nservers-x="0.5" type="EXP" x="15.55" y="10.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" mult="&lt;x&gt;" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" mult="&lt;x&gt;" tail="T0"/>
+      <arc head="T1" kind="INPUT" mult="&lt;x&gt;" tail="P1">
+        <point x="37.0" y="17.0"/>
+      </arc>
+      <arc head="P0" kind="OUTPUT" mult="&lt;x&gt;" tail="T1">
+        <point x="23.0" y="17.0"/>
+      </arc>
+      <arc head="T2" kind="INPUT" mult="&lt;x&gt;[@[0] !=c1]" mult-x="0.0" mult-y="-1.0" tail="P2"/>
+      <arc head="P0" kind="OUTPUT" mult="&lt;x&gt;" tail="T2"/>
+    </edges>
+  </gspn>
+  <gspn name="FilteredDomain" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <color-class definition="c{1..3}" name="C" x="2.4375" y="2.0"/>
+      <color-class definition="d{1..4}" name="D" x="2.4375" y="3.0"/>
+      <color-class definition="e{1..2}" name="E" x="2.5" y="4.0"/>
+      <color-class definition="C*D*E" name="CDE" x="1.9375" y="5.0"/>
+      <place domain="CDE" label-x="-0.5" label-y="-1.5" marking="&lt;All,All,All&gt;" name="P0" x="4.0" y="9.0"/>
+      <transition name="T0" nservers-x="0.5" type="EXP" x="15.55" y="17.0"/>
+      <place domain="CDE" name="P1" x="23.0" y="17.0"/>
+      <color-var domain="C" name="c" x="15.25" y="2.0"/>
+      <color-var domain="D" name="d" x="15.1875" y="3.0"/>
+      <color-var domain="E" name="e" x="15.25" y="4.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" mult="&lt;c,d,e&gt;[ @[0]==c1 &amp;&amp; @[1] != d2 ]" mult-x="5.0" mult-y="-0.5" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" mult="&lt;c,d,e&gt;" mult-x="0.5" mult-y="0.5" tail="T0"/>
+    </edges>
+  </gspn>
+</project>

@@ -21,7 +21,7 @@ public class DummyLatexProvider extends LatexProvider {
     MetaCommands cmd;
 
     @Override
-    MetaCommands typesetLatexFormula(String latex, float size) {
+    MetaCommands typesetLatexFormula(String latex, float size, boolean useCache) {
         return cmd;
     }
 

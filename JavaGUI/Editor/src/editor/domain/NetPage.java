@@ -13,12 +13,12 @@ import editor.domain.grammar.ExprRewriter;
 import editor.domain.grammar.NodeNamespace;
 import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.TemplateBinding;
-import editor.domain.superposition.ComposableNet;
-import editor.domain.superposition.NodeGroup;
+import editor.domain.composition.ComposableNet;
 import editor.gui.net.NetEditorPanel;
 import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -196,6 +196,18 @@ public abstract class NetPage extends ProjectPage implements Serializable, Compo
         return count;
     }
     
+    public Selectable[] getAllSelectedObjects() {
+        Selectable[] sel = new Selectable[countSelectedEdges() + countSelectedNodes()];
+        int k = 0;
+        for (Node node : nodes)
+            if (node.isSelected())
+                sel[k++] = node;
+        for (Edge edge : edges)
+            if (edge.isSelected())
+                sel[k++] = edge;
+        return sel;
+    }
+    
     // =========== Resource management ============
     
     @Override
@@ -212,6 +224,30 @@ public abstract class NetPage extends ProjectPage implements Serializable, Compo
             node.retrieveLinkedResources(resourceTable);
         for (Edge edge : edges)
             edge.retrieveLinkedResources(resourceTable);
+    }
+    
+    // =========== Unique name generation ============
+
+    public String generateUniqueNodeName(boolean useZeroSuffix, String prefix) {
+        for (int i=0; ; i++) {
+            String name;
+            if (i == 0 && !useZeroSuffix)
+                name = prefix;  // Generate N instead of N0
+            else
+                name = prefix + i;
+//            if (i >= 10)
+//                name += "{" + i + "}";
+//            else
+//                name += i;
+            boolean isDup = false;
+            for (Node node : nodes)
+                if (node.getUniqueName().equals(name)) {
+                    isDup = true;
+                    break;
+                }
+            if (!isDup)
+                return name;
+        }
     }
     
     // =========== Test for page content correctness ===========
@@ -444,6 +480,15 @@ public abstract class NetPage extends ProjectPage implements Serializable, Compo
         Rectangle2D bounds = getOrComputeBoundsOfContent();
         return new Rectangle2D.Double(bounds.getX(), bounds.getY(), 
                                       bounds.getWidth(), bounds.getHeight());
+    }
+    
+    public Rectangle2D computeIntegerPageBounds() {
+        Rectangle2D bounds = computePageBounds(0, 0);
+        bounds.setFrame((int)Math.floor(bounds.getX()), 
+                        (int)Math.floor(bounds.getY()),
+                        (int)Math.ceil(bounds.getWidth()),
+                        (int)Math.ceil(bounds.getHeight()));
+        return bounds;
     }
     
     public void selectionEnds() {
@@ -690,38 +735,54 @@ public abstract class NetPage extends ProjectPage implements Serializable, Compo
     }
     
     //----------------- Net composition interface ---------------------------
-    @Override
-    public Iterator<NodeGroup> groupIterator() {
-        Iterator it = nodes.iterator();
-        @SuppressWarnings("unchecked") Iterator<NodeGroup> nIt = (it);
-        return nIt;
-    }
+//    @Override
+//    public Iterator<NodeGroup> groupIterator() {
+//        Iterator it = nodes.iterator();
+//        @SuppressWarnings("unchecked") Iterator<NodeGroup> nIt = (it);
+//        return nIt;
+//    }
+//
+//    @Override
+//    public Iterator<ComposableNet> subnetsIterator() {
+//        @SuppressWarnings("unchecked") Iterator<ComposableNet> cnIt
+//                = common.EmptyIterator.INSTANCE;
+//        return cnIt;
+//    }
+//
+//    @Override
+//    public int numNodeGroups() { 
+//        return nodes.size();
+//    }
+//
+//    @Override
+//    public int numSubnets() {
+//        return 0;
+//    }
 
     @Override
-    public Iterator<ComposableNet> subnetsIterator() {
-        @SuppressWarnings("unchecked") Iterator<ComposableNet> cnIt
-                = common.EmptyIterator.INSTANCE;
-        return cnIt;
-    }
-
-    @Override
-    public int numNodeGroups() { 
-        return nodes.size();
-    }
-
-    @Override
-    public int numSubnets() {
-        return 0;
-    }
-
-    @Override
-    public Set<TemplateVariable> enumerateParams() {
+    public Set<TemplateVariable> enumerateParamsForNetComposition() {
         assert isPageCorrect();
-        Set<TemplateVariable> params = new HashSet<>();
+//        Set<TemplateVariable> params = new HashSet<>();
+//        for (Node node : nodes)
+//            if (node instanceof TemplateVariable)
+//                params.add((TemplateVariable)node);
+//        return params;
+
+        // Get the parametric color class definitions, 
+        // and extract which parameters are template
+        Set<String> ccDepVarNames = new HashSet<>();
+        Iterator<ColorClass> ccIter = colorClassIterator();
+        if (ccIter!=null) {
+            while (ccIter.hasNext()) {
+                ColorClass cc = ccIter.next();
+                cc.getDependentVariables(ccDepVarNames);
+            }
+        }
+        Set<TemplateVariable> colorClassDepTemplateVars = new HashSet<>();
         for (Node node : nodes)
-            if (node instanceof TemplateVariable)
-                params.add((TemplateVariable)node);
-        return params;
+            if (node instanceof TemplateVariable && ccDepVarNames.contains(node.getUniqueName()))
+                colorClassDepTemplateVars.add((TemplateVariable)node);
+        return colorClassDepTemplateVars;
     }
     
     @Override

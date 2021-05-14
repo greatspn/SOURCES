@@ -14,5 +14,7 @@ import java.awt.geom.Point2D;
 public interface EditableCell extends HitTestable, EditableValue {
     
     public Point2D getEditorCenter();
+    
+    public boolean editAsMultiline();
 
 }

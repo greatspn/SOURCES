@@ -38,8 +38,11 @@ public abstract class FormulaPanel extends javax.swing.JPanel implements ExprFie
         jTextField_result.setText("---");
         exprField_comment.setExprListener(this);
         exprField_formula.setExprListener(this);
+        jLabel_num.setForeground(Color.BLACK);
+        jLabelAltText.setForeground(Color.BLACK);
         
         Dimension dim = jButtonViewResults.getPreferredSize();
+        dim.width = (int)(dim.width * 1.5);
         dim.height = jTextField_result.getPreferredSize().height;
         jTextField_result.setMinimumSize(dim);
         jTextField_result.setMaximumSize(dim);
@@ -66,7 +69,7 @@ public abstract class FormulaPanel extends javax.swing.JPanel implements ExprFie
         jLabel_num.setText((num+1<10 ? " " : "")+(num+1) + "°");
         
         boolean isComputableBySolver = (null==page.solverParams.isLanguageSupported(measure.getLanguage()));
-        Color bkgnd = Color.WHITE;
+        Color bkgnd = editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_COLOR;
         if (measure.isSelected())
             bkgnd = BACKGROUND_SELECTED;
         setBackground(bkgnd);
@@ -201,7 +204,6 @@ public abstract class FormulaPanel extends javax.swing.JPanel implements ExprFie
         jButtonViewResults = new javax.swing.JButton();
         jLabelAltText = new javax.swing.JLabel();
 
-        setBackground(new java.awt.Color(255, 255, 255));
         setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(102, 102, 102)));
         setLayout(new java.awt.GridBagLayout());
 

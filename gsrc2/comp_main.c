@@ -36,15 +36,15 @@ int no_cod = 0, no_byte = 0;
 int	place_num, trans_num;
 
 
-char   **p_names;
+extern char   **p_names;
 
-int nomp;
-ROWP MP;
-char   **m_names;
+extern int nomp;
+extern ROWP MP;
+extern char   **m_names;
 
-int norp;
-float 	*RP;
-char   **r_names;
+extern int norp;
+extern float 	*RP;
+extern char   **r_names;
 
 
 unsigned int nobits(n)

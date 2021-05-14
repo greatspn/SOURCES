@@ -26,9 +26,9 @@ then
 	# For now, always clear the editor sources, to avoid having ant
 	# not rebuilding everything and leaving some class uncompiled/stale
 	${RUN} chown -R user:user /home/user/GreatSPN/SOURCES
-	(rm -rf /home/user/GreatSPN/SOURCES/JavaGUI/Editor/build/classes/* )
-	(touch /home/user/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/grammar/ExprLang.g4)
-	(cd /home/user/GreatSPN/SOURCES && make JavaGUI-antlr)
+	# (rm -rf /home/user/GreatSPN/SOURCES/JavaGUI/Editor/build/classes/* )
+	# (touch /home/user/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/grammar/ExprLang.g4)
+	# (cd /home/user/GreatSPN/SOURCES && make JavaGUI)
 	# Make everything else
 	(cd /home/user/GreatSPN/SOURCES && make)
 	echo
@@ -66,55 +66,60 @@ echo $LN
 echo "${B1}Running post-installation script...${B0}"
 echo $LN && echo
 
+DESKTOP_ENTRY_DIR=/home/user/.local/share/applications
+
 # Update Deskop link to mount script
-cat <<EOF > "/home/user/Desktop/Mount Shared Folder"
+cat <<EOF > "${DESKTOP_ENTRY_DIR}/Mount Shared Folder.desktop"
 [Desktop Entry]
 Encoding=UTF-8
 Type=Application
 Name=Mount Shared Folder
 Name[en_US]=Mount Shared Folder
-Icon=utilities-terminal-symbolic
+Icon=/home/user/GreatSPN/SOURCES/JavaGUI/Additional/shared-mount.png
 Exec=/home/user/GreatSPN/SOURCES/NSRC/VirtualMachineSupport/mount-shared-folder.sh
 Comment[en_US]=
 Terminal=true
 EOF
-${RUN} chown user:user "/home/user/Desktop/Mount Shared Folder"
+${RUN} chown user:user "${DESKTOP_ENTRY_DIR}/Mount Shared Folder.desktop"
+chmod 755 "${DESKTOP_ENTRY_DIR}/Mount Shared Folder.desktop"
 
 # Update Deskop link to upgrade GreatSPN
-cat <<EOF > "/home/user/Desktop/Upgrade GreatSPN"
+cat <<EOF > "${DESKTOP_ENTRY_DIR}/Update GreatSPN.desktop"
 [Desktop Entry]
 Encoding=UTF-8
 Type=Application
-Name=Upgrade GreatSPN
-Name[en_US]=Upgrade GreatSPN
-Icon=utilities-terminal-symbolic
+Name=Update GreatSPN
+Name[en_US]=Update GreatSPN
+Icon=/home/user/GreatSPN/SOURCES/JavaGUI/Additional/greatspn-update.png
 Exec=/home/user/GreatSPN/SOURCES/NSRC/VirtualMachineSupport/upgrade-greatspn-from-svn.sh
 Comment[en_US]=
 Terminal=true
 EOF
-${RUN} chown user:user "/home/user/Desktop/Upgrade GreatSPN"
+${RUN} chown user:user "${DESKTOP_ENTRY_DIR}/Update GreatSPN.desktop"
+chmod 755 "${DESKTOP_ENTRY_DIR}/Update GreatSPN.desktop"
 
 # Link to the old GreatSPN interface
-cat <<EOF > "/home/user/launch-old-greatspn"
+cat <<EOF > "/home/user/.launch-old-greatspn"
 #! /bin/sh
 export PATH=$PATH:/usr/local/GreatSPN/scripts
 greatspn
 EOF
-${RUN} chown user:user "/home/user/launch-old-greatspn"
-chmod 755 "/home/user/launch-old-greatspn"
+${RUN} chown user:user "/home/user/.launch-old-greatspn"
+chmod 755 "/home/user/.launch-old-greatspn"
 
-cat <<EOF > "/home/user/Desktop/GreatSPN-OLD"
+cat <<EOF > "${DESKTOP_ENTRY_DIR}/GreatSPN-OLD.desktop"
 [Desktop Entry]
 Encoding=UTF-8
 Type=Application
 Name=GreatSPN-OLD
 Name[en_US]=GreatSPN-OLD
 Icon=utilities-terminal-symbolic
-Exec=/home/user/launch-old-greatspn
+Exec=/home/user/.launch-old-greatspn
 Comment[en_US]=
 Terminal=true
 EOF
-${RUN} chown user:user "/home/user/Desktop/GreatSPN-OLD"
+${RUN} chown user:user "${DESKTOP_ENTRY_DIR}/GreatSPN-OLD.desktop"
+chmod 755 "${DESKTOP_ENTRY_DIR}/GreatSPN-OLD.desktop"
 
 # Link to the new GreatSPN interface
 # cat <<EOF > "/home/user/Desktop/New GreatSPN Editor"
@@ -132,8 +137,8 @@ It is designed to be run under VirtualBox or VMWare, to ease the software portab
 
 UPGRADE GREATSPN FROM SOURCES USING THE GITHUB REPOSITORY:
 
-Just double-click on the Upgrade-GreatSPN script on the Desktop.
-The script downloads the latest sources of GreatSPN and builds it.
+Just double-click on the "GreatSPN Update" icon in the application bar.
+The script downloads the latest sources of GreatSPN and rebuilds the software.
 
 ---------------------------------------------------------------------------------------
 INTEGRATION WITH VIRTUALBOX:
@@ -169,11 +174,11 @@ FOR VIRTUALBOX
 Configure VirtualBox shared folders by adding your shared folder in:
    Machine > Settings > Shared Folders > Machine Folders
 
-Share name *MUST* be:  /media/shared
+Share name *MUST* be:  shared
 
 Auto-mount feature of VirtualBox does not work properly and it is
 disabled. To mount the shared folder, double click on the
-'Mount Shared Folder' icon on the desktop.
+'Mount Shared Volume' icon on the application bar.
 
 FOR VMWARE
 -----------------------
@@ -183,14 +188,15 @@ ${RUN} chown user:user "/home/user/Desktop/HowTo mount shared folder"
 
 #-----------------------------------------------------------------
 cat <<EOF > "/home/user/Desktop/HowTo get root access"
-The root password is: fedora
+The root password is: user
 EOF
 ${RUN} chown user:user "/home/user/Desktop/HowTo get root access"
 
-#-----------------------------------------------------------------
-if [[ ! -e /home/user/Desktop/SharedFolder ]] ; then
-	ln -s /media/vbox_Dati /home/user/Desktop/SharedFolder
-fi
+# #-----------------------------------------------------------------
+# if [[ ! -e /home/user/Desktop/SharedFolder ]] ; then
+# 	ln -s /media/vbox_Dati /home/user/Desktop/SharedFolder
+# fi
+mkdir -p /home/user/Desktop/SharedFolder
 
 # Remove old upgrade script
 # ${RUN} rm -f "/home/user/upgrade-greatspn-from-svn"
@@ -211,8 +217,8 @@ fi
 # Install script end.
 #===================================================================
 echo && echo && echo
-echo "${B1}Upgrade procedure completed successfully...${B0}"
+echo "${B1}Update procedure completed successfully...${B0}"
 echo
 read -p "Press any key to quit..." -n1 -s
-
+echo
 

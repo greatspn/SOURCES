@@ -3,15 +3,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "const.h"
-#include "SCONSSPOT.h"
-#include "struct.h"
-#include "SSTRUCTSPOT.h"
-#include "var_ext.h"
-#include "SVAR_EXTSPOT.h"
-#include "macros.h"
-#include "service.h"
-#include "gspnlib.h"
+#include "../../../INCLUDE/const.h"
+#include "../../../INCLUDE/SCONSSPOT.h"
+#include "../../../INCLUDE/struct.h"
+#include "../../../INCLUDE/SSTRUCTSPOT.h"
+#include "../../../INCLUDE/var_ext.h"
+#include "../../../INCLUDE/SVAR_EXTSPOT.h"
+#include "../../../INCLUDE/macros.h"
+#include "../../../INCLUDE/service.h"
+#include "../../../INCLUDE/gspnlib.h"
 
 #undef  NORMAL
 

@@ -16,6 +16,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -125,7 +126,7 @@ public class TextFieldForEditable extends JTextField {
             String t = getText();
             isValueValid = editable.isValueValid(project, page, t);
             if (isValueValid || t.equals("---")) {
-                setForeground(Color.BLACK);
+                setForeground(UIManager.getColor("ComboBox.foreground"));
             }
             else {
                 setForeground(Color.RED);

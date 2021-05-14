@@ -169,6 +169,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="textFieldPlaceTags" max="32767" attributes="0"/>
                       <Component id="textFieldTransitionTags" alignment="0" max="32767" attributes="0"/>
+                      <Component id="checkBoxCombineTags" alignment="0" max="32767" attributes="0"/>
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="jLabel4" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -177,8 +178,9 @@
                               <Component id="radioTransitionSuperpos" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="radioPlaceAndTransitionSuperpos" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace min="0" pref="2" max="32767" attributes="0"/>
+                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
+                      <Component id="checkBoxNewImplementation" alignment="0" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -201,7 +203,11 @@
                   <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="textFieldTransitionTags" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  <Component id="checkBoxCombineTags" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="checkBoxNewImplementation" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -253,6 +259,16 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="radioPlaceAndTransitionSuperposActionPerformed"/>
           </Events>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="checkBoxCombineTags">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Final net combines all tags from operands (EXPERIMENTAL)"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="checkBoxNewImplementation">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Use new Java-based implementation (EXPERIMENTAL)"/>
+          </Properties>
         </Component>
       </SubComponents>
     </Container>

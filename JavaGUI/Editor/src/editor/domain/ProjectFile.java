@@ -226,4 +226,8 @@ public class ProjectFile extends Observable implements Serializable, UuidObject 
     protected void setSaved() {
         savedVersionID = lastSnapshot.getDataVersionID();
     }
+    
+    public String generateUniquePageName(String prefix) {
+        return getCurrent().generateUniquePageName(prefix);
+    }
 }

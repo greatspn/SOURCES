@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="New project" version="121">
+  <gspn name="PT1" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place marking="4" name="P0" superposition-tags="a|b" x="7.0" y="7.0"/>
+      <place name="P1" superposition-tags="c|d|e" x="17.0" y="7.0"/>
+      <transition name="T0" nservers-x="0.5" type="EXP" x="12.55" y="4.0"/>
+      <transition name="T1" nservers-x="0.5" type="EXP" x="12.55" y="10.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="T0"/>
+      <arc head="T1" kind="INPUT" tail="P1"/>
+      <arc head="P0" kind="OUTPUT" tail="T1"/>
+    </edges>
+  </gspn>
+  <gspn name="PT2" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place marking="3" name="P0" superposition-tags="a" x="7.0" y="7.0"/>
+      <place name="P1" superposition-tags="k|c" x="17.0" y="7.0"/>
+      <transition name="T0" nservers-x="0.5" type="EXP" x="12.55" y="4.0"/>
+      <transition name="T1" nservers-x="0.5" type="EXP" x="12.55" y="10.0"/>
+      <transition name="T2" nservers-x="0.5" type="EXP" x="22.55" y="7.0"/>
+      <place name="P2" superposition-tags="d" x="27.0" y="7.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="T0"/>
+      <arc head="T1" kind="INPUT" tail="P1"/>
+      <arc head="P0" kind="OUTPUT" tail="T1"/>
+      <arc head="T2" kind="INPUT" tail="P1"/>
+      <arc head="P2" kind="OUTPUT" tail="T2"/>
+    </edges>
+  </gspn>
+  <gspn name="PT1+PT2" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place label-x="1.9999999993913775E-6" label-y="1.4999999999999991" marking="1" name="P0" superposition-tags="a|b" x="6.999998000000001" y="6.999998000000001"/>
+      <place label-x="0.15624600000000122" label-y="1.4999999999999991" name="P11" superposition-tags="c|d|e" x="17.0" y="6.999998000000001"/>
+      <place label-x="-3.999999998782755E-6" label-y="1.5000000000000018" name="P1" superposition-tags="k|c" x="17.0" y="21.000002"/>
+      <place label-x="-3.999999998782755E-6" label-y="1.5000000000000018" name="P2" superposition-tags="d" x="27.000002000000002" y="21.000002"/>
+      <transition delay="1.000000000000000" delay-x="0.4999980000000015" delay-y="1.0000040000000006" label-x="-3.999999997006398E-6" label-y="-1.4999979999999997" name="T0" nservers-x="0.5" type="EXP" x="12.550002" y="3.9999979999999997"/>
+      <transition delay="1.000000000000000" delay-x="0.4999980000000015" delay-y="1.000003999999997" label-x="-3.999999997006398E-6" label-y="-1.4999980000000015" name="T1" nservers-x="0.5" type="EXP" x="12.550002" y="9.999998000000001"/>
+      <transition delay="1.000000000000000" delay-x="0.4999980000000015" delay-y="0.9999980000000015" label-x="-3.999999997006398E-6" label-y="-1.500003999999997" name="T0_0" nservers-x="0.5" type="EXP" x="12.550002" y="18.000002"/>
+      <transition delay="1.000000000000000" delay-x="0.4999980000000015" delay-y="0.9999979999999979" label-x="-3.999999997006398E-6" label-y="-1.5000040000000006" name="T1_0" nservers-x="0.5" type="EXP" x="12.550002" y="24.000002000000002"/>
+      <transition delay="1.000000000000000" delay-x="0.500003999999997" delay-y="0.9999980000000015" label-x="1.999999998503199E-6" label-y="-1.500003999999997" name="T2" nservers-x="0.5" type="EXP" x="22.549998000000002" y="21.000002"/>
+      <text-box border-color="none" fill-color="none" height="5.0" horiz-pos="2" name="__textBox0" shadow="true" shape="ROUND_RECTANGLE" text-color="#000000" width="14.5" x="23.0" y="3.0">Obtained by running algebra
+using PT1 and PT2 as nets,
+with place superposition and
+place tag list = \{a\}</text-box>
+    </nodes>
+    <edges>
+      <arc head="T0" head-magnet="0" kind="INPUT" tail="P0" tail-magnet="0"/>
+      <arc head="P11" head-magnet="0" kind="OUTPUT" tail="T0" tail-magnet="0"/>
+      <arc head="T1" head-magnet="0" kind="INPUT" tail="P11" tail-magnet="0"/>
+      <arc head="P0" head-magnet="0" kind="OUTPUT" tail="T1" tail-magnet="0"/>
+      <arc head="T0_0" head-magnet="0" kind="INPUT" tail="P0" tail-magnet="0">
+        <point x="10.462056" y="8.433900000000001"/>
+        <point x="9.784403999999999" y="20.929362"/>
+      </arc>
+      <arc head="P1" head-magnet="0" kind="OUTPUT" tail="T0_0" tail-magnet="0"/>
+      <arc head="T1_0" head-magnet="0" kind="INPUT" tail="P1" tail-magnet="0"/>
+      <arc head="P0" head-magnet="0" kind="OUTPUT" tail="T1_0" tail-magnet="0">
+        <point x="9.784403999999999" y="23.070642"/>
+        <point x="8.433900000000001" y="5.53794"/>
+      </arc>
+      <arc head="T2" head-magnet="0" kind="INPUT" tail="P1" tail-magnet="0"/>
+      <arc head="P2" head-magnet="0" kind="OUTPUT" tail="T2" tail-magnet="0"/>
+    </edges>
+  </gspn>
+  <gspn name="AA1" show-color-cmd="false" show-fluid-cmd="false" view-rates="false">
+    <nodes>
+      <place name="NA0" superposition-tags="na0|na1" x="29.0" y="5.0"/>
+      <place name="A0" superposition-tags="aa|a0" x="6.0" y="5.0"/>
+      <place marking="1" name="A1" superposition-tags="aa|a1" x="13.0" y="5.0"/>
+      <place marking="2" name="A2" superposition-tags="aa|a2" x="20.0" y="5.0"/>
+      <place name="NA1" superposition-tags="na2|na3" x="29.0" y="10.0"/>
+      <transition name="aT0" nservers-x="0.5" superposition-tags="tz1" type="EXP" x="4.55" y="16.0"/>
+      <transition name="aT1" nservers-x="0.5" superposition-tags="tt|at|aa0" type="EXP" x="16.55" y="16.0"/>
+      <transition name="aT2" nservers-x="0.5" superposition-tags="tt|at1|aa1" type="EXP" x="20.55" y="16.0"/>
+      <transition name="aT3" nservers-x="0.5" superposition-tags="taz" type="EXP" x="7.55" y="16.0"/>
+      <transition name="t0" superposition-tags="ia0" type="IMM" x="3.85" y="24.0"/>
+      <transition name="t1" superposition-tags="ia0" type="IMM" x="4.85" y="24.0"/>
+      <transition name="t2" priority="2" superposition-tags="ia2" type="IMM" x="5.85" y="25.0"/>
+      <transition name="t3" superposition-tags="im" type="IMM" x="15.85" y="24.0"/>
+      <transition name="t4" superposition-tags="im" type="IMM" x="18.85" y="24.0"/>
+      <transition name="t5" priority="3" superposition-tags="im" type="IMM" x="21.85" y="24.0"/>
+      <transition name="t6" priority="2" superposition-tags="ia2" type="IMM" x="6.85" y="24.0"/>
+      <transition name="t7" priority="4" type="IMM" x="29.85" y="24.0"/>
+    </nodes>
+    <edges/>
+  </gspn>
+  <gspn name="BB1" show-color-cmd="false" show-fluid-cmd="false" view-rates="false">
+    <nodes>
+      <place name="NB0" superposition-tags="z0" x="36.0" y="5.0"/>
+      <place name="NB1" superposition-tags="z1" x="36.0" y="10.0"/>
+      <place marking="3" name="B0" superposition-tags="aa|bb|b0" x="6.0" y="5.0"/>
+      <place marking="4" name="B1" superposition-tags="aa|bb|b1" x="13.0" y="5.0"/>
+      <place marking="5" name="B2" superposition-tags="aa|bb|b2" x="19.0" y="5.0"/>
+      <place marking="6" name="B3" superposition-tags="aa|bb|b3" x="25.0" y="5.0"/>
+      <place name="NB2" superposition-tags="z2|w" x="41.0" y="5.0"/>
+      <place name="NB3" superposition-tags="z3|ww" x="41.0" y="10.0"/>
+      <transition name="bT0" nservers-x="0.5" superposition-tags="tz1" type="EXP" x="3.55" y="18.0"/>
+      <transition name="bT1" nservers-x="0.5" superposition-tags="tt|bt|b0" type="EXP" x="15.55" y="18.0"/>
+      <transition name="bT2" nservers-x="0.5" superposition-tags="tt|bt1|bb1" type="EXP" x="19.55" y="18.0"/>
+      <transition name="bT3" nservers-x="0.5" superposition-tags="taz" type="EXP" x="6.55" y="18.0"/>
+      <transition name="bT4" nservers-x="0.5" superposition-tags="tt|bt3" type="EXP" x="24.55" y="18.0"/>
+      <transition name="t0" superposition-tags="ib|ibb" type="IMM" x="3.85" y="26.0"/>
+      <transition name="t1" superposition-tags="ib|ibb" type="IMM" x="4.85" y="26.0"/>
+      <transition name="t2" superposition-tags="im|ibb|ibx" type="IMM" x="13.85" y="26.0"/>
+      <transition name="t3" superposition-tags="im|ibb|ibx" type="IMM" x="18.85" y="26.0"/>
+      <transition name="t4" priority="3" superposition-tags="im|ibb|ibx" type="IMM" x="23.85" y="26.0"/>
+      <transition name="t5" priority="3" superposition-tags="im|ibb|ibx" type="IMM" x="27.85" y="26.0"/>
+      <transition name="t6" priority="2" type="IMM" x="5.85" y="27.0"/>
+      <transition name="t7" priority="3" type="IMM" x="6.85" y="26.0"/>
+    </nodes>
+    <edges/>
+  </gspn>
+  <gspn name="AA2" show-color-cmd="false" show-fluid-cmd="false" view-rates="false">
+    <nodes>
+      <place name="NA0" superposition-tags="na0|na1" x="29.0" y="5.0"/>
+      <place name="A0" superposition-tags="aa|a0" x="6.0" y="5.0"/>
+      <place marking="1" name="A1" superposition-tags="aa|a1" x="13.0" y="5.0"/>
+      <place marking="2" name="A2" superposition-tags="aa|a2" x="20.0" y="5.0"/>
+      <place name="NA1" superposition-tags="na2|na3" x="29.0" y="10.0"/>
+      <transition name="aT0" nservers-x="0.5" superposition-tags="tz1" type="EXP" x="4.55" y="16.0"/>
+      <transition name="aT1" nservers-x="0.5" superposition-tags="tt|at|aa0" type="EXP" x="16.55" y="16.0"/>
+      <transition name="aT2" nservers-x="0.5" superposition-tags="tt|at1|aa1" type="EXP" x="20.55" y="16.0"/>
+      <transition name="aT3" nservers-x="0.5" superposition-tags="taz" type="EXP" x="7.55" y="16.0"/>
+      <transition name="t0" superposition-tags="ia0" type="IMM" x="3.85" y="24.0"/>
+      <transition name="t1" superposition-tags="ia0" type="IMM" x="4.85" y="24.0"/>
+      <transition name="t2" superposition-tags="ia2" type="IMM" x="5.85" y="24.0"/>
+      <transition name="t3" superposition-tags="im" type="IMM" x="15.85" y="24.0"/>
+      <transition name="t4" superposition-tags="im" type="IMM" x="18.85" y="24.0"/>
+      <transition name="t5" superposition-tags="im" type="IMM" x="21.85" y="24.0"/>
+      <transition name="t6" superposition-tags="ia2" type="IMM" x="6.85" y="24.0"/>
+    </nodes>
+    <edges/>
+  </gspn>
+  <gspn name="BB2" show-color-cmd="false" show-fluid-cmd="false" view-rates="false">
+    <nodes>
+      <place name="NB0" superposition-tags="z0" x="36.0" y="5.0"/>
+      <place name="NB1" superposition-tags="z1" x="36.0" y="10.0"/>
+      <place marking="3" name="B0" superposition-tags="aa|bb|b0" x="6.0" y="5.0"/>
+      <place marking="4" name="B1" superposition-tags="aa|bb|b1" x="13.0" y="5.0"/>
+      <place marking="5" name="B2" superposition-tags="aa|bb|b2" x="19.0" y="5.0"/>
+      <place marking="6" name="B3" superposition-tags="aa|bb|b3" x="25.0" y="5.0"/>
+      <place name="NB2" superposition-tags="z2|w" x="41.0" y="5.0"/>
+      <place name="NB3" superposition-tags="z3|ww" x="41.0" y="10.0"/>
+      <transition name="bT0" nservers-x="0.5" superposition-tags="tz1" type="EXP" x="3.55" y="18.0"/>
+      <transition name="bT1" nservers-x="0.5" superposition-tags="tt|bt|b0" type="EXP" x="15.55" y="18.0"/>
+      <transition name="bT2" nservers-x="0.5" superposition-tags="tt|bt1|bb1" type="EXP" x="19.55" y="18.0"/>
+      <transition name="bT3" nservers-x="0.5" superposition-tags="taz" type="EXP" x="6.55" y="18.0"/>
+      <transition name="bT4" nservers-x="0.5" superposition-tags="tt|bt3" type="EXP" x="24.55" y="18.0"/>
+      <transition name="t0" superposition-tags="ib|ibb" type="IMM" x="3.85" y="26.0"/>
+      <transition name="t1" superposition-tags="ib|ibb" type="IMM" x="4.85" y="26.0"/>
+      <transition name="t2" superposition-tags="im|ibb|ibx" type="IMM" x="13.85" y="26.0"/>
+      <transition name="t3" superposition-tags="im|ibb|ibx" type="IMM" x="18.85" y="26.0"/>
+      <transition name="t4" superposition-tags="im|ibb|ibx" type="IMM" x="23.85" y="26.0"/>
+      <transition name="t5" superposition-tags="im|ibb|ibx" type="IMM" x="27.85" y="26.0"/>
+      <transition name="t6" type="IMM" x="5.85" y="27.0"/>
+      <transition name="t7" type="IMM" x="6.85" y="26.0"/>
+    </nodes>
+    <edges/>
+  </gspn>
+  <gspn name="AAA3" show-fluid-cmd="false">
+    <nodes>
+      <constant consttype="INTEGER" name="N" value="0" x="4.0625" y="4.0"/>
+      <constant consttype="INTEGER" name="N1" value="1" x="3.75" y="6.0"/>
+      <constant consttype="REAL" name="R" value="0.0" x="4.0625" y="8.0"/>
+      <template name="n" type="INTEGER" x="10.0" y="3.0"/>
+      <template name="r" type="REAL" x="10.0" y="5.0"/>
+      <color-class definition="c{1..3}" name="CC" x="15.5625" y="3.0"/>
+      <constant consttype="INTEGER" domain="CC" name="NCC" value="2&lt;c1&gt;" x="2.75" y="10.0"/>
+      <color-class definition="d{1..3}" name="DD" x="15.5625" y="5.0"/>
+      <constant consttype="INTEGER" domain="DD" name="NDD" value="3&lt;d2&gt;" x="2.6875" y="12.0"/>
+      <color-var domain="CC" name="v0" x="17.9375" y="8.0"/>
+      <color-var domain="CC" name="v1" x="17.9375" y="10.0"/>
+      <color-var domain="DD" name="v2" x="17.9375" y="12.0"/>
+      <text-box bold="true" border-color="#000000" fill-color="none" height="2.5" name="__textBox0" shadow="true" shape="ROUND_RECTANGLE" text-color="#000000" width="10.0" x="27.0" y="2.0">(Click to insert text)</text-box>
+    </nodes>
+    <edges/>
+  </gspn>
+  <gspn name="BBB3" show-fluid-cmd="false">
+    <nodes>
+      <constant consttype="INTEGER" name="N" value="0" x="4.0625" y="4.0"/>
+      <constant consttype="INTEGER" name="N1" value="1" x="3.75" y="6.0"/>
+      <constant consttype="REAL" name="R" value="2.5" x="4.0625" y="8.0"/>
+      <template name="n" type="INTEGER" x="10.0" y="3.0"/>
+      <template name="r" type="REAL" x="10.0" y="5.0"/>
+      <color-class definition="c{1..3}" name="CC" x="15.5625" y="3.0"/>
+      <constant consttype="INTEGER" domain="CC" name="NCC" value="2&lt;c1&gt;" x="2.75" y="10.0"/>
+      <color-class definition="d{1..4}" name="DD" x="15.5625" y="5.0"/>
+      <constant consttype="INTEGER" domain="DD" name="NDD" value="3&lt;d2&gt;" x="2.6875" y="12.0"/>
+      <color-var domain="CC" name="v0" x="17.9375" y="8.0"/>
+      <color-var domain="DD" name="v1" x="17.9375" y="10.0"/>
+      <color-var domain="DD" name="v2" x="17.9375" y="12.0"/>
+      <text-box bold="true" border-color="#000000" fill-color="none" height="2.5" name="__textBox0" shadow="true" shape="ROUND_RECTANGLE" text-color="#000000" width="10.0" x="29.0" y="4.0">(Click to insert text)</text-box>
+    </nodes>
+    <edges/>
+  </gspn>
+  <gspn name="A4" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place name="A0" superposition-tags="pp|a0" x="7.0" y="6.0"/>
+      <place name="A1" superposition-tags="pp|a1" x="7.0" y="13.0"/>
+      <transition name="T0" nservers-x="0.5" superposition-tags="tt" type="EXP" x="22.55" y="6.0"/>
+      <transition name="T1" nservers-x="0.5" superposition-tags="tt" type="EXP" x="22.55" y="13.0"/>
+      <place name="A2" superposition-tags="pp|a2" x="7.0" y="21.0"/>
+      <transition name="T2" nservers-x="0.5" superposition-tags="tt" type="EXP" x="22.55" y="21.0"/>
+      <place label-y="2.0" name="AN0" x="7.0" y="28.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" mult-k="0.8389221191406251" tail="A0"/>
+      <arc head="T1" kind="INPUT" mult-k="0.18935546875" tail="A1"/>
+      <arc head="T2" kind="INPUT" tail="A2"/>
+    </edges>
+  </gspn>
+  <gspn name="B4" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place name="B0" superposition-tags="pp|b0" x="7.0" y="6.0"/>
+      <place name="B1" superposition-tags="pp|b1|a0" x="7.0" y="13.0"/>
+      <transition name="U0" nservers-x="0.5" superposition-tags="tt" type="EXP" x="23.55" y="6.0"/>
+      <transition name="U1" nservers-x="0.5" superposition-tags="tt" type="EXP" x="23.55" y="13.0"/>
+      <place name="B2" superposition-tags="pp|b2" x="7.0" y="20.0"/>
+      <transition name="U2" nservers-x="0.5" superposition-tags="tt|t2" type="EXP" x="23.55" y="20.0"/>
+      <place name="BN0" x="7.0" y="27.0"/>
+    </nodes>
+    <edges>
+      <arc head="U0" kind="INPUT" mult-k="0.8389221191406251" tail="B0"/>
+      <arc head="U1" kind="INPUT" mult-k="0.18935546875" tail="B1"/>
+      <arc head="U2" kind="INPUT" tail="B2"/>
+    </edges>
+  </gspn>
+  <gspn name="A5" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place name="A0" superposition-tags="pp|a0" x="7.0" y="6.0"/>
+      <place name="A1" superposition-tags="pp|a1" x="7.0" y="13.0"/>
+      <transition name="T0" nservers-x="0.5" superposition-tags="tt" type="EXP" x="20.55" y="6.0"/>
+      <transition name="T1" nservers-x="0.5" superposition-tags="tt" type="EXP" x="20.55" y="13.0"/>
+      <place label-y="2.0" name="AN0" x="7.0" y="28.0"/>
+      <transition name="ATN0" nservers-x="0.5" type="EXP" x="22.55" y="28.0"/>
+      <place name="A2" superposition-tags="qq|a0" x="33.0" y="6.0"/>
+      <place name="A3" superposition-tags="qq|a1" x="33.0" y="13.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" mult-k="3.623925781250001" tail="A0">
+        <point x="13.250450337326148" y="7.0"/>
+        <point x="14.5" y="5.5"/>
+        <point x="15.499121093750002" y="7.0"/>
+      </arc>
+      <arc head="T1" kind="INPUT" mult-k="0.44990234375000004" tail="A1">
+        <point x="13.31298828125" y="14.0"/>
+        <point x="14.5" y="12.5"/>
+        <point x="15.688054854100773" y="14.0"/>
+      </arc>
+      <arc head="ATN0" kind="INPUT" mult-k="0.73544921875" tail="A1">
+        <point x="18.156631059817542" y="24.156631059817542"/>
+        <point x="19.0" y="28.0"/>
+        <point x="20.65771484375" y="26.65771484375"/>
+      </arc>
+      <arc head="A2" kind="OUTPUT" mult-k="0.7170898437500001" tail="T0">
+        <point x="26.50087890625" y="7.0"/>
+        <point x="27.5" y="5.0"/>
+        <point x="28.812504252985796" y="7.0"/>
+      </arc>
+      <arc head="A3" kind="OUTPUT" mult-k="0.50009765625" tail="T1">
+        <point x="22.0" y="14.0"/>
+        <point x="26.250033278441904" y="14.0"/>
+        <point x="28.0" y="12.0"/>
+        <point x="29.062948170050692" y="14.0"/>
+      </arc>
+      <arc head="AN0" kind="OUTPUT" mult-k="0.7206054687500001" tail="T1">
+        <point x="12.007910156249999" y="24.37548828125"/>
+        <point x="9.5" y="23.5"/>
+        <point x="10.325930240344505" y="26.316234338064035"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="B5" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place name="B0" superposition-tags="pp|b0" x="7.0" y="6.0"/>
+      <place name="B1" superposition-tags="pp|b1|a0" x="7.0" y="13.0"/>
+      <transition name="U0" nservers-x="0.5" superposition-tags="tt" type="EXP" x="20.55" y="6.0"/>
+      <transition name="U1" nservers-x="0.5" superposition-tags="tt" type="EXP" x="20.55" y="13.0"/>
+      <place name="BN0" x="7.0" y="27.0"/>
+      <transition name="UBN0" nservers-x="0.5" type="EXP" x="23.55" y="27.0"/>
+      <place name="B3" superposition-tags="qq|b0" x="30.0" y="6.0"/>
+      <place name="B4" superposition-tags="qq|b1" x="30.0" y="13.0"/>
+    </nodes>
+    <edges>
+      <arc head="U0" kind="INPUT" mult-k="3.482910156250001" tail="B0">
+        <point x="14.50126953125" y="7.0"/>
+        <point x="16.0" y="8.5"/>
+        <point x="17.06214653383322" y="7.0"/>
+      </arc>
+      <arc head="U1" kind="INPUT" mult-k="0.37919921874999996" tail="B1">
+        <point x="14.37431640625" y="14.0"/>
+        <point x="15.5" y="15.5"/>
+        <point x="16.687426813715913" y="14.0"/>
+      </arc>
+      <arc head="UBN0" kind="INPUT" mult-k="0.7278320312500002" tail="B1">
+        <point x="18.5" y="26.0"/>
+        <point x="21.0" y="24.5"/>
+        <point x="21.0" y="27.0"/>
+      </arc>
+      <arc head="BN0" kind="OUTPUT" mult-k="0.7204101562500002" tail="U1">
+        <point x="12.005371093749998" y="24.1865234375"/>
+        <point x="9.5" y="24.0"/>
+        <point x="10.203990286705093" y="26.126471998932978"/>
+      </arc>
+      <arc head="B3" kind="OUTPUT" mult-k="0.5012695312500001" tail="U0">
+        <point x="24.8759765625" y="7.0"/>
+        <point x="26.0" y="8.5"/>
+        <point x="27.31282540466948" y="7.0"/>
+      </arc>
+      <arc head="B4" kind="OUTPUT" mult-k="0.57412109375" tail="U1">
+        <point x="25.2509765625" y="14.0"/>
+        <point x="26.0" y="15.5"/>
+        <point x="27.312554732383767" y="14.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="A6" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place name="A0" superposition-tags="pp|a0" x="7.0" y="6.0"/>
+      <place name="A1" superposition-tags="pp|a1" x="7.0" y="13.0"/>
+      <transition name="T0" superposition-tags="tt" type="IMM" x="22.85" y="6.0"/>
+      <transition name="T1" superposition-tags="tt" type="IMM" x="22.85" y="13.0"/>
+      <place label-y="2.0" name="AN0" x="7.0" y="28.0"/>
+      <transition name="ATN0" type="IMM" x="22.85" y="28.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" mult-k="0.8389221191406251" tail="A0"/>
+      <arc head="T1" kind="INPUT" mult-k="0.18935546875" tail="A1"/>
+    </edges>
+  </gspn>
+  <gspn name="B6" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place name="B0" superposition-tags="pp|b0" x="7.0" y="6.0"/>
+      <place name="B1" superposition-tags="pp|b1|a0" x="7.0" y="13.0"/>
+      <transition name="U0" superposition-tags="tt" type="IMM" x="23.85" y="6.0"/>
+      <transition name="U1" superposition-tags="tt" type="IMM" x="23.85" y="13.0"/>
+      <place name="BN0" x="7.0" y="27.0"/>
+      <transition name="UBN0" type="IMM" x="23.85" y="27.0"/>
+    </nodes>
+    <edges>
+      <arc head="U0" kind="INPUT" mult-k="0.8389221191406251" tail="B0"/>
+      <arc head="U1" kind="INPUT" mult-k="0.18935546875" tail="B1"/>
+    </edges>
+  </gspn>
+</project>

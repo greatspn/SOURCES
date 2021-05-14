@@ -29,6 +29,8 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <functional>
+#include <unistd.h>
+#include <signal.h>
 using namespace std;
 
 #include <boost/optional.hpp>
@@ -89,6 +91,13 @@ void Experiment3(const MRP &mrp, const SolverParams &spar);
 
 //=============================================================================
 
+void sig_alarm_handler(int signum) {
+    cout << "Timeout expired. Exit..." << endl;
+    exit(0);
+}
+
+//=============================================================================
+
 
 //#ifdef USE_UNICODE_TTY
 //#define LINESEP "\xE2\x94\x80"
@@ -139,9 +148,11 @@ static const char *s_AppBanner =
     "  {!-tfl}             Compute minimal Transition flows, saved as {$<file>.tfl}.\n"
     "  {!-pbasis}          Compute basis for Place invariants, saved as {$<file>.pba}.\n"
     "  {!-tbasis}          Compute basis for Transition invariants, saved as {$<file>.tba}.\n"
+    "  {!-traps}/{!-siphons}  Compute minimal traps/siphons.\n"
     "  {!-bnd}             Compute place bounds from P-semiflows, saved as {$<file>.bnd}.\n"
     "  {!-detect-exp}      Limit exponential growth in P/T flow generation.\n"
     "  {!-strict-support}  Slack variables are excluded from the flow support.\n"    
+    "  {!-timeout} {$<sec>}   Set a timeout of {$<sec>} seconds for the tool activity.\n"
     "\n"
     "  {!-dot}             Saves the (T)RG as a dot/pdf file.\n"
     "  {!-dot-open}        Like -dot, but also opens the pdf output.\n"
@@ -296,6 +307,57 @@ template<typename T> void set_null(shared_ptr<T> &ptr) {
     ptr.swap(empty);
 }
 
+//=============================================================================
+
+bool is_invariants_cmd(std::string cmd, invariants_spec_t& is) {
+    if (cmd.size() < 3 || cmd[0] != '-')
+        return false;
+
+    is.invknd = InvariantKind::PLACE;
+    is.system_kind = SystemMatrixType::REGULAR;
+    is.suppl_flags = 0;
+    is.matk = FlowMatrixKind::SEMIFLOWS;
+
+    // extract the nominal command
+    size_t i=1;
+    while (i < cmd.size() && std::isalpha(cmd[i]))
+        i++;
+    std::string cmdName = cmd.substr(1, i-1);
+    // cout << "cmdName = " << cmdName << endl;
+
+    if (cmdName == "traps"  || cmdName == "siphons") {
+        is.system_kind = (cmdName == "traps" ? SystemMatrixType::TRAPS : SystemMatrixType::SIPHONS);
+        return true;
+    }
+    
+    if      (cmdName == "pinv" || cmdName == "psfl")  
+    { is.invknd=InvariantKind::PLACE;      is.matk=FlowMatrixKind::SEMIFLOWS;  }
+    else if (cmdName == "tinv" || cmdName == "tsfl")  
+    { is.invknd=InvariantKind::TRANSITION; is.matk=FlowMatrixKind::SEMIFLOWS;  }
+    else if (cmdName == "pfl")  
+    { is.invknd=InvariantKind::PLACE;      is.matk=FlowMatrixKind::INTEGER_FLOWS;  }
+    else if (cmdName == "tfl")  
+    { is.invknd=InvariantKind::TRANSITION; is.matk=FlowMatrixKind::INTEGER_FLOWS;  }
+    else if (cmdName == "pbasis")  
+    { is.invknd=InvariantKind::PLACE;      is.matk=FlowMatrixKind::BASIS;  }
+    else if (cmdName == "tbasis")  
+    { is.invknd=InvariantKind::TRANSITION; is.matk=FlowMatrixKind::BASIS;  }
+    else return false;
+
+    // read extra flags
+    while (i < cmd.size()) {
+        // cout << "extra: " << cmd[i] << endl;
+        switch (cmd[i]) {
+            case '+': is.suppl_flags |= FM_POSITIVE_SUPPLEMENTARY; break;
+            case '-': is.suppl_flags |= FM_NEGATIVE_SUPPLEMENTARY; break;
+            case '*': is.suppl_flags |= FM_ON_THE_FLY_SUPPL_VARS | FM_POSITIVE_SUPPLEMENTARY | FM_NEGATIVE_SUPPLEMENTARY; break;
+            case 'r': is.suppl_flags |= FM_REDUCE_SUPPLEMENTARY_VARS; break;
+            default:  return false;
+        }
+        i++;
+    } 
+    return true;
+}
 
 //=============================================================================
 
@@ -607,6 +669,7 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
     while (argNum < argc) {
         string cmdArg(argv[argNum++]);
         size_t remainedArgs = argc - argNum;
+        invariants_spec_t inv_spec;
 
         try {
             if (cmdArg == "-h" || cmdArg == "-help" ||
@@ -1054,47 +1117,57 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
                 cout << "EXCLUDING SLACK VARIABLES FROM FLOWS SUPPORT." << endl;
                 extra_vars_in_support = false;
             }
-            else if (cmdArg == "-pinv"   || cmdArg == "-pinv+"   || cmdArg == "-pinv-"   || cmdArg == "-pinv+-"   || cmdArg == "-pinv*"   ||
-                     cmdArg == "-tinv"   || cmdArg == "-tinv+"   || cmdArg == "-tinv-"   || cmdArg == "-tinv+-"   || cmdArg == "-tinv*"   ||
-                     cmdArg == "-psfl"   || cmdArg == "-psfl+"   || cmdArg == "-psfl-"   || cmdArg == "-psfl+-"   || cmdArg == "-psfl*"   ||
-                     cmdArg == "-tsfl"   || cmdArg == "-tsfl+"   || cmdArg == "-tsfl-"   || cmdArg == "-tsfl+-"   || cmdArg == "-tsfl*"   ||
-                     cmdArg == "-pbasis" || cmdArg == "-pbasis+" || cmdArg == "-pbasis-" || cmdArg == "-pbasis+-" || cmdArg == "-pbasis*" ||
-                     cmdArg == "-tbasis" || cmdArg == "-tbasis+" || cmdArg == "-tbasis-" || cmdArg == "-tbasis+-" || cmdArg == "-tbasis*" ||
-                     cmdArg == "-pfl"    || cmdArg == "-pfl+"    || cmdArg == "-pfl-"    || cmdArg == "-pfl+-"    || cmdArg == "-pfl*"    ||
-                     cmdArg == "-tfl"    || cmdArg == "-tfl+"    || cmdArg == "-tfl-"    || cmdArg == "-tfl+-"    || cmdArg == "-tfl*") 
+            // else if (cmdArg == "-pinv"   || cmdArg == "-pinv+"   || cmdArg == "-pinv-"   || cmdArg == "-pinv+-"   || cmdArg == "-pinv*"   ||
+            //          cmdArg == "-tinv"   || cmdArg == "-tinv+"   || cmdArg == "-tinv-"   || cmdArg == "-tinv+-"   || cmdArg == "-tinv*"   ||
+            //          cmdArg == "-psfl"   || cmdArg == "-psfl+"   || cmdArg == "-psfl-"   || cmdArg == "-psfl+-"   || cmdArg == "-psfl*"   ||
+            //          cmdArg == "-tsfl"   || cmdArg == "-tsfl+"   || cmdArg == "-tsfl-"   || cmdArg == "-tsfl+-"   || cmdArg == "-tsfl*"   ||
+            //          cmdArg == "-pbasis" || cmdArg == "-pbasis+" || cmdArg == "-pbasis-" || cmdArg == "-pbasis+-" || cmdArg == "-pbasis*" ||
+            //          cmdArg == "-tbasis" || cmdArg == "-tbasis+" || cmdArg == "-tbasis-" || cmdArg == "-tbasis+-" || cmdArg == "-tbasis*" ||
+            //          cmdArg == "-pfl"    || cmdArg == "-pfl+"    || cmdArg == "-pfl-"    || cmdArg == "-pfl+-"    || cmdArg == "-pfl*"    ||
+            //          cmdArg == "-tfl"    || cmdArg == "-tfl+"    || cmdArg == "-tfl-"    || cmdArg == "-tfl+-"    || cmdArg == "-tfl*"    ||
+            //          cmdArg == "-traps"  || cmdArg == "-siphons") 
+            else if (is_invariants_cmd(cmdArg, inv_spec))
             {
                 RequirePetriNet();
-                size_t suppl_flags = 0;
-                InvariantKind invknd = (cmdArg[1]=='p' ? InvariantKind::PLACE : InvariantKind::TRANSITION);
-                FlowMatrixKind matk = FlowMatrixKind::SEMIFLOWS;
-                if (cmdArg[2] == 'b') // [b]asis
-                    matk = FlowMatrixKind::BASIS;
-                if (cmdArg[2] == 'f') // [f]l
-                    matk = FlowMatrixKind::INTEGER_FLOWS;
-                switch (cmdArg[strlen(cmdArg.c_str()) - 1]) {
-                    case '+': suppl_flags |= FM_POSITIVE_SUPPLEMENTARY; break;
-                    case '-': suppl_flags |= FM_NEGATIVE_SUPPLEMENTARY; break;
-                    case '*': suppl_flags |= FM_ON_THE_FLY_SUPPL_VARS | FM_POSITIVE_SUPPLEMENTARY | FM_NEGATIVE_SUPPLEMENTARY; break;
-                    default:  suppl_flags = 0;  break;
-                }
-                if (cmdArg[strlen(cmdArg.c_str()) - 2] == '+')
-                    suppl_flags |= FM_POSITIVE_SUPPLEMENTARY;
+                // size_t suppl_flags = 0;
+                // InvariantKind invknd = InvariantKind::PLACE;
+                // SystemMatrixType system_kind = SystemMatrixType::REGULAR;
+                // FlowMatrixKind matk = FlowMatrixKind::SEMIFLOWS;
+                // if (cmdArg == "-traps"  || cmdArg == "-siphons") {
+                //     system_kind = (cmdArg == "-traps" ? SystemMatrixType::TRAPS : SystemMatrixType::SIPHONS);
+                // }
+                // else {
+                //     invknd = (cmdArg[1]=='p' ? InvariantKind::PLACE : InvariantKind::TRANSITION);
+                //     if (cmdArg[2] == 'b') // [b]asis
+                //         matk = FlowMatrixKind::BASIS;
+                //     if (cmdArg[2] == 'f') // [f]l
+                //         matk = FlowMatrixKind::INTEGER_FLOWS;
+                //     switch (cmdArg[strlen(cmdArg.c_str()) - 1]) {
+                //         case '+': suppl_flags |= FM_POSITIVE_SUPPLEMENTARY; break;
+                //         case '-': suppl_flags |= FM_NEGATIVE_SUPPLEMENTARY; break;
+                //         case '*': suppl_flags |= FM_ON_THE_FLY_SUPPL_VARS | FM_POSITIVE_SUPPLEMENTARY | FM_NEGATIVE_SUPPLEMENTARY; break;
+                //         default:  suppl_flags = 0;  break;
+                //     }
+                //     if (cmdArg[strlen(cmdArg.c_str()) - 2] == '+')
+                //         suppl_flags |= FM_POSITIVE_SUPPLEMENTARY;
+                // }
                 // if (cmdArg[3] == 'p') // s[p]an
                 //     matk = FlowMatrixKind::NESTED_FLOW_SPAN;
                 performance_timer timer;
-                shared_ptr<flow_matrix_t> psf = ComputeFlows(*pn, invknd, matk, detectExpFlows, 
-                                                             suppl_flags, use_Colom_pivoting, 
+                shared_ptr<flow_matrix_t> psf = ComputeFlows(*pn, inv_spec.invknd, inv_spec.matk, 
+                                                             inv_spec.system_kind, detectExpFlows, 
+                                                             inv_spec.suppl_flags, use_Colom_pivoting, 
                                                              extra_vars_in_support, verboseLvl);
                 shared_ptr<flow_matrix_t> *dst;
-                switch (matk) {
+                switch (inv_spec.matk) {
                     case FlowMatrixKind::SEMIFLOWS:
-                        dst = (invknd == InvariantKind::PLACE ? &pinv : &tinv);
+                        dst = (inv_spec.invknd == InvariantKind::PLACE ? &pinv : &tinv);
                         break;
                     case FlowMatrixKind::BASIS:
-                        dst = (invknd == InvariantKind::PLACE ? &pbasis : &tbasis);
+                        dst = (inv_spec.invknd == InvariantKind::PLACE ? &pbasis : &tbasis);
                         break;
                     case FlowMatrixKind::INTEGER_FLOWS:
-                        dst = (invknd == InvariantKind::PLACE ? &pminflows : &tminflows);
+                        dst = (inv_spec.invknd == InvariantKind::PLACE ? &pminflows : &tminflows);
                         break;
                     // case FlowMatrixKind::NESTED_FLOW_SPAN:
                     //     dst = (invknd == InvariantKind::PLACE ? &pnestflspan : &tnestflspan);
@@ -1103,7 +1176,7 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
                 }
                 *dst = psf;
                 // Save the flows to the disk in GreatSPN format
-                string FlowFile(*netName + GetGreatSPN_FileExt(invknd, psf->mat_kind, suppl_flags));
+                string FlowFile(*netName + GetGreatSPN_FileExt(inv_spec));
                 ofstream flow_os(FlowFile.c_str());
                 SaveFlows(*psf, flow_os);
                 PrintFlows(*pn, *psf, cmdArg.c_str(), verboseLvl);
@@ -1128,6 +1201,30 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
                 pbounds = make_shared<place_bounds_t>();
                 LoadBounds(*pn, *pbounds, bnd_is);
                 PrintBounds(*pn, *pbounds, verboseLvl);
+            }
+            else if (cmdArg == "-m0min") {
+                cout << "COMPUTING MINIMAL TOKEN COUNTS FROM P-SEMIFLOWS ..." << endl;
+                RequirePSemiflows();
+                std::vector<int> m0min;
+                // pbounds = make_shared<place_bounds_t>();
+                ComputeMinimalTokensFromFlows(*pn, *pinv, m0min);
+                string m0minFile = *netName + ".m0min";
+                ofstream m0min_os(m0minFile.c_str());
+                SaveMinimalTokens(m0min, m0min_os);
+                PrintMinimalTokens(*pn, m0min, verboseLvl);
+            }
+            else if (cmdArg == "-timeout" && remainedArgs >= 1) {
+                int seconds = atoi(argv[argNum++]);
+                if (seconds > 0) {
+                    signal(SIGALRM, sig_alarm_handler);
+                    alarm(seconds);
+                    cout << "Scheduled timeout of " << seconds << " seconds." << endl;
+                }
+                else {
+                    alarm(seconds);
+                    signal(SIGALRM, SIG_DFL);
+                    cout << "Cancelling timeout." << endl;
+                }
             }
 #ifdef HAS_LP_SOLVE_LIB
             // Commands that use the ILP solver
@@ -2549,68 +2646,68 @@ void Experiment1()
     // }
 
 
-    size_t MT = 16, NP= 12;
-    flow_matrix_t psfm(NP, NP, MT, InvariantKind::PLACE, 0, false, true, true);
-    incidence_matrix_generator_t inc_gen(psfm);
-    inc_gen.add_flow_entry(0, 0, 1);
-    inc_gen.add_flow_entry(0, 2, 1);
-    inc_gen.add_flow_entry(0, 7, -1);
-    inc_gen.add_flow_entry(0, 8, 1);
-    inc_gen.add_flow_entry(1, 0, 1);
-    inc_gen.add_flow_entry(1, 1, 1);
-    inc_gen.add_flow_entry(1, 4, -1);
-    inc_gen.add_flow_entry(1, 5, 1);
-    inc_gen.add_flow_entry(10, 13, -1);
-    inc_gen.add_flow_entry(10, 14, 1);
-    inc_gen.add_flow_entry(10, 3, -1);
-    inc_gen.add_flow_entry(11, 12, 1);
-    inc_gen.add_flow_entry(11, 15, -1);
-    inc_gen.add_flow_entry(11, 3, -1);
-    inc_gen.add_flow_entry(2, 1, 1);
-    inc_gen.add_flow_entry(2, 11, 1);
-    inc_gen.add_flow_entry(2, 12, -1);
-    inc_gen.add_flow_entry(2, 3, 1);
-    inc_gen.add_flow_entry(3, 10, -1);
-    inc_gen.add_flow_entry(3, 13, 1);
-    inc_gen.add_flow_entry(3, 2, 1);
-    inc_gen.add_flow_entry(3, 3, 1);
-    inc_gen.add_flow_entry(4, 1, -1);
-    inc_gen.add_flow_entry(4, 4, 1);
-    inc_gen.add_flow_entry(4, 6, -1);
-    inc_gen.add_flow_entry(5, 10, 1);
-    inc_gen.add_flow_entry(5, 14, -1);
-    inc_gen.add_flow_entry(5, 2, -1);
-    inc_gen.add_flow_entry(6, 2, -1);
-    inc_gen.add_flow_entry(6, 8, -1);
-    inc_gen.add_flow_entry(6, 9, 1);
-    inc_gen.add_flow_entry(7, 1, -1);
-    inc_gen.add_flow_entry(7, 11, -1);
-    inc_gen.add_flow_entry(7, 15, 1);
-    inc_gen.add_flow_entry(8, 0, -1);
-    inc_gen.add_flow_entry(8, 5, -1);
-    inc_gen.add_flow_entry(8, 6, 1);
-    inc_gen.add_flow_entry(9, 0, -1);
-    inc_gen.add_flow_entry(9, 7, 1);
-    inc_gen.add_flow_entry(9, 9, -1);
-    inc_gen.generate_matrix();
+    // size_t MT = 16, NP= 12;
+    // flow_matrix_t psfm(NP, NP, MT, InvariantKind::PLACE, SystemMatrixType::REGULAR, 0, false, true, true);
+    // incidence_matrix_generator_t inc_gen(psfm);
+    // inc_gen.add_flow_entry(0, 0, 1);
+    // inc_gen.add_flow_entry(0, 2, 1);
+    // inc_gen.add_flow_entry(0, 7, -1);
+    // inc_gen.add_flow_entry(0, 8, 1);
+    // inc_gen.add_flow_entry(1, 0, 1);
+    // inc_gen.add_flow_entry(1, 1, 1);
+    // inc_gen.add_flow_entry(1, 4, -1);
+    // inc_gen.add_flow_entry(1, 5, 1);
+    // inc_gen.add_flow_entry(10, 13, -1);
+    // inc_gen.add_flow_entry(10, 14, 1);
+    // inc_gen.add_flow_entry(10, 3, -1);
+    // inc_gen.add_flow_entry(11, 12, 1);
+    // inc_gen.add_flow_entry(11, 15, -1);
+    // inc_gen.add_flow_entry(11, 3, -1);
+    // inc_gen.add_flow_entry(2, 1, 1);
+    // inc_gen.add_flow_entry(2, 11, 1);
+    // inc_gen.add_flow_entry(2, 12, -1);
+    // inc_gen.add_flow_entry(2, 3, 1);
+    // inc_gen.add_flow_entry(3, 10, -1);
+    // inc_gen.add_flow_entry(3, 13, 1);
+    // inc_gen.add_flow_entry(3, 2, 1);
+    // inc_gen.add_flow_entry(3, 3, 1);
+    // inc_gen.add_flow_entry(4, 1, -1);
+    // inc_gen.add_flow_entry(4, 4, 1);
+    // inc_gen.add_flow_entry(4, 6, -1);
+    // inc_gen.add_flow_entry(5, 10, 1);
+    // inc_gen.add_flow_entry(5, 14, -1);
+    // inc_gen.add_flow_entry(5, 2, -1);
+    // inc_gen.add_flow_entry(6, 2, -1);
+    // inc_gen.add_flow_entry(6, 8, -1);
+    // inc_gen.add_flow_entry(6, 9, 1);
+    // inc_gen.add_flow_entry(7, 1, -1);
+    // inc_gen.add_flow_entry(7, 11, -1);
+    // inc_gen.add_flow_entry(7, 15, 1);
+    // inc_gen.add_flow_entry(8, 0, -1);
+    // inc_gen.add_flow_entry(8, 5, -1);
+    // inc_gen.add_flow_entry(8, 6, 1);
+    // inc_gen.add_flow_entry(9, 0, -1);
+    // inc_gen.add_flow_entry(9, 7, 1);
+    // inc_gen.add_flow_entry(9, 9, -1);
+    // inc_gen.generate_matrix();
 
-    class Printer : public flow_algorithm_printer_t {
-    public:
-        virtual void advance(const char*, size_t step, size_t totalSteps, size_t, ssize_t) {
-            cout << "Step " << (step + 1) << "/" << totalSteps << endl;
-        }
+    // class Printer : public flow_algorithm_printer_t {
+    // public:
+    //     virtual void advance(const char*, size_t step, size_t totalSteps, size_t, ssize_t) {
+    //         cout << "Step " << (step + 1) << "/" << totalSteps << endl;
+    //     }
 
-    } printer;
-    flows_generator_t sf_gen(psfm, printer, VL_VERBOSE);
-    sf_gen.compute_semiflows();
+    // } printer;
+    // flows_generator_t sf_gen(psfm, printer, VL_VERBOSE);
+    // sf_gen.compute_semiflows();
 
-    cout << "# semiflows : " << psfm.num_flows() << endl;
-    for (auto sf = psfm.begin(); sf != psfm.end(); ++sf) {
-        for (size_t n=0; n<sf->nonzeros(); n++)
-            if (sf->ith_nonzero(n).value != 0)
-                cout << sf->ith_nonzero(n).value << "*P" << (sf->ith_nonzero(n).index+1) << " ";
-        cout << endl;
-    }
+    // cout << "# semiflows : " << psfm.num_flows() << endl;
+    // for (auto sf = psfm.begin(); sf != psfm.end(); ++sf) {
+    //     for (size_t n=0; n<sf->nonzeros(); n++)
+    //         if (sf->ith_nonzero(n).value != 0)
+    //             cout << sf->ith_nonzero(n).value << "*P" << (sf->ith_nonzero(n).index+1) << " ";
+    //     cout << endl;
+    // }
 }
 
 //-----------------------------------------------------------------------------

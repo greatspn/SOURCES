@@ -4,6 +4,7 @@
  */
 package editor.domain.io;
 
+import common.UnixPrintWriter;
 import editor.domain.elements.ConstantID;
 import editor.domain.Edge;
 import editor.domain.elements.GspnEdge;
@@ -422,10 +423,13 @@ public class GreatSpnFormat {
 
     // Parameter useExt means that we are using the new extensions of the format that
     // are not compatible with the old GreatSPN GUI.
-    public static String exportGspn(GspnPage gspn, File netFile, File defFile, boolean useExt) throws Exception {
+    public static String exportGspn(GspnPage gspn, File netFile, File defFile, 
+                                    boolean useExt, boolean useMDepArcs) throws Exception 
+    {
         if (!gspn.isPageCorrect()) {
             throw new UnsupportedOperationException("GSPN must be correct before exporting.");
         }
+        System.out.println("exportGspn useExt="+useExt);
 
         Properties sysProps = System.getProperties();
         Object oldLineSep = null;
@@ -435,8 +439,9 @@ public class GreatSpnFormat {
 
             ArrayList<String> log = new ArrayList<>();
 
-            PrintWriter net = new PrintWriter(new BufferedOutputStream(new FileOutputStream(netFile)));
-            PrintWriter def = new PrintWriter(new BufferedOutputStream(new FileOutputStream(defFile)));
+            // Always save the net/def files with Unix line endings using the UnixPrintWriter
+            PrintWriter net = new UnixPrintWriter(new BufferedOutputStream(new FileOutputStream(netFile)));
+            PrintWriter def = new UnixPrintWriter(new BufferedOutputStream(new FileOutputStream(defFile)));
 
             net.println("|0|\n|");
 
@@ -678,13 +683,20 @@ public class GreatSpnFormat {
                 }
 
                 if (trn.isExponential()) {
-                    String delayExpr = delay;
-                    delay = realOrRpar(delayExpr, "transition coefficient", gspn, null);
+                    delay = realOrRpar(delay, "transition coefficient", gspn, null);
                     if (delay == null) { // marking-dependent rate
                         delay = trn.convertDelayLang(context, null, ExpressionLanguage.GREATSPN);
                         markDepDefs.add("|"+(trnNum+1)+"\n"+delay);
                         delay = "-5.100000e+02";
                         enabDeg = 1;
+                    }
+                }
+                else if (trn.isImmediate() && useExt) {
+                    delay = realOrRpar(delay, "transition coefficient", gspn, null);
+                    if (delay == null) { // marking-dependent rate
+                        delay = trn.convertWeightLang(context, null, ExpressionLanguage.GREATSPN);
+                        markDepDefs.add("|"+(trnNum+1)+"\n"+delay);
+                        delay = "-5.100000e+02";
                     }
                 }
                 else // can only be a constant or a rate parameter
@@ -757,8 +769,13 @@ public class GreatSpnFormat {
                     sb.append("   ");
                     sb.append(arc.isBroken ? "-" : "");
                     boolean isColored = !arc.getColorDomainOfConnectedPlace().isNeutralDomain();
+                    boolean hasMdepExpr = false;
                     if (isColored)
                         sb.append("1");
+                    else if (useMDepArcs && !NetObject.isInteger(arc.getMultiplicity())) {
+                        hasMdepExpr = true;
+                        sb.append("1");
+                    }
                     else if (useExt && mpar2pos.containsKey(arc.getMultiplicity()))
                         sb.append(20000 + mpar2pos.get(arc.getMultiplicity()));
                     else
@@ -768,7 +785,7 @@ public class GreatSpnFormat {
                     sb.append(" ");
                     sb.append(arc.numPoints() - 2);
                     sb.append(" 0");
-                    if (isColored)
+                    if (isColored || hasMdepExpr)
                         sb.append(" 0.000000 0.000000 ").append(exportExpr(arc.getMultiplicity(), allColorClasses, log));
                     sb.append("\n");
                     for (int pt = 1; pt < arc.numPoints() - 1; pt++) {
@@ -1051,7 +1068,8 @@ public class GreatSpnFormat {
                 name = name.substring(0, pos);
             }
             name = sanitizeName(name);
-            int initMark = net.nextInt();
+            String initMarkStr = net.next();
+            int initMark = Integer.parseInt(ensureInt(initMarkStr, "Initial Marking cannot be parsed as INT.", log));
             Point2D pos = readPos(net);
             Point2D label = readPos(net);
             skip_layers(net);

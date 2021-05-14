@@ -130,7 +130,7 @@ public class NetToolBase implements MouseListener, MouseMotionListener, KeyListe
         return snapPointToGrid(new Point2D.Double(LX, LY), mgs);
     }
         
-    private final static double GRID_ANGLE_DEGREES = 15.0;
+//    private final static double GRID_ANGLE_DEGREES = 15.0;
     protected Point2D snapPointToGrid(Point2D pt, NetObject.MeshGridSize mgs) {
         if (mgs != null) {
             boolean gridSnapping = (editor.isGridSnappingActive());
@@ -151,8 +151,8 @@ public class NetToolBase implements MouseListener, MouseMotionListener, KeyListe
                                            pt.getX() - mgs.rotationCenter.getX());
                 //theta += Math.PI / 2.0;
                 if (gridSnapping)
-                    theta = NetObject.DEG_TO_RAD * (GRID_ANGLE_DEGREES * Math.round
-                                                    (theta * NetObject.RAD_TO_DEG / GRID_ANGLE_DEGREES));
+                    theta = NetObject.DEG_TO_RAD * (mgs.gridSnapping * Math.round
+                                                    (theta * NetObject.RAD_TO_DEG / mgs.gridSnapping));
                 
                 pt.setLocation(mgs.rotationCenter.getX() + mgs.rotationShaft * Math.cos(theta),
                                mgs.rotationCenter.getY() + mgs.rotationShaft * Math.sin(theta));

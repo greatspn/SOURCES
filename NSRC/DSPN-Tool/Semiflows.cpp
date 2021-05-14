@@ -14,6 +14,7 @@
 #include <string>
 #include <cstring>
 #include <cfloat>
+#include <cassert>
 #include <vector>
 #include <map>
 #include <list>
@@ -65,6 +66,12 @@ inline int gcd(int a, int b) {
             b = b - a;
     }
     return a;
+}
+
+//-----------------------------------------------------------------------------
+
+inline int lcm(int a, int b) {
+    return (a * b) / gcd(a, b);
 }
 
 //-----------------------------------------------------------------------------
@@ -134,45 +141,87 @@ inline ssize_t traverse_both(typename Container1::const_iterator& it1,
 
 //-----------------------------------------------------------------------------
 
-const char* GetGreatSPN_FileExt(InvariantKind ik, FlowMatrixKind matk, int suppl_flags) {
-    typedef const char*  T[4];
-    size_t i = 0;
-    if (suppl_flags & FM_POSITIVE_SUPPLEMENTARY)
-        i += 1;
-    if (suppl_flags & FM_NEGATIVE_SUPPLEMENTARY)
-        i += 2;
-    const char *ext;
-    switch (matk) {
-        case FlowMatrixKind::SEMIFLOWS:
-            ext = (ik==InvariantKind::PLACE) ? T{ ".pin", ".pin+", ".pin-", ".pin+-" }[i] 
-                                             : T{ ".tin", ".tin+", ".tin-", ".tin+-" }[i];
-            break;
-        case FlowMatrixKind::BASIS:
-            ext = (ik==InvariantKind::PLACE) ? T{ ".pba", ".pba+", ".pba-", ".pba+-" }[i] 
-                                             : T{ ".tba", ".tba+", ".tba-", ".tba+-" }[i];
-            break;
-        case FlowMatrixKind::INTEGER_FLOWS:
-            ext = (ik==InvariantKind::PLACE) ? T{ ".pfl", ".pfl+", ".pfl-", ".pfl+-" }[i] 
-                                             : T{ ".tfl", ".tfl+", ".tfl-", ".tfl+-" }[i];
-            break;
-        // case FlowMatrixKind::NESTED_FLOW_SPAN:
-        //     return (ik==InvariantKind::PLACE) ? ".pspan" : ".tspan";
-        default:
-            throw program_exception("Internal error in GetGreatSPN_FileExt");
+std::string GetGreatSPN_FileExt(invariants_spec_t is) {
+    std::string ext;
+
+    if (is.system_kind == SystemMatrixType::SIPHONS)
+        ext = ".siphons";
+    else if (is.system_kind == SystemMatrixType::TRAPS)
+        ext = ".traps";
+    else {
+        switch (is.matk) {
+            case FlowMatrixKind::SEMIFLOWS:
+                ext = (is.invknd == InvariantKind::PLACE) ? ".pin" : ".tin";
+                break;
+            case FlowMatrixKind::BASIS:
+                ext = (is.invknd == InvariantKind::PLACE) ? ".pba" : ".tba";
+                break;
+            case FlowMatrixKind::INTEGER_FLOWS:
+                ext = (is.invknd == InvariantKind::PLACE) ? ".pfl" : ".tfl";
+                break;
+            default:
+                throw program_exception("Internal error in GetGreatSPN_FileExt");
+        }
+        if (is.suppl_flags & FM_POSITIVE_SUPPLEMENTARY)
+            ext += "+";
+        if (is.suppl_flags & FM_NEGATIVE_SUPPLEMENTARY)
+            ext += "-";
+        if (is.suppl_flags & FM_ON_THE_FLY_SUPPL_VARS)
+            ext += "o";
+        if (is.suppl_flags & FM_REDUCE_SUPPLEMENTARY_VARS)
+            ext += "r";
     }
+    // typedef const char*  T[4];
+    // size_t i = 0;
+    // if (suppl_flags & FM_POSITIVE_SUPPLEMENTARY)
+    //     i += 1;
+    // if (suppl_flags & FM_NEGATIVE_SUPPLEMENTARY)
+    //     i += 2;
+    // const char *ext;
+    // switch (matk) {
+    //     case FlowMatrixKind::SEMIFLOWS:
+    //         if (smt == SystemMatrixType::TRAPS) {
+    //             ext = ".traps";
+    //             break;
+    //         }
+    //         else if (smt == SystemMatrixType::SIPHONS) {
+    //             ext = ".siphons";
+    //             break;
+    //         }
+    //         ext = (ik==InvariantKind::PLACE) ? T{ ".pin", ".pin+", ".pin-", ".pin+-" }[i] 
+    //                                          : T{ ".tin", ".tin+", ".tin-", ".tin+-" }[i];
+    //         break;
+    //     case FlowMatrixKind::BASIS:
+    //         ext = (ik==InvariantKind::PLACE) ? T{ ".pba", ".pba+", ".pba-", ".pba+-" }[i] 
+    //                                          : T{ ".tba", ".tba+", ".tba-", ".tba+-" }[i];
+    //         break;
+    //     case FlowMatrixKind::INTEGER_FLOWS:
+    //         ext = (ik==InvariantKind::PLACE) ? T{ ".pfl", ".pfl+", ".pfl-", ".pfl+-" }[i] 
+    //                                          : T{ ".tfl", ".tfl+", ".tfl-", ".tfl+-" }[i];
+    //         break;
+    //     // case FlowMatrixKind::NESTED_FLOW_SPAN:
+    //     //     return (ik==InvariantKind::PLACE) ? ".pspan" : ".tspan";
+    //     default:
+    //         throw program_exception("Internal error in GetGreatSPN_FileExt");
+    // }
     return ext;
 }
 //-----------------------------------------------------------------------------
 
-const char* GetFlowName(InvariantKind ik, FlowMatrixKind matk) {
+const char* GetFlowName(InvariantKind ik, FlowMatrixKind matk, SystemMatrixType smt) {
     bool p = (ik==InvariantKind::PLACE);
     switch (matk) {
         case FlowMatrixKind::EMPTY:         
             return "EMPTY";
         case FlowMatrixKind::INCIDENCE:     
             return "INCIDENCE MATRIX";
-        case FlowMatrixKind::SEMIFLOWS:     
-            return p ? "PLACE SEMIFLOWS" : "TRANSITION SEMIFLOWS";
+        case FlowMatrixKind::SEMIFLOWS:
+            if (smt == SystemMatrixType::REGULAR)
+                return p ? "PLACE SEMIFLOWS" : "TRANSITION SEMIFLOWS";
+            else if (smt == SystemMatrixType::TRAPS)
+                return p ? "TRAPS" : "????";
+            else // Siphons
+                return p ? "SIPHONS" : "????";
         case FlowMatrixKind::BASIS:         
             return p ? "PLACE FLOW BASIS" : "TRANSITION FLOW BASIS";
         case FlowMatrixKind::INTEGER_FLOWS: 
@@ -217,12 +266,12 @@ ostream& flow_matrix_t::row_t::print(ostream& os, const ssize_t M, const ssize_t
     if (D.size() > MAX_DENSE_REPR) { // sparse representation
         for (size_t i = 0, cnt = 0; i < D.nonzeros(); i++)
             if (D.ith_nonzero(i).value)
-                os << (cnt++ > 0 ? ", " : "") << (D.ith_nonzero(i).index+1) 
+                os << (cnt++ > 0 ? ", " : " ") << (D.ith_nonzero(i).index+1) 
                    << ":" << D.ith_nonzero(i).value;
-        os << " | ";
+        os << " |";
         for (size_t i = 0, cnt = 0; i < A.nonzeros(); i++)
             if (A.ith_nonzero(i).value)
-                os << (cnt++ > 0 ? ", " : "") << (A.ith_nonzero(i).index+1) 
+                os << (cnt++ > 0 ? ", " : " ") << (A.ith_nonzero(i).index+1) 
                    << ":" << A.ith_nonzero(i).value;
     }
     else { // dense representation
@@ -258,9 +307,9 @@ ostream& flow_matrix_t::print(ostream& os, bool highlight_annulled) const {
 //-----------------------------------------------------------------------------
 
 flow_matrix_t::flow_matrix_t(size_t _N, size_t _N0, size_t _M, InvariantKind _ik, 
-                             int _suppl_flags, bool _add_extra_vars, 
+                             SystemMatrixType smt, int _suppl_flags, bool _add_extra_vars, 
                              bool _use_Colom_pivoting, bool _extra_vars_in_support) 
-: N(_N), N0(_N0), M(_M), inv_kind(_ik), suppl_flags(_suppl_flags), 
+: N(_N), N0(_N0), M(_M), inv_kind(_ik), system_kind(smt), suppl_flags(_suppl_flags), 
 add_extra_vars(_add_extra_vars), use_Colom_pivoting(_use_Colom_pivoting), 
 extra_vars_in_support(_extra_vars_in_support), mat_kind(FlowMatrixKind::EMPTY) 
 { 
@@ -291,20 +340,20 @@ inline int flow_matrix_t::row_t::gcd_nnz_DA() const {
 
 //-----------------------------------------------------------------------------
 
-inline bool flow_matrix_t::row_t::test_minimal_support_D(const spintvector& D2, const size_t N0) const
+inline bool flow_matrix_t::row_t::test_minimal_support_D(const spintvector& D2, const size_t maxN) const
 {
     // Check if the support of D2 is included in D
     //   support(D2) subseteq support(D)    
     // where support(.) is the set of columns with non-zero entries
-    // The test checks all the nonzero entries up to N0
-    if (D2.nonzeros() > D.nonzeros())
+    // The test checks all the nonzero entries up to maxN
+    if (D2.nonzeros() > D.nonzeros() && (D.size()==maxN))
         return false;
 
-    if (D2.nonzeros() > 0 && D2.ith_nonzero(0).index >= N0)
+    if (D2.nonzeros() > 0 && D2.ith_nonzero(0).index >= maxN)
         return false; // do not test containment of empty vectors
 
     for (size_t i2=0, i=0; i2<D2.nonzeros(); i2++) {
-        if (D2.ith_nonzero(i2).index >= N0)
+        if (D2.ith_nonzero(i2).index >= maxN)
             break;
         while (i < D.nonzeros() && (D.ith_nonzero(i).index < D2.ith_nonzero(i2).index)) {
             i++;
@@ -609,99 +658,225 @@ void flow_matrix_t::clear_A_vectors() {
 
 //-----------------------------------------------------------------------------
 
-void incidence_matrix_generator_t::add_flow_entry(size_t i, size_t j, int cardinality) {
-    assert(i < f.N && j < f.M);
-    auto elem = initEntries.lower_bound(flow_entry_t(i, j, numeric_limits<int>::min()));
-    if (elem != initEntries.end() && elem->i == i && elem->j == j) {
-        cardinality += elem->card;
-        initEntries.erase(elem);
-    }
-        // initEntries.insert(Flow(i, j, elem->card + cardinality));
-    // else
-    initEntries.insert(flow_entry_t(i, j, cardinality));
-    // cout << "msa.add_flow_entry("<<i<<", "<<j<<", "<<cardinality<<");"<<endl;
-}
+// void incidence_matrix_generator_t::add_flow_entry(size_t i, size_t j, int cardinality) {
+//     assert(i < f.N && j < f.M);
+//     auto elem = initEntries.lower_bound(flow_entry_t(i, j, numeric_limits<int>::min()));
+//     if (elem != initEntries.end() && elem->i == i && elem->j == j) {
+//         cardinality += elem->card;
+//         initEntries.erase(elem);
+//     }
+//         // initEntries.insert(Flow(i, j, elem->card + cardinality));
+//     // else
+//     initEntries.insert(flow_entry_t(i, j, cardinality));
+//     // cout << "msa.add_flow_entry("<<i<<", "<<j<<", "<<cardinality<<");"<<endl;
+// }
 
 //-----------------------------------------------------------------------------
 
-// Insert flows from Petri net
-void incidence_matrix_generator_t::add_flows_from(const PN& pn, bool print_warns) {
-    // Load the incidence matrix into the flows_generator_t class
-    bool warnForInhibitor = print_warns;
-    bool warnForMarkingDep = print_warns;
-    for (const Transition& trn : pn.trns) {
-        if (warnForInhibitor && !trn.arcs[HA].empty()) {
-            cerr << console::beg_error() << "WARNING: " << console::end_error() 
-                 << "PETRI NET HAS INHIBITOR ARCS THAT WILL BE IGNORED." << endl;
-            warnForInhibitor = false;
+// // Insert flows from Petri net
+// void incidence_matrix_generator_t::add_flows_from(const PN& pn, bool print_warns) {
+//     // Load the incidence matrix into the flows_generator_t class
+//     bool warnForInhibitor = print_warns;
+//     bool warnForMarkingDep = print_warns;
+//     for (const Transition& trn : pn.trns) {
+//         if (warnForInhibitor && !trn.arcs[HA].empty()) {
+//             cerr << console::beg_error() << "WARNING: " << console::end_error() 
+//                  << "PETRI NET HAS INHIBITOR ARCS THAT WILL BE IGNORED." << endl;
+//             warnForInhibitor = false;
+//         }
+//         for (int k=0; k<2; k++) {
+//             ArcKind ak = (k==0 ? IA : OA);
+//             int sign = (ak==IA ? -1 : +1);
+//             for (const Arc& arc : trn.arcs[ak]) {
+//                 if (arc.isMultMarkingDep()) {
+//                     if (warnForMarkingDep) {
+//                         cerr << console::beg_error() << "WARNING: " << console::end_error() 
+//                              << "PETRI NET HAS MARKING-DEPENDENT ARCS THAT WILL BE IGNORED." << endl;
+//                          warnForMarkingDep = false;
+//                     }
+//                 }
+//                 else {
+//                     int card = get_value(arc.getConstantMult()) * sign;
+//                     if (f.inv_kind == InvariantKind::PLACE) 
+//                         add_flow_entry(arc.plc, trn.index, card);
+//                     else
+//                         add_flow_entry(trn.index, arc.plc, card);
+//                 }
+//             }
+//         }
+//     }
+// }
+
+//-----------------------------------------------------------------------------
+
+// void incidence_matrix_generator_t::generate_matrix() {
+//     // Initialize matrix K with the initEntries
+//     for (size_t i = 0; i < f.N; i++) {
+//         flow_matrix_t::row_t row(f);
+//         // Diagonal entry in D
+//         row.D.insert_element(i, 1);
+
+//         // Insert the flows in the A matrix, which starts as the incidence matrix
+//         auto it1 = initEntries.lower_bound(flow_entry_t(i, 0, numeric_limits<int>::min()));
+//         auto it2 = initEntries.lower_bound(flow_entry_t(i, numeric_limits<size_t>::max(), 0));
+//         if (it1 == it2 && i >= f.N0 && f.add_extra_vars)
+//             continue;
+//         for (; it1 != it2; ++it1) {
+//             assert(it1->i == i && it1->j < f.M);
+//             row.A.add_element(it1->j, it1->card);
+//         }
+
+//         if (row.A.empty() && i >= f.N0) // empty supplementary variable row, can drop it
+//             continue;
+
+//         f.mK.emplace_back(std::move(row));
+//     }
+//     initEntries.clear();
+//     f.mat_kind = FlowMatrixKind::INCIDENCE;
+// }
+
+//-----------------------------------------------------------------------------
+
+void incidence_matrix_generator_t::generate_matrix2(const PN& pn, bool print_warns) {
+    // Provide warnings to the user
+    if (print_warns) {
+        for (const Transition& trn : pn.trns) {
+            if (!trn.arcs[HA].empty()) {
+                cerr << console::beg_error() << "WARNING: " << console::end_error() 
+                    << "PETRI NET HAS INHIBITOR ARCS THAT WILL BE IGNORED." << endl;
+                break;
+            }
         }
-        for (int k=0; k<2; k++) {
-            ArcKind ak = (k==0 ? IA : OA);
-            int sign = (ak==IA ? -1 : +1);
-            for (const Arc& arc : trn.arcs[ak]) {
-                if (arc.isMultMarkingDep()) {
-                    if (warnForMarkingDep) {
+        for (const Transition& trn : pn.trns) {
+            bool warned = false;
+            for (int k=0; k<2 && !warned; k++) {
+                ArcKind ak = (k==0 ? IA : OA);
+                for (const Arc& arc : trn.arcs[ak]) {
+                    if (arc.isMultMarkingDep()) {
                         cerr << console::beg_error() << "WARNING: " << console::end_error() 
-                             << "PETRI NET HAS MARKING-DEPENDENT ARCS THAT WILL BE IGNORED." << endl;
-                         warnForMarkingDep = false;
+                            << "PETRI NET HAS MARKING-DEPENDENT ARCS THAT WILL BE IGNORED." << endl;
+                        warned = true;
+                        break;
                     }
                 }
-                else {
-                    int card = get_value(arc.getConstantMult()) * sign;
-                    if (f.inv_kind == InvariantKind::PLACE)
-                        add_flow_entry(arc.plc, trn.index, card);
-                    else
-                        add_flow_entry(trn.index, arc.plc, card);
+            }
+            if (warned)
+                break;
+        }
+    }
+
+    std::vector<flow_matrix_t::spintvector*> ptr_A(f.N);
+
+    // Initialize the N rows of matrix K
+    for (size_t i = 0; i < f.N; i++) {
+       flow_matrix_t::row_t row(f);
+        // Diagonal entry in D
+        row.D.insert_element(i, 1);
+        f.mK.emplace_back(std::move(row));
+        ptr_A[i] = &(f.mK.back().A);
+    }
+
+    // Initialize the rows of the A matrix
+    if (f.system_kind == SystemMatrixType::REGULAR) {
+        for (const Transition& trn : pn.trns) {
+            for (int k=0; k<2; k++) {
+                ArcKind ak = (k==0 ? IA : OA);
+                int sign = (ak==IA ? -1 : +1);
+                for (const Arc& arc : trn.arcs[ak]) {
+                    if (arc.isMultMarkingDep()) 
+                        continue;
+                    int card = get_value(arc.getConstantMult()), i, j;
+                    if (f.inv_kind == InvariantKind::PLACE) {
+                        i = arc.plc;
+                        j = trn.index;
+                    }
+                    else {
+                        i = trn.index;
+                        j = arc.plc;
+                    }
+                    ptr_A[i]->add_element(j, card * sign);
                 }
             }
         }
+
+        // Add initial supplementary variables
+        bool dynamic_extra_var_gen = 0 != (f.suppl_flags & FM_ON_THE_FLY_SUPPL_VARS);
+        if (f.suppl_flags != 0 && !dynamic_extra_var_gen) {
+            // add an arc for each place N0+i from transition i
+            verify(f.M == (f.N - f.N0) / 2);
+            for (size_t i=0; i < f.M; i++) {
+                if (f.suppl_flags & FM_NEGATIVE_SUPPLEMENTARY)
+                    ptr_A[f.N0 + i]->add_element(i, -1);
+                    // add_flow_entry(f.N0 + i, i, -1);
+
+                if (f.suppl_flags & FM_POSITIVE_SUPPLEMENTARY)
+                    ptr_A[f.N0 + f.M + i]->add_element(i, +1);
+                    // add_flow_entry(f.N0 + f.M + i, i, +1);
+            }
+        }
     }
+    else { // traps, siphons
+        verify(f.inv_kind == InvariantKind::PLACE);
+        const ArcKind dup_type = (f.system_kind==SystemMatrixType::TRAPS ? IA : OA);
+        const ArcKind secondary_type = (f.system_kind==SystemMatrixType::TRAPS ? OA : IA);
+        int j_start=0, j_end;
+        for (const Transition& trn : pn.trns) {
+            int num_arcs = trn.arcs[dup_type].size();
+            j_end = j_start + num_arcs;
+            int jj = j_start;
+            // cout << trn.name << " num_arcs="<<num_arcs<<endl;
 
-}
+            for (const Arc& arc : trn.arcs[secondary_type]) {
+                if (arc.isMultMarkingDep()) 
+                    continue;
+                int i = arc.plc;
+                for (int j=j_start; j<j_end; j++)
+                    ptr_A[i]->set_element(j, -1);
+            }
 
-//-----------------------------------------------------------------------------
-
-void incidence_matrix_generator_t::generate_matrix() {
-    // Initialize matrix K with the initEntries
-    for (size_t i = 0; i < f.N; i++) {
-        flow_matrix_t::row_t row(f);
-        // Diagonal entry in D
-        row.D.insert_element(i, 1);
-
-        // Insert the flows in the A matrix, which starts as the incidence matrix
-        auto it1 = initEntries.lower_bound(flow_entry_t(i, 0, numeric_limits<int>::min()));
-        auto it2 = initEntries.lower_bound(flow_entry_t(i, numeric_limits<size_t>::max(), 0));
-        if (it1 == it2 && i >= f.N0 && f.add_extra_vars)
-            continue;
-        for (; it1 != it2; ++it1) {
-            assert(it1->i == i && it1->j < f.M);
-            row.A.add_element(it1->j, it1->card);
+            for (const Arc& arc : trn.arcs[dup_type]) {
+                if (arc.isMultMarkingDep()) 
+                    continue;
+                int i = arc.plc;
+                if ((*ptr_A[i])[jj] == 0)
+                    ptr_A[i]->set_element(jj, 1);
+                jj++;
+            }
+            j_start = j_end;
         }
 
-        if (row.A.empty() && i >= f.N0) // empty supplementary variable row, can drop it
-            continue;
-
-        f.mK.emplace_back(std::move(row));
+        // Add the identity matrix below the incidence. A = [C] over [I]
+        for (size_t i=0; i<f.M; i++) {
+            ptr_A[i + f.N0]->insert_element(i, 1);
+        }
     }
-    initEntries.clear();
+
+    // Drop empty rows from matrix K
+    size_t i = 0;
+    for (auto it = f.mK.begin(); it != f.mK.end(); i++) {
+        if (it->A.empty() && i >= f.N0) // empty supplementary variable row, can drop it
+            it = f.mK.erase(it);
+        else
+            ++it;
+    }
     f.mat_kind = FlowMatrixKind::INCIDENCE;
 }
 
 //-----------------------------------------------------------------------------
 
-void incidence_matrix_generator_t::add_increase_decrease_flows() {
-    assert(f.M == (f.N - f.N0) / 2);
-    // assert(f.inc_dec == 1 || f.inc_dec == -1);
+// void incidence_matrix_generator_t::add_increase_decrease_flows() {
+//     assert(f.M == (f.N - f.N0) / 2);
+//     // assert(f.inc_dec == 1 || f.inc_dec == -1);
 
-    // add an arc for each place N0+i from transition i
-    for (size_t i=0; i < f.M; i++) {
-        if (f.suppl_flags & FM_NEGATIVE_SUPPLEMENTARY)
-            add_flow_entry(f.N0 + i, i, -1);
+//     // add an arc for each place N0+i from transition i
+//     for (size_t i=0; i < f.M; i++) {
+//         if (f.suppl_flags & FM_NEGATIVE_SUPPLEMENTARY)
+//             add_flow_entry(f.N0 + i, i, -1);
 
-        if (f.suppl_flags & FM_POSITIVE_SUPPLEMENTARY)
-            add_flow_entry(f.N0 + f.M + i, i, +1);
-    }
-}
+//         if (f.suppl_flags & FM_POSITIVE_SUPPLEMENTARY)
+//             add_flow_entry(f.N0 + f.M + i, i, +1);
+//     }
+// }
 
 //-----------------------------------------------------------------------------
 
@@ -1296,13 +1471,63 @@ void flows_generator_t::compute_basis()
 
 //-----------------------------------------------------------------------------
 
+void flows_generator_t::drop_slack_vars_in_D() {
+    for (auto row = f.mK.begin(); row != f.mK.end(); ) {
+        size_t i;
+        for (i=0; i<row->D.nonzeros(); i++)
+            if (row->D.ith_nonzero(i).index >= f.N0)
+                break;
+        if (i > 0) {
+            row->D.truncate_nnz(i);
+            ++row;
+        }
+        else {
+            if (verboseLvl >= VL_VERY_VERBOSE) {
+                cout << console::red_fgnd() << "TRNC" << console::default_disp();
+                row->print(cout, f.M, f.N0, true) << endl;
+            }
+            row = f.mK.erase(row);
+        }
+    }
+}
+
+//-----------------------------------------------------------------------------
+
+void flows_generator_t::reduce_non_minimal() {
+    drop_slack_vars_in_D();
+
+    auto row = f.mK.begin();
+    while (row != f.mK.end()) {
+        // Test for minimal support excluding the slack variables
+        bool erased = false;
+        for (auto row2 = f.mK.begin(); row2 != f.mK.end(); ++row2) {
+            if (row == row2)
+                continue;
+            if (row->test_minimal_support_D(row2->D, /*f.extra_vars_in_support?f.N:*/f.N0)) {
+                if (verboseLvl >= VL_VERY_VERBOSE) {
+                    cout << console::red_fgnd() << "REDX" << console::default_disp();
+                    row->print(cout, f.M, f.N0, true) << endl;
+                }
+                row = f.mK.erase(row); // drop and continue;
+                erased = true;
+                break;
+            }
+        }
+        if (!erased)
+            ++row;
+    }
+}
+
+//-----------------------------------------------------------------------------
+
 shared_ptr<flow_matrix_t>
 ComputeFlows(const PN& pn, InvariantKind inv_kind, FlowMatrixKind mat_kind, 
-             bool detect_exp_growth, int suppl_flags, bool use_Colom_pivoting,
-             bool extra_vars_in_support, VerboseLevel verboseLvl) 
+             SystemMatrixType system_kind, bool detect_exp_growth, 
+             int suppl_flags, bool use_Colom_pivoting, 
+             bool extra_vars_in_support, VerboseLevel verboseLvl)
 {
     if (verboseLvl >= VL_BASIC) {
-        cout << "COMPUTING " << GetFlowName(inv_kind, mat_kind) << "..." << endl;
+        cout << "COMPUTING " << GetFlowName(inv_kind, mat_kind, system_kind) << "..." << endl;
     }
     bool has_suppl_vars = (suppl_flags != 0);
     bool dynamic_extra_var_gen = 0 != (suppl_flags & FM_ON_THE_FLY_SUPPL_VARS);
@@ -1321,16 +1546,33 @@ ComputeFlows(const PN& pn, InvariantKind inv_kind, FlowMatrixKind mat_kind,
             N += 2 * pn.plcs.size();
         M  = pn.plcs.size();
     }
-    pfm = make_shared<flow_matrix_t>(N, N0, M, inv_kind, suppl_flags, 
+    if (system_kind != SystemMatrixType::REGULAR) {
+        // for traps/siphons, the incidence matrix is modified:
+        // each IA/OA arc generates a duplicate transition with an
+        // associated supplementary variable.
+        const ArcKind dup_type = (system_kind==SystemMatrixType::TRAPS ? IA : OA);
+        M = 0; // reset transition count
+        N = N0; // start from 0 suppl. vars.
+        for (const Transition& trn : pn.trns) {
+            int num_arcs = trn.arcs[dup_type].size();
+            M += num_arcs;
+            N += num_arcs;
+        }
+    }
+    pfm = make_shared<flow_matrix_t>(N, N0, M, inv_kind, system_kind, suppl_flags, 
                                      dynamic_extra_var_gen, use_Colom_pivoting,
                                      extra_vars_in_support);
 
     // Initialize the flow matrix with the incidence matrix
     incidence_matrix_generator_t inc_gen(*pfm);
-    inc_gen.add_flows_from(pn, verboseLvl >= VL_BASIC);
-    if (has_suppl_vars && !dynamic_extra_var_gen)
-        inc_gen.add_increase_decrease_flows();
-    inc_gen.generate_matrix();
+    // if (reduce_non_minimal)
+    inc_gen.generate_matrix2(pn, verboseLvl >= VL_BASIC);
+    // else {
+    //     inc_gen.add_flows_from(pn, verboseLvl >= VL_BASIC);
+    //     if (has_suppl_vars && !dynamic_extra_var_gen)
+    //         inc_gen.add_increase_decrease_flows();
+    //     inc_gen.generate_matrix();
+    // }
 
     // Message printer
     class fa_printer_t : public flow_algorithm_printer_t {
@@ -1368,7 +1610,7 @@ ComputeFlows(const PN& pn, InvariantKind inv_kind, FlowMatrixKind mat_kind,
     // Initialize generator
     flows_generator_t sf_gen(*pfm, printer, verboseLvl);
     if (detect_exp_growth)
-        sf_gen.max_peak_rows = 5 * pn.plcs.size();
+        sf_gen.max_peak_rows = 5 * pfm->N; // N=pn.plcs.size() for psfl
 
     // Start the computation of the P/T semiflows/basis/flows
     switch (mat_kind) {
@@ -1388,14 +1630,17 @@ ComputeFlows(const PN& pn, InvariantKind inv_kind, FlowMatrixKind mat_kind,
             throw program_exception("Unknown kind of flows!");
     }
 
+    if (system_kind != SystemMatrixType::REGULAR || 0!=(suppl_flags & FM_REDUCE_SUPPLEMENTARY_VARS))
+        sf_gen.reduce_non_minimal();
+
     if (verboseLvl >= VL_BASIC) {
         if (mat_kind == FlowMatrixKind::BASIS) {
             cout << "FOUND " << pfm->num_flows()
-                 << " VECTORS IN THE " << GetFlowName(inv_kind, pfm->mat_kind);
+                 << " VECTORS IN THE " << GetFlowName(inv_kind, pfm->mat_kind, pfm->system_kind);
         }
         else {
             cout << "FOUND " << pfm->num_flows()
-                 << " " << GetFlowName(inv_kind, pfm->mat_kind);
+                 << " " << GetFlowName(inv_kind, pfm->mat_kind, pfm->system_kind);
         }
         size_t num_neg = 0;
         for (auto&& row : pfm->mK)
@@ -1536,11 +1781,31 @@ void PrintFlows(const PN& pn, const flow_matrix_t& psfm,
 
 //-----------------------------------------------------------------------------
 
+// are all places of a net covered by at least one flow?
+bool IsNetCoveredByFlows(const PN& pn, const flow_matrix_t& flows) {
+    assert(flows.inv_kind == InvariantKind::PLACE);
+    std::vector<bool> covered(pn.plcs.size(), false);
+
+    for (const auto &f : flows) {
+        for (auto& elem : f) {
+            if (elem.index < pn.plcs.size()) {
+                covered[elem.index] = true;
+            }
+        }
+    }
+    for (bool is_cov : covered)
+        if (!is_cov)
+        return false;
+    return true;
+}
+
+//-----------------------------------------------------------------------------
+
 // Compute place bounds using the P-semiflows
 void ComputeBoundsFromSemiflows(const PN& pn, const flow_matrix_t& semiflows, 
                                 place_bounds_t& bounds) 
 {
-    assert(semiflows.mat_kind == FlowMatrixKind::SEMIFLOWS);
+    // assert(semiflows.mat_kind == FlowMatrixKind::SEMIFLOWS);
     assert(semiflows.inv_kind == InvariantKind::PLACE);
     bounds.resize(pn.plcs.size());
     std::fill(bounds.begin(), bounds.end(), PlaceBounds{ 0, numeric_limits<int>::max() });
@@ -1549,13 +1814,16 @@ void ComputeBoundsFromSemiflows(const PN& pn, const flow_matrix_t& semiflows,
         // Get the amount of tokens circulating in semiflow @sf
         int tokenCnt = 0;
         for (auto& elem : sf)
-            tokenCnt += elem.value * int(pn.plcs[elem.index].getInitTokenCount());
+            if (elem.index < pn.plcs.size()) // not a support variable
+                tokenCnt += elem.value * int(pn.plcs[elem.index].getInitTokenCount());
 
         int kk = -1;
         // Set upper bounds for all the places in semiflow @sf
         for (auto& elem : sf) {
-            kk = tokenCnt / elem.value;
-            bounds[elem.index].upper = std::min(bounds[elem.index].upper, kk);
+            if (elem.index < pn.plcs.size()) {// not a support variable
+                kk = tokenCnt / elem.value;
+                bounds[elem.index].upper = std::min(bounds[elem.index].upper, kk);
+            }
         }
         // Set lower bounds for all the places in @sf
         if (sf.nonzeros() == 1 && kk > bounds[sf.front_nonzero().index].lower)
@@ -1610,6 +1878,186 @@ void PrintBounds(const PN& pn, const place_bounds_t& bounds, VerboseLevel verbos
             else
                 cout << "inf";
             cout << "]" << endl;
+        }
+    }
+}
+
+//-----------------------------------------------------------------------------
+// minimal marking that satisfies a set of flows
+//-----------------------------------------------------------------------------
+
+// Compute the minimal number of tokens to satisfy each semiflow
+void ComputeMinimalTokensFromFlows(const PN& pn, 
+                                   const flow_matrix_t& semiflows, 
+                                   std::vector<int>& m0min)
+{
+    // assert(semiflows.mat_kind == FlowMatrixKind::SEMIFLOWS);
+    assert(semiflows.inv_kind == InvariantKind::PLACE);
+    m0min.resize(pn.plcs.size());
+
+    // std::fill(m0min.begin(), m0min.end(), -1);
+    // for (const auto& sf : semiflows) {
+    //     // get the lcm of the semiflow
+    //     int lcm_sf = 1;
+    //     for (auto& elem : sf) {
+    //         // if (elem.index < pn.plcs.size()) {
+    //         // cout << "    " << lcm_sf << " " << elem.value << endl;
+    //         lcm_sf = lcm(lcm_sf, elem.value);
+    //         // }
+    //     }
+    //     // cout << "LCM: " << lcm_sf << endl;
+
+    //     // Set the minimum token count of m0 that satisies the semiflow.
+    //     for (auto& elem : sf) {
+    //         if (elem.index < pn.plcs.size()) {
+    //             int tc = lcm_sf / elem.value;
+    //             int m0 = int(pn.plcs[elem.index].getInitTokenCount());
+    //             tc = std::min(tc, m0);
+    //             if (m0min[elem.index] < 0)
+    //                 m0min[elem.index] = tc;
+    //             else
+    //                 m0min[elem.index] = std::min(m0min[elem.index], tc);
+    //         }
+    //     }
+    // }
+
+    // Extract all the m0*Y of all semiflows in the net
+    std::set<int> all_m0_Y;
+    for (const auto& sf : semiflows) {
+        int m0_Y = 0;
+        for (auto& elem : sf) {
+            if (elem.index < pn.plcs.size()) { // not a support variable
+                m0_Y += elem.value * int(pn.plcs[elem.index].getInitTokenCount());
+            }
+        }
+        all_m0_Y.insert(m0_Y);
+    }
+    // renumber the token counts to find the optimal reduced token counts
+    // the optimal reduced token count is the smallest renumbering that preserves 
+    // the partial order between the token counts in each circuit.
+    std::map<int, int> reducer;
+    for (auto m0_Y : all_m0_Y) {
+        reducer.insert(make_pair(m0_Y, reducer.size() + 1));
+        // cout << "reducer "<<m0_Y<<" -> "<<reducer[m0_Y]<<endl;
+    }
+    
+    // Assign the reduced token count to each place
+    std::fill(m0min.begin(), m0min.end(), -1);
+    for (const auto& sf : semiflows) {
+        int m0_Y = 0;
+        for (auto& elem : sf) {
+            if (elem.index < pn.plcs.size()) { // not a support variable
+                m0_Y += elem.value * int(pn.plcs[elem.index].getInitTokenCount());
+            }
+        }
+        int reduced_m0_Y = reducer[m0_Y];
+        // get the lcm of the semiflow
+        int lcm_sf = 1;
+        for (auto& elem : sf)
+            lcm_sf = lcm(lcm_sf, elem.value);
+
+        // Set the minimum token count of m0 that satisfies the semiflow.
+        for (auto& elem : sf) {
+            if (elem.index < pn.plcs.size()) {
+                int mult = lcm_sf / elem.value;
+                // int tc = m0_Y / elem.value;
+                int tc = mult * reduced_m0_Y;
+                int m0 = int(pn.plcs[elem.index].getInitTokenCount());
+                // if (elem.index==0) {
+                //     cout << "P"<<elem.index<<"  m0="<<m0<<" tc="<<tc
+                //          <<"   reduced_m0_Y="<<reduced_m0_Y<<" elem.value="<<elem.value<<endl;
+                // }
+                tc = std::min(tc, m0);
+                if (m0min[elem.index] < 0)
+                    m0min[elem.index] = tc;
+                else
+                    m0min[elem.index] = std::min(m0min[elem.index], tc);
+            }
+        }
+    }
+
+    /*//////////
+    std::vector<std::set<int>> bounds;
+    bounds.resize(pn.plcs.size());
+
+    for (const auto& sf : semiflows) {
+        // get the lcm of the semiflow
+        int lcm_sf = 1;
+        for (auto& elem : sf)
+            lcm_sf = lcm(lcm_sf, elem.value);
+
+        // Get the amount of tokens circulating in semiflow @sf
+        int tokenCnt = 0;
+        for (auto& elem : sf) {
+            if (elem.index < pn.plcs.size()) { // not a support variable
+                tokenCnt += elem.value * int(pn.plcs[elem.index].getInitTokenCount());
+            }
+        }
+        cout << "lcm_sf="<<lcm_sf<<" tokenCnt="<<tokenCnt<<endl;
+
+        int kk = -1;
+        // Set upper bounds for all the places in semiflow @sf
+        for (auto& elem : sf) {
+            if (elem.index < pn.plcs.size()) {// not a support variable
+                kk = tokenCnt / elem.value;
+                bounds[elem.index].insert(kk);// = std::min(bounds[elem.index].upper, kk);
+            }
+        }
+        // Set lower bounds for all the places in @sf
+        // if (sf.nonzeros() == 1 && kk > bounds[sf.front_nonzero().index].lower)
+        //     bounds[sf.front_nonzero().index].lower = kk;
+    }
+
+    cout << "MINIMAL M0:" << endl;
+    size_t max_plc_len = 0;
+    for (auto& plc : pn.plcs)
+        max_plc_len = std::max(max_plc_len, plc.name.size());
+
+    for (size_t p = 0; p<pn.plcs.size(); p++) {
+        cout << right << setw(max_plc_len) << pn.plcs[p].name 
+                << ": " << left << setw(3) << m0min[p] 
+                << " (" << pn.plcs[p].getInitTokenCount() << ")   ";
+
+        for (auto k : bounds[p])
+            cout << k <<  " ";
+        cout << endl;
+    }
+    cout << endl;//*/
+}
+
+//-----------------------------------------------------------------------------
+
+void SaveMinimalTokens(const std::vector<int>& m0min, ofstream& file) {
+    if (m0min.empty()) {
+    }
+    else {
+        for (auto& b : m0min) {
+            file << b << " ";
+        }
+        file << "\n" << flush;
+    }
+}
+
+//-----------------------------------------------------------------------------
+
+void PrintMinimalTokens(const PN& pn, const std::vector<int>& m0min, VerboseLevel verboseLvl) {
+    if (verboseLvl > VL_BASIC) {
+        if (m0min.empty()) {
+            cout << "COULD NOT COMPUTE MINIMAL M0: net does not meet all the requirements." << endl;
+        }
+        else {
+            cout << "MINIMAL M0:" << endl;
+            size_t max_plc_len = 0;
+            for (auto& plc : pn.plcs)
+                max_plc_len = std::max(max_plc_len, plc.name.size());
+
+            for (size_t p = 0; p<pn.plcs.size(); p++) {
+                cout << right << setw(max_plc_len) << pn.plcs[p].name 
+                     << ": " << left << setw(3) << m0min[p] 
+                     << " (" << pn.plcs[p].getInitTokenCount() << ")"
+                     << endl;
+            }
+            cout << endl;
         }
     }
 }

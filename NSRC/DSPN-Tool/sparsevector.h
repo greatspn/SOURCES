@@ -102,7 +102,7 @@ public:
     typedef typename storage_type::const_iterator const_iterator;
 
     // comparator for  index_value_pair <> index_type
-    struct less_by_index : binary_function <index_value_pair, index_type, bool> {
+    struct less_by_index : std::binary_function <index_value_pair, index_type, bool> {
         inline bool operator()(const index_value_pair &x, const index_type &y) const
         { return x.index < y; }
         inline bool operator()(const index_type &x, const index_value_pair &y) const
@@ -139,6 +139,7 @@ public:
 
     inline sparsevector() : maxIndex(0) {}
     inline sparsevector(size_t mi) : maxIndex(mi) {}
+    inline sparsevector(size_t mi, storage_type&& s) : maxIndex(mi), spvec(s) {}
     inline ~sparsevector() {}
     inline sparsevector(const sparsevector&) = default;
     inline sparsevector(sparsevector&&) = default;
@@ -230,6 +231,11 @@ public:
         if (!preserve)
             spvec.clear();
         dbg_check();
+    }
+
+    inline void truncate_nnz(size_t new_nnz) {
+        assert(new_nnz <= spvec.size());
+        spvec.resize(new_nnz);
     }
 
     inline void clear() { spvec.clear(); }

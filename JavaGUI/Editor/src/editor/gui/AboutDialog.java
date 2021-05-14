@@ -4,12 +4,14 @@
  */
 package editor.gui;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.swing.JFrame;
 
 /**
@@ -27,8 +29,22 @@ public class AboutDialog extends javax.swing.JDialog {
         setLocationRelativeTo(frame);
         getRootPane().setDefaultButton(jButtonCloseDialog);
         
-        jLabelVersion.setText("Build date: "+getBuildData());
-    }
+        String buildDate = getBuildDate();
+        String buildYear = buildDate.substring(0, buildDate.indexOf('-'));
+        
+        String incrNum = getBuildNumber("build_number.txt");
+        String version = getBuildNumber("version_number.txt");
+        String repoBranch = getBuildNumber("repo_branch.txt");
+        String repoCount = getBuildNumber("repo_count.txt");
+        String repoHash = getBuildNumber("repo_hash.txt");
+        
+        jLabelVersion.setText("<html>Version: <b>"+version+"</b>-"+incrNum+"<br/>"
+                        + "Build date: "+buildDate+"<br/>"
+                        + "Repo branch: "+repoCount+"@"+repoBranch+", hash="+repoHash
+                        + "</html>");
+        
+        jLabelCopyrights.setText(jLabelCopyrights.getText().replace("XXXX", buildYear));
+    } 
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -38,92 +54,111 @@ public class AboutDialog extends javax.swing.JDialog {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        jLabelCopyrights = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabelVersion = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
         jButtonCloseDialog = new javax.swing.JButton();
 
         setResizable(false);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("About"));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Credits"));
+        jPanel1.setLayout(new java.awt.GridBagLayout());
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/editor/gui/icons/icon64.png"))); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
+        jPanel1.add(jLabel1, gridBagConstraints);
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/editor/gui/icons/app-banner.png"))); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(jLabel2, gridBagConstraints);
 
-        jLabel3.setText("<html> Credits:<br/>   &nbsp;&nbsp;&nbsp;GreatSPN framework: &copy; 1985-2016 : Università di Torino, Italy.<br/>\n  &nbsp;&nbsp;&nbsp;New GreatSPN Editor: &copy; 2013-2016 : Università di Torino, Italy.<br/>\n  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Main developer of the GUI: <a href=\"amparore@di.unito.it\">Elvio G. Amparore</a> <br/>  </html>");
-        jLabel3.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jLabelCopyrights.setText("<html> Credits:<br/>   &nbsp;&nbsp;&nbsp;GreatSPN framework: &copy; 1985-XXXX : Università di Torino, Italy.<br/>\n  &nbsp;&nbsp;&nbsp;New GreatSPN Editor: &copy; 2013-XXXX : Università di Torino, Italy.<br/>\n  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Main developer of the GUI: <a href=\"amparore@di.unito.it\">Elvio G. Amparore</a> <br/>  </html>");
+        jLabelCopyrights.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipady = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel1.add(jLabelCopyrights, gridBagConstraints);
 
         jLabel4.setText("This software uses ");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.ipady = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
+        jPanel1.add(jLabel4, gridBagConstraints);
 
         jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/editor/gui/icons/jlatexmath.png"))); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.ipady = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
+        jPanel1.add(jLabel5, gridBagConstraints);
 
         jLabel6.setText(" for typesetting texts in LaTeX.");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipady = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
+        jPanel1.add(jLabel6, gridBagConstraints);
 
-        jLabelVersion.setText("Version number: XXX");
+        jLabelVersion.setText("<html>Version number: XXX<br/>\nYYY<br/>\nZZZ\n</html>");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipady = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel1.add(jLabelVersion, gridBagConstraints);
 
-        jLabel7.setText("<html>JLaTeXMath is licensed with GPL v2 with linking exception.<br/>\nSome icons are taken from <u>http://www.fatcow.com/free-icons</u>, licensed<br/>\nunder Creative Commons Attribution 3.0 License.");
+        jLabel7.setText("<html>JLaTeXMath is licensed with GPL v2 with linking exception.<br/>\nSome icons are taken from <u>http://www.fatcow.com/free-icons</u>, licensed<br/>\nunder Creative Commons Attribution 3.0 License.<br/>\n\nApache PDFBox (<u>https://pdfbox.apache.org/</u>) and <br/>\npdfbox-graphics2d (<u>https://github.com/rototor/pdfbox-graphics2d</u>) <br/>\nare used to export diagrams in PDF format.<br/>");
         jLabel7.setToolTipText("");
         jLabel7.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipady = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel1.add(jLabel7, gridBagConstraints);
 
-        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jPanel1Layout.createSequentialGroup()
-                        .add(jLabel1)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .add(jLabelVersion, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addContainerGap())
-                            .add(jPanel1Layout.createSequentialGroup()
-                                .add(jLabel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .add(10, 10, 10))))
-                    .add(jPanel1Layout.createSequentialGroup()
-                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(jLabel7)
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .add(jLabel3)
-                                .add(4, 4, 4))
-                            .add(jPanel1Layout.createSequentialGroup()
-                                .add(jLabel4)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jLabel5)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jLabel6, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                        .addContainerGap())))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel1Layout.createSequentialGroup()
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jLabel2)
-                    .add(jPanel1Layout.createSequentialGroup()
-                        .add(22, 22, 22)
-                        .add(jLabel1)))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jLabelVersion, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 32, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jLabel3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 83, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                    .add(jLabel5, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE)
-                    .add(jLabel4, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(jLabel6, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jLabel7))
-        );
+        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
+
+        jPanel2.setLayout(new java.awt.GridBagLayout());
 
         jButtonCloseDialog.setText("Close");
         jButtonCloseDialog.addActionListener(new java.awt.event.ActionListener() {
@@ -131,28 +166,17 @@ public class AboutDialog extends javax.swing.JDialog {
                 jButtonCloseDialogActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.ipadx = 4;
+        gridBagConstraints.ipady = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(7, 7, 7, 7);
+        jPanel2.add(jButtonCloseDialog, gridBagConstraints);
 
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .add(jButtonCloseDialog)
-                .addContainerGap())
-            .add(layout.createSequentialGroup()
-                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(0, 0, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jButtonCloseDialog)
-                .addContainerGap())
-        );
+        getContentPane().add(jPanel2, java.awt.BorderLayout.SOUTH);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -161,25 +185,41 @@ public class AboutDialog extends javax.swing.JDialog {
         setVisible(false);
     }//GEN-LAST:event_jButtonCloseDialogActionPerformed
 
-    // Get the Build-Date attribute from the Manifest of this JAR.
-    // This function requires that the build process generates the Build-Date attribute,
-    // which is not by default. The build.xml has been changed to add this value.
-    private String getBuildData() {
+    // Get the build number
+    private String getBuildNumber(String fname) {
+        try {
+            BufferedReader txtReader = new BufferedReader
+                (new InputStreamReader(
+                      getClass().getResourceAsStream("/common/"+fname)));
+
+            String num = txtReader.readLine();
+            txtReader.close();
+            return num;
+        }
+        catch (IOException e) { }
+        return "<???>";
+    }
+    
+    // Get the Build Date from the compile time attribute of the Manifest
+    private String getBuildDate() {
         try {
             URL url = getClass().getResource(getClass().getSimpleName() + ".class");
             if (url == null)
                 return "<<Not running from a JAR file.>>";
             URLConnection urlConn = url.openConnection();
+            
+            long epoch = 0;
             if (urlConn instanceof JarURLConnection) {
-                JarURLConnection conn = (JarURLConnection)urlConn;
-                Manifest mf = conn.getManifest();
-                Attributes atts = mf.getMainAttributes();
-                for (Object key : atts.keySet())
-                    System.out.println(key + " = " + atts.get(key));
-                return atts.getValue("Build-Date");
+                // Is it a JAR file? Get manifest time
+                epoch = ((JarURLConnection) urlConn).getJarFile().getEntry("META-INF/MANIFEST.MF").getTime();
+            } else {
+                // Regular file? Get file compile time
+                epoch = urlConn.getLastModified();
             }
-            else
-                return "<<Cannot retrieve JAR Manifest>>";
+            // Format as timestamp
+            Date epochDate = new Date(epoch);
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            return df.format(epochDate);
         }
         catch (IOException e) {
             return "---";
@@ -226,12 +266,13 @@ public class AboutDialog extends javax.swing.JDialog {
     private javax.swing.JButton jButtonCloseDialog;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabelCopyrights;
     private javax.swing.JLabel jLabelVersion;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     // End of variables declaration//GEN-END:variables
 }
