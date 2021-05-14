@@ -20,11 +20,13 @@ then
     echo "       -F ->   Specifies objective function file (only with -P)"
     echo "       -T ->   Specifies transition bounds file (only with -P)"
     echo "       -C ->   Specifies C++ code for generic rate function"
+    echo "       -N ->   Disable the PINV computation"
     echo "       Format:"
     echo "       -R ->   Export in R format "
     echo "       -P ->   Export in R format with optimization "
     echo "       -O ->   Export in Matlab format"
     echo "       -G ->   Export in GPU format"
+    echo "       -Z ->   Generate Compact CPP code"
     echo
 
     echo "Please, be aware that:"
@@ -44,6 +46,7 @@ fi
 
 NET_PATH=$(perl -e "use File::Spec; print(File::Spec->rel2abs(\"${1}\"),\"\n\")")
 TRANS_POLICY="-I"
+NOPINV="NO"
 
 shift
 
@@ -63,6 +66,13 @@ case "$1" in
     AUT="$1"
     ;;
 
+    -N)
+    NOPINV="YES"
+    ;;
+
+    -Z)
+   COMPRESS="-C"
+    ;;
 
     -T)
     if [ $# -gt 1 ]
@@ -112,12 +122,14 @@ done
 
 
 echo "#Computing p-semiflows and place bounds: "
-struct $NET_PATH
-if [ "$?" -ne 0 ]
+if [ "$NOPINV" == "NO" ]
 then
-	exit 1
+    struct $NET_PATH
+    if [ "$?" -ne 0 ]
+    then
+        exit 1
+    fi
 fi
-
 
 if [ "$EXPORT_FORMAT" == "-P" ]
 then
@@ -129,10 +141,10 @@ then
 echo ${GREATSPN_BINDIR}/PN2ODE $NET_PATH $EXPORT_FORMAT $TRANS_POLICY -T $TRANS_PATH -F $FUN_PATH
 ${GREATSPN_BINDIR}/PN2ODE $NET_PATH $EXPORT_FORMAT $TRANS_POLICY -T $TRANS_PATH -F $FUN_PATH
 else
-echo ${GREATSPN_BINDIR}/PN2ODE $NET_PATH $EXPORT_FORMAT $TRANS_POLICY $AUT
-${GREATSPN_BINDIR}/PN2ODE $NET_PATH $EXPORT_FORMAT $TRANS_POLICY $AUT
+echo ${GREATSPN_BINDIR}/PN2ODE $NET_PATH $EXPORT_FORMAT $TRANS_POLICY $AUT $COMPRESS
+${GREATSPN_BINDIR}/PN2ODE $NET_PATH $EXPORT_FORMAT $TRANS_POLICY $AUT $COMPRESS
 fi
-
+echo "PN2ODE soluion"
 if [ $? -ne 0 ]
 then
 	 echo "Solution failed in module PN2ODE"
@@ -243,7 +255,7 @@ else
 	echo -e "#Error during compilation. \n\n"
 	exit 1
   fi
- 
+
 
 fi
 

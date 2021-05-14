@@ -124,6 +124,7 @@ extern "C" {
     bool R = false;
     bool P = false;
     bool GPU=false;
+    bool COMPACT_CPP=false; //true if a compact cpp file is generated
     std::string TRANS_PATH;
     std::string OBJ_PATH;
 }
@@ -135,6 +136,7 @@ extern void build_ODEM(ofstream &out, string net);
 extern void build_ODER(ofstream &out, string net);
 extern void build_ODEOPT(ofstream &out, string net, string transitions, string objective_function);
 extern void build_ODEGPU(string net);
+extern void build_ODECompact(ofstream &out, string path, string net);
 int Max_Token_Bound = 255; //max number of different tokens for places
 
 /****************************************************/
@@ -1165,7 +1167,9 @@ int initialize(int  argc,  char  *argv[]) {
             else
                 exit(1);
             break;
-
+        case 'C' :
+            COMPACT_CPP= true;
+            break;
         default :
             if(argv[2][1] == 'P'){
                 P = true;
@@ -1376,9 +1380,10 @@ int main(int argc, char **argv) {
 
     else if (MATLAB)
         build_ODEM(out, net);
+    else if (COMPACT_CPP)
+        build_ODECompact(out, path, net); 				    /* OPERAZIONI */
     else
-        build_ODE(out, path, net); 				    /* OPERAZIONI */
-
+        build_ODE(out, path, net);
     out.close();
     }
     else{
