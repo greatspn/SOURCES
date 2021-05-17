@@ -426,8 +426,14 @@ dd_edge Context::AUfair(dd_edge f1, dd_edge f2) const {
     dd_edge not_f1 = NOT(f1);
     dd_edge not_f2 = NOT(f2);
 
-    return AND(NOT(EUfair(not_f2, AND(not_f1, not_f2))),
+    dd_edge not_E_not_f2_U_not_f1_and_not_f2 = NOT(EUfair(not_f2, AND(not_f1, not_f2)));
+    if (is_false(not_E_not_f2_U_not_f1_and_not_f2))
+        return not_E_not_f2_U_not_f1_and_not_f2;
+
+    return AND(not_E_not_f2_U_not_f1_and_not_f2,
                NOT(EGfair(not_f2)));
+    // return AND(NOT(EUfair(not_f2, AND(not_f1, not_f2))),
+    //            NOT(EGfair(not_f2)));
 }
 
 //----------------------------------------------------------------------------
@@ -437,7 +443,7 @@ dd_edge Context::AUfair(dd_edge f1, dd_edge f2) const {
 
 
 //----------------------------------------------------------------------------
-// Fairness constraints management
+// Fairness constraints management (for fair CTL model checking)
 //----------------------------------------------------------------------------
 
 // add a new fairness constraint and update fair_states
@@ -465,6 +471,63 @@ dd_edge Context::get_fair_states() const {
 
 
 
+
+
+
+
+
+//-----------------------------------------------------------------------------
+// NSF with stuttering (self-loops) on the deadlocked markings 
+// for the pre_image operation. This NSF is a regular transition relation
+// for a Kripke structure.
+//-----------------------------------------------------------------------------
+
+class KripkeStructureNSF : public VirtualNSF {
+    shared_ptr<VirtualNSF>  petri_net_NSF;
+    dd_edge                 dead_markings;
+public:
+    KripkeStructureNSF(shared_ptr<VirtualNSF> &_pn_nsf, dd_edge _dm) 
+    : petri_net_NSF(_pn_nsf), dead_markings(_dm) { }
+
+    forest* getForestMxD() const override;
+    dd_edge pre_image(const dd_edge& set) const override;
+    dd_edge post_image(const dd_edge& set) const override;
+    dd_edge forward_reachable(const dd_edge& s0) const override;
+};
+
+//-----------------------------------------------------------------------------
+
+forest* KripkeStructureNSF::getForestMxD() const {
+    return petri_net_NSF->getForestMxD();
+}
+
+//-----------------------------------------------------------------------------
+
+dd_edge KripkeStructureNSF::pre_image(const dd_edge& set) const {
+    // return petri_net_NSF->pre_image(set) + (set - non_dead_markings);
+    return petri_net_NSF->pre_image(set) + (set * dead_markings);
+}
+
+//-----------------------------------------------------------------------------
+
+dd_edge KripkeStructureNSF::post_image(const dd_edge& set) const {
+    return petri_net_NSF->post_image(set) + (set * dead_markings);
+}
+
+//-----------------------------------------------------------------------------
+
+dd_edge KripkeStructureNSF::forward_reachable(const dd_edge& s0) const {
+    return petri_net_NSF->forward_reachable(s0);
+}
+
+//-----------------------------------------------------------------------------
+
+
+
+
+
+
+
 //-----------------------------------------------------------------------------
 // Trace generation algorithms
 //-----------------------------------------------------------------------------
@@ -479,11 +542,22 @@ bool sat_set_contains(const dd_edge &dd, const std::vector<int> &marking) {
 //-----------------------------------------------------------------------------
 
 // create the DD corresponding to a single marking
-dd_edge dd_of_marking(const std::vector<int> &marking, MEDDLY::forest *mdd_forest) {
+dd_edge dd_from_marking(const std::vector<int> &marking, MEDDLY::forest *mdd_forest) {
     dd_edge dd_of_state(mdd_forest);
     const int *vlist = marking.data();
     mdd_forest->createEdge(&vlist, 1, dd_of_state);
     return dd_of_state;
+}
+
+//-----------------------------------------------------------------------------
+
+// extract an arbitrary state from the dd
+void get_marking_from_dd(const dd_edge &dd, std::vector<int> &marking) {
+    MEDDLY::enumerator it(dd);
+    const int *tmp = it.getAssignments();
+    const size_t n_vars = dd.getForest()->getDomain()->getNumVariables();
+    marking.resize(n_vars + 1);
+    std::copy(tmp, tmp + n_vars + 1, marking.begin());
 }
 
 //-----------------------------------------------------------------------------
@@ -512,7 +586,7 @@ void generate_sequential_trace(const std::vector<int> &s0,
     std::vector<int> state = s0;
     trace_states.push_back(state);
     for (int i = start_i+1; i<steps.size(); i++) {
-        dd_edge dd_state = dd_of_marking(state, ctx.get_MDD_forest());
+        dd_edge dd_state = dd_from_marking(state, ctx.get_MDD_forest());
         // generate the successors of @state
         dd_edge dd_succ = ctx.vNSF->post_image(dd_state);
         // take only those that are also in step[i]
@@ -520,9 +594,7 @@ void generate_sequential_trace(const std::vector<int> &s0,
         if (ctx.is_false(dd_succ))
             throw rgmedd_exception("Problem generating the trace successors");
         // get one successor state for the trace
-        enumerator it(dd_succ);
-        const int *tmp = it.getAssignments();
-        std::copy(tmp, tmp + npl + 1, state.begin());
+        get_marking_from_dd(dd_succ, state);
         trace_states.push_back(state);
     }
 }
@@ -530,9 +602,9 @@ void generate_sequential_trace(const std::vector<int> &s0,
 //-----------------------------------------------------------------------------
 
 // generate a rho trace in the form:
-//  s0 -> s1 -> s2 -> ... -> sk -> ... -> sN --\ 
+//  s0 -> s1 -> s2 -> ... -> sk -> ... -> sN --\   <- goes back
 //                            ^----------------/
-// that contains a self loop going back to itself.
+// that contains a self loop going back to some intermediate state sk.
 // States in the trace belong to the M steps DDs.
 void generate_rho_trace(const std::vector<int> &s0, 
                         const std::vector<dd_edge> steps, 
@@ -546,7 +618,7 @@ void generate_rho_trace(const std::vector<int> &s0,
     start_of_loop = trace_states.size();
 
     std::vector<int> sk = trace_states.back();
-    dd_edge dd_sk = dd_of_marking(sk, ctx.get_MDD_forest());
+    dd_edge dd_sk = dd_from_marking(sk, ctx.get_MDD_forest());
 
     // find a loop that goes back to sk, while remaining in the SCC. 
     // Generate all intermediate DDs

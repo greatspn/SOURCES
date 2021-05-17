@@ -1661,8 +1661,8 @@ void QuantifiedFormula::createMDD(Context& ctx) {
                          mdd_potential_state_set(rsrg, rsrg->getForestMDD(), false),
                          std::move(RSxBA_NSF), 
                          false, // important! LTL semantics requires no stuttering for EG!
-                         false, // no stuttering in EX
-                         false, // will not use SatELTL recusively to model check the TS
+                         false, // no stuttering in EX (not used)
+                         false, // will not use SatELTL recusively to model check the TS (not used)
                          Language::LTL, // language is irrelevant since it used only for TS evaluation.
                          ctx.statePol,
                          ctx.verbose);

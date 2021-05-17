@@ -172,11 +172,11 @@ A precompiled macOS app bundle can also be found [here](http://www.di.unito.it/~
 ## How to run the command-line solvers.
 
 When GreatSPN is installed on your PC, it will (by default) place itself 
-in the: `/usr/local/GreatSPN` directory. The following sub-directory will be created:
+in the: `/usr/local/GreatSPN` directory. The following sub-directories will be created:
 
- * `${GREATSPN_HOME}/scripts`:  the scripts that invoke the solver pipelines.
+ * `${GREATSPN_HOME}/scripts`:  the scripts that invoke the solution pipelines.
  * `${GREATSPN_HOME}/bin`:  the individual solver binaries.
- * `${GREATSPN_HOME}/models`:  the default model library available from the GUI.
+ * `${GREATSPN_HOME}/models`:  the default models available from the GUI.
 
 Typically, most tools are accessed through a script in the first directory.
 
@@ -234,17 +234,17 @@ Other recent papers referencing GreatSPN:
 
 GreatSPN partecipated to several Model Checking Context (MCC) editions:
 
- * MCC 2018 Edition [(link)](https://mcc.lip6.fr/2018/results.php):
-    - 🥇 Gold medal in StateSpace category;
-    - 🥉 Bronze medal in UpperBounds category;
-    - ✔️ 100% accuracy of the results.
- * MCC 2019 Edition [(link)](https://mcc.lip6.fr/2019/results.php):
-    - 🥈 Silver medal in StateSpace category;
-    - ✔️ 100% accuracy of the results.
  * MCC 2020 Edition [(link)](https://mcc.lip6.fr/2020/results.php):
     - 🥈 Silver medal in StateSpace category;
     - 🥈 Silver medal in GlobalProperties category;
     - 🥉 Bronze medal in UpperBounds category;
+ * MCC 2019 Edition [(link)](https://mcc.lip6.fr/2019/results.php):
+    - 🥈 Silver medal in StateSpace category;
+    - ✔️ 100% accuracy of the results.
+ * MCC 2018 Edition [(link)](https://mcc.lip6.fr/2018/results.php):
+    - 🥇 Gold medal in StateSpace category;
+    - 🥉 Bronze medal in UpperBounds category;
+    - ✔️ 100% accuracy of the results.
 
 See the [Model Checking Context site](https://mcc.lip6.fr) for further details.
 
