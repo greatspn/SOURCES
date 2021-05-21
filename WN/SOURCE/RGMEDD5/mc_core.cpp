@@ -541,6 +541,13 @@ bool sat_set_contains(const dd_edge &dd, const std::vector<int> &marking) {
 
 //-----------------------------------------------------------------------------
 
+bool sat_set_is_empty(const dd_edge &e) {
+    expert_forest *forest = static_cast<expert_forest *>(e.getForest());
+    return e.getNode() == forest->handleForValue(false);
+}
+
+//-----------------------------------------------------------------------------
+
 // create the DD corresponding to a single marking
 dd_edge dd_from_marking(const std::vector<int> &marking, MEDDLY::forest *mdd_forest) {
     dd_edge dd_of_state(mdd_forest);
@@ -568,10 +575,11 @@ void get_marking_from_dd(const dd_edge &dd, std::vector<int> &marking) {
 // sN \subsetof steps[M-1]
 // the first step is the first DD that contains s0.
 void generate_sequential_trace(const std::vector<int> &s0, 
-                               const std::vector<dd_edge> steps, 
-                               const Context& ctx,
+                               const std::vector<dd_edge> &steps, 
+                               const VirtualNSF& NSF,
                                std::list<std::vector<int>> &trace_states) 
 {
+    MEDDLY::forest* forestMDD = steps.front().getForest();
     // follow back the intermediate DD steps, and find the one that contains s0
     int start_i;
     for (start_i=steps.size()-1; start_i>=0; start_i--) {
@@ -586,12 +594,12 @@ void generate_sequential_trace(const std::vector<int> &s0,
     std::vector<int> state = s0;
     trace_states.push_back(state);
     for (int i = start_i+1; i<steps.size(); i++) {
-        dd_edge dd_state = dd_from_marking(state, ctx.get_MDD_forest());
+        dd_edge dd_state = dd_from_marking(state, forestMDD);
         // generate the successors of @state
-        dd_edge dd_succ = ctx.vNSF->post_image(dd_state);
+        dd_edge dd_succ = NSF.post_image(dd_state);
         // take only those that are also in step[i]
         MEDDLY::apply(INTERSECTION, dd_succ, steps[i], dd_succ);
-        if (ctx.is_false(dd_succ))
+        if (sat_set_is_empty(dd_succ))
             throw rgmedd_exception("Problem generating the trace successors");
         // get one successor state for the trace
         get_marking_from_dd(dd_succ, state);
@@ -607,18 +615,19 @@ void generate_sequential_trace(const std::vector<int> &s0,
 // that contains a self loop going back to some intermediate state sk.
 // States in the trace belong to the M steps DDs.
 void generate_rho_trace(const std::vector<int> &s0, 
-                        const std::vector<dd_edge> steps, 
-                        const Context& ctx,
+                        const std::vector<dd_edge> &steps, 
+                        const VirtualNSF& NSF,
                         std::list<std::vector<int>> &trace_states,
                         size_t& start_of_loop) 
 {
+    MEDDLY::forest* forestMDD = steps.front().getForest();
     // first generate a sequence from s0 to sk in the last steps[] DD,
     // which is assumed to be a SCC.
-    generate_sequential_trace(s0, steps, ctx, trace_states);
+    generate_sequential_trace(s0, steps, NSF, trace_states);
     start_of_loop = trace_states.size();
 
     std::vector<int> sk = trace_states.back();
-    dd_edge dd_sk = dd_from_marking(sk, ctx.get_MDD_forest());
+    dd_edge dd_sk = dd_from_marking(sk, forestMDD);
 
     // find a loop that goes back to sk, while remaining in the SCC. 
     // Generate all intermediate DDs
@@ -626,7 +635,7 @@ void generate_rho_trace(const std::vector<int> &s0,
     loop_steps.push_back(dd_sk);
 
     while (true) {
-        dd_edge succs = ctx.vNSF->post_image(loop_steps.back());
+        dd_edge succs = NSF.post_image(loop_steps.back());
         MEDDLY::apply(INTERSECTION, succs, steps.back(), succs);
         loop_steps.push_back(succs);
         if (sat_set_contains(succs, sk))
@@ -639,13 +648,13 @@ void generate_rho_trace(const std::vector<int> &s0,
         if (iter == loop_steps.rend())
             break;
 
-        preds = ctx.vNSF->pre_image(preds);
+        preds = NSF.pre_image(preds);
         MEDDLY::apply(INTERSECTION, *iter, preds, *iter);
     }
 
     trace_states.resize(trace_states.size() - 1); // remove the last state
     // Now generate a self loop visiting the succs_lst DDs.
-    generate_sequential_trace(sk, loop_steps, ctx, trace_states);
+    generate_sequential_trace(sk, loop_steps, NSF, trace_states);
 }
 
 //-----------------------------------------------------------------------------
