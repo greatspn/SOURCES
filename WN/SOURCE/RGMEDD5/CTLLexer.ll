@@ -6,7 +6,7 @@ using namespace ctlmdd;
 
 #define register
 
-extern RSRG *rsrg;
+extern RSRG *g_rsrg;
 extern bool parsing_HOA_edge;
 int yyFlexLexer::yywrap(void){
 	return 1;
@@ -27,14 +27,14 @@ int lex_identifier(const std::string& token) {
 		mark_pars_initialized = true;
 	}
 	// PLACE name
-	int id = rsrg->findPlaceIdByName(token.c_str());
+	int id = g_rsrg->findPlaceIdByName(token.c_str());
 	if (-1 != id) {
 		assert(id >= 0 && id < npl);
 		mmlval.place_id = id; //CTLMDD::getInstance()->convertPlaceToMDDLevel(id) + 1;
 		return PLACE_ID;
 	}
 	// TRANSITION name
-	id = rsrg->findTransitionIdByName(token.c_str());
+	id = g_rsrg->findTransitionIdByName(token.c_str());
 	if (-1 != id) {
 		assert(id >= 0 && id < ntr);
 		mmlval.transition_id = id;

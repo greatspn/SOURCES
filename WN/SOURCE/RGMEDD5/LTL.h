@@ -70,6 +70,8 @@ struct BuchiAutomaton {
 
     // Create all the MDDs labeling the Buchi Automata edges
     void pre_compute_subformula_MDDs(Context& ctx);
+    // change numbering of BA locations
+    void reindex_locations(const int *reindex_tbl);
 };
 
 ostream& operator<<(ostream& os, const BuchiAutomaton& ba);
@@ -135,6 +137,10 @@ public:
     inline void set_explicit(dd_edge& nsf) {
         implicit = false;
         NSF = nsf;
+    }
+    inline const dd_edge& get_explicit() const { 
+        assert(!implicit); 
+        return NSF; 
     }
 
     virtual forest* getForestMxD() const override;

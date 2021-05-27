@@ -21,7 +21,7 @@
 
 #define DOUBLELEVEL false
 
-extern RSRG *rsrg;
+extern RSRG *g_rsrg;
 extern bool CTL_quiet;
 // Model check CTL formulas using CTL operators or CTL* operators
 extern bool eval_CTL_using_SatELTL;
@@ -207,6 +207,8 @@ public:
 
     // forest MDD of the RS
     inline forest* get_MDD_forest() const { return RS.getForest(); }
+    inline forest* get_MxD_forest() const { return vNSF->getForestMxD(); }
+    inline const domain* get_domain() const { return get_MDD_forest()->getDomain(); }
 
     // test for true/false in the context RS
     inline bool is_true(const dd_edge& e) const {

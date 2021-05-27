@@ -21,7 +21,7 @@ using namespace ctlmdd;
 extern const char* MCC_TECHNIQUES;
 // Are we parsing a boolean expression of HOA edges?
 bool parsing_HOA_edge = false;
-RSRG *rsrg;
+RSRG *g_rsrg;
 // tempi di clock quando inizia la generazione dell'MDD della formula, 
 // quando finisce e dopo aver controllato la presenza dello stato iniziale nella formula
 // static clock_t startMDD, endMDD, endMDD2; 
@@ -115,7 +115,7 @@ BaseFormula *parse_and_evaluate_formula(Context& ctx, const std::string& formula
             // endMDD = clock();
 
             // Evaluate the CTL expression:  s0 |= formula
-            dd_edge r(rsrg->getForestMDD());
+            dd_edge r(ctx.get_MDD_forest());
 
             /*cout << "Markings that satisfy the formula: \n";
             enumerator i(*dd);
@@ -133,7 +133,7 @@ BaseFormula *parse_and_evaluate_formula(Context& ctx, const std::string& formula
             }
             cout << endl;*/
 
-            apply(INTERSECTION, rsrg->getInitMark(), dd, r);
+            apply(INTERSECTION, g_rsrg->getInitMark(), dd, r);
             *out_result = result_t{!ctx.is_false(r)};
         }
         // endMDD2=clock();
@@ -239,9 +239,9 @@ void model_check_query(Context& ctx, const ctl_query_t& query, int sem_id, bool 
     bool compute_card = CTL_print_sat_sets || invoked_from_gui();
     if (formula && formula->isBoolFormula() && (query.lang!=Language::LTL) && compute_card) {
         dd_edge dd(dynamic_cast<Formula*>(formula)->getMDD(ctx));
-        apply(INTERSECTION, rsrg->getRS(), dd, dd);
+        apply(INTERSECTION, ctx.RS, dd, dd);
         apply(CARDINALITY, dd, cardinality_ref(satset_card));
-        apply(CARDINALITY, rsrg->getRS(), cardinality_ref(rs_card));
+        apply(CARDINALITY, ctx.RS, cardinality_ref(rs_card));
     }
 
     // stop the killing timer after query evaluation
@@ -333,7 +333,7 @@ void model_check_query(Context& ctx, const ctl_query_t& query, int sem_id, bool 
                 Formula* state_formula = dynamic_cast<Formula*>(formula);
                 cout << "\nGenerated " << (boost::get<bool>(result) ? "witness: " : "counter-example: ") << endl;
                 vector<int> state0(npl + 1);
-                enumerator it0(rsrg->getInitMark());
+                enumerator it0(g_rsrg->getInitMark());
                 const int* tmp =it0.getAssignments();
                 std::copy(tmp, tmp+npl + 1, state0.begin());
                 
@@ -441,11 +441,11 @@ Language language_from_string(const char* str) {
 
 // Parse input ctl queries read from file. Print the formula result on screen.
 bool do_model_checking(RSRG *r) {
-    rsrg = r;
-    std::string filename = rsrg->getPropName();
+    g_rsrg = r;
+    std::string filename = g_rsrg->getPropName();
     ifstream in;
     if (filename == "")
-        filename = rsrg->getNetName() + std::string("ctl");
+        filename = g_rsrg->getNetName() + std::string("ctl");
     in.open(filename.c_str());
     if (!in)
     {
@@ -548,8 +548,8 @@ bool do_model_checking(RSRG *r) {
 
     // carica i risultati attesi per le query
     for (size_t i=0; i<queries.size(); i++) {
-        auto kv = rsrg->expected_results.find(queries[i].name);
-        if (kv != rsrg->expected_results.end())
+        auto kv = g_rsrg->expected_results.find(queries[i].name);
+        if (kv != g_rsrg->expected_results.end())
             queries[i].expected = kv->second;
         if (!CTL_quiet && !running_for_MCC()) {
             // const auto n = get<1>(p);
@@ -576,11 +576,11 @@ bool do_model_checking(RSRG *r) {
 
     // Evaluate the availability of the RS
     bool need_rs = (hasCTLSTAR || hasCTL || hasLTL);
-    if (need_rs && !rsrg->has_RS()) {
+    if (need_rs && !g_rsrg->has_RS()) {
         cout << "RS is not built. Could not evaluate formulas." << endl;
         return false;
     }
-    if (need_rs && !rsrg->has_finite_RS()) {
+    if (need_rs && !g_rsrg->has_finite_RS()) {
         if (!running_for_MCC())
             cout << "State space is infinite. Could not evaluate formulas." << endl;
         else
@@ -592,12 +592,12 @@ bool do_model_checking(RSRG *r) {
 //    bool need_monoNSF = (((hasLTL||hasCTLSTAR) && !LTL_implicit_RSxBA) || (hasCTL && !implicitNextForCTL));
 //    bool need_monoNSF = (hasLTL || hasCTLSTAR || (hasCTL && !implicitNextForCTL));
     if (need_monoNSF)
-        rsrg->prepareNSFforCTL();
+        g_rsrg->prepareNSFforCTL();
 
     bool need_eventNSF = implicitNextForCTLstar;
     // bool need_eventNSF = (hasCTL && implicitNextForCTL) || ((hasLTL||hasCTLSTAR) && LTL_implicit_RSxBA);
     if (need_eventNSF) {
-        rsrg->prepareEventMxDsForCTL();
+        g_rsrg->prepareEventMxDsForCTL();
     }
 
     // cout << "hasCTL: " << hasCTL << endl;
@@ -610,14 +610,14 @@ bool do_model_checking(RSRG *r) {
     unique_ptr<VirtualNSF> vNSF;
     if (implicitNextForCTLstar) {
         cout << "MODEL CHECKING USING IMPLICIT NEXT." << endl;
-        vNSF = make_unique<ByEventVirtualNSF>(rsrg);  // BySeparateEventVirtualNSF OLD, ByEventVirtualNSF NEW
+        vNSF = make_unique<ByEventVirtualNSF>(g_rsrg);  // BySeparateEventVirtualNSF OLD, ByEventVirtualNSF NEW
     }
     else {
-        vNSF = make_unique<MonoVirtualNSF>(rsrg->getNSF());
+        vNSF = make_unique<MonoVirtualNSF>(g_rsrg->getNSF());
     }
     
-    Context ctx(rsrg, rsrg->getRS(), 
-                mdd_potential_state_set(rsrg, rsrg->getForestMDD(), true),
+    Context ctx(g_rsrg, g_rsrg->getRS(), 
+                mdd_potential_state_set(g_rsrg, g_rsrg->getForestMDD(), true),
                 std::move(vNSF), 
                 false, false, /* EG/EX stuttering is by-query */
                 false, // SatELTL usage is decided per query.

@@ -97,6 +97,23 @@ ostream& operator<<(ostream& os, const BuchiAutomaton& ba) {
 
 //-----------------------------------------------------------------------------
 
+void BuchiAutomaton::reindex_locations(const int *reindex_tbl) {
+    // reindex initial locations
+    for (size_t i=0; i<init_locs.size(); i++)
+        init_locs[i] = reindex_tbl[init_locs[i]];
+    // reindex the set of sets of accepting locations
+    for (auto& as : accept_loc_sets)
+        for (auto& q : as)
+            q = reindex_tbl[q];
+    // reindex edges
+    for (ba_edge_t& e : edges) {
+        e.src_loc = reindex_tbl[e.src_loc];
+        e.dst_loc = reindex_tbl[e.dst_loc];
+    }
+}
+
+//-----------------------------------------------------------------------------
+
 /**
  * Load an automa from a stream
  * --------------------------------------------
@@ -310,8 +327,8 @@ dd_edge mxd_location_change(dd_edge& NSF, const size_t i, const size_t j)
 
     // The NSF should not have nodes in the location level (by construction)
     m_assert(std::abs(NSF.getLevel()) < locLvl, "Extra levels are not reduced.");
-    m_assert(rsrg->getExtraLvls() == 1, "# of extra levels in the RS should be 1");
-    CTL_ASSERT(rsrg->isIndexOfExtraLvl(locLvl-1));
+    m_assert(g_rsrg->getExtraLvls() == 1, "# of extra levels in the RS should be 1");
+    CTL_ASSERT(g_rsrg->isIndexOfExtraLvl(locLvl-1));
 
     // Create a node nh1=[j:NSF] in the primed loc level
     unpacked_node* un;
@@ -416,7 +433,7 @@ dd_edge mdd_relabel(const dd_edge& mdd, int loc, int loc_primed, forest* forestM
 //-----------------------------------------------------------------------------
 
 // RS_times_BA::RS_times_BA(RSRG* rsrg) 
-// : S0(rsrg->getForestMDD()), NSF(rsrg->getForestMxD()), RS(rsrg->getForestMDD())
+// : S0(ctx.get_MDD_forest()), NSF(ctx.get_MxD_forest()), RS(ctx.get_MDD_forest())
 // {}
 
 // //-----------------------------------------------------------------------------
@@ -424,8 +441,8 @@ dd_edge mdd_relabel(const dd_edge& mdd, int loc, int loc_primed, forest* forestM
 // RS_times_BA 
 // build_RS_times_BA(Context& ctx, RSRG* rsrg, BuchiAutomaton& ba, dd_edge deadlock)
 // {
-//     forest* forestMDD = rsrg->getForestMDD();
-//     forest* forestMxD = rsrg->getForestMxD();
+//     forest* forestMDD = ctx.get_MDD_forest();
+//     forest* forestMxD = ctx.get_MxD_forest();
 //     expert_domain* dom = (expert_domain*)rsrg->getDomain();
 //     const int nvars = dom->getNumVariables();
 
@@ -527,7 +544,7 @@ dd_edge mdd_relabel(const dd_edge& mdd, int loc, int loc_primed, forest* forestM
 
 dd_edge
 RSxBA_init_states(Context& ctx, BuchiAutomaton& ba) {
-    expert_domain* dom = (expert_domain*)ctx.rsrg->getDomain();
+    expert_domain* dom = (expert_domain*)ctx.get_domain();
     const int nvars = dom->getNumVariables();
     // Resize the variable bound of the extra level to accomodate BA location indicess
     const unsigned int currentLocLvlBound = dom->getVariableBound(nvars);
@@ -536,12 +553,12 @@ RSxBA_init_states(Context& ctx, BuchiAutomaton& ba) {
         dom->enlargeVariableBound(nvars, false, locLvlBound);
 
     // Encode the initial states of the Transition System
-    dd_edge S0(rsrg->getForestMDD());
+    dd_edge S0(ctx.get_MDD_forest());
     for (ba_edge_t& edge : ba.edges) {
         if(edge.is_initial) { // edge:  0 --(s)--> dst 
             // Move all Sat(s) states in the dst location, and add them to S0
             dd_edge sat_s = ctx.SELECT_REAL(edge.state_formula->getMDD(ctx));
-            dd_edge init_dst = mdd_relabel(sat_s, 0, edge.dst_loc, ctx.rsrg->getForestMxD());
+            dd_edge init_dst = mdd_relabel(sat_s, 0, edge.dst_loc, ctx.get_MxD_forest());
 
             S0 += init_dst;
         }
@@ -556,9 +573,9 @@ RSxBA_init_states(Context& ctx, BuchiAutomaton& ba) {
 
 std::list<dd_edge>
 RSxBA_final_sets(Context& ctx, BuchiAutomaton& ba) {
-    forest* forestMDD = ctx.rsrg->getForestMDD();
-    forest* forestMxD = ctx.rsrg->getForestMxD();
-    expert_domain* dom = (expert_domain*)rsrg->getDomain();
+    forest* forestMDD = ctx.get_MDD_forest();
+    forest* forestMxD = ctx.get_MxD_forest();
+    expert_domain* dom = (expert_domain*)ctx.get_domain();
     const int nvars = dom->getNumVariables();
 
     const unsigned int locLvlBound = dom->getVariableBound(nvars);
@@ -588,9 +605,9 @@ RSxBA_final_sets(Context& ctx, BuchiAutomaton& ba) {
 
 dd_edge 
 RSxBA_makeNSF(Context& ctx, BuchiAutomaton& ba, dd_edge& deadlock) {
-    forest* forestMDD = ctx.rsrg->getForestMDD();
-    forest* forestMxD = ctx.rsrg->getForestMxD();
-    expert_domain* dom = (expert_domain*)ctx.rsrg->getDomain();
+    forest* forestMDD = ctx.get_MDD_forest();
+    forest* forestMxD = ctx.get_MxD_forest();
+    expert_domain* dom = (expert_domain*)ctx.get_domain();
     const int nvars = dom->getNumVariables();
 
     // full potential RS (any state in the domain)
@@ -612,7 +629,7 @@ RSxBA_makeNSF(Context& ctx, BuchiAutomaton& ba, dd_edge& deadlock) {
         // edgeMxD = NSF intersect (RS x Sat(s))
         dd_edge edgeMxD(forestMxD);
         apply(CROSS, pot_RS, sat_ap, edgeMxD);
-        apply(INTERSECTION, rsrg->getNSF(), edgeMxD, edgeMxD);
+        apply(INTERSECTION, ctx.rsrg->getNSF(), edgeMxD, edgeMxD);
 
         // Encode the location change from src to dst
         edgeMxD = mxd_location_change(edgeMxD, edge.src_loc, edge.dst_loc);
@@ -652,8 +669,8 @@ RSxBA_makeNSF(Context& ctx, BuchiAutomaton& ba, dd_edge& deadlock) {
 
 dd_edge
 RSxBA_postimage(Context& ctx, BuchiAutomaton& ba, const dd_edge& deadlock, const dd_edge& setMxA) {
-    forest* forestMDD = ctx.rsrg->getForestMDD();
-    forest* forestMxD = ctx.rsrg->getForestMxD();
+    forest* forestMDD = ctx.get_MDD_forest();
+    forest* forestMxD = ctx.get_MxD_forest();
     dd_edge succMxA(forestMDD);
 
     // location-agnostic deadlock states
@@ -698,8 +715,8 @@ RSxBA_postimage(Context& ctx, BuchiAutomaton& ba, const dd_edge& deadlock, const
 
 dd_edge
 RSxBA_preimage(Context& ctx, BuchiAutomaton& ba, const dd_edge& deadlock, const dd_edge& setMxA) {
-    forest* forestMDD = ctx.rsrg->getForestMDD();
-    forest* forestMxD = ctx.rsrg->getForestMxD();
+    forest* forestMDD = ctx.get_MDD_forest();
+    forest* forestMxD = ctx.get_MxD_forest();
 
     // location-agnostic deadlock states
     dd_edge deadlock_anyloc = mdd_relabel(deadlock, DONT_CARE, DONT_CARE, forestMxD);
@@ -746,7 +763,7 @@ RSxBA_preimage(Context& ctx, BuchiAutomaton& ba, const dd_edge& deadlock, const 
 //-----------------------------------------------------------------------------
 
 forest* RSxBA_VirtualNSF::getForestMxD() const { 
-    return ctx->rsrg->getForestMxD();
+    return ctx->get_MxD_forest();
 }
 
 dd_edge RSxBA_VirtualNSF::pre_image(const dd_edge& set) const {

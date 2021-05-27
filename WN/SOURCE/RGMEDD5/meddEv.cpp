@@ -238,6 +238,7 @@ void RSRG::initialize(RsMethod _rsMethod, LrsMethod _lrsMethod,
                 lvl_name = tabp[mddLevel_to_net[lvl]].place_name;
             else {
                 lvl_name_s = "extra_level_" + std::to_string(lvl - npl);
+                // lvl_name_s = "Loc";
                 lvl_name = lvl_name_s.c_str();
             }
 

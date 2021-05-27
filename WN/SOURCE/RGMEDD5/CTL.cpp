@@ -43,7 +43,7 @@ inline size_t hash_combine(size_t seed, T v, Rest&&... rest)
 CTLMDD *CTLMDD::instance = NULL;
 
 void CTLMDD::CTLinit() {
-    int nvar = rsrg->getDomain()->getNumVariables();
+    int nvar = g_rsrg->getDomain()->getNumVariables();
     ins = new int *;
     *ins = new int[nvar + 1];
     for (int j = 1; j <= nvar; j++) {
@@ -57,8 +57,8 @@ void CTLMDD::CTLinit() {
         fp.setFullyReduced();
     //fp.setCompactStorage();
     fp.setOptimistic();
-    forestMTMDD = rsrg->getDomain()->createForest(DOUBLELEVEL, forest::REAL, 
-                                                  forest::MULTI_TERMINAL, fp);
+    forestMTMDD = g_rsrg->getDomain()->createForest(DOUBLELEVEL, forest::REAL, 
+                                                    forest::MULTI_TERMINAL, fp);
     //if (DOUBLELEVEL)
     //  forestMTMDD->setReductionRule(forest::IDENTITY_REDUCED);
     //forestMTMDD->setNodeStorage(forest::FULL_OR_SPARSE_STORAGE);
@@ -79,7 +79,7 @@ forest *CTLMDD::getMTMDDForest() const {
 
 int **CTLMDD::getIns() const {
 #ifndef NDEBUG
-    int nvar = rsrg->getDomain()->getNumVariables();
+    int nvar = g_rsrg->getDomain()->getNumVariables();
     bool ins_damaged = false;
     for (int j = 1; j <= nvar; j++) {
         if (ins[0][j] != DONT_CARE) {
@@ -100,7 +100,7 @@ void CTLMDD::print_state(const int *marking) const {
         if (marking[i + 1] > 0) {
             // if (marking[i] > 1)
             //     cout << marking[i] << "*";
-            cout << (first ? "" : ", ") << rsrg->nameOfMddVar(i);
+            cout << (first ? "" : ", ") << g_rsrg->nameOfMddVar(i);
             cout << "(" << marking[i + 1] << ")";
             first = false;
         }
@@ -168,7 +168,7 @@ void CTLMDD::printStatistics() {
     // rs.getForest()->garbageCollect();
     // NSF.getForest()->garbageCollect();
     // forestMTMDD->garbageCollect();
-    const dd_edge& rs = rsrg->getRS();
+    const dd_edge& rs = g_rsrg->getRS();
 
     print_banner(" CTL MEMORY ");
     cout << " RS nodes:                " << rs.getNodeCount() << endl;
@@ -248,14 +248,14 @@ struct FormulaPrinter {
         if (running_for_MCC() || CTL_quiet)
             return;
         cout << "  potential card = " << f->getStoredMDD().getCardinality();
-        if (f->getStoredMDD().getNode() == rsrg->getRS().getNode())
+        if (f->getStoredMDD().getNode() == g_rsrg->getRS().getNode())
             cout << " (RS)";
 
         if (CTL_print_intermediate_sat_sets) {            
             cout << endl;
             // const dd_edge& dd = f->getMDD(ctx);
             dd_edge dd(f->getStoredMDD());
-            apply(INTERSECTION, rsrg->getRS(), dd, dd);
+            apply(INTERSECTION, g_rsrg->getRS(), dd, dd);
             enumerator i(dd);
             int nvar = dd.getForest()->getDomain()->getNumVariables();
             cout << "     real card = " << dd.getCardinality() << endl;
@@ -264,7 +264,7 @@ struct FormulaPrinter {
                 for(int j=1; j <= nvar; j++) { // for each variable
                     int val = *(i.getAssignments() + j);
                     const char* s = dd.getForest()->getDomain()->getVar(j)->getName();
-                    if (rsrg->isIndexOfPlace(j - 1)) {
+                    if (g_rsrg->isIndexOfPlace(j - 1)) {
                         if(val == 1)
                             cout << s << " ";
                         else if(val != 0) 
@@ -435,20 +435,20 @@ void BoundOfPlaces::compute_bounds() const {
 
     // Just one place in the list:
     if (places.size() == 1) {
-        // int var_of_pl = rsrg->convertPlaceToMDDLevel(places[0]) + 1;
-        _computedBound = make_pair(rsrg->getMinValueOfPlaceRS(places[0]),
-                                   rsrg->getMaxValueOfPlaceRS(places[0]));
+        // int var_of_pl = g_rsrg->convertPlaceToMDDLevel(places[0]) + 1;
+        _computedBound = make_pair(g_rsrg->getMinValueOfPlaceRS(places[0]),
+                                   g_rsrg->getMaxValueOfPlaceRS(places[0]));
         return;
     }
     
     // Compute the bound of the set of places (the maximum number of tokens that these
     // places may have in the TRG at the same time). -> MAX( p1 + p2 + .. + pn)
-    std::vector<bool> selected_vars(npl + rsrg->getExtraLvls());
+    std::vector<bool> selected_vars(npl + g_rsrg->getExtraLvls());
     std::fill(selected_vars.begin(), selected_vars.end(), false);
     for (int i=0; i<places.size(); i++) {
-        //cout << "adding " << rsrg->getPL(places[i] - 1) << " to the list of places for the bound." << endl;
+        //cout << "adding " << g_rsrg->getPL(places[i] - 1) << " to the list of places for the bound." << endl;
         //cout << "selected_vars.size()="<<selected_vars.size()<<"  places[i] - 1 = " << (places[i] - 1) << endl;
-        int var_of_pl = rsrg->convertPlaceToMDDLevel(places[i]);
+        int var_of_pl = g_rsrg->convertPlaceToMDDLevel(places[i]);
 
         assert(selected_vars.size() > var_of_pl);
         if (selected_vars[var_of_pl]) {
@@ -458,7 +458,7 @@ void BoundOfPlaces::compute_bounds() const {
         selected_vars[var_of_pl] = true;
     }
 
-    _computedBound = rsrg->computeRealBoundOfVariables(selected_vars);
+    _computedBound = g_rsrg->computeRealBoundOfVariables(selected_vars);
     return;
 }
 
@@ -504,7 +504,7 @@ float PlaceTerm::getCoeff() const {
 }
 
 int PlaceTerm::getVariable() const {
-    return rsrg->convertPlaceToMDDLevel(place) + 1;
+    return g_rsrg->convertPlaceToMDDLevel(place) + 1;
 }
 
 int PlaceTerm::getPlace() const {
@@ -537,9 +537,9 @@ void PlaceTerm::print(std::ostream &os) const {
 void PlaceTerm::createMTMDD(Context& ctx) {
     CTLMDD *ctl = CTLMDD::getInstance();
     forest *mtmdd_forest = ctl->getMTMDDForest();
-    int level = rsrg->convertPlaceToMDDLevel(place) + 1;
-    int variable_bound = rsrg->getMaxValueOfPlaceRS(place);//rsrg->getRealBound(variable);
-    int dom_bound = rsrg->getDomain()->getVariableBound(level);
+    int level = g_rsrg->convertPlaceToMDDLevel(place) + 1;
+    int variable_bound = g_rsrg->getMaxValueOfPlaceRS(place);//g_rsrg->getRealBound(variable);
+    int dom_bound = g_rsrg->getDomain()->getVariableBound(level);
     assert(variable_bound <= dom_bound);
     FormulaPrinter<PlaceTerm> fp(this);
 
@@ -810,10 +810,10 @@ void Inequality::createMDD(Context& ctx) {
         dd_edge boole(ctx.get_MDD_forest());
         dd_edge tmp_complete(ctx.get_MDD_forest());
         int **m = ctl->getIns();
-        std::fill(m[0], m[0] + rsrg->getDomain()->getNumVariables() + 1, DONT_CARE);
-        // memset(m[0], -1, (rsrg->getDomain()->getNumVariables())*sizeof(int));
-        int variable_bound1 = rsrg->getMaxValueOfPlaceRS(((PlaceTerm *)expr1)->getPlace());
-        int variable_bound2 = rsrg->getMaxValueOfPlaceRS(((PlaceTerm *)expr2)->getPlace());
+        std::fill(m[0], m[0] + ctx.get_domain()->getNumVariables() + 1, DONT_CARE);
+        // memset(m[0], -1, (g_rsrg->getDomain()->getNumVariables())*sizeof(int));
+        int variable_bound1 = g_rsrg->getMaxValueOfPlaceRS(((PlaceTerm *)expr1)->getPlace());
+        int variable_bound2 = g_rsrg->getMaxValueOfPlaceRS(((PlaceTerm *)expr2)->getPlace());
         // n*expr1 == m*expr2  ->  expr1 == (m/n)*expr2
         for (int i = 0; i <= variable_bound1  ; i++) {
             m[0][((PlaceTerm *)expr1)->getVariable()] = i;
@@ -967,7 +967,7 @@ void Fireability::createMDD(Context& ctx) {
     // Generate the MDD corresponding to the union of the enabling conditions of the transitions
     for (int tr : transitions) {
         dd_edge enab_tr(ctx.get_MDD_forest());
-        apply(PRE_IMAGE, ctx.get_state_set(), rsrg->getEventMxD(tr), enab_tr);
+        apply(PRE_IMAGE, ctx.get_state_set(), g_rsrg->getEventMxD(tr), enab_tr);
         sat += enab_tr;
     }
     setMDD(sat);
@@ -1627,6 +1627,7 @@ void QuantifiedFormula::createMDD(Context& ctx) {
 
     // Generate the Buchi Automaton of the maximal path formula with SPOT
     BuchiAutomaton ba = spot_LTL_to_Buchi_automaton(ltl_formula.c_str(), subformulas);
+    // int q_subst[] = {1, 0}; ba.reindex_locations(q_subst);
     // cout << ba << endl;
 
     dd_edge result(ctx.get_MDD_forest());
@@ -1658,7 +1659,7 @@ void QuantifiedFormula::createMDD(Context& ctx) {
 
         // Create the evaluation context for the synchronized product
         Context ctxRSxBA(ctx.rsrg, reachabRSxBA, 
-                         mdd_potential_state_set(rsrg, rsrg->getForestMDD(), false),
+                         mdd_potential_state_set(ctx.rsrg, ctx.get_MDD_forest(), false),
                          std::move(RSxBA_NSF), 
                          false, // important! LTL semantics requires no stuttering for EG!
                          false, // no stuttering in EX (not used)
@@ -1696,15 +1697,16 @@ void QuantifiedFormula::createMDD(Context& ctx) {
         // Clear the location from RS*BA states, to get back to Petri net markings
         result = mdd_relabel(fair_S0, DONT_CARE, 0, ctxRSxBA.vNSF->getForestMxD());
 
-        /*std::string root("/home/elvio/ownCloud/ICATPN2020/NuovoEsempioJournal/model_");
+        /*std::string root("/home/elvio/amparore-svn/CTLstar/TOOL/model_");
         for (int tr=0; tr<ntr; tr++)
-            write_dd_as_pdf(nullptr, rsrg->getEventMxD(tr), (root + "trn_" + tabt[tr].trans_name).c_str(), true, true, true);
-        write_dd_as_pdf(nullptr, rsrg->getInitMark(), (root + "m0").c_str(), true, true, true);
+            write_dd_as_pdf(nullptr, ctx.rsrg->getEventMxD(tr), (root + "trn_" + tabt[tr].trans_name).c_str(), true, true, true);
+        write_dd_as_pdf(nullptr, ctx.rsrg->getInitMark(), (root + "m0").c_str(), true, true, true);
         write_dd_as_pdf(nullptr, ctx.RS, (root + "RS").c_str(), true, true, true);
-        write_dd_as_pdf(nullptr, rsrg->getNSF(), (root + "NSF").c_str(), true, true, true);
+        write_dd_as_pdf(nullptr, ctx.rsrg->getNSF(), (root + "NSF").c_str(), true, true, true);
         write_dd_as_pdf(nullptr, S0, (root + "S0_SyncProd").c_str(), true, true, false);
         write_dd_as_pdf(nullptr, reachabRSxBA, (root + "RS_SyncProd").c_str(), true, true, false);
-        //write_dd_as_pdf(nullptr, RSxBA_NSF, (root + "NSF_SyncProd").c_str(), true, true, false);
+        const RSxBA_VirtualNSF *pNSF_RSxBA = dynamic_cast<RSxBA_VirtualNSF*>(ctxRSxBA.vNSF.get());
+        write_dd_as_pdf(nullptr, pNSF_RSxBA->get_explicit(), (root + "NSF_SyncProd").c_str(), true, true, false);
         int as_cnt = 0;
         for (auto&& as : AS)
             write_dd_as_pdf(nullptr, as, (root + "AS_"+std::to_string(as_cnt++)+"_SyncProd").c_str(), true, true, false);
@@ -1921,7 +1923,7 @@ size_t GlobalProperty::compute_hash() const {
 }
 
 void GlobalProperty::createMDD(Context& ctx) {
-    const bool is_unfolded = rsrg->has_unfolding_map();
+    const bool is_unfolded = ctx.rsrg->has_unfolding_map();
 
     // CTLMDD *ctl = CTLMDD::getInstance();
     bool result;
@@ -1950,13 +1952,13 @@ void GlobalProperty::createMDD(Context& ctx) {
                 // This PN is the unfolding of a colored model: the transitions
                 // considered in the quasi-liveness should be the original colored 
                 // transitions, not the unfolded ones
-                num_transitions = rsrg->get_unfolding_map().tr_unf.size();
+                num_transitions = ctx.rsrg->get_unfolding_map().tr_unf.size();
             }
 
             // evaluate E F firable(t) for each transition of the *ORIGINAL* model
             for (size_t tr = 0; tr<num_transitions; tr++) {
                 if (is_unfolded) {
-                    const auto& unfolded_trns = (rsrg->get_unfolding_map()
+                    const auto& unfolded_trns = (ctx.rsrg->get_unfolding_map()
                                                   .tr_unf[tr].second);
                     f = ctlnew<Fireability>(&unfolded_trns);
                 }
@@ -1969,7 +1971,7 @@ void GlobalProperty::createMDD(Context& ctx) {
                 dd_edge enab_tr = f->getMDD(ctx);
                 safe_removeOwner(f);
 
-                // apply(INTERSECTION, rsrg->getInitMark(), dd, dd);
+                // apply(INTERSECTION, ctx.rsrg->getInitMark(), dd, dd);
                 apply(INTERSECTION, ctx.RS, enab_tr, enab_tr); // remove potential states
                 if (ctx.is_false(enab_tr)) {
                     result = false;
@@ -1984,12 +1986,12 @@ void GlobalProperty::createMDD(Context& ctx) {
             std::vector<int> v1(1);
             Formula* f;
             result = true;
-            size_t num_transitions = (is_unfolded ? rsrg->get_unfolding_map()
+            size_t num_transitions = (is_unfolded ? ctx.rsrg->get_unfolding_map()
                                                             .tr_unf.size() : ntr);
             // evaluate AG EF firable(t) for each transition of the *ORIGINAL* model
             for (size_t tr = 0; tr<num_transitions; tr++) {
                 if (is_unfolded) {
-                    const auto& unfolded_trns = (rsrg->get_unfolding_map()
+                    const auto& unfolded_trns = (ctx.rsrg->get_unfolding_map()
                                                   .tr_unf[tr].second);
                     f = ctlnew<Fireability>(&unfolded_trns);
                 }
@@ -2002,7 +2004,7 @@ void GlobalProperty::createMDD(Context& ctx) {
 
                 dd_edge dd = ctx.AGfair(ctx.EF(enab_tr));
                 // m0 |= AG EF firable(tr)
-                apply(INTERSECTION, rsrg->getInitMark(), dd, dd);
+                apply(INTERSECTION, ctx.rsrg->getInitMark(), dd, dd);
                 if (ctx.is_false(dd)) {
                     result = false;
                     break;
@@ -2018,11 +2020,11 @@ void GlobalProperty::createMDD(Context& ctx) {
             std::vector<int> v1(1);
             result = true;
             int bound;
-            size_t num_places = (is_unfolded ? rsrg->get_unfolding_map()
+            size_t num_places = (is_unfolded ? ctx.rsrg->get_unfolding_map()
                                                 .pl_unf.size() : npl);
             for (size_t pl = 0; pl<num_places; pl++) {
                 if (is_unfolded) {
-                    bof = ctlnew<BoundOfPlaces>(&rsrg->get_unfolding_map()
+                    bof = ctlnew<BoundOfPlaces>(&ctx.rsrg->get_unfolding_map()
                                                 .pl_unf[pl].second);
                 }
                 else {
@@ -2045,11 +2047,11 @@ void GlobalProperty::createMDD(Context& ctx) {
             std::vector<int> v1(1);
             result = false;
             int bound;
-            size_t num_places = (is_unfolded ? rsrg->get_unfolding_map()
+            size_t num_places = (is_unfolded ? ctx.rsrg->get_unfolding_map()
                                                 .pl_unf.size() : npl);
             for (size_t pl = 0; pl<num_places; pl++) {
                 if (is_unfolded) {
-                    bof = ctlnew<BoundOfPlaces>(&rsrg->get_unfolding_map()
+                    bof = ctlnew<BoundOfPlaces>(&ctx.rsrg->get_unfolding_map()
                                                 .pl_unf[pl].second);
                 }
                 else {
@@ -2086,7 +2088,7 @@ global_property_type GlobalProperty::getType() const {
 /*---------------------
  ---	Formula	---
  -----------------------*/
-Formula::Formula() : SatMDD(rsrg->getForestMDD()) {
+Formula::Formula() : SatMDD(g_rsrg->getForestMDD()) {
 }
 Formula::~Formula() {
 }
@@ -2101,7 +2103,7 @@ const dd_edge &Formula::getMDD(Context& ctx) {
         // cout << (this->isAtomicPropos() ? "  AP" : "");
         // cout << endl;
         createMDD(ctx);
-        // rsrg->show_markings(cout, SatMDD);
+        // ctx.rsrg->show_markings(cout, SatMDD);
     }
     CTL_ASSERT(hasStoredMDD());
     return SatMDD;
