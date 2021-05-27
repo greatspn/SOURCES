@@ -1674,7 +1674,9 @@ void QuantifiedFormula::createMDD(Context& ctx) {
         switch (ba.type) {
             case STRONG_BA: // Emerson-Lei algorithm
                 // define the fair set for Fair CTL evaluation
-                ctxRSxBA.fair_sets = AS; 
+                for (dd_edge& Fi : AS)
+                    ctxRSxBA.add_fairness_constraint(Fi);
+                // ctxRSxBA.fair_sets = AS; 
                 fair_states = ctxRSxBA.EGfair(reachabRSxBA);
                 break;
 

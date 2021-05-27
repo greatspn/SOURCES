@@ -124,14 +124,20 @@ dd_edge Context::SELECT_REAL(dd_edge f1) const {
     return f1;
 }
 
-dd_edge Context::PREIMG(dd_edge f1) const {
+dd_edge Context::PREIMG(dd_edge f1, bool stuttered) const {
     // Note: for non-ergodic RS, the E X true is only valid
     // for non-dead states. Therefore, the E X true case
     // is not different from the general case.
     if (is_false(f1)) // E X False -> false
         return empty_set();
 
-    dd_edge result = vNSF->pre_image(f1);
+    dd_edge result(get_MDD_forest());
+    if (stuttered) {
+        result = get_stuttered_nsf()->pre_image(f1);
+    }
+    else {
+        result = vNSF->pre_image(f1);
+    }
     return SELECT_REAL(result);
 }
 
@@ -139,7 +145,7 @@ dd_edge Context::PREIMG(dd_edge f1) const {
 
 dd_edge Context::NON_DEAD() const {
     // dd_edge non_deadlock_states = ctx.vNSF->pre_image(ctx.RS);
-    dd_edge non_deadlock_states = PREIMG(RS);
+    dd_edge non_deadlock_states = PREIMG(RS, false);
 	return non_deadlock_states;
 }
 
@@ -161,7 +167,7 @@ dd_edge Context::DEAD() const {
 //     const int NUM_PRESTEPS = 0;
 //     result = ctx.SELECT_REAL(f1);
 //     for (int i = 0; /*i < NUM_PRESTEPS*/true; i++) {
-//         dd_edge prev_r(result);
+//         dd_edge curr_result(result);
 //         // Y' = Y union (Y * N^-1)
 //         result = OR(result, PREIMG(result, ctx), ctx);
 //         if (print_intermediate_expr()) {
@@ -169,7 +175,7 @@ dd_edge Context::DEAD() const {
 //                  << fixed << result.getCardinality() << endl;
 //             cout.unsetf(ios_base::floatfield);
 //         }
-//         if (result == prev_r)
+//         if (result == curr_result)
 //             return result; // fixed point reached
 //     }
 //     // // Solve using backward reachability with saturation
@@ -184,28 +190,22 @@ dd_edge Context::DEAD() const {
 //----------------------------------------------------------------------------
 
 dd_edge Context::EG(dd_edge f1) const {
-    if (is_false(f1)) // E G false -> false
+    return EGfair(f1);
+    /*if (is_false(f1)) // E G false -> false
         return empty_set();
 
     // NOTE: the case E G true is not trivial for non-ergodic RS.
     // Therefore, we leave it with the general case and do not
     // treat it separately.
     dd_edge result(get_MDD_forest());
-    dd_edge prev_r(get_MDD_forest());
+    dd_edge curr_result(get_MDD_forest());
     f1 = SELECT_REAL(f1);
     result = f1;
 
-    dd_edge deadlock_f1;
-    if(stutter_EG) 
-        deadlock_f1 = f1 - NON_DEAD();
-
     size_t n_iters = 0;
     do {
-        prev_r = result; // previous iteration result
-        result = AND(result, PREIMG(prev_r));
-        if(stutter_EG) 
-            result = OR(result, deadlock_f1);
-
+        curr_result = result; // previous iteration result
+        result = AND(result, PREIMG(curr_result, stutter_EG));
         n_iters++;
         if (print_intermediate_expr()) {
             cout << "EG: step=" << n_iters << ",  SAT size=" 
@@ -213,14 +213,49 @@ dd_edge Context::EG(dd_edge f1) const {
             cout.unsetf(ios_base::floatfield);
         }
     }
-    while (result != prev_r);
+    while (result != curr_result);
 
     if (print_intermediate_expr()) {
         cout << "R2 = " << result.getNode() << " in " 
              << n_iters << " iterations." << endl;
     }
-    return result;
+    return result;*/
 }
+
+/*// NOTE: the case E G true is not trivial for non-ergodic RS.
+// Therefore, we leave it with the general case and do not
+// treat it separately.
+dd_edge result(get_MDD_forest());
+dd_edge curr_result(get_MDD_forest());
+f1 = SELECT_REAL(f1);
+result = f1;
+
+dd_edge deadlock_f1;
+if(stutter_EG) 
+    deadlock_f1 = f1 - NON_DEAD();
+
+size_t n_iters = 0;
+do {
+    curr_result = result; // previous iteration result
+    result = AND(result, PREIMG(curr_result));
+    if(stutter_EG) 
+        result = OR(result, deadlock_f1);
+
+    n_iters++;
+    if (print_intermediate_expr()) {
+        cout << "EG: step=" << n_iters << ",  SAT size=" 
+                << fixed << result.getCardinality() << endl;
+        cout.unsetf(ios_base::floatfield);
+    }
+}
+while (result != curr_result);
+
+if (print_intermediate_expr()) {
+    cout << "R2 = " << result.getNode() << " in " 
+            << n_iters << " iterations." << endl;
+}
+return result;*/
+
 
 //----------------------------------------------------------------------------
 
@@ -237,14 +272,14 @@ dd_edge Context::EU(dd_edge f1, dd_edge f2) const {
         return f2;
     
     dd_edge result(get_MDD_forest());
-    dd_edge prev_r(get_MDD_forest());
+    dd_edge curr_result(get_MDD_forest());
     result = SELECT_REAL(f2);
 
     size_t n_iters = 0;
     do {
-        prev_r = result;
+        curr_result = result;
         // R' = R union (F1 intersect (R * N^-1))
-        result = OR(result, AND(f1, PREIMG(result)));
+        result = OR(result, AND(f1, PREIMG(result, false)));
 
         n_iters++;
         if (print_intermediate_expr()) {
@@ -253,7 +288,7 @@ dd_edge Context::EU(dd_edge f1, dd_edge f2) const {
             cout.unsetf(ios_base::floatfield);
         }
     }
-    while (result != prev_r);
+    while (result != curr_result);
 
     return result;
 }
@@ -261,14 +296,15 @@ dd_edge Context::EU(dd_edge f1, dd_edge f2) const {
 //----------------------------------------------------------------------------
 
 dd_edge Context::EX(dd_edge f1) const {
-    dd_edge result = PREIMG(f1);
+    /*dd_edge result = PREIMG(f1);
 
     if (stutter_EX) {
         // cout << "## !stuttered EX" << endl;
         dd_edge deadlock_f1 = f1 - NON_DEAD();
         // add self-loops on f1-dead states
         result = OR(result, deadlock_f1);
-    }
+    }*/
+    dd_edge result = PREIMG(f1, stutter_EX);
 
     return result;
 }
@@ -283,10 +319,9 @@ dd_edge Context::EF(dd_edge f1) const {
 // Fair ECTL (explicit)
 //----------------------------------------------------------------------------
 
-dd_edge Context::EGfair(dd_edge f1) const
-{
-    if (!has_fairness_constraints())
-        return EG(f1); // use non-fair EG
+dd_edge Context::EGfair(dd_edge f1) const {
+    // if (!has_fairness_constraints())
+    //     return EG(f1); // use non-fair EG
     if (is_false(f1)) // E G false -> false
         return empty_set();
 
@@ -294,11 +329,40 @@ dd_edge Context::EGfair(dd_edge f1) const
     // Therefore, we leave it with the general case and do not
     // treat it separately.
     dd_edge result(get_MDD_forest());
-    dd_edge prev_r(get_MDD_forest());
+    dd_edge curr_result(get_MDD_forest());
     f1 = SELECT_REAL(f1);
     result = f1;
 
-    dd_edge deadlock_f1;
+    size_t n_iters = 0;
+    do {
+        curr_result = result; // previous iteration result
+        if (has_fairness_constraints()) {
+            for (auto&& F : fair_sets) {
+                dd_edge Y = EU(result, AND(F, result));
+                result = AND(result, PREIMG(Y, stutter_EG));
+            }
+        }
+        else {
+            result = AND(result, PREIMG(curr_result, stutter_EG));
+        }
+
+        n_iters++;
+        if (print_intermediate_expr()) {
+            cout << (has_fairness_constraints() ? "Fair" : "")
+                 << "EG: step=" << n_iters << ",  SAT size=" 
+                 << fixed << result.getCardinality() << endl;
+            cout.unsetf(ios_base::floatfield);
+        }
+    }
+    while (result != curr_result);
+
+    if (print_intermediate_expr()) {
+        cout << "R2 = " << result.getNode() << " in " 
+             << n_iters << " iterations." << endl;
+    }
+
+
+    /*dd_edge deadlock_f1;
     if(stutter_EG) {
         deadlock_f1 = f1 - NON_DEAD();
         // select dead fair f1 states
@@ -309,7 +373,7 @@ dd_edge Context::EGfair(dd_edge f1) const
 
     size_t n_iters = 0;
     do {
-        prev_r = result; // previous iteration result
+        curr_result = result; // previous iteration result
         if (has_fairness_constraints()) {
             for (auto&& F : fair_sets) {
                 dd_edge Y = EU(result, AND(F, result));
@@ -317,7 +381,7 @@ dd_edge Context::EGfair(dd_edge f1) const
             }
         }
         else {
-            result = AND(result, PREIMG(prev_r));
+            result = AND(result, PREIMG(curr_result));
         }
         if(stutter_EG) 
             result = OR(result, deadlock_f1);
@@ -330,12 +394,12 @@ dd_edge Context::EGfair(dd_edge f1) const
             cout.unsetf(ios_base::floatfield);
         }
     }
-    while (result != prev_r);
+    while (result != curr_result);
 
     if (print_intermediate_expr()) {
         cout << "R2 = " << result.getNode() << " in " 
              << n_iters << " iterations." << endl;
-    }
+    }*/
     return result;
 }
 // {
@@ -343,19 +407,19 @@ dd_edge Context::EGfair(dd_edge f1) const
 //         return EG(f1); // use non-fair EG
 
 //     dd_edge result(get_MDD_forest());
-//     dd_edge prev_r(get_MDD_forest());
+//     dd_edge curr_result(get_MDD_forest());
 //     // dd_edge deadlock_f1 = f1 - ctx.NON_DEAD();
 
 //     result = f1;
 //     do {
-//         prev_r = result; // previous iteration result
+//         curr_result = result; // previous iteration result
 //         for (auto&& F : fair_sets) {
 //             dd_edge Y = EU(result, AND(F, result));
 //             result = AND(result, EX(Y));
 //         }
 //         // result = OR(result, deadlock_f1);
 //     }
-//     while (prev_r.getNode() != result.getNode());
+//     while (curr_result.getNode() != result.getNode());
 
 //     return result;
 // }
@@ -470,30 +534,24 @@ dd_edge Context::get_fair_states() const {
 
 
 
-
-
-
-
-
-
-//-----------------------------------------------------------------------------
-// NSF with stuttering (self-loops) on the deadlocked markings 
-// for the pre_image operation. This NSF is a regular transition relation
-// for a Kripke structure.
 //-----------------------------------------------------------------------------
 
-class KripkeStructureNSF : public VirtualNSF {
-    shared_ptr<VirtualNSF>  petri_net_NSF;
-    dd_edge                 dead_markings;
-public:
-    KripkeStructureNSF(shared_ptr<VirtualNSF> &_pn_nsf, dd_edge _dm) 
-    : petri_net_NSF(_pn_nsf), dead_markings(_dm) { }
+const VirtualNSF* Context::get_stuttered_nsf() const {
+    if (stuttered_NSF.get() == nullptr) {
+        stuttered_NSF = make_unique<KripkeStructureNSF>(vNSF, DEAD());
+    }
+    return stuttered_NSF.get();
+}
 
-    forest* getForestMxD() const override;
-    dd_edge pre_image(const dd_edge& set) const override;
-    dd_edge post_image(const dd_edge& set) const override;
-    dd_edge forward_reachable(const dd_edge& s0) const override;
-};
+//-----------------------------------------------------------------------------
+
+
+
+
+
+
+
+
 
 //-----------------------------------------------------------------------------
 

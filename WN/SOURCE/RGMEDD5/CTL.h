@@ -171,11 +171,12 @@ enum class StateSetPolicy { ACTUAL, POTENTIAL };
  -----------------------*/
 class Context {
     mutable dd_edge         fair_states; // set of fair states (that satisfy all fairness constraints)
+    mutable unique_ptr<VirtualNSF>  stuttered_NSF;
 public:
     RSRG                   *rsrg;  // forest, domains, model data, ...
     dd_edge                 RS;    // the reference RS
     dd_edge                 PS;    // the reference potential state set
-    unique_ptr<VirtualNSF>  vNSF;  // pre/post image operator with the NSF
+    shared_ptr<VirtualNSF>  vNSF;  // pre/post image operator with the NSF
     std::list<dd_edge>      fair_sets;  // fair sets for fair CTL evaluation
     bool                    stutter_EG; // EG phi should be true on dead phi-states
     bool                    stutter_EX; // EX phi should be true on dead phi-states
@@ -185,7 +186,7 @@ public:
     bool                    verbose;    // should print intermediate steps
 
     inline Context() {} 
-    inline Context(RSRG *_rsrg, dd_edge _RS, dd_edge _PS, unique_ptr<VirtualNSF>&& p, bool _stutter_EG, 
+    inline Context(RSRG *_rsrg, dd_edge _RS, dd_edge _PS, shared_ptr<VirtualNSF>&& p, bool _stutter_EG, 
     /**/           bool _stutter_EX, bool _always_use_SatELTL, Language l, 
     /**/           StateSetPolicy _sp, bool _verbose)
     /**/: rsrg(_rsrg), RS(_RS), PS(_PS), vNSF(std::move(p)), stutter_EG(_stutter_EG), 
@@ -232,9 +233,12 @@ public:
         return (statePol==StateSetPolicy::ACTUAL) ? RS : PS;
     }
 
+    // get stuttered NSF (build if necessary)
+    const VirtualNSF* get_stuttered_nsf() const;
+
     // Computational CTL core algorithms
     dd_edge SELECT_REAL(dd_edge f1) const;
-    dd_edge PREIMG(dd_edge f1) const;
+    dd_edge PREIMG(dd_edge f1, bool stuttered) const;
     dd_edge NON_DEAD() const;
     dd_edge DEAD() const;
 
@@ -263,6 +267,25 @@ dd_edge MDD_INTERSECT(dd_edge f1, dd_edge f2);
 
 // potential state on each model variable, and fixed 0 values for the extra levels
 dd_edge mdd_potential_state_set(RSRG* rsrg, forest* forestMDD, bool zero_extra_lvls);
+
+//-----------------------------------------------------------------------------
+// NSF with stuttering (self-loops) on the deadlocked markings 
+// for the pre_image operation. This NSF is a regular transition relation
+// for a Kripke structure.
+//-----------------------------------------------------------------------------
+
+class KripkeStructureNSF : public VirtualNSF {
+    shared_ptr<VirtualNSF>  petri_net_NSF;
+    dd_edge                 dead_markings;
+public:
+    KripkeStructureNSF(const shared_ptr<VirtualNSF> &_pn_nsf, dd_edge _dm) 
+    : petri_net_NSF(_pn_nsf), dead_markings(_dm) { }
+
+    forest* getForestMxD() const override;
+    dd_edge pre_image(const dd_edge& set) const override;
+    dd_edge post_image(const dd_edge& set) const override;
+    dd_edge forward_reachable(const dd_edge& s0) const override;
+};
 
 /*---------------------
  --- Base class of all CTL formulas
