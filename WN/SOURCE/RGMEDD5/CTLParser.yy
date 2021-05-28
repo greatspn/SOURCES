@@ -68,20 +68,32 @@ inline Formula* fix_unquantified_ctlstar_formulas(Formula* f) {
     return f;
 }
 
+
+struct ref_formula_objid { int id; };
+
+
 //-----------------------------------------------------------------------------
 // Indirect non-POD object storage to overcome yacc limitation
 //-----------------------------------------------------------------------------
 struct objid_key_comparator {
     inline bool operator()(const formula_objid& f1, const formula_objid& f2)const { return f1.id<f2.id;} 
     inline bool operator()(const int_formula_objid& f1, const int_formula_objid& f2)const { return f1.id<f2.id;} 
+    inline bool operator()(const ref_formula_objid& f1, const ref_formula_objid& f2)const { return f1.id<f2.id;} 
 };
 //-----------------------------------------------------------------------------
 // from C++ object type to object id
 ctlmdd::Formula* objid_to_object_type(formula_objid); // not implemented
 ctlmdd::IntFormula* objid_to_object_type(int_formula_objid); // not implemented
+ref_ptr<Formula> objid_to_object_type(ref_formula_objid); // not implemented
 // from object id to C++ object type
 formula_objid object_to_objid_type(ctlmdd::Formula*); // not implemented
 int_formula_objid object_to_objid_type(ctlmdd::IntFormula*); // not implemented
+
+template<typename T>
+ref_formula_objid object_to_objid_type(ref_ptr<T>) { 
+    static_assert(std::is_base_of<Formula, T>::value, "!"); 
+    return ref_formula_objid();
+}
 //-----------------------------------------------------------------------------
 // the per-id static map that will store the id->object mapping
 template<typename T>
@@ -90,8 +102,24 @@ template<typename T> auto get_map() -> map_type_of<T>*;
 // specializations (one for each object id)
 template<> map_type_of<formula_objid>* get_map<formula_objid>() 
 { static map_type_of<formula_objid> the_map; return &the_map; }
+
 template<> map_type_of<int_formula_objid>* get_map<int_formula_objid>() 
 { static map_type_of<int_formula_objid> the_map; return &the_map; }
+
+template<> map_type_of<ref_formula_objid>* get_map<ref_formula_objid>() 
+{ static map_type_of<ref_formula_objid> the_map; return &the_map; }
+//-----------------------------------------------------------------------------
+// covariant conversion of derived ref_ptr<> objects into their base ref_ptr<>s
+template<typename T>
+using ref_ptr_base = decltype(objid_to_object_type(object_to_objid_type( ref_ptr<T>() )));
+ctlmdd::Formula* prepare_for_storage(ctlmdd::Formula* f) { return f; }
+ctlmdd::IntFormula* prepare_for_storage(ctlmdd::IntFormula* f) { return f; }
+template<typename T>
+ref_ptr_base<T> prepare_for_storage(ref_ptr<T>& r) { 
+    typedef typename ref_ptr_base<T>::value_type TB;
+    return dynamic_pointer_cast<TB>(r);
+}
+//-----------------------------------------------------------------------------
 // global unique id generator
 static int g_mapped_id_counter = 0;
 //-----------------------------------------------------------------------------
@@ -102,8 +130,8 @@ mput(T f) -> decltype(object_to_objid_type(f)) {
     typedef decltype(object_to_objid_type(f)) objid_t;
     auto formula_map = get_map<objid_t>();
     objid_t oid{ .id = g_mapped_id_counter++ };
-    formula_map->emplace(oid, f);
-    cout << "mput<"<<typeid(objid_t).name()<<"> id=" <<oid.id << " size=" << formula_map->size() << endl;
+    formula_map->emplace(oid, prepare_for_storage(f));
+    // cout << "mput<"<<typeid(objid_t).name()<<"> id=" <<oid.id << " size=" << formula_map->size() << endl;
     return oid;
 }
 //-----------------------------------------------------------------------------
@@ -117,7 +145,7 @@ mget(objid_t oid) -> decltype(objid_to_object_type(oid)) {
     assert(it != formula_map->end());
     T o = std::move(it->second);
     formula_map->erase(it);
-    cout << "mget<"<<typeid(objid_t).name()<<"> id=" <<oid.id << " size=" << formula_map->size() << endl;
+    // cout << "mget<"<<typeid(objid_t).name()<<"> id=" <<oid.id << " size=" << formula_map->size() << endl;
     return o;
 }
 //-----------------------------------------------------------------------------
@@ -125,6 +153,20 @@ mget(objid_t oid) -> decltype(objid_to_object_type(oid)) {
 static inline void parse_verify_objid_maps() {
     CTL_ASSERT(get_map<formula_objid>()->size() == 0);
     CTL_ASSERT(get_map<int_formula_objid>()->size() == 0);
+}
+
+// template<typename T>
+// static decltype(mput<>)
+
+void f(ref_ptr<BaseFormula> f) {}
+void g() {
+    ref_ptr<LogicalFormula> r;
+    f(dynamic_pointer_cast<BaseFormula>(r));
+
+    ref_ptr<LogicalFormula> ref;
+    ref_formula_objid oid = mput(ref);
+    ref_ptr<Formula> ref2 = mget(oid);
+    // auto rr = prepare_for_storage2(ref);
 }
 
 //-----------------------------------------------------------------------------
@@ -382,47 +424,6 @@ IntFormula* make_expression(IntFormula* e1, IntFormula::op_type op, IntFormula* 
     // Otherwise, create an IntFormula* object
     return ctlnew<IntExpression>(e1, e2, op);
 }
-
-//-----------------------------------------------------------------------------
-
-// static formula_objid mput(ctlmdd::Formula *f) {
-//     formula_objid oid{.id = g_max_formula_objid.id++ };
-//     g_formula_map.emplace(oid, f);
-//     // cout << "mput<formula_objid> id=" <<oid.id << " size=" << g_formula_map.size() << endl;
-//     return oid;
-// }
-// static ctlmdd::Formula *mget(formula_objid oid) {
-//     auto it = g_formula_map.find(oid);
-//     assert(it != g_formula_map.end());
-//     ctlmdd::Formula *f = std::move(it->second);
-//     g_formula_map.erase(it);
-//     // cout << "mget<formula_objid> id=" <<oid.id << " size=" << g_formula_map.size() << endl;
-//     return f;
-// }
-
-// //-----------------------------------------------------------------------------
-
-// static int_formula_objid mput(ctlmdd::IntFormula *f) {
-//     int_formula_objid oid{.id = g_max_int_formula_objid.id++ };
-//     g_int_formula_map.emplace(oid, f);
-//     // cout << "mput<int_formula_objid> id=" <<oid.id << " size=" << g_int_formula_map.size() << endl;
-//     return oid;
-// }
-// static ctlmdd::IntFormula *mget(int_formula_objid oid) {
-//     auto it = g_int_formula_map.find(oid);
-//     assert(it != g_int_formula_map.end());
-//     ctlmdd::IntFormula *f = std::move(it->second);
-//     g_int_formula_map.erase(it);
-//     // cout << "mget<int_formula_objid> id=" <<oid.id << " size=" << g_int_formula_map.size() << endl;
-//     return f;
-// }
-
-// //-----------------------------------------------------------------------------
-
-// static inline void parse_verify_objid_maps() {
-//     CTL_ASSERT(g_formula_map.size() == 0);
-//     CTL_ASSERT(g_int_formula_map.size() == 0);
-// }
 
 //-----------------------------------------------------------------------------
 

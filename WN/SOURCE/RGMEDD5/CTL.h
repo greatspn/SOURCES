@@ -336,11 +336,6 @@ private:
 
 //----------------------------------------------------------------------------
 
-#define DECLARE_CTL_CLASS \
-    template <typename T, typename... Args> \
-    friend inline enable_if_t<is_base_of<BaseFormula, T>::value, T*> \
-    ctlnew(Args&&... args)
-
 #define safe_removeOwner(p) {   if (p != nullptr) { p->removeOwner(); p = nullptr; }   }
 #define safe_addOwner(p)    {   if (p != nullptr) { p->addOwner(); }   }
 
@@ -350,6 +345,7 @@ template<typename T>
 class ref_ptr {
     T*    ptr;       // ref-counted pointer to a subclass of BaseFormula
 public:
+    typedef T value_type;
     inline ref_ptr() : ptr(nullptr) {
         static_assert(std::is_base_of<BaseFormula, T>::value, 
                       "type parameter is not a CTL BaseFormula");
@@ -388,10 +384,27 @@ public:
 
 //----------------------------------------------------------------------------
 
+template <class Base, class Derived>
+ref_ptr<Base> dynamic_pointer_cast(ref_ptr<Derived>& sp) noexcept {
+    ref_ptr<Base> rb(dynamic_cast<Base*>(sp.get()));
+    if (rb.get() != nullptr)
+        rb.get()->addOwner();
+    return rb;
+}
+
+//----------------------------------------------------------------------------
+
+#define DECLARE_CTL_CLASS \
+    template <typename T, typename... Args> \
+    friend inline T* \
+    ctlnew(Args&&... args)
+
 // Allocate CTL expression nodes
 template <typename T, typename... Args>
-inline enable_if_t<is_base_of<BaseFormula, T>::value, T*> 
+inline T* 
 ctlnew(Args&&... args) {
+    // enable_if_t<is_base_of<BaseFormula, T>::value, T*> 
+    static_assert(std::is_base_of<BaseFormula, T>::value, "T must inherit from BaseFormula");
     T* p = new T(args...);
     p->addOwner();
     return (T*)(CTLMDD::getInstance()->cache_insert(p));
