@@ -60,7 +60,7 @@ char ctl_result_buffer[32];
 const char* format_result(const result_t& result, bool uppercase) {
     return boost::apply_visitor(overload{
         [](ssize_t i)  { 
-            sprintf(ctl_result_buffer, "%d", i); 
+            sprintf(ctl_result_buffer, "%zd", i); 
             return (const char*)ctl_result_buffer;
         },
         [&uppercase](bool b) {

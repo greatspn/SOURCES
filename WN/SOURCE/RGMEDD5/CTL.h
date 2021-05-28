@@ -274,11 +274,11 @@ dd_edge mdd_potential_state_set(RSRG* rsrg, forest* forestMDD, bool zero_extra_l
 // for a Kripke structure.
 //-----------------------------------------------------------------------------
 
-class KripkeStructureNSF : public VirtualNSF {
+class StutteredNSF : public VirtualNSF {
     shared_ptr<VirtualNSF>  petri_net_NSF;
     dd_edge                 dead_markings;
 public:
-    KripkeStructureNSF(const shared_ptr<VirtualNSF> &_pn_nsf, dd_edge _dm) 
+    StutteredNSF(const shared_ptr<VirtualNSF> &_pn_nsf, dd_edge _dm) 
     : petri_net_NSF(_pn_nsf), dead_markings(_dm) { }
 
     forest* getForestMxD() const override;
@@ -397,6 +397,9 @@ ctlnew(Args&&... args) {
     return (T*)(CTLMDD::getInstance()->cache_insert(p));
 }
 
+// Used by parser to indirectly store non-POD objects
+struct int_formula_objid { int id; };
+struct formula_objid { int id; };
 
 //--------------------------
 enum quant_type {
@@ -930,9 +933,6 @@ public:
     bool hasStoredMTMDD() const;
     virtual bool isBoolFormula() const override;
     virtual bool isIntFormula() const override;
-    // virtual bool isStateFormula() const override;
-    // virtual bool isPathFormula() const override;
-    // virtual bool isAtomicPropos() const override;
 };
 
 /*---------------------

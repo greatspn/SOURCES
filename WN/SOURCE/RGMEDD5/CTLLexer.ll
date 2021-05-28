@@ -66,8 +66,8 @@ int lex_identifier(const std::string& token) {
 "false"|"False"     {return FALSEv;}
 "or"|"||" 	        {return OR;} 
 "and"|"&&"          {return AND;} 
-"&"                 {return AMPERSAND;}
-"|"                 {return PIPE;}
+"&"                 {return SPOT_AND;}
+"|"                 {return SPOT_OR;}
 "not"|"!"           {return NOT;}
 "xor"               {return XOR;}
 "->"                {return IMPLY;}

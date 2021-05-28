@@ -125,11 +125,13 @@ dd_edge Context::SELECT_REAL(dd_edge f1) const {
 }
 
 dd_edge Context::PREIMG(dd_edge f1, bool stuttered) const {
+    if (is_false(f1)) // E X False -> false
+        return empty_set();
     // Note: for non-ergodic RS, the E X true is only valid
     // for non-dead states. Therefore, the E X true case
     // is not different from the general case.
-    if (is_false(f1)) // E X False -> false
-        return empty_set();
+    if (is_true(f1) && stuttered)
+        return RS;
 
     dd_edge result(get_MDD_forest());
     if (stuttered) {
@@ -538,7 +540,7 @@ dd_edge Context::get_fair_states() const {
 
 const VirtualNSF* Context::get_stuttered_nsf() const {
     if (stuttered_NSF.get() == nullptr) {
-        stuttered_NSF = make_unique<KripkeStructureNSF>(vNSF, DEAD());
+        stuttered_NSF = make_unique<StutteredNSF>(vNSF, DEAD());
     }
     return stuttered_NSF.get();
 }
@@ -555,26 +557,26 @@ const VirtualNSF* Context::get_stuttered_nsf() const {
 
 //-----------------------------------------------------------------------------
 
-forest* KripkeStructureNSF::getForestMxD() const {
+forest* StutteredNSF::getForestMxD() const {
     return petri_net_NSF->getForestMxD();
 }
 
 //-----------------------------------------------------------------------------
 
-dd_edge KripkeStructureNSF::pre_image(const dd_edge& set) const {
+dd_edge StutteredNSF::pre_image(const dd_edge& set) const {
     // return petri_net_NSF->pre_image(set) + (set - non_dead_markings);
     return petri_net_NSF->pre_image(set) + (set * dead_markings);
 }
 
 //-----------------------------------------------------------------------------
 
-dd_edge KripkeStructureNSF::post_image(const dd_edge& set) const {
+dd_edge StutteredNSF::post_image(const dd_edge& set) const {
     return petri_net_NSF->post_image(set) + (set * dead_markings);
 }
 
 //-----------------------------------------------------------------------------
 
-dd_edge KripkeStructureNSF::forward_reachable(const dd_edge& s0) const {
+dd_edge StutteredNSF::forward_reachable(const dd_edge& s0) const {
     return petri_net_NSF->forward_reachable(s0);
 }
 
