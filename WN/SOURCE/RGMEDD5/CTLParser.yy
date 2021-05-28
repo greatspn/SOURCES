@@ -76,52 +76,56 @@ struct objid_key_comparator {
     inline bool operator()(const int_formula_objid& f1, const int_formula_objid& f2)const { return f1.id<f2.id;} 
 };
 //-----------------------------------------------------------------------------
-static formula_objid g_max_formula_objid { .id = 1 };
-static std::map<formula_objid, ctlmdd::Formula*, objid_key_comparator> g_formula_map;
-static formula_objid mput(ctlmdd::Formula *f);
-static ctlmdd::Formula *mget(formula_objid oid);
+// from C++ object type to object id
+ctlmdd::Formula* objid_to_object_type(formula_objid); // not implemented
+ctlmdd::IntFormula* objid_to_object_type(int_formula_objid); // not implemented
+// from object id to C++ object type
+formula_objid object_to_objid_type(ctlmdd::Formula*); // not implemented
+int_formula_objid object_to_objid_type(ctlmdd::IntFormula*); // not implemented
 //-----------------------------------------------------------------------------
-static int_formula_objid g_max_int_formula_objid { .id = 1 };
-static std::map<int_formula_objid, ctlmdd::IntFormula*, objid_key_comparator> g_int_formula_map;
-static int_formula_objid mput(ctlmdd::IntFormula *f);
-static ctlmdd::IntFormula *mget(int_formula_objid oid);
-
-//-----------------------------------------------------------------------------
-// derive non-POD object type from its id type
-template<typename T> struct objid_to_object_type {};
-template<> struct objid_to_object_type<formula_objid> { typedef ctlmdd::Formula* obj_t; };
-template<> struct objid_to_object_type<int_formula_objid> { typedef ctlmdd::IntFormula* obj_t; };
-// Inverse relation: id type to non-POD object type
-template<typename T> struct object_to_objid_type {};
-template<> struct object_to_objid_type<ctlmdd::Formula*> { typedef formula_objid objid_t; };
-template<> struct object_to_objid_type<ctlmdd::IntFormula*> { typedef int_formula_objid objid_t; };
-// static map allocator
+// the per-id static map that will store the id->object mapping
 template<typename T>
-static std::map<T, typename objid_to_object_type<T>::obj_t, objid_key_comparator>& get_map() {
-    static std::map<T, typename objid_to_object_type<T>::obj_t, objid_key_comparator> the_map;
-    return the_map;
-}
+using map_type_of = std::map<T, decltype(objid_to_object_type(T())), objid_key_comparator>;
+template<typename T> auto get_map() -> map_type_of<T>*;
+// specializations (one for each object id)
+template<> map_type_of<formula_objid>* get_map<formula_objid>() 
+{ static map_type_of<formula_objid> the_map; return &the_map; }
+template<> map_type_of<int_formula_objid>* get_map<int_formula_objid>() 
+{ static map_type_of<int_formula_objid> the_map; return &the_map; }
+// global unique id generator
+static int g_mapped_id_counter = 0;
+//-----------------------------------------------------------------------------
 // store non-POD object and get its id
 template<typename T>
-static typename object_to_objid_type<T>::objid_t
-mput(T *f) {
-    typedef typename object_to_objid_type<T>::objid_t objid_t;
-    auto& formula_map = get_map<T>();
-    static int id_counter = 0;
-    objid_t oid{ .id = id_counter++ };
-    formula_map.emplace(oid, f);
-    // cout << "mput<int_formula_objid> id=" <<oid.id << " size=" << g_int_formula_map.size() << endl;
+static auto
+mput(T f) -> decltype(object_to_objid_type(f)) {
+    typedef decltype(object_to_objid_type(f)) objid_t;
+    auto formula_map = get_map<objid_t>();
+    objid_t oid{ .id = g_mapped_id_counter++ };
+    formula_map->emplace(oid, f);
+    cout << "mput<"<<typeid(objid_t).name()<<"> id=" <<oid.id << " size=" << formula_map->size() << endl;
     return oid;
 }
+//-----------------------------------------------------------------------------
 // retrieve non-POD object from its id, end remove the object from the map
-// static ctlmdd::IntFormula *mget(int_formula_objid oid) {
-//     auto it = g_int_formula_map.find(oid);
-//     assert(it != g_int_formula_map.end());
-//     ctlmdd::IntFormula *f = std::move(it->second);
-//     g_int_formula_map.erase(it);
-//     // cout << "mget<int_formula_objid> id=" <<oid.id << " size=" << g_int_formula_map.size() << endl;
-//     return f;
-// }
+template<typename objid_t>
+static auto
+mget(objid_t oid) -> decltype(objid_to_object_type(oid)) {
+    typedef decltype(objid_to_object_type(oid)) T;
+    auto formula_map = get_map<objid_t>();
+    auto it = formula_map->find(oid);
+    assert(it != formula_map->end());
+    T o = std::move(it->second);
+    formula_map->erase(it);
+    cout << "mget<"<<typeid(objid_t).name()<<"> id=" <<oid.id << " size=" << formula_map->size() << endl;
+    return o;
+}
+//-----------------------------------------------------------------------------
+// sanity check for POD conversion tables (one for each object id)
+static inline void parse_verify_objid_maps() {
+    CTL_ASSERT(get_map<formula_objid>()->size() == 0);
+    CTL_ASSERT(get_map<int_formula_objid>()->size() == 0);
+}
 
 //-----------------------------------------------------------------------------
 %}
@@ -183,8 +187,6 @@ mput(T *f) {
 %type <inop>                ineq_op
 %type <int_formula>         expression
 %type <formula>             ctlstar_formula spot_expression atomic_prop
-// %type <formula>             atomic_prop
-// %type <formula>             spot_expression
 
 %start start_rule
 
@@ -383,44 +385,44 @@ IntFormula* make_expression(IntFormula* e1, IntFormula::op_type op, IntFormula* 
 
 //-----------------------------------------------------------------------------
 
-static formula_objid mput(ctlmdd::Formula *f) {
-    formula_objid oid{.id = g_max_formula_objid.id++ };
-    g_formula_map.emplace(oid, f);
-    // cout << "mput<formula_objid> id=" <<oid.id << " size=" << g_formula_map.size() << endl;
-    return oid;
-}
-static ctlmdd::Formula *mget(formula_objid oid) {
-    auto it = g_formula_map.find(oid);
-    assert(it != g_formula_map.end());
-    ctlmdd::Formula *f = std::move(it->second);
-    g_formula_map.erase(it);
-    // cout << "mget<formula_objid> id=" <<oid.id << " size=" << g_formula_map.size() << endl;
-    return f;
-}
+// static formula_objid mput(ctlmdd::Formula *f) {
+//     formula_objid oid{.id = g_max_formula_objid.id++ };
+//     g_formula_map.emplace(oid, f);
+//     // cout << "mput<formula_objid> id=" <<oid.id << " size=" << g_formula_map.size() << endl;
+//     return oid;
+// }
+// static ctlmdd::Formula *mget(formula_objid oid) {
+//     auto it = g_formula_map.find(oid);
+//     assert(it != g_formula_map.end());
+//     ctlmdd::Formula *f = std::move(it->second);
+//     g_formula_map.erase(it);
+//     // cout << "mget<formula_objid> id=" <<oid.id << " size=" << g_formula_map.size() << endl;
+//     return f;
+// }
 
-//-----------------------------------------------------------------------------
+// //-----------------------------------------------------------------------------
 
-static int_formula_objid mput(ctlmdd::IntFormula *f) {
-    int_formula_objid oid{.id = g_max_int_formula_objid.id++ };
-    g_int_formula_map.emplace(oid, f);
-    // cout << "mput<int_formula_objid> id=" <<oid.id << " size=" << g_int_formula_map.size() << endl;
-    return oid;
-}
-static ctlmdd::IntFormula *mget(int_formula_objid oid) {
-    auto it = g_int_formula_map.find(oid);
-    assert(it != g_int_formula_map.end());
-    ctlmdd::IntFormula *f = std::move(it->second);
-    g_int_formula_map.erase(it);
-    // cout << "mget<int_formula_objid> id=" <<oid.id << " size=" << g_int_formula_map.size() << endl;
-    return f;
-}
+// static int_formula_objid mput(ctlmdd::IntFormula *f) {
+//     int_formula_objid oid{.id = g_max_int_formula_objid.id++ };
+//     g_int_formula_map.emplace(oid, f);
+//     // cout << "mput<int_formula_objid> id=" <<oid.id << " size=" << g_int_formula_map.size() << endl;
+//     return oid;
+// }
+// static ctlmdd::IntFormula *mget(int_formula_objid oid) {
+//     auto it = g_int_formula_map.find(oid);
+//     assert(it != g_int_formula_map.end());
+//     ctlmdd::IntFormula *f = std::move(it->second);
+//     g_int_formula_map.erase(it);
+//     // cout << "mget<int_formula_objid> id=" <<oid.id << " size=" << g_int_formula_map.size() << endl;
+//     return f;
+// }
 
-//-----------------------------------------------------------------------------
+// //-----------------------------------------------------------------------------
 
-static inline void parse_verify_objid_maps() {
-    CTL_ASSERT(g_formula_map.size() == 0);
-    CTL_ASSERT(g_int_formula_map.size() == 0);
-}
+// static inline void parse_verify_objid_maps() {
+//     CTL_ASSERT(g_formula_map.size() == 0);
+//     CTL_ASSERT(g_int_formula_map.size() == 0);
+// }
 
 //-----------------------------------------------------------------------------
 
