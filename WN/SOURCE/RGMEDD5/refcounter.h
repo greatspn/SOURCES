@@ -12,6 +12,7 @@
 // base class of non-copyable reference counted objects
 //----------------------------------------------------------------------------
 class refcounted_base {
+    // reference counter. starts at 1.
     int ref_count;
 protected:
     refcounted_base();
@@ -22,7 +23,10 @@ protected:
     refcounted_base(refcounted_base&&) = delete;
     refcounted_base& operator=(const refcounted_base&) = delete;
 public:
+    // increase the reference counter
     void add_ref();
+    // decrease the reference counter. 
+    // if it is 0, call before_delete() and then delete the object.
     void remove_ref();
 };
 

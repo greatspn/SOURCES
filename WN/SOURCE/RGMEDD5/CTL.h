@@ -152,15 +152,13 @@ public:
 
     void print_state(const int *marking) const;
 
-    // inline bool SatSetContains(const dd_edge &dd, const int *marking) {
-    //     bool isContained;
-    //     rsrg->getForestMDD()->evaluate(dd, marking, isContained);
-    //     return isContained;
-    // }
-
+    // verify if f is already cached
     bool cache_contains(BaseFormula* f) const;
+    // cache or replace f if an identical copy already exists
     BaseFormula* cache_insert(BaseFormula* f);
+    // remove from cache
     void cache_remove(BaseFormula* f);
+    // number of cached BaseFormula* objects
     size_t cache_size() const;
 };
 
@@ -179,8 +177,9 @@ ctlnew(Args&&... args) {
     static_assert(std::is_base_of<BaseFormula, T>::value, "T must inherit from BaseFormula");
     T* p = new T(args...);
     // cout << "ctlnew("<<(p)<<") "<<(typeid(T).name())<<endl;
-    p->add_ref();
+    // insert od replace with an existing cached object
     p = (T*)(CTLMDD::getInstance()->cache_insert(p));
+    // encapsulate p inside a smart pointer
     return move_to_ref_ptr<T>(std::move(p));
 }
 
@@ -519,8 +518,8 @@ public:
     virtual bool isPathFormula() const override;
     virtual bool isAtomicPropos() const override;
 
-    Formula* getPathFormula() const;
-    quant_type getQuantifier() const;
+    inline Formula* getPathFormula() const { return formula.get(); }
+    inline quant_type getQuantifier() const { return quantifier; }
 };
 
 //-----------------------------------------------------------------------------
@@ -821,6 +820,7 @@ private:
     int place; // place index, not MDD variable level
     float coeff;
     IntFormula::op_type op;
+    
     virtual void createMTMDD(Context& ctx) override;
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;

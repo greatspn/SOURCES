@@ -37,9 +37,9 @@ inline size_t hash_combine(size_t seed, T v, Rest&&... rest)
 
 //-----------------------------------------------------------------------------
 
-/*-----------------
- ---	CTLMDD	---
- ------------------*/
+//-----------------------------------------------------------------------------
+// CTLMDD
+//-----------------------------------------------------------------------------
 CTLMDD *CTLMDD::instance = NULL;
 
 void CTLMDD::CTLinit() {
@@ -290,10 +290,9 @@ struct FormulaPrinter {
 };
 
 
-/*--------------------------
- ---    TreeTraceNode    ---
- ---------------------------*/
-
+//-----------------------------------------------------------------------------
+// TreeTraceNode
+//-----------------------------------------------------------------------------
 void TreeTraceNode::print_trace(const char *prefix, int nest_level) const {
     CTLMDD *ctl = CTLMDD::getInstance();
 
@@ -367,9 +366,9 @@ TreeTraceNode::~TreeTraceNode() {
 
 
 
-/*-------------------------
- ---	IntLiteral	---
- ---------------------------*/
+//-----------------------------------------------------------------------------
+// IntLiteral
+//-----------------------------------------------------------------------------
 void IntLiteral::createMTMDD(Context& ctx) {
     CTLMDD *ctl = CTLMDD::getInstance();
     forest *mtmdd_forest = ctl->getMTMDDForest();
@@ -413,10 +412,9 @@ size_t IntLiteral::compute_hash() const {
 }
 
 
-/*------------------------
- ---  Bound of Places  ---
- -------------------------*/
-
+//-----------------------------------------------------------------------------
+// BoundOfPlaces
+//-----------------------------------------------------------------------------
 BoundOfPlaces::BoundOfPlaces(const std::vector<int>* p) 
 : IntLiteral(-1), places(*p) {
     _computedBound = make_pair(-1000, -1000); // cannot be negative
@@ -485,18 +483,14 @@ size_t BoundOfPlaces::compute_hash() const {
     return seed;
 }
 
-/*-----------------
- ---    PlaceTerm    ---
- ------------------*/
+//-----------------------------------------------------------------------------
+// PlaceTerm
+//-----------------------------------------------------------------------------
+PlaceTerm::PlaceTerm(float _coeff, int _place, IntFormula::op_type _op)
+: coeff(_coeff), place(_place), op(_op)
+{ }
 
-PlaceTerm::PlaceTerm(float coeff, int place, IntFormula::op_type op) {
-    this->coeff = coeff;
-    this->place = place;
-    this->op = op;
-}
-
-PlaceTerm::~PlaceTerm() {
-}
+PlaceTerm::~PlaceTerm() { }
 
 int PlaceTerm::getMeddlyLevel1based() const {
     return g_rsrg->convertPlaceToMDDLevel(place) + 1;
@@ -601,21 +595,14 @@ void PlaceTerm::createMTMDD(Context& ctx) {
     // assert(mark_of_place == tmp_mdd);
 }
 
-/*---------------------
- ---	IntExpression	---
- ----------------------*/
-IntExpression::IntExpression(ref_ptr<IntFormula> expr1, ref_ptr<IntFormula> expr2, IntFormula::op_type op) {
-    this->expr1 = expr1;
-    this->expr2 = expr2;
-    this->op = op;
-    // expr1->addOwner();
-    // expr2->addOwner();
-}
+//-----------------------------------------------------------------------------
+// IntExpression
+//-----------------------------------------------------------------------------
+IntExpression::IntExpression(ref_ptr<IntFormula> _expr1, ref_ptr<IntFormula> _expr2, IntFormula::op_type _op) 
+: expr1(_expr1), expr2(_expr2), op(_op)
+{ }
 
-IntExpression::~IntExpression() {
-    // safe_removeOwner(expr1);
-    // safe_removeOwner(expr2);
-}
+IntExpression::~IntExpression() { }
 
 bool IntExpression::equals(const BaseFormula* pf) const {
     if (typeid(*pf) == typeid(*this)) {
@@ -662,15 +649,12 @@ void IntExpression::createMTMDD(Context& ctx) {
     setMTMDD(r);
 }
 
-/*---------------------
- ---	IntFormula	---
- ----------------------*/
-IntFormula::IntFormula() {
-}
+//-----------------------------------------------------------------------------
+// IntFormula
+//-----------------------------------------------------------------------------
+IntFormula::IntFormula() { }
 
-IntFormula::~IntFormula() {
-    // clearMTMDD();
-}
+IntFormula::~IntFormula() { }
 
 const dd_edge& IntFormula::getMTMDD(Context& ctx) {
     if (!hasStoredMTMDD()) {
@@ -706,34 +690,22 @@ const char *IntFormula::OP_Names[4] = {
     "+", "-", "*", "/"
 };
 
-/*---------------------
- ---	Inequality	---
- ----------------------*/
+//-----------------------------------------------------------------------------
+// Inequality
+//-----------------------------------------------------------------------------
 const char *Inequality::OP_Names[8] = {
     "<", ">", "<=", ">=", "=", "!=", "==", "<>"
 };
 
-Inequality::Inequality(op_type op, ref_ptr<IntFormula> expr1, float constant) {
-    this->op = op;
-    this->expr1 = expr1;
-    // this->expr2 = nullptr;
-    this->constant = constant;
-    // expr1->addOwner();
-}
+Inequality::Inequality(op_type _op, ref_ptr<IntFormula> _expr1, float _constant) 
+: expr1(_expr1), op(_op), constant(_constant)
+{ }
 
-Inequality::Inequality(op_type op, ref_ptr<IntFormula> expr1, ref_ptr<IntFormula> expr2) {
-    this->op = op;
-    this->expr1 = expr1;
-    this->expr2 = expr2;
-    this->constant = -1;
-    // expr1->addOwner();
-    // expr2->addOwner();
-}
+Inequality::Inequality(op_type _op, ref_ptr<IntFormula> _expr1, ref_ptr<IntFormula> _expr2) 
+: expr1(_expr1), expr2(_expr2), op(_op), constant(-1)
+{ }
 
-Inequality::~Inequality() {
-    // safe_removeOwner(expr1);
-    // safe_removeOwner(expr2);
-}
+Inequality::~Inequality() { }
 
 bool Inequality::equals(const BaseFormula* pf) const {
     if (typeid(*pf) == typeid(*this)) {
@@ -906,11 +878,10 @@ TreeTraceNode *Inequality::generateTrace(const vector<int> &state, TraceType tra
     return nullptr;
 }
 
-/*---------------------
- ---  Fireability   ---
- ----------------------*/
-
-Fireability::~Fireability() {}
+//-----------------------------------------------------------------------------
+// Fireability
+//-----------------------------------------------------------------------------
+Fireability::~Fireability() { }
 
 bool Fireability::equals(const BaseFormula* pf) const {
     if (typeid(*pf) == typeid(*this)) {
@@ -951,10 +922,9 @@ TreeTraceNode* Fireability::generateTrace(const vector<int> &state, TraceType tr
     return new TreeTraceNode(state, make_ref_ptr<Formula>(this), traceTy);
 }
 
-/*---------------------
- ---    AtomicProposition ---
- ----------------------*/
-
+//-----------------------------------------------------------------------------
+// AtomicProposition
+//-----------------------------------------------------------------------------
 AtomicProposition::~AtomicProposition() { }
 
 bool AtomicProposition::isStateFormula() const {
@@ -972,16 +942,12 @@ void AtomicProposition::maximal_path_subformula(Context& ctx, std::ostream& os, 
     add_this_as_subformula(os, subformulas);
 }
 
-/*---------------------
- ---	BoolLiteral	---
- ----------------------*/
+//-----------------------------------------------------------------------------
+// BoolLiteral
+//-----------------------------------------------------------------------------
+BoolLiteral::BoolLiteral(bool _value) : value(_value) { }
 
-BoolLiteral::BoolLiteral(bool value) {
-    this->value = value;
-}
-
-BoolLiteral::~BoolLiteral() {
-}
+BoolLiteral::~BoolLiteral() { }
 
 void BoolLiteral::maximal_path_subformula(Context& ctx, std::ostream& os, quant_type quantifier,
                                           std::vector<ref_ptr<Formula>>& subformulas) {
@@ -1030,16 +996,12 @@ TreeTraceNode *BoolLiteral::generateTrace(const vector<int> &state, TraceType tr
 }
 
 
-/*---------------------
- ---	Deadlock	---
- ----------------------*/
+//-----------------------------------------------------------------------------
+// Deadlock
+//-----------------------------------------------------------------------------
+Deadlock::Deadlock(bool _value) : value(_value) { }
 
-Deadlock::Deadlock(bool value) {
-    this->value = value;
-}
-
-Deadlock::~Deadlock() {
-}
+Deadlock::~Deadlock() { }
 
 bool Deadlock::equals(const BaseFormula* pf) const {
     if (typeid(*pf) == typeid(*this)) {
@@ -1082,11 +1044,11 @@ TreeTraceNode *Deadlock::generateTrace(const vector<int> &state, TraceType trace
     return nullptr;
 }
 
-/*---------------------
- ---	InitState	---
- ----------------------*/
-
+//-----------------------------------------------------------------------------
+// InitState
+//-----------------------------------------------------------------------------
 InitState::InitState() { }
+
 InitState::~InitState() { }
 
 bool InitState::equals(const BaseFormula* pf) const {
@@ -1117,18 +1079,14 @@ TreeTraceNode *InitState::generateTrace(const vector<int> &state, TraceType trac
     return nullptr;
 }
 
-/*-------------------------
- ---    Reachability    ---
- --------------------------*/
+//-----------------------------------------------------------------------------
+// Reachability
+//-----------------------------------------------------------------------------
+Reachability::Reachability(ref_ptr<Formula> _subf, prop_type _type) 
+: subf(_subf), type(_type)
+{ }
 
-Reachability::Reachability(ref_ptr<Formula> subf, prop_type type) {
-    this->subf = subf;
-    this->type = type;
-    // subf->addOwner();
-}
-Reachability::~Reachability() {
-    // safe_removeOwner(subf);
-}
+Reachability::~Reachability() { }
 
 bool Reachability::equals(const BaseFormula* pf) const {
     if (typeid(*pf) == typeid(*this)) {
@@ -1165,27 +1123,18 @@ void Reachability::print(std::ostream &os) const {
        << " " << *subf;
 }
 
-/*-----------------------------
- ---	LogicalFormula	---
- ------------------------------*/
-LogicalFormula::LogicalFormula(ref_ptr<Formula> formula1, ref_ptr<Formula> formula2, op_type op) {
-    this->formula1 = formula1;
-    this->formula2 = formula2;
-    this->op = op;
-    // formula1->addOwner();
-    // formula2->addOwner();
-}
-LogicalFormula::LogicalFormula(ref_ptr<Formula> formula1) {
-    this->formula1 = formula1;
-    // this->formula2 = NULL;
-    this->op = CBF_NOT;
-    // formula1->addOwner();
-}
+//-----------------------------------------------------------------------------
+// LogicalFormula
+//-----------------------------------------------------------------------------
+LogicalFormula::LogicalFormula(ref_ptr<Formula> _formula1, ref_ptr<Formula> _formula2, op_type _op) 
+: formula1(_formula1), formula2(_formula2), op(_op)
+{ }
 
-LogicalFormula::~LogicalFormula() {
-    // safe_removeOwner(formula1);
-    // safe_removeOwner(formula2);
-}
+LogicalFormula::LogicalFormula(ref_ptr<Formula> _formula1) 
+: formula1(_formula1), op(CBF_NOT)
+{ }
+
+LogicalFormula::~LogicalFormula() { }
 
 bool LogicalFormula::equals(const BaseFormula* pf) const {
     if (typeid(*pf) == typeid(*this)) {
@@ -1201,11 +1150,6 @@ size_t LogicalFormula::compute_hash() const {
     return hash_combine(0xb0a022609433e4cd, op, formula1->hash(),
                         formula2 ? formula2->hash() : 0);
 }
-
-// void LogicalFormula::setOp(LogicalFormula::op_type op) {
-//     this->op = op;
-//     clearMDD();
-// }
 
 void LogicalFormula::print(std::ostream &os) const {
     if (op == CBF_NOT) {
@@ -1389,24 +1333,15 @@ bool LogicalFormula::isAtomicPropos() const {
 
 
 
-/*-----------------------------
- ---    QuantifiedFormula   ---
- ------------------------------*/
+//-----------------------------------------------------------------------------
+// QuantifiedFormula
+//-----------------------------------------------------------------------------
 QuantifiedFormula::QuantifiedFormula(ref_ptr<Formula> _formula, quant_type _quantifier) 
 : formula(_formula), quantifier(_quantifier)
-{
-    // formula->addOwner();
-}
+{ }
 
-QuantifiedFormula::~QuantifiedFormula() {
-    // safe_removeOwner(formula);
-}
-Formula* QuantifiedFormula::getPathFormula() const {
-    return formula.get();
-}
-quant_type QuantifiedFormula::getQuantifier() const {
-    return quantifier;
-}
+QuantifiedFormula::~QuantifiedFormula() { }
+
 bool QuantifiedFormula::equals(const BaseFormula* pf) const {
     if (typeid(*pf) == typeid(*this)) {
         const QuantifiedFormula* p = dynamic_cast<const QuantifiedFormula*>(pf);
@@ -1415,12 +1350,15 @@ bool QuantifiedFormula::equals(const BaseFormula* pf) const {
     }
     return false;
 }
+
 size_t QuantifiedFormula::compute_hash() const {
     return hash_combine(0x10321fa763621142, quantifier, formula->hash());
 }
+
 void QuantifiedFormula::print(std::ostream &os) const {
 	os << "(" << g_quant_type_str[quantifier] << " " << *formula << ")";
 }
+
 void QuantifiedFormula::maximal_path_subformula(Context& ctx, std::ostream& os, quant_type quantifier,
                                                 std::vector<ref_ptr<Formula>>& subformulas) {
     // add the Quantified formula as a new atomic proposition.
@@ -1576,18 +1514,14 @@ void QuantifiedFormula::createMDD(Context& ctx) {
         ba.pre_compute_subformula_MDDs(ctx);
 
         // Get all deadlock states of the RS from the deadlock atomic proposition
-        // Deadlock* dead_ap = ctlnew<Deadlock>(true);
-        // dd_edge deadlock = dead_ap->getMDD(ctx);
-        // safe_removeOwner(dead_ap);
-
         ref_ptr<Deadlock> dead_ap = ctlnew<Deadlock>(true);
         dd_edge deadlock = dead_ap->getMDD(ctx);
 
         // Initial & final states of RS*BA
-        dd_edge S0 = RSxBA_init_states(ctx, ba);
+        dd_edge Z0 = RSxBA_init_states(ctx, ba);
         std::list<dd_edge> AS = RSxBA_final_sets(ctx, ba);
 
-        unique_ptr<RSxBA_VirtualNSF> RSxBA_NSF = make_unique<RSxBA_VirtualNSF>(&ctx, &ba, deadlock);
+        shared_ptr<RSxBA_VirtualNSF> RSxBA_NSF = make_shared<RSxBA_VirtualNSF>(&ctx, &ba, deadlock);
         if (!implicitNextForCTLstar) {
             // Build monolithic NSF of the RS*BA product
             dd_edge NSF = RSxBA_makeNSF(ctx, ba, deadlock);
@@ -1595,7 +1529,7 @@ void QuantifiedFormula::createMDD(Context& ctx) {
         }
 
         // build the reachable set of RS*BA
-        dd_edge reachabRSxBA = RSxBA_NSF->forward_reachable(S0);
+        dd_edge reachabRSxBA = RSxBA_NSF->forward_reachable(Z0);
 
         // Create the evaluation context for the synchronized product
         Context ctxRSxBA(ctx.rsrg, reachabRSxBA, 
@@ -1635,9 +1569,9 @@ void QuantifiedFormula::createMDD(Context& ctx) {
         }
 
         // Get the initial states of RS*BA that are also fair states
-        dd_edge fair_S0 = MDD_INTERSECT(fair_states, S0); // NOTE: do not use AND!!!
+        dd_edge fair_Z0 = MDD_INTERSECT(fair_states, Z0); // NOTE: do not use AND!!!
         // Clear the location from RS*BA states, to get back to Petri net markings
-        result = mdd_relabel(fair_S0, DONT_CARE, 0, ctxRSxBA.vNSF->getForestMxD());
+        result = mdd_relabel(fair_Z0, DONT_CARE, 0, ctxRSxBA.vNSF->getForestMxD());
 
         /*std::string root("/home/elvio/amparore-svn/CTLstar/TOOL/model_");
         for (int tr=0; tr<ntr; tr++)
@@ -1663,51 +1597,39 @@ void QuantifiedFormula::createMDD(Context& ctx) {
     if (quantifier == QOP_ALWAYS) 
         result = ctx.NOT(result); // A phi = not E (not phi)
 
-    // release subformulas
-    // for (Formula* f : subformulas)
-    //     safe_removeOwner(f);
-    // subformulas.clear();
-    // cout << "\n\nRELEASING SUBFORMULAS\n" << endl;
-    // for (auto&& f : subformulas) {
-    //     cout << *f << endl;
-    // }
-    // cout << endl;
-
     setMDD(result);
 }
 
 TreeTraceNode *QuantifiedFormula::generateTrace(const vector<int> &state, TraceType traceTy) {
     assert(false);
 }
+
 bool QuantifiedFormula::isStateFormula() const {
     return true;
 }
+
 bool QuantifiedFormula::isPathFormula() const {
     return false;
 }
+
 bool QuantifiedFormula::isAtomicPropos() const {
     return false;
 }
 
 
-/*-----------------------------
- ---    TemporalFormula   ---
- ------------------------------*/
+//-----------------------------------------------------------------------------
+// TemporalFormula
+//-----------------------------------------------------------------------------
 TemporalFormula::TemporalFormula(ref_ptr<Formula> _formula, path_op_type _op) 
 : formula1(_formula), op(_op)
-{
-    // formula1->addOwner();
-}
+{ }
+
 TemporalFormula::TemporalFormula(ref_ptr<Formula> _formula1, ref_ptr<Formula> _formula2/*, path_op_type _op*/) 
 : formula1(_formula1), formula2(_formula2), op(POT_UNTIL)
-{
-    // formula1->addOwner();
-    // formula2->addOwner();    
-}
-TemporalFormula::~TemporalFormula() {
-    // safe_removeOwner(formula1);
-    // safe_removeOwner(formula2);
-}
+{ }
+    
+TemporalFormula::~TemporalFormula() { }
+
 bool TemporalFormula::equals(const BaseFormula* pf) const {
     if (typeid(*pf) == typeid(*this)) {
         const TemporalFormula* p = dynamic_cast<const TemporalFormula*>(pf);
@@ -1717,6 +1639,7 @@ bool TemporalFormula::equals(const BaseFormula* pf) const {
     }
     return false;
 }
+
 size_t TemporalFormula::compute_hash() const {
     return hash_combine(0x66504e2162c582ec, op, formula1->hash(),
                         formula2 ? formula2->hash() : 0);
@@ -1763,6 +1686,7 @@ void TemporalFormula::print(std::ostream &os) const {
     }
     os << ")";
 }
+
 void TemporalFormula::maximal_path_subformula(Context& ctx, std::ostream& os, quant_type quantifier,
                                               std::vector<ref_ptr<Formula>>& subformulas) {
     os << "(";
@@ -1820,23 +1744,26 @@ void TemporalFormula::maximal_path_subformula(Context& ctx, std::ostream& os, qu
     }
     os << ")";
 }
+
 TreeTraceNode *TemporalFormula::generateTrace(const vector<int> &state, TraceType traceTy) {
     assert(false);
 }
+
 bool TemporalFormula::isStateFormula() const {
     return false;
 }
+
 bool TemporalFormula::isPathFormula() const {
     return true;
 }
+
 bool TemporalFormula::isAtomicPropos() const {
     return false;
 }
 
-/*-------------------------
- ---    GlobalProperty    ---
- --------------------------*/
-
+//-----------------------------------------------------------------------------
+// GlobalProperty
+//-----------------------------------------------------------------------------
 const char *g_global_property_type_name[] = {
     "HAS_DEADLOCK", "QUASI_LIVENESS", "STABLE_MARKING", "LIVENESS", "ONESAFE"
 };
@@ -1844,8 +1771,8 @@ const char *g_global_property_type_name[] = {
 GlobalProperty::GlobalProperty(global_property_type type) {
     this->type = type;
 }
-GlobalProperty::~GlobalProperty() {
-}
+
+GlobalProperty::~GlobalProperty() { }
 
 bool GlobalProperty::equals(const BaseFormula* pf) const {
     if (typeid(*pf) == typeid(*this)) {
@@ -1871,7 +1798,6 @@ void GlobalProperty::createMDD(Context& ctx) {
             // computing non-deadlock states is faster
             ref_ptr<Deadlock> fnd = ctlnew<Deadlock>(false); // non-dead states
             dd_edge dd = fnd->getMDD(ctx);
-            // safe_removeOwner(fnd);
             apply(INTERSECTION, ctx.RS, dd, dd); // remove potential states
             // result = (dd.getNode() != ctx.RS.getNode());
             result = !ctx.is_true(dd);
@@ -1907,7 +1833,6 @@ void GlobalProperty::createMDD(Context& ctx) {
                 // f = ctlnew<TemporalFormula>(f, POT_FUTURE);
                 // f = ctlnew<QuantifiedFormula>(f, QOP_EXISTS);
                 dd_edge enab_tr = f->getMDD(ctx);
-                // safe_removeOwner(f);
 
                 // apply(INTERSECTION, ctx.rsrg->getInitMark(), dd, dd);
                 apply(INTERSECTION, ctx.RS, enab_tr, enab_tr); // remove potential states
@@ -1938,7 +1863,6 @@ void GlobalProperty::createMDD(Context& ctx) {
                     f = ctlnew<Fireability>(&v1);
                 }
                 dd_edge enab_tr = f->getMDD(ctx);
-                // safe_removeOwner(f);
 
                 dd_edge dd = ctx.AGfair(ctx.EF(enab_tr));
                 // m0 |= AG EF firable(tr)
@@ -1970,7 +1894,6 @@ void GlobalProperty::createMDD(Context& ctx) {
                     bof = ctlnew<BoundOfPlaces>(&v1);
                 }
                 int bound = bof->getUpperBound();
-                // safe_removeOwner(bof);
                 if (bound > 1) {
                     result = false;
                     break;
@@ -1997,7 +1920,6 @@ void GlobalProperty::createMDD(Context& ctx) {
                     bof = ctlnew<BoundOfPlaces>(&v1);
                 }
                 bool stable = bof->getLowerBound() == bof->getUpperBound();
-                // safe_removeOwner(bof);
 
                 if (stable) {
                     result = true;
@@ -2011,25 +1933,28 @@ void GlobalProperty::createMDD(Context& ctx) {
     FormulaPrinter<GlobalProperty> fp(this);
     setMDD(result ? ctx.RS : ctx.empty_set());
 }
+
 TreeTraceNode *GlobalProperty::generateTrace(const vector<int> &state, TraceType traceTy) {
     throw rgmedd_exception("Unimplemented");
 }
+
 void GlobalProperty::print(std::ostream &os) const {
     os << g_global_property_type_name[type];
 }
+
 global_property_type GlobalProperty::getType() const {
     return type;
 }
 
 
 
-/*---------------------
- ---	Formula	---
- -----------------------*/
-Formula::Formula() : SatMDD(g_rsrg->getForestMDD()) {
-}
-Formula::~Formula() {
-}
+//-----------------------------------------------------------------------------
+// Formula
+//-----------------------------------------------------------------------------
+Formula::Formula() : SatMDD(g_rsrg->getForestMDD()) { }
+
+Formula::~Formula() { }
+
 const dd_edge &Formula::getMDD(Context& ctx) {
     if (!hasStoredMDD()) {
         // Setting computedMDD here avoids infinite recursions when Meddly ends the memory
@@ -2046,27 +1971,34 @@ const dd_edge &Formula::getMDD(Context& ctx) {
     CTL_ASSERT(hasStoredMDD());
     return SatMDD;
 }
+
 bool Formula::hasStoredMDD() const {
     return computedMDD;
 }
+
 const dd_edge& Formula::getStoredMDD() const {
     CTL_ASSERT(hasStoredMDD());
     return SatMDD;
 }
+
 void Formula::setMDD(dd_edge newMDD) {
     SatMDD = newMDD;
     computedMDD = true; 
 }
+
 void Formula::clearMDD() {
     SatMDD.clear();
     computedMDD = false;
 }
+
 bool Formula::isBoolFormula() const {
     return true;
 }
+
 bool Formula::isIntFormula() const {
     return false;
 }
+
 void Formula::add_this_as_subformula(std::ostream &os, std::vector<ref_ptr<Formula>>& subformulas) {
     for (size_t i=0; i<subformulas.size(); i++) {
         if (subformulas[i].get() == this) {
@@ -2079,15 +2011,13 @@ void Formula::add_this_as_subformula(std::ostream &os, std::vector<ref_ptr<Formu
     // and output a new AP identifier
     os << "a" << subformulas.size();
     subformulas.emplace_back(make_ref_ptr<Formula>(this));
-    // this->addOwner();
 }
 
 
 
-/*-----------------------
- ---    BaseFormula   ---
- -----------------------*/
-
+//-----------------------------------------------------------------------------
+// BaseFormula
+//-----------------------------------------------------------------------------
 BaseFormula::BaseFormula() : computed_hash(0), _is_cached(false) {}
 
 BaseFormula::~BaseFormula() {
@@ -2136,7 +2066,7 @@ bool equals(const BaseFormula* pf1, const BaseFormula* pf2) {
 // reference counter base
 //-----------------------------------------------------------------------------
 
-refcounted_base::refcounted_base() : ref_count(0) {}
+refcounted_base::refcounted_base() : ref_count(1) {}
 
 refcounted_base::~refcounted_base() {
     // cout << "delete ("<<(this)<<") "<<ref_count<<endl;
