@@ -427,13 +427,13 @@ ref_ptr<IntFormula> make_expression(ref_ptr<IntFormula> e1, IntFormula::op_type 
     // <constant> <*/> <PlaceTerm>  ->  combine into a single PlaceTerm
     else if (e1const && e2term) {
         if (op == IntFormula::EOP_TIMES || op == IntFormula::EOP_DIV) {
-            int variable = dynamic_ptr_cast<PlaceTerm>(e2)->getVariable();
+            int placeNum = dynamic_ptr_cast<PlaceTerm>(e2)->getPlace();
             float coeff = dynamic_ptr_cast<PlaceTerm>(e2)->getCoeff();
             float val1 = dynamic_ptr_cast<IntLiteral>(e1)->getConstant();
             assert(coeff == 1);
             // e1->removeOwner();
             // e2->removeOwner();
-            return dynamic_ptr_cast<IntFormula>(ctlnew<PlaceTerm>(val1, variable, op));
+            return dynamic_ptr_cast<IntFormula>(ctlnew<PlaceTerm>(val1, placeNum, op));
         }
     }
     // Otherwise, create an IntFormula* object

@@ -137,9 +137,9 @@ BaseFormula* CTLMDD::cache_insert(BaseFormula* f) {
 #endif
         // return the cached object instead of f (and delete f)
         // cout << "CACHE HIT: " << (*f) << "   f="<<f<<" cache="<<*iter<<endl;
-        safe_removeOwner(f);
+        safe_remove_ref(f);
         f = *iter; // cached object
-        f->addOwner();
+        f->add_ref();
         return f;
     }
     // f does not exists in the cache yet. Add it.
@@ -435,7 +435,6 @@ void BoundOfPlaces::compute_bounds() const {
 
     // Just one place in the list:
     if (places.size() == 1) {
-        // int var_of_pl = g_rsrg->convertPlaceToMDDLevel(places[0]) + 1;
         _computedBound = make_pair(g_rsrg->getMinValueOfPlaceRS(places[0]),
                                    g_rsrg->getMaxValueOfPlaceRS(places[0]));
         return;
@@ -499,20 +498,8 @@ PlaceTerm::PlaceTerm(float coeff, int place, IntFormula::op_type op) {
 PlaceTerm::~PlaceTerm() {
 }
 
-float PlaceTerm::getCoeff() const {
-    return coeff;
-}
-
-int PlaceTerm::getVariable() const {
+int PlaceTerm::getMeddlyLevel1based() const {
     return g_rsrg->convertPlaceToMDDLevel(place) + 1;
-}
-
-int PlaceTerm::getPlace() const {
-    return place;
-}
-
-IntFormula::op_type PlaceTerm::getOp() const {
-    return op;
 }
 
 bool PlaceTerm::equals(const BaseFormula* pf) const {
@@ -537,7 +524,7 @@ void PlaceTerm::print(std::ostream &os) const {
 void PlaceTerm::createMTMDD(Context& ctx) {
     CTLMDD *ctl = CTLMDD::getInstance();
     forest *mtmdd_forest = ctl->getMTMDDForest();
-    int level = g_rsrg->convertPlaceToMDDLevel(place) + 1;
+    int level = getMeddlyLevel1based();
     int variable_bound = g_rsrg->getMaxValueOfPlaceRS(place);//g_rsrg->getRealBound(variable);
     int dom_bound = g_rsrg->getDomain()->getVariableBound(level);
     assert(variable_bound <= dom_bound);
@@ -628,18 +615,6 @@ IntExpression::IntExpression(ref_ptr<IntFormula> expr1, ref_ptr<IntFormula> expr
 IntExpression::~IntExpression() {
     // safe_removeOwner(expr1);
     // safe_removeOwner(expr2);
-}
-
-IntFormula* IntExpression::getExpr1() const {
-    return expr1.get();
-}
-
-IntFormula* IntExpression::getExpr2() const {
-    return expr2.get();
-}
-
-IntFormula::op_type IntExpression::getOp() const {
-    return op;
 }
 
 bool IntExpression::equals(const BaseFormula* pf) const {
@@ -807,7 +782,7 @@ void Inequality::createMDD(Context& ctx) {
         int variable_bound2 = g_rsrg->getMaxValueOfPlaceRS(plterm2->getPlace());
         // n*expr1 == m*expr2  ->  expr1 == (m/n)*expr2
         for (int i = 0; i <= variable_bound1  ; i++) {
-            m[0][plterm1->getVariable()] = i;
+            m[0][plterm1->getMeddlyLevel1based()] = i;
             int div = 1, mult = 1;
             if (plterm1->getOp() == IntFormula::EOP_DIV)
                 mult *= (int)plterm1->getCoeff();
@@ -818,12 +793,12 @@ void Inequality::createMDD(Context& ctx) {
             else
                 mult *= (int)plterm2->getCoeff();
             if (((i % div) == 0) && ((i / div * mult) <= variable_bound2)) {
-                m[0][plterm2->getVariable()] = int(i / div * mult);
+                m[0][plterm2->getMeddlyLevel1based()] = int(i / div * mult);
                 ctx.get_MDD_forest()->createEdge(m, 1, tmp_complete);
                 apply(UNION, tmp_complete, boole, boole);
-                m[0][plterm2->getVariable()] = DONT_CARE;
+                m[0][plterm2->getMeddlyLevel1based()] = DONT_CARE;
             }
-            m[0][plterm1->getVariable()] = DONT_CARE;
+            m[0][plterm1->getMeddlyLevel1based()] = DONT_CARE;
         }
 
         switch (op) {
@@ -1064,14 +1039,6 @@ Deadlock::Deadlock(bool value) {
 }
 
 Deadlock::~Deadlock() {
-}
-
-// void Deadlock::setValue(bool value) {
-//     this->value = value;
-//     clearMDD();
-// }
-bool Deadlock::getValue() const {
-    return value;
 }
 
 bool Deadlock::equals(const BaseFormula* pf) const {
@@ -1741,15 +1708,6 @@ TemporalFormula::~TemporalFormula() {
     // safe_removeOwner(formula1);
     // safe_removeOwner(formula2);
 }
-Formula* TemporalFormula::getFormula1() const {
-    return formula1.get();
-}
-Formula* TemporalFormula::getFormula2() const {
-    return formula2.get();
-}
-path_op_type TemporalFormula::getOp() const {
-    return op;
-}
 bool TemporalFormula::equals(const BaseFormula* pf) const {
     if (typeid(*pf) == typeid(*this)) {
         const TemporalFormula* p = dynamic_cast<const TemporalFormula*>(pf);
@@ -1924,7 +1882,6 @@ void GlobalProperty::createMDD(Context& ctx) {
             // forall t : EF fireable(t)
             // equivalent to testing if all transitions are enabled
             std::vector<int> v1(1);
-            ref_ptr<Fireability> f;
             result = true;
             size_t num_transitions = ntr;
 
@@ -1937,6 +1894,7 @@ void GlobalProperty::createMDD(Context& ctx) {
 
             // evaluate E F firable(t) for each transition of the *ORIGINAL* model
             for (size_t tr = 0; tr<num_transitions; tr++) {
+                ref_ptr<Fireability> f;
                 if (is_unfolded) {
                     const auto& unfolded_trns = (ctx.rsrg->get_unfolding_map()
                                                   .tr_unf[tr].second);
@@ -1964,12 +1922,12 @@ void GlobalProperty::createMDD(Context& ctx) {
         case GPT_LIVENESS: {
             // forall t : AG EF fireable(t)
             std::vector<int> v1(1);
-            ref_ptr<Fireability> f;
             result = true;
             size_t num_transitions = (is_unfolded ? ctx.rsrg->get_unfolding_map()
                                                             .tr_unf.size() : ntr);
             // evaluate AG EF firable(t) for each transition of the *ORIGINAL* model
             for (size_t tr = 0; tr<num_transitions; tr++) {
+                ref_ptr<Fireability> f;
                 if (is_unfolded) {
                     const auto& unfolded_trns = (ctx.rsrg->get_unfolding_map()
                                                   .tr_unf[tr].second);
@@ -1996,13 +1954,13 @@ void GlobalProperty::createMDD(Context& ctx) {
         case GPT_ONESAFE: {
             // forall p : AG token_count(p) <= 1
             // equivalent to a bound computation
-            ref_ptr<BoundOfPlaces> bof;
             std::vector<int> v1(1);
             result = true;
             int bound;
             size_t num_places = (is_unfolded ? ctx.rsrg->get_unfolding_map()
                                                 .pl_unf.size() : npl);
             for (size_t pl = 0; pl<num_places; pl++) {
+                ref_ptr<BoundOfPlaces> bof;
                 if (is_unfolded) {
                     bof = ctlnew<BoundOfPlaces>(&ctx.rsrg->get_unfolding_map()
                                                 .pl_unf[pl].second);
@@ -2023,13 +1981,13 @@ void GlobalProperty::createMDD(Context& ctx) {
 
         case GPT_STABLE_MARKING: {
             // E p : E x : AG token_count(p) == x
-            ref_ptr<BoundOfPlaces> bof;
             std::vector<int> v1(1);
             result = false;
             int bound;
             size_t num_places = (is_unfolded ? ctx.rsrg->get_unfolding_map()
                                                 .pl_unf.size() : npl);
             for (size_t pl = 0; pl<num_places; pl++) {
+                ref_ptr<BoundOfPlaces> bof;
                 if (is_unfolded) {
                     bof = ctlnew<BoundOfPlaces>(&ctx.rsrg->get_unfolding_map()
                                                 .pl_unf[pl].second);
@@ -2133,7 +2091,6 @@ void Formula::add_this_as_subformula(std::ostream &os, std::vector<ref_ptr<Formu
 BaseFormula::BaseFormula() : computed_hash(0), _is_cached(false) {}
 
 BaseFormula::~BaseFormula() {
-    // assert(countOwner == 0);
     assert(!is_cached()) ;
 }
 
@@ -2141,22 +2098,6 @@ void BaseFormula::before_delete() {
     if (is_cached())
         CTLMDD::getInstance()->cache_remove(this);
 }
-
-// void BaseFormula::addOwner() {
-//     // cout << "addOwner("<<(*this)<<"): "<<countOwner<<"->"<<(countOwner + 1)<<endl;
-//     countOwner++;
-// }
-// void BaseFormula::removeOwner() {
-//     // cout << "removeOwner("<<(*this)<<"): "<<countOwner<<"->"<<(countOwner - 1)<<endl;
-//     countOwner--;
-//     if (countOwner < 0)
-//         throw rgmedd_exception("ownership count cannot become negative.");
-//     if (countOwner < 1) {
-//         if (is_cached())
-//             CTLMDD::getInstance()->cache_remove(this);
-//         delete this;
-//     }
-// }
 
 size_t BaseFormula::hash() const {
     if (computed_hash == 0) { // compute and store
@@ -2195,23 +2136,23 @@ bool equals(const BaseFormula* pf1, const BaseFormula* pf2) {
 // reference counter base
 //-----------------------------------------------------------------------------
 
-refcounted_base::refcounted_base() : countOwner(0) {}
+refcounted_base::refcounted_base() : ref_count(0) {}
 
 refcounted_base::~refcounted_base() {
-    // cout << "delete ("<<(this)<<") "<<countOwner<<endl;
-    assert(countOwner == 0); 
+    // cout << "delete ("<<(this)<<") "<<ref_count<<endl;
+    assert(ref_count == 0); 
 }
 
-void refcounted_base::addOwner() {
-    // cout << "addOwner("<<(this)<<"): "<<countOwner<<"->"<<(countOwner + 1)<<endl;
-    countOwner++;
+void refcounted_base::add_ref() {
+    // cout << "add_ref("<<(this)<<"): "<<ref_count<<"->"<<(ref_count + 1)<<endl;
+    ref_count++;
 }
-void refcounted_base::removeOwner() {
-    // cout << "removeOwner("<<(this)<<"): "<<countOwner<<"->"<<(countOwner - 1)<<endl;
-    countOwner--;
-    if (countOwner < 0)
+void refcounted_base::remove_ref() {
+    // cout << "remove_ref("<<(this)<<"): "<<ref_count<<"->"<<(ref_count - 1)<<endl;
+    ref_count--;
+    if (ref_count < 0)
         throw rgmedd_exception("ownership count cannot become negative.");
-    if (countOwner < 1) {
+    if (ref_count < 1) {
         before_delete();
         delete this;
     }

@@ -179,9 +179,9 @@ ctlnew(Args&&... args) {
     static_assert(std::is_base_of<BaseFormula, T>::value, "T must inherit from BaseFormula");
     T* p = new T(args...);
     // cout << "ctlnew("<<(p)<<") "<<(typeid(T).name())<<endl;
-    p->addOwner();
+    p->add_ref();
     p = (T*)(CTLMDD::getInstance()->cache_insert(p));
-    return make_new_ref_ptr<T>(p);
+    return move_to_ref_ptr<T>(std::move(p));
 }
 
 //----------------------------------------------------------------------------
@@ -309,9 +309,9 @@ public:
     dd_edge forward_reachable(const dd_edge& s0) const override;
 };
 
-/*---------------------
- --- Base class of all CTL formulas
- -----------------------*/
+//-----------------------------------------------------------------------------
+// Base class of all CTL formulas
+//-----------------------------------------------------------------------------
 
 class BaseFormula : public refcounted_base {
 private:
@@ -350,10 +350,7 @@ private:
 
     friend std::ostream &operator << (std::ostream &os, const BaseFormula &ex);
     friend bool equals(const BaseFormula*, const BaseFormula*);
-
 };
-
-
 
 //----------------------------------------------------------------------------
 
@@ -376,9 +373,9 @@ enum path_op_type {
 };
 extern const char* g_path_op_type[4];
 
-/*---------------------
- ---	Formula	---
- -----------------------*/
+//-----------------------------------------------------------------------------
+// State/path formulae
+//-----------------------------------------------------------------------------
 // Base for all Boolean formulae
 class Formula : public BaseFormula {
     // sat-set of the formula
@@ -459,20 +456,13 @@ public:
     void print_trace(const char *prefix = "", int nest_level = 0) const;
 };
 
-/*-----------------------------
- ---	LogicalFormula	---
- ------------------------------*/
-/**
- * Bool expression composed by two CTL formulae linked through operator.
- * This class represent bool expression with form formula1 op formula2 for binary operator (AND and OR).
- * This class represent bool expression with form op formula1 for unary operator (only NOT).
- * */
+//-----------------------------------------------------------------------------
+// Logical formula (and,or,not,imply)
+//-----------------------------------------------------------------------------
 class LogicalFormula: public Formula {
     DECLARE_CTL_CLASS;
 public:
-    /**
-     * Type of logic operator
-     * */
+    // Type of logic operator
     enum op_type {
         CBF_NOT = 0, CBF_AND = 1, CBF_OR = 2, CBF_IMPLY = 3
     };
@@ -487,18 +477,8 @@ private:
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
 protected:
-    /**
-     * Constructor for bool expression with binary operator.
-     * @param formula1 value of the first CTL formula
-     * @param formula2 value of the second CTL formula
-     * @param op value of operator (AND or OR)
-     * */
     LogicalFormula(ref_ptr<Formula> formula1, ref_ptr<Formula> formula2, op_type op);
-    /**
-     * Constructor for bool expression with unary operator. The operator is NOT.
-     * @param formula1 value of the first CTL formula
-     *
-     * */
+    // Constructor for the unary NOT
     LogicalFormula(ref_ptr<Formula> formula1);
     virtual ~LogicalFormula();
 public:
@@ -512,10 +492,9 @@ public:
     inline op_type getOp() const { return op; }
 };
 
-/*-----------------------------
- ---    QuantifiedFormula   ---
- ------------------------------*/
-// A quantified State formula
+//-----------------------------------------------------------------------------
+// A quantified State formula (exists/forall)
+//-----------------------------------------------------------------------------
 class QuantifiedFormula: public Formula {
     DECLARE_CTL_CLASS;
 private:
@@ -544,16 +523,14 @@ public:
     quant_type getQuantifier() const;
 };
 
-/*-----------------------------
- ---    TemporalFormula   ---
- ------------------------------*/
+//-----------------------------------------------------------------------------
 // A formula with a temporal operator (PathFormula)
+//-----------------------------------------------------------------------------
 class TemporalFormula : public Formula {
     DECLARE_CTL_CLASS;
 private:
     ref_ptr<Formula> formula1, formula2;
     path_op_type op;
-
 
     virtual void createMDD(Context& ctx) override;
     virtual void print(std::ostream &os) const override;
@@ -562,9 +539,6 @@ private:
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
 protected:
-    /**
-     * Constructors for quantified expressionr.
-     * */
     TemporalFormula(ref_ptr<Formula> _formula, path_op_type _op);
     TemporalFormula(ref_ptr<Formula> _formula1, ref_ptr<Formula> _formula2/*, path_op_type _op*/);
 public:
@@ -573,21 +547,18 @@ public:
 
     virtual ~TemporalFormula();
 
-    Formula* getFormula1() const;
-    Formula* getFormula2() const;
-    path_op_type getOp() const;
+    inline Formula* getFormula1() const { return formula1.get(); }
+    inline Formula* getFormula2() const { return formula2.get(); }
+    path_op_type getOp() const { return op; }
 
     virtual bool isStateFormula() const override;
     virtual bool isPathFormula() const override;
     virtual bool isAtomicPropos() const override;
 };
 
-/*-----------------------------
- ---	AtomicProposition	---
- ------------------------------*/
-/**
- * Base class of all atomic propositions.
- * */
+//-----------------------------------------------------------------------------
+// Base class of all atomic propositions.
+//-----------------------------------------------------------------------------
 class AtomicProposition: public Formula {
     // DECLARE_CTL_CLASS;
 protected:
@@ -601,13 +572,9 @@ public:
                                          std::vector<ref_ptr<Formula>>&) override;
 };
 
-/*-------------------------
- ---	BoolLiteral	---
- ---------------------------*/
-/**
- * Atomic proposition as boolean value.
- * */
-
+//-----------------------------------------------------------------------------
+// Atomic proposition as boolean value.
+//-----------------------------------------------------------------------------
 class BoolLiteral: public AtomicProposition {
     DECLARE_CTL_CLASS;
 private:
@@ -634,14 +601,10 @@ public:
     bool getValue() const;
 };
 
-/*-------------------------
- ---	Deadlock	---
- ---------------------------*/
-/**
- * Atomic proposition for deadlock state o deadlock free state.
- * If value is true it finds deadlock state, otherwise it finds deadlock free state.
- * */
-
+//-----------------------------------------------------------------------------
+// Atomic proposition for deadlock state o deadlock free state.
+// If value is true it finds deadlock state, otherwise it finds deadlock free state.
+//-----------------------------------------------------------------------------
 class Deadlock: public AtomicProposition {
     DECLARE_CTL_CLASS;
 private:
@@ -650,27 +613,18 @@ private:
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
 protected:
-    /**
-     * Constructor.
-     * @param value a boolean value
-     * */
     Deadlock(bool value);
     virtual ~Deadlock();
 public:
     virtual TreeTraceNode *generateTrace(const vector<int> &state, TraceType traceTy) override;
     virtual void print(std::ostream &os) const override;
-    /**
-     * Return the boolean value.
-     * @return boolean value
-     * */
-    bool getValue() const;
+
+    inline bool getValue() const { return  value; }
 };
 
-/*-------------------------
- ---	InitState	---
- ---------------------------*/
-/** Atomic proposition true in the initial marking, and false otherwise. */
-
+//-----------------------------------------------------------------------------
+// Atomic proposition true in the initial marking, and false otherwise.
+//-----------------------------------------------------------------------------
 class InitState: public AtomicProposition {
     DECLARE_CTL_CLASS;
 private:
@@ -678,10 +632,6 @@ private:
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
 protected:
-    /**
-     * Constructor.
-     * @param value a boolean value
-     * */
     InitState();
     virtual ~InitState();
 public:
@@ -689,9 +639,9 @@ public:
     virtual void print(std::ostream &os) const override;
 };
 
-/*-------------------------
- ---    GlobalProperty    ---
- ---------------------------*/
+//-----------------------------------------------------------------------------
+// GlobalProperty
+//-----------------------------------------------------------------------------
 enum global_property_type {
     GPT_HAS_DEADLOCK,
     GPT_QUASI_LIVENESS,
@@ -725,14 +675,11 @@ public:
     global_property_type getType() const;
 };
 
-/*-------------------------
- ---    Reachability    ---
- --------------------------*/
-/**
- * Tells if a sub-formula is invariantly/possibly true/false
- * in all states of the TRG. Its result is always true or false.
- * */
-
+//-----------------------------------------------------------------------------
+// Reachability property
+// Tells if a sub-formula is invariantly/possibly true/false in all states. 
+// The result is either true or false
+//-----------------------------------------------------------------------------
 class Reachability: public AtomicProposition {
     DECLARE_CTL_CLASS;
 public:
@@ -759,7 +706,7 @@ public:
 
 //----------------------------------------------------------------------------
 // Enabling of a set of transitions
-
+//-----------------------------------------------------------------------------
 class Fireability : public AtomicProposition {
     DECLARE_CTL_CLASS;
 private:
@@ -776,20 +723,13 @@ public:
     virtual TreeTraceNode *generateTrace(const vector<int> &state, TraceType traceTy) override;
 };
 
-/*---------------------
- ---    Inequality  ---
- ----------------------*/
-/**
- * Inequality class. This class representing inequality with the follow form:
- * expression op constant
- *
- * */
-
+//-----------------------------------------------------------------------------
+// Inequality of two integer expressions.
+//-----------------------------------------------------------------------------
 class Inequality : public AtomicProposition {
     DECLARE_CTL_CLASS;
 public:
-    /**
-     * Type of compare operator*/
+    // Type of compare operator
     enum op_type {
         IOP_MIN = 0, IOP_MAJ = 1, IOP_MINEQ = 2, IOP_MAJEQ = 3,
         IOP_EQ = 4,  IOP_NEQ = 5, IOP_SIM = 6,   IOP_DIF = 7
@@ -806,19 +746,7 @@ private:
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
 protected:
-    /**
-     * Constructor.
-     * @param op operator
-     * @param expr1 expression
-     * @param constant value of constant
-     * */
     Inequality(op_type op, ref_ptr<IntFormula> expr1, ref_ptr<IntFormula> expr2);
-    /**
-     * Constructor.
-     * @param op operator
-     * @param expr1 expression
-     * @param constant value of constant
-     * */
     Inequality(op_type op, ref_ptr<IntFormula> expr1, float constant);
     virtual ~Inequality();    
 public:
@@ -830,34 +758,18 @@ public:
     inline op_type getOp() const { return op; }
 };
 
-/*---------------------
- ---	IntFormula	---
- ----------------------*/
-/**
- * Abstract class. This class representing arithmetic expression with tree structure.
- * */
+//-----------------------------------------------------------------------------
+// Base class of all integrl expressions, computed on MTMDDs
+//-----------------------------------------------------------------------------
 class IntFormula : public BaseFormula {
 public:
-    /**
-     * This is the type of operator
-     * */
     enum op_type {
         EOP_PLUS = 0, EOP_MINUS = 1, EOP_TIMES = 2, EOP_DIV = 3
     };
     static const char *OP_Names[4]; // symbols of op_type
-
-    /**
-     * Array for translate op_type to string.
-     * */
 private:
-    /**
-     * expression MTMDD (real)
-     * */
     dd_edge MTMDD;
     bool computedMTMDD = false;
-    /**
-     * create expression MTMDD (real)
-     * */
     virtual void createMTMDD(Context& ctx) = 0;
 
 protected:
@@ -865,26 +777,19 @@ protected:
     virtual ~IntFormula();
 public:
     virtual void print(std::ostream &os) const override = 0;
-    /**
-     * Create, if not yet, and return a MDD representation of the term.
-     * @return MTMDD representation of the term
-     * */
+    // Creates the MTMDD if it does not exists yet.
     const dd_edge& getMTMDD(Context& ctx);
     void setMTMDD(dd_edge newMTMDD);
     void clearMTMDD();
     bool hasStoredMTMDD() const;
+
     virtual bool isBoolFormula() const override;
     virtual bool isIntFormula() const override;
 };
 
-/*---------------------
- ---	IntExpression	---
- ----------------------*/
-/**
- * IntFormula compose by two sub expression linked through operator.
- * This class represent expression with form expr1 op expr2
- * */
-
+//-----------------------------------------------------------------------------
+// Expression over integer terms (+, -, *, /)
+//-----------------------------------------------------------------------------
 class IntExpression: public IntFormula {
     DECLARE_CTL_CLASS;
 private:
@@ -895,42 +800,21 @@ private:
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
 protected:
-    /**
-     * Constructor.
-     * @param expr1 value of the first expression
-     * @param expr2 value of the second expression
-     * @param op value of operator
-     * */
     IntExpression(ref_ptr<IntFormula> expr1, ref_ptr<IntFormula> expr2, IntFormula::op_type op =
                   IntFormula::EOP_PLUS);
     virtual ~IntExpression();
 public:
     virtual void print(std::ostream &os) const override;
-    /**
-     * Return the first expression.
-     * @return expr1
-     * */
-    IntFormula* getExpr1() const;
-    /**
-     * Return the second expression.
-     * @return expr2
-     * */
-    IntFormula* getExpr2() const;
-    /**
-     * Return the operator value.
-     * @return op
-     * */
-    IntFormula::op_type getOp() const;
+    
+    inline IntFormula* getExpr1() const { return expr1.get(); }
+    inline IntFormula* getExpr2() const { return expr2.get(); }
+    inline IntFormula::op_type getOp() const { return op; }
 };
 
-/*-----------------
- ---	PlaceTerm	---
- ------------------*/
-/**
- * PlaceTerm Class. This class representing term with the follow form:
- * coeff op place
- *
- * */
+//-----------------------------------------------------------------------------
+// Evaluates to the marking of a specified place in every state,
+// multiplied/divided by a coeff term:   coeff <op> place
+//-----------------------------------------------------------------------------
 class PlaceTerm : public IntFormula {
     DECLARE_CTL_CLASS;
 private:
@@ -941,40 +825,21 @@ private:
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
 protected:
-    /**
-     * Constructor.
-     * @param coeff value of the term coefficient
-     * @param variable value of id variable
-     * @param op value of operator
-     * */
     PlaceTerm(float coeff, int place, IntFormula::op_type op = IntFormula::EOP_TIMES);
     virtual ~PlaceTerm();
 public:
-    /**
-     * Return the coefficient value.
-     * @return coefficient value.
-     * */
-    float getCoeff() const;
-    /**
-     * Return the variable id value.
-     * @return variable id value
-     * */
-    int getVariable() const;
-    int getPlace() const;
-    /**
-     * Create, if not yet, and return a MDD representation of the term.
-     * @return MDD representation of the term*/
-    IntFormula::op_type getOp() const;
+    inline float getCoeff() const { return coeff; }
+    int getMeddlyLevel1based() const;
+    inline int getPlace() const { return place; }
+    inline IntFormula::op_type getOp() const { return op; }
 
     virtual void print(std::ostream &os) const override;
 };
 
-/*-------------------------
- ---	IntLiteral	---
- --------------------------*/
-/**
- * Representing a constant
- * */
+//-----------------------------------------------------------------------------
+// Constant integer values.
+// Also base class of BoundOfPlaces.
+//-----------------------------------------------------------------------------
 class IntLiteral: public IntFormula {
     DECLARE_CTL_CLASS;
 private:
@@ -983,14 +848,10 @@ private:
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
 protected:
-    /**
-     * Constructor
-     * @param constant constant value
-     * */
     IntLiteral(float constant);
     virtual ~IntLiteral();
 public:
-
+    // The actual constant value can be defined differently
     virtual float getConstant() const;
 
     virtual void print(std::ostream &os) const override;
@@ -998,7 +859,7 @@ public:
 
 //----------------------------------------------------------------------------
 // Upper bound of a set of places
-
+//-----------------------------------------------------------------------------
 class BoundOfPlaces : public IntLiteral {
     DECLARE_CTL_CLASS;
 private:

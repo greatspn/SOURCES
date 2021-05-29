@@ -34,8 +34,6 @@ struct ba_edge_t {
     ba_edge_t(ba_location_t _src_loc, ba_location_t _dst_loc, 
               ref_ptr<Formula> _state_formula, bool _is_initial);
 
-    // ~ba_edge_t();
-
     ba_edge_t(const ba_edge_t&) = delete;
     ba_edge_t(ba_edge_t&&) = default;
     ba_edge_t& operator=(const ba_edge_t&) = delete;

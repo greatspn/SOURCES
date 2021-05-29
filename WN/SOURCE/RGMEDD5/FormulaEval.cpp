@@ -100,7 +100,7 @@ ref_ptr<BaseFormula> parse_and_evaluate_formula(Context& ctx, const std::string&
             // Fix unquantified LTL formulas
             if (ctx.language == Language::LTL && boolFrm->isPathFormula()) { 
                 parsedFrm = ctlnew<QuantifiedFormula>(dynamic_ptr_cast<Formula>(parsedFrm), QOP_ALWAYS);
-                // parsedFrm = boolFrm; // important: change also parsedFrm!
+                // important: change also boolFrm!
                 boolFrm = dynamic_cast<Formula*>(parsedFrm.get());
 	        }
             // Mark the top-level node
@@ -170,38 +170,38 @@ parse_spot_formula(const std::string& formula,
 
 //-----------------------------------------------------------------------------
 
-// count number of nested parenthesis in property string
-unsigned int max_nested_par(const std::string prop)
-{
-    unsigned int cnt = 0;
-    unsigned int max = 0;
+// // count number of nested parenthesis in property string
+// unsigned int max_nested_par(const std::string prop)
+// {
+//     unsigned int cnt = 0;
+//     unsigned int max = 0;
 
-    for(const char& c: prop) {
-        switch(c) {
-        case '(':
-        case '[':
-            if(++cnt > max) max = cnt;
-            break;
-        case ')':
-        case ']':
-            --cnt;
-            break;
-        default:
-            break;
-        }
-    }
-    return max;
-}
+//     for(const char& c: prop) {
+//         switch(c) {
+//         case '(':
+//         case '[':
+//             if(++cnt > max) max = cnt;
+//             break;
+//         case ')':
+//         case ']':
+//             --cnt;
+//             break;
+//         default:
+//             break;
+//         }
+//     }
+//     return max;
+// }
 
-unsigned int num_path_ops(const std::string prop)
-{
-    unsigned int cnt = 0;
-    std::string ops = "GFUX";
-    for(const char& c: prop) {
-        if(std::find(ops.begin(), ops.end(), c) != ops.end()) cnt++;
-    }
-    return cnt;
-}
+// unsigned int num_path_ops(const std::string prop)
+// {
+//     unsigned int cnt = 0;
+//     std::string ops = "GFUX";
+//     for(const char& c: prop) {
+//         if(std::find(ops.begin(), ops.end(), c) != ops.end()) cnt++;
+//     }
+//     return cnt;
+// }
 
 //-----------------------------------------------------------------------------
 
@@ -372,10 +372,6 @@ void model_check_query(Context& ctx, const ctl_query_t& query, int sem_id, bool 
             // Add the sat-set as a new fairness constraint in the global evaluation context
             ctx.add_fairness_constraint(state_formula->getStoredMDD());
         }
-
-        // Release the memory occupied by the CTL formula tree
-        // formula->removeOwner();
-        // formula = nullptr;
     }
 
     if (!running_for_MCC() && !CTL_quiet)
@@ -633,7 +629,13 @@ bool do_model_checking(RSRG *r) {
             } 
         }
         if (!running_for_MCC()) {
-            cout << "Formula cache size: " << CTLMDD::getInstance()->cache_size() << endl;
+            size_t cache_sz = CTLMDD::getInstance()->cache_size();
+            cout << "Formula cache size: " << cache_sz << endl;
+            if (cache_sz != 0) {
+                cerr << "!! Cache size is expected to be 0 after evaluating all MC queries.\n"
+                        "   If it is not 0, it means that some Formula* object was not\n"
+                        "   deallocated properly." << endl;
+            }
         }
     }
     else {

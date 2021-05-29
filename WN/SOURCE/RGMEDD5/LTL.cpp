@@ -227,11 +227,11 @@ public:
 
         for(ba_location_t s: conjSuccessors) {
             // parse the edge label, extract the boolean state formula
-ref_ptr<            Formula> stateFormula = parse_spot_formula(labelExpr->toString(), 
+            ref_ptr<Formula> stateFormula = parse_spot_formula(labelExpr->toString(), 
                                                        atomic_propositions,
                                                        spot_ap_to_greatspn_ap_index);
 
-            p_ba->edges.emplace_back(std::move(ba_edge_t(stateId, s, nullptr, initial)));
+            p_ba->edges.emplace_back(std::move(ba_edge_t(stateId, s, ref_ptr<Formula>(nullptr), initial)));
             p_ba->edges.back().state_formula = stateFormula;
         }
 
