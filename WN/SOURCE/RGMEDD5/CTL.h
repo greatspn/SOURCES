@@ -46,9 +46,8 @@ namespace std {
 }
 
 // parser/lexer interface
-void initialize_lexer(istringstream *p_iss);
-void deinitialize_lexer();
-ctlmdd::BaseFormula* parse_formula();
+// void initialize_lexer(istringstream *p_iss);
+// void deinitialize_lexer();
 
 #undef DEAD
 
@@ -72,12 +71,13 @@ class BoolLiteral;
 class Deadlock;
 class InitState;
 class Reachability;
-class Fireability ;
-class Inequality ;
+class Fireability;
+class Inequality;
+class GlobalProperty;
 
 // Integer expressions
 class IntExpression;
-class PlaceTerm ;
+class PlaceTerm;
 class IntLiteral;
 class BoundOfPlaces;
 
@@ -103,10 +103,10 @@ class TreeTraceNode;
 //----------------------------------------------------------------------------
 
 // deep comparison of formulas
-bool equals(const BaseFormula *pf1, const BaseFormula *pf2);
+bool equals(const BaseFormula* pf1, const BaseFormula* pf2);
 
 struct formula_equal_to {
-    inline bool operator()(const BaseFormula *pf1, const BaseFormula *pf2) const 
+    inline bool operator()(const BaseFormula* pf1, const BaseFormula* pf2) const 
     { return equals(pf1, pf2); }
 };
 
@@ -163,6 +163,28 @@ public:
     void cache_remove(BaseFormula* f);
     size_t cache_size() const;
 };
+
+//----------------------------------------------------------------------------
+
+#define DECLARE_CTL_CLASS \
+    template <typename T, typename... Args> \
+    friend inline ref_ptr<T> \
+    ctlnew(Args&&... args)
+
+// Allocate CTL expression nodes
+template <typename T, typename... Args>
+inline ref_ptr<T> 
+ctlnew(Args&&... args) {
+    // enable_if_t<is_base_of<BaseFormula, T>::value, T*> 
+    static_assert(std::is_base_of<BaseFormula, T>::value, "T must inherit from BaseFormula");
+    T* p = new T(args...);
+    // cout << "ctlnew("<<(p)<<") "<<(typeid(T).name())<<endl;
+    p->addOwner();
+    p = (T*)(CTLMDD::getInstance()->cache_insert(p));
+    return make_new_ref_ptr<T>(p);
+}
+
+//----------------------------------------------------------------------------
 
 enum class StateSetPolicy { ACTUAL, POTENTIAL };
 
@@ -291,9 +313,8 @@ public:
  --- Base class of all CTL formulas
  -----------------------*/
 
-class BaseFormula {
+class BaseFormula : public refcounted_base {
 private:
-    int countOwner;
     mutable size_t computed_hash;
     mutable bool _is_cached;
     // is this a root/top-level node in the AST? (modifiable, not hashed)
@@ -301,13 +322,11 @@ private:
 protected:
     BaseFormula();
     virtual ~BaseFormula();
+    void before_delete() override;
     // BaseFormula objects are not copyable.
     BaseFormula(const BaseFormula&) = delete;
     BaseFormula& operator=(const BaseFormula&) = delete;
 public:
-    void addOwner();
-    void removeOwner();
-
     BaseFormula(BaseFormula&&) = default;
     BaseFormula& operator=(BaseFormula&&) = default;
 
@@ -334,85 +353,17 @@ private:
 
 };
 
-//----------------------------------------------------------------------------
 
-#define safe_removeOwner(p) {   if (p != nullptr) { p->removeOwner(); p = nullptr; }   }
-#define safe_addOwner(p)    {   if (p != nullptr) { p->addOwner(); }   }
 
 //----------------------------------------------------------------------------
-
-template<typename T> 
-class ref_ptr {
-    T*    ptr;       // ref-counted pointer to a subclass of BaseFormula
-public:
-    typedef T value_type;
-    inline ref_ptr() : ptr(nullptr) {
-        static_assert(std::is_base_of<BaseFormula, T>::value, 
-                      "type parameter is not a CTL BaseFormula");
-    }
-    inline ref_ptr(T* _ptr) : ptr(_ptr) { }
-    inline ref_ptr(const ref_ptr<T>& ref) : ptr(ref.ptr) { safe_addOwner(ptr); }
-    inline ref_ptr(ref_ptr<T>&&) = default;
-
-    inline ~ref_ptr() { safe_removeOwner(ptr); }
-
-    inline T& operator* () { return *ptr; }
-    inline T* operator-> () { return ptr; }
-    
-    inline ref_ptr<T>& operator=(const ref_ptr<T>& ref) {
-        if (this != &ref) { // no self assignments
-            safe_removeOwner(ptr); 
-            ptr = ref.ptr;
-            safe_addOwner(ptr);
-        }
-        return *this;
-    }
-    inline ref_ptr<T>& operator=(T* _ptr) {
-        if (this != _ptr) {
-            safe_removeOwner(ptr); 
-            ptr = _ptr;
-        }
-        return *this;
-    }
-    inline ref_ptr<T>& operator=(ref_ptr<T>&&) = default;
-
-    inline operator bool() const { return (ptr != nullptr); }
-
-    inline const T* get() const { return ptr; }
-    inline T* get() { return ptr; }
-};
-
-//----------------------------------------------------------------------------
-
-template <class Base, class Derived>
-ref_ptr<Base> dynamic_pointer_cast(ref_ptr<Derived>& sp) noexcept {
-    ref_ptr<Base> rb(dynamic_cast<Base*>(sp.get()));
-    if (rb.get() != nullptr)
-        rb.get()->addOwner();
-    return rb;
-}
-
-//----------------------------------------------------------------------------
-
-#define DECLARE_CTL_CLASS \
-    template <typename T, typename... Args> \
-    friend inline T* \
-    ctlnew(Args&&... args)
-
-// Allocate CTL expression nodes
-template <typename T, typename... Args>
-inline T* 
-ctlnew(Args&&... args) {
-    // enable_if_t<is_base_of<BaseFormula, T>::value, T*> 
-    static_assert(std::is_base_of<BaseFormula, T>::value, "T must inherit from BaseFormula");
-    T* p = new T(args...);
-    p->addOwner();
-    return (T*)(CTLMDD::getInstance()->cache_insert(p));
-}
 
 // Used by parser to indirectly store non-POD objects
-struct int_formula_objid { int id; };
-struct formula_objid { int id; };
+// struct int_formula_objid { int id; };
+// struct formula_objid { int id; };
+struct ref_formula_objid { int id; };
+struct ref_int_formula_objid { int id; };
+
+ref_ptr<BaseFormula> parse_formula(const std::string& formula);
 
 //--------------------------
 enum quant_type {
@@ -447,11 +398,11 @@ public:
     // Generate a string representation of the maximal path subformula,
     // and collect all the atomic propositions below such subformula
     virtual void maximal_path_subformula(Context& ctx, std::ostream &os, quant_type quantifier,
-                                         std::vector<Formula*>& subformulas) = 0;
+                                         std::vector<ref_ptr<Formula>>& subformulas) = 0;
     void add_this_as_subformula(std::ostream &os, 
-                                std::vector<Formula*>& subformulas);
+                                std::vector<ref_ptr<Formula>>& subformulas);
     // void add_deadlock_subformula(std::ostream &os, 
-    //                              std::vector<Formula*>& subformulas);
+    //                              std::vector<ref_ptr<Formula>>& subformulas);
 
     // Type classification
     virtual bool isBoolFormula() const override;
@@ -486,7 +437,7 @@ private:
     // Sub formulas (null if formula is an atomic proposition)
     TreeTraceNode *sub_trace1, *sub_trace2;
     // Which formula is this trace  demostraiting ?
-    Formula  *formula;
+    ref_ptr<Formula>  formula;
     // Counterexample of an Existential CTL formula
     bool           isECTL_cntexample;
     // Is a circular trace?
@@ -495,7 +446,7 @@ private:
     TraceType      traceTy;
 public:
     TreeTraceNode();
-    TreeTraceNode(const vector<int> &mark, Formula *f, TraceType tt);
+    TreeTraceNode(const vector<int> &mark, ref_ptr<Formula> f, TraceType tt);
     ~TreeTraceNode();
 
     inline void set_sub_trace1(TreeTraceNode *ttn) { CTL_ASSERT(sub_trace1 == NULL); sub_trace1 = ttn; }
@@ -526,13 +477,13 @@ public:
         CBF_NOT = 0, CBF_AND = 1, CBF_OR = 2, CBF_IMPLY = 3
     };
 private:
-    Formula *formula1;
-    Formula *formula2; // if op = NOT this value is null
+    ref_ptr<Formula> formula1;
+    ref_ptr<Formula> formula2; // if op = NOT this value is null
     op_type op;
     virtual void createMDD(Context& ctx) override;
     virtual void print(std::ostream &os) const override;
     virtual void maximal_path_subformula(Context& ctx, std::ostream&, quant_type,
-                                         std::vector<Formula*>&) override;
+                                         std::vector<ref_ptr<Formula>>&) override;
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
 protected:
@@ -542,13 +493,13 @@ protected:
      * @param formula2 value of the second CTL formula
      * @param op value of operator (AND or OR)
      * */
-    LogicalFormula(Formula *formula1, Formula *formula2, op_type op);
+    LogicalFormula(ref_ptr<Formula> formula1, ref_ptr<Formula> formula2, op_type op);
     /**
      * Constructor for bool expression with unary operator. The operator is NOT.
      * @param formula1 value of the first CTL formula
      *
      * */
-    LogicalFormula(Formula *formula1);
+    LogicalFormula(ref_ptr<Formula> formula1);
     virtual ~LogicalFormula();
 public:
     virtual TreeTraceNode *generateTrace(const vector<int> &state, TraceType traceTy) override;
@@ -556,21 +507,9 @@ public:
     virtual bool isPathFormula() const override;
     virtual bool isAtomicPropos() const override;
 
-    /**
-     * Return the first CTL formula.
-     * @return formula1
-     * */
-    Formula *getFormula1() const;
-   /**
-     * Return the second formula.
-     * @return formula2
-     * */
-    Formula *getFormula2() const;
-    /**
-     * Return the operator value.
-     * @return op
-     * */
-    LogicalFormula::op_type getOp() const;
+    inline Formula* getFormula1() const { return formula1.get(); }
+    inline Formula* getFormula2() const { return formula2.get(); }
+    inline op_type getOp() const { return op; }
 };
 
 /*-----------------------------
@@ -580,7 +519,7 @@ public:
 class QuantifiedFormula: public Formula {
     DECLARE_CTL_CLASS;
 private:
-    Formula *formula;
+    ref_ptr<Formula> formula;
     quant_type quantifier;
 
     bool do_CTL_model_checking(Context& ctx);
@@ -588,11 +527,11 @@ private:
     virtual void createMDD(Context& ctx) override;
     virtual void print(std::ostream &os) const override;
     virtual void maximal_path_subformula(Context& ctx, std::ostream&, quant_type,
-                                         std::vector<Formula*>&) override;
+                                         std::vector<ref_ptr<Formula>>&) override;
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
 protected:
-    QuantifiedFormula(Formula *_formula, quant_type _quantifier);
+    QuantifiedFormula(ref_ptr<Formula> _formula, quant_type _quantifier);
     virtual ~QuantifiedFormula();
 public:
 
@@ -601,7 +540,7 @@ public:
     virtual bool isPathFormula() const override;
     virtual bool isAtomicPropos() const override;
 
-    Formula *getPathFormula() const;
+    Formula* getPathFormula() const;
     quant_type getQuantifier() const;
 };
 
@@ -612,30 +551,30 @@ public:
 class TemporalFormula : public Formula {
     DECLARE_CTL_CLASS;
 private:
-    Formula *formula1, *formula2;
+    ref_ptr<Formula> formula1, formula2;
     path_op_type op;
 
 
     virtual void createMDD(Context& ctx) override;
     virtual void print(std::ostream &os) const override;
     virtual void maximal_path_subformula(Context& ctx, std::ostream&, quant_type,
-                                         std::vector<Formula*>&) override;
+                                         std::vector<ref_ptr<Formula>>&) override;
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
 protected:
     /**
      * Constructors for quantified expressionr.
      * */
-    TemporalFormula(Formula *_formula, path_op_type _op);
-    TemporalFormula(Formula *_formula1, Formula *_formula2/*, path_op_type _op*/);
+    TemporalFormula(ref_ptr<Formula> _formula, path_op_type _op);
+    TemporalFormula(ref_ptr<Formula> _formula1, ref_ptr<Formula> _formula2/*, path_op_type _op*/);
 public:
 
     virtual TreeTraceNode *generateTrace(const vector<int> &state, TraceType traceTy) override;
 
     virtual ~TemporalFormula();
 
-    Formula *getFormula1() const;
-    Formula *getFormula2() const;
+    Formula* getFormula1() const;
+    Formula* getFormula2() const;
     path_op_type getOp() const;
 
     virtual bool isStateFormula() const override;
@@ -659,7 +598,7 @@ public:
     virtual bool isPathFormula() const override;
     virtual bool isAtomicPropos() const override;
     virtual void maximal_path_subformula(Context& ctx, std::ostream&, quant_type,
-                                         std::vector<Formula*>&) override;
+                                         std::vector<ref_ptr<Formula>>&) override;
 };
 
 /*-------------------------
@@ -687,7 +626,7 @@ public:
     virtual TreeTraceNode *generateTrace(const vector<int> &state, TraceType traceTy) override;
     virtual void print(std::ostream &os) const override;
     virtual void maximal_path_subformula(Context& ctx, std::ostream&, quant_type,
-                                         std::vector<Formula*>&) override;
+                                         std::vector<ref_ptr<Formula>>&) override;
     /**
      * Return the boolean value.
      * @return boolean value
@@ -803,13 +742,13 @@ public:
         RPT_POSSIBILITY    // evaluates to true if *subf is verified for some states of the system (at least one)
     };
 private:
-    Formula *subf;
+    ref_ptr<Formula> subf;
     prop_type   type;
     virtual void createMDD(Context& ctx) override;
     virtual bool equals(const BaseFormula* pf) const override;
     virtual size_t compute_hash() const override;
 protected:
-    Reachability(Formula *subf, prop_type type);
+    Reachability(ref_ptr<Formula> subf, prop_type type);
     virtual ~Reachability();
 public:
     virtual TreeTraceNode *generateTrace(const vector<int> &state, TraceType traceTy) override;
@@ -858,8 +797,8 @@ public:
     static const char *OP_Names[8]; // symbols of op_type
 private:
     op_type op;
-    IntFormula *expr1;
-    IntFormula *expr2;
+    ref_ptr<IntFormula> expr1;
+    ref_ptr<IntFormula> expr2;
     float constant;
     virtual void createMDD(Context& ctx) override;
     void createMDDByComplement(Context& ctx);
@@ -873,32 +812,22 @@ protected:
      * @param expr1 expression
      * @param constant value of constant
      * */
-    Inequality(op_type op, IntFormula *expr1, IntFormula *expr2);
+    Inequality(op_type op, ref_ptr<IntFormula> expr1, ref_ptr<IntFormula> expr2);
     /**
      * Constructor.
      * @param op operator
      * @param expr1 expression
      * @param constant value of constant
      * */
-    Inequality(op_type op, IntFormula *expr1, float constant);
+    Inequality(op_type op, ref_ptr<IntFormula> expr1, float constant);
     virtual ~Inequality();    
 public:
     virtual TreeTraceNode *generateTrace(const vector<int> &state, TraceType traceTy) override;
-    /**
-     * Return the constant value.
-     * @return constant value.
-     * */
-    float getConstant() const;
-    /**
-     * Return the expression.
-     * @return expression.
-     * */
-    // IntFormula *getExpr() const;
-    /**
-     * Return the op value.
-     * @return op value.
-     * */
-    op_type getOp() const;
+
+    inline float getConstant() const { return constant; }
+    inline IntFormula *getExpr1() const { return expr1.get(); }
+    inline IntFormula *getExpr2() const { return expr2.get(); }
+    inline op_type getOp() const { return op; }
 };
 
 /*---------------------
@@ -959,8 +888,8 @@ public:
 class IntExpression: public IntFormula {
     DECLARE_CTL_CLASS;
 private:
-    IntFormula *expr1;
-    IntFormula *expr2;
+    ref_ptr<IntFormula> expr1;
+    ref_ptr<IntFormula> expr2;
     IntFormula::op_type op;
     virtual void createMTMDD(Context& ctx) override;
     virtual bool equals(const BaseFormula* pf) const override;
@@ -972,7 +901,7 @@ protected:
      * @param expr2 value of the second expression
      * @param op value of operator
      * */
-    IntExpression(IntFormula *expr1, IntFormula *expr2, IntFormula::op_type op =
+    IntExpression(ref_ptr<IntFormula> expr1, ref_ptr<IntFormula> expr2, IntFormula::op_type op =
                   IntFormula::EOP_PLUS);
     virtual ~IntExpression();
 public:
@@ -981,12 +910,12 @@ public:
      * Return the first expression.
      * @return expr1
      * */
-    IntFormula *getExpr1() const;
+    IntFormula* getExpr1() const;
     /**
      * Return the second expression.
      * @return expr2
      * */
-    IntFormula *getExpr2() const;
+    IntFormula* getExpr2() const;
     /**
      * Return the operator value.
      * @return op

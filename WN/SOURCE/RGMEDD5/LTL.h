@@ -9,6 +9,7 @@
 
 // generation of MDDs from HOA representation
 #include "rgmedd5.h"
+#include "refcounter.h"
 #include <meddly.h>
 #include <meddly_expert.h>
 
@@ -25,15 +26,15 @@ typedef unsigned int ba_location_t;
 
 // An edge of a Buchi Automaton
 struct ba_edge_t {
-    ba_location_t   src_loc;
-    ba_location_t   dst_loc;
-    Formula        *state_formula;
-    bool            is_initial;
+    ba_location_t     src_loc;
+    ba_location_t     dst_loc;
+    ref_ptr<Formula>  state_formula;
+    bool              is_initial;
 
     ba_edge_t(ba_location_t _src_loc, ba_location_t _dst_loc, 
-              Formula *_state_formula, bool _is_initial);
+              ref_ptr<Formula> _state_formula, bool _is_initial);
 
-    ~ba_edge_t();
+    // ~ba_edge_t();
 
     ba_edge_t(const ba_edge_t&) = delete;
     ba_edge_t(ba_edge_t&&) = default;
@@ -78,7 +79,7 @@ ostream& operator<<(ostream& os, const BuchiAutomaton& ba);
 
 BuchiAutomaton
 spot_LTL_to_Buchi_automaton(const char* ltl_formula,
-                            const std::vector<Formula*>& atomic_propositions);
+                            const std::vector<ref_ptr<Formula>>& atomic_propositions);
 
 //-----------------------------------------------------------------------------
 

@@ -22,7 +22,7 @@ using namespace std;
 using namespace ctlmdd;
 
 // result of the formuls
-static BaseFormula *g_parser_result;
+static ref_ptr<BaseFormula> g_parser_result;
 // lexer instance
 static FlexLexer* s_lexer;
 
@@ -37,7 +37,7 @@ void deinitialize_lexer() {
 }
 
 extern const std::vector<size_t> *p_spot_ap_to_greatspn_ap_index;
-extern const std::vector<Formula*> *p_greatspn_atomic_propositions;
+extern const std::vector<ref_ptr<Formula>> *p_greatspn_atomic_propositions;
 
 void yyerror(const char *str) {
   cout<<"Parse error at \"" << s_lexer->YYText() << "\": " << str << "." << endl;
@@ -61,63 +61,85 @@ inline Inequality::op_type reverse_ineq_op(Inequality::op_type inop) {
     }
 }
 
-inline Formula* fix_unquantified_ctlstar_formulas(Formula* f) {
-    // if (f->isPathFormula()) { // typeid(*f) != typeid(QuantifiedFormula) && 
-    //     f = ctlnew<QuantifiedFormula>(f, QOP_ALWAYS);
-	// }
-    return f;
-}
-
-
-struct ref_formula_objid { int id; };
-
-
 //-----------------------------------------------------------------------------
 // Indirect non-POD object storage to overcome yacc limitation
 //-----------------------------------------------------------------------------
+template<typename objid>
 struct objid_key_comparator {
-    inline bool operator()(const formula_objid& f1, const formula_objid& f2)const { return f1.id<f2.id;} 
-    inline bool operator()(const int_formula_objid& f1, const int_formula_objid& f2)const { return f1.id<f2.id;} 
-    inline bool operator()(const ref_formula_objid& f1, const ref_formula_objid& f2)const { return f1.id<f2.id;} 
+    // inline bool operator()(const formula_objid& f1, const formula_objid& f2)const { return f1.id<f2.id; }
+    // inline bool operator()(const int_formula_objid& f1, const int_formula_objid& f2)const { return f1.id<f2.id; }
+    inline bool operator()(const objid& f1, const objid& f2)const { return f1.id<f2.id; }
+    // inline bool operator()(const ref_int_formula_objid& f1, const ref_formula_objid& f2)const { return f1.id<f2.id; }
 };
 //-----------------------------------------------------------------------------
 // from C++ object type to object id
-ctlmdd::Formula* objid_to_object_type(formula_objid); // not implemented
-ctlmdd::IntFormula* objid_to_object_type(int_formula_objid); // not implemented
-ref_ptr<Formula> objid_to_object_type(ref_formula_objid); // not implemented
+// ctlmdd::Formula* objid_to_object_type(formula_objid); // not implemented
+// ctlmdd::IntFormula* objid_to_object_type(int_formula_objid); // not implemented
+static inline ref_ptr<Formula> objid_to_object_type(ref_formula_objid); // not implemented
+static inline ref_ptr<IntFormula> objid_to_object_type(ref_int_formula_objid); // not implemented
 // from object id to C++ object type
-formula_objid object_to_objid_type(ctlmdd::Formula*); // not implemented
-int_formula_objid object_to_objid_type(ctlmdd::IntFormula*); // not implemented
+// formula_objid object_to_objid_type(ctlmdd::Formula*); // not implemented
+// int_formula_objid object_to_objid_type(ctlmdd::IntFormula*); // not implemented
 
-template<typename T>
-ref_formula_objid object_to_objid_type(ref_ptr<T>) { 
-    static_assert(std::is_base_of<Formula, T>::value, "!"); 
-    return ref_formula_objid();
-}
+// State formulas & atomic propositions
+static inline ref_formula_objid object_to_objid_type(ref_ptr<Formula>);
+static inline ref_formula_objid object_to_objid_type(ref_ptr<AtomicProposition>);
+static inline ref_formula_objid object_to_objid_type(ref_ptr<LogicalFormula>);
+static inline ref_formula_objid object_to_objid_type(ref_ptr<TemporalFormula>);
+static inline ref_formula_objid object_to_objid_type(ref_ptr<QuantifiedFormula>);
+static inline ref_formula_objid object_to_objid_type(ref_ptr<BoolLiteral>);
+static inline ref_formula_objid object_to_objid_type(ref_ptr<Deadlock>);
+static inline ref_formula_objid object_to_objid_type(ref_ptr<InitState>);
+static inline ref_formula_objid object_to_objid_type(ref_ptr<Reachability>);
+static inline ref_formula_objid object_to_objid_type(ref_ptr<Fireability>);
+static inline ref_formula_objid object_to_objid_type(ref_ptr<Inequality>);
+static inline ref_formula_objid object_to_objid_type(ref_ptr<GlobalProperty>);
+
+// Integer expressions
+static inline ref_int_formula_objid object_to_objid_type(ref_ptr<IntFormula>);
+static inline ref_int_formula_objid object_to_objid_type(ref_ptr<IntExpression>);
+static inline ref_int_formula_objid object_to_objid_type(ref_ptr<PlaceTerm>);
+static inline ref_int_formula_objid object_to_objid_type(ref_ptr<IntLiteral>);
+static inline ref_int_formula_objid object_to_objid_type(ref_ptr<BoundOfPlaces>);
+
+// template<typename T>
+// static inline ref_formula_objid object_to_objid_type(ref_ptr<T>) { 
+//     static_assert(std::is_base_of<Formula, T>::value, "!"); 
+//     return ref_formula_objid();
+// }
+// template<typename T>
+// static inline ref_int_formula_objid object_to_objid_type(ref_ptr<T>) { 
+//     static_assert(std::is_base_of<IntFormula, T>::value, "!"); 
+//     return ref_int_formula_objid();
+// }
 //-----------------------------------------------------------------------------
 // the per-id static map that will store the id->object mapping
-template<typename T>
-using map_type_of = std::map<T, decltype(objid_to_object_type(T())), objid_key_comparator>;
-template<typename T> auto get_map() -> map_type_of<T>*;
+template<typename objid_t>
+using map_type_of = std::map<objid_t, decltype(objid_to_object_type(objid_t())), objid_key_comparator<objid_t> >;
+template<typename objid_t> auto get_map() -> map_type_of<objid_t>*;
 // specializations (one for each object id)
-template<> map_type_of<formula_objid>* get_map<formula_objid>() 
-{ static map_type_of<formula_objid> the_map; return &the_map; }
+// template<> map_type_of<formula_objid>* get_map<formula_objid>() 
+// { static map_type_of<formula_objid> the_map; return &the_map; }
 
-template<> map_type_of<int_formula_objid>* get_map<int_formula_objid>() 
-{ static map_type_of<int_formula_objid> the_map; return &the_map; }
+// template<> map_type_of<int_formula_objid>* get_map<int_formula_objid>() 
+// { static map_type_of<int_formula_objid> the_map; return &the_map; }
 
 template<> map_type_of<ref_formula_objid>* get_map<ref_formula_objid>() 
 { static map_type_of<ref_formula_objid> the_map; return &the_map; }
+
+template<> map_type_of<ref_int_formula_objid>* get_map<ref_int_formula_objid>() 
+{ static map_type_of<ref_int_formula_objid> the_map; return &the_map; }
 //-----------------------------------------------------------------------------
 // covariant conversion of derived ref_ptr<> objects into their base ref_ptr<>s
 template<typename T>
 using ref_ptr_base = decltype(objid_to_object_type(object_to_objid_type( ref_ptr<T>() )));
-ctlmdd::Formula* prepare_for_storage(ctlmdd::Formula* f) { return f; }
-ctlmdd::IntFormula* prepare_for_storage(ctlmdd::IntFormula* f) { return f; }
+// ctlmdd::Formula* prepare_for_storage(ctlmdd::Formula* f) { return f; }
+// ctlmdd::IntFormula* prepare_for_storage(ctlmdd::IntFormula* f) { return f; }
 template<typename T>
-ref_ptr_base<T> prepare_for_storage(ref_ptr<T>& r) { 
+inline ref_ptr_base<T> prepare_for_storage(ref_ptr<T>&& r) { 
+    // r->printRef();
     typedef typename ref_ptr_base<T>::value_type TB;
-    return dynamic_pointer_cast<TB>(r);
+    return dynamic_ptr_cast<TB>(std::move(r));
 }
 //-----------------------------------------------------------------------------
 // global unique id generator
@@ -127,10 +149,22 @@ static int g_mapped_id_counter = 0;
 template<typename T>
 static auto
 mput(T f) -> decltype(object_to_objid_type(f)) {
+    // {
+    //     cout << endl;
+    //     ref_ptr<refcounted_base> rr(new refcounted_base());
+    //     rr->addOwner();
+    //     ref_ptr<refcounted_base> rr2 = std::move(rr);
+    // }
+    // cout << endl;
     typedef decltype(object_to_objid_type(f)) objid_t;
+    typedef decltype(objid_to_object_type(objid_t())) object_t;
     auto formula_map = get_map<objid_t>();
     objid_t oid{ .id = g_mapped_id_counter++ };
-    formula_map->emplace(oid, prepare_for_storage(f));
+    // cout << "prepare ...." <<endl;
+    auto prepared = prepare_for_storage(std::move(f));
+    // object_t prepared = std::move(f); // covariant conversion from T to object_t
+    // cout << "insert ...." <<endl;
+    formula_map->emplace(oid, std::move(prepared));
     // cout << "mput<"<<typeid(objid_t).name()<<"> id=" <<oid.id << " size=" << formula_map->size() << endl;
     return oid;
 }
@@ -151,23 +185,27 @@ mget(objid_t oid) -> decltype(objid_to_object_type(oid)) {
 //-----------------------------------------------------------------------------
 // sanity check for POD conversion tables (one for each object id)
 static inline void parse_verify_objid_maps() {
-    CTL_ASSERT(get_map<formula_objid>()->size() == 0);
-    CTL_ASSERT(get_map<int_formula_objid>()->size() == 0);
+    // CTL_ASSERT(get_map<formula_objid>()->size() == 0);
+    // CTL_ASSERT(get_map<int_formula_objid>()->size() == 0);
+    CTL_ASSERT(get_map<ref_formula_objid>()->size() == 0);
+    CTL_ASSERT(get_map<ref_int_formula_objid>()->size() == 0);
 }
 
 // template<typename T>
 // static decltype(mput<>)
 
-void f(ref_ptr<BaseFormula> f) {}
-void g() {
-    ref_ptr<LogicalFormula> r;
-    f(dynamic_pointer_cast<BaseFormula>(r));
+// void f(ref_ptr<BaseFormula> f) {}
+// void g() {
+//     ref_ptr<LogicalFormula> r;
+//     f(dynamic_ptr_cast<BaseFormula>(r));
 
-    ref_ptr<LogicalFormula> ref;
-    ref_formula_objid oid = mput(ref);
-    ref_ptr<Formula> ref2 = mget(oid);
-    // auto rr = prepare_for_storage2(ref);
-}
+//     ref_ptr<LogicalFormula> ref;
+//     ref_formula_objid oid = mput(ref);
+//     ref_ptr<Formula> ref2 = mget(oid);
+
+//     ref_ptr<Formula> ref3 = ref;
+//     // auto rr = prepare_for_storage2(ref);
+// }
 
 //-----------------------------------------------------------------------------
 %}
@@ -179,8 +217,8 @@ void g() {
     int      place_id;
     int      transition_id;
     // rules
-    formula_objid                formula;
-    int_formula_objid            int_formula;
+    ref_formula_objid            formula;
+    ref_int_formula_objid        int_formula;
     ctlmdd::Inequality::op_type  inop;
     std::vector<int>            *place_id_list;
     std::vector<int>            *transition_id_list;
@@ -233,9 +271,9 @@ void g() {
 %start start_rule
 
 %%
-start_rule: expression opt_semicolon  { g_parser_result = mget($1); }
-          | LTLStart spot_expression  { g_parser_result = mget($2); }
-          | ctlstar_formula opt_semicolon { g_parser_result = fix_unquantified_ctlstar_formulas(mget($1)); }
+start_rule: expression opt_semicolon  { g_parser_result = dynamic_ptr_cast<BaseFormula>(mget($1)); }
+          | LTLStart spot_expression  { g_parser_result = dynamic_ptr_cast<BaseFormula>(mget($2)); }
+          | ctlstar_formula opt_semicolon { g_parser_result = dynamic_ptr_cast<BaseFormula>(mget($1)); }
           ;
 
 opt_semicolon: /*nothing*/ | SEMICOLON ;
@@ -254,8 +292,8 @@ spot_expression: spot_expression SPOT_AND spot_expression  { $$ = mput(ctlnew<Lo
                         throw "ERROR: Atomic Proposition index is not valid."; // "
                     }
                     size_t ap_index = (*p_spot_ap_to_greatspn_ap_index)[$1];
-                    ctlmdd::Formula *f = (*p_greatspn_atomic_propositions)[ap_index];
-                    f->addOwner();
+                    ref_ptr<Formula> f = (*p_greatspn_atomic_propositions)[ap_index];
+                    // f->addOwner();
                     $$ = mput(f);
                }
                ;
@@ -279,12 +317,12 @@ ctlstar_formula: atomic_prop                       { $$ = $1; }
              | ctlstar_formula U ctlstar_formula   { $$ = mput(ctlnew<TemporalFormula>(mget($1), mget($3))); }
              | LQPARENT ctlstar_formula U ctlstar_formula RQPARENT { $$ = mput(ctlnew<TemporalFormula>(mget($2), mget($4))); }
              /* syntactic sugar */
-             | EX ctlstar_formula                  { $$ = mput(ctlnew<QuantifiedFormula>(ctlnew<TemporalFormula>(mget($2), POT_NEXT), QOP_EXISTS)); }
-             | EG ctlstar_formula                  { $$ = mput(ctlnew<QuantifiedFormula>(ctlnew<TemporalFormula>(mget($2), POT_GLOBALLY), QOP_EXISTS)); }
-             | EF ctlstar_formula                  { $$ = mput(ctlnew<QuantifiedFormula>(ctlnew<TemporalFormula>(mget($2), POT_FUTURE), QOP_EXISTS)); }
-             | AX ctlstar_formula                  { $$ = mput(ctlnew<QuantifiedFormula>(ctlnew<TemporalFormula>(mget($2), POT_NEXT), QOP_ALWAYS)); }
-             | AG ctlstar_formula                  { $$ = mput(ctlnew<QuantifiedFormula>(ctlnew<TemporalFormula>(mget($2), POT_GLOBALLY), QOP_ALWAYS)); }
-             | AF ctlstar_formula                  { $$ = mput(ctlnew<QuantifiedFormula>(ctlnew<TemporalFormula>(mget($2), POT_FUTURE), QOP_ALWAYS)); }
+             | EX ctlstar_formula                  { $$ = mput(ctlnew<QuantifiedFormula>(dynamic_ptr_cast<Formula>(ctlnew<TemporalFormula>(mget($2), POT_NEXT)), QOP_EXISTS)); }
+             | EG ctlstar_formula                  { $$ = mput(ctlnew<QuantifiedFormula>(dynamic_ptr_cast<Formula>(ctlnew<TemporalFormula>(mget($2), POT_GLOBALLY)), QOP_EXISTS)); }
+             | EF ctlstar_formula                  { $$ = mput(ctlnew<QuantifiedFormula>(dynamic_ptr_cast<Formula>(ctlnew<TemporalFormula>(mget($2), POT_FUTURE)), QOP_EXISTS)); }
+             | AX ctlstar_formula                  { $$ = mput(ctlnew<QuantifiedFormula>(dynamic_ptr_cast<Formula>(ctlnew<TemporalFormula>(mget($2), POT_NEXT)), QOP_ALWAYS)); }
+             | AG ctlstar_formula                  { $$ = mput(ctlnew<QuantifiedFormula>(dynamic_ptr_cast<Formula>(ctlnew<TemporalFormula>(mget($2), POT_GLOBALLY)), QOP_ALWAYS)); }
+             | AF ctlstar_formula                  { $$ = mput(ctlnew<QuantifiedFormula>(dynamic_ptr_cast<Formula>(ctlnew<TemporalFormula>(mget($2), POT_FUTURE)), QOP_ALWAYS)); }
              /* global properties */
              | HAS_DEADLOCK                        { $$ = mput(ctlnew<GlobalProperty>(GPT_HAS_DEADLOCK)); }
              | QUASI_LIVENESS                      { $$ = mput(ctlnew<GlobalProperty>(GPT_QUASI_LIVENESS)); }
@@ -322,7 +360,7 @@ expression: LPARENT expression RPARENT        { $$ = $2;}
           | BOUNDS LPARENT place_list RPARENT { $$ = mput(ctlnew<BoundOfPlaces>($3)); delete $3; }
           | NUMBER                            { $$ = mput(ctlnew<IntLiteral>($1)); }
           | MARK_PAR                          { $$ = mput(ctlnew<IntLiteral>(tabmp[$1].mark_val)); }
-          | MINUS expression  %prec NOT       { $$ = mput(make_expression(ctlnew<IntLiteral>(0), IntFormula::EOP_MINUS, mget($2))); }
+          | MINUS expression  %prec NOT       { $$ = mput(make_expression(dynamic_ptr_cast<IntFormula>(ctlnew<IntLiteral>(0)), IntFormula::EOP_MINUS, mget($2))); }
           | expression TIMES expression       { $$ = mput(make_expression(mget($1), IntFormula::EOP_TIMES, mget($3))); }
           | expression DIV expression         { $$ = mput(make_expression(mget($1), IntFormula::EOP_DIV, mget($3))); }
           | expression PLUS expression        { $$ = mput(make_expression(mget($1), IntFormula::EOP_PLUS, mget($3))); }
@@ -338,17 +376,18 @@ opt_sharp : /*nothing*/ | SHARP;
 //-----------------------------------------------------------------------------
 
 // Create an Inequality* object, with some optimizations for the special cases
-AtomicProposition* make_inequality(IntFormula* e1, Inequality::op_type op, IntFormula* e2) {
+ref_ptr<AtomicProposition> make_inequality(ref_ptr<IntFormula> e1, Inequality::op_type op, ref_ptr<IntFormula> e2) {
+    cout << "make_inequality: typeid(*e1) = " << typeid(*e1).name() << endl;
     bool e1const = (typeid(*e1) == typeid(IntLiteral));
     bool e2const = (typeid(*e2) == typeid(IntLiteral));
     bool e1term = (typeid(*e1) == typeid(PlaceTerm));
     bool e2term = (typeid(*e2) == typeid(PlaceTerm));
     // constant <op> constant   ->   can be replaced with true/false
     if (e1const && e2const) {
-        float val1 = ((IntLiteral*)e1)->getConstant();
-        float val2 = ((IntLiteral*)e2)->getConstant();
-        e1->removeOwner();
-        e2->removeOwner();
+        float val1 = dynamic_ptr_cast<IntLiteral>(e1)->getConstant();
+        float val2 = dynamic_ptr_cast<IntLiteral>(e2)->getConstant();
+        // e1->removeOwner();
+        // e2->removeOwner();
         bool result;
         switch (op) {
             case Inequality::IOP_MIN:     result = val1 < val2;    break;
@@ -361,19 +400,19 @@ AtomicProposition* make_inequality(IntFormula* e1, Inequality::op_type op, IntFo
             case Inequality::IOP_DIF:     result = val1 != val2;   break;
             default: throw;
         }
-        return ctlnew<BoolLiteral>(result);
+        return dynamic_ptr_cast<AtomicProposition>(ctlnew<BoolLiteral>(result));
     }
     // constant <op> expression  ->  reverse the operator and build an inequality with constant
     else if (e1const) {
-        float val1 = ((IntLiteral*)e1)->getConstant();
-        e1->removeOwner();
-        return ctlnew<Inequality>(reverse_ineq_op(op), e2, val1);
+        float val1 = dynamic_ptr_cast<IntLiteral>(e1)->getConstant();
+        // e1->removeOwner();
+        return dynamic_ptr_cast<AtomicProposition>(ctlnew<Inequality>(reverse_ineq_op(op), e2, val1));
     }
     // expression <op> constant  ->  inequality with constant
     else if (e2const) {
-        float val2 = ((IntLiteral*)e2)->getConstant();
-        e2->removeOwner();
-        return ctlnew<Inequality>(op, e1, val2);
+        float val2 = dynamic_ptr_cast<IntLiteral>(e2)->getConstant();
+        // e2->removeOwner();
+        return dynamic_ptr_cast<AtomicProposition>(ctlnew<Inequality>(op, e1, val2));
     }
     // remaining case:  expression <op> expression
     // Use SIM and DIF if the two expressions are simple terms.    
@@ -383,21 +422,20 @@ AtomicProposition* make_inequality(IntFormula* e1, Inequality::op_type op, IntFo
         else if (op == Inequality::IOP_NEQ)
             op = Inequality::IOP_DIF;
     }
-    return ctlnew<Inequality>(op, e1, e2);
-
+    return dynamic_ptr_cast<AtomicProposition>(ctlnew<Inequality>(op, e1, e2));
 }
 
 //-----------------------------------------------------------------------------
 
-IntFormula* make_expression(IntFormula* e1, IntFormula::op_type op, IntFormula* e2) {
+ref_ptr<IntFormula> make_expression(ref_ptr<IntFormula> e1, IntFormula::op_type op, ref_ptr<IntFormula> e2) {
     bool e1const = (typeid(*e1) == typeid(IntLiteral));
     bool e2const = (typeid(*e2) == typeid(IntLiteral));
     bool e2term = (typeid(*e2) == typeid(PlaceTerm));
     // Terms are constants -> combine them directly
     if (e1const && e2const) {
         float result;
-        float val1 = ((IntLiteral*)e1)->getConstant();
-        float val2 = ((IntLiteral*)e2)->getConstant();
+        float val1 = dynamic_ptr_cast<IntLiteral>(e1)->getConstant();
+        float val2 = dynamic_ptr_cast<IntLiteral>(e2)->getConstant();
         switch (op) {
             case IntFormula::EOP_TIMES:   result = val1 * val2;     break;
             case IntFormula::EOP_DIV:     result = val1 / val2;     break;
@@ -405,35 +443,45 @@ IntFormula* make_expression(IntFormula* e1, IntFormula::op_type op, IntFormula* 
             case IntFormula::EOP_MINUS:   result = val1 - val2;     break;
             default: throw;
         }
-        e1->removeOwner();
-        e2->removeOwner();
-        return ctlnew<IntLiteral>(result);
+        // e1->removeOwner();
+        // e2->removeOwner();
+        return dynamic_ptr_cast<IntFormula>(ctlnew<IntLiteral>(result));
     }
     // <constant> <*/> <PlaceTerm>  ->  combine into a single PlaceTerm
     else if (e1const && e2term) {
         if (op == IntFormula::EOP_TIMES || op == IntFormula::EOP_DIV) {
-            int variable = ((PlaceTerm*)e2)->getVariable();
-            float coeff = ((PlaceTerm*)e2)->getCoeff();
-            float val1 = ((IntLiteral*)e1)->getConstant();
+            int variable = dynamic_ptr_cast<PlaceTerm>(e2)->getVariable();
+            float coeff = dynamic_ptr_cast<PlaceTerm>(e2)->getCoeff();
+            float val1 = dynamic_ptr_cast<IntLiteral>(e1)->getConstant();
             assert(coeff == 1);
-            e1->removeOwner();
-            e2->removeOwner();
-            return ctlnew<PlaceTerm>(val1, variable, op);
+            // e1->removeOwner();
+            // e2->removeOwner();
+            return dynamic_ptr_cast<IntFormula>(ctlnew<PlaceTerm>(val1, variable, op));
         }
     }
     // Otherwise, create an IntFormula* object
-    return ctlnew<IntExpression>(e1, e2, op);
+    return dynamic_ptr_cast<IntFormula>(ctlnew<IntExpression>(e1, e2, op));
 }
 
 //-----------------------------------------------------------------------------
 
-BaseFormula* parse_formula() {
+namespace ctlmdd {
+
+ref_ptr<BaseFormula> parse_formula(const std::string& formula) {
+    // cout << "\n\nparse_formula: "<<formula <<"\n"<<endl;
     assert(g_parser_result == nullptr);
+    istringstream *p_buffer = new istringstream(formula);
+    initialize_lexer(p_buffer);
     yyparse();
-    BaseFormula* f = g_parser_result;
-    g_parser_result = nullptr;
     parse_verify_objid_maps();
+    deinitialize_lexer();
+    delete p_buffer;
+
+    ref_ptr<BaseFormula> f = g_parser_result;
+    g_parser_result.reset();
     return f;
 }
+
+};
 
 //-----------------------------------------------------------------------------

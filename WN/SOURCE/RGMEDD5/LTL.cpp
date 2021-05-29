@@ -20,10 +20,10 @@
 using namespace MEDDLY;
 
 
-// convert a SPOT formula into a ctlmdd::Formula* object
-ctlmdd::Formula* 
+// convert a SPOT formula into a ctlmddref_ptr<::Formula> object
+ref_ptr<ctlmdd::Formula> 
 parse_spot_formula(const std::string& formula, 
-                   const std::vector<ctlmdd::Formula*>& atomic_propositions,
+                   const std::vector<ref_ptr<ctlmdd::Formula>>& atomic_propositions,
                    const std::vector<size_t>& spot_ap_to_greatspn_ap_index);
 
 //-----------------------------------------------------------------------------
@@ -38,7 +38,7 @@ const char* g_str_BAType[4] = { "STRONG_BA", "WEAK_BA", "VERY_WEAK_BA", "TERMINA
 //-----------------------------------------------------------------------------
 
 ba_edge_t::ba_edge_t(ba_location_t _src_loc, ba_location_t _dst_loc, 
-                     Formula *_state_formula, bool _is_initial) 
+                     ref_ptr<Formula> _state_formula, bool _is_initial) 
 {
     src_loc       = _src_loc;
     dst_loc       = _dst_loc;
@@ -46,10 +46,10 @@ ba_edge_t::ba_edge_t(ba_location_t _src_loc, ba_location_t _dst_loc,
     is_initial    = _is_initial;
 }
 
-ba_edge_t::~ba_edge_t() {
-    // cout << "deleting ba_edge_t..." << state_formula << endl;
-    safe_removeOwner(state_formula);
-}
+// ba_edge_t::~ba_edge_t() {
+//     // cout << "deleting ba_edge_t..." << state_formula << endl;
+//     // safe_removeOwner(state_formula);
+// }
 
 ostream& operator<<(ostream& os, const ba_edge_t& e) {
     os << "  q"<<e.src_loc << " -> q" << e.dst_loc 
@@ -127,14 +127,14 @@ void BuchiAutomaton::reindex_locations(const int *reindex_tbl) {
 class hoa_to_buchi_loader : public cpphoafparser::HOAIntermediate {
 public:
     // Atomic propositions of the LTL subformulas
-    const std::vector<Formula*>& atomic_propositions;
+    const std::vector<ref_ptr<Formula>>& atomic_propositions;
     // Output Buchi Automata
     BuchiAutomaton *p_ba;
     // SPOT AP indices -> atomic_propositions[] indices
     std::vector<size_t> spot_ap_to_greatspn_ap_index;
 
     hoa_to_buchi_loader(HOAConsumer::ptr next, 
-                        const std::vector<Formula*>& AP, 
+                        const std::vector<ref_ptr<Formula>>& AP, 
                         BuchiAutomaton *p) 
     : cpphoafparser::HOAIntermediate(next), atomic_propositions(AP), p_ba(p) {}
 
@@ -227,7 +227,7 @@ public:
 
         for(ba_location_t s: conjSuccessors) {
             // parse the edge label, extract the boolean state formula
-            Formula* stateFormula = parse_spot_formula(labelExpr->toString(), 
+ref_ptr<            Formula> stateFormula = parse_spot_formula(labelExpr->toString(), 
                                                        atomic_propositions,
                                                        spot_ap_to_greatspn_ap_index);
 
@@ -286,7 +286,7 @@ void translate_SPOT_formula(std::stringstream& out, const char* formula)
 
 BuchiAutomaton
 spot_LTL_to_Buchi_automaton(const char* ltl_formula,
-                            const std::vector<Formula*>& atomic_propositions) 
+                            const std::vector<ref_ptr<Formula>>& atomic_propositions) 
 {
     // Get the Hanoi-Omega Automata format (HOA) using SPOT
     std::stringstream hoa;
