@@ -62,14 +62,14 @@ inline Inequality::op_type reverse_ineq_op(Inequality::op_type inop) {
 }
 
 //-----------------------------------------------------------------------------
-// Indirect non-POD object storage to overcome yacc limitation
+// Non-POD types management for yacc/bison.
+// yacc/bison cannot store directly non-POD objects as rule types.
+// This limitation can be overcome by converting non-POD objects 
+// to object-ids, and back, using mget/mput.
 //-----------------------------------------------------------------------------
 template<typename objid>
 struct objid_key_comparator {
-    // inline bool operator()(const formula_objid& f1, const formula_objid& f2)const { return f1.id<f2.id; }
-    // inline bool operator()(const int_formula_objid& f1, const int_formula_objid& f2)const { return f1.id<f2.id; }
     inline bool operator()(const objid& f1, const objid& f2)const { return f1.id<f2.id; }
-    // inline bool operator()(const ref_int_formula_objid& f1, const ref_formula_objid& f2)const { return f1.id<f2.id; }
 };
 //-----------------------------------------------------------------------------
 // from C++ object type to object id
@@ -77,58 +77,32 @@ struct objid_key_comparator {
 // ctlmdd::IntFormula* objid_to_object_type(int_formula_objid); // not implemented
 static inline ref_ptr<Formula> objid_to_object_type(ref_formula_objid); // not implemented
 static inline ref_ptr<IntFormula> objid_to_object_type(ref_int_formula_objid); // not implemented
+//-----------------------------------------------------------------------------
 // from object id to C++ object type
 // formula_objid object_to_objid_type(ctlmdd::Formula*); // not implemented
 // int_formula_objid object_to_objid_type(ctlmdd::IntFormula*); // not implemented
 
-// State formulas & atomic propositions
-static inline ref_formula_objid object_to_objid_type(ref_ptr<Formula>);
-static inline ref_formula_objid object_to_objid_type(ref_ptr<AtomicProposition>);
-static inline ref_formula_objid object_to_objid_type(ref_ptr<LogicalFormula>);
-static inline ref_formula_objid object_to_objid_type(ref_ptr<TemporalFormula>);
-static inline ref_formula_objid object_to_objid_type(ref_ptr<QuantifiedFormula>);
-static inline ref_formula_objid object_to_objid_type(ref_ptr<BoolLiteral>);
-static inline ref_formula_objid object_to_objid_type(ref_ptr<Deadlock>);
-static inline ref_formula_objid object_to_objid_type(ref_ptr<InitState>);
-static inline ref_formula_objid object_to_objid_type(ref_ptr<Reachability>);
-static inline ref_formula_objid object_to_objid_type(ref_ptr<Fireability>);
-static inline ref_formula_objid object_to_objid_type(ref_ptr<Inequality>);
-static inline ref_formula_objid object_to_objid_type(ref_ptr<GlobalProperty>);
+// ref_ptr<T subtype of Formula>  ->  indexed as ref_formula_objid
+template<typename T> static inline 
+enable_if_t<is_base_of<Formula, T>::value, ref_formula_objid> object_to_objid_type(ref_ptr<T>);
+// ref_ptr<T subtype of IntFormula>  ->  indexed as ref_int_formula_objid
+template<typename T> static inline 
+enable_if_t<is_base_of<IntFormula, T>::value, ref_int_formula_objid> object_to_objid_type(ref_ptr<T>);
 
-// Integer expressions
-static inline ref_int_formula_objid object_to_objid_type(ref_ptr<IntFormula>);
-static inline ref_int_formula_objid object_to_objid_type(ref_ptr<IntExpression>);
-static inline ref_int_formula_objid object_to_objid_type(ref_ptr<PlaceTerm>);
-static inline ref_int_formula_objid object_to_objid_type(ref_ptr<IntLiteral>);
-static inline ref_int_formula_objid object_to_objid_type(ref_ptr<BoundOfPlaces>);
-
-// template<typename T>
-// static inline ref_formula_objid object_to_objid_type(ref_ptr<T>) { 
-//     static_assert(std::is_base_of<Formula, T>::value, "!"); 
-//     return ref_formula_objid();
-// }
-// template<typename T>
-// static inline ref_int_formula_objid object_to_objid_type(ref_ptr<T>) { 
-//     static_assert(std::is_base_of<IntFormula, T>::value, "!"); 
-//     return ref_int_formula_objid();
-// }
 //-----------------------------------------------------------------------------
 // the per-id static map that will store the id->object mapping
 template<typename objid_t>
 using map_type_of = std::map<objid_t, decltype(objid_to_object_type(objid_t())), objid_key_comparator<objid_t> >;
 template<typename objid_t> auto get_map() -> map_type_of<objid_t>*;
+
 // specializations (one for each object id)
-// template<> map_type_of<formula_objid>* get_map<formula_objid>() 
-// { static map_type_of<formula_objid> the_map; return &the_map; }
-
-// template<> map_type_of<int_formula_objid>* get_map<int_formula_objid>() 
-// { static map_type_of<int_formula_objid> the_map; return &the_map; }
-
+static map_type_of<ref_formula_objid> s_map_for_ref_formula_objid;
 template<> map_type_of<ref_formula_objid>* get_map<ref_formula_objid>() 
-{ static map_type_of<ref_formula_objid> the_map; return &the_map; }
+{ return &s_map_for_ref_formula_objid; }
 
+static map_type_of<ref_int_formula_objid> s_map_for_ref_int_formula_objid;
 template<> map_type_of<ref_int_formula_objid>* get_map<ref_int_formula_objid>() 
-{ static map_type_of<ref_int_formula_objid> the_map; return &the_map; }
+{ return &s_map_for_ref_int_formula_objid; }
 //-----------------------------------------------------------------------------
 // covariant conversion of derived ref_ptr<> objects into their base ref_ptr<>s
 template<typename T>
@@ -149,21 +123,12 @@ static int g_mapped_id_counter = 0;
 template<typename T>
 static auto
 mput(T f) -> decltype(object_to_objid_type(f)) {
-    // {
-    //     cout << endl;
-    //     ref_ptr<refcounted_base> rr(new refcounted_base());
-    //     rr->addOwner();
-    //     ref_ptr<refcounted_base> rr2 = std::move(rr);
-    // }
-    // cout << endl;
     typedef decltype(object_to_objid_type(f)) objid_t;
     typedef decltype(objid_to_object_type(objid_t())) object_t;
     auto formula_map = get_map<objid_t>();
     objid_t oid{ .id = g_mapped_id_counter++ };
-    // cout << "prepare ...." <<endl;
+    // covariant conversion from ref_ptr<subtypeT> to ref_ptr<T>
     auto prepared = prepare_for_storage(std::move(f));
-    // object_t prepared = std::move(f); // covariant conversion from T to object_t
-    // cout << "insert ...." <<endl;
     formula_map->emplace(oid, std::move(prepared));
     // cout << "mput<"<<typeid(objid_t).name()<<"> id=" <<oid.id << " size=" << formula_map->size() << endl;
     return oid;
@@ -183,12 +148,23 @@ mget(objid_t oid) -> decltype(objid_to_object_type(oid)) {
     return o;
 }
 //-----------------------------------------------------------------------------
+// cleanup of temporary map
+template<typename T>
+static void map_cleanup(T* p_map) {
+    if (p_map->size() != 0) {
+        cout << "!! Found parser objects in the objid map. This could happen when the parser "
+                "stops due to a parse error (unprocessed symbols on the stack), or "
+                "could be a bug in the mput/mget system." << endl;
+        p_map->clear();
+    }
+}
+//-----------------------------------------------------------------------------
 // sanity check for POD conversion tables (one for each object id)
 static inline void parse_verify_objid_maps() {
-    // CTL_ASSERT(get_map<formula_objid>()->size() == 0);
-    // CTL_ASSERT(get_map<int_formula_objid>()->size() == 0);
-    CTL_ASSERT(get_map<ref_formula_objid>()->size() == 0);
-    CTL_ASSERT(get_map<ref_int_formula_objid>()->size() == 0);
+    // map_cleanup(get_map<formula_objid>());
+    // map_cleanup(get_map<int_formula_objid>());
+    map_cleanup(get_map<ref_formula_objid>());
+    map_cleanup(get_map<ref_int_formula_objid>());
 }
 
 // template<typename T>
@@ -206,6 +182,8 @@ static inline void parse_verify_objid_maps() {
 //     ref_ptr<Formula> ref3 = ref;
 //     // auto rr = prepare_for_storage2(ref);
 // }
+
+#define AP_INDEX_ERRMSG   "ERROR: Atomic Proposition index is not valid."
 
 //-----------------------------------------------------------------------------
 %}
@@ -289,7 +267,7 @@ spot_expression: spot_expression SPOT_AND spot_expression  { $$ = mput(ctlnew<Lo
                     // Atomic proposition index must be present in the corresponding array
                     assert(p_greatspn_atomic_propositions != nullptr);
                     if ($1 > p_spot_ap_to_greatspn_ap_index->size() || $1 < 0) {
-                        throw "ERROR: Atomic Proposition index is not valid."; // "
+                        throw rgmedd_exception(AP_INDEX_ERRMSG);
                     }
                     size_t ap_index = (*p_spot_ap_to_greatspn_ap_index)[$1];
                     ref_ptr<Formula> f = (*p_greatspn_atomic_propositions)[ap_index];
@@ -377,7 +355,6 @@ opt_sharp : /*nothing*/ | SHARP;
 
 // Create an Inequality* object, with some optimizations for the special cases
 ref_ptr<AtomicProposition> make_inequality(ref_ptr<IntFormula> e1, Inequality::op_type op, ref_ptr<IntFormula> e2) {
-    cout << "make_inequality: typeid(*e1) = " << typeid(*e1).name() << endl;
     bool e1const = (typeid(*e1) == typeid(IntLiteral));
     bool e2const = (typeid(*e2) == typeid(IntLiteral));
     bool e1term = (typeid(*e1) == typeid(PlaceTerm));
