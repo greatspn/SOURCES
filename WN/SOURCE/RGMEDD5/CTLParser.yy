@@ -167,22 +167,6 @@ static inline void parse_verify_objid_maps() {
     map_cleanup(get_map<ref_int_formula_objid>());
 }
 
-// template<typename T>
-// static decltype(mput<>)
-
-// void f(ref_ptr<BaseFormula> f) {}
-// void g() {
-//     ref_ptr<LogicalFormula> r;
-//     f(dynamic_ptr_cast<BaseFormula>(r));
-
-//     ref_ptr<LogicalFormula> ref;
-//     ref_formula_objid oid = mput(ref);
-//     ref_ptr<Formula> ref2 = mget(oid);
-
-//     ref_ptr<Formula> ref3 = ref;
-//     // auto rr = prepare_for_storage2(ref);
-// }
-
 #define AP_INDEX_ERRMSG   "ERROR: Atomic Proposition index is not valid."
 
 //-----------------------------------------------------------------------------
@@ -355,10 +339,11 @@ opt_sharp : /*nothing*/ | SHARP;
 
 // Create an Inequality* object, with some optimizations for the special cases
 ref_ptr<AtomicProposition> make_inequality(ref_ptr<IntFormula> e1, Inequality::op_type op, ref_ptr<IntFormula> e2) {
-    bool e1const = (typeid(*e1) == typeid(IntLiteral));
-    bool e2const = (typeid(*e2) == typeid(IntLiteral));
-    bool e1term = (typeid(*e1) == typeid(PlaceTerm));
-    bool e2term = (typeid(*e2) == typeid(PlaceTerm));
+    IntFormula *pe1 = e1.get(), *pe2 = e2.get();
+    bool e1const = (typeid(*pe1) == typeid(IntLiteral));
+    bool e2const = (typeid(*pe2) == typeid(IntLiteral));
+    bool e1term = (typeid(*pe1) == typeid(PlaceTerm));
+    bool e2term = (typeid(*pe2) == typeid(PlaceTerm));
     // constant <op> constant   ->   can be replaced with true/false
     if (e1const && e2const) {
         float val1 = dynamic_ptr_cast<IntLiteral>(e1)->getConstant();
@@ -405,9 +390,10 @@ ref_ptr<AtomicProposition> make_inequality(ref_ptr<IntFormula> e1, Inequality::o
 //-----------------------------------------------------------------------------
 
 ref_ptr<IntFormula> make_expression(ref_ptr<IntFormula> e1, IntFormula::op_type op, ref_ptr<IntFormula> e2) {
-    bool e1const = (typeid(*e1) == typeid(IntLiteral));
-    bool e2const = (typeid(*e2) == typeid(IntLiteral));
-    bool e2term = (typeid(*e2) == typeid(PlaceTerm));
+    IntFormula *pe1 = e1.get(), *pe2 = e2.get();
+    bool e1const = (typeid(*pe1) == typeid(IntLiteral));
+    bool e2const = (typeid(*pe2) == typeid(IntLiteral));
+    bool e2term = (typeid(*pe2) == typeid(PlaceTerm));
     // Terms are constants -> combine them directly
     if (e1const && e2const) {
         float result;

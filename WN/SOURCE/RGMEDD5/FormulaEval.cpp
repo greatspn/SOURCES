@@ -77,7 +77,7 @@ const char* format_result(const result_t& result, bool uppercase) {
 // Parse and evaluate a CTL formula
 ref_ptr<BaseFormula> parse_and_evaluate_formula(Context& ctx, const std::string& formula, result_t *out_result) {
     ref_ptr<BaseFormula> parsedFrm = parse_formula(formula);
-    if(parsedFrm != NULL) {
+    if(parsedFrm != nullptr) {
         // parsedFrm->set_top_level(true);
         // parsedFrm->addOwner();
         // startMDD = clock();
@@ -247,7 +247,7 @@ void model_check_query(Context& ctx, const ctl_query_t& query, int sem_id, bool 
 
 
     // Show the result of this CTL formula
-    if (formula == NULL) { // parse error
+    if (formula == nullptr) { // parse error
         semaphore_sentinel sent(sem_id);
         if (!running_for_MCC()) {
             cout<<"Parse error."<<endl;

@@ -726,7 +726,7 @@ size_t Inequality::compute_hash() const {
 
 void Inequality::print(std::ostream &os) const {
     os << "(" << *expr1 << " " << OP_Names[op] << " ";
-    if (expr2 != NULL)
+    if (expr2 != nullptr)
         os << *expr2;
     else
         os << constant;
@@ -788,7 +788,7 @@ void Inequality::createMDD(Context& ctx) {
     }
 
     // only for case  exp <op> term
-    if ((expr2 == NULL) &&
+    if ((expr2 == nullptr) &&
             ((op == IOP_MIN && constant > 0) ||
              (op == IOP_MAJ && constant < 0) ||
              (op == IOP_MAJEQ && constant <= 0) ||
@@ -802,7 +802,7 @@ void Inequality::createMDD(Context& ctx) {
     dd_edge exp2MDD;
     dd_edge exp1MDD = expr1->getMTMDD(ctx);
     dd_edge q(mtmdd_forest);
-    if (expr2 != NULL) { //case exp <op> exp
+    if (expr2 != nullptr) { //case exp <op> exp
         exp2MDD = expr2->getMTMDD(ctx);
     }
     else { //case exp <op> term
@@ -1219,8 +1219,9 @@ void LogicalFormula::createMDD(Context& ctx) {
             break;
 
         case CBF_AND: {
-            if (typeid(*formula2) == typeid(LogicalFormula)) {
-                LogicalFormula *logic_f2 = dynamic_cast<LogicalFormula *>(formula2.get());
+            Formula *pf2 = formula2.get();
+            if (typeid(*pf2) == typeid(LogicalFormula)) {
+                LogicalFormula *logic_f2 = dynamic_cast<LogicalFormula *>(pf2);
                 if (logic_f2->getOp() == LogicalFormula::CBF_NOT) {
                     // f1 AND NOT f2 can be computed more efficiently using AND_NOT
                     dd_edge not_f2 = logic_f2->getFormula1()->getMDD(ctx);
@@ -1367,8 +1368,9 @@ void QuantifiedFormula::maximal_path_subformula(Context& ctx, std::ostream& os, 
 
 // verify if a quantified path formula is aCTL formula
 bool QuantifiedFormula::is_CTL() const {
-    if (typeid(*formula) == typeid(TemporalFormula)) {
-        TemporalFormula* ptf = dynamic_cast<TemporalFormula*>(getPathFormula());
+    Formula* ppathfrm = getPathFormula();
+    if (typeid(*ppathfrm) == typeid(TemporalFormula)) {
+        TemporalFormula* ptf = dynamic_cast<TemporalFormula*>(ppathfrm);
         Formula* f1 = ptf->getFormula1();
         Formula* f2 = ptf->getFormula2();
 
@@ -1391,8 +1393,9 @@ bool QuantifiedFormula::do_CTL_model_checking(Context& ctx)
 {
     dd_edge result(ctx.get_MDD_forest());
 
-    if (typeid(*formula) == typeid(TemporalFormula)) {
-        TemporalFormula* ptf = dynamic_cast<TemporalFormula*>(getPathFormula());
+    Formula* ppathfrm = getPathFormula();
+    if (typeid(*ppathfrm) == typeid(TemporalFormula)) {
+        TemporalFormula* ptf = dynamic_cast<TemporalFormula*>(ppathfrm);
         Formula* f1 = ptf->getFormula1();
         Formula* f2 = ptf->getFormula2();
 
@@ -2071,6 +2074,15 @@ refcounted_base::refcounted_base() : ref_count(1) {}
 refcounted_base::~refcounted_base() {
     // cout << "delete ("<<(this)<<") "<<ref_count<<endl;
     assert(ref_count == 0); 
+}
+
+refcounted_base::refcounted_base(const refcounted_base& rcb) {
+    ref_count = 1; // start with a new ref count
+}
+
+refcounted_base& refcounted_base::operator=(const refcounted_base& rcb) {
+    ref_count = 1; // start with a new ref count
+    return *this;
 }
 
 void refcounted_base::add_ref() {

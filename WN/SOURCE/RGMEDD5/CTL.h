@@ -322,12 +322,12 @@ protected:
     BaseFormula();
     virtual ~BaseFormula();
     void before_delete() override;
-    // BaseFormula objects are not copyable.
+    // BaseFormula objects are neither copyable nor relocatable
     BaseFormula(const BaseFormula&) = delete;
     BaseFormula& operator=(const BaseFormula&) = delete;
 public:
-    BaseFormula(BaseFormula&&) = default;
-    BaseFormula& operator=(BaseFormula&&) = default;
+    BaseFormula(BaseFormula&&) = delete;
+    BaseFormula& operator=(BaseFormula&&) = delete;
 
     virtual bool isBoolFormula() const = 0;
     virtual bool isIntFormula() const = 0;

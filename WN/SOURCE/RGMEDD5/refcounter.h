@@ -19,9 +19,11 @@ protected:
     virtual ~refcounted_base();
     virtual void before_delete();
 
-    refcounted_base(const refcounted_base&) = delete;
+    // unsafe to relocate
     refcounted_base(refcounted_base&&) = delete;
-    refcounted_base& operator=(const refcounted_base&) = delete;
+    // copy is protected. Reset the counter of the copied object.
+    refcounted_base(const refcounted_base&);
+    refcounted_base& operator=(const refcounted_base&);
 public:
     // increase the reference counter
     void add_ref();
@@ -120,7 +122,7 @@ private:
     // low-level manipulatrion of the pointer without changing the ref counts
     inline void set(T* p) { ptr = p; }
 
-    // methods that can use set()
+    // friend methods that can use set()
     template<typename T2> friend ref_ptr<T2> move_to_ref_ptr(T2*&& p);
 
     template<typename T2> friend ref_ptr<T2> make_ref_ptr(T2* p);
