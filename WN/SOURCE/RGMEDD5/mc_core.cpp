@@ -157,107 +157,9 @@ dd_edge Context::DEAD() const {
 
 //----------------------------------------------------------------------------
 
-// dd_edge EF(dd_edge f1, Context& ctx) {
-//     if (ctx.is_true(f1)) // E F true  ->  true
-//         return ctx.RS;
-//     if (ctx.is_false(f1)) // E F false  ->  false
-//         return ctx.empty_set();
-
-//     dd_edge result(ctx.get_MDD_forest());
-
-//     // Number of steps of pre-image before switching to saturation
-//     const int NUM_PRESTEPS = 0;
-//     result = ctx.SELECT_REAL(f1);
-//     for (int i = 0; /*i < NUM_PRESTEPS*/true; i++) {
-//         dd_edge curr_result(result);
-//         // Y' = Y union (Y * N^-1)
-//         result = OR(result, PREIMG(result, ctx), ctx);
-//         if (print_intermediate_expr()) {
-//             cout << "EF: step=" << i << ",  SAT size=" 
-//                  << fixed << result.getCardinality() << endl;
-//             cout.unsetf(ios_base::floatfield);
-//         }
-//         if (result == curr_result)
-//             return result; // fixed point reached
-//     }
-//     // // Solve using backward reachability with saturation
-//     // // (slightly more costly than PRE IMAGE + UNION)
-//     // apply(REVERSE_REACHABLE_DFS, result, NSF, result);
-//     // if (print_intermediate_expr()) {
-//     //     cout << "      saturation: ";
-//     // }
-//     return result;
-// }
-
-//----------------------------------------------------------------------------
-
 dd_edge Context::EG(dd_edge f1) const {
     return EGfair(f1);
-    /*if (is_false(f1)) // E G false -> false
-        return empty_set();
-
-    // NOTE: the case E G true is not trivial for non-ergodic RS.
-    // Therefore, we leave it with the general case and do not
-    // treat it separately.
-    dd_edge result(get_MDD_forest());
-    dd_edge curr_result(get_MDD_forest());
-    f1 = SELECT_REAL(f1);
-    result = f1;
-
-    size_t n_iters = 0;
-    do {
-        curr_result = result; // previous iteration result
-        result = AND(result, PREIMG(curr_result, stutter_EG));
-        n_iters++;
-        if (print_intermediate_expr()) {
-            cout << "EG: step=" << n_iters << ",  SAT size=" 
-                 << fixed << result.getCardinality() << endl;
-            cout.unsetf(ios_base::floatfield);
-        }
-    }
-    while (result != curr_result);
-
-    if (print_intermediate_expr()) {
-        cout << "R2 = " << result.getNode() << " in " 
-             << n_iters << " iterations." << endl;
-    }
-    return result;*/
 }
-
-/*// NOTE: the case E G true is not trivial for non-ergodic RS.
-// Therefore, we leave it with the general case and do not
-// treat it separately.
-dd_edge result(get_MDD_forest());
-dd_edge curr_result(get_MDD_forest());
-f1 = SELECT_REAL(f1);
-result = f1;
-
-dd_edge deadlock_f1;
-if(stutter_EG) 
-    deadlock_f1 = f1 - NON_DEAD();
-
-size_t n_iters = 0;
-do {
-    curr_result = result; // previous iteration result
-    result = AND(result, PREIMG(curr_result));
-    if(stutter_EG) 
-        result = OR(result, deadlock_f1);
-
-    n_iters++;
-    if (print_intermediate_expr()) {
-        cout << "EG: step=" << n_iters << ",  SAT size=" 
-                << fixed << result.getCardinality() << endl;
-        cout.unsetf(ios_base::floatfield);
-    }
-}
-while (result != curr_result);
-
-if (print_intermediate_expr()) {
-    cout << "R2 = " << result.getNode() << " in " 
-            << n_iters << " iterations." << endl;
-}
-return result;*/
-
 
 //----------------------------------------------------------------------------
 
@@ -267,12 +169,19 @@ dd_edge Context::EU(dd_edge f1, dd_edge f2) const {
     else if (is_true(f2)) // E f1 U true  ->  true
         return RS;
 
-    // if (is_true(f1)) // E true U f2  ->  E F f2
-    //     return EF(f2);
-    // else 
+    // E true U f2  ->  E F f2  (not reduced)
     if (is_false(f1)) // E false U f2  ->  f2
         return f2;
-    
+
+    // E[f1 U f2]
+    // M,s |= E[f1 U f2] iff there exists a path s_0, s_1, s_2,... where s_0 = s 
+    // and there exists k>=0 such that M,sk |= f2 and M,s_i |= f1 for all 0<=i<k.
+    // Recursive definition:
+    //   E[f1 U f2] = f2 OR (f1 AND EX E[f1 U f2])
+    // expands as:
+    //   res(0)   = f2
+    //   res(i+1) = res(i) OR (f1 AND EX res(i))
+
     dd_edge result(get_MDD_forest());
     dd_edge curr_result(get_MDD_forest());
     result = SELECT_REAL(f2);
@@ -280,12 +189,12 @@ dd_edge Context::EU(dd_edge f1, dd_edge f2) const {
     size_t n_iters = 0;
     do {
         curr_result = result;
-        // R' = R union (F1 intersect (R * N^-1))
         result = OR(result, AND(f1, PREIMG(result, false)));
 
         n_iters++;
         if (print_intermediate_expr()) {
-            cout << "EU: step=" << n_iters << ",  SAT size=" 
+            cout << (is_true(f1) ? "EF" : "EU") 
+                 << ": step=" << n_iters << ",  SAT size=" 
                  << fixed << result.getCardinality() << endl;
             cout.unsetf(ios_base::floatfield);
         }
@@ -322,14 +231,14 @@ dd_edge Context::EF(dd_edge f1) const {
 //----------------------------------------------------------------------------
 
 dd_edge Context::EGfair(dd_edge f1) const {
-    // if (!has_fairness_constraints())
+    //   EG f1 = E[false R f1]
+    return ERfair(empty_set(), f1);
+    /*// if (!has_fairness_constraints())
     //     return EG(f1); // use non-fair EG
     if (is_false(f1)) // E G false -> false
         return empty_set();
-
     // NOTE: the case E G true is not trivial for non-ergodic RS.
-    // Therefore, we leave it with the general case and do not
-    // treat it separately.
+
     dd_edge result(get_MDD_forest());
     dd_edge curr_result(get_MDD_forest());
     f1 = SELECT_REAL(f1);
@@ -363,68 +272,8 @@ dd_edge Context::EGfair(dd_edge f1) const {
              << n_iters << " iterations." << endl;
     }
 
-
-    /*dd_edge deadlock_f1;
-    if(stutter_EG) {
-        deadlock_f1 = f1 - NON_DEAD();
-        // select dead fair f1 states
-        if (has_fairness_constraints()) 
-            for (auto&& F : fair_sets)
-                apply(INTERSECTION, deadlock_f1, F, deadlock_f1);
-    }
-
-    size_t n_iters = 0;
-    do {
-        curr_result = result; // previous iteration result
-        if (has_fairness_constraints()) {
-            for (auto&& F : fair_sets) {
-                dd_edge Y = EU(result, AND(F, result));
-                result = AND(result, PREIMG(Y));
-            }
-        }
-        else {
-            result = AND(result, PREIMG(curr_result));
-        }
-        if(stutter_EG) 
-            result = OR(result, deadlock_f1);
-
-        n_iters++;
-        if (print_intermediate_expr()) {
-            cout << (has_fairness_constraints() ? "Fair" : "")
-                 << "EG: step=" << n_iters << ",  SAT size=" 
-                 << fixed << result.getCardinality() << endl;
-            cout.unsetf(ios_base::floatfield);
-        }
-    }
-    while (result != curr_result);
-
-    if (print_intermediate_expr()) {
-        cout << "R2 = " << result.getNode() << " in " 
-             << n_iters << " iterations." << endl;
-    }*/
-    return result;
+    return result;*/
 }
-// {
-//     if (!has_fairness_constraints())
-//         return EG(f1); // use non-fair EG
-
-//     dd_edge result(get_MDD_forest());
-//     dd_edge curr_result(get_MDD_forest());
-//     // dd_edge deadlock_f1 = f1 - ctx.NON_DEAD();
-
-//     result = f1;
-//     do {
-//         curr_result = result; // previous iteration result
-//         for (auto&& F : fair_sets) {
-//             dd_edge Y = EU(result, AND(F, result));
-//             result = AND(result, EX(Y));
-//         }
-//         // result = OR(result, deadlock_f1);
-//     }
-//     while (curr_result.getNode() != result.getNode());
-
-//     return result;
-// }
 
 //----------------------------------------------------------------------------
 
@@ -451,6 +300,79 @@ dd_edge Context::EUfair(dd_edge f1, dd_edge f2) const
     // EUfair(f1, f2) = EU(f1, f2 AND fair)
     return EU(f1, AND(f2, fair));
 }
+
+//----------------------------------------------------------------------------
+
+dd_edge Context::ERfair(dd_edge f1, dd_edge f2) const {
+    if (is_false(f2)) // E f1 R false -> false
+        return empty_set();
+    // NOTE: the case f2==true is not trivial for non-ergodic RS.
+
+    // E[f1 R f2]
+    // M,s |= E[f1 R f2] iff there exists a path s_0, s_1, s_2,... where s_0 = s, 
+    // such that for all k > 0, if not(M,s_i |= f1) for all 0<=i<k, then M,s_k |= f2
+    // Recursive definition:
+    //   E[f1 R f2] = f2 AND (f1 OR EX E[f1 R f2])
+    // expands as BDD operations:
+    //   res(0)   = f2
+    //   res(i+1) = res(i) AND (f1 OR EX res(i))
+    //
+    // Emerson-Let E_fair G expansion:
+    // Efair G f2 = nu Z . ( f2 OR_{Fi \in Fair}(EX(E[Z U (Z and Fi)]))) )
+    //   res(0)   = f2
+    //   Y(i)     =  AND_{Fi \in Fair} E[res(i) U (res(i) and Fi)]
+    //   res(i+1) = res(i) AND EX Y(i+1)
+    // Current espanzion for E_fair R
+    //   res(0)   = f2
+    //   Y(i)     = AND_{Fi \in Fair} E[res(i) U (res(i) and Fi)]
+    //   res(i+1) = res(i) AND ((f1 AND FairStates) OR EX Y(i+1))
+
+    dd_edge result(get_MDD_forest());
+    dd_edge curr_result(get_MDD_forest());
+    f2 = SELECT_REAL(f2);
+    result = f2;
+
+    // Since evaluation stops in f1 states, we have to ensure that from every
+    // Sat(f1) state a fair path may originate.
+    dd_edge fair_f1 = f1;
+    if (!is_false(f1) && has_fairness_constraints()) {
+        dd_edge fair = get_fair_states(); //EGfair(RS);
+        for (auto&& Fi : fair_sets)
+            fair_f1 = AND(fair_f1, fair);
+    }
+
+    size_t n_iters = 0;
+    do {
+        curr_result = result; // previous iteration result
+        if (has_fairness_constraints()) {
+            for (auto&& Fi : fair_sets) {
+                dd_edge Y = EU(result, AND(Fi, result));
+                result = AND(result, OR(fair_f1, PREIMG(Y, stutter_EG)));
+            }
+        }
+        else {
+            result = AND(result, OR(fair_f1, PREIMG(curr_result, stutter_EG)));
+        }
+
+        n_iters++;
+        if (print_intermediate_expr()) {
+            cout << (has_fairness_constraints() ? "Fair" : "")
+                 << (is_false(f1) ? "EG" : "ER") 
+                 << ": step=" << n_iters << ",  SAT size=" 
+                 << fixed << result.getCardinality() << endl;
+            cout.unsetf(ios_base::floatfield);
+        }
+    }
+    while (result != curr_result);
+
+    // if (print_intermediate_expr()) {
+    //     cout << "R2 = " << result.getNode() << " in " 
+    //          << n_iters << " iterations." << endl;
+    // }
+
+    return result;
+}
+
 
 //----------------------------------------------------------------------------
 
@@ -488,18 +410,28 @@ dd_edge Context::AGfair(dd_edge f1) const {
 //----------------------------------------------------------------------------
 
 dd_edge Context::AUfair(dd_edge f1, dd_edge f2) const {
-    //not (E not f2 U (not f1 and not f2) ) and not EG not f2
-    dd_edge not_f1 = NOT(f1);
-    dd_edge not_f2 = NOT(f2);
+    // //not (E not f2 U (not f1 and not f2) ) and not EG not f2
+    // dd_edge not_f1 = NOT(f1);
+    // dd_edge not_f2 = NOT(f2);
 
-    dd_edge not_E_not_f2_U_not_f1_and_not_f2 = NOT(EUfair(not_f2, AND(not_f1, not_f2)));
-    if (is_false(not_E_not_f2_U_not_f1_and_not_f2))
-        return not_E_not_f2_U_not_f1_and_not_f2;
+    // dd_edge not_E_not_f2_U_not_f1_and_not_f2 = NOT(EUfair(not_f2, AND(not_f1, not_f2)));
+    // if (is_false(not_E_not_f2_U_not_f1_and_not_f2))
+    //     return not_E_not_f2_U_not_f1_and_not_f2;
 
-    return AND(not_E_not_f2_U_not_f1_and_not_f2,
-               NOT(EGfair(not_f2)));
-    // return AND(NOT(EUfair(not_f2, AND(not_f1, not_f2))),
+    // return AND(not_E_not_f2_U_not_f1_and_not_f2,
     //            NOT(EGfair(not_f2)));
+    // // return AND(NOT(EUfair(not_f2, AND(not_f1, not_f2))),
+    // //            NOT(EGfair(not_f2)));
+
+    // A[f1 U f2] = not E [(not f1) R (not f2)]
+    return NOT(ERfair(NOT(f1), NOT(f2)));
+}
+
+//----------------------------------------------------------------------------
+
+dd_edge Context::ARfair(dd_edge f1, dd_edge f2) const {
+    // A[f1 R f2] = not E [(not f1) U (not f2)]
+    return NOT(EUfair(NOT(f1), NOT(f2)));
 }
 
 //----------------------------------------------------------------------------

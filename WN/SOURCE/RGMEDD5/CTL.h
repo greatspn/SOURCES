@@ -276,12 +276,14 @@ public:
     dd_edge EGfair(dd_edge f1) const;
     dd_edge EXfair(dd_edge f1) const;
     dd_edge EUfair(dd_edge f1, dd_edge f2) const;
+    dd_edge ERfair(dd_edge f1, dd_edge f2) const;
     dd_edge EFfair(dd_edge f1) const;
 
     dd_edge AXfair(dd_edge f1) const;
     dd_edge AFfair(dd_edge f1) const;
     dd_edge AGfair(dd_edge f1) const;
     dd_edge AUfair(dd_edge f1, dd_edge f2) const;
+    dd_edge ARfair(dd_edge f1, dd_edge f2) const;
 };
 
 dd_edge MDD_INTERSECT(dd_edge f1, dd_edge f2);
