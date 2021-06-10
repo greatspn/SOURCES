@@ -49,6 +49,16 @@ dd_edge MDD_INTERSECT(dd_edge f1, dd_edge f2) {
     apply(INTERSECTION, f1, f2, result);
     return result;
 }
+dd_edge MDD_DIFFERENCE(dd_edge f1, dd_edge f2) {
+    dd_edge result(f1.getForest());
+    apply(DIFFERENCE, f1, f2, result);
+    return result;
+}
+dd_edge MDD_UNION(dd_edge f1, dd_edge f2) {
+    dd_edge result(f1.getForest());
+    apply(UNION, f1, f2, result);
+    return result;
+}
 
 //----------------------------------------------------------------------------
 
@@ -59,9 +69,9 @@ dd_edge Context::NOT(dd_edge f1) const {
         return RS;
 
     // NOT f1
-    dd_edge result(get_MDD_forest());
-    apply(DIFFERENCE, RS, f1, result);
-    return result;
+    // dd_edge result(get_MDD_forest());
+    // apply(DIFFERENCE, RS, f1, result);
+    return MDD_DIFFERENCE(RS, f1);
 }
 
 //----------------------------------------------------------------------------
@@ -77,9 +87,9 @@ dd_edge Context::AND(dd_edge f1, dd_edge f2) const {
         return empty_set();
     
     // f1 AND f2
-    dd_edge result(get_MDD_forest());
-    apply(INTERSECTION, f1, f2, result);
-    return result;
+    // dd_edge result(get_MDD_forest());
+    // apply(INTERSECTION, f1, f2, result);
+    return MDD_INTERSECT(f1, f2);
 }
 
 //----------------------------------------------------------------------------
@@ -89,9 +99,9 @@ dd_edge Context::AND_NOT(dd_edge f1, dd_edge f2) const {
         return empty_set();
     
     // f1 AND (NOT f2)  computed as a SETDIFF: f1 \ f2
-    dd_edge result(get_MDD_forest());
-    apply(DIFFERENCE, f1, f2, result);
-    return result;
+    // dd_edge result(get_MDD_forest());
+    // apply(DIFFERENCE, f1, f2, result);
+    return MDD_DIFFERENCE(f1, f2);;
 }
 
 //----------------------------------------------------------------------------
@@ -108,9 +118,9 @@ dd_edge Context::OR(dd_edge f1, dd_edge f2) const {
         return f1;
 
     // f1 OR f2
-    dd_edge result(get_MDD_forest());
-    apply(UNION, f1, f2, result);
-    return result;
+    // dd_edge result(get_MDD_forest());
+    // apply(UNION, f1, f2, result);
+    return MDD_UNION(f1, f2);
 }
 
 //----------------------------------------------------------------------------

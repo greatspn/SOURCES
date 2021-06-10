@@ -187,6 +187,10 @@ ctlnew(Args&&... args) {
 
 enum class StateSetPolicy { ACTUAL, POTENTIAL };
 
+dd_edge MDD_INTERSECT(dd_edge f1, dd_edge f2);
+dd_edge MDD_DIFFERENCE(dd_edge f1, dd_edge f2);
+dd_edge MDD_UNION(dd_edge f1, dd_edge f2);
+
 /*---------------------
  --- CTL Evaluation Context
  -----------------------*/

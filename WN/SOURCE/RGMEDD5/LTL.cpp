@@ -552,19 +552,22 @@ RSxBA_init_states(Context& ctx, BuchiAutomaton& ba) {
     if (currentLocLvlBound < locLvlBound) // resize needed
         dom->enlargeVariableBound(nvars, false, locLvlBound);
 
-    // Encode the initial states of the Transition System
-    dd_edge S0(ctx.get_MDD_forest());
+    // Encode the initial states of RSxBA
+    dd_edge Z0(ctx.get_MDD_forest());
     for (ba_edge_t& edge : ba.edges) {
         if(edge.is_initial) { // edge:  0 --(s)--> dst 
-            // Move all Sat(s) states in the dst location, and add them to S0
-            dd_edge sat_s = ctx.SELECT_REAL(edge.state_formula->getMDD(ctx));
+            // Move all Sat(s) states in the dst location, and add them to Z0
+            #warning We may want to always intersect RS when generating Z0
+            dd_edge sat_s = edge.state_formula->getMDD(ctx);
+            // sat_s = ctx.SELECT_REAL(sat_s);
+            sat_s = MDD_INTERSECT(sat_s, ctx.RS);
             dd_edge init_dst = mdd_relabel(sat_s, 0, edge.dst_loc, ctx.get_MxD_forest());
 
-            S0 += init_dst;
+            Z0 += init_dst;
         }
     }
 
-    return S0;
+    return Z0;
 }
 
 //-----------------------------------------------------------------------------

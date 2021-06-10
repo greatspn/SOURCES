@@ -26,12 +26,26 @@ const char* g_path_op_type[4] = { "X", "G", "F", "U" };
 
 //-----------------------------------------------------------------------------
 
+template<typename T>
+inline T bit_rotl(const T value, int shift) {
+    // if ((shift &= sizeof(value)*CHAR_BIT - 1) == 0)
+    //     return value;
+    return (value << shift) | (value >> (sizeof(value)*CHAR_BIT - shift));
+}
+
+template<typename T>
+inline T bit_rotr(const T value, int shift) {
+    // if ((shift &= sizeof(value)*CHAR_BIT - 1) == 0)
+    //     return value;
+    return (value >> shift) | (value << (sizeof(value)*CHAR_BIT - shift));
+}
+
 inline size_t hash_combine(size_t seed) { return seed; }
 
 template <typename T, typename... Rest>
 inline size_t hash_combine(size_t seed, T v, Rest&&... rest)
 {
-    seed ^= std::hash<T>{}(v) + 0xd2911b3ffc2dd383 + (seed << 6) + (seed >> 2);
+    seed = std::hash<T>{}(v) + 0xd2911b3ffc2dd383 + bit_rotl(seed, 6);//(seed << 6) + (seed >> 2);
     return hash_combine(seed, std::forward<Rest>(rest)...);
 }
 

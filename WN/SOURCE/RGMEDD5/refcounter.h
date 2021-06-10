@@ -9,7 +9,7 @@
 #define safe_add_ref(p)    {   if (p != nullptr) { p->add_ref(); }   }
 
 //----------------------------------------------------------------------------
-// base class of non-copyable reference counted objects
+// intrusive base class of non-copyable reference-counted objects
 //----------------------------------------------------------------------------
 class refcounted_base {
     // reference counter. starts at 1.
@@ -60,7 +60,7 @@ public:
     // dtor
     inline ~ref_ptr() { safe_remove_ref(ptr); }
 
-    // indirect acces
+    // indirect access
     inline T& operator* () const { return *ptr; } 
     inline T* operator-> () const { return ptr; }
     
@@ -110,16 +110,18 @@ public:
     inline bool operator!=(std::nullptr_t) const { return (ptr != nullptr); }
     inline bool operator==(std::nullptr_t) const { return (ptr == nullptr); }
 
-    // get the pointer without changing the ref counts
+    // check same pointer
+    template<typename T2> inline bool operator!=(const ref_ptr<T2>& ref) const { return (ptr != ref.ptr); }
+    template<typename T2> inline bool operator==(const ref_ptr<T2>& ref) const { return (ptr == ref.ptr); }
+
+    // get the pointer without changing the reference count
     inline T* get() const { return ptr; }
     
     // reset the pointer to nullptr
     inline void reset() { safe_remove_ref(ptr); }
 
-    // return the pointer, and reset to nullptr
-
 private:
-    // low-level manipulatrion of the pointer without changing the ref counts
+    // low-level manipulation of the pointer without changing the reference count
     inline void set(T* p) { ptr = p; }
 
     // friend methods that can use set()
