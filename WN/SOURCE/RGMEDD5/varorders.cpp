@@ -903,7 +903,7 @@ void determine_var_order(const var_order_selector& sel,
 
         // clock_t time_PSI_EN = clock();
         // cardinality_t PSI_EN = measure_PSI(net_to_mddLevel, false, true, true, 
-        //                                    g_print_pbasis_metrics, *fbm);
+        //                                    g_print_pbasis_metrics, *static_cast<flow_basis_metric_t*>(&fbm));
         // time_PSI_EN = clock() - time_PSI_EN;
         // cout << "PSI-EN:      " << PSI_EN << endl;
         // cout << "TIME-PSI-EN: " << double(time_PSI_EN) / CLOCKS_PER_SEC << endl;
