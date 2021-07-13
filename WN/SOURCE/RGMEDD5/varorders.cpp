@@ -1092,8 +1092,8 @@ bool method_uses_nested_units(VariableOrderCriteria voc) {
 const char *name_of_annealing(Annealing a, VariableOrderMetric m) {
     switch (a) {
         case Annealing::NO_ANN:             return "None";
-        case Annealing::ANN_PBASIS:         return "B-RANK";
-        case Annealing::ANN_PBASIS_MIN:     return "B-RANK reorder";
+        case Annealing::ANN_PBASIS:         return "iRank";
+        case Annealing::ANN_PBASIS_MIN:     return "iRank reorder";
         case Annealing::ANN_MINIMIZE_METRIC:
             return metric_name(m);
         case Annealing::ANN_FORCE:          return "Force";
@@ -1110,7 +1110,7 @@ const char* metric_name(VariableOrderMetric m) {
         case METRIC_SOUPS:    return "SOUPS";
         case METRIC_SWIR:     return "SWIR";
         case METRIC_SWIR_X:   return "SWIR_X";
-        case METRIC_B_RANK:   return "B_RANK";
+        case METRIC_iRank:   return "iRank";
         case METRIC_NES:      return "NES";
         case METRIC_WES1:     return "WES1";
         case METRIC_PSF:      return "PSF";
@@ -1254,7 +1254,7 @@ void metric_compute(const std::vector<int>& net_to_level,
                 *out[m] = measure_swir2(net_to_level, trn_set, lw_invs);
                 break;
 
-            case METRIC_B_RANK:
+            case METRIC_iRank:
                 require_lw_invs();
                 *out[m] = (uint64_t)std::accumulate(lw_invs.begin(), lw_invs.end(), size_t(0));
                 // assert(opt_fbm != nullptr);

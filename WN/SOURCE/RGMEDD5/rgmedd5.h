@@ -500,7 +500,7 @@ enum VariableOrderMetric {
     METRIC_SOUPS,
     METRIC_SWIR,
     METRIC_SWIR_X,
-    METRIC_B_RANK,
+    METRIC_iRank,
     METRIC_NES,
     METRIC_WES1,
     METRIC_PSF,

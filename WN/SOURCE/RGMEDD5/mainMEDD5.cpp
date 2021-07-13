@@ -1701,9 +1701,9 @@ int initialize(int  argc,  char  *argv[]) {
             g_var_order_sel.annealing = Annealing::ANN_MINIMIZE_METRIC;
             g_var_order_sel.ann_metric = VariableOrderMetric::METRIC_SWIR;
         }
-        else if (0 == strcmp(argv[ii], "-ann-b_rank")) {
+        else if (0 == strcmp(argv[ii], "-ann-iRank")) {
             g_var_order_sel.annealing = Annealing::ANN_MINIMIZE_METRIC;
-            g_var_order_sel.ann_metric = VariableOrderMetric::METRIC_B_RANK;
+            g_var_order_sel.ann_metric = VariableOrderMetric::METRIC_iRank;
         }
         else if (0 == strcmp(argv[ii], "-ann-nes")) {
             g_var_order_sel.annealing = Annealing::ANN_MINIMIZE_METRIC;
