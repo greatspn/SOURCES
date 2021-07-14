@@ -26,6 +26,9 @@ const flow_basis_t& load_Psemiflows();
 // P-semiflows with <= relation, i.e.:   m*Y <= m0*Y, forall m in RS(m0)
 const flow_basis_t& load_Psemiflows_leq();
 
+const std::vector<int>& load_Psemiflow_consts();
+const std::vector<int>& load_Psemiflow_leq_consts();
+
 
 // Returns the number of P-semiflows (0 if there are no P-invariants, or if the
 // model has an empty .pin file)

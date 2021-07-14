@@ -934,7 +934,8 @@ public:
     // Return true if it is possible, false if it is not possible.
     bool buildLRS();
 
-    std::optional<dd_edge> computeLRSof(std::vector<int> m0, const flow_basis_t& inv_set) const;
+    std::vector<int> compute_inv_consts_from_m0(const std::vector<int>& m0, const flow_basis_t& inv_set) const;
+    std::optional<dd_edge> computeLRSof(const std::vector<int>& inv_consts, const flow_basis_t& inv_set) const;
 
     //! it generates the RS using the next state function for models with timed and immediate transitions.  It returns -1 in case of error 0 otherwise.
     bool genRSAll();

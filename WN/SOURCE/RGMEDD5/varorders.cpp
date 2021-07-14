@@ -1434,6 +1434,32 @@ void var_order_from_file(std::vector<int> &out_order, const std::map<const char*
 
 //---------------------------------------------------------------------------------------
 
+static std::vector<int>
+load_flow_consts_from_file(ifstream& pif, size_t num_flows) {
+    std::vector<int> inv_consts;
+    if (!pif) 
+        return inv_consts; // empty
+
+    int num_consts;
+    pif >> num_consts;
+    if (!pif || num_consts < 0 || num_consts != num_flows)
+        return inv_consts;
+
+    inv_consts.resize(num_consts);
+    for (int i = 0; i < num_consts; i++) {
+        int c;
+        pif >> c;
+        if (!pif || c < 0) {
+            inv_consts.clear();
+            return inv_consts; // bad file, or could not read the data
+        }
+        inv_consts[i] = c;
+    }
+    return inv_consts;
+}
+
+//---------------------------------------------------------------------------------------
+
 static flow_basis_t
 load_flows_from_file(ifstream& pif, size_t max_index, bool allow_neg_card) {
     flow_basis_t flows;
@@ -1490,6 +1516,24 @@ load_Psemiflows() {
 
 //---------------------------------------------------------------------------------------
 
+// Load and store p-semiflow constants (from the <netname>.pinc file)
+const std::vector<int>&
+load_Psemiflow_consts() {
+    static std::vector<int> net_ic; 
+    static bool ic_loaded = false;
+
+    if (!ic_loaded) {
+        ic_loaded = true;
+        std::string pinc_name(net_name);
+        pinc_name += "pinc";
+        ifstream pif(pinc_name.c_str());
+        net_ic = load_flow_consts_from_file(pif, get_num_Psemiflows());
+    }
+    return net_ic;
+}
+
+//---------------------------------------------------------------------------------------
+
 // Load and store the vector of P-semiflows (from the <netname>.pin+- file) with extra support variables
 const flow_basis_t&
 load_Psemiflows_leq() {
@@ -1504,6 +1548,24 @@ load_Psemiflows_leq() {
         net_psf_leq = load_flows_from_file(pif, npl + 2*ntr, false);
     }
     return net_psf_leq;
+}
+
+//---------------------------------------------------------------------------------------
+
+// Load and store p-semiflow constants (from the <netname>.pin+-c file)
+const std::vector<int>&
+load_Psemiflow_leq_consts() {
+    static std::vector<int> net_ic_leq; 
+    static bool ic_leq_loaded = false;
+
+    if (!ic_leq_loaded) {
+        ic_leq_loaded = true;
+        std::string pinc_name(net_name);
+        pinc_name += "pin+-c";
+        ifstream pif(pinc_name.c_str());
+        net_ic_leq = load_flow_consts_from_file(pif, get_num_Psemiflows());
+    }
+    return net_ic_leq;
 }
 
 //---------------------------------------------------------------------------------------
