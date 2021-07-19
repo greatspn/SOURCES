@@ -3,17 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/net/NetSemiflowsPanel.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/measures/SolverInvokator.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/measures/SolverParams.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/net/NetEditorPanel.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/semiflows/FlowsGenerator.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/measures/MC4CSLTASolver.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/semiflows/PTFlows.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/net/NetRelayoutWindow.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/io/GreatSpnFormat.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/elements/Transition.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/net/SelectMoveTool.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/AlgebraToolDialog.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/unfolding/Algebra.java</file>
         </group>
     </open-files>
 </project-private>

@@ -7,19 +7,11 @@ package editor.cli;
 
 import common.Util;
 import editor.Main;
-import editor.domain.ProjectFile;
-import editor.domain.ProjectPage;
 import editor.domain.ViewProfile;
 import editor.domain.elements.GspnPage;
-import editor.domain.io.GreatSpnFormat;
-import editor.domain.io.PNMLFormat;
-import editor.domain.io.PnProFormat;
 import editor.domain.unfolding.Algebra;
 import editor.domain.unfolding.MergePolicy;
 import java.awt.geom.Rectangle2D;
-import java.io.File;
-import java.util.Map;
-import java.util.TreeMap;
 import latex.DummyLatexProvider;
 import static editor.cli.Common.*;
 

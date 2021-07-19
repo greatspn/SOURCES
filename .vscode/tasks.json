@@ -19,6 +19,7 @@
                 "kind": "build",
                 "isDefault": true
             },
+            "presentation": { "clear": true },
             "problemMatcher": []
         },
         {
@@ -40,6 +41,7 @@
                 "kind": "build",
                 "isDefault": true
             },
+            "presentation": { "clear": true },
             "problemMatcher": []
         },
         {
@@ -61,6 +63,7 @@
                 "kind": "build",
                 "isDefault": true
             },
+            "presentation": { "clear": true },
             "problemMatcher": []
         },
         {
