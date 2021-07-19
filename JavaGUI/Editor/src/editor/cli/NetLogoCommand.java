@@ -8,9 +8,13 @@ package editor.cli;
 import editor.Main;
 import static editor.cli.Common.loadPage;
 import static editor.cli.Common.printGspnStat;
+import editor.domain.PageErrorWarning;
+import editor.domain.ProjectData;
+import editor.domain.ProjectPage;
 import editor.domain.elements.GspnPage;
 import editor.domain.io.NetLogoFormat;
 import java.io.File;
+import java.util.ArrayList;
 import latex.DummyLatexProvider;
 
 /**
@@ -119,6 +123,22 @@ public class NetLogoCommand {
         System.out.println("");
         System.out.println("LOADING TIME: "+(System.currentTimeMillis() - loadStart)/1000.0);
         System.out.println("");
+        
+        
+        // GSPN semantic check
+        ArrayList<ProjectPage> pages = new ArrayList<>();
+        pages.add(net1);
+        ProjectData proj = new ProjectData("project", pages);
+        net1.preparePageCheck();
+        net1.checkPage(proj, null, net1, null);
+        if (!net1.isPageCorrect()) {
+            for (int err=0; err < net1.getNumErrorsAndWarnings(); err++) {
+                PageErrorWarning pew = net1.getErrorWarning(err);
+                System.out.println(" "+pew.getDescription());
+            }
+            System.out.println("Found errors in loaded file. Stop.");
+            System.exit(1);
+        }
         
         String[] agentColorList = agentColors.split(",");
         

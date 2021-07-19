@@ -9,6 +9,7 @@ import common.Tuple;
 import editor.domain.Node;
 import editor.domain.elements.ColorClass;
 import editor.domain.elements.GspnPage;
+import editor.domain.elements.Place;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -100,6 +101,23 @@ public class NetLogoFormat {
         }
         pw.println();
         
+        // Check place sanity
+        for (Node node : gspn.nodes) {
+            if (node instanceof Place) {
+                Place pl = (Place)node;
+                ColorClass plDom = pl.getColorDomain();
+                
+                if (plDom==null || plDom.isNeutralDomain()) {
+                    throw new IllegalStateException("Place "+pl.getUniqueName()+
+                            " does not have a color domain.");
+                }
+                String agentClass = plDom.getColorClassName(0);
+                if (!agentClasses.contains(agentClass)) {
+                    throw new IllegalStateException("Place "+pl.getUniqueName()+
+                            " does not belong to an agent class.");
+                }
+            }
+        }
         
         
         pw.close();
