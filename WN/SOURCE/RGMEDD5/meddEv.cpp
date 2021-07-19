@@ -869,7 +869,8 @@ bool RSRG::verify_LRS_RS_equiv() {
     forestMDD->createEdge(&ins_ptr, 1, m0min_mdd);
 
     // Build LRS[m0min]
-    auto LRS = computeLRSof(m0min, *p_flows);
+    vector<int> inv_consts = compute_inv_consts_from_m0(m0min, *p_flows);
+    auto LRS = computeLRSof(inv_consts, *p_flows);
     if (!LRS)
         return false;
 
@@ -1857,8 +1858,26 @@ bool RSRG::buildRS() {
 
 //-----------------------------------------------------------------------------
 
+std::vector<int> RSRG::compute_inv_consts_from_m0(const std::vector<int>& m0, const flow_basis_t& inv_set) const {
+    std::vector<int> inv_consts(inv_set.size());
+
+    size_t f = 0;
+    for (auto&& flow : inv_set) {
+        int m0_flow = 0;
+        for (auto& elem : flow) {
+            if (elem.index < npl) {// index of a place and not of a support variable
+                m0_flow += elem.value * m0[elem.index]; // m0 * flow
+            }
+        }    
+        inv_consts[f++] = m0_flow;
+    }
+    return inv_consts;
+}
+
+//-----------------------------------------------------------------------------
+
 std::optional<dd_edge>
-RSRG::computeLRSof(std::vector<int> m0, const flow_basis_t& inv_set) const {
+RSRG::computeLRSof(const std::vector<int>& inv_consts, const flow_basis_t& inv_set) const {
     expert_forest *efMDD = static_cast<expert_forest *>(forestMDD);
     expert_domain *eDom = static_cast<expert_domain *>(dom);
     dd_edge ALL(efMDD);
@@ -1912,12 +1931,13 @@ RSRG::computeLRSof(std::vector<int> m0, const flow_basis_t& inv_set) const {
     std::vector<constraint_t> constraints;
     constraints.reserve(inv_set.size());
 
+    size_t flow_index = 0;
     for (auto&& flow : inv_set) {
-        int m0_flow = 0;
+        int m0_flow = inv_consts[flow_index++];
         bool has_negative_coeffs = false;
         for (auto& elem : flow) {
             if (elem.index < npl) {// index of a place and not of a support variable
-                m0_flow += elem.value * m0[elem.index]; // m0 * flow
+        //         m0_flow += elem.value * m0[elem.index]; // m0 * flow
                 if (elem.value < 0)
                     has_negative_coeffs = true;
             }
@@ -2207,7 +2227,11 @@ bool RSRG::buildLRSbyPBasisConstraints() {
     for (int p=0; p<npl; p++)
         m0[p] = net_mark[p].total;
 
+const std::vector<int>& load_Psemiflow_consts();
+const std::vector<int>& load_Psemiflow_leq_consts();
+
     const flow_basis_t* p_flows = nullptr;
+    const std::vector<int>* p_flow_consts = nullptr;
     for (size_t phase = 0; phase<2; phase++) 
     {
         const flow_basis_t* F = (phase==0 ? &load_Psemiflows() : //get_flow_basis() : 
@@ -2216,6 +2240,9 @@ bool RSRG::buildLRSbyPBasisConstraints() {
             continue;
 
         p_flows = F;
+
+        p_flow_consts = (phase==0 ? &load_Psemiflow_consts() :
+                                    &load_Psemiflow_leq_consts());
         break;
     }
     if (p_flows == nullptr) {
@@ -2225,7 +2252,14 @@ bool RSRG::buildLRSbyPBasisConstraints() {
     
     // const flow_basis_t& B = get_flow_basis();
     // const flow_basis_t& B = load_Psemiflows_leq();
-    auto ret = computeLRSof(m0, *p_flows);
+    // Determine the invariant constants
+    vector<int> inv_consts;
+    if (p_flow_consts->size() == p_flows->size())
+        inv_consts = *p_flow_consts; // from file
+    else
+        inv_consts = compute_inv_consts_from_m0(m0, *p_flows); // from product with m0
+
+    auto ret = computeLRSof(inv_consts, *p_flows);
     if (!ret)
         return false;
 
