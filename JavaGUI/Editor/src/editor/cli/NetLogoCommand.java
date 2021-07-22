@@ -12,6 +12,7 @@ import editor.domain.PageErrorWarning;
 import editor.domain.ProjectData;
 import editor.domain.ProjectPage;
 import editor.domain.elements.GspnPage;
+import editor.domain.grammar.ParserContext;
 import editor.domain.io.NetLogoFormat;
 import java.io.File;
 import java.util.ArrayList;
@@ -23,17 +24,17 @@ import latex.DummyLatexProvider;
  */
 public class NetLogoCommand {
     
-        public static void main(String[] args) {
+    public static void main(String[] args) {
         try {
             Main.useGuiLogWindowForExceptions = false;
             Main.fixedUiSize = Main.UiSize.NORMAL;
             DummyLatexProvider.initializeProvider();
             long totalStart = System.currentTimeMillis();
 
-            toolMain(args);
+            boolean status = toolMain(args);
 
             System.out.println("TOTAL TIME: "+(System.currentTimeMillis() - totalStart)/1000.0);
-            System.out.println("OK.");
+            System.out.println(status ? "OK." : "FAILED.");
         }
         catch (Throwable e) {
             System.out.println("EXCEPTION RAISED.");
@@ -43,18 +44,14 @@ public class NetLogoCommand {
         }
     }
     
-    public static void toolMain(String[] args) throws Exception {
+    public static boolean toolMain(String[] args) throws Exception {
         // Read command line arguments
         if (args.length < 1) {
             System.out.println("Not enough arguments.");
             System.exit(1);
         }
         String agentColors = "";
-//        String restSetTr = "";
-//        int propPlacement = 1;
-//        boolean saveAsPnml = false;
         boolean verbose = false;
-//        boolean useBrokenEdges = true;
         int c;
         for (c=0; c<args.length; c++) {
 //            System.out.println("args["+c+"]="+args[c]);
@@ -67,31 +64,9 @@ public class NetLogoCommand {
                     agentColors = args[++c];
                     break;
                     
-//                case "-t":
-//                    if (c+1 == args.length) 
-//                        throw new IllegalArgumentException("Missing transition restrictions set.");
-//                    restSetTr = args[++c];
-//                    break;
-//                    
-//                case "-out-pnml":
-//                    saveAsPnml = true;
-//                    break;
-//                    
-//                case "-horiz":
-//                    propPlacement = 1;
-//                    break;
-//
-//                case "-vert":
-//                    propPlacement = 2;
-//                    break;
-
                 case "-v":
                     verbose = true;
                     break;
-
-//                case "-no_ba":
-//                    useBrokenEdges = false;
-//                    break;
 
                 case "--": // end of arguments
                     break;
@@ -106,20 +81,15 @@ public class NetLogoCommand {
             throw new IllegalArgumentException("input/output net name is not correct.");
         }
         String inBaseName = args[c++];
-//        String inBaseName2 = args[c++];
         String outBaseName = args[c++];
         
-//        System.out.println("inBaseName1 = " + inBaseName1);
-//        System.out.println("inBaseName2 = " + inBaseName2);
+//        System.out.println("inBaseName = " + inBaseName);
 //        System.out.println("outBaseName = " + outBaseName);
         
         // Load input nets
         long loadStart = System.currentTimeMillis();
-        GspnPage net1 = loadPage(inBaseName);
-        printGspnStat(net1, null);
-//        System.out.println("");
-//        GspnPage net2 = loadPage(inBaseName2);
-//        printGspnStat(net2, null);
+        GspnPage gspn = loadPage(inBaseName);
+        printGspnStat(gspn, null);
         System.out.println("");
         System.out.println("LOADING TIME: "+(System.currentTimeMillis() - loadStart)/1000.0);
         System.out.println("");
@@ -127,65 +97,39 @@ public class NetLogoCommand {
         
         // GSPN semantic check
         ArrayList<ProjectPage> pages = new ArrayList<>();
-        pages.add(net1);
+        pages.add(gspn);
         ProjectData proj = new ProjectData("project", pages);
-        net1.preparePageCheck();
-        net1.checkPage(proj, null, net1, null);
-        if (!net1.isPageCorrect()) {
-            for (int err=0; err < net1.getNumErrorsAndWarnings(); err++) {
-                PageErrorWarning pew = net1.getErrorWarning(err);
+        gspn.preparePageCheck();
+        gspn.checkPage(proj, null, gspn, null);
+        
+        ParserContext context = new ParserContext(gspn);
+        gspn.compileParsedInfo(context);
+        if (!gspn.isPageCorrect()) {
+            for (int err=0; err < gspn.getNumErrorsAndWarnings(); err++) {
+                PageErrorWarning pew = gspn.getErrorWarning(err);
                 System.out.println(" "+pew.getDescription());
             }
             System.out.println("Found errors in loaded file. Stop.");
             System.exit(1);
         }
         
-        String[] agentColorList = agentColors.split(",");
+        String[] agentsColorList = agentColors.split(",");
         
         
         // Export in NetLogo format
-//        long composeStart = System.currentTimeMillis();
-//        System.out.println("COMPOSITION STARTS...\n");
-//        int dx2shift = 0, dy2shift = 0;
-//        Rectangle2D pageBounds1 = net1.getPageBounds();
-//        switch (propPlacement) {
-//            case 1: // horizontal
-//                dx2shift = (int)pageBounds1.getWidth() + 5;
-//                break;
-//            case 2: // vertical
-//                dy2shift = (int)pageBounds1.getHeight() + 5;
-//                break;
-////            case 3: // user-specified
-////                dx2shift = Integer.parseInt(textFieldDxShift.getText());
-////                dy2shift = Integer.parseInt(textFieldDyShift.getText());
-////                break;
-//        }
-//
-//        Algebra a = new Algebra(MergePolicy.BY_TAG, net1, net2, 
-//                        restSetTr.replace(" ", "").split(","), 
-//                        restSetPl.replace(" ", "").split(","), 
-//                        dx2shift, dy2shift, useBrokenEdges, verbose);
-//        a.compose();
-//        GspnPage netComp = a.result;
-//        netComp.setPageName(net1.getPageName()+"_"+net2.getPageName());
-//        netComp.viewProfile = (ViewProfile)Util.deepCopy(net1.viewProfile);
-//
-//        if (!a.warnings.isEmpty()) {
-//            for (String w : a.warnings)
-//                System.out.println(w);
-//            System.out.println("");
-//        }
-//        System.out.println("COMPOSITION TIME: "+(System.currentTimeMillis() - composeStart)/1000.0);
-
-        
-        // Save the composed net
         long saveStart = System.currentTimeMillis();
         System.out.println("");
         File netLogoFile = new File(outBaseName);
-        String log = NetLogoFormat.export(net1, netLogoFile, agentColorList, verbose);
+        String log = NetLogoFormat.export(gspn, netLogoFile, agentsColorList, verbose);
         
-        System.out.println(log);
-//        savePage(netComp, outBaseName, saveAsPnml);
-        System.out.println("SAVING TIME: "+(System.currentTimeMillis() - saveStart)/1000.0);
+        if (log != null) {        
+            System.out.println(log);
+            netLogoFile.delete();
+            return false;
+        }
+        else {
+            System.out.println("SAVING TIME: "+(System.currentTimeMillis() - saveStart)/1000.0);
+            return true;
+        }
     }
 }
