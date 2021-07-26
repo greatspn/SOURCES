@@ -15,6 +15,9 @@
             "options": {
                 "cwd": "${workspaceFolder}"
             },
+            "presentation": {
+                "clear": true
+            },
             "group": {
                 "kind": "build",
                 "isDefault": true

@@ -847,13 +847,13 @@ void determine_var_order(const var_order_selector& sel,
         //         cout << "SO_" << mf_name[mf]<<"_w"<<lw_name[lw]<<":   "<<m<<endl;
         //     }
 
-        //     // clock_t time_PSI_RANK = clock();
-        //     // cardinality_t PSI_RANK = measure_PSI(net_to_mddLevel, false, false, false, false, *fbm);
-        //     // time_PSI_RANK = clock() - time_PSI_RANK;
-        //     // cout << "PSI-RANK:  " << PSI_RANK << endl;
-        //     // cout << "TIME-PSI:  " << double(time_PSI_RANK) / CLOCKS_PER_SEC << endl;
-        //     // if (g_print_pbasis_metrics)
-        //     //     print_PSI_diagram(net_to_mddLevel, *fbm);
+            clock_t time_PSI_RANK = clock();
+            cardinality_t PSI_RANK = measure_PSI(net_to_mddLevel, false, false, false, false, fbm);
+            time_PSI_RANK = clock() - time_PSI_RANK;
+            cout << "PSI-RANK:  " << PSI_RANK << endl;
+            cout << "TIME-PSI:  " << double(time_PSI_RANK) / CLOCKS_PER_SEC << endl;
+            // if (g_print_pbasis_metrics)
+                print_PSI_diagram(net_to_mddLevel, fbm);
 
 
         // }

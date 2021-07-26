@@ -909,6 +909,7 @@ cardinality_t flow_basis_metric_t::compute_score()
             continue; // top level has always a single node
 
         // Consider all the invariants active at this level
+
         for (int r=0; r<B.size(); r++) {
             if (B[r].nonzeros() == 0)
                 continue;
@@ -923,7 +924,13 @@ cardinality_t flow_basis_metric_t::compute_score()
                 // else
                 //     inv_combs = (invariant_range_at_lvl(r, lvl) / weight).size();
 
-                int inv_combs = invariant_range_at_lvl(r, lvl).size();
+                int inv_combs;
+                if (lvl == B[r].trailing())
+                    inv_combs = 1;
+                else
+                    inv_combs = invariant_range_at_lvl(r, lvl + 1).size();
+
+                // int inv_combs = invariant_range_at_lvl(r, lvl).size();
 
                 combinations[lvl] *= inv_combs;
             }
@@ -1464,6 +1471,8 @@ flow_basis_metric_t::measure_PSI(const std::vector<int> &net_to_level)
 //---------------------------------------------------------------------------------------
 
 void flow_basis_metric_t::print_PSI_diagram(const std::vector<int> &net_to_level) {
+    print_flow_basis(B);
+
     size_t max_plc_len = 5;
     for (int p=0; p<npl; p++)
         max_plc_len = max(max_plc_len, strlen(tabp[p].place_name));
@@ -1483,7 +1492,7 @@ void flow_basis_metric_t::print_PSI_diagram(const std::vector<int> &net_to_level
     if (!ranges.empty()) {
         assert(!combinations.empty());
         for (int b=0; b<B.size(); b++)
-            cout << "   inv" << setw(2) << b ;
+            cout << "   inv" << setw(2) << b;
         cout << " #cmb" << (count_uPSIs.empty() ? "" : " #uPSI");
     }
     cout << endl;
@@ -1508,16 +1517,30 @@ void flow_basis_metric_t::print_PSI_diagram(const std::vector<int> &net_to_level
 
         if (!ranges.empty()) {
             for (int r=0; r<B.size(); r++) {
-                if (B[r].leading() <= lvl && lvl <= B[r].trailing())
-                    cout << setw(8) << invariant_range_at_lvl(r, lvl).str();
+                if (B[r].leading() <= lvl && lvl <= B[r].trailing()) {
+                    cout << setw(8) << right << invariant_range_at_lvl(r, lvl).str();
+                    // int value = 0;
+                    // bool found = false;
+                    // for (auto &&pair : B[r]) {
+                    //     if (pair.index == lvl) {
+                    //         value = pair.value;
+                    //         found = true;
+                    //         break;
+                    //     }
+                    // }
+                    // // size_t ii = B[r].lowe(lvl);
+                    // if (found)
+                    //     cout << "~" << setw(3) << left << value;
+                    // else
+                    //     cout << "~0  ";
+                }
                 else 
-                    cout << setw(8) << " - ";
-
+                    cout << setw(8) << right << " - ";
             }
 
             cout << setw(5) << combinations[lvl];
             if (!count_uPSIs.empty())
-                cout << setw(6) << count_uPSIs[lvl];
+                cout << setw(6) << right << count_uPSIs[lvl];
         }
         cout << endl;
     }
