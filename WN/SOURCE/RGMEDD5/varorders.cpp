@@ -847,13 +847,21 @@ void determine_var_order(const var_order_selector& sel,
         //         cout << "SO_" << mf_name[mf]<<"_w"<<lw_name[lw]<<":   "<<m<<endl;
         //     }
 
-            clock_t time_PSI_RANK = clock();
-            cardinality_t PSI_RANK = measure_PSI(net_to_mddLevel, false, false, false, false, fbm);
-            time_PSI_RANK = clock() - time_PSI_RANK;
-            cout << "PSI-RANK:  " << PSI_RANK << endl;
-            cout << "TIME-PSI:  " << double(time_PSI_RANK) / CLOCKS_PER_SEC << endl;
-            // if (g_print_pbasis_metrics)
-                print_PSI_diagram(net_to_mddLevel, fbm);
+            // clock_t time_PSI_RANK = clock();
+            // cardinality_t PSI_RANK = measure_PSI(net_to_mddLevel, false, false, false, false, fbm);
+            // cardinality_t score2 = measure_score_experimental(fbm, 0);
+            // cardinality_t score3 = measure_score_experimental(fbm, 1);
+            // cardinality_t score4 = measure_score_experimental(fbm, 2);
+            // time_PSI_RANK = clock() - time_PSI_RANK;
+            // cout << "score1:  " << PSI_RANK << "    (full product of ranges)" <<endl;
+            // cout << "score2:  " << score2 << "    (hyper-triangular product< / n!)" << endl;
+            // cout << "score3:  " << score3 << "    (hyper-triangular product> / n!)" << endl;
+            // cout << "score4:  " << score4 << "    (hypervolume? product of ranges / n)" << endl;
+            // // cout << "score4:  " << score4 << "    (...)" << endl;
+            // cout << endl;
+            // // cout << "TIME-PSI:  " << double(time_PSI_RANK) / CLOCKS_PER_SEC << endl;
+            // // if (g_print_pbasis_metrics)
+            // print_PSI_diagram(net_to_mddLevel, fbm);
 
 
         // }
@@ -1727,6 +1735,24 @@ const flow_basis_t& get_flow_basis() {
     if (!s_basis_loaded)
         load_flow_basis(); 
     return s_fb;
+}
+
+//---------------------------------------------------------------------------------------
+
+// Load and store p-basis constants (from the <netname>.pbac file)
+const std::vector<int>&
+load_flow_consts() {
+    static std::vector<int> net_basis_c; 
+    static bool pbac_loaded = false;
+
+    if (!pbac_loaded) {
+        pbac_loaded = true;
+        std::string pbac_name(net_name);
+        pbac_name += "pbac";
+        ifstream pif(pbac_name.c_str());
+        net_basis_c = load_flow_consts_from_file(pif, get_flow_basis().size());
+    }
+    return net_basis_c;
 }
 
 //---------------------------------------------------------------------------------------

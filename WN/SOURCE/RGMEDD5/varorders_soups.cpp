@@ -838,8 +838,9 @@ void write_incidence_as_EPS(const char* filename, const trans_span_set_t &trn_se
                             const std::vector<int> &net_to_level, const flow_basis_t& basis, 
                             const std::vector<std::vector<std::string>>* rangeMat,
                             LevelInfoEPS* ppLvlInfo[], const size_t numLvlInfo,
-                            const DDEPS* ddeps)
+                            const DDEPS* ddeps, bool write_trn_matrix)
 {
+    const size_t num_trns = (write_trn_matrix ? ntr : 0);
     assert(!trn_set.sorted_trns.empty());
     const int TIMES_FONT_SIZE = 8;
     const double PFLOW_FONT_SIZE = TIMES_FONT_SIZE * 0.8;
@@ -847,8 +848,10 @@ void write_incidence_as_EPS(const char* filename, const trans_span_set_t &trn_se
     double max_plc_width = 0, max_trn_width = 0;
     for (int pl=0; pl<npl; pl++)
         max_plc_width = max(max_plc_width, EPS_string_width(tabp[pl].place_name, TIMES_FONT_SIZE));
-    for (int tr=0; tr<ntr; tr++)
+    for (int tr=0; tr<num_trns; tr++)
         max_trn_width = max(max_trn_width, EPS_string_width(tabt[tr].trans_name, TIMES_FONT_SIZE));
+    if (num_trns==0)
+        max_trn_width = 5;
     
     int level_to_net[net_to_level.size()];
     for (int p=0; p<net_to_level.size(); p++)
@@ -876,7 +879,7 @@ void write_incidence_as_EPS(const char* filename, const trans_span_set_t &trn_se
 
     const double X0 = 5; // X start of the incidence matrix
     const double Y0 = 12; // Y start of the incidence matrix
-    const double X_START_OF_M0    = X0 + 10*ntr + 6; // initial X position of the place names
+    const double X_START_OF_M0    = X0 + 10*num_trns + 6; // initial X position of the place names
     const double Y_START_OF_TRN   = Y0 + 10*npl+4; // initial Y position of the transition names
     const double X_START_OF_PLC   = X_START_OF_M0 + 15; // initial X position of the place names
     const double X_START_OF_BND   = X_START_OF_PLC + max_plc_width + 5; // X position of place bounds
@@ -902,12 +905,12 @@ void write_incidence_as_EPS(const char* filename, const trans_span_set_t &trn_se
 
     // draw the grid of the incidence matrix. Squares have size 10*10.
     eps << "\n0.8 setgray 0.5 setlinewidth 2 setlinecap\n";
-    for (int t=0; t<=ntr; t++) {
+    for (int t=0; t<=num_trns; t++) {
         eps << "newpath "<<(X0+10*t)<<" "<<Y0<<" moveto "<<(X0+10*t)<<" "<<(10*npl+Y0)<<" lineto\n";
         eps << "closepath stroke\n";
     }
     for (int p=0; p<=npl; p++) {
-        eps << "newpath "<<X0<<" "<<(10*p+Y0)<<" moveto "<<(X0+10*ntr)<<" "<<(10*p+Y0)<<" lineto\n";
+        eps << "newpath "<<X0<<" "<<(10*p+Y0)<<" moveto "<<(X0+10*num_trns)<<" "<<(10*p+Y0)<<" lineto\n";
         eps << "closepath stroke\n";
     }
 
@@ -917,7 +920,7 @@ void write_incidence_as_EPS(const char* filename, const trans_span_set_t &trn_se
            "closepath\ngsave setrgbcolor fill\ngrestore 0 setgray stroke\n} def\n\n";
     std::set<pair<int, int>> sh2uniq;
     size_t soups = 0;
-    for (int tr=0; tr<ntr; tr++) {
+    for (int tr=0; tr<num_trns; tr++) {
         const trans_span_t& trspan = *trn_set.sorted_trns[tr];
         if (trspan.entries.empty())
             continue;
@@ -986,7 +989,7 @@ void write_incidence_as_EPS(const char* filename, const trans_span_set_t &trn_se
 
     // Write transition names in span order
     eps << "\n/Times-Roman findfont "<<TIMES_FONT_SIZE<<" scalefont setfont\n0 setgray\n";
-    for (int t=0; t<ntr; t++) {
+    for (int t=0; t<num_trns; t++) {
         eps << "gsave "<<(X0 + 10*t+10/2)<<" "<<Y_START_OF_TRN<<" translate 67 rotate\n";
         eps <<"newpath 0 0 moveto\n";
         eps << "(" << tabt[trn_set.sorted_trns[t]->trn].trans_name << ") show\ngrestore\n";

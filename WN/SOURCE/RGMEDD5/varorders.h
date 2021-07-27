@@ -39,6 +39,7 @@ int get_num_Psemiflows();
 // Get the basis of P-invariants from file (netname.pba)
 const flow_basis_t& get_flow_basis();
 bool load_flow_basis();
+const std::vector<int>& load_flow_consts();
 size_t get_num_invariants();
 int get_max_invariant_coeff();
 bool is_net_covered_by_flow_basis();
@@ -289,7 +290,7 @@ void write_incidence_as_EPS(const char* filename, const trans_span_set_t &trn_se
                             const std::vector<int> &varorder, const flow_basis_t& basis, 
                             const std::vector<std::vector<std::string>>* rangeMat = nullptr,
                             LevelInfoEPS* ppLvlInfo[] = nullptr, const size_t numLvlInfo = 0,
-                            const DDEPS* ddeps = nullptr);
+                            const DDEPS* ddeps = nullptr, bool write_trn_matrix = true);
 
 //---------------------------------------------------------------------------------------
 
@@ -302,6 +303,8 @@ cardinality_t
 measure_PSI(const std::vector<int> &varorder, bool only_ranks,
             bool use_ilp, bool use_enum, bool print_enums,
             flow_basis_metric_t& fbm);
+
+cardinality_t measure_score_experimental(flow_basis_metric_t& fbm, int var);
 
 void print_PSI_diagram(const std::vector<int> &varorder, flow_basis_metric_t& fbm);
 
@@ -337,6 +340,8 @@ const flow_basis_t& get_basis(const flow_basis_metric_t& fbm);
 
 // Reorder p-flows' variables according to a variable order
 void reorder_basis(flow_basis_t& B, const std::vector<int>& net_to_level);
+// also canonicalize the vector of invariant constants
+void reorder_basis(flow_basis_t& B, std::vector<int>& consts, const std::vector<int>& net_to_level);
 
 // transitions/invariants force
 void var_order_ti_force(flow_basis_metric_t& fbm, 

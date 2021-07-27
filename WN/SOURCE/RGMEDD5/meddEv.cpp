@@ -3986,14 +3986,24 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
     // LevelInfoEPS *allInfo[] = { &DD, &Sing, &SwirW, &PSI };
 
     // P-flow matrix
-    flow_basis_t pfb = get_pflows();
-    reorder_basis(pfb, net_to_mddLevel);
+    // flow_basis_t pfb = get_pflows();
+    // reorder_basis(pfb, net_to_mddLevel);
     // P-flow basis in footprint form
-    // auto && pfb = get_basis(*p_fbm);
+    auto && pfb = get_basis(*p_fbm);
+
+    const dd_edge* p_DDshown;
+    bool write_transitions_matrix = true;
+    if (shouldBuildLRS()) {
+        p_DDshown = &lrs;
+        write_transitions_matrix = false;
+    }
+    else
+        p_DDshown = &rs;
+
 
     // Generate the DD as an EPS and incorporate it inside the diagram
     DDEPS ddeps;
-    size_t nodeCount = getRS().getNodeCount();
+    size_t nodeCount = p_DDshown->getNodeCount();
     char dot_name[] = "tempDD.XXXXXXXX";
     char ddEPS_name[128];
     bool has_dot_file = false, has_ddEPS_file = false;
@@ -4002,7 +4012,7 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
         cout << dot_name << endl;
         close(fd);
 
-        write_dd_as_dot(this, getRS(), dot_name, false, false, true);
+        write_dd_as_dot(this, *p_DDshown, dot_name, false, false, true);
         has_dot_file = true;
 
         snprintf(ddEPS_name, sizeof(ddEPS_name), "%s.eps", dot_name);
@@ -4031,7 +4041,7 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
                            net_to_mddLevel, pfb,
                            /*&rangeMat,*/ nullptr,
                            allInfo.data(), allInfo.size(),
-                           &ddeps);
+                           &ddeps, write_transitions_matrix);
     // By using the --gsopt -sFONTPATH=... command, Ghostscript encapsulates 
     // arbitrary fonts in the resulting PDF
     // epstopdf test.eps --gsopt -sFONTPATH=/Users/elvio/Desktop/MY-SVN/GreatSPN/
