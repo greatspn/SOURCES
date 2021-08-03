@@ -3910,6 +3910,18 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
 
     std::vector<std::string> RP;
     size_t totalPSI = range_prod_for_representation(*p_fbm, RP);
+    // cardinality_t totalPSI = lvl_combinations_for_representation(*p_fbm, RP);
+
+    // std::vector<std::string> RP2, RP3, RP4, RP5;
+    // cardinality_t score2 = measure_score_experimental(*p_fbm, 0);
+    // lvl_combinations_for_representation(*p_fbm, RP2);
+    // cardinality_t score3 = measure_score_experimental(*p_fbm, 1);
+    // lvl_combinations_for_representation(*p_fbm, RP3);
+    // cardinality_t score4 = measure_score_experimental(*p_fbm, 2);
+    // lvl_combinations_for_representation(*p_fbm, RP4);
+    // cardinality_t score5 = measure_score_experimental(*p_fbm, 3);
+    // lvl_combinations_for_representation(*p_fbm, RP5);
+
 
     LevelInfoEPS DD[2], Sing[2];
     for (int i=0; i<2; i++) {
@@ -3979,8 +3991,42 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
     PSI.colors = (const char **)colorsPSI;
     PSI.info.resize(npl);
     PSI.info.swap(RP);
-    // allInfo.push_back(&PSI);
+    allInfo.push_back(&PSI);
 
+
+    // // Score 2: hyper-triangular product< / n!
+    // const char* colorsMM2[] = { "0.94 0.03 0.03" };
+    // LevelInfoEPS MM2 { .header="HP<", .footer=std::to_string(score2) };
+    // MM2.colors = (const char **)colorsMM2;
+    // MM2.info.resize(npl);
+    // MM2.info.swap(RP2);
+    // allInfo.push_back(&MM2);
+
+
+    // // Score 3: hyper-triangular product> / n!
+    // const char* colorsMM3[] = { "0.75 0.04 0.04" };
+    // LevelInfoEPS MM3 { .header="HP>", .footer=std::to_string(score3) };
+    // MM3.colors = (const char **)colorsMM3;
+    // MM3.info.resize(npl);
+    // MM3.info.swap(RP3);
+    // allInfo.push_back(&MM3);
+
+
+    // // Score 4: hyper-triangular product< / n!
+    // const char* colorsMM4[] = { "0.80 0.0 0.1" };
+    // LevelInfoEPS MM4 { .header="HV", .footer=std::to_string(score4) };
+    // MM4.colors = (const char **)colorsMM4;
+    // MM4.info.resize(npl);
+    // MM4.info.swap(RP4);
+    // allInfo.push_back(&MM4);
+
+    // // Score 4: range scores
+    // const char* colorsMM5[] = { "0.35 0.05 0.77" };
+    // LevelInfoEPS MM5 { .header="RS", .footer=std::to_string(score5) };
+    // MM5.colors = (const char **)colorsMM5;
+    // MM5.info.resize(npl);
+    // MM5.info.swap(RP5);
+    // allInfo.push_back(&MM5);
 
     // Array of extra per-level infos
     // LevelInfoEPS *allInfo[] = { &DD, &Sing, &SwirW, &PSI };

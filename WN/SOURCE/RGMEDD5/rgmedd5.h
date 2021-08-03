@@ -56,6 +56,11 @@ inline long int get_long(cardinality_t& c) { return mpz_get_si(cardinality_ref(c
 inline double get_double(cardinality_t& c) { return mpz_get_d(cardinality_ref(c)); }
 // The Meddly operand type
 #define cardinality_operant_type  MEDDLY::HUGEINT
+namespace std {
+    inline std::string to_string(cardinality_t& c) {
+        ostringstream oss; oss<<c; return oss.str();
+    }
+};
 #else
 // The cardinality type is just a double
 typedef double cardinality_t;
