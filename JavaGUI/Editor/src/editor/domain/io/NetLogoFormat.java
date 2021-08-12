@@ -6,12 +6,15 @@
 package editor.domain.io;
 
 import common.Tuple;
+import editor.domain.Edge;
 import editor.domain.Node;
 import editor.domain.elements.ColorClass;
 import editor.domain.elements.ConstantID;
+import editor.domain.elements.GspnEdge;
 import editor.domain.elements.GspnPage;
 import editor.domain.elements.ParsedColorSubclass;
 import editor.domain.elements.Place;
+import editor.domain.elements.Transition;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -120,19 +123,6 @@ public class NetLogoFormat {
             }
         }
         
-        // Write agent attributes
-        pw.println(";; Agent attributes");
-        for (String agentClass : agentClasses) {
-            pw.print(agentClass+"-own [");
-            Set<Tuple<String, Integer>> attributes = agentAttrs.get(agentClass);
-            if (attributes != null) {
-                for (Tuple<String, Integer> attr : attributes)
-                    pw.print(attr.x+"_"+attr.y+" ");
-            }
-            pw.println("place myrate]");
-        }
-        pw.println();
-        
         // Sanity check for places
         for (Node node : gspn.nodes) {
             if (node instanceof Place) {
@@ -153,6 +143,96 @@ public class NetLogoFormat {
         // Do not continue if problems were detected so far.
         if (!log.isEmpty())
             return reportLog(log, pw);
+
+        // Pre-process all input arcs. 
+        //  edge -> tuples of color variables
+        Map<Edge, ArrayList<String[]>> edge2Agents = new HashMap<>(); 
+        //  transition -> agents involved
+        Map<Transition, Set<String>> trn2agents = new HashMap<>();
+        // transition -> input edges
+        Map<Transition, Set<GspnEdge>> trn2inputTmp = new HashMap<>();
+        Map<Transition, GspnEdge[]> trn2input = new HashMap<>();
+        // Each arc expresses a sum of agents involved in the transition
+        for (Edge edge : gspn.edges) {
+            if (edge instanceof GspnEdge) {
+                GspnEdge e = (GspnEdge)edge;
+                if (e.getConnectedPlace().isInNeutralDomain())
+                    continue;
+                ColorClass dom = e.getConnectedPlace().getColorDomain();
+                assert domain2attrs.containsKey(dom);
+                // Separate sum terms
+                ArrayList<String[]> tuples = new ArrayList<>();
+                for (String tupleTerm : e.getMultiplicity().split("\\+")) {
+                    tupleTerm = tupleTerm.strip();
+                    if (!tupleTerm.startsWith("<") || !tupleTerm.endsWith(">")) {
+                        log.add("Could not separate terms of \""+e.getMultiplicity()+"\": error in: "+tupleTerm);
+                        break;
+                    }
+                    tupleTerm = tupleTerm.substring(1, tupleTerm.length()-1);
+                    String[] colorVars = tupleTerm.split(",");
+                    for (int i=0; i<colorVars.length; i++)
+                        colorVars[i] = colorVars[i].strip();
+                    tuples.add(colorVars);
+                    
+                    Transition trn = e.getConnectedTransition();
+                    if (!trn2agents.containsKey(trn)) {
+                        trn2agents.put(trn, new HashSet<>());
+                        trn2inputTmp.put(trn, new HashSet<>());
+                    }
+                    trn2agents.get(trn).add(colorVars[0]);
+                    trn2inputTmp.get(trn).add(e);
+                }
+                edge2Agents.put(edge, tuples);
+            }
+        }
+        /*for (Map.Entry<Edge, ArrayList<String[]>> ee : edge2Agents.entrySet()) {
+            GspnEdge e2 = (GspnEdge)ee.getKey();
+            System.out.println("edge "+e2.getEdgeKind()+
+                    " "+e2.getConnectedPlace().getUniqueName()+
+                    " "+e2.getConnectedTransition().getUniqueName());
+            ColorClass dom = e2.getConnectedPlace().getColorDomain();
+            String[] attrs = domain2attrs.get(dom);
+            for (String[] tuple : ee.getValue()) {
+                assert attrs.length == tuple.length;
+                System.out.print("   agent: "+tuple[0]+"  attributes: ");
+                for (int i=1; i<tuple.length; i++)
+                    System.out.print(tuple[i]+"("+attrs[i]+") ");
+                System.out.println("");
+            }
+        }//*/
+        
+        for (Map.Entry<Transition, Set<GspnEdge>> ee : trn2inputTmp.entrySet())
+            trn2input.put(ee.getKey(), ee.getValue().toArray(new GspnEdge[ee.getValue().size()]));
+        trn2inputTmp = null;
+        
+        // agent -> transitions for which it is the leader
+        Map<String, Set<Transition>> leadersOfTrn = new HashMap<>();
+        Map<Tuple<String, Transition>, Integer> leaderTrnPos = new HashMap<>();
+        for (String agentClass : agentClasses) 
+            leadersOfTrn.put(agentClass, new HashSet<>());
+        
+        for (Map.Entry<Transition, GspnEdge[]> ee : trn2input.entrySet()) {
+            String agentClass = ee.getValue()[0].getConnectedPlace().getColorDomain().getColorClassName(0);
+            leaderTrnPos.put(new Tuple<>(agentClass, ee.getKey()), leadersOfTrn.get(agentClass).size());
+            leadersOfTrn.get(agentClass).add(ee.getKey());
+            System.out.println(agentClass+" is leader of transition "+ee.getKey().getUniqueName());
+        }
+
+
+        ///////////////////////////////////////////
+        // Write agent attributes
+        pw.println(";; Agent attributes");
+        for (String agentClass : agentClasses) {
+            pw.print(agentClass+"-own [");
+            Set<Tuple<String, Integer>> attributes = agentAttrs.get(agentClass);
+            if (attributes != null) {
+                for (Tuple<String, Integer> attr : attributes)
+                    pw.print(attr.x+"_"+attr.y+" ");
+            }
+            pw.println("place myrate]");
+        }
+        pw.println();
+        
         
         // Model Setup procedure
         pw.println(";; model setup procedure");
@@ -197,10 +277,99 @@ public class NetLogoFormat {
         }
         pw.println("end\n");
         
+        
+        // Ask all agents to initialize their myrate list
+        pw.println(";; ask agents to initialize myrate");
+        for (String agentClass : agentClasses) {
+            Set<Transition> leadersOf = leadersOfTrn.get(agentClass);
+            if (leadersOf.size() > 0) {
+                pw.print("ask "+agentClass+" [set myrate list");
+                for (int i=0; i<leadersOf.size(); i++)
+                    pw.print(" 0");
+                pw.println("]");
+            }
+        }
+//        pw.println("ask turtles [set myrate [] ]");
+        pw.println();
+        
+        
         // Convert transitions
+        for (Node node : gspn.nodes) {
+            if (node instanceof Transition) {
+                Transition trn = (Transition)node;
+                int ind=0;
+                int agentNum = 1;
+                
+                GspnEdge[] allEdges = trn2input.get(trn);
+                String leaderAgentClass = allEdges[0].getConnectedPlace().getColorDomain().getColorClassName(0);
+                
+                // cycle through all input edges
+                for (GspnEdge e : allEdges) {
+                    ArrayList<String[]> agentsOfEdge = edge2Agents.get(e);
+                    for (String[] colorVars : agentsOfEdge) {
+                        Place plc = e.getConnectedPlace();
+                        ColorClass dom = plc.getColorDomain();
+                        String[] attrs = domain2attrs.get(dom);
+                        String guard = "";
+                        if (agentNum == allEdges.length) {
+                            guard = " AND ...guard..."; // TODO: missing guard
+                        }
+                        
+                        indent(pw, ind); 
+                        pw.println("let A"+agentNum+" "+dom.getColorClassName(0)+
+                                 " with [place = "+plc.getUniqueName()+guard+"]"); 
+                        indent(pw, ind); pw.println("if-else A"+agentNum+" = nobody ["+
+                                (agentNum==1 ? " set myrate  lput 0 myrate " : " ")+"]");
+                        indent(pw, ind); pw.println("["); ind++;
+                        
+                        if (agentNum == allEdges.length) { // last agent set
+                            indent(pw, ind); pw.println("set countInstances  countInstances + (count A"+agentNum+")");
+                        }
+                        else {
+                            // ask the selected agent
+                            indent(pw, ind);  pw.println("ask A"+agentNum+" ["); ind++;
+                            if (agentNum == 1) {
+                                 indent(pw, ind); pw.println("set countInstances 0");
+                            }
+                            // name self
+                            indent(pw, ind); 
+                            pw.println("let "+colorVars[0]+" [who] of self");
+                            // name all attributes
+                            for (int i=1; i<attrs.length; i++) {
+                                indent(pw, ind); 
+                                pw.println("let "+colorVars[i]+" ["+attrs[i]+"] of self");
+                            }
+                        }
+                        agentNum++;
+                    }
+                }
+                
+                while (ind > 0) {
+                    if (ind == 2) {
+                        // determine the transition index inside leadersOfTrn
+                        Tuple<String, Transition> pp = new Tuple<>(leaderAgentClass, trn);
+                        int myratePos = leaderTrnPos.get(pp);
+                        indent(pw, ind); pw.println("replace-item "+myratePos+" myrate countInstances");
+                    }
+                    ind--;
+                    indent(pw, ind); pw.println("]");
+                }
+                /*indent = "  "; agentNum = 0;
+                for (GspnEdge e : allEdges) {
+                    indent += "  ";
+//                    pw.println("]");
+                }*/
+            }
+        }
         
         
         return reportLog(log, pw);
+    }
+    
+    
+    private static void indent(PrintWriter pw, int indentLevel) {
+        for (int i=0; i<indentLevel; i++)
+            pw.print("  ");
     }
     
     
