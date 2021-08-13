@@ -306,9 +306,9 @@ public class NetLogoFormat {
                 
                 ArrayList<Tuple<GspnEdge, String[]>> allInAgents = trn2inAgents.get(trn);
                 String leaderAgentClass = allInAgents.get(0).x.getConnectedPlace().getColorDomain().getColorClassName(0);
+                pw.println(";; transition "+trn.getUniqueName());
                 
-                
-                // cycle through all input edges
+                // cycle through all input agents
                 for (Tuple<GspnEdge, String[]> agent : allInAgents) {
                     Place plc = agent.x.getConnectedPlace();
                     ColorClass dom = plc.getColorDomain();
@@ -321,7 +321,6 @@ public class NetLogoFormat {
                         String nlGuard = trn.convertGuardLang(context, null, ExpressionLanguage.NETLOGO);
 //                        System.out.println(trn.getGuard()+" ==> "+nlGuard);
                         for (Map.Entry<String, String> ee : varConv.entrySet()) {
-//                            System.out.println("replacing "+ee.getKey()+" with "+ee.getValue());
                             nlGuard = nlGuard.replace(ee.getKey(), ee.getValue());
                         }
                         guard = " AND " + nlGuard; 
@@ -355,7 +354,6 @@ public class NetLogoFormat {
                         }
                     }
                     agentNum++;
-//                    }
                 }
                 
                 while (ind > 0) {
@@ -368,11 +366,6 @@ public class NetLogoFormat {
                     ind--;
                     indent(pw, ind); pw.println("]");
                 }
-                /*indent = "  "; agentNum = 0;
-                for (GspnEdge e : allEdges) {
-                    indent += "  ";
-//                    pw.println("]");
-                }*/
             }
         }
         
