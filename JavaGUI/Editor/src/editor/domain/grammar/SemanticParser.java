@@ -92,6 +92,10 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                     if (obj instanceof ColorVar)
                         return "<variable refvariable=\""+((ColorVar) obj).getUniqueName()+"\"/>";
                     throw new UnsupportedOperationException("Cannot convert entity in PNML format.");
+                case NETLOGO:
+                    if (obj instanceof ColorVar)
+                        return "($"+((ColorVar) obj).getUniqueName()+"$)";
+                    throw new UnsupportedOperationException("Cannot convert entity in PNML format.");                    
                 default:
                     throw new UnsupportedOperationException("getObjectFormula");
             }
@@ -257,6 +261,30 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new UnaryFunct(true, ExprLangParser.NOT, "<not><subterm>", "</subterm></not>"),
     };
     
+    static final UnaryFunct netlogoUnaryFunctions[] = {
+        new UnaryFunct(true, ExprLangParser.OP_PAREN, "( ", " )"),
+        new UnaryFunct(false, ExprLangParser.SUB, " - ", OperatorPos.PREFIX_SIMPLETERM),
+        new UnaryFunct(false, ExprLangParser.POSTINCR, " + 1", OperatorPos.POSTFIX_SIMPLETERM),
+        new UnaryFunct(false, ExprLangParser.POSTDECR, " - 1", OperatorPos.POSTFIX_SIMPLETERM),
+//        new UnaryFunct(true, ExprLangParser.CEIL_FN, "\\left\\lceil ", " \\right\\rceil"),
+//        new UnaryFunct(true, ExprLangParser.FLOOR_FN, "\\left\\lfloor ", " \\right\\rfloor"),
+//        new UnaryFunct(true, ExprLangParser.ROUND_FN, "\\mathrm{Round}\\left[ ", " \\right]"),
+//        new UnaryFunct(true, ExprLangParser.ABS_FN, "\\left\\vert ", " \\right\\vert"),
+//        new UnaryFunct(false, ExprLangParser.FACTORIAL_FN, "!", OperatorPos.POSTFIX_SIMPLETERM),
+//        new UnaryFunct(false, ExprLangParser.EXP_FN, "\\mathrm{e}^{", "}"),
+//        new UnaryFunct(true, ExprLangParser.SQRT_FN, "\\sqrt{", " }"),
+//        new UnaryFunct(false, ExprLangParser.SIN_FN, "\\sin{", " }"),
+//        new UnaryFunct(false, ExprLangParser.COS_FN, "\\cos{", " }"),
+//        new UnaryFunct(false, ExprLangParser.TAN_FN, "\\tan{", " }"),
+//        new UnaryFunct(false, ExprLangParser.ARCSIN_FN, "\\asin{", " }"),
+//        new UnaryFunct(false, ExprLangParser.ARCCOS_FN, "\\acos{", " }"),
+//        new UnaryFunct(false, ExprLangParser.ARCTAN_FN, "\\atan{", " }"),
+        new UnaryFunct(false, ExprLangParser.NOT, "NOT ", OperatorPos.PREFIX_SIMPLETERM),
+//        new UnaryFunct(true, ExprLangParser.MULTISET_CARD, "\\mathrm{Card}[", " ]"),
+//        new UnaryFunct(true, ExprLangParser.MULTISET_SUBCLASS, "\\mathrm{Subclass}[", " ]"),
+//        new UnaryFunct(true, ExprLangParser.COLOR_ORDINAL, "\\mathrm{CN}[", "]"),
+    };
+    
     
     public FormattedFormula formatUnaryFn(int unaryIntRealFn, FormattedFormula expr) {
         UnaryFunct[] functs;
@@ -267,6 +295,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case APNN:      functs = apnnUnaryFunctions;        break;
             case GRML:      functs = grmlUnaryFunctions;        break;
             case PNML:      functs = pnmlUnaryFunctions;        break;
+            case NETLOGO:   functs = netlogoUnaryFunctions;     break;
             default:
                 throw new UnsupportedOperationException("formatUnaryFn: Unsupported language");
         }
@@ -485,6 +514,39 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new BinaryFunct(false, ExprLangParser.GREATER, "<greaterthan><subterm>","</subterm><subterm>","</subterm></greaterthan>", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.GREATER_EQ, "<greaterthanorequal><subterm>","</subterm><subterm>","</subterm></greaterthanorequal>", OperatorPos.FUNCTION),
     };
+    static final BinaryFunct netlogoBinaryFunctions[] = {
+        new BinaryFunct(false, ExprLangParser.ADD, " + ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.SUB, " - ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.MUL, " * ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.DIV, " / ", OperatorPos.FUNCTION),
+        
+//        new BinaryFunct(true, ExprLangParser.MAX_FN, "Max[", ", ", "]", OperatorPos.FUNCTION),
+//        new BinaryFunct(true, ExprLangParser.MIN_FN, "Min[", ", ", "]", OperatorPos.FUNCTION),
+//        new BinaryFunct(false, ExprLangParser.MOD_FN, "Mod[", ", ", "]", OperatorPos.FUNCTION),
+//        new BinaryFunct(true, ExprLangParser.BINOMIAL_FN, "Binom[ ", ", ", "]", OperatorPos.FUNCTION),
+//        new BinaryFunct(false, ExprLangParser.POW_FN, "Pow[", ", ", "]", OperatorPos.FUNCTION_FIRST_SIMPLETERM),
+//        new BinaryFunct(true, ExprLangParser.FRACT_FN, " / ", OperatorPos.FUNCTION),
+        
+        new BinaryFunct(false, ExprLangParser.AND, " AND ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.OR, " OR ", OperatorPos.FUNCTION),
+//        new BinaryFunct(false, ExprLangParser.IMPLY, " -> ", OperatorPos.FUNCTION),
+//        new BinaryFunct(false, ExprLangParser.BIIMPLY, " <-> ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.EQUAL, " = ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.NOT_EQUAL, " != ", OperatorPos.FUNCTION),
+//        new BinaryFunct(false, ExprLangParser.LESS, " < ", OperatorPos.FUNCTION),
+//        new BinaryFunct(false, ExprLangParser.LESS_EQ, " <= ", OperatorPos.FUNCTION),
+//        new BinaryFunct(false, ExprLangParser.GREATER, " > ", OperatorPos.FUNCTION),
+//        new BinaryFunct(false, ExprLangParser.GREATER_EQ, " >= ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.CONTAINS, " ( member? ", " ", " )", OperatorPos.FUNCTION_FIRST_SIMPLETERM),
+        new BinaryFunct(false, ExprLangParser.DONT_CONTAINS, " ( NOT member? ", " ", " )", OperatorPos.FUNCTION_FIRST_SIMPLETERM),
+        // General event PDF functions
+//        new BinaryFunct(true, ExprLangParser.RECT_FN, "R[", ", ", "]", OperatorPos.FUNCTION),
+//        new BinaryFunct(true, ExprLangParser.UNIFORM_FN, "Uniform[", ", ", "]", OperatorPos.FUNCTION),
+//        new BinaryFunct(true, ExprLangParser.TRIANGULAR_FN, "Triangular[", ", ", "]", OperatorPos.FUNCTION),
+//        new BinaryFunct(true, ExprLangParser.ERLANG_FN, "Erlang[", ", ", "]", OperatorPos.FUNCTION),
+//        new BinaryFunct(true, ExprLangParser.TRUNCATED_EXP_FN, "TruncatedExp[", ", ", "]", OperatorPos.FUNCTION),
+//        new BinaryFunct(true, ExprLangParser.PARETO_FN, "Pareto[", ", ", "]", OperatorPos.FUNCTION),
+    };
         
     public FormattedFormula formatBinaryFn(int binaryIntFn, FormattedFormula expr0, 
                                            FormattedFormula expr1) 
@@ -497,6 +559,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case APNN:      functs = apnnBinaryFunctions;     break;
             case GRML:      functs = grmlBinaryFunctions;     break;
             case PNML:      functs = pnmlBinaryFunctions;     break;
+            case NETLOGO:   functs = netlogoBinaryFunctions;     break;
             default:
                 throw new UnsupportedOperationException("formatBinaryFn: Unsupported language");
         }
@@ -1444,6 +1507,9 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                         break;
                     case PNML:
                         throw new UnsupportedOperationException("Static subclasses are not supporeted in PNML.");
+                    case NETLOGO:
+                        altId = id;
+                        break;                        
                     default:
                         throw new UnsupportedOperationException();
                 }
@@ -1888,6 +1954,11 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                     buffer.append("<attribute name=\"intValue\">1</attribute>");
                 buffer.append("</attribute><attribute name=\"tokenProfile\">");
                 break;
+            case NETLOGO:
+                if (mult != null)
+                    throw new UnsupportedOperationException("Tuple multiplicity is not supported!");
+                buffer.append("<");
+                break;
             default:
                 throw new UnsupportedOperationException("visitMultiSetDef");
         }
@@ -1931,6 +2002,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             }
             switch (lang) {
                 case LATEX:
+                case NETLOGO:
                     if (count > 0)
                         buffer.append(", ");
                     buffer.append(msetElem.getFormula());
@@ -1984,6 +2056,9 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 break;
             case GRML:
                 buffer.append("</attribute></attribute>"); // tokenProfile, token
+                break;
+            case NETLOGO:
+                buffer.append(">");
                 break;
             default:
                 throw new UnsupportedOperationException();

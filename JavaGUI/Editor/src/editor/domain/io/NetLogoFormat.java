@@ -15,6 +15,8 @@ import editor.domain.elements.GspnPage;
 import editor.domain.elements.ParsedColorSubclass;
 import editor.domain.elements.Place;
 import editor.domain.elements.Transition;
+import editor.domain.grammar.ExpressionLanguage;
+import editor.domain.grammar.ParserContext;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,7 +34,9 @@ import java.util.Set;
 public class NetLogoFormat {
  
     public static String export(GspnPage gspn, File file, 
-                                String[] agentsColorList, boolean verbose) 
+                                String[] agentsColorList, 
+                                ParserContext context,
+                                boolean verbose) 
             throws Exception 
     {
         ArrayList<String> log = new ArrayList<>();
@@ -150,8 +154,9 @@ public class NetLogoFormat {
         //  transition -> agents involved
         Map<Transition, Set<String>> trn2agents = new HashMap<>();
         // transition -> input edges
-        Map<Transition, Set<GspnEdge>> trn2inputTmp = new HashMap<>();
-        Map<Transition, GspnEdge[]> trn2input = new HashMap<>();
+//        Map<Transition, Set<GspnEdge>> trn2inputTmp = new HashMap<>();
+//        Map<Transition, GspnEdge[]> trn2input = new HashMap<>();
+        Map<Transition, ArrayList<Tuple<GspnEdge, String[]>>> trn2inAgents = new HashMap<>();
         // Each arc expresses a sum of agents involved in the transition
         for (Edge edge : gspn.edges) {
             if (edge instanceof GspnEdge) {
@@ -160,27 +165,32 @@ public class NetLogoFormat {
                     continue;
                 ColorClass dom = e.getConnectedPlace().getColorDomain();
                 assert domain2attrs.containsKey(dom);
+                
+                String nlMult = e.convertMultiplicityLang(context, ExpressionLanguage.NETLOGO);
+//                System.out.println(e.getMultiplicity()+" ==> "+nlMult);
+                String[] allTupleTerms = splitTupleSum(nlMult, log);
                 // Separate sum terms
                 ArrayList<String[]> tuples = new ArrayList<>();
-                for (String tupleTerm : e.getMultiplicity().split("\\+")) {
-                    tupleTerm = tupleTerm.strip();
-                    if (!tupleTerm.startsWith("<") || !tupleTerm.endsWith(">")) {
-                        log.add("Could not separate terms of \""+e.getMultiplicity()+"\": error in: "+tupleTerm);
-                        break;
-                    }
-                    tupleTerm = tupleTerm.substring(1, tupleTerm.length()-1);
+                for (String tupleTerm : allTupleTerms) {
+//                    if (!tupleTerm.startsWith("<") || !tupleTerm.endsWith(">")) {
+//                        log.add("Could not separate terms of \""+e.getMultiplicity()+"\": error in: "+tupleTerm);
+//                        break;
+//                    }
+//                    tupleTerm = tupleTerm.substring(1, tupleTerm.length()-1);
                     String[] colorVars = tupleTerm.split(",");
                     for (int i=0; i<colorVars.length; i++)
-                        colorVars[i] = colorVars[i].strip();
+                        colorVars[i] = stripVarTerm(colorVars[i], log);
                     tuples.add(colorVars);
                     
                     Transition trn = e.getConnectedTransition();
                     if (!trn2agents.containsKey(trn)) {
                         trn2agents.put(trn, new HashSet<>());
-                        trn2inputTmp.put(trn, new HashSet<>());
+//                        trn2inputTmp.put(trn, new HashSet<>());
+                        trn2inAgents.put(trn, new ArrayList<>());
                     }
                     trn2agents.get(trn).add(colorVars[0]);
-                    trn2inputTmp.get(trn).add(e);
+//                    trn2inputTmp.get(trn).add(e);
+                    trn2inAgents.get(trn).add(new Tuple<>(e, colorVars));
                 }
                 edge2Agents.put(edge, tuples);
             }
@@ -201,9 +211,9 @@ public class NetLogoFormat {
             }
         }//*/
         
-        for (Map.Entry<Transition, Set<GspnEdge>> ee : trn2inputTmp.entrySet())
-            trn2input.put(ee.getKey(), ee.getValue().toArray(new GspnEdge[ee.getValue().size()]));
-        trn2inputTmp = null;
+//        for (Map.Entry<Transition, Set<GspnEdge>> ee : trn2inputTmp.entrySet()) 
+//            trn2input.put(ee.getKey(), ee.getValue().toArray(new GspnEdge[ee.getValue().size()]));
+//        trn2inputTmp = null;
         
         // agent -> transitions for which it is the leader
         Map<String, Set<Transition>> leadersOfTrn = new HashMap<>();
@@ -211,8 +221,8 @@ public class NetLogoFormat {
         for (String agentClass : agentClasses) 
             leadersOfTrn.put(agentClass, new HashSet<>());
         
-        for (Map.Entry<Transition, GspnEdge[]> ee : trn2input.entrySet()) {
-            String agentClass = ee.getValue()[0].getConnectedPlace().getColorDomain().getColorClassName(0);
+        for (Map.Entry<Transition, ArrayList<Tuple<GspnEdge, String[]>>> ee : trn2inAgents.entrySet()) {
+            String agentClass = ee.getValue().get(0).x.getConnectedPlace().getColorDomain().getColorClassName(0);
             leaderTrnPos.put(new Tuple<>(agentClass, ee.getKey()), leadersOfTrn.get(agentClass).size());
             leadersOfTrn.get(agentClass).add(ee.getKey());
             System.out.println(agentClass+" is leader of transition "+ee.getKey().getUniqueName());
@@ -252,13 +262,6 @@ public class NetLogoFormat {
                 
                 String[] allSumTerms = splitTupleSum(initMark, log);
                 for (String sumTerm : allSumTerms) { 
-//                    sumTerm = sumTerm.trim();
-//                    System.out.println("sumTerm = "+sumTerm);
-//                    if (sumTerm.charAt(0)!='<' || sumTerm.charAt(sumTerm.length()-1)!='>') {
-//                        log.add("Invalid element "+sumTerm+" in initial marking of "+pl.getUniqueName());
-//                        continue;
-//                    }
-//                    String sumTuple = sumTerm.substring(1, sumTerm.length() - 1);
                     String[] sumTupleEl = sumTerm.split(",");
                     int numSproutedAgents = countColorNum(plDom.getColorClass(0), sumTupleEl[0], log);
 
@@ -297,51 +300,62 @@ public class NetLogoFormat {
         for (Node node : gspn.nodes) {
             if (node instanceof Transition) {
                 Transition trn = (Transition)node;
+                Map<String, String> varConv = new HashMap<>();
                 int ind=0;
                 int agentNum = 1;
                 
-                GspnEdge[] allEdges = trn2input.get(trn);
-                String leaderAgentClass = allEdges[0].getConnectedPlace().getColorDomain().getColorClassName(0);
+                ArrayList<Tuple<GspnEdge, String[]>> allInAgents = trn2inAgents.get(trn);
+                String leaderAgentClass = allInAgents.get(0).x.getConnectedPlace().getColorDomain().getColorClassName(0);
+                
                 
                 // cycle through all input edges
-                for (GspnEdge e : allEdges) {
-                    ArrayList<String[]> agentsOfEdge = edge2Agents.get(e);
-                    for (String[] colorVars : agentsOfEdge) {
-                        Place plc = e.getConnectedPlace();
-                        ColorClass dom = plc.getColorDomain();
-                        String[] attrs = domain2attrs.get(dom);
-                        String guard = "";
-                        if (agentNum == allEdges.length) {
-                            guard = " AND ...guard..."; // TODO: missing guard
+                for (Tuple<GspnEdge, String[]> agent : allInAgents) {
+                    Place plc = agent.x.getConnectedPlace();
+                    ColorClass dom = plc.getColorDomain();
+                    String[] attrs = domain2attrs.get(dom);
+                    String guard = "";
+                    if (agentNum == allInAgents.size()) {
+                        varConv.put("($"+agent.y[0]+"$)", "[who] of self");
+                        for (int i=1; i<agent.y.length; i++)
+                            varConv.put("($"+agent.y[i]+"$)", "["+attrs[i]+"] of self");
+                        String nlGuard = trn.convertGuardLang(context, null, ExpressionLanguage.NETLOGO);
+//                        System.out.println(trn.getGuard()+" ==> "+nlGuard);
+                        for (Map.Entry<String, String> ee : varConv.entrySet()) {
+//                            System.out.println("replacing "+ee.getKey()+" with "+ee.getValue());
+                            nlGuard = nlGuard.replace(ee.getKey(), ee.getValue());
                         }
-                        
-                        indent(pw, ind); 
-                        pw.println("let A"+agentNum+" "+dom.getColorClassName(0)+
-                                 " with [place = "+plc.getUniqueName()+guard+"]"); 
-                        indent(pw, ind); pw.println("if-else A"+agentNum+" = nobody ["+
-                                (agentNum==1 ? " set myrate  lput 0 myrate " : " ")+"]");
-                        indent(pw, ind); pw.println("["); ind++;
-                        
-                        if (agentNum == allEdges.length) { // last agent set
-                            indent(pw, ind); pw.println("set countInstances  countInstances + (count A"+agentNum+")");
-                        }
-                        else {
-                            // ask the selected agent
-                            indent(pw, ind);  pw.println("ask A"+agentNum+" ["); ind++;
-                            if (agentNum == 1) {
-                                 indent(pw, ind); pw.println("set countInstances 0");
-                            }
-                            // name self
-                            indent(pw, ind); 
-                            pw.println("let "+colorVars[0]+" [who] of self");
-                            // name all attributes
-                            for (int i=1; i<attrs.length; i++) {
-                                indent(pw, ind); 
-                                pw.println("let "+colorVars[i]+" ["+attrs[i]+"] of self");
-                            }
-                        }
-                        agentNum++;
+                        guard = " AND " + nlGuard; 
                     }
+
+                    indent(pw, ind); 
+                    pw.println("let A"+agentNum+" "+dom.getColorClassName(0)+
+                             " with [place = "+plc.getUniqueName()+guard+"]"); 
+                    indent(pw, ind); pw.println("if-else A"+agentNum+" = nobody ["+
+                            (agentNum==1 ? " set myrate  lput 0 myrate " : " ")+"]");
+                    indent(pw, ind); pw.println("["); ind++;
+
+                    if (agentNum == allInAgents.size()) { // last agent set
+                        indent(pw, ind); pw.println("set countInstances  countInstances + (count A"+agentNum+")");
+                    }
+                    else {
+                        // ask the selected agent
+                        indent(pw, ind);  pw.println("ask A"+agentNum+" ["); ind++;
+                        if (agentNum == 1) {
+                             indent(pw, ind); pw.println("set countInstances 0");
+                        }
+                        // name self
+                        indent(pw, ind); 
+                        pw.println("let "+agent.y[0]+" [who] of self");
+                        varConv.put("($"+agent.y[0]+"$)", agent.y[0]);
+                        // name all attributes
+                        for (int i=1; i<agent.y.length; i++) {
+                            indent(pw, ind); 
+                            pw.println("let "+agent.y[i]+" ["+attrs[i]+"] of self");
+                            varConv.put("($"+agent.y[i]+"$)", agent.y[i]);
+                        }
+                    }
+                    agentNum++;
+//                    }
                 }
                 
                 while (ind > 0) {
@@ -397,6 +411,21 @@ public class NetLogoFormat {
             }
         }
         return tuples.toArray(new String[tuples.size()]);
+    }
+    
+    // Given a term in the form " ($var$)  ", returns "var"
+    private static String stripVarTerm(String term, ArrayList<String> log) {
+        term = term.strip();
+        if (term.startsWith("($") && term.endsWith("$)")) {
+            term = term.substring(2, term.length()-2);
+            if (term.contains("$")) {
+                log.add("The term "+term+" was not parsed correctly.");
+            }
+        }
+        else {
+            log.add("Could not identify the variable in "+term);
+        }
+        return term;
     }
     
     

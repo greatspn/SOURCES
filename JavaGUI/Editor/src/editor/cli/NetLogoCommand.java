@@ -123,7 +123,7 @@ public class NetLogoCommand {
         long saveStart = System.currentTimeMillis();
         System.out.println("");
         File netLogoFile = new File(outBaseName);
-        String log = NetLogoFormat.export(gspn, netLogoFile, agentsColorList, verbose);
+        String log = NetLogoFormat.export(gspn, netLogoFile, agentsColorList, context, verbose);
         
         if (log != null) {        
             System.out.println(log);
