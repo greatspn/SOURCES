@@ -173,7 +173,8 @@ LIBRARY_SEARCH_DIRS := /usr/local/lib \
 					   /usr/lib \
 					   /usr/lib64 \
 					   /opt/homebrew/lib \
-					   /usr/lib/x86_64-linux-gnu
+					   /usr/lib/x86_64-linux-gnu \
+					   /usr/local/lib/x86_64-linux-gnu
 # define HAS_$(1) if file $(2) of library named $(3) is found in any library search path
 define search_library
 $(foreach libdir,$(LIBRARY_SEARCH_DIRS),  \
