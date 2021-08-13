@@ -97,6 +97,17 @@ If not, modify the `/etc/ld.so.conf` and/or the environmental variable `LD_LIBRA
 
 **Missing GraphMDP**: Only in the case you are interested in solution of MDP systems, you can find the optional dependency GraphMDP [here](http://www.di.unito.it/~greatspn/graphMDP-0.5.tar.gz). Note that this library is currently unmantained, and it could be hard to compile.
 
+**Optional dependency: OGDF**
+[OGDF](https://ogdf.uos.de/) is used for the automatic Petri net relayout feature of the graphical editor. 
+It can be installed using these commands:
+```
+git clone https://github.com/ogdf/ogdf
+cd ogdf
+./makeMakefile.sh
+mkdir build && cd build && cmake .. && make
+sudo make install
+```
+
 
 ### macOS installation instructions:
 
