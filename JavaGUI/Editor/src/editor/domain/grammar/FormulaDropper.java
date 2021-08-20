@@ -18,7 +18,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
  * @author elvio
  */
 public class FormulaDropper extends SemanticParser {
-//    FormulaEvaluator eval;
     Set<String> knownSymbols;
     
     public FormulaDropper(ParserContext context, int parseFlags, 
@@ -28,50 +27,8 @@ public class FormulaDropper extends SemanticParser {
         super(context, parseFlags);
         this.lang = lang;
         this.knownSymbols = knownSymbols;
-//        this.eval = new FormulaEvaluator(context, args);
     }
 
-//    @Override
-//    public FormattedFormula visit(ParseTree pt) {
-//        if (applyReduce) {
-//            try {
-//                // Try compute the value of this expression
-//                EvaluatedFormula result = eval.visit(pt);
-//                // Return the evaluated value;
-//                String reduced = result.toStringFormat(lang, null);
-//                FormulaPayload payload = null;
-//                if (result.isMultiSet())
-//                    payload = new MultiSetElemType(result.getDomain());
-//                return new FormattedFormula(lang, result.isScalar(), reduced, payload);
-//            }
-//            catch (EvaluationException e) {
-//                // ignore evaluation error, means that it is not reducible
-//            }
-//        }
-//        // Not evaluatable, return the expression as it is
-//        return super.visit(pt);        
-//    }
-    
-//    @Override
-//    public FormattedFormula visit(ParseTree pt) {
-//        if (applyReduce) {
-//            try {
-//                // Try compute the value of this expression
-//                EvaluatedFormula result = eval.visit(pt);
-//                // Return the evaluated value;
-//                String reduced = result.toStringFormat(lang, null);
-//                FormulaPayload payload = null;
-//                if (result.isMultiSet())
-//                    payload = new MultiSetElemType(result.getDomain());
-//                return new FormattedFormula(lang, result.isScalar(), reduced, payload);
-//            }
-//            catch (EvaluationException e) {
-//                // ignore evaluation error, means that it is not reducible
-//            }
-//        }
-//        // Not evaluatable, return the expression as it is
-//        return super.visit(pt);        
-//    }
 
     @Override
     public FormattedFormula visitColorVarIdentifier(ExprLangParser.ColorVarIdentifierContext ctx) {
@@ -112,7 +69,7 @@ public class FormulaDropper extends SemanticParser {
             else if (fB.getFormula().equals("False")) // A OR False
                 return fA;
             else
-                return super.visitBoolExprOr(ctx); 
+                return super.visitBoolExprOr(ctx);
         }
     }
 

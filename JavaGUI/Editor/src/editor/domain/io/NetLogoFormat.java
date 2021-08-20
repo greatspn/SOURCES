@@ -216,14 +216,14 @@ public class NetLogoFormat {
 //        trn2inputTmp = null;
         
         // agent -> transitions for which it is the leader
-        Map<String, Set<Transition>> leadersOfTrn = new HashMap<>();
-        Map<Tuple<String, Transition>, Integer> leaderTrnPos = new HashMap<>();
+        Map<String, ArrayList<Transition>> leadersOfTrn = new HashMap<>();
+//        Map<Tuple<String, Transition>, Integer> leaderTrnPos = new HashMap<>();
         for (String agentClass : agentClasses) 
-            leadersOfTrn.put(agentClass, new HashSet<>());
+            leadersOfTrn.put(agentClass, new ArrayList<>());
         
         for (Map.Entry<Transition, ArrayList<Tuple<GspnEdge, String[]>>> ee : trn2inAgents.entrySet()) {
             String agentClass = ee.getValue().get(0).x.getConnectedPlace().getColorDomain().getColorClassName(0);
-            leaderTrnPos.put(new Tuple<>(agentClass, ee.getKey()), leadersOfTrn.get(agentClass).size());
+//            leaderTrnPos.put(new Tuple<>(agentClass, ee.getKey()), leadersOfTrn.get(agentClass).size());
             leadersOfTrn.get(agentClass).add(ee.getKey());
             System.out.println(agentClass+" is leader of transition "+ee.getKey().getUniqueName());
         }
@@ -239,11 +239,12 @@ public class NetLogoFormat {
                 for (Tuple<String, Integer> attr : attributes)
                     pw.print(attr.x+"_"+attr.y+" ");
             }
-            pw.println("place myrate]");
+            pw.println("place myrate totrate]");
         }
         pw.println();
         
         
+        ///////////////////////////////////////////
         // Model Setup procedure
         pw.println(";; model setup procedure");
         pw.println("to setup");
@@ -278,23 +279,27 @@ public class NetLogoFormat {
                 }
             }
         }
+        pw.println("  set time 0.0");
         pw.println("end\n");
         
         
+        ///////////////////////////////////////////
         // Ask all agents to initialize their myrate list
         pw.println(";; ask agents to initialize myrate");
         for (String agentClass : agentClasses) {
-            Set<Transition> leadersOf = leadersOfTrn.get(agentClass);
+            ArrayList<Transition> leadersOf = leadersOfTrn.get(agentClass);
             if (leadersOf.size() > 0) {
                 pw.print("ask "+agentClass+" [set myrate list");
                 for (int i=0; i<leadersOf.size(); i++)
                     pw.print(" 0");
+                pw.print(" set totrate 0.0 ");
                 pw.println("]");
             }
         }
 //        pw.println("ask turtles [set myrate [] ]");
         pw.println();
         
+        ///////////////////////////////////////////
         // Convert transitions
         for (Node node : gspn.nodes) {
             if (node instanceof Transition) {
@@ -314,30 +319,19 @@ public class NetLogoFormat {
                     ColorClass dom = plc.getColorDomain();
                     String[] attrs = domain2attrs.get(dom);
                     String guard = "";
-//                    if (agentNum == allInAgents.size()) {
                     varConv.put("($"+agent.y[0]+"$)", "[who] of self");
                     for (int i=1; i<agent.y.length; i++)
                         varConv.put("($"+agent.y[i]+"$)", "["+attrs[i]+"] of self");
-//                    }
                     
                     for (int i=0; i<agent.y.length; i++)
                         knownVars.add(agent.y[i]);
                     String nlGuard = trn.dropGuardSubTerms(context, knownVars, ExpressionLanguage.NETLOGO);
-//                    String nlGuard = trn.convertGuardLang(context, null, ExpressionLanguage.NETLOGO);
-//                        System.out.println(trn.getGuard()+" ==> "+nlGuard);
                     if (!nlGuard.isEmpty()) {
                         for (Map.Entry<String, String> ee : varConv.entrySet()) {
                             nlGuard = nlGuard.replace(ee.getKey(), ee.getValue());
                         }
-                        guard = " AND " + nlGuard; 
+                        guard = " AND (" + nlGuard + ")"; 
                     }
-                    
-//                    {
-//                        for (int i=0; i<agent.y.length; i++)
-//                            knownVars.add(agent.y[i]);
-//                        String drGuard = trn.dropGuardSubTerms(context, knownVars, ExpressionLanguage.NETLOGO);
-//                        System.out.println("drGuard = "+drGuard);
-//                    }
                     
 
                     indent(pw, ind); 
@@ -373,15 +367,135 @@ public class NetLogoFormat {
                 while (ind > 0) {
                     if (ind == 2) {
                         // determine the transition index inside leadersOfTrn
-                        Tuple<String, Transition> pp = new Tuple<>(leaderAgentClass, trn);
-                        int myratePos = leaderTrnPos.get(pp);
-                        indent(pw, ind); pw.println("replace-item "+myratePos+" myrate countInstances");
+                        int myratePos = leadersOfTrn.get(leaderAgentClass).indexOf(trn);                        
+//                        Tuple<String, Transition> pp = new Tuple<>(leaderAgentClass, trn);
+//                        int myratePos = leaderTrnPos.get(pp);
+                        indent(pw, ind); pw.println("replace-item "+myratePos+" myrate (countInstances * "+trn.getDelay()+")");
                     }
                     ind--;
                     indent(pw, ind); pw.println("]");
                 }
             }
         }
+        pw.println();
+        
+        ///////////////////////////////////////////
+        // Now ask all agents to sum the rates into a single totrate variable
+        pw.println(";; ask agents to update their myrate values, and then update gammatot");
+        pw.println("ask turtles [set totrate sum myrate]");
+        pw.println("set gammatot sum [totrate] of turtles");
+        pw.println("let increment ((-1 / gammatot) * ln(random - float 1))");
+        pw.println("set time  time + increment");
+        pw.println();
+
+        // Select the next agent that will perform an action
+        pw.println(";; select the next agent that will perform an action");
+        pw.println("let chosenAgent rnd:weighted-one-of turtles [totrate]");
+        pw.println();
+        
+        
+        ///////////////////////////////////////////
+        // Switch over the chosen agent class to activate a transition firing
+        pw.println(";; switch over the class of the chosen agent");
+        pw.println("ask chosenAgent [(");
+        pw.println("  if-else ");
+        for (String agentClass : agentClasses) {
+            ArrayList<Transition> leadersOf = leadersOfTrn.get(agentClass);
+            if (leadersOf.isEmpty())
+                continue; // this agent is never a leader of any transition
+            pw.println("  if-"+agentClass+"? myself [");
+            // select the enabling transition
+            pw.println("    ;; select the next action performed by the chosen "+agentClass);
+            pw.println("    let indices  n-values (length myrate) [ i -> i ]");
+            pw.println("    let pairs (map list indices myrate)");
+            pw.println("    let nextaction  first rnd:weighted-one-of-list pairs [ [p] -> last p ]");
+            pw.println("    (");
+            pw.println("      if-else");
+            // evaluate the transitions where the agent is a leader
+            for (int iit=0; iit<leadersOf.size(); iit++) {
+                Transition trn = leadersOf.get(iit);
+                pw.println("      nextaction = "+iit+" [");
+                pw.println("        ;; chosenAgent is leader of "+trn.getUniqueName());
+                int ind = 4;
+                pw.println("        set targetRate random-float (item "+iit+" myrate)");
+                
+                
+                
+                // cycle through all input agents
+                ArrayList<Tuple<GspnEdge, String[]>> allInAgents = trn2inAgents.get(trn);
+                Map<String, String> varConv = new HashMap<>();
+                Set<String> knownVars = new HashSet<>();
+                int agentNum = 1;
+                for (Tuple<GspnEdge, String[]> agent : allInAgents) {
+                    Place plc = agent.x.getConnectedPlace();
+                    ColorClass dom = plc.getColorDomain();
+                    String[] attrs = domain2attrs.get(dom);
+                    String guard = "";
+                    varConv.put("($"+agent.y[0]+"$)", "[who] of self");
+                    for (int i=1; i<agent.y.length; i++)
+                        varConv.put("($"+agent.y[i]+"$)", "["+attrs[i]+"] of self");
+                    
+                    for (int i=0; i<agent.y.length; i++)
+                        knownVars.add(agent.y[i]);
+                    String nlGuard = trn.dropGuardSubTerms(context, knownVars, ExpressionLanguage.NETLOGO);
+                    if (!nlGuard.isEmpty()) {
+                        for (Map.Entry<String, String> ee : varConv.entrySet()) {
+                            nlGuard = nlGuard.replace(ee.getKey(), ee.getValue());
+                        }
+                        guard = " AND (" + nlGuard + ")"; 
+                    }
+                    
+
+                    indent(pw, ind); 
+                    pw.println("let A"+agentNum+" "+dom.getColorClassName(0)+
+                             " with [place = "+plc.getUniqueName()+guard+"]"); 
+                    indent(pw, ind); pw.println("if-else A"+agentNum+" = nobody ["+
+                            (agentNum==1 ? " set myrate  lput 0 myrate " : " ")+"]");
+                    indent(pw, ind); pw.println("["); ind++;
+
+                    if (agentNum == allInAgents.size()) { // last agent set
+                        indent(pw, ind); pw.println(".....");
+                    }
+                    else {
+                        // ask the selected agent
+                        indent(pw, ind);  pw.println("ask A"+agentNum+" ["); ind++;
+                        if (agentNum == 1) {
+                             indent(pw, ind); pw.println("set countInstances 0");
+                        }
+                        // name self
+                        indent(pw, ind); 
+                        pw.println("let "+agent.y[0]+" [who] of self");
+                        varConv.put("($"+agent.y[0]+"$)", agent.y[0]);
+                        // name all attributes
+                        for (int i=1; i<agent.y.length; i++) {
+                            indent(pw, ind); 
+                            pw.println("let "+agent.y[i]+" ["+attrs[i]+"] of self");
+                            varConv.put("($"+agent.y[i]+"$)", agent.y[i]);
+                        }
+                    }
+                    agentNum++;
+                }
+                
+                while (ind > 4) {
+//                    if (ind == 2) {
+//                        // determine the transition index inside leadersOfTrn
+//                        int myratePos = leadersOfTrn.get(agentClass).indexOf(trn);                        
+////                        indent(pw, ind); pw.println("replace-item "+myratePos+" myrate (countInstances * "+trn.getDelay()+")");
+//                    }
+                    ind--;
+                    indent(pw, ind); pw.println("]");
+                }
+                
+                
+                
+                pw.println("      ]");
+            }
+            pw.println("    )");
+            
+            pw.println("  ]"); // end of if-agent? case
+        }
+        pw.println(")]");
+        pw.println();
         
         
         return reportLog(log, pw);
