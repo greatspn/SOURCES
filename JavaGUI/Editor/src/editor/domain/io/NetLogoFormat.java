@@ -295,12 +295,12 @@ public class NetLogoFormat {
 //        pw.println("ask turtles [set myrate [] ]");
         pw.println();
         
-        
         // Convert transitions
         for (Node node : gspn.nodes) {
             if (node instanceof Transition) {
                 Transition trn = (Transition)node;
                 Map<String, String> varConv = new HashMap<>();
+                Set<String> knownVars = new HashSet<>();
                 int ind=0;
                 int agentNum = 1;
                 
@@ -314,17 +314,31 @@ public class NetLogoFormat {
                     ColorClass dom = plc.getColorDomain();
                     String[] attrs = domain2attrs.get(dom);
                     String guard = "";
-                    if (agentNum == allInAgents.size()) {
-                        varConv.put("($"+agent.y[0]+"$)", "[who] of self");
-                        for (int i=1; i<agent.y.length; i++)
-                            varConv.put("($"+agent.y[i]+"$)", "["+attrs[i]+"] of self");
-                        String nlGuard = trn.convertGuardLang(context, null, ExpressionLanguage.NETLOGO);
+//                    if (agentNum == allInAgents.size()) {
+                    varConv.put("($"+agent.y[0]+"$)", "[who] of self");
+                    for (int i=1; i<agent.y.length; i++)
+                        varConv.put("($"+agent.y[i]+"$)", "["+attrs[i]+"] of self");
+//                    }
+                    
+                    for (int i=0; i<agent.y.length; i++)
+                        knownVars.add(agent.y[i]);
+                    String nlGuard = trn.dropGuardSubTerms(context, knownVars, ExpressionLanguage.NETLOGO);
+//                    String nlGuard = trn.convertGuardLang(context, null, ExpressionLanguage.NETLOGO);
 //                        System.out.println(trn.getGuard()+" ==> "+nlGuard);
+                    if (!nlGuard.isEmpty()) {
                         for (Map.Entry<String, String> ee : varConv.entrySet()) {
                             nlGuard = nlGuard.replace(ee.getKey(), ee.getValue());
                         }
                         guard = " AND " + nlGuard; 
                     }
+                    
+//                    {
+//                        for (int i=0; i<agent.y.length; i++)
+//                            knownVars.add(agent.y[i]);
+//                        String drGuard = trn.dropGuardSubTerms(context, knownVars, ExpressionLanguage.NETLOGO);
+//                        System.out.println("drGuard = "+drGuard);
+//                    }
+                    
 
                     indent(pw, ind); 
                     pw.println("let A"+agentNum+" "+dom.getColorClassName(0)+

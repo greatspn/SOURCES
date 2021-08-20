@@ -492,6 +492,53 @@ public class ParserContext implements NodeNamespace {
         return result;
     }
     
+    // Evaluate a formula
+    public String dropSubterms(String formulaText, ParserEntryPoint entry,
+                               Set<String> knownColorVars,
+                               String stackRecordName, int parseFlags,
+                               ExpressionLanguage lang)
+    {
+        if (evalStack == null)
+            evalStack = new Stack<>();
+        evalStack.push(stackRecordName);
+        if (evalStack.size() > MAX_STACK_DEPTH)
+            throw new EvaluationException("Evaluation stack depth is too high.");
+        
+        String result = null;
+        
+        if (entry == ParserEntryPoint.VERBATIM_TEXT || 
+            entry == ParserEntryPoint.VERBATIM_TEXT_REMOVE_PREFIX) 
+        {
+            // Verbatim expressions (like transitions with "FN:<text>" rate) cannot
+            // be reduced and are returned as-is.
+            result = formulaText;
+        }
+        else {
+            try {
+                ParseTree tree = generateParseTreeFor(formulaText, entry, parseFlags, getThrowingErrListener());
+
+                ExprLangVisitor<FormattedFormula> dropper = new FormulaDropper(this, parseFlags, lang, knownColorVars);
+                result = dropper.visit(tree).getFormula();
+
+    //            System.out.println("("+evalStack.size()+") evaluate("+formulaText+") = "+result);
+            }
+            catch (EvaluationException e) {
+                throw e;
+            }
+            catch (Exception e) {
+                Main.logException(e, true);
+                throw new EvaluationException("Could not evaluate: "+stackRecordName);
+            }
+            catch (Throwable t) { // In case of assertions or other unexpected exceptions
+                System.out.println("Unrecoverable error while reducing: "+formulaText);
+                throw t;
+            }
+        }
+        
+        evalStack.pop();
+        return result;
+    }
+    
     // Rewrite a formula
     public String rewrite(String formulaText, ParserEntryPoint entry, 
                          int parseFlags, ExprRewriter rewriter) 

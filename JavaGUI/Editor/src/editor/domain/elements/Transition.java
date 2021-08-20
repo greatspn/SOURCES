@@ -522,6 +522,12 @@ public class Transition extends Node implements Serializable, Firable {
         return guardExpr.convertLang(context, new EvaluationArguments(marking), lang);
     }
     
+    
+    public String dropGuardSubTerms(ParserContext context, Set<String> knownColorVars, ExpressionLanguage lang) {
+        assert hasGuard();
+        return guardExpr.dropSubterms(context, knownColorVars, lang);
+    }
+    
     // returns the deterministic delay expression if this transition is a general transition
     // with firing function: I[ expr ]. Otherwise returns null.
     // Accepted expressions are restricted to:  I[ real-value ]   and:  I[ constant-id ]

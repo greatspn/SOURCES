@@ -71,4 +71,9 @@ public class FormattedFormula implements Serializable {
     public FormattedFormula addPayload(FormulaPayload newPayload) {
         return new FormattedFormula(lang, isSimpleTerm, formula, newPayload);
     }
+    
+    
+    public FormattedFormula replaceFormula(String newFormula) {
+        return new FormattedFormula(lang, isSimpleTerm, newFormula, payload);
+    }
 }

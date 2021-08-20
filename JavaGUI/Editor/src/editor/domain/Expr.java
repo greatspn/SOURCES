@@ -13,8 +13,8 @@ import editor.domain.grammar.FormattedFormula;
 import editor.domain.grammar.FormulaPayload;
 import editor.domain.grammar.ParserContext;
 import java.io.Serializable;
+import java.util.Set;
 import latex.LatexFormula;
-import latex.LatexProvider;
 import latex.LatexProviderImpl;
 
 /** An expression object, that is formatted and evaluated inside a ParserContext.
@@ -147,6 +147,20 @@ public abstract class Expr implements Serializable {
                 // Will not rewrite anything.
             }
         }
+    }
+    
+    public String dropSubterms(ParserContext context, Set<String> knownColorVars, ExpressionLanguage lang) {
+        assert isFormatted();
+//        System.out.println("context="+context);
+//        System.out.println("expr="+expr);
+//        System.out.println("getParseRule()="+getParseRule());
+        if (!prepareContext(context))
+            return null;
+        String result;
+        result = context.dropSubterms(getExpr(), getParseRule(getExpr()), knownColorVars,
+                                      getExprDescr(), getParseFlags(), lang);
+//        System.out.println("result = "+result.toStringFormat("%.2f"));
+        return result;
     }
     
     public String convertLang(ParserContext context, EvaluationArguments args, ExpressionLanguage lang) {
