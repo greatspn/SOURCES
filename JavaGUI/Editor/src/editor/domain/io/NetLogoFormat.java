@@ -150,19 +150,28 @@ public class NetLogoFormat {
 
         // Pre-process all input arcs. 
         //  edge -> tuples of color variables
-        Map<Edge, ArrayList<String[]>> edge2Agents = new HashMap<>(); 
+//        Map<Edge, ArrayList<String[]>> edge2Agents = new HashMap<>(); 
         //  transition -> agents involved
-        Map<Transition, Set<String>> trn2agents = new HashMap<>();
-        // transition -> input edges
-//        Map<Transition, Set<GspnEdge>> trn2inputTmp = new HashMap<>();
-//        Map<Transition, GspnEdge[]> trn2input = new HashMap<>();
+//        Map<Transition, Set<String>> trn2agents = new HashMap<>();
+        // transition -> input/output/inhibitor edges
         Map<Transition, ArrayList<Tuple<GspnEdge, String[]>>> trn2inAgents = new HashMap<>();
+        Map<Transition, ArrayList<Tuple<GspnEdge, String[]>>> trn2outAgents = new HashMap<>();
+        Map<Transition, ArrayList<Tuple<GspnEdge, String[]>>> trn2inhibAgents = new HashMap<>();
         // Each arc expresses a sum of agents involved in the transition
         for (Edge edge : gspn.edges) {
             if (edge instanceof GspnEdge) {
                 GspnEdge e = (GspnEdge)edge;
                 if (e.getConnectedPlace().isInNeutralDomain())
                     continue;
+                
+                Map<Transition, ArrayList<Tuple<GspnEdge, String[]>>> trnAgentMap;
+                switch (e.getEdgeKind()) {
+                    case INPUT:     trnAgentMap = trn2inAgents;    break;
+                    case OUTPUT:    trnAgentMap = trn2outAgents;   break;
+                    case INHIBITOR: trnAgentMap = trn2inhibAgents; break;
+                    default: throw new IllegalStateException();
+                }
+                
                 ColorClass dom = e.getConnectedPlace().getColorDomain();
                 assert domain2attrs.containsKey(dom);
                 
@@ -183,16 +192,16 @@ public class NetLogoFormat {
                     tuples.add(colorVars);
                     
                     Transition trn = e.getConnectedTransition();
-                    if (!trn2agents.containsKey(trn)) {
-                        trn2agents.put(trn, new HashSet<>());
+                    if (!trnAgentMap.containsKey(trn)) {
+//                        trn2agents.put(trn, new HashSet<>());
 //                        trn2inputTmp.put(trn, new HashSet<>());
-                        trn2inAgents.put(trn, new ArrayList<>());
+                        trnAgentMap.put(trn, new ArrayList<>());
                     }
-                    trn2agents.get(trn).add(colorVars[0]);
+//                    trn2agents.get(trn).add(colorVars[0]);
 //                    trn2inputTmp.get(trn).add(e);
-                    trn2inAgents.get(trn).add(new Tuple<>(e, colorVars));
+                    trnAgentMap.get(trn).add(new Tuple<>(e, colorVars));
                 }
-                edge2Agents.put(edge, tuples);
+//                edge2Agents.put(edge, tuples);
             }
         }
         /*for (Map.Entry<Edge, ArrayList<String[]>> ee : edge2Agents.entrySet()) {
@@ -217,29 +226,79 @@ public class NetLogoFormat {
         
         // agent -> transitions for which it is the leader
         Map<String, ArrayList<Transition>> leadersOfTrn = new HashMap<>();
-//        Map<Tuple<String, Transition>, Integer> leaderTrnPos = new HashMap<>();
         for (String agentClass : agentClasses) 
             leadersOfTrn.put(agentClass, new ArrayList<>());
         
         for (Map.Entry<Transition, ArrayList<Tuple<GspnEdge, String[]>>> ee : trn2inAgents.entrySet()) {
             String agentClass = ee.getValue().get(0).x.getConnectedPlace().getColorDomain().getColorClassName(0);
-//            leaderTrnPos.put(new Tuple<>(agentClass, ee.getKey()), leadersOfTrn.get(agentClass).size());
             leadersOfTrn.get(agentClass).add(ee.getKey());
             System.out.println(agentClass+" is leader of transition "+ee.getKey().getUniqueName());
         }
+        
+        // transition firing transformation
+        Map<Transition, ArrayList<Tuple< Tuple<GspnEdge, String[]>, Tuple<GspnEdge, String[]> >>> inOutTrnRel = new HashMap();
+        for (Node node : gspn.nodes) {
+            if (node instanceof Transition) {
+                Transition trn = (Transition)node;
+                ArrayList<Tuple< Tuple<GspnEdge, String[]>, Tuple<GspnEdge, String[]> >> io = new ArrayList<>();
+                
+                ArrayList<Tuple<GspnEdge, String[]>> allInAgents = trn2inAgents.get(trn);
+                ArrayList<Tuple<GspnEdge, String[]>> allOutAgents = trn2outAgents.get(trn);
+                
+                if (allOutAgents != null) {
+                    for (Tuple<GspnEdge, String[]> outAgent : allOutAgents) {
+                        boolean isNew = true;
+                        if (allInAgents != null) {
+                            for (Tuple<GspnEdge, String[]> inAgent : allInAgents) {
+                                if (outAgent.y[0].equals(inAgent.y[0])) {
+                                    io.add(new Tuple<>(inAgent, outAgent)); // modified
+                                    isNew = false;
+                                    break;
+                                }
+                            }
+                        }
+                        if (isNew) {
+                            io.add(new Tuple<>(null, outAgent)); // newly created
+                        }
+                    }
+                    if (allInAgents != null) {
+                        for (Tuple<GspnEdge, String[]> inAgent : allInAgents) {
+                            // check if inAgent was transformed
+                            boolean isFound = false;
+                            for (int i=0; i<io.size(); i++) {
+                                if (io.get(i).x!=null && io.get(i).x.y[0].equals(inAgent.y[0])) {
+                                    isFound = true;
+                                    break;
+                                }
+                            }
+                            if (!isFound) {
+                                io.add(new Tuple<>(inAgent, null)); // killed
+                            }
+                        }
+                    }
+                }
 
+                inOutTrnRel.put(trn, io);
+            }
+        }
+        
 
         ///////////////////////////////////////////
         // Write agent attributes
+        Map<String, ArrayList<String>> agentAttrSeq = new HashMap<>();
         pw.println(";; Agent attributes");
         for (String agentClass : agentClasses) {
             pw.print(agentClass+"-own [");
             Set<Tuple<String, Integer>> attributes = agentAttrs.get(agentClass);
+            ArrayList<String> attrPos = new ArrayList<>();
             if (attributes != null) {
-                for (Tuple<String, Integer> attr : attributes)
+                for (Tuple<String, Integer> attr : attributes) {
                     pw.print(attr.x+"_"+attr.y+" ");
+                    attrPos.add(attr.x+"_"+attr.y);
+                }
             }
             pw.println("place myrate totrate]");
+            agentAttrSeq.put(agentClass, attrPos);
         }
         pw.println();
         
@@ -285,14 +344,15 @@ public class NetLogoFormat {
         
         ///////////////////////////////////////////
         // Ask all agents to initialize their myrate list
+        pw.println("to go");
         pw.println(";; ask agents to initialize myrate");
         for (String agentClass : agentClasses) {
             ArrayList<Transition> leadersOf = leadersOfTrn.get(agentClass);
             if (leadersOf.size() > 0) {
-                pw.print("ask "+agentClass+" [set myrate list");
+                pw.print("ask "+agentClass+" [set myrate list (");
                 for (int i=0; i<leadersOf.size(); i++)
                     pw.print(" 0");
-                pw.print(" set totrate 0.0 ");
+                pw.print(" ) set totrate 0.0 ");
                 pw.println("]");
             }
         }
@@ -348,7 +408,7 @@ public class NetLogoFormat {
                         // ask the selected agent
                         indent(pw, ind);  pw.println("ask A"+agentNum+" ["); ind++;
                         if (agentNum == 1) {
-                             indent(pw, ind); pw.println("set countInstances 0");
+                             indent(pw, ind); pw.println("let countInstances 0");
                         }
                         // name self
                         indent(pw, ind); 
@@ -370,7 +430,8 @@ public class NetLogoFormat {
                         int myratePos = leadersOfTrn.get(leaderAgentClass).indexOf(trn);                        
 //                        Tuple<String, Transition> pp = new Tuple<>(leaderAgentClass, trn);
 //                        int myratePos = leaderTrnPos.get(pp);
-                        indent(pw, ind); pw.println("replace-item "+myratePos+" myrate (countInstances * "+trn.getDelay()+")");
+                        indent(pw, ind); pw.println(";; summing up all rates");
+                        indent(pw, ind); pw.println("set myrate replace-item "+myratePos+" myrate (countInstances * "+trn.getDelay()+")");
                     }
                     ind--;
                     indent(pw, ind); pw.println("]");
@@ -384,7 +445,7 @@ public class NetLogoFormat {
         pw.println(";; ask agents to update their myrate values, and then update gammatot");
         pw.println("ask turtles [set totrate sum myrate]");
         pw.println("set gammatot sum [totrate] of turtles");
-        pw.println("let increment ((-1 / gammatot) * ln(random - float 1))");
+        pw.println("let increment ((-1 / gammatot) * ln(random-float 1))");
         pw.println("set time  time + increment");
         pw.println();
 
@@ -397,13 +458,14 @@ public class NetLogoFormat {
         ///////////////////////////////////////////
         // Switch over the chosen agent class to activate a transition firing
         pw.println(";; switch over the class of the chosen agent");
-        pw.println("ask chosenAgent [(");
-        pw.println("  if-else ");
+        pw.println("ask chosenAgent [");
+        pw.println("  let bindingSelected false");
+        pw.println("  (if-else ");
         for (String agentClass : agentClasses) {
             ArrayList<Transition> leadersOf = leadersOfTrn.get(agentClass);
             if (leadersOf.isEmpty())
                 continue; // this agent is never a leader of any transition
-            pw.println("  if-"+agentClass+"? myself [");
+            pw.println("  is-a_"+agentClass+"? myself [");
             // select the enabling transition
             pw.println("    ;; select the next action performed by the chosen "+agentClass);
             pw.println("    let indices  n-values (length myrate) [ i -> i ]");
@@ -417,7 +479,7 @@ public class NetLogoFormat {
                 pw.println("      nextaction = "+iit+" [");
                 pw.println("        ;; chosenAgent is leader of "+trn.getUniqueName());
                 int ind = 4;
-                pw.println("        set targetRate random-float (item "+iit+" myrate)");
+                pw.println("        let targetRate random-float (item "+iit+" myrate)");
                 
                 
                 
@@ -447,32 +509,103 @@ public class NetLogoFormat {
                     
 
                     indent(pw, ind); 
-                    pw.println("let A"+agentNum+" "+dom.getColorClassName(0)+
+                    pw.println("let AA"+agentNum+" "+dom.getColorClassName(0)+
                              " with [place = "+plc.getUniqueName()+guard+"]"); 
-                    indent(pw, ind); pw.println("if-else A"+agentNum+" = nobody ["+
+                    indent(pw, ind); pw.println("if-else AA"+agentNum+" = nobody ["+
                             (agentNum==1 ? " set myrate  lput 0 myrate " : " ")+"]");
                     indent(pw, ind); pw.println("["); ind++;
 
-                    if (agentNum == allInAgents.size()) { // last agent set
-                        indent(pw, ind); pw.println(".....");
-                    }
-                    else {
-                        // ask the selected agent
-                        indent(pw, ind);  pw.println("ask A"+agentNum+" ["); ind++;
-                        if (agentNum == 1) {
-                             indent(pw, ind); pw.println("set countInstances 0");
-                        }
-                        // name self
+                    // ask the selected agent
+                    indent(pw, ind);  pw.println("ask AA"+agentNum+" ["); ind++;
+                    indent(pw, ind);  pw.println("if-else bindingSelected = true [ ]"); 
+                    indent(pw, ind);  pw.println("["); ind++;
+//                        if (agentNum == 1) {
+//                             indent(pw, ind); pw.println("set countInstances 0");
+//                        }
+                    // name self
+                    indent(pw, ind); 
+                    pw.println("let "+agent.y[0]+" [who] of self");
+                    varConv.put("($"+agent.y[0]+"$)", agent.y[0]);
+                    // name all attributes
+                    for (int i=1; i<agent.y.length; i++) {
                         indent(pw, ind); 
-                        pw.println("let "+agent.y[0]+" [who] of self");
-                        varConv.put("($"+agent.y[0]+"$)", agent.y[0]);
-                        // name all attributes
-                        for (int i=1; i<agent.y.length; i++) {
-                            indent(pw, ind); 
-                            pw.println("let "+agent.y[i]+" ["+attrs[i]+"] of self");
-                            varConv.put("($"+agent.y[i]+"$)", agent.y[i]);
-                        }
+                        pw.println("let "+agent.y[i]+" ["+attrs[i]+"] of self");
+                        varConv.put("($"+agent.y[i]+"$)", agent.y[i]);
                     }
+                    
+                    if (agentNum == allInAgents.size()) { // last agent may perform the firing
+                        indent(pw, ind); pw.println("set targetRate targetRate - ("+trn.getDelay()+")");
+                        indent(pw, ind); pw.println("if-else targetRate > 0 [ ]");
+                        indent(pw, ind); pw.println("[");
+                        ind++;
+                        
+                        ///////////////////////////////////////////
+                        // Transition firing
+                        indent(pw, ind); pw.println(";; fire this binding");
+                        indent(pw, ind); pw.println("set bindingSelected true");
+                        
+                        ArrayList<Tuple< Tuple<GspnEdge, String[]>, Tuple<GspnEdge, String[]> >> allIoRel = inOutTrnRel.get(trn);
+                        // create all new agents
+                        for (Tuple< Tuple<GspnEdge, String[]>, Tuple<GspnEdge, String[]> > ioRel : allIoRel) {
+                            if (ioRel.x == null) {
+                                indent(pw, ind); pw.println(";; agent "+ioRel.y.y[0]+" is new");
+                                
+                                Place outPlc = ioRel.y.x.getConnectedPlace();
+                                ColorClass outDom = outPlc.getColorDomain();
+                                String[] outAttrs = domain2attrs.get(outDom);
+                                assert outAttrs.length == ioRel.y.y.length;
+                                String outAgentClass = outPlc.getColorDomain().getColorClassName(0);
+                                ArrayList<String> attrPos = agentAttrSeq.get(outAgentClass);
+
+                                for (int i=1; i<outAttrs.length; i++) {
+                                    indent(pw, ind); pw.println(";; set "+outAttrs[i]+" "+ioRel.y.y[i]);
+                                }
+                                
+                                indent(pw, ind); pw.print("hatch-"+outAgentClass+" 1 [ ");
+                                // follow attribute order
+                                for (String attr : attrPos) {
+                                    boolean haveAttr = false;
+                                    for (int i=1; i<outAttrs.length; i++) {
+                                        if (outAttrs[i].equals(attr)) {
+                                            pw.print(ioRel.y.y[i]+" ");
+                                            haveAttr = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!haveAttr)
+                                        pw.print("-100 ");
+                                }
+                                // place myrate totrate
+                                pw.print(outPlc.getUniqueName()+" 0 0");
+                                pw.println("]");
+                            }
+                        }
+                        // modify existing agents
+                        for (Tuple< Tuple<GspnEdge, String[]>, Tuple<GspnEdge, String[]> > ioRel : allIoRel) {
+                            if (ioRel.x != null && ioRel.y != null) {
+                                indent(pw, ind); pw.println(";; agent "+ioRel.y.y[0]+" is modified");
+                                
+                                Place inPlc = ioRel.x.x.getConnectedPlace();
+                                ColorClass inDom = inPlc.getColorDomain();
+                                String[] inAttrs = domain2attrs.get(inDom);
+                                
+                                Place outPlc = ioRel.y.x.getConnectedPlace();
+                                ColorClass outDom = outPlc.getColorDomain();
+                                String[] outAttrs = domain2attrs.get(outDom);
+                            }
+                        }
+                        // kill agents
+                        for (Tuple< Tuple<GspnEdge, String[]>, Tuple<GspnEdge, String[]> > ioRel : allIoRel) {
+                            if (ioRel.y == null) {
+                                indent(pw, ind); pw.println(";; agent "+ioRel.x.y[0]+" is killed");
+                                indent(pw, ind); pw.println("ask turtle "+ioRel.x.y[0]+" [die]");
+                            }
+                        }
+                       
+                        ind--;
+                        indent(pw, ind); pw.println("]");
+                    }                    
+                    
                     agentNum++;
                 }
                 
@@ -496,6 +629,7 @@ public class NetLogoFormat {
         }
         pw.println(")]");
         pw.println();
+        pw.println("end\n");
         
         
         return reportLog(log, pw);
