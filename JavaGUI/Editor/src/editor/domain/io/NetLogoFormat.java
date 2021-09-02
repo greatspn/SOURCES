@@ -542,7 +542,7 @@ public class NetLogoFormat {
                         ///////////////////////////////////////////
                         // Transition firing
                         indent(pw, ind); pw.println(";; fire this binding");
-                        indent(pw, ind); pw.println("set bindingSelected true");
+                        indent(pw, ind); pw.println("set bindingSelected true\n");
                         
                         ArrayList<Tuple< Tuple<GspnEdge, String[]>, Tuple<GspnEdge, String[]> >> allIoRel = inOutTrnRel.get(trn);
                         // create all new agents
@@ -557,9 +557,9 @@ public class NetLogoFormat {
                                 String outAgentClass = outPlc.getColorDomain().getColorClassName(0);
                                 ArrayList<String> attrPos = agentAttrSeq.get(outAgentClass);
 
-                                for (int i=1; i<outAttrs.length; i++) {
-                                    indent(pw, ind); pw.println(";; set "+outAttrs[i]+" "+ioRel.y.y[i]);
-                                }
+//                                for (int i=1; i<outAttrs.length; i++) {
+//                                    indent(pw, ind); pw.println(";; set "+outAttrs[i]+" "+ioRel.y.y[i]);
+//                                }
                                 
                                 indent(pw, ind); pw.print("hatch-"+outAgentClass+" 1 [ ");
                                 // follow attribute order
@@ -577,7 +577,7 @@ public class NetLogoFormat {
                                 }
                                 // place myrate totrate
                                 pw.print(outPlc.getUniqueName()+" 0 0");
-                                pw.println("]");
+                                pw.println("]\n");
                             }
                         }
                         // modify existing agents
@@ -585,20 +585,30 @@ public class NetLogoFormat {
                             if (ioRel.x != null && ioRel.y != null) {
                                 indent(pw, ind); pw.println(";; agent "+ioRel.y.y[0]+" is modified");
                                 
-                                Place inPlc = ioRel.x.x.getConnectedPlace();
-                                ColorClass inDom = inPlc.getColorDomain();
-                                String[] inAttrs = domain2attrs.get(inDom);
+//                                Place inPlc = ioRel.x.x.getConnectedPlace();
+//                                ColorClass inDom = inPlc.getColorDomain();
+//                                String[] inAttrs = domain2attrs.get(inDom);
                                 
                                 Place outPlc = ioRel.y.x.getConnectedPlace();
                                 ColorClass outDom = outPlc.getColorDomain();
                                 String[] outAttrs = domain2attrs.get(outDom);
+                                assert outAttrs.length == ioRel.y.y.length;
+                                String outAgentClass = outPlc.getColorDomain().getColorClassName(0);
+//                                ArrayList<String> attrPos = agentAttrSeq.get(outAgentClass);
+
+                                indent(pw, ind); pw.println(";; ***** set place "+outPlc.getUniqueName());
+                                for (int i=1; i<outAttrs.length; i++) {
+                                    indent(pw, ind); pw.println(";; ***** set "+outAttrs[i]+" "+ioRel.y.y[i]);
+                                }
+                                
+                                pw.println();
                             }
                         }
                         // kill agents
                         for (Tuple< Tuple<GspnEdge, String[]>, Tuple<GspnEdge, String[]> > ioRel : allIoRel) {
                             if (ioRel.y == null) {
                                 indent(pw, ind); pw.println(";; agent "+ioRel.x.y[0]+" is killed");
-                                indent(pw, ind); pw.println("ask turtle "+ioRel.x.y[0]+" [die]");
+                                indent(pw, ind); pw.println("ask turtle "+ioRel.x.y[0]+" [die]\n");
                             }
                         }
                        
