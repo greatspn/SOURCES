@@ -1244,6 +1244,8 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 return format(true, "<attribute name=\"boolValue\">"+ (value ? "true" : "false") +"</attribute>");
             case PNML:
                 return format(true, "<numberconstant value=\""+(value ? "true" : "false")+"\">");
+            case NETLOGO:
+                return format(true, value ? "TRUE" : "FALSE"); 
            default:
                 throw new UnsupportedOperationException("visitBoolConst");
         }
