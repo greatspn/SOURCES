@@ -27,6 +27,7 @@ then
     echo "       -O ->   Export in Matlab format"
     echo "       -G ->   Export in GPU format"
     echo "       -Z ->   Generate Compact CPP code"
+    echo "       -H ->   Enable Flux Balance"
     echo
 
     echo "Please, be aware that:"
@@ -74,6 +75,11 @@ case "$1" in
    COMPRESS="-C"
     ;;
 
+    -H)
+    FLUXB="-H"
+    ;;
+    
+    
     -T)
     if [ $# -gt 1 ]
     then
@@ -193,10 +199,7 @@ echo $name_file
 
 
 
-if [ "$AUT" == "-A" ]
-then
-
-  cd ${GREATSPN_SCRIPTDIR}/../inst_src
+ cd ${GREATSPN_SCRIPTDIR}/../inst_src
   echo "#cd ${GREATSPN_SCRIPTDIR}/../inst_src"
   MyTempDir=`mktemp -d 2>/dev/null || mktemp -d -t 'mytmpdir'`
   echo "#Copying file form ${GREATSPN_SCRIPTDIR}/../inst_src to ${MyTempDir}"
@@ -216,48 +219,36 @@ then
   fi
   cp ./lsode.*  ${MyTempDir}
   cp ./makefile ${MyTempDir}
-  cp ./readingAutomaton.* ${MyTempDir}
-  cp ./automa.* ${MyTempDir}
+  if [ "$AUT" == "-A" ]
+  then
+  	cp ./readingAutomaton.* ${MyTempDir}
+  	cp ./automa.* ${MyTempDir}
+  fi	
+  if [ "$FLUXB" == "-H" ]
+  then
+  	cp ./general.* ${MyTempDir}
+  	cp ./GLPKsolve.* ${MyTempDir}
+  fi	
   cd ${MyTempDir}
   echo "#cd ${MyTempDir}"
   echo
   echo "#Compiling ... "
-  make  automa
-else
-  cd ${GREATSPN_SCRIPTDIR}/../inst_src
-  echo "#cd ${GREATSPN_SCRIPTDIR}/../inst_src"
-  MyTempDir=`mktemp -d 2>/dev/null || mktemp -d -t 'mytmpdir'`
-  echo
-  echo "#Copying file form ${GREATSPN_SCRIPTDIR}/../inst_src to ${MyTempDir}"
-  echo
-  cp ./class.* ${MyTempDir}
-  if  [ "$CFUN" == "-C" ]
+  if [ "$AUT" == "-A" ]
   then
-
-	echo "  namespace SDE {"  >  ${MyTempDir}/tmpB
-	echo "}; "	>  ${MyTempDir}/tmpE
- 	echo "#cat ${MyTempDir}/tmpB  $CFUN_PATH  ${MyTempDir}/tmpE >> ${MyTempDir}/tmpA"
-	cat ${MyTempDir}/tmpB $CFUN_PATH  ${MyTempDir}/tmpE > ${MyTempDir}/tmpA
-	cat ${MyTempDir}/tmpA >>  ${MyTempDir}/class.cpp
-	echo	FuncT
-	echo "#cat ${MyTempDir}/tmpA >>  ${MyTempDir}/class.cpp"
-	echo
-  fi
-  cp ./lsode.* ${MyTempDir}
-  cp ./makefile ${MyTempDir}
-   cd ${MyTempDir}
-  echo "#cd ${MyTempDir}"
-  echo
-  echo "#Compiling ... "
-  make  normal
+  	make  automa
+  else
+  	if [ "$FLUXB" == "-H" ]
+  	then
+  		make fluxb
+  	else
+   		make  normal
+   	fi
+  fi 	
   if [ "$?" -ne 0 ]
   then
 	echo -e "#Error during compilation. \n\n"
 	exit 1
   fi
-
-
-fi
 
 echo
 echo "#Executable file: $NET_PATH.solver"
