@@ -27,8 +27,8 @@ y.tab.o:	 readingAutomaton.yy
 normal:	$(name_file).cpp ./class.cpp  ./lsode.cpp
 	 $(C++) -I./  -o  $(name_file).solver  $(name_file).cpp  ./class.cpp  ./lsode.cpp  $(OPTION) $(OPTIONW)
 	 
-normal:	$(name_file).cpp ./class.cpp  ./lsode.cpp ./GLPKsolve.cpp ./general.cpp
-	 $(C++) -I./  -o  $(name_file).solver  $(name_file).cpp  ./class.cpp  ./lsode.cpp /GLPKsolve.cpp ./general.cpp $(OPTION) $(OPTIONW) $(OPTIONGLPK)
+fluxb:	$(name_file).cpp ./class.cpp  ./lsode.cpp ./GLPKsolve.cpp ./general.cpp
+	 $(C++) -I./  -o  $(name_file).solver  $(name_file).cpp  ./class.cpp  ./lsode.cpp ./GLPKsolve.cpp ./general.cpp $(OPTION) $(OPTIONW) $(OPTIONGLPK)
 	 	 
 doc:
 	doxygen  DoxyFile
