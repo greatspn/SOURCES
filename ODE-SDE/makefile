@@ -1,6 +1,7 @@
 
 OPTION = -O3 -std=c++11 -lm
 OPTIONW = -Wall
+OPTIONGLPK=  -lglpk
 
 CC = gcc
 C++ = g++
@@ -25,5 +26,9 @@ y.tab.o:	 readingAutomaton.yy
 
 normal:	$(name_file).cpp ./class.cpp  ./lsode.cpp
 	 $(C++) -I./  -o  $(name_file).solver  $(name_file).cpp  ./class.cpp  ./lsode.cpp  $(OPTION) $(OPTIONW)
+	 
+normal:	$(name_file).cpp ./class.cpp  ./lsode.cpp ./GLPKsolve.cpp ./general.cpp
+	 $(C++) -I./  -o  $(name_file).solver  $(name_file).cpp  ./class.cpp  ./lsode.cpp /GLPKsolve.cpp ./general.cpp $(OPTION) $(OPTIONW) $(OPTIONGLPK)
+	 	 
 doc:
 	doxygen  DoxyFile
