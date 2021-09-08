@@ -1325,7 +1325,12 @@ INSTALLEDSOURCES := 	ODE-SDE/class.hpp \
 			ODE-SDE/automa.hpp \
 			ODE-SDE/automa.cpp \
 			ODE-SDE/readingAutomaton.yy \
-			ODE-SDE/readingAutomaton.ll
+			ODE-SDE/readingAutomaton.ll \
+			ODE-SDE/GLPKsolve.hpp \
+			ODE-SDE/GLPKsolve.cpp \
+			ODE-SDE/general.h \
+			ODE-SDE/general.cpp 
+			
 
 
 ### Additional custom rules ###
