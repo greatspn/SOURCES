@@ -42,6 +42,26 @@ public class NetLogoFormat {
         ArrayList<String> log = new ArrayList<>();
         PrintWriter pw = new PrintWriter(new BufferedOutputStream(new FileOutputStream(file)));
         
+        // Get all simple color classes that are not agent classes
+        Set<ColorClass> attrColorClasses = new HashSet<>();
+        for (Node node : gspn.nodes) {
+            if (node instanceof ColorClass) {
+                ColorClass cc = (ColorClass)node;
+                if (cc.isSimpleClass()) {
+                    boolean isAgent = false;
+                    for (String agentClass : agentsColorList) {
+                        if (agentClass.equals(cc.getUniqueName())) {
+                            isAgent = true;
+                            break;
+                        }
+                    }
+                    if (!isAgent)
+                        attrColorClasses.add(cc);
+                }
+            }
+        }
+        
+        
         // Get all mark/rate parameters as global variables
         String varNames = "";
         String varSetup = "";
@@ -68,9 +88,13 @@ public class NetLogoFormat {
         pw.println("]\n");
         
         // Declare all agents
-        pw.println(";; declare agent classes");
+        pw.println(";; declare main agent classes");
         for (String agentClass : agentsColorList) {
             pw.println("breed ["+agentClass+" a_"+agentClass+"]");
+        }
+        pw.println(";; declare support classes (for attributes)");
+        for (ColorClass agentClass : attrColorClasses) {
+            pw.println("breed ["+agentClass.getUniqueName()+" a_"+agentClass.getUniqueName()+"_attr]");
         }
         pw.println();
         
@@ -311,6 +335,10 @@ public class NetLogoFormat {
             pw.println("place myrate totrate]");
             agentAttrSeq.put(agentClass, attrPos);
         }
+        pw.println(";; Support agent attributes");
+        for (ColorClass agentClass : attrColorClasses) {
+            pw.println(agentClass.getUniqueName()+"-own [attrValue]");
+        }
         pw.println();
         
         
@@ -357,6 +385,17 @@ public class NetLogoFormat {
                 pw.println("  set "+plc.getUniqueName()+" "+(plcId++));
             }
         }
+        pw.println();
+        
+        pw.println("  ;; setup initial marking");
+        pw.println();
+        
+        pw.println("  ;; setup support agents");
+        for (ColorClass agentClass : attrColorClasses) {
+            pw.println("  sprout-"+agentClass.getUniqueName()+" "+agentClass.numColors()+" [set color black set attrValue XXXX]");
+        }
+        pw.println();
+        
         pw.println("  set time 0.0");
         pw.println("end\n");
         
@@ -380,7 +419,7 @@ public class NetLogoFormat {
         pw.println();
         
         ///////////////////////////////////////////
-        // Convert transitions
+        // Compute transition enablings
         for (Node node : gspn.nodes) {
             if (node instanceof Transition) {
                 Transition trn = (Transition)node;
