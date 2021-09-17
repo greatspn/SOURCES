@@ -44,7 +44,7 @@ public class NetLogoCommand {
         }
     }
     // GREATSPN_BINDIR=~/GreatSPN/SOURCES/JavaGUI/Editor/dist/
-    // java -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar 
+    // java -ea -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar 
     //   editor.cli.NetLogoCommand -ac Sheep,Wolf SheepWolfModif2 out.netlogo && cat out.netlogo
     
     public static boolean toolMain(String[] args) throws Exception {
