@@ -36,8 +36,8 @@ exec)
 	;;
 
 update)
-	wget https://raw.githubusercontent.com/greatspn/SOURCES/master/docker/do.sh 
-	wget https://raw.githubusercontent.com/greatspn/SOURCES/master/docker/Dockerfile
+	wget https://raw.githubusercontent.com/greatspn/SOURCES/master/docker/do.sh ./do.sh 
+	wget https://raw.githubusercontent.com/greatspn/SOURCES/master/docker/Dockerfile ./Dockerfile
 	;;
 
 esac

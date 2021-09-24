@@ -15,8 +15,11 @@ import editor.domain.elements.GspnPage;
 import editor.domain.elements.ParsedColorSubclass;
 import editor.domain.elements.Place;
 import editor.domain.elements.Transition;
+import editor.domain.grammar.DomainElement;
 import editor.domain.grammar.ExpressionLanguage;
 import editor.domain.grammar.ParserContext;
+import editor.domain.values.EvaluatedFormula;
+import editor.domain.values.ValuedMultiSet;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -426,37 +429,6 @@ public class NetLogoFormat {
         pw.println("  ca ;; clear all");
         pw.println("  reset-ticks");
         pw.print(varSetup);
-        // write initial markings as sprout directives
-        for (Node node : gspn.nodes) {
-            if (node instanceof Place) {
-                Place pl = (Place)node;
-                ColorClass plDom = pl.getColorDomain();
-                if (plDom==null || plDom.isNeutralDomain()) 
-                    continue;
-                String agentClassName = plDom.getColorClassName(0);
-                String initMark = pl.getInitMarkingExpr();
-                if (initMark.isEmpty())
-                    continue;
-                
-                String[] allSumTerms = splitTupleSum(initMark, log);
-                for (String sumTerm : allSumTerms) { 
-                    String[] sumTupleEl = sumTerm.split(",");
-                    int numSproutedAgents = countColorNum(plDom.getColorClass(0), sumTupleEl[0], log);
-
-
-                    pw.println("  create-"+agentClassName+" "+numSproutedAgents+" [");
-                    pw.println("    set place "+pl.getUniqueName());
-                    String[] attrs = domain2attrs.get(plDom);
-                    // set the attributes
-                    for (int i=1; i<plDom.getNumClassesInDomain(); i++) {
-                        String value = sumTupleEl[i];
-                        pw.println("    set "+attrs[i]+" "+value);
-                    }
-                    pw.println("  ]");
-                }
-            }
-        }
-        pw.println();
         
         pw.println("  ;; place identifiers");
         int plcId = 1000;
@@ -469,9 +441,53 @@ public class NetLogoFormat {
         pw.println();
         
         pw.println("  ;; setup initial marking");
-        pw.println();
-        
-        pw.println("  ;; setup static color subclasses");
+        // write initial markings as sprout directives
+        for (Node node : gspn.nodes) {
+            if (node instanceof Place) {
+                Place pl = (Place)node;
+                ColorClass plDom = pl.getColorDomain();
+                if (plDom==null || plDom.isNeutralDomain()) 
+                    continue;
+                String agentClassName = plDom.getColorClassName(0);
+                String initMark = pl.getInitMarkingExpr();
+                if (initMark.isEmpty())
+                    continue;
+                String[] attrs = domain2attrs.get(plDom);
+                
+                EvaluatedFormula em0 = pl.evaluateInitMarking(context);
+                assert em0.isMultiSetInt();
+                ValuedMultiSet msm0 = (ValuedMultiSet)em0;
+                for (int ii=0; ii<msm0.numElements(); ii++) {
+                    DomainElement domEl = msm0.getElement(ii);
+                    assert plDom == domEl.getDomain();
+                    int elMult = msm0.getValue(ii).getScalarInt();
+                    
+                    pw.println("  create-"+agentClassName+" "+elMult+" [");
+                    pw.println("    set place "+pl.getUniqueName());
+                    for (int colNum=1; colNum<plDom.getNumClassesInDomain(); colNum++) {
+                        ColorClass simpleColor = plDom.getColorClass(colNum);
+                        int colIndex = domEl.getColor(colNum);
+                        pw.println("    set "+attrs[colNum]+" "+colIndex);
+                    }
+                    pw.println("  ]");
+                }
+            }
+        }
+        pw.println();        
+        pw.println("  ;; setup static color subclasses of attribute color classes");
+        for (ColorClass clrClass : attrColorClasses) {
+            for (int sc=0; sc<clrClass.numSubClasses(); sc++) {
+                ParsedColorSubclass pcsc = clrClass.getSubclass(sc);
+                if (pcsc.isNamed()) {
+                    pw.print("  let "+pcsc.name+" (list ");
+                    for (int cc=0; cc<pcsc.getNumColors(); cc++) {
+                        int clrIndex = clrClass.getColorIndex(pcsc.getColorName(cc));
+                        pw.print(clrIndex+" ");
+                    }
+                    pw.println(")");
+                }
+            }
+        }
         pw.println();
 
         pw.println("  ;; setup support agents");
@@ -537,7 +553,8 @@ public class NetLogoFormat {
                     String guard = "";
                     varConv.put("($"+agent.agentName+"$)", "["+whoOfSelf+"] of self");
                     for (int i=1; i<agent.inColorVars.length; i++)
-                        varConv.put("($"+agent.inColorVars[i]+"$)", "["+attrs[i]+"] of self");
+                        varConv.put("($"+agent.inColorVars[i]+"$)", attrs[i]);
+//                        varConv.put("($"+agent.inColorVars[i]+"$)", "["+attrs[i]+"] of self");
 
                     for (int i=0; i<agent.inColorVars.length; i++)
                         knownVars.add(agent.inColorVars[i]);
@@ -556,8 +573,7 @@ public class NetLogoFormat {
                     indent(pw, ind); 
                     pw.println((agentNum==1 ? "set" : "let")+" A"+agentNum+" "+agent.agentClass.getUniqueName()+
                              " with ["+guard+"]"); 
-                    indent(pw, ind); pw.println("if-else A"+agentNum+" = nobody ["+
-                            (agentNum==1 ? " set myrate  lput 0 myrate " : " ")+"]");
+                    indent(pw, ind); pw.println("if-else A"+agentNum+" = nobody [ ]");
                     indent(pw, ind); pw.println("["); ind++;
 
                     if (inputFiringAgents.size() == 1) { // single agent transition
@@ -610,15 +626,19 @@ public class NetLogoFormat {
         ///////////////////////////////////////////
         // Now ask all agents to sum the rates into a single totrate variable
         pw.println(";; ask agents to update their myrate values, and then update gammatot");
-        pw.println("ask turtles [set totrate sum myrate]");
-        pw.println("set gammatot sum [totrate] of turtles");
+        pw.print("let allAgents (turtle-set ");
+        for (String agentClass : agentClasses)
+            pw.print(agentClass+" ");
+        pw.println(")");
+        pw.println("ask allAgents [set totrate sum myrate]");
+        pw.println("set gammatot sum [totrate] of allAgents");
         pw.println("let increment ((-1 / gammatot) * ln(random-float 1))");
         pw.println("set time  time + increment");
         pw.println();
 
         // Select the next agent that will perform an action
         pw.println(";; select the next agent that will perform an action");
-        pw.println("let chosenAgent rnd:weighted-one-of turtles [totrate]");
+        pw.println("let chosenAgent rnd:weighted-one-of allAgents [totrate]");
         pw.println();
         
         
@@ -668,7 +688,8 @@ public class NetLogoFormat {
                     String guard = "";
                     varConv.put("($"+agent.agentName+"$)", "["+whoOfSelf+"] of self");
                     for (int i=1; i<agent.inColorVars.length; i++)
-                        varConv.put("($"+agent.inColorVars[i]+"$)", "["+attrs[i]+"] of self");
+                        varConv.put("($"+agent.inColorVars[i]+"$)", attrs[i]);
+//                        varConv.put("($"+agent.inColorVars[i]+"$)", "["+attrs[i]+"] of self");
                     
                     for (int i=0; i<agent.inColorVars.length; i++)
                         knownVars.add(agent.inColorVars[i]);
