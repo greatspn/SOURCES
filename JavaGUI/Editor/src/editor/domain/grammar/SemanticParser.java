@@ -1729,6 +1729,9 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                                 cc.getUniqueName()+"</attribute><attribute name=\"enumValue\">"+id+
                                 "</attribute></attribute></attribute>";
                         break;
+                    case NETLOGO:
+                        clrId = id;
+                        break;
                     default:
                         throw new UnsupportedOperationException();
                 }
