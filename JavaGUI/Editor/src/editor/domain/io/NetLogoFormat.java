@@ -573,8 +573,7 @@ public class NetLogoFormat {
                     indent(pw, ind); 
                     pw.println((agentNum==1 ? "set" : "let")+" A"+agentNum+" "+agent.agentClass.getUniqueName()+
                              " with ["+guard+"]"); 
-                    indent(pw, ind); pw.println("if-else A"+agentNum+" = nobody [ ]");
-                    indent(pw, ind); pw.println("["); ind++;
+                    indent(pw, ind); pw.println("if any? A"+agentNum+" ["); ind++;
 
                     if (inputFiringAgents.size() == 1) { // single agent transition
                         indent(pw, ind);  pw.println("ask A"+agentNum+" ["); ind++;
@@ -632,6 +631,7 @@ public class NetLogoFormat {
         pw.println(")");
         pw.println("ask allAgents [set totrate sum myrate]");
         pw.println("set gammatot sum [totrate] of allAgents");
+        pw.println("if gammatot = 0 [stop]");
         pw.println("let increment ((-1 / gammatot) * ln(random-float 1))");
         pw.println("set time  time + increment");
         pw.println();
@@ -706,14 +706,11 @@ public class NetLogoFormat {
 
                     indent(pw, ind); 
                     pw.println("let AA"+agentNum+" "+agent.agentClass.getUniqueName()+" with ["+guard+"]"); 
-                    indent(pw, ind); pw.println("if-else AA"+agentNum+" = nobody ["+
-                            (agentNum==1 ? " set myrate  lput 0 myrate " : " ")+"]");
-                    indent(pw, ind); pw.println("["); ind++;
+                    indent(pw, ind); pw.println("if any? AA"+agentNum+" ["); ind++;
 
                     // ask the selected agent
                     indent(pw, ind);  pw.println("ask AA"+agentNum+" ["); ind++;
-                    indent(pw, ind);  pw.println("if-else bindingSelected = true [ ]"); 
-                    indent(pw, ind);  pw.println("["); ind++;
+                    indent(pw, ind);  pw.println("if NOT bindingSelected ["); ind++;
                     // name self
                     indent(pw, ind); 
                     pw.println("let "+agent.agentName+" ["+whoOfSelf+"] of self");
@@ -758,7 +755,7 @@ public class NetLogoFormat {
                                     
                                 case MODIFIED:
                                     indent(pw, ind); pw.println(";; agent "+firing.agentName+" is modified");
-                                    indent(pw, ind); pw.println("ask "+firing.agentName+" ["); ind++;
+                                    indent(pw, ind); pw.println("ask turtle "+firing.agentName+" ["); ind++;
                                     indent(pw, ind); pw.println("set place "+firing.outEdge.getConnectedPlace().getUniqueName());
                                     for (int i=1; i<outAttrs.length; i++) {
                                         indent(pw, ind); pw.println("set "+outAttrs[i]+" "+firing.outColorVars[i]);
@@ -793,6 +790,7 @@ public class NetLogoFormat {
             pw.println("  ]"); // end of if-agent? case
         }
         pw.println(")]");
+        pw.println("tick");
         pw.println();
         pw.println("end\n");
         
