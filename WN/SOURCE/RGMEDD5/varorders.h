@@ -55,6 +55,12 @@ size_t get_num_pflows();
 
 //---------------------------------------------------------------------------------------
 
+// Load and store the integer constraints problem (from the <netname>.icp file)
+const int_lin_constr_vec_t&
+load_int_constr_problem();
+
+//---------------------------------------------------------------------------------------
+
 #undef NONE
 // Variant type of a metric value
 enum class metric_value_type { CARD, DOUBLE, UINT64, NONE };

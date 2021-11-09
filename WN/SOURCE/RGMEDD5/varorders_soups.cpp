@@ -416,7 +416,7 @@ void trans_span_set_t::compute_level_boundaries() {
 // Build the trns_by_level[] linked lists, where each list contains the transitions
 // that start in a certain level
 void trans_span_set_t::build_trn_list_by_level() {
-    assert(!sorted_trns.empty() && !finalized);
+    assert(/*!sorted_trns.empty() &&*/ !finalized);
     trns_by_level.resize(npl);
     std::fill(trns_by_level.begin(), trns_by_level.end(), nullptr);
 

@@ -696,10 +696,10 @@ void read_NET_file(int read_postproc) {
         fprintf(stderr, "Net file has 0 places. Stop.\n");
         exit(1);
     }
-    if (el[4] == 0) { // no transitions
-        fprintf(stderr, "Net file has 0 transitions. Stop.\n");
-        exit(1);
-    }
+    // if (el[4] == 0) { // no transitions
+    //     fprintf(stderr, "Net file has 0 transitions. Stop.\n");
+    //     exit(1);
+    // }
     /*********** MARKING PARAMETERS ***********/
     if (el[0] > 0) {
         /* Ci sono marking parameters */

@@ -38,6 +38,10 @@ static const cardinality_t CARD1 = cardinality_t(1);
 
 void print_bounds_stats();
 
+const char* s_constr_ineq_op_str[] = {
+    "<", "<=", "==", "!=", ">", ">="
+};
+
 //-----------------------------------------------------------------------------
 
 static int from_GUI = -1;
@@ -869,8 +873,19 @@ bool RSRG::verify_LRS_RS_equiv() {
     forestMDD->createEdge(&ins_ptr, 1, m0min_mdd);
 
     // Build LRS[m0min]
-    vector<int> inv_consts = compute_inv_consts_from_m0(m0min, *p_flows);
-    auto LRS = computeLRSof(inv_consts, *p_flows);
+    // vector<int> inv_consts = compute_inv_consts_from_m0(m0min, *p_flows);
+
+
+    // Setup the ILCP
+    int_lin_constr_vec_t ilcp;
+    ilcp.resize(p_flows->size());
+    for (size_t i=0; i<ilcp.size(); i++) {
+        ilcp[i].coeffs = (*p_flows)[i];
+        ilcp[i].op = CI_EQ;
+    }
+    fill_const_terms_from_m0(m0min, ilcp);
+
+    auto LRS = computeLRSof(ilcp);
     if (!LRS)
         return false;
 
@@ -1876,8 +1891,23 @@ std::vector<int> RSRG::compute_inv_consts_from_m0(const std::vector<int>& m0, co
 
 //-----------------------------------------------------------------------------
 
+void RSRG::fill_const_terms_from_m0(const std::vector<int>& m0, int_lin_constr_vec_t& ilcp) const {
+    for (size_t i=0; i<ilcp.size(); i++) {
+        int m0_flow = 0;
+        for (auto& elem : ilcp[i].coeffs) {
+            if (elem.index < npl) {// index of a place and not of a support variable
+                m0_flow += elem.value * m0[elem.index]; // m0 * flow
+            }
+        }    
+        ilcp[i].const_term = m0_flow;
+    }
+}
+
+//-----------------------------------------------------------------------------
+
 std::optional<dd_edge>
-RSRG::computeLRSof(const std::vector<int>& inv_consts, const flow_basis_t& inv_set) const {
+RSRG::computeLRSof(const int_lin_constr_vec_t& ilcp) const 
+{
     expert_forest *efMDD = static_cast<expert_forest *>(forestMDD);
     expert_domain *eDom = static_cast<expert_domain *>(dom);
     dd_edge ALL(efMDD);
@@ -1894,7 +1924,7 @@ RSRG::computeLRSof(const std::vector<int>& inv_consts, const flow_basis_t& inv_s
         if (isIndexOfPlace(lvl))
             real_bound = domainBounds(lvl);
         else
-            continue; // extra leevls are bounded at the end
+            continue; // extra levels are bounded at the end
         // cout << real_bound << " / " << var_bound << endl;
 
         // Encode the constraint:   var < bound
@@ -1923,19 +1953,20 @@ RSRG::computeLRSof(const std::vector<int>& inv_consts, const flow_basis_t& inv_s
         bool operator < (const constraint_elem_t& e) const { return level < e.level; }
     };
     struct constraint_t {
-        int m0_Y;
+        int const_term; // m0 * Y for semiflows, or an arbitrary integer
         bool has_negative_coeffs;
-        std::vector<constraint_elem_t> flow;
+        std::vector<constraint_elem_t> flow; // coefficients
+        constr_ineq_op_t op; // comparison operator for the constraint
         bool operator < (const constraint_t& c) const { return flow.size() < c.flow.size(); }
     };
     std::vector<constraint_t> constraints;
-    constraints.reserve(inv_set.size());
+    constraints.reserve(ilcp.size());
 
-    size_t flow_index = 0;
-    for (auto&& flow : inv_set) {
-        int m0_flow = inv_consts[flow_index++];
+    size_t constr_index = 0;
+    for (auto&& row : ilcp) {
+        // int m0_flow = inv_consts[constr_index++];
         bool has_negative_coeffs = false;
-        for (auto& elem : flow) {
+        for (auto& elem : row.coeffs) {
             if (elem.index < npl) {// index of a place and not of a support variable
         //         m0_flow += elem.value * m0[elem.index]; // m0 * flow
                 if (elem.value < 0)
@@ -1943,8 +1974,8 @@ RSRG::computeLRSof(const std::vector<int>& inv_consts, const flow_basis_t& inv_s
             }
         }
         std::vector<constraint_elem_t> sorted_flow;
-        sorted_flow.reserve(flow.nonzeros());
-        for (auto& elem : flow) {
+        sorted_flow.reserve(row.coeffs.nonzeros());
+        for (auto& elem : row.coeffs) {
             int lvl;
             if (elem.index < npl) {
                 lvl = convertPlaceToMDDLevel(elem.index) + 1;
@@ -1960,8 +1991,8 @@ RSRG::computeLRSof(const std::vector<int>& inv_consts, const flow_basis_t& inv_s
                     complVar_to_level[elem.index] = lvl;
                     ++ithExtraLevel;
                     // Ensure the extra level has the right bound
-                    if (eDom->getVariableBound(lvl) < m0_flow + 2)
-                        eDom->enlargeVariableBound(lvl, false, m0_flow + 2);
+                    if (eDom->getVariableBound(lvl) < row.const_term + 2)
+                        eDom->enlargeVariableBound(lvl, false, row.const_term + 2);
                     cout << "Assigning level " << lvl << " to support variable " << elem.index 
                          << " with bound " << eDom->getVariableBound(lvl) << endl;
                 }
@@ -1970,7 +2001,10 @@ RSRG::computeLRSof(const std::vector<int>& inv_consts, const flow_basis_t& inv_s
             sorted_flow.push_back(constraint_elem_t{.level=lvl, .place=(long)elem.index, .card=elem.value});
         }
         std::sort(sorted_flow.begin(), sorted_flow.end());
-        constraints.push_back(constraint_t{.m0_Y=m0_flow, .has_negative_coeffs=has_negative_coeffs, .flow=std::move(sorted_flow)});
+        constraints.push_back(constraint_t{.const_term=row.const_term, 
+                                           .has_negative_coeffs=has_negative_coeffs, 
+                                           .flow=std::move(sorted_flow), 
+                                           .op=row.op});
     }
     // std::sort(constraints.rbegin(), constraints.rend());
     // for (auto& c : constraints)
@@ -2046,7 +2080,7 @@ RSRG::computeLRSof(const std::vector<int>& inv_consts, const flow_basis_t& inv_s
             for (int i=0; i<bound; i++) {
                 for (auto&& part : partial_sums) {
                     int j = part.first + (i * elem.card);
-                    if (constr.has_negative_coeffs || j <= constr.m0_Y) {
+                    if (constr.has_negative_coeffs || j <= constr.const_term) {
                         std::map<int, unpacked_node*>::iterator node = partial_sums_at_lvl.find(j);
                         if (node == partial_sums_at_lvl.end()) {
                             unpacked_node* nodeptr = unpacked_node::newFull(efMDD, elem.level, bound);
@@ -2073,38 +2107,57 @@ RSRG::computeLRSof(const std::vector<int>& inv_consts, const flow_basis_t& inv_s
         }
 
         // Generate the final constraint for the P-flow
-        dd_edge stateConstrDD(forestMDD);
-        stateConstrDD = partial_sums[constr.m0_Y];
-        // if (has_support_vars) {
-            // stateConstrDD.set(0);
-            // for (int i=m0_pflow; i>=0; i--) {
-            //     stateConstrDD += partial_sums[i];
-            // }
-        // }
-        // else {
-        //     stateConstrDD = partial_sums[m0_pflow];
-        // }
+        // dd_edge stateConstrDD(forestMDD);
+        dd_edge constraint_dd(forestMDD);
+        for (auto kv : partial_sums) {
+            bool keep;
+            switch (constr.op) { // evaluate the inequality operator associated with this constraint
+                case CI_LESS:      keep = (kv.first < constr.const_term);  break;
+                case CI_LESS_EQ:   keep = (kv.first <= constr.const_term);  break;
+                case CI_EQ:        keep = (kv.first == constr.const_term);  break;
+                case CI_NEQ:       keep = (kv.first != constr.const_term);  break;
+                case CI_GREAT:     keep = (kv.first > constr.const_term);  break;
+                case CI_GREAT_EQ:  keep = (kv.first >= constr.const_term);  break;
+                default:  throw rgmedd_exception();
+            }
 
-        // cardinality_t card;
-        // apply(CARDINALITY, stateConstrDD, cardinality_ref(card));
-        // cout << "  INV: ";
-        // for (auto& elem : pflow)
-        //     if (elem.index < npl)
-        //         cout << elem.value << "*" << tabp[elem.index].place_name << " ";
-        // cout << (has_support_vars ? "<=" : "=");
-        // cout << " " << m0_pflow << "   CARD: " << card << "  NODES: " << stateConstrDD.getNodeCount() << endl;
-        // MEDDLY::ostream_output stdout_wrap(cout);
-        // stateConstrDD.show(stdout_wrap, 2);
+            if (keep) {
+                apply(MEDDLY::UNION, constraint_dd, kv.second, constraint_dd);
+            }
+        }
+        apply(MEDDLY::INTERSECTION, LRS, constraint_dd, LRS);
+
+        // stateConstrDD = partial_sums[constr.const_term];
+        // // if (has_support_vars) {
+        //     // stateConstrDD.set(0);
+        //     // for (int i=m0_pflow; i>=0; i--) {
+        //     //     stateConstrDD += partial_sums[i];
+        //     // }
+        // // }
+        // // else {
+        // //     stateConstrDD = partial_sums[m0_pflow];
+        // // }
+
+        // // cardinality_t card;
+        // // apply(CARDINALITY, stateConstrDD, cardinality_ref(card));
+        // // cout << "  INV: ";
+        // // for (auto& elem : pflow)
+        // //     if (elem.index < npl)
+        // //         cout << elem.value << "*" << tabp[elem.index].place_name << " ";
+        // // cout << (has_support_vars ? "<=" : "=");
+        // // cout << " " << m0_pflow << "   CARD: " << card << "  NODES: " << stateConstrDD.getNodeCount() << endl;
+        // // MEDDLY::ostream_output stdout_wrap(cout);
+        // // stateConstrDD.show(stdout_wrap, 2);
 
 
-        // Remove from the state space all the states that violate the invariant
-        // cout << "doing INTERSECTION..." << endl;
-        apply(MEDDLY::INTERSECTION, LRS, stateConstrDD, LRS);
-        // cout << " LRS nodes: " << LRS.getNodeCount() << endl;
+        // // Remove from the state space all the states that violate the invariant
+        // // cout << "doing INTERSECTION..." << endl;
+        // apply(MEDDLY::INTERSECTION, LRS, stateConstrDD, LRS);
+        // // cout << " LRS nodes: " << LRS.getNodeCount() << endl;
 
-        // cout << "doing CARDINALITY..." << endl;
-        // apply(CARDINALITY, LRS, cardinality_ref(card));
-        // cout << " LRS: " << card << endl;
+        // // cout << "doing CARDINALITY..." << endl;
+        // // apply(CARDINALITY, LRS, cardinality_ref(card));
+        // // cout << " LRS: " << card << endl;
     }
 
 
@@ -2227,39 +2280,47 @@ bool RSRG::buildLRSbyPBasisConstraints() {
     for (int p=0; p<npl; p++)
         m0[p] = net_mark[p].total;
 
-const std::vector<int>& load_Psemiflow_consts();
-const std::vector<int>& load_Psemiflow_leq_consts();
+    int_lin_constr_vec_t ilcp;
+    const int_lin_constr_vec_t *p_ilcp;
 
-    const flow_basis_t* p_flows = nullptr;
-    const std::vector<int>* p_flow_consts = nullptr;
-    for (size_t phase = 0; phase<2; phase++) 
-    {
-        const flow_basis_t* F = (phase==0 ? &load_Psemiflows() : //get_flow_basis() : 
-                                            &load_Psemiflows_leq());
-        if (!check_invariants_satisfy_LRS_requirements(*F))
-            continue;
+    p_ilcp = &load_int_constr_problem();
+    if (p_ilcp->empty()) {
+        // no ILCP ready. Build one from the P-semiflows
+        const flow_basis_t* p_flows = nullptr;
+        const std::vector<int>* p_flow_consts = nullptr;
+        for (size_t phase = 0; phase<2; phase++) 
+        {
+            const flow_basis_t* F = (phase==0 ? &load_Psemiflows() : //get_flow_basis() : 
+                                                &load_Psemiflows_leq());
+            if (!check_invariants_satisfy_LRS_requirements(*F))
+                continue;
 
-        p_flows = F;
+            p_flows = F;
 
-        p_flow_consts = (phase==0 ? &load_Psemiflow_consts() :
-                                    &load_Psemiflow_leq_consts());
-        break;
+            p_flow_consts = (phase==0 ? &load_Psemiflow_consts() :
+                                        &load_Psemiflow_leq_consts());
+            break;
+        }
+        if (p_flows == nullptr) {
+            cout << "No set of P-flows covers all places. Cannot do constraint satisfaction." << endl;
+            return false;
+        }
+
+        // Setup the ILCP from the P-semiflows
+        ilcp.resize(p_flows->size());
+        bool has_consts_terms = (p_flow_consts->size() == p_flows->size());
+        for (size_t i=0; i<ilcp.size(); i++) {
+            ilcp[i].coeffs = (*p_flows)[i];
+            if (has_consts_terms)
+                ilcp[i].const_term = (*p_flow_consts)[i];
+            ilcp[i].op = CI_EQ;
+        }
+        if (!has_consts_terms)
+            fill_const_terms_from_m0(m0, ilcp);
+        p_ilcp = &ilcp;
     }
-    if (p_flows == nullptr) {
-        cout << "No set of P-flows covers all places. Cannot do constraint satisfaction." << endl;
-        return false;
-    }
-    
-    // const flow_basis_t& B = get_flow_basis();
-    // const flow_basis_t& B = load_Psemiflows_leq();
-    // Determine the invariant constants
-    vector<int> inv_consts;
-    if (p_flow_consts->size() == p_flows->size())
-        inv_consts = *p_flow_consts; // from file
-    else
-        inv_consts = compute_inv_consts_from_m0(m0, *p_flows); // from product with m0
 
-    auto ret = computeLRSof(inv_consts, *p_flows);
+    auto ret = computeLRSof(*p_ilcp);
     if (!ret)
         return false;
 
@@ -2346,6 +2407,29 @@ const std::vector<int>& load_Psemiflow_leq_consts();
 
     // return true;
 }
+
+// //-----------------------------------------------------------------------------
+
+// bool RSRG::buildBoundedIntegerLinearConstraints() {
+//     // Verify that all places have a known bound
+//     size_t nguess = 0;
+//     for (int i=0; i<npl; i++)
+//         if (guessState[i] == PlaceBoundState::GUESSED)
+//             nguess++;
+//     if (nguess > 0) {
+//         cout << nguess << " places have an unknown bound. Cannot do constraint satisfaction." << endl;
+//         return false;
+//     }
+//     // Load the constraints
+//     const int_lin_constr_vec_t& ilc = load_int_constr_problem();
+//     if (ilc.size() == 0) {
+//         cout << "There are no integer constraints (.ilc file)." << endl;
+//         return false;
+//     }
+
+
+//     return true;
+// }
 
 //-----------------------------------------------------------------------------
 

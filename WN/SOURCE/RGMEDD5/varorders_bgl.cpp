@@ -400,6 +400,9 @@ void var_order_sloan(const VariableOrderCriteria voc, std::vector<int> &out_orde
         out_order = {0};
         return;
     }
+    if (ntr == 0) {
+        throw rgmedd_exception("var_order_sloan() cannot be used with 0 transitions.");
+    }
 
     // The graph type for the sloan method
     typedef boost::adjacency_list<boost::setS, 

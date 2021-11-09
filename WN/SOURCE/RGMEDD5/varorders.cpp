@@ -1509,6 +1509,60 @@ load_flows_from_file(ifstream& pif, size_t max_index, bool allow_neg_card) {
 
 //---------------------------------------------------------------------------------------
 
+static int_lin_constr_vec_t
+load_int_lin_constr_problem_from_file(ifstream& pif, size_t max_index, bool allow_neg_card) {
+    int_lin_constr_vec_t ilcp;
+    if (!pif) 
+        return ilcp; // empty
+
+    int num_constr;
+    pif >> num_constr;
+    if (!pif || num_constr < 0)
+        return ilcp;
+
+    ilcp.reserve(num_constr);
+    for (int i = 0; i < num_constr; i++) {
+        int len;
+        pif >> len;
+        if (!pif || len < 0) {
+            ilcp.clear();
+            cerr << "Error reading constraints from file." << endl;
+            return ilcp; // bad file, or could not generate constraints (len<0)
+        }
+        int_lin_constr_t constr;
+        constr.coeffs.resize(max_index);
+        constr.coeffs.reserve(len);
+        for (int j = 0; j < len; j++) {
+            int card, pl;
+            pif >> card >> pl;
+            if (!pif || (card <= 0 && !allow_neg_card) || pl <= 0 || pl > max_index) {
+                ilcp.clear();
+                cerr << "Error reading constraints coefficients from file." << endl;
+                return ilcp; // bad file
+            }
+            constr.coeffs.insert_element(pl - 1, card);
+        }
+        std::string op;
+        pif >> op >> constr.const_term;
+        constr.op = constr_ineq_op_t(-1);
+        for (size_t e=0; e<CI_TOTAL_OPERATORS; e++) {
+            if (0==strcmp(s_constr_ineq_op_str[e], op.c_str())) {
+                constr.op = constr_ineq_op_t(e);
+                break;
+            }
+        }
+        if (constr.op == constr_ineq_op_t(-1)) {
+            ilcp.clear();
+            cerr << "Error reading ineq. operator "<<op<<" from file." << endl;
+            return ilcp; // bad file
+        }
+        ilcp.emplace_back(constr);
+    }
+    return ilcp;
+}
+
+//---------------------------------------------------------------------------------------
+
 // Load and store the vector of P-semiflows (from the <netname>.pin file)
 const flow_basis_t&
 load_Psemiflows() {
@@ -1577,6 +1631,24 @@ load_Psemiflow_leq_consts() {
         net_ic_leq = load_flow_consts_from_file(pif, get_num_Psemiflows());
     }
     return net_ic_leq;
+}
+
+//---------------------------------------------------------------------------------------
+
+// Load and store the integer constraints problem (from the <netname>.icp file)
+const int_lin_constr_vec_t&
+load_int_constr_problem() {
+    static int_lin_constr_vec_t net_icp; // Permanently stored 
+    static bool icp_loaded = false;
+
+    if (!icp_loaded) {
+        icp_loaded = true;
+        std::string icp_name(net_name);
+        icp_name += "ilcp";
+        ifstream pif(icp_name.c_str());
+        net_icp = load_int_lin_constr_problem_from_file(pif, npl, true);
+    }
+    return net_icp;
 }
 
 //---------------------------------------------------------------------------------------

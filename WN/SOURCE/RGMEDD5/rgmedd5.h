@@ -121,6 +121,27 @@ struct spvec_int_tag {
 typedef sparsevector<spvec_int_tag> sparse_vector_t;
 typedef std::vector<sparse_vector_t> flow_basis_t;
 
+enum constr_ineq_op_t {
+    CI_LESS, CI_LESS_EQ, CI_EQ, CI_NEQ, CI_GREAT, CI_GREAT_EQ,
+    CI_TOTAL_OPERATORS
+};
+extern const char* s_constr_ineq_op_str[];
+
+struct int_lin_constr_t {
+    sparse_vector_t  coeffs; // coefficients of the variables
+    constr_ineq_op_t op;     // sign of the inequality
+    int              const_term;
+};
+typedef std::vector<int_lin_constr_t> int_lin_constr_vec_t;
+
+// struct int_lin_constr_problem_t {
+//     flow_basis_t                    coeffs;
+//     std::vector<int>                const_terms;
+//     std::vector<constr_ineq_op_t>   ineq_ops;
+
+//     inline void clear() { coeffs.clear(); const_terms.clear(); ineq_ops.clear(); }
+// };
+
 //---------------------------------------------------------------------------------------
 
 
@@ -804,6 +825,8 @@ protected:
     //--------------------------------------------------
     // constraint satisfaction (LRS generation)
     bool buildLRSbyPBasisConstraints();
+    // // bounded integer linear constraint state space
+    // bool buildBoundedIntegerLinearConstraints();
 
 private:
     int visitXBounds(const node_handle node, int visit_level, std::vector<bool> &visited, std::vector<int> &nodeMaxSumTokens);
@@ -941,7 +964,9 @@ public:
     bool buildLRS();
 
     std::vector<int> compute_inv_consts_from_m0(const std::vector<int>& m0, const flow_basis_t& inv_set) const;
-    std::optional<dd_edge> computeLRSof(const std::vector<int>& inv_consts, const flow_basis_t& inv_set) const;
+    void fill_const_terms_from_m0(const std::vector<int>& m0, int_lin_constr_vec_t& ilcp) const;
+
+    std::optional<dd_edge> computeLRSof(const int_lin_constr_vec_t& ilcp) const;
 
     //! it generates the RS using the next state function for models with timed and immediate transitions.  It returns -1 in case of error 0 otherwise.
     bool genRSAll();
