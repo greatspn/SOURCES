@@ -1962,7 +1962,7 @@ RSRG::computeLRSof(const int_lin_constr_vec_t& ilcp) const
     std::vector<constraint_t> constraints;
     constraints.reserve(ilcp.size());
 
-    size_t constr_index = 0;
+    // size_t constr_index = 0;
     for (auto&& row : ilcp) {
         // int m0_flow = inv_consts[constr_index++];
         bool has_negative_coeffs = false;
@@ -2012,6 +2012,7 @@ RSRG::computeLRSof(const int_lin_constr_vec_t& ilcp) const
 
 
     // Evaluate one constraint at a time from the set of sorted P-flows
+    size_t constr_index = 0;
     for (auto& constr : constraints) {
         // bool has_negative_coeffs = false;
         // int m0_pflow = 0;
@@ -2126,6 +2127,8 @@ RSRG::computeLRSof(const int_lin_constr_vec_t& ilcp) const
             }
         }
         apply(MEDDLY::INTERSECTION, LRS, constraint_dd, LRS);
+
+        cout << (++constr_index) << "/" << constraints.size() << endl;
 
         // stateConstrDD = partial_sums[constr.const_term];
         // // if (has_support_vars) {

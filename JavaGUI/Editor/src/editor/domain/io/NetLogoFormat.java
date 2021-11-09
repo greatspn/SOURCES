@@ -262,7 +262,7 @@ public class NetLogoFormat {
                 ColorClass dom = e.getConnectedPlace().getColorDomain();
                 assert domain2attrs.containsKey(dom);
                 
-                System.out.println("convert: " + e.getMultiplicity());
+//                System.out.println("convert: " + e.getMultiplicity());
                 String nlMult = e.convertMultiplicityLang(context, ExpressionLanguage.NETLOGO);
 //                System.out.println(e.getMultiplicity()+" ==> "+nlMult);
                 String[] allTupleTerms = splitTupleSum(nlMult, log);
@@ -319,23 +319,23 @@ public class NetLogoFormat {
                                             AgentFiringStatus.CREATED));
                         }
                     }
-                    if (allInAgents != null) {
-                        for (Tuple<GspnEdge, String[]> inAgent : allInAgents) {
-                            // check if inAgent was transformed
-                            boolean isFound = false;
-                            for (FiringAgent fa : firingAgents) {
-                                if (fa.agentName.equals(inAgent.y[0])) {
-                                    isFound = true;
-                                    break;
-                                }
+                }
+                if (allInAgents != null) {
+                    for (Tuple<GspnEdge, String[]> inAgent : allInAgents) {
+                        // check if inAgent was transformed
+                        boolean isFound = false;
+                        for (FiringAgent fa : firingAgents) {
+                            if (fa.agentName.equals(inAgent.y[0])) {
+                                isFound = true;
+                                break;
                             }
-                            if (!isFound) {
+                        }
+                        if (!isFound) {
 //                              // killed
-                                firingAgents.add(new FiringAgent(trn, inAgent.x, null, 
-                                            inAgent.y[0], inAgent.x.getConnectedPlace().getColorDomain().getColorClass(0),
-                                            inAgent.y, null,
-                                            AgentFiringStatus.KILLED));
-                            }
+                            firingAgents.add(new FiringAgent(trn, inAgent.x, null, 
+                                        inAgent.y[0], inAgent.x.getConnectedPlace().getColorDomain().getColorClass(0),
+                                        inAgent.y, null,
+                                        AgentFiringStatus.KILLED));
                         }
                     }
                 }
@@ -533,7 +533,7 @@ public class NetLogoFormat {
                 int ind=0;
                 int agentNum = 1;
                 
-                System.out.println("transition: "+trn.getUniqueName());
+//                System.out.println("transition: "+trn.getUniqueName());
                 ArrayList<FiringAgent> firingAgents = allFiringAgents.get(trn);
                 ArrayList<FiringAgent> inputFiringAgents = new ArrayList<>();
                 for (FiringAgent agent : firingAgents) {
@@ -542,7 +542,7 @@ public class NetLogoFormat {
                 }
                 
                 String leaderAgentClass = leaderOfTrn.get(trn);
-                assert leaderAgentClass == inputFiringAgents.get(0).agentClass.getUniqueName();
+                assert inputFiringAgents.isEmpty() || leaderAgentClass.equals(inputFiringAgents.get(0).agentClass.getUniqueName());
                 pw.println(";; transition "+trn.getUniqueName());
 
                 // cycle through all input agents
@@ -613,7 +613,7 @@ public class NetLogoFormat {
                         // determine the transition index inside leadersOfTrn
                         int myratePos = transitionsOfLeaderAgentClass.get(leaderAgentClass).indexOf(trn);                        
                         indent(pw, ind); pw.println(";; summing up all rates");
-                        indent(pw, ind); pw.println("set myrate replace-item "+myratePos+" myrate (countInstances * "+trn.getDelay()+")");
+                        indent(pw, ind); pw.println("set myrate replace-item "+myratePos+" myrate (countInstances * ("+trn.getDelay()+"))");
                     }
                     ind--;
                     indent(pw, ind); pw.println("]");
@@ -860,7 +860,7 @@ public class NetLogoFormat {
 //                System.out.println("confronto 1: "+pcsc.name);
                 if (clrTerm.equals(pcsc.name)) {
                     // clrTerm is a static subclass
-                    System.out.println("color term "+clrTerm+" is a static subclass");
+//                    System.out.println("color term "+clrTerm+" is a static subclass");
                     num += pcsc.getNumColors();
                     found = true;
                 }
@@ -869,7 +869,7 @@ public class NetLogoFormat {
 //                    System.out.println("confronto 2: "+pcsc.getColorName(c));
                     if (pcsc.getColorName(c).equals(clrTerm)) {
                         // clrTerm is a single named color
-                        System.out.println("color term "+clrTerm+" is a named single color");
+//                        System.out.println("color term "+clrTerm+" is a named single color");
                         num += 1;
                         found = true;
                     }
