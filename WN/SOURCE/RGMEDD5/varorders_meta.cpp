@@ -60,177 +60,6 @@ ScoreWeights get_weights_for(VariableOrderCriteria voc, bool is_multi) {
 
 //---------------------------------------------------------------------------------------
 
-// // Select the variable order which has the best weighted score
-// void metaheuristic_wscore(VariableOrderCriteria metavoc,
-//                           std::vector<score_vo_t>& varorders,
-//                           size_t max_varorders,
-//                           VariableOrderMetric& ann_metric,
-//                           trans_span_set_t &trns_set,
-//                           flow_basis_metric_t& fbm,
-//                           const std::map<const char*, int, cstr_less>& S2Ipl) 
-// {
-//     std::vector<int> order(npl);
-//     // VariableOrderCriteria best_voc = VOC_NO_REORDER;
-//     // const char* best_variation = "";
-//     // double best_score = -1;
-//     clock_t start_time = 0;
-
-//     // Conditions for heuristics applicability
-//     bool has_psf = (get_num_Psemiflows() >= 1);
-//     bool has_nu = model_has_nested_units();
-//     bool has_scc = (get_num_components() > 1);
-//     bool is_multi = (max_varorders > 1);
-
-//     struct { 
-//         VariableOrderCriteria voc;  // Tested algorithm in the meta-heuristic
-//         int refine_with_force;      // Test also the algo+FORCE variation
-//         int apply_compact_pbasis;   // Test also the algo+Annealing variation
-//         bool selectable;            // Is it selectable for the current instance?
-//     }
-//     algoList[] {
-//         { VOC_SLOAN,                       1, 0, true },
-//         { VOC_SLOAN_1_16,                  1, 0, (npl<5000 && ntr<10000) },
-//         { VOC_TOVCHIGRECHKO2,              1, 0, true }, 
-//         { VOC_NOACK2,                      1, 0, true }, 
-//         { VOC_VCL_ADVANCED_CUTHILL_MCKEE,  1, 0, (npl<1000) },
-//         { VOC_VCL_CUTHILL_MCKEE,           1, 0, (npl<1000) },
-//         { VOC_VCL_GIBBS_POOLE_STOCKMEYER,  1, 0, (npl<5000) && is_multi }, // NEW ENTRY 2020
-//         { VOC_CUTHILL_MCKEE,               1, 0, (npl<5000) && is_multi }, // NEW ENTRY 2020
-//         { VOC_GRADIENT_NU,                 1, 0, has_nu },
-//         { VOC_MARKOV_CLUSTER,              0, 0, is_clusterable() },
-//         { VOC_PCHAINING,                   0, 0, has_psf && (npl < 1000) }, // P-INV does not scale well
-//         { VOC_GRADIENT_P,                  1, 0, has_psf },
-//         { VOC_TOPOLOGICAL,                 1, 0, has_scc },
-//         { VOC_FORCE_NU,                    1, 0, has_nu && is_multi }, // NEW ENTRY 2020
-//         { VOC_NO_REORDER /* end of list */ }
-//     };
-
-//     // Evaluate and print the given score
-//     auto evaluate_score = [&](VariableOrderCriteria voc, 
-//                               variable_order_variation_type vt, double score, 
-//                               double weight, const var_order_selector& sel) 
-//     {
-//         score *= weight; // Apply weight **before** the announce
-
-//         score_vo_t sv(npl);
-//         sv.order = order;
-//         sv.voc = voc;
-//         sv.score = score;
-//         sv.variation_type = vt;
-
-//         if (!running_for_MCC()) { // announce computed score
-//             const char *vname = var_order_name(voc).first;
-//             ssize_t n = 25 - strlen(vname) - strlen(sv.variation());
-//             cout << "  "<<vname<<sv.variation()<< setw(n<0?0:n) << score;
-//             if (sel.p_meta_score_ex2)
-//                 cout << setw(12) << *sel.p_meta_score_ex2;
-//             if (sel.p_meta_score_ex3)
-//                 cout << setw(12) << *sel.p_meta_score_ex3;
-//             if (sel.p_meta_score_ex4)
-//                 cout << setw(9) << *sel.p_meta_score_ex4;
-//             cout << setw(8) << weight;
-//             cout << setw(11) << (double(clock() - start_time) / CLOCKS_PER_SEC) << " sec." << endl;
-//         }
-//         varorders.insert(std::upper_bound(varorders.begin(), varorders.end(), sv), sv);
-//         if (varorders.size() > max_varorders)
-//             varorders.resize(varorders.size() - 1);
-//         // if (best_score == -1 || score < best_score) {
-//         //     best_order = order;
-//         //     best_voc = voc;
-//         //     best_score = score;
-//         //     best_variation = variation;
-//         // }
-//     };
-
-//     if (!running_for_MCC()) {
-//         cout << "  METHOD              SCORE        SWIR       SOUPS DISCOUNT  WEIGHT       TIME " << endl;
-//     }
-
-//     // Test all the variable orderings in algoList[]
-//     for (int m=0; algoList[m].voc != VOC_NO_REORDER; m++) {
-//         const VariableOrderCriteria voc = algoList[m].voc;
-//         if (!algoList[m].selectable)
-//             continue;
-
-//         assert(!method_uses_pinvs(voc) || has_psf);
-//         assert(!method_uses_nested_units(voc) || model_has_nested_units());
-//         bool do_discount = (voc == VOC_VCL_ADVANCED_CUTHILL_MCKEE) || (voc == VOC_VCL_CUTHILL_MCKEE);
-//         do_discount = do_discount && (npl < ntr/4);
-//         ScoreWeights SW = get_weights_for(voc, is_multi);
-
-//         double score = -1, score_ex2 = -1, score_ex3 = -1, score_ex4 = -1;
-//         var_order_selector sel;
-//         sel.heuristics = voc;
-//         sel.p_meta_score = &score;
-//         sel.p_meta_score_ex2 = &score_ex2; // TODO: remove
-//         sel.p_meta_score_ex3 = &score_ex3; // TODO: remove
-//         sel.p_meta_score_ex4 = &score_ex4; // TODO: remove
-//         sel.discount_score = do_discount;
-//         sel.verbose = false;
-
-//         try {
-//             // Get the order & its (weighted) score
-//             start_time = clock();
-//             determine_var_order(sel, S2Ipl, order, trns_set, fbm);
-//             assert(score >= 0);
-//             evaluate_score(voc, VT_NONE, score, SW.base_weight, sel);
-//         }
-//         catch (rgmedd_exception& e) {
-//             if (!running_for_MCC())
-//                 cout << "Skipping " << var_order_name(voc).first << ", reason: " << e.what() << endl;
-//             continue;
-//         }
-
-//         // Run Force on that order and test the obtained variation
-//         if (algoList[m].refine_with_force) {
-//             score = -1;
-//             sel.heuristics = VOC_INPUT_ORDER;
-//             sel.refinement = ForceBasedRefinement::BEST_AVAILABLE;
-//             try {
-//                 start_time = clock();
-//                 determine_var_order(sel, S2Ipl, order, trns_set, fbm);
-//                 assert(score >= 0);
-//                 evaluate_score(voc, VT_FORCE, score, SW.force_weight, sel);
-//             }
-//             catch (rgmedd_exception& e) {
-//                 if (!running_for_MCC())
-//                     cout << "Skipping " << var_order_name(voc).first << "+Force, reason: " << e.what() << endl;
-//             }
-//         }
-
-//         // Run compact-pbasis heuristics on that order and test the obtained variation
-//         if (algoList[m].apply_compact_pbasis) {
-//             score = -1;
-//             sel.heuristics = VOC_INPUT_ORDER;
-//             sel.refinement = ForceBasedRefinement::NO_REFINEMENT;
-//             sel.annealing = Annealing::ANN_PBASIS_MIN;
-//             try {
-//                 start_time = clock();
-//                 determine_var_order(sel, S2Ipl, order, trns_set, fbm);
-//                 assert(score >= 0);
-//                 evaluate_score(voc, VT_COMPACT, score, 1.0/*SW.ann_weight*/, sel);
-//             }
-//             catch (rgmedd_exception& e) {
-//                 if (!running_for_MCC())
-//                     cout << "Skipping " << var_order_name(voc).first << "+CP, reason: " << e.what() << endl;
-//             }
-//         }
-//     }
-
-//     // if (!running_for_MCC()) {
-//     //     cout << "Meta-heuristic: selecting method " << var_order_name(varorders[0].voc).first << varorders[0].variation
-//     //          << " with score: " << varorders[0].score << endl;
-//     // }
-
-//     // varorder = std::move(best_order);
-//     if (max_varorders == 1 && 
-//         ann_metric == VariableOrderMetric::METRIC_SWIR && 
-//         varorders[0].voc == VOC_MARKOV_CLUSTER)
-//         ann_metric = VariableOrderMetric::METRIC_SWIR_X;
-// }
-
-// //---------------------------------------------------------------------------------------
-
 
 
 
@@ -342,7 +171,7 @@ score_vo_t
 generate_variable_order(VariableOrderCriteria voc,
                         metaheuristic_context_t& mhctx)
 {
-    assert(!method_uses_pinvs(voc) || mhctx.has_psf);
+    assert(!method_uses_lin_constraints(voc) || mhctx.has_psf);
     assert(!method_uses_nested_units(voc) || model_has_nested_units());
     bool do_discount = (voc == VOC_VCL_ADVANCED_CUTHILL_MCKEE) || 
                        (voc == VOC_VCL_CUTHILL_MCKEE);
@@ -439,7 +268,7 @@ void metaheuristic(metaheuristic_context_t& mhctx,
     clock_t start_time = 0;
 
     // Conditions for heuristics applicability
-    mhctx.has_psf = (get_num_Psemiflows() >= 1);
+    mhctx.has_psf = (get_int_constr_problem().size() >= 1);
     mhctx.has_nu = model_has_nested_units();
     mhctx.has_scc = (get_num_components() > 1);
     mhctx.is_multi = (max_varorders > 1);

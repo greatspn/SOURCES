@@ -230,7 +230,7 @@ void determine_var_order(const var_order_selector& sel,
     }
     const char *short_name, *long_name;
     std::tie(short_name, long_name) = var_order_name(sel.heuristics);
-    const flow_basis_t empty_psf;
+    const int_lin_constr_vec_t empty_ilcp;
     if (!running_for_MCC() && sel.verbose) {
     	cout << "Variable order method: " << long_name << endl;
     }
@@ -269,14 +269,15 @@ void determine_var_order(const var_order_selector& sel,
         }
 
         case VOC_PCHAINING:
-            varorder_P_chaining(load_Psemiflows(), net_to_mddLevel);
+            varorder_P_chaining(get_int_constr_problem(), net_to_mddLevel);
             fill_missing_vars = true;
             invert_mapping = true;
             break;
 
 	    case VOC_PINV: {
-	    	if (read_PIN_file())
-	    		throw rgmedd_exception("Cannot load P-invariants (.pin) file.");
+            if (get_int_constr_problem().empty())
+	    	// if (read_PIN_file())
+	    		throw rgmedd_exception("Cannot sort using P-euristics.");
 	        int *pinv_order = sort_according_to_pinv();
 	        free_PIN_file();
 	        std::copy(pinv_order, pinv_order + npl, net_to_mddLevel.begin());
@@ -293,19 +294,19 @@ void determine_var_order(const var_order_selector& sel,
         case VOC_FORCE:
             var_order_visit(VOC_BFS, net_to_mddLevel, 0);
             var_order_FORCE(sel.heuristics, net_to_mddLevel, net_to_mddLevel, 
-                            empty_psf, sel.verbose);
+                            empty_ilcp, sel.verbose);
             break;
 
         case VOC_FORCE_PINV:
             var_order_visit(VOC_BFS, net_to_mddLevel, 0);
             var_order_FORCE(sel.heuristics, net_to_mddLevel, net_to_mddLevel, 
-                            load_Psemiflows(), sel.verbose);
+                            get_int_constr_problem(), sel.verbose);
             break;
 
         case VOC_FORCE_NU:
             var_order_visit(VOC_BFS, net_to_mddLevel, 0);
             var_order_FORCE(sel.heuristics, net_to_mddLevel, net_to_mddLevel, 
-                            convert_nested_units_as_semiflows(), sel.verbose);
+                            convert_nested_units_as_ilcp(), sel.verbose);
             break;
 
 	    case VOC_CUTHILL_MCKEE:
@@ -334,12 +335,12 @@ void determine_var_order(const var_order_selector& sel,
             break;
 
 	    case VOC_GRADIENT_P:
-            var_order_gradient_P(sel.heuristics, load_Psemiflows(), net_to_mddLevel);
+            var_order_gradient_P(sel.heuristics, get_int_constr_problem(), net_to_mddLevel);
             invert_mapping = true;
             break;
 
         case VOC_GRADIENT_NU:
-            var_order_gradient_P(sel.heuristics, convert_nested_units_as_semiflows(), net_to_mddLevel);
+            var_order_gradient_P(sel.heuristics, convert_nested_units_as_ilcp(), net_to_mddLevel);
             invert_mapping = true;
             break;
 
@@ -522,7 +523,7 @@ void determine_var_order(const var_order_selector& sel,
     ForceBasedRefinement refinement = sel.refinement;
     if (refinement == ForceBasedRefinement::BEST_AVAILABLE) {        
         const bool use_ForceTI = (get_num_invariants() > 1 && get_num_invariants() < 100 && get_max_invariant_coeff() < 100);
-        const bool use_ForcePSF = (load_Psemiflows().size() > 1);
+        const bool use_ForcePSF = (get_int_constr_problem().size() > 1);
         if (use_ForceTI)
             refinement = ForceBasedRefinement::FORCE_TI;
         else if (use_ForcePSF)
@@ -535,11 +536,11 @@ void determine_var_order(const var_order_selector& sel,
             break;
 
         case ForceBasedRefinement::FORCE:
-            var_order_FORCE(VOC_FORCE, net_to_mddLevel, net_to_mddLevel, empty_psf, sel.verbose);
+            var_order_FORCE(VOC_FORCE, net_to_mddLevel, net_to_mddLevel, empty_ilcp, sel.verbose);
             break;
 
         case ForceBasedRefinement::FORCE_PSF:
-            var_order_FORCE(VOC_FORCE_PINV, net_to_mddLevel, net_to_mddLevel, load_Psemiflows(), sel.verbose);
+            var_order_FORCE(VOC_FORCE_PINV, net_to_mddLevel, net_to_mddLevel, get_int_constr_problem(), sel.verbose);
             break;
 
         case ForceBasedRefinement::FORCE_TI:
@@ -1014,7 +1015,7 @@ std::pair<const char*, const char*> var_order_name(VariableOrderCriteria voc) {
 
 //---------------------------------------------------------------------------------------
 
-bool method_uses_pinvs(VariableOrderCriteria voc) {
+bool method_uses_lin_constraints(VariableOrderCriteria voc) {
 	switch (voc) {
 		case VOC_NO_REORDER:
         case VOC_RANDOM:
@@ -1653,6 +1654,43 @@ load_int_constr_problem() {
 
 //---------------------------------------------------------------------------------------
 
+// Get the general ILCP problem, which could come either from the ILCP file, or from the PIN file
+const int_lin_constr_vec_t&
+get_int_constr_problem() {
+    static const int_lin_constr_vec_t *p_icp;
+    static int_lin_constr_vec_t buffer; 
+    static bool has_icp = false;
+
+    if (!has_icp) {
+        has_icp = true;
+
+        const int_lin_constr_vec_t& ilcp_file = load_int_constr_problem();
+        if (!ilcp_file.empty()) {
+            p_icp = &ilcp_file;
+            cout << "ILCP from file. " << p_icp->size() << endl;
+        }
+        else {
+            p_icp = &buffer;
+            const flow_basis_t& psf = load_Psemiflows();
+            const std::vector<int>& psfc = load_Psemiflow_consts();
+            if (!psf.empty()) {
+                // generate the ILCP from the P-semiflows
+                buffer.reserve(psf.size());
+                for (const sparse_vector_t& f : psf) {
+                    buffer.emplace_back(int_lin_constr_t{
+                        .coeffs = f, .op = CI_EQ,
+                        .const_term = psfc.empty() ? 0 : psfc[buffer.size()]
+                    });
+                }
+                cout << "ILCP from PSF. " << p_icp->size() << endl;
+            }
+        }
+    }
+    return *p_icp;
+}
+
+//---------------------------------------------------------------------------------------
+
 // Returns the number of P-invariants (0 if there are no P-invariants, or if the
 // model has an empty .pin file)
 int get_num_Psemiflows() {
@@ -1690,33 +1728,35 @@ bool all_places_are_covered(const flow_basis_t& flows) {
 
 //---------------------------------------------------------------------------------------
 
-// NuPN: convert nested units into fake p-semiflows, to be injected as inputs to
-// P-semiflows based variable orders
-const flow_basis_t&
-convert_nested_units_as_semiflows() 
+// NuPN: convert nested units into fake linear constraints, to be injected as inputs to
+// P-semiflows and/or constraint based variable orders
+const int_lin_constr_vec_t&
+convert_nested_units_as_ilcp() 
 {
-    static flow_basis_t nupn_psf; // Permanently stored NuPN
+    static int_lin_constr_vec_t nupn_ilcp; // Permanently stored NuPN
     static bool nupn_conv = false;
 
     if (!nupn_conv) {
         nupn_conv = true;
         if (!model_has_nested_units())
-            return nupn_psf;
-        nupn_psf.resize(num_nested_units);
+            return nupn_ilcp;
+        nupn_ilcp.resize(num_nested_units);
         for (int i=0; i<num_nested_units; i++) {
-            nupn_psf[i].resize(npl);
-            nupn_psf[i].reserve(nu_array[i]->num_places);
+            nupn_ilcp[i].coeffs.resize(npl);
+            nupn_ilcp[i].coeffs.reserve(nu_array[i]->num_places);
             for (int p=0; p<nu_array[i]->num_places; p++)
-                nupn_psf[i].add_element(nu_array[i]->places[p], 1);
-            // nupn_psf[i].resize(nu_array[i]->num_places);
+                nupn_ilcp[i].coeffs.add_element(nu_array[i]->places[p], 1);
+            nupn_ilcp[i].const_term = 1;
+            nupn_ilcp[i].op = CI_EQ;
+            // nupn_ilcp[i].resize(nu_array[i]->num_places);
             // Read unit' places
-            // for (int p=0; p<nupn_psf[i].size(); p++) {
-            //     nupn_psf[i][p].place_no = nu_array[i]->places[p];
-            //     nupn_psf[i][p].card = 1; 
+            // for (int p=0; p<nupn_ilcp[i].size(); p++) {
+            //     nupn_ilcp[i][p].place_no = nu_array[i]->places[p];
+            //     nupn_ilcp[i][p].card = 1; 
             // }
         }
     }
-    return nupn_psf;
+    return nupn_ilcp;
 }
 
 //---------------------------------------------------------------------------------------
@@ -2374,7 +2414,7 @@ static const int FORCE_MAX_SECONDS = 10;
 // The initial order should be passed in the in_order vector.
 // See: Aloul, Markov, Sakallah, "FORCE: a fast and easy-to-implement variable-ordering heuristic"
 void var_order_FORCE(const VariableOrderCriteria voc, std::vector<int> &out_order, 
-                     const std::vector<int> &in_order, const flow_basis_t& psf, 
+                     const std::vector<int> &in_order, const int_lin_constr_vec_t& ilcp, 
                      bool verbose) 
 {
     std::vector<int> num_trns_of_place(npl);
@@ -2382,17 +2422,15 @@ void var_order_FORCE(const VariableOrderCriteria voc, std::vector<int> &out_orde
     std::vector<std::pair<double, int>> sorter(npl);
     double last_pts = -1;
 
-    // Load P-semiflows (if available)
-    bool has_semiflows = (voc != VOC_FORCE) && (psf.size() > 0);
+    // Load constraints (if available)
+    bool has_constraints = (voc != VOC_FORCE) && (ilcp.size() > 0);
     std::vector<int> num_sf_per_place(npl);
-    std::vector<double> psf_cog(psf.size());
-    if (has_semiflows) {
-        // Count the number of P-semiflows that cover each place
-        for (int i = 0; i < psf.size(); i++)
-            for (auto& p : psf[i])
+    std::vector<double> psf_cog(ilcp.size());
+    if (has_constraints) {
+        // Count the number of constraints that cover each place
+        for (int i = 0; i < ilcp.size(); i++)
+            for (auto& p : ilcp[i].coeffs)
                 num_sf_per_place[p.index]++;
-            // for (int j = 0; j < psf[i].size(); j++)
-            //     num_sf_per_place[ psf[i][j].place_no ]++;
     }
 
 
@@ -2426,15 +2464,15 @@ void var_order_FORCE(const VariableOrderCriteria voc, std::vector<int> &out_orde
         }
         // Recompute center-of-gravity of each P-semiflow (PSFCOG)
         //   PSFCOG(i) = Sum( grade(p) ) / num(p)      where variable p is connected with psf i
-        if (has_semiflows) {
-            for (int i = 0; i < psf.size(); i++) {
+        if (has_constraints) {
+            for (int i = 0; i < ilcp.size(); i++) {
                 psf_cog[i] = 0.0;
-                for (auto& p : psf[i])
+                for (auto& p : ilcp[i].coeffs)
                     psf_cog[i] += var_position[p.index];
-                // for (int j = 0; j < psf[i].size(); j++)
-                //     psf_cog[i] += var_position[ psf[i][j].place_no ];
-                safe_div(psf_cog[i], psf[i].nonzeros());
+                safe_div(psf_cog[i], ilcp[i].coeffs.nonzeros());
+                // cout << psf_cog[i] << " ";
             }
+            // cout << endl;
         }
 
         // Compute the new grade of each variable, using the transition COGs
@@ -2455,18 +2493,14 @@ void var_order_FORCE(const VariableOrderCriteria voc, std::vector<int> &out_orde
             safe_div(trn_pts, num_pl);
             pts += trn_pts;
         }
-        if (has_semiflows) { // Add also the PSFCOG[i] to each place
-            for (int i = 0; i < psf.size(); i++) {
+        if (has_constraints) { // Add also the PSFCOG[i] to each place
+            for (int i = 0; i < ilcp.size(); i++) {
                 double psf_pts = 0.0; // point-PSF span
-                for (auto& p : psf[i]) {
+                for (auto& p : ilcp[i].coeffs) {
                     grade[p.index] += psf_cog[i];
                     psf_pts += std::abs(psf_cog[i] - var_position[p.index]);
                 }
-                // for (int j = 0; j < psf[i].size(); j++) {
-                //     grade[ psf[i][j].place_no ] += psf_cog[i];
-                //     psf_pts += std::abs(psf_cog[i] - var_position[ psf[i][j].place_no ]);
-                // }
-                safe_div(psf_pts, psf[i].nonzeros());
+                safe_div(psf_pts, ilcp[i].coeffs.nonzeros());
                 pts += psf_pts;
             }
         }
@@ -2496,7 +2530,6 @@ void var_order_FORCE(const VariableOrderCriteria voc, std::vector<int> &out_orde
             sorter[p] = std::make_pair(grade[p], p);
         std::sort(sorter.begin(), sorter.end());
         for (int p = 0; p < npl; p++)
-            // var_position[p] = sorter[p].second;
             var_position[ sorter[p].second ] = p;
     }
 
@@ -2504,7 +2537,6 @@ void var_order_FORCE(const VariableOrderCriteria voc, std::vector<int> &out_orde
     assert(out_order.size() == npl);
     for (int p = 0; p < npl; p++) {
         out_order[p] = var_position[p];
-        // out_order[ var_position[p] ] = p;
     }
 }
 
@@ -3002,14 +3034,14 @@ void var_order_noack_tovchigrechko(const VariableOrderCriteria voc, std::vector<
 // This re-implkementation as almost linear in the number of places.
 //---------------------------------------------------------------------------------------
 
-static int find_min(const flow_basis_t& PSF);
-static int find_max(const flow_basis_t& PSF, int keep, std::vector<int> &checked_pinv);
+static int find_min(const int_lin_constr_vec_t& PSF);
+static int find_max(const int_lin_constr_vec_t& PSF, int keep, std::vector<int> &checked_pinv);
 static bool common_places_are_not_touched(const std::vector<int>& not_touched, int position);
 
 //---------------------------------------------------------------------------------------
 
 // Efficient reimplementation of the P-chaining algorithm
-void varorder_P_chaining(const flow_basis_t& PSF, std::vector<int>& new_map_sort) {
+void varorder_P_chaining(const int_lin_constr_vec_t& PSF, std::vector<int>& new_map_sort) {
     const size_t num_pinv = PSF.size();
     if (num_pinv == 0)
         throw rgmedd_exception("P-chaining requires a non-empty set of P-semiflows");
@@ -3032,7 +3064,7 @@ void varorder_P_chaining(const flow_basis_t& PSF, std::vector<int>& new_map_sort
         // cout << "keep_sec = " << keep_sec << endl; 
 
         if (keep_sec == -1) { // if intersection is empty, put in the vector only the places of the first p-invariant
-            for (auto& e : PSF[keep]) {
+            for (auto& e : PSF[keep].coeffs) {
                 if (!selected_place[e.index]) { // else i store it in the vector
                     new_map_sort[cnt++] = e.index;
                     selected_place[e.index] = true;
@@ -3041,9 +3073,9 @@ void varorder_P_chaining(const flow_basis_t& PSF, std::vector<int>& new_map_sort
         }
         else { // if intersection is non empty
             // Store non-common places of keep
-            for (auto& e : PSF[keep]) {
+            for (auto& e : PSF[keep].coeffs) {
                 bool is_common = false;
-                for (auto& e2 : PSF[keep_sec]) {
+                for (auto& e2 : PSF[keep_sec].coeffs) {
                     if (e.index == e2.index) {
                         is_common = true;
                         continue; // common place
@@ -3055,8 +3087,8 @@ void varorder_P_chaining(const flow_basis_t& PSF, std::vector<int>& new_map_sort
                 }
             }
             // Store common places between the two p-semiflows
-            for (auto& e : PSF[keep]) {
-                for (auto& e2 : PSF[keep_sec]) {
+            for (auto& e : PSF[keep].coeffs) {
+                for (auto& e2 : PSF[keep_sec].coeffs) {
                     if (e.index == e2.index) {
                         if (!common_places_are_not_touched(not_touched, e.index)) { // if it isn't already in common places
                             if (!selected_place[e.index]) { // if it isn't on the new_map_sort
@@ -3082,9 +3114,9 @@ void varorder_P_chaining(const flow_basis_t& PSF, std::vector<int>& new_map_sort
             }
 
             // Store non-common places of keep_sec
-            for (auto& e2 : PSF[keep_sec]) {
+            for (auto& e2 : PSF[keep_sec].coeffs) {
                 bool is_common = false;
-                for (auto& e : PSF[keep]) {
+                for (auto& e : PSF[keep].coeffs) {
                     if (e.index == e2.index) {
                         is_common = true;
                         continue; // common place
@@ -3113,7 +3145,7 @@ void varorder_P_chaining(const flow_basis_t& PSF, std::vector<int>& new_map_sort
 // Finds the P-invariant with the minimum intersection with the others
 // and returns its position on the vector where P-invariants are stored
  
-static int find_min(const flow_basis_t& PSF) {
+static int find_min(const int_lin_constr_vec_t& PSF) {
     const size_t num_pinv = PSF.size();
     int keep = 0;
     int min = 100;
@@ -3122,10 +3154,10 @@ static int find_min(const flow_basis_t& PSF) {
         int inter_vec_min_i = 0;
         for (int j = i + 1; j < num_pinv; j++) {
             int k = 0;
-            for (auto& e : PSF[j]) {
+            for (auto& e : PSF[j].coeffs) {
                 // Search if e.place is in common with PSF[i]
-                for (size_t h=0; h<PSF[i].nonzeros(); h++) {
-                    if (PSF[i].ith_nonzero(h).index == e.index) {
+                for (size_t h=0; h<PSF[i].coeffs.nonzeros(); h++) {
+                    if (PSF[i].coeffs.ith_nonzero(h).index == e.index) {
                         k++;
                         break;
                     }
@@ -3151,7 +3183,7 @@ static int find_min(const flow_basis_t& PSF) {
 //---------------------------------------------------------------------------------------
 // Finds the P-invariant with the maximum intersection with the others
 // and returns its position on the vector where P-invariants are stored
-static int find_max(const flow_basis_t& PSF, int keep, std::vector<int> &checked_pinv) {
+static int find_max(const int_lin_constr_vec_t& PSF, int keep, std::vector<int> &checked_pinv) {
     const size_t num_pinv = PSF.size();
     int max = -1;
     int keep_sec = 0;
@@ -3163,10 +3195,10 @@ static int find_max(const flow_basis_t& PSF, int keep, std::vector<int> &checked
         }
         else {
             int k = 0;
-            for (auto& e : PSF[keep]) {
+            for (auto& e : PSF[keep].coeffs) {
                 // Search if e.place is in common with PSF[i]
-                for (size_t h=0; h<PSF[i].nonzeros(); h++) {
-                    if (PSF[i].ith_nonzero(h).index == e.index) {
+                for (size_t h=0; h<PSF[i].coeffs.nonzeros(); h++) {
+                    if (PSF[i].coeffs.ith_nonzero(h).index == e.index) {
                         k++;
                         num_inter_max_i++;
                         break;
@@ -3271,14 +3303,14 @@ void annealing_force(const Annealing ann,
                       new_order[genrand64_int63() % npl]);
 
         // Apply FORCE and relax the variable order
-        const flow_basis_t empty_psf;
+        const int_lin_constr_vec_t empty_ilcp;
         switch (ann) {
             case Annealing::ANN_FORCE:
-                var_order_FORCE(VOC_FORCE, new_order, new_order, empty_psf, false);
+                var_order_FORCE(VOC_FORCE, new_order, new_order, empty_ilcp, false);
                 break;
 
             case Annealing::ANN_FORCE_P:
-                var_order_FORCE(VOC_FORCE, new_order, new_order, load_Psemiflows(), false);
+                var_order_FORCE(VOC_FORCE, new_order, new_order, get_int_constr_problem(), false);
                 break;
 
             case Annealing::ANN_FORCE_TI:
@@ -3323,7 +3355,7 @@ void var_order_meta_force(std::vector<int>& best_net_to_level,
     for (size_t i = 0; i < npl; i++)
         net_to_level[i] = i;
 
-    const flow_basis_t empty_psf;
+    const int_lin_constr_vec_t empty_ilcp;
     metric_t best_metric;
 
     for (size_t i=0; i<num_attempts; i++) {
@@ -3332,7 +3364,7 @@ void var_order_meta_force(std::vector<int>& best_net_to_level,
             std::swap(net_to_level[genrand64_int63() % npl],
                       net_to_level[genrand64_int63() % npl]);
 
-        var_order_FORCE(VOC_FORCE, net_to_level, net_to_level, empty_psf, false);
+        var_order_FORCE(VOC_FORCE, net_to_level, net_to_level, empty_ilcp, false);
         metric_t met;
         metric_compute(net_to_level, trn_set, opt_fbm, target_metric, &met);
         if (i==0 || met < best_metric) {

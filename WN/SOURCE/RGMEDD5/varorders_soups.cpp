@@ -282,7 +282,7 @@ void trans_span_set_t::compute_unique_productive_nodes(bool sort_transitions, bo
 //---------------------------------------------------------------------------------------
 
 void trans_span_set_t::compute_level_boundaries() {
-    assert(!sorted_trns.empty());
+    // assert(!sorted_trns.empty());
     uf.initialize();
     for (size_t tr=0; tr<ntr; tr++) {
         const trans_span_t& trspan = *sorted_trns[tr];
@@ -841,7 +841,7 @@ void write_incidence_as_EPS(const char* filename, const trans_span_set_t &trn_se
                             const DDEPS* ddeps, bool write_trn_matrix)
 {
     const size_t num_trns = (write_trn_matrix ? ntr : 0);
-    assert(!trn_set.sorted_trns.empty());
+    // assert(!trn_set.sorted_trns.empty());
     const int TIMES_FONT_SIZE = 8;
     const double PFLOW_FONT_SIZE = TIMES_FONT_SIZE * 0.8;
     // Get the maximum size of the place and transition names

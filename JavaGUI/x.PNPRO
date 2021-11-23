@@ -73,7 +73,7 @@
       <place label-x="-0.5" marking="1" name="Start" x="5.0" y="7.0"/>
       <transition name="exec" type="EXP" x="10.55" y="4.0"/>
       <place label-x="0.5" marking="2" name="Proc1" x="15.0" y="7.0"/>
-      <transition delay="3.5" name="error" type="GEN" x="10.55" y="10.0"/>
+      <transition delay="I[3.5]" name="error" type="GEN" x="10.55" y="10.0"/>
       <place marking="5" name="Proc3" x="27.0" y="7.0"/>
       <transition name="complete" type="IMM" x="32.85" y="7.0"/>
       <place name="P3" x="38.0" y="7.0"/>
@@ -86,7 +86,7 @@
       <place name="Queue1" x="27.0" y="17.0"/>
       <place marking="1" name="Queue2" x="27.0" y="21.0"/>
       <place name="Queue3" x="27.0" y="25.0"/>
-      <transition delay="0.5" name="work1" type="GEN" x="32.55" y="17.0"/>
+      <transition delay="I[0.5]" name="work1" type="GEN" x="32.55" y="17.0"/>
       <transition delay="2.0" name="work2" type="EXP" x="32.55" y="21.0"/>
       <transition name="work3" priority="3" type="IMM" x="32.85" y="25.0"/>
       <place label-x="0.5" name="End" x="38.0" y="21.0"/>

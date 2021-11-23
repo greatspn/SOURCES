@@ -469,7 +469,7 @@ double sign(double v) { return v<0 ? -1 : +1; }
 // Selects P-invariants following a Sloan-like gradient between two extreme 
 // vertices of the graph.
 void var_order_gradient_P(const VariableOrderCriteria voc, 
-                          const flow_basis_t& psf,
+                          const int_lin_constr_vec_t& ilcp,
                           std::vector<int> &out_order) 
 {
     typedef boost::adjacency_list<boost::setS, 
@@ -621,10 +621,10 @@ void var_order_gradient_P(const VariableOrderCriteria voc,
 			while (true) {
 				double max_score = 0;
 				const sparse_vector_t *max_sf = nullptr;
-				for (const sparse_vector_t& sf : psf) {
+				for (const int_lin_constr_t& constr : ilcp) {
 					double score = 0;
 					int num_elems = 0;
-					for (auto& sfe : sf) {
+					for (auto& sfe : constr.coeffs) {
 						int v = sfe.index;
 						if (comp_num != vert_comp_num[v])
 							continue; // not part of this SCC
@@ -647,7 +647,7 @@ void var_order_gradient_P(const VariableOrderCriteria voc,
 					// score /= num_elems;//*num_elems;
 					if (max_sf == nullptr || score > max_score) {
 						max_score = score;
-						max_sf = &sf;
+						max_sf = &constr.coeffs;
 					}
                     // cout << max_sf << "   score="<<score<<endl;
 				}

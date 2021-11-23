@@ -59,6 +59,10 @@ size_t get_num_pflows();
 const int_lin_constr_vec_t&
 load_int_constr_problem();
 
+// get the ILCP problem from file or from the P-semiflows
+const int_lin_constr_vec_t&
+get_int_constr_problem();
+
 //---------------------------------------------------------------------------------------
 
 #undef NONE
@@ -451,7 +455,7 @@ const pre_post_sets_t& get_pre_post_sets();
 void var_order_from_file(std::vector<int> &out_order, const std::map<const char*, int, cstr_less>& S2Ipl);
 void var_order_visit(const VariableOrderCriteria voc, std::vector<int> &order, int start=0);
 void var_order_FORCE(const VariableOrderCriteria voc, std::vector<int> &out_order, 
-                     const std::vector<int> &in_order,  const flow_basis_t& psf, bool verbose);
+                     const std::vector<int> &in_order,  const int_lin_constr_vec_t& ilcp, bool verbose);
 // void var_order_MeasFORCE(const VariableOrderCriteria voc, std::vector<int> &out_order);
 // void var_order_MeasFORCE_PINV(const VariableOrderCriteria voc, std::vector<int> &out_order);
 void var_order_cuthill_mckee(const VariableOrderCriteria voc, std::vector<int> &out_order);
@@ -459,14 +463,14 @@ void var_order_king_ordering(const VariableOrderCriteria voc, std::vector<int> &
 void var_order_sloan(const VariableOrderCriteria voc, std::vector<int> &out_order);
 void var_order_noack_tovchigrechko(const VariableOrderCriteria voc, std::vector<int> &out_order);
 void var_order_Noack_Tovchigrechko_fast(const VariableOrderCriteria voc, std::vector<int> &out_order);
-void var_order_gradient_P(const VariableOrderCriteria voc, const flow_basis_t& psf, std::vector<int> &out_order);
+void var_order_gradient_P(const VariableOrderCriteria voc, const int_lin_constr_vec_t& psf, std::vector<int> &out_order);
 void var_order_vcl(const VariableOrderCriteria voc, std::vector<int> &out_order);
-void varorder_P_chaining(const flow_basis_t& PSF, std::vector<int>& new_map_sort);
+void varorder_P_chaining(const int_lin_constr_vec_t& PSF, std::vector<int>& new_map_sort);
 
 // Order algorithm names
 std::pair<const char*, const char*> var_order_name(VariableOrderCriteria voc);
-// Returns true if the order methods needs P-invariants
-bool method_uses_pinvs(VariableOrderCriteria voc);
+// Returns true if the order methods needs linear constraints (like p-semiflows)
+bool method_uses_lin_constraints(VariableOrderCriteria voc);
 
 // // Generate the set of a-priori metrics from the net graph structure
 // void gen_net_metrics(std::vector<double>& out_metrics, bool pinv_metrics);
@@ -563,7 +567,7 @@ void metaheuristic(metaheuristic_context_t& mhctx,
 
 // NuPN support:
 bool model_has_nested_units();
-const flow_basis_t& convert_nested_units_as_semiflows();
+const int_lin_constr_vec_t& convert_nested_units_as_ilcp();
 bool method_uses_nested_units(VariableOrderCriteria voc);
 
 // On-the-fly clustering of places using MCL
