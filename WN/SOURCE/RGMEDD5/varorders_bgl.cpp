@@ -279,6 +279,9 @@ void fill_out_ordering(std::vector<int> &out_order,
 void var_order_cuthill_mckee(const VariableOrderCriteria voc, 
                              std::vector<int> &out_order) 
 {
+    if (ntr == 0)
+        throw rgmedd_exception("var_order_cuthill_mckee() cannot be used with 0 transitions.");
+
     typedef boost::adjacency_list<boost::vecS, 
     /**/                          boost::vecS, 
     /**/                          boost::undirectedS> Graph; // Must be undirected!
@@ -372,6 +375,9 @@ void var_order_cuthill_mckee(const VariableOrderCriteria voc,
 void var_order_king_ordering(const VariableOrderCriteria voc, 
                              std::vector<int> &out_order) 
 {
+    if (ntr == 0)
+        throw rgmedd_exception("var_order_cuthill_mckee() cannot be used with 0 transitions.");
+
     typedef boost::adjacency_list<boost::vecS, 
     /**/                          boost::vecS, 
     /**/                          boost::undirectedS> Graph;
@@ -981,6 +987,8 @@ int compute_connected_components() {
 //---------------------------------------------------------------------------------------
 
 void reorder_using_SCC(std::vector<int> &out_order) {
+    if (ntr == 0) 
+        throw rgmedd_exception("reorder_using_SCC() cannot be used with 0 transitions.");
     // compute_connected_components();
 
     // Move roots at the lowest levels, and BSCC at top levels
@@ -1367,6 +1375,9 @@ void metrics_bandwidth(const std::vector<int>& net_to_level, uint64_t *BW, uint6
 
 // Use the ViennaCL methods
 void var_order_vcl(const VariableOrderCriteria voc, std::vector<int> &out_order) {
+    if (ntr == 0)
+        throw rgmedd_exception("var_order_vcl() cannot be used with 0 transitions.");
+
     vcl_matrix_t matrix;
     init_graph_edges_from_Petri_net(matrix);
 

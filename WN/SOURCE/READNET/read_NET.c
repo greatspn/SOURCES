@@ -299,6 +299,9 @@ int num;
         tabp[i].tagged = FALSE;
 #endif
         tabp[i].unit = NULL;
+#ifdef IS_RGMEDD_TOOL
+        tabp[i].is_slack_var = FALSE;
+#endif
     }/* Per ogni elemento della tabella */
 }/* End init_places */
 /**************************************************************/

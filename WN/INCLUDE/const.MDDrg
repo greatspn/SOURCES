@@ -3,6 +3,7 @@
 #define  __GSPN_CONST_H__
 
 #define MDD 1
+#define IS_RGMEDD_TOOL 1
 
 /******* Kind of prototype *******/
 

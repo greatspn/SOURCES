@@ -157,6 +157,9 @@ struct PLACES {
     int position ;
     int tagged ;
     NESTED_UNIT *unit;
+#ifdef IS_RGMEDD_TOOL
+    int is_slack_var;
+#endif
 } ;
 /***** DEFINIZIONE DI EVENTO *****/
 struct ENABLING	{

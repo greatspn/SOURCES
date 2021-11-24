@@ -1637,8 +1637,8 @@ load_Psemiflow_leq_consts() {
 //---------------------------------------------------------------------------------------
 
 // Load and store the integer constraints problem (from the <netname>.icp file)
-const int_lin_constr_vec_t&
-load_int_constr_problem() {
+int_lin_constr_vec_t&
+load_int_constr_problem_nonconst() {
     static int_lin_constr_vec_t net_icp; // Permanently stored 
     static bool icp_loaded = false;
 
@@ -1650,6 +1650,69 @@ load_int_constr_problem() {
         net_icp = load_int_lin_constr_problem_from_file(pif, npl, true);
     }
     return net_icp;
+}
+
+const int_lin_constr_vec_t& load_int_constr_problem() { 
+    return load_int_constr_problem_nonconst(); 
+}
+
+//---------------------------------------------------------------------------------------
+
+// Manipulate the model to add slack variables for the constraints with < or >
+void ilcp_add_slack_variables_to_model() {
+    // Determine the missing slack variables, and standardize the constraints
+    size_t num_slack_vars = 0, sv;
+    int_lin_constr_vec_t& ilcp = load_int_constr_problem_nonconst();
+    for (int_lin_constr_t& constr : ilcp) {
+        switch (constr.op) {
+            case CI_EQ:
+                break; // already standardized
+
+            case CI_LESS_EQ: 
+                // x1 + 2*x2 <= 3  -->  x1 + 2*x2 + s1 = 3, s1 >= 0
+                sv = npl + (num_slack_vars++);
+                constr.coeffs.resize(sv+1);
+                constr.coeffs.insert_element(sv, 1);
+                constr.op = CI_EQ;
+                break;
+
+            case CI_GREAT_EQ: 
+                sv = npl + (num_slack_vars++);
+                constr.coeffs.resize(sv+1);
+                constr.coeffs.insert_element(sv, -1);
+                constr.op = CI_EQ;
+                break;
+
+            case CI_LESS:
+            case CI_GREAT:
+            default:
+                throw new rgmedd_exception("Unimplemented.");
+        }
+    }
+    cout << "Adding " << num_slack_vars << " slack variables to the model." << endl;
+
+    // resize the place table
+    tabp = (struct PLACES *)realloc(tabp, sizeof(struct PLACES) * (npl + num_slack_vars));
+    for (size_t ii=0; ii<num_slack_vars; ii++) {
+        char buffer[32];
+        snprintf(buffer, sizeof(buffer), "s%zu", ii);
+        tabp[npl + ii].place_name = strdup(buffer);
+        tabp[npl + ii].algebra_tags = nullptr;
+        tabp[npl + ii].dominio = nullptr;
+        tabp[npl + ii].comp_num = UNKNOWN;
+        tabp[npl + ii].card = UNKNOWN;
+        tabp[npl + ii].position = 0; // initial marking is zero
+        tabp[npl + ii].tagged = FALSE;
+        tabp[npl + ii].unit = NULL;
+        tabp[npl + ii].is_slack_var = TRUE; // mark as a slack variable
+    }
+
+    // change the number of places
+    npl = npl + num_slack_vars;
+
+    // resize the ILCP constraints
+    for (int_lin_constr_t& constr : ilcp)
+        constr.coeffs.resize(npl);
 }
 
 //---------------------------------------------------------------------------------------
@@ -2869,6 +2932,8 @@ struct incremental_noack {
 //   "MARCIE’s Secrets of Efficient Model Checking"
 // with incremental weights update
 void var_order_Noack_Tovchigrechko_fast(const VariableOrderCriteria voc, std::vector<int> &out_order) {
+    if (ntr == 0)
+        throw rgmedd_exception("var_order_Noack_Tovchigrechko_fast() cannot be used with 0 transitions.");
     incremental_noack inc_noack(voc);
     inc_noack.compute(out_order);
 }
@@ -2879,6 +2944,8 @@ void var_order_Noack_Tovchigrechko_fast(const VariableOrderCriteria voc, std::ve
 //   "MARCIE’s Secrets of Efficient Model Checking"
 // Old implementation: the cost of this method is at least O(P^2)
 void var_order_noack_tovchigrechko(const VariableOrderCriteria voc, std::vector<int> &out_order) {
+    if (ntr == 0)
+        throw rgmedd_exception("var_order_noack_tovchigrechko() cannot be used with 0 transitions.");
     // Precompute divisor of W: div_W(p) = |pre(p) U post(p)|, and pre/post T sets sizes
     std::vector<int> div_W(npl, 0);
     for (int t=0; t<ntr; t++) {

@@ -226,6 +226,8 @@ static bool fast_NSF_gen = false;
 static bool print_guessed_bounds = false;
 bool test_LRS_RS_equiv = false;
 int g_num_extra_levels = 1;
+bool ilcp_model = false;
+void ilcp_add_slack_variables_to_model();
 
 double GP_WEIGHT = 1.0;
 double GP_EXP = 0.0;
@@ -2030,6 +2032,11 @@ int initialize(int  argc,  char  *argv[]) {
         else if (0 == strcmp(argv[ii], "-lrs")){
             initLrsMethod = LRSM_PBASIS_CONSTRAINTS;
         }
+        else if (0 == strcmp(argv[ii], "-ilcp")) {
+            initRsMethod = RSM_NONE;
+            initLrsMethod = LRSM_PBASIS_CONSTRAINTS;
+            ilcp_model = true;
+        }
         // else if (0 == strcmp(argv[ii], "-old-nsf-gen")) {
         //     fast_NSF_gen = false;
         // }
@@ -2296,7 +2303,7 @@ int initialize(int  argc,  char  *argv[]) {
 
     parse_DEF = MDRATE;
     read_DEF_file();                          /* OPERAZIONI */
-    initialize_free_event_list();
+    // initialize_free_event_list();
 
     // if (g_var_order_sel.heuristics == VOC_PINV) {
     //     ret_read_pin_file = read_PIN_file(npl);
@@ -2306,8 +2313,13 @@ int initialize(int  argc,  char  *argv[]) {
     //     }
     // }
 
+    // If the input problem is an ILCP, add the slack variables
+    if (ilcp_model) {
+        ilcp_add_slack_variables_to_model();
+    }
+
     /* DIMENSIONAMENTO DELLE STRUTTURE DATI DEL PRODOTTO CARTESIANO */
-    create_cartesian_product_data_structure();
+    // create_cartesian_product_data_structure();
     /* DIMENSIONAMENTO DELLE STRUTTURE DATI DEL PRODOTTO CARTESIANO */
 
 #ifdef SIMULATION

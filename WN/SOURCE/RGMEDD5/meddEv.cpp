@@ -304,13 +304,14 @@ void RSRG::initialize(RsMethod _rsMethod, LrsMethod _lrsMethod,
 
 //-----------------------------------------------------------------------------
 
-enum class PlaceBoundSource { UNKNOWN_BND, PLACE_INV_BND, ILP_BND };
+enum class PlaceBoundSource { UNKNOWN_BND, PLACE_INV_BND, ILP_BND, ILCP_COMPUTED };
 
 static std::vector<int> s_bounds;
 static std::vector<PlaceBoundSource> s_bound_states;
 static std::vector<int> s_places_inf_bnd;
 static bool s_bounds_loaded = false;
 static bool s_have_unbound_list = false;
+void determine_bounds_of_ilcp_slack_variables();
 
 int* load_bounds() {
     if (!s_bounds_loaded) {
@@ -379,9 +380,61 @@ int* load_bounds() {
                 }
             }
         }
+
+        if (ilcp_model)
+            determine_bounds_of_ilcp_slack_variables();
     }
     return (s_bounds.empty() ? nullptr : s_bounds.data());
 }
+
+//-----------------------------------------------------------------------------
+
+void determine_bounds_of_ilcp_slack_variables() {
+    if (s_bounds.empty())
+        return;
+
+    const int_lin_constr_vec_t& ilcp = load_int_constr_problem();
+    if (ilcp.empty())
+        return;
+
+    for (size_t pl=0; pl<npl; pl++) {
+        if (!tabp[pl].is_slack_var)
+            continue;
+        
+        int bound = -1;
+        // search the ILCP constraint that originated that slack variable
+        for (const int_lin_constr_t& constr : ilcp) {
+            if (constr.coeffs[pl] == 0)
+                continue;
+            
+            int max_sv;
+            if (constr.coeffs[pl] > 0) {
+                // positive slack variable originated from a <= constraint
+                //   c1*x1 + ... cn*xn + sv = n
+                //   max(sv) = n - c1*min(x1) - ... - cn*min(xn)
+                max_sv = constr.const_term;
+            }
+            else {
+                // negative slack variable originated from a >= constraint
+                //   c1*x1 + ... cn*xn - sv = n
+                //   max(sv) = c1*max(x1) + ... + cn*max(xn) - n
+                for (auto el : constr.coeffs) {
+                    max_sv = -constr.const_term;
+                    if (!tabp[el.index].is_slack_var) {
+                        if (s_bound_states[pl] == PlaceBoundSource::UNKNOWN_BND || s_bounds[pl] < 0)
+                            throw rgmedd_exception("ILCP variables must be bounded.");
+                        max_sv += s_bounds[pl];
+                    }
+                }
+            }
+            s_bounds[pl] = max_sv;
+            s_bound_states[pl] = PlaceBoundSource::ILCP_COMPUTED;
+            break;
+        }
+    }
+}
+
+//-----------------------------------------------------------------------------
 
 // Return the list of potentially unbounded places (determined using ilp bounds)
 const std::vector<int>& get_unbound_list() {

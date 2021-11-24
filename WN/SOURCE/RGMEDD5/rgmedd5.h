@@ -668,6 +668,8 @@ const std::vector<int>& get_unbound_list();
 // Check if there is a maximum token count bound of infinite
 bool have_unbounded_token_count();
 
+extern bool ilcp_model;
+
 //-----------------------------------------------------------------------------
 
 enum class PlaceBoundState {

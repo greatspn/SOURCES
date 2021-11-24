@@ -272,7 +272,7 @@ void canonicalize(sparse_vector_t& vec, int& const_value) {
 //---------------------------------------------------------------------------------------
 
 // Annul column j of row B[i] by summing to it row B[k] with an appropriate multiplier
-// Repeat the same operation on the constants vector
+// Do the same operation on the constants vector
 inline void annul_column_of_B_row(flow_basis_t& B, int i, int k, int j, std::vector<int>& inv_coeffs) {
     assert(B[i][j] != 0);
     // Find multipliers

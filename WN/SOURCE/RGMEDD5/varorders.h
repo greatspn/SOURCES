@@ -56,12 +56,13 @@ size_t get_num_pflows();
 //---------------------------------------------------------------------------------------
 
 // Load and store the integer constraints problem (from the <netname>.icp file)
-const int_lin_constr_vec_t&
-load_int_constr_problem();
+const int_lin_constr_vec_t& load_int_constr_problem();
+// int_lin_constr_vec_t& load_int_constr_problem_nonconst();
 
 // get the ILCP problem from file or from the P-semiflows
-const int_lin_constr_vec_t&
-get_int_constr_problem();
+const int_lin_constr_vec_t& get_int_constr_problem();
+
+void ilcp_add_slack_variables_to_model();
 
 //---------------------------------------------------------------------------------------
 
