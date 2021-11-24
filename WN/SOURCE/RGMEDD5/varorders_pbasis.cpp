@@ -774,7 +774,7 @@ flow_basis_metric_t::~flow_basis_metric_t() {
 
 void flow_basis_metric_t::initialize() {
     // load_flow_basis();
-    get_int_constr_problem();
+    get_flow_basis();
     // if (!load_flow_basis()) {
     //     cerr << "\nMISSING .pba FILE! CANNOT LOAD P-FLOW BASIS!\n" << endl;
     //     throw rgmedd_exception("Missing pba.");
@@ -1679,7 +1679,7 @@ void compute_lvl_weights(const std::vector<int> &net_to_level,
                          std::vector<size_t>& lvl_weights) 
 {
     // Build a copy of the basis where columns are ordered according to @net_to_level
-    fbm.B = get_int_constr_problem();
+    fbm.B = get_flow_basis();
     reorder_basis(fbm.B, net_to_level);
 
     // Gaussian elimination: move B in reduced footprint row form
@@ -1750,7 +1750,7 @@ range_prod_for_representation(flow_basis_metric_t& fbm, std::vector<std::string>
 //---------------------------------------------------------------------------------------
 
 // bool initialize_inv_coeffs(/*std::vector<int> *p_inv_coeffs*/) {
-//     const int_lin_constr_vec_t& pbasis = get_int_constr_problem();
+//     const int_lin_constr_vec_t& pbasis = get_flow_basis();
 //     // Load or compute the invariant coefficients
 //     // const std::vector<int>& avail_inv_coeffs = load_flow_consts();
 // #warning check this method
@@ -1779,7 +1779,7 @@ range_prod_for_representation(flow_basis_metric_t& fbm, std::vector<std::string>
 
 void
 flow_basis_metric_t::reset_B_and_inv_coeffs(const std::vector<int> &net_to_level) {
-    const int_lin_constr_vec_t& pbasis = get_int_constr_problem();
+    const int_lin_constr_vec_t& pbasis = get_flow_basis();
 
     // Build a copy of the basis 
     B = pbasis;
@@ -1828,7 +1828,7 @@ void flow_basis_metric_t::verify_inv_coeffs() const {
         int flow_m0 = 0;
         for (auto&& elem : B[f].coeffs)
             flow_m0 += elem.value * net_mark[ level_to_net[elem.index] ].total;
-        // cout << "verify: f="<<f<<"  flow_m0=" << flow_m0 << "  inv_coeffs[f]="<<inv_coeffs[f]<<endl;
+        // cout << "verify: f="<<f<<"  flow_m0=" << flow_m0 << "  == "<<B[f].const_term<<endl;
         assert(flow_m0 == B[f].const_term);
     }
 #endif
@@ -1839,7 +1839,7 @@ void flow_basis_metric_t::verify_inv_coeffs() const {
 cardinality_t 
 flow_basis_metric_t::measure_PSI(const std::vector<int> &net_to_level)
 {
-    const int_lin_constr_vec_t& pbasis = get_int_constr_problem();
+    const int_lin_constr_vec_t& pbasis = get_flow_basis();
     cardinality_t PSI;
 
     // Restart from the initial basis/inv_coeffs, and reorder the columns of B
@@ -2013,7 +2013,7 @@ void flow_basis_metric_t::annealing_compact(std::vector<int> &net_to_level)
     std::vector<int> rev_order(npl);
     // std::vector<pair<size_t, size_t>> sharing;
     level_to_net.resize(net_to_level.size());
-    const int_lin_constr_vec_t& pbasis = get_int_constr_problem();
+    const int_lin_constr_vec_t& pbasis = get_flow_basis();
     // std::vector<int> initial_inv_coeffs;
     // initialize_inv_coeffs();
 
@@ -2132,7 +2132,7 @@ void flow_basis_metric_t::compact_basis_row_min(std::vector<int> &net_to_level)
     for (int i=0; i<net_to_level.size(); i++)
         level_to_net[ net_to_level[i] ] = i;
 
-    const int_lin_constr_vec_t& pbasis = get_int_constr_problem();
+    const int_lin_constr_vec_t& pbasis = get_flow_basis();
     // Reorder B (the method extract_reinsert_row() expects it to be ordered).
     B = pbasis;
     reorder_basis(B, net_to_level);
@@ -2320,7 +2320,7 @@ size_t flow_basis_metric_t::extract_reinsert_row(size_t row, const std::vector<i
         for (size_t pl=0; pl<npl; pl++)
             tmp_order[pl] = lvl_to_lvl_map[ net_to_level[pl] ];
 
-        B3 = get_int_constr_problem();
+        B3 = get_flow_basis();
         reorder_basis(B3, tmp_order);
         row_footprint_form(B3);
         sc = sum_of_footprints(B3);
@@ -2545,7 +2545,7 @@ void reduced_row_footprint_form(flow_matrix_t& B) {
 //---------------------------------------------------------------------------------------
 
 void initialize_flow_matrix(flow_matrix_t& B) {
-    const flow_basis_t& pbasis = get_int_constr_problem();
+    const flow_basis_t& pbasis = get_flow_basis();
     B = flow_matrix_t(pbasis.size(), npl);
     for (size_t i=0; i<pbasis.size(); i++) {
         flow_vector_t row(npl);
@@ -2765,7 +2765,7 @@ struct ti_force {
 
     ti_force(flow_basis_metric_t& _fbm, const trans_span_set_t& _ts, bool _ut) 
     : fbm(_fbm), trns_set(_ts), use_trn_cogs(_ut), 
-      pbasis(get_int_constr_problem()), ninv(get_num_invariants())
+      pbasis(get_flow_basis()), ninv(get_num_invariants())
     {
         // initialize_inv_coeffs();
     }

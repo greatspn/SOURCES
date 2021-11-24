@@ -119,7 +119,7 @@ struct spvec_int_tag {
     static inline bool allow_zeros() { return true; }
 };
 typedef sparsevector<spvec_int_tag> sparse_vector_t;
-typedef std::vector<sparse_vector_t> flow_basis_t;
+// typedef std::vector<sparse_vector_t> flow_basis_t;
 
 enum constr_ineq_op_t {
     CI_LESS, CI_LESS_EQ, CI_EQ, CI_NEQ, CI_GREAT, CI_GREAT_EQ,
@@ -134,14 +134,6 @@ struct int_lin_constr_t {
 };
 typedef std::vector<int_lin_constr_t> int_lin_constr_vec_t;
 std::ostream& operator<<(std::ostream& os, const int_lin_constr_vec_t& ilcp);
-
-// struct int_lin_constr_problem_t {
-//     flow_basis_t                    coeffs;
-//     std::vector<int>                const_terms;
-//     std::vector<constr_ineq_op_t>   ineq_ops;
-
-//     inline void clear() { coeffs.clear(); const_terms.clear(); ineq_ops.clear(); }
-// };
 
 //---------------------------------------------------------------------------------------
 
@@ -966,7 +958,7 @@ public:
     // Return true if it is possible, false if it is not possible.
     bool buildLRS();
 
-    std::vector<int> compute_inv_consts_from_m0(const std::vector<int>& m0, const flow_basis_t& inv_set) const;
+    // std::vector<int> compute_inv_consts_from_m0(const std::vector<int>& m0, const flow_basis_t& inv_set) const;
     void fill_const_terms_from_m0(const std::vector<int>& m0, int_lin_constr_vec_t& ilcp) const;
 
     std::optional<dd_edge> computeLRSof(const int_lin_constr_vec_t& ilcp) const;

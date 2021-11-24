@@ -840,11 +840,11 @@ bool RSRG::init_RS(const Net_Mark_p &net_mark) {
 //-----------------------------------------------------------------------------
 
 static
-bool check_invariants_satisfy_LRS_requirements(const flow_basis_t& flows) {
-    if (flows.empty())
+bool check_invariants_satisfy_LRS_requirements(const int_lin_constr_vec_t& ilcp) {
+    if (ilcp.empty())
         return false;
 
-    if (!all_places_are_covered(flows))
+    if (!all_places_are_covered(ilcp))
         return false;
 
     return true;
@@ -872,11 +872,11 @@ bool RSRG::verify_LRS_RS_equiv() {
     // verify invariants in two phases:
     // 0. verify P-semiflows basis with == relation, i.e. (if available)
     // 1. verify P-semiflows with <= relation (if available)
-    const flow_basis_t* p_flows = nullptr;
+    const int_lin_constr_vec_t* p_flows = nullptr;
     for (size_t phase = 0; phase<2; phase++) 
     {
-        const flow_basis_t* F = (phase==0 ? &load_Psemiflows() :  // get_flow_basis()
-                                            &load_Psemiflows_leq());
+        const int_lin_constr_vec_t* F = (phase==0 ? &load_Psemiflows() :  // get_flow_basis()
+                                                    &load_Psemiflows_leq());
         if (!check_invariants_satisfy_LRS_requirements(*F))
             continue;
 
@@ -930,12 +930,12 @@ bool RSRG::verify_LRS_RS_equiv() {
 
 
     // Setup the ILCP
-    int_lin_constr_vec_t ilcp;
-    ilcp.resize(p_flows->size());
-    for (size_t i=0; i<ilcp.size(); i++) {
-        ilcp[i].coeffs = (*p_flows)[i];
-        ilcp[i].op = CI_EQ;
-    }
+    int_lin_constr_vec_t ilcp = *p_flows; // copy
+    // ilcp.resize(p_flows->size());
+    // for (size_t i=0; i<ilcp.size(); i++) {
+    //     ilcp[i].coeffs = (*p_flows)[i];
+    //     ilcp[i].op = CI_EQ;
+    // }
     fill_const_terms_from_m0(m0min, ilcp);
 
     auto LRS = computeLRSof(ilcp);
@@ -1924,23 +1924,23 @@ bool RSRG::buildRS() {
     return rs_is_infinite;
 }
 
-//-----------------------------------------------------------------------------
+// //-----------------------------------------------------------------------------
 
-std::vector<int> RSRG::compute_inv_consts_from_m0(const std::vector<int>& m0, const flow_basis_t& inv_set) const {
-    std::vector<int> inv_consts(inv_set.size());
+// std::vector<int> RSRG::compute_inv_consts_from_m0(const std::vector<int>& m0, const flow_basis_t& inv_set) const {
+//     std::vector<int> inv_consts(inv_set.size());
 
-    size_t f = 0;
-    for (auto&& flow : inv_set) {
-        int m0_flow = 0;
-        for (auto& elem : flow) {
-            if (elem.index < npl) {// index of a place and not of a support variable
-                m0_flow += elem.value * m0[elem.index]; // m0 * flow
-            }
-        }    
-        inv_consts[f++] = m0_flow;
-    }
-    return inv_consts;
-}
+//     size_t f = 0;
+//     for (auto&& flow : inv_set) {
+//         int m0_flow = 0;
+//         for (auto& elem : flow) {
+//             if (elem.index < npl) {// index of a place and not of a support variable
+//                 m0_flow += elem.value * m0[elem.index]; // m0 * flow
+//             }
+//         }    
+//         inv_consts[f++] = m0_flow;
+//     }
+//     return inv_consts;
+// }
 
 //-----------------------------------------------------------------------------
 
@@ -2336,25 +2336,24 @@ bool RSRG::buildLRSbyPBasisConstraints() {
     for (int p=0; p<npl; p++)
         m0[p] = net_mark[p].total;
 
-    int_lin_constr_vec_t ilcp;
     const int_lin_constr_vec_t *p_ilcp;
 
     p_ilcp = &load_int_constr_problem();
     if (p_ilcp->empty()) {
         // no ILCP ready. Build one from the P-semiflows
-        const flow_basis_t* p_flows = nullptr;
+        const int_lin_constr_vec_t* p_flows = nullptr;
         const std::vector<int>* p_flow_consts = nullptr;
         for (size_t phase = 0; phase<2; phase++) 
         {
-            const flow_basis_t* F = (phase==0 ? &load_Psemiflows() : //get_flow_basis() : 
-                                                &load_Psemiflows_leq());
+            const int_lin_constr_vec_t* F = (phase==0 ? &load_Psemiflows() : //get_flow_basis() : 
+                                                        &load_Psemiflows_leq());
             if (!check_invariants_satisfy_LRS_requirements(*F))
                 continue;
 
             p_flows = F;
 
-            p_flow_consts = (phase==0 ? &load_Psemiflow_consts() :
-                                        &load_Psemiflow_leq_consts());
+            // p_flow_consts = (phase==0 ? &load_Psemiflow_consts() :
+            //                             &load_Psemiflow_leq_consts());
             break;
         }
         if (p_flows == nullptr) {
@@ -2363,17 +2362,17 @@ bool RSRG::buildLRSbyPBasisConstraints() {
         }
 
         // Setup the ILCP from the P-semiflows
-        ilcp.resize(p_flows->size());
-        bool has_consts_terms = (p_flow_consts->size() == p_flows->size());
-        for (size_t i=0; i<ilcp.size(); i++) {
-            ilcp[i].coeffs = (*p_flows)[i];
-            if (has_consts_terms)
-                ilcp[i].const_term = (*p_flow_consts)[i];
-            ilcp[i].op = CI_EQ;
-        }
-        if (!has_consts_terms)
-            fill_const_terms_from_m0(m0, ilcp);
-        p_ilcp = &ilcp;
+        // ilcp.resize(p_flows->size());
+        // bool has_consts_terms = (p_flow_consts->size() == p_flows->size());
+        // for (size_t i=0; i<ilcp.size(); i++) {
+        //     ilcp[i].coeffs = (*p_flows)[i];
+        //     if (has_consts_terms)
+        //         ilcp[i].const_term = (*p_flow_consts)[i];
+        //     ilcp[i].op = CI_EQ;
+        // }
+        // if (!has_consts_terms)
+        //     fill_const_terms_from_m0(m0, ilcp);
+        // p_ilcp = &ilcp;
     }
 
     auto ret = computeLRSof(*p_ilcp);

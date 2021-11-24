@@ -21,13 +21,13 @@ class accumulator;
 //---------------------------------------------------------------------------------------
 
 // P-semiflows with strict equivalence, i.e.:   m*Y == m0*Y, forall m in RS(m0)
-const flow_basis_t& load_Psemiflows();
+const int_lin_constr_vec_t& load_Psemiflows();
 
 // P-semiflows with <= relation, i.e.:   m*Y <= m0*Y, forall m in RS(m0)
-const flow_basis_t& load_Psemiflows_leq();
+const int_lin_constr_vec_t& load_Psemiflows_leq();
 
-const std::vector<int>& load_Psemiflow_consts();
-const std::vector<int>& load_Psemiflow_leq_consts();
+// const std::vector<int>& load_Psemiflow_consts();
+// const std::vector<int>& load_Psemiflow_leq_consts();
 
 
 // Returns the number of P-semiflows (0 if there are no P-invariants, or if the
@@ -37,19 +37,19 @@ int get_num_Psemiflows();
 //---------------------------------------------------------------------------------------
 
 // Get the basis of P-invariants from file (netname.pba)
-const flow_basis_t& get_flow_basis();
+const int_lin_constr_vec_t& get_flow_basis();
 bool load_flow_basis();
 const std::vector<int>& load_flow_consts();
 size_t get_num_invariants();
 int get_max_invariant_coeff();
 bool is_net_covered_by_flow_basis();
 
-bool all_places_are_covered(const flow_basis_t&);
+bool all_places_are_covered(const int_lin_constr_vec_t&);
 
 //---------------------------------------------------------------------------------------
 
 // Get the P-flows from file (netname.pfl)
-const flow_basis_t& get_pflows();
+const int_lin_constr_vec_t& get_pflows();
 bool load_pflows();
 size_t get_num_pflows();
 
@@ -216,7 +216,7 @@ uint64_t measure_SOS(const std::vector<int> &varorder);
 
 // Computes the FORCE metric (point-transition spans) as defined for the FORCE algorithm
 double measure_FORCE_pts(const VariableOrderCriteria voc, const std::vector<int> &in_order, 
-                         const flow_basis_t& psf);
+                         const int_lin_constr_vec_t& psf);
 
 // Bandwidth-reduction metrics (bandwidth, profile, wavefront)
 void metrics_bandwidth(const std::vector<int>& net_to_level, uint64_t *BW, uint64_t *PROF,

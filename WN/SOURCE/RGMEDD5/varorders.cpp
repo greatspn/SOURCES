@@ -668,9 +668,10 @@ void determine_var_order(const var_order_selector& sel,
             initialize_invariants = false; // High risk of overflows using SWIR.
         std::vector<size_t> lw_invs;
 
+        cardinality_t iRank = -2;
         if (initialize_invariants) {
             // Initialize the fbm data structure
-            measure_PSI(net_to_mddLevel, 
+            iRank = measure_PSI(net_to_mddLevel, 
                 true /*only_ranks*/, false /*use_ilp*/, false /*use_enum*/, false /*print_enums*/, fbm);
 
             // Extract level weights for SWIR
@@ -687,6 +688,13 @@ void determine_var_order(const var_order_selector& sel,
                 *sel.p_meta_score_ex2 = -1; // swir with no discount
             if (sel.p_meta_score_ex3)
                 *sel.p_meta_score_ex3 = *sel.p_meta_score; // soups
+        }
+        else if (initialize_invariants && ntr == 0) { // use iRank
+            *sel.p_meta_score = get_double(iRank);
+            if (sel.p_meta_score_ex2)
+                *sel.p_meta_score_ex2 = *sel.p_meta_score; // same
+            if (sel.p_meta_score_ex3)
+                *sel.p_meta_score_ex3 = *sel.p_meta_score; // same
         }
         else { // use SWIR
             *sel.p_meta_score = measure_swir2(net_to_mddLevel, trns_set, lw_invs);
@@ -1122,7 +1130,7 @@ const char* metric_name(VariableOrderMetric m) {
         case METRIC_SOUPS:    return "SOUPS";
         case METRIC_SWIR:     return "SWIR";
         case METRIC_SWIR_X:   return "SWIR_X";
-        case METRIC_iRank:   return "iRank";
+        case METRIC_iRank:    return "iRank";
         case METRIC_NES:      return "NES";
         case METRIC_WES1:     return "WES1";
         case METRIC_PSF:      return "PSF";
@@ -1228,12 +1236,12 @@ void metric_compute(const std::vector<int>& net_to_level,
     auto require_lw_psf = [&]() {
         if (lw_psf.empty()) {
             lw_psf.resize(npl, 0);
-            const flow_basis_t& psf = load_Psemiflows();
+            const int_lin_constr_vec_t& psf = load_Psemiflows();
             const int* bounds = load_bounds();
-            for (const sparse_vector_t& p : psf) {
+            for (const int_lin_constr_t& p : psf) {
                 int lvlbot, lvltop;
-                lvlbot = lvltop = net_to_level[p.ith_nonzero(0).index];
-                for (auto& e : p) {
+                lvlbot = lvltop = net_to_level[p.coeffs.ith_nonzero(0).index];
+                for (auto& e : p.coeffs) {
                     lvlbot = min(lvlbot, net_to_level[e.index]);
                     lvltop = max(lvltop, net_to_level[e.index]);
                 }
@@ -1294,8 +1302,8 @@ void metric_compute(const std::vector<int>& net_to_level,
                 break;
 
             case METRIC_PTS: {
-                const flow_basis_t empty_psf;
-                *out[m] = measure_FORCE_pts(VOC_FORCE, net_to_level, empty_psf);
+                const int_lin_constr_vec_t empty_ilcp;
+                *out[m] = measure_FORCE_pts(VOC_FORCE, net_to_level, empty_ilcp);
                 break;
             }
 
@@ -1472,9 +1480,9 @@ load_flow_consts_from_file(ifstream& pif, size_t num_flows) {
 
 //---------------------------------------------------------------------------------------
 
-static flow_basis_t
+static int_lin_constr_vec_t
 load_flows_from_file(ifstream& pif, size_t max_index, bool allow_neg_card) {
-    flow_basis_t flows;
+    int_lin_constr_vec_t flows;
     if (!pif) 
         return flows; // empty
 
@@ -1491,8 +1499,10 @@ load_flows_from_file(ifstream& pif, size_t max_index, bool allow_neg_card) {
             flows.clear();
             return flows; // bad file, or could not generate flows (len<0)
         }
-        flows[i].resize(max_index);
-        flows[i].reserve(len);
+        flows[i].coeffs.resize(max_index);
+        flows[i].coeffs.reserve(len);
+        flows[i].const_term = 0; // m0 * p-flow
+        flows[i].op = CI_EQ;
         for (int j = 0; j < len; j++) {
             int card, pl;
             pif >> card >> pl;
@@ -1500,9 +1510,11 @@ load_flows_from_file(ifstream& pif, size_t max_index, bool allow_neg_card) {
                 flows.clear();
                 return flows; // bad file
             }
-            flows[i].insert_element(pl - 1, card);
+            flows[i].coeffs.insert_element(pl - 1, card);
             // flows[i].ith_nonzero(j).index = pl - 1;
             // flows[i].ith_nonzero(j).value = card;
+            if (pl < npl) // real place index, not a supplementray variable
+                flows[i].const_term += net_mark[pl - 1].total * card;
         }
     }
     return flows;
@@ -1565,9 +1577,9 @@ load_int_lin_constr_problem_from_file(ifstream& pif, size_t max_index, bool allo
 //---------------------------------------------------------------------------------------
 
 // Load and store the vector of P-semiflows (from the <netname>.pin file)
-const flow_basis_t&
+const int_lin_constr_vec_t&
 load_Psemiflows() {
-    static flow_basis_t net_psf; // Permanently stored P-semiflows
+    static int_lin_constr_vec_t net_psf; // Permanently stored P-semiflows
     static bool psf_loaded = false;
 
     if (!psf_loaded) {
@@ -1582,28 +1594,28 @@ load_Psemiflows() {
 
 //---------------------------------------------------------------------------------------
 
-// Load and store p-semiflow constants (from the <netname>.pinc file)
-const std::vector<int>&
-load_Psemiflow_consts() {
-    static std::vector<int> net_ic; 
-    static bool ic_loaded = false;
+// // Load and store p-semiflow constants (from the <netname>.pinc file)
+// const std::vector<int>&
+// load_Psemiflow_consts() {
+//     static std::vector<int> net_ic; 
+//     static bool ic_loaded = false;
 
-    if (!ic_loaded) {
-        ic_loaded = true;
-        std::string pinc_name(net_name);
-        pinc_name += "pinc";
-        ifstream pif(pinc_name.c_str());
-        net_ic = load_flow_consts_from_file(pif, get_num_Psemiflows());
-    }
-    return net_ic;
-}
+//     if (!ic_loaded) {
+//         ic_loaded = true;
+//         std::string pinc_name(net_name);
+//         pinc_name += "pinc";
+//         ifstream pif(pinc_name.c_str());
+//         net_ic = load_flow_consts_from_file(pif, get_num_Psemiflows());
+//     }
+//     return net_ic;
+// }
 
 //---------------------------------------------------------------------------------------
 
 // Load and store the vector of P-semiflows (from the <netname>.pin+- file) with extra support variables
-const flow_basis_t&
+const int_lin_constr_vec_t&
 load_Psemiflows_leq() {
-    static flow_basis_t net_psf_leq; // Permanently stored P-semiflows with extra variables
+    static int_lin_constr_vec_t net_psf_leq; // Permanently stored P-semiflows with extra variables
     static bool psf_leq_loaded = false;
 
     if (!psf_leq_loaded) {
@@ -1618,21 +1630,21 @@ load_Psemiflows_leq() {
 
 //---------------------------------------------------------------------------------------
 
-// Load and store p-semiflow constants (from the <netname>.pin+-c file)
-const std::vector<int>&
-load_Psemiflow_leq_consts() {
-    static std::vector<int> net_ic_leq; 
-    static bool ic_leq_loaded = false;
+// // Load and store p-semiflow constants (from the <netname>.pin+-c file)
+// const std::vector<int>&
+// load_Psemiflow_leq_consts() {
+//     static std::vector<int> net_ic_leq; 
+//     static bool ic_leq_loaded = false;
 
-    if (!ic_leq_loaded) {
-        ic_leq_loaded = true;
-        std::string pinc_name(net_name);
-        pinc_name += "pin+-c";
-        ifstream pif(pinc_name.c_str());
-        net_ic_leq = load_flow_consts_from_file(pif, get_num_Psemiflows());
-    }
-    return net_ic_leq;
-}
+//     if (!ic_leq_loaded) {
+//         ic_leq_loaded = true;
+//         std::string pinc_name(net_name);
+//         pinc_name += "pin+-c";
+//         ifstream pif(pinc_name.c_str());
+//         net_ic_leq = load_flow_consts_from_file(pif, get_num_Psemiflows());
+//     }
+//     return net_ic_leq;
+// }
 
 //---------------------------------------------------------------------------------------
 
@@ -1720,50 +1732,10 @@ void ilcp_add_slack_variables_to_model() {
 // Get the general ILCP problem, which could come either from the ILCP file, or from the PIN file
 const int_lin_constr_vec_t&
 get_int_constr_problem() {
-    static const int_lin_constr_vec_t *p_icp;
-    static int_lin_constr_vec_t buffer; 
-    static bool has_icp = false;
-
-    if (!has_icp) {
-        has_icp = true;
-
-        const int_lin_constr_vec_t& ilcp_file = load_int_constr_problem();
-        if (!ilcp_file.empty()) {
-            p_icp = &ilcp_file;
-            cout << "ILCP from file. " << p_icp->size() << endl;
-        }
-        else {
-            p_icp = &buffer;
-            const flow_basis_t& psf = load_Psemiflows();
-            const std::vector<int>& psfc = load_Psemiflow_consts();
-            if (!psf.empty()) {
-                // generate the ILCP from the P-semiflows
-                buffer.reserve(psf.size());
-                for (const sparse_vector_t& f : psf) {
-                    // Determine the const_term
-                    int const_term = 0;
-                    if (psfc.empty()) { // Use the p-invariant law
-                        for (auto&& el : f) {
-                            const int plc = el.index;
-                            // const int plc = level_to_net[el.index];
-                            const_term += net_mark[plc].total * el.value;
-                        }
-                    }
-                    else
-                        const_term = psfc[buffer.size()];
-
-                    // Add a new ILCP constraint from the p-flow
-                    buffer.emplace_back(int_lin_constr_t{
-                        .coeffs = f, .op = CI_EQ, .const_term = const_term
-                    });
-                }
-
-                cout << "ILCP from PSF. " << p_icp->size() << endl;
-            }
-        }
-        cout << endl << *p_icp << endl << endl;
-    }
-    return *p_icp;
+    if (ilcp_model)
+        return load_int_constr_problem();
+    else
+        return load_Psemiflows();
 }
 
 //---------------------------------------------------------------------------------------
@@ -1801,12 +1773,12 @@ bool model_has_nested_units() {
 
 //---------------------------------------------------------------------------------------
 
-bool all_places_are_covered(const flow_basis_t& flows) {
+bool all_places_are_covered(const int_lin_constr_vec_t& ilcp) {
     // verify place coverage
     std::vector<bool> covered(npl, false);
-    for (const auto &f : flows) {
+    for (const auto &f : ilcp) {
         // size_t num_support_vars = 0;
-        for (auto& elem : f) {
+        for (auto& elem : f.coeffs) {
             if (elem.index >= npl) { // support variable
                 // num_support_vars++;
                 // if (num_support_vars > 1)
@@ -1899,12 +1871,12 @@ const pre_post_sets_t& get_pre_post_sets() {
 //---------------------------------------------------------------------------------------
 
 // Test if all places are covered by at least one p-flow in the given basis/set
-static bool test_flows_coverage(flow_basis_t& fb) {
+static bool test_flows_coverage(int_lin_constr_vec_t& fb) {
     std::vector<bool> cov(npl);
     std::fill(cov.begin(), cov.end(), false);
 
     for (auto&& row : fb)
-        for (auto&& el : row)
+        for (auto&& el : row.coeffs)
             cov[el.index] = true;
 
     return std::find(cov.begin(), cov.end(), false) == cov.end();
@@ -1918,7 +1890,7 @@ static bool s_basis_loaded = false; // Have we tried to load the basis?
 static bool s_have_basis = false;   // Do we have the basis?
 static int s_max_inv_coeff = 0;
 static bool s_cov_by_flow_basis = false; // Are all places in the net covered by P-flows?
-static flow_basis_t s_fb;
+static int_lin_constr_vec_t s_fb;
 
 bool load_flow_basis() {
     if (!s_basis_loaded) {
@@ -1931,7 +1903,7 @@ bool load_flow_basis() {
         s_have_basis = !s_fb.empty();
         if (s_have_basis) {
             for (auto&& row : s_fb)
-                for (auto&& el : row)
+                for (auto&& el : row.coeffs)
                     s_max_inv_coeff = max(s_max_inv_coeff, el.value);
 
             s_cov_by_flow_basis = test_flows_coverage(s_fb);
@@ -1942,7 +1914,11 @@ bool load_flow_basis() {
 
 //---------------------------------------------------------------------------------------
 
-const flow_basis_t& get_flow_basis() {
+const int_lin_constr_vec_t& get_flow_basis() {
+    // for ILCP model, the ILCP matrix itself is the flow basis for iRank
+    if (ilcp_model)
+        return load_int_constr_problem();
+    // for Petri nets instead, use the P-flow basis matrix
     if (!s_basis_loaded)
         load_flow_basis(); 
     return s_fb;
@@ -1950,21 +1926,21 @@ const flow_basis_t& get_flow_basis() {
 
 //---------------------------------------------------------------------------------------
 
-// Load and store p-basis constants (from the <netname>.pbac file)
-const std::vector<int>&
-load_flow_consts() {
-    static std::vector<int> net_basis_c; 
-    static bool pbac_loaded = false;
+// // Load and store p-basis constants (from the <netname>.pbac file)
+// const std::vector<int>&
+// load_flow_consts() {
+//     static std::vector<int> net_basis_c; 
+//     static bool pbac_loaded = false;
 
-    if (!pbac_loaded) {
-        pbac_loaded = true;
-        std::string pbac_name(net_name);
-        pbac_name += "pbac";
-        ifstream pif(pbac_name.c_str());
-        net_basis_c = load_flow_consts_from_file(pif, get_flow_basis().size());
-    }
-    return net_basis_c;
-}
+//     if (!pbac_loaded) {
+//         pbac_loaded = true;
+//         std::string pbac_name(net_name);
+//         pbac_name += "pbac";
+//         ifstream pif(pbac_name.c_str());
+//         net_basis_c = load_flow_consts_from_file(pif, get_flow_basis().size());
+//     }
+//     return net_basis_c;
+// }
 
 //---------------------------------------------------------------------------------------
 
@@ -1988,7 +1964,7 @@ bool is_net_covered_by_flow_basis() {
 
 static bool s_pflows_loaded = false; // Have we tried to load the basis?
 static bool s_have_pflows = false;   // Do we have the basis?
-static flow_basis_t s_pflows;
+static int_lin_constr_vec_t s_pflows;
 
 bool load_pflows() {
     if (!s_pflows_loaded) {
@@ -2003,7 +1979,7 @@ bool load_pflows() {
     return s_have_pflows;
 }
 
-const flow_basis_t& get_pflows() {
+const int_lin_constr_vec_t& get_pflows() {
     if (!s_pflows_loaded)
         load_pflows();
     return s_pflows;
@@ -2343,14 +2319,14 @@ measure_profile_bandwidth(const std::vector<int> &varorder) {
 
 // Sum of P-semiflows spans
 int measure_PSF(const std::vector<int> &varorder) {
-    const flow_basis_t& psf = load_Psemiflows();
+    const int_lin_constr_vec_t& psf = load_Psemiflows();
     int PSF = 0;
     for (int p=0; p<psf.size(); p++) {
-        if (psf[p].size() == 0)
+        if (psf[p].coeffs.size() == 0)
             continue;
-        int top = varorder[ psf[p].ith_nonzero(0).index ];
+        int top = varorder[ psf[p].coeffs.ith_nonzero(0).index ];
         int bot = top;
-        for (auto& elem : psf[p]) {
+        for (auto& elem : psf[p].coeffs) {
             top = std::max(top, varorder[ elem.index ]);
             bot = std::min(bot, varorder[ elem.index ]);
         }
@@ -2640,7 +2616,7 @@ void var_order_FORCE(const VariableOrderCriteria voc, std::vector<int> &out_orde
 
 // Computes the FORCE metric (point-transition spans) as defined for the FORCE algorithm
 double measure_FORCE_pts(const VariableOrderCriteria voc, const std::vector<int> &in_order,
-                         const flow_basis_t& psf) 
+                         const int_lin_constr_vec_t& psf) 
 {
     std::vector<int> num_trns_of_place(npl);
     std::vector<double> cog(ntr);//, grade(npl);
@@ -2654,7 +2630,7 @@ double measure_FORCE_pts(const VariableOrderCriteria voc, const std::vector<int>
     if (has_semiflows) {
         // Count the number of P-semiflows that cover each place
         for (int i = 0; i < psf.size(); i++)
-            for (auto& p : psf[i])
+            for (auto& p : psf[i].coeffs)
                 num_sf_per_place[p.index]++;
             // for (int j = 0; j < psf[i].size(); j++)
             //     num_sf_per_place[ psf[i][j].place_no ]++;
@@ -2689,11 +2665,11 @@ double measure_FORCE_pts(const VariableOrderCriteria voc, const std::vector<int>
     if (has_semiflows) {
         for (int i = 0; i < psf.size(); i++) {
             psf_cog[i] = 0.0;
-            for (auto& p : psf[i])
+            for (auto& p : psf[i].coeffs)
                 psf_cog[i] += var_position[p.index];
             // for (int j = 0; j < psf[i].size(); j++)
             //     psf_cog[i] += var_position[ psf[i][j].place_no ];
-            safe_div(psf_cog[i], psf[i].size());
+            safe_div(psf_cog[i], psf[i].coeffs.size());
         }
     }
 
@@ -2718,14 +2694,14 @@ double measure_FORCE_pts(const VariableOrderCriteria voc, const std::vector<int>
     if (has_semiflows) { // Add also the PSFCOG[i] to each place
         for (int i = 0; i < psf.size(); i++) {
             double psf_pts = 0.0; // point-PSF span
-            for (auto& p : psf[i])
+            for (auto& p : psf[i].coeffs)
                 psf_pts += std::abs(psf_cog[i] - var_position[p.index]);
             
             // for (int j = 0; j < psf[i].size(); j++) {
             //     // grade[ psf[i][j].place_no ] += psf_cog[i];
             //     psf_pts += std::abs(psf_cog[i] - var_position[ psf[i][j].place_no ]);
             // }
-            safe_div(psf_pts, psf[i].size());
+            safe_div(psf_pts, psf[i].coeffs.size());
             pts += psf_pts;
         }
     }
