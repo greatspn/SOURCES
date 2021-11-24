@@ -98,14 +98,14 @@ inline int_range_t merge(const int_range_t& i1, const int_range_t& i2) {
 // Metric based on P-flow basis
 //---------------------------------------------------------------------------------------
 
-ostream& operator<<(ostream& os, const flow_basis_t& fb) {
-    for (const sparse_vector_t& s : fb) {
-        for (size_t i=0; i<s.size(); i++)
-            os << setw(3) << s[i];
-        os << endl;
-    }
-    return os;
-}
+// ostream& operator<<(ostream& os, const int_lin_constr_vec_t& fb) {
+//     for (const int_lin_constr_t& s : fb) {
+//         for (size_t i=0; i<s.coeffs.size(); i++)
+//             os << setw(3) << s.coeffs[i];
+//         os << endl;
+//     }
+//     return os;
+// }
 
 //-----------------------------------------------------------------------------
 
@@ -229,43 +229,43 @@ sparse_vector_t linear_comb(int mult1, const sparse_vector_t& vec1,
 
 //---------------------------------------------------------------------------------------
 
-void canonicalize_sign(sparse_vector_t& vec, int& const_value) {
+void canonicalize_sign(int_lin_constr_t& constr) {
     // Always make the first entry positive
-    if (vec.nonzeros() > 0 && vec.front_nonzero().value < 0) {
+    if (constr.coeffs.nonzeros() > 0 && constr.coeffs.front_nonzero().value < 0) {
         // invert all signs in the flow vector
-        for (size_t i=0; i<vec.nonzeros(); i++)
-            vec.set_nnz_value(i, -vec.ith_nonzero(i).value);
+        for (size_t i=0; i<constr.coeffs.nonzeros(); i++)
+            constr.coeffs.set_nnz_value(i, -constr.coeffs.ith_nonzero(i).value);
         // also invert the constant value
-        const_value = -const_value;
+        constr.const_term = -constr.const_term;
     }
 }
 
 //---------------------------------------------------------------------------------------
 
-void canonicalize(sparse_vector_t& vec, int& const_value) {
+void canonicalize(int_lin_constr_t& constr) {
     // Always make the first entry positive
-    canonicalize_sign(vec, const_value);
+    canonicalize_sign(constr);
 
     // Get the g.c.d. of the vector entries
     int g = -1;
-    for (size_t i=0; i<vec.nonzeros(); i++) {
-        if (vec.ith_nonzero(i).value != 0) {
+    for (size_t i=0; i<constr.coeffs.nonzeros(); i++) {
+        if (constr.coeffs.ith_nonzero(i).value != 0) {
             if (g == -1) // first entry
-                g = abs(vec.ith_nonzero(i).value);
+                g = abs(constr.coeffs.ith_nonzero(i).value);
             else
-                g = gcd(g, abs(vec.ith_nonzero(i).value));
+                g = gcd(g, abs(constr.coeffs.ith_nonzero(i).value));
             if (g == 1)
                 return;
         }
     }
-    if (const_value != 0)
-        g = gcd(g, abs(const_value));
+    if (constr.const_term != 0)
+        g = gcd(g, abs(constr.const_term));
 
     if (g > 1) {
-        for (size_t i=0; i<vec.nonzeros(); i++)
-            vec.set_nnz_value(i, vec.ith_nonzero(i).value / g);
+        for (size_t i=0; i<constr.coeffs.nonzeros(); i++)
+            constr.coeffs.set_nnz_value(i, constr.coeffs.ith_nonzero(i).value / g);
 
-        const_value /= g;
+        constr.const_term /= g;
     }
 }
 
@@ -273,64 +273,65 @@ void canonicalize(sparse_vector_t& vec, int& const_value) {
 
 // Annul column j of row B[i] by summing to it row B[k] with an appropriate multiplier
 // Do the same operation on the constants vector
-inline void annul_column_of_B_row(flow_basis_t& B, int i, int k, int j, std::vector<int>& inv_coeffs) {
-    assert(B[i][j] != 0);
+inline void annul_column_of_B_row(int_lin_constr_vec_t& B, int i, int k, int j) {
+    assert(B[i].coeffs[j] != 0);
+    assert(B[i].op == CI_EQ);
     // Find multipliers
-    int mult_k = abs(B[i][j]);
-    int mult_i = abs(B[k][j]);
+    int mult_k = abs(B[i].coeffs[j]);
+    int mult_i = abs(B[k].coeffs[j]);
     int gcd_ik = gcd(mult_k, mult_i);
     mult_k /= gcd_ik;
     mult_i /= gcd_ik;
-    if (sign(B[i][j]) == sign(B[k][j]))
+    if (sign(B[i].coeffs[j]) == sign(B[k].coeffs[j]))
         mult_k *= -1;
     
     // Sum and make canonical
-    B[i] = linear_comb(mult_k, B[k], mult_i, B[i]);
-    inv_coeffs[i] = scalar_linear_comb(mult_k, inv_coeffs[k], mult_i, inv_coeffs[i]);
+    B[i].coeffs = linear_comb(mult_k, B[k].coeffs, mult_i, B[i].coeffs);
+    B[i].const_term = scalar_linear_comb(mult_k, B[k].const_term, mult_i, B[i].const_term);
 
-    canonicalize(B[i], inv_coeffs[i]);
-    assert(B[i][j] == 0);
+    canonicalize(B[i]);//, inv_coeffs[i]);
+    assert(B[i].coeffs[j] == 0);
 }
 
 //---------------------------------------------------------------------------------------
 
 // Get the basis B in row footprint form
-void row_footprint_form(flow_basis_t& B, std::vector<int>& inv_coeffs) {
+void row_footprint_form(int_lin_constr_vec_t& B) {
     for (int k=0; k<B.size(); k++) {
         // Find the k-th pivot row
         int i_max = k;
         for (int i=k; i<B.size(); i++)
-            if (B[i].nonzeros() > 0 && B[i].leading() < B[i_max].leading())
+            if (B[i].coeffs.nonzeros() > 0 && B[i].coeffs.leading() < B[i_max].coeffs.leading())
                 i_max = i;
         // Move the pivot in position k
         std::swap(B[i_max], B[k]);
-        std::swap(inv_coeffs[i_max], inv_coeffs[k]);
+        // std::swap(inv_coeffs[i_max], inv_coeffs[k]);
         // Annull column j0 to all the rows below the pivot (row k)
-        const int j0 = B[k].leading();
+        const int j0 = B[k].coeffs.leading();
         for (int i=k+1; i<B.size(); i++) { // Get into a row-echelon form
-            if (B[i][j0] != 0)
-                annul_column_of_B_row(B, i, k, j0, inv_coeffs);
+            if (B[i].coeffs[j0] != 0)
+                annul_column_of_B_row(B, i, k, j0);
         }
     }
     // Step 2: Find row-trailing entries and annul all entries above each of them. 
     // This step is different from the one of the reduced row footprint form.
     // We need to check the trailings by columns, and subtract them from the highest
     // trailing to the lowest trailing, not in row order.
-    size_t last_trailing = B[0].size();
+    size_t last_trailing = B[0].coeffs.size();
     for (int hh=B.size()-1; hh>=0; hh--) {
         // From the bottom, find the row k with the higher trailing less than last_trailing
         int k = -1;
         for (int i=B.size()-1; i>=0; i--)
-            if (B[i].trailing() < last_trailing)
-                if (k == -1 || B[i].trailing() > B[k].trailing())
+            if (B[i].coeffs.trailing() < last_trailing)
+                if (k == -1 || B[i].coeffs.trailing() > B[k].coeffs.trailing())
                     k = i;
-        last_trailing = B[k].trailing();
+        last_trailing = B[k].coeffs.trailing();
         // Subtract row k to all the rows above with the same trailing
-        const int jN = B[k].trailing();
+        const int jN = B[k].coeffs.trailing();
         // cout << "k="<<k<<" jN="<<jN<<endl;
         for (int i=k-1; i>=0; i--) { 
-            if (jN == B[i].trailing())
-                annul_column_of_B_row(B, i, k, jN, inv_coeffs);
+            if (jN == B[i].coeffs.trailing())
+                annul_column_of_B_row(B, i, k, jN);
         }
     }
 }
@@ -338,34 +339,36 @@ void row_footprint_form(flow_basis_t& B, std::vector<int>& inv_coeffs) {
 //---------------------------------------------------------------------------------------
 
 // Get the basis B into reduced row footprint form
-void reduced_row_footprint_form(flow_basis_t& B, std::vector<int>& inv_coeffs) {
+void reduced_row_footprint_form(int_lin_constr_vec_t& B) {
     for (int k=0; k<B.size(); k++) {
         // Find the k-th pivot row
         int i_max = k;
         for (int i=k; i<B.size(); i++)
-            if (B[i_max].nonzeros() == 0 || (B[i].nonzeros() > 0 && B[i].leading() < B[i_max].leading()))
+            if (B[i_max].coeffs.nonzeros() == 0 || 
+                (B[i].coeffs.nonzeros() > 0 && 
+                 B[i].coeffs.leading() < B[i_max].coeffs.leading()))
                 i_max = i;
         // Move the pivot in position k
         std::swap(B[i_max], B[k]);
-        std::swap(inv_coeffs[i_max], inv_coeffs[k]);
+        // std::swap(inv_coeffs[i_max], inv_coeffs[k]);
         // Annull column j0 to all the rows below the pivot (row k)
-        if (B[k].nonzeros() > 0) {
-            const int j0 = B[k].leading();
+        if (B[k].coeffs.nonzeros() > 0) {
+            const int j0 = B[k].coeffs.leading();
             for (int i=k+1; i<B.size(); i++) { // Get into a row-echelon form
-                if (B[i][j0] != 0)
-                    annul_column_of_B_row(B, i, k, j0, inv_coeffs);
+                if (B[i].coeffs[j0] != 0)
+                    annul_column_of_B_row(B, i, k, j0);
             }
         }
     }
     // Step 2: Find row-trailing entries and annul all entries above each of them. 
     for (int k=B.size()-1; k>=0; k--) {
         // Annul the last column of B[k] to all the rows above the pivot row k
-        if (B[k].nonzeros() > 0) {
-            const int jN = B[k].trailing();
+        if (B[k].coeffs.nonzeros() > 0) {
+            const int jN = B[k].coeffs.trailing();
             // const int j0 = B[k].leading();
             for (int i=k-1; i>=0; i--) { // Get into our modified row-echelon form
-                if (B[i][jN] != 0) /*&& jN == B[i].trailing()*/
-                    annul_column_of_B_row(B, i, k, jN, inv_coeffs);
+                if (B[i].coeffs[jN] != 0) /*&& jN == B[i].trailing()*/
+                    annul_column_of_B_row(B, i, k, jN);
             }
         }
     }
@@ -375,41 +378,41 @@ void reduced_row_footprint_form(flow_basis_t& B, std::vector<int>& inv_coeffs) {
 
 // Get the basis B in row footprint form, operating exclusively
 // on the rows in the inclusive range [start_row, end_row].
-void reduced_row_footprint_form_range(flow_basis_t& B, std::vector<int>& inv_coeffs, ssize_t start_row, ssize_t end_row) {
+void reduced_row_footprint_form_range(int_lin_constr_vec_t& B, ssize_t start_row, ssize_t end_row) {
     for (int k=start_row; k<=end_row; k++) {
         // Find the k-th pivot row
         int i_max = k;
         for (int i=k; i<B.size(); i++)
-            if (B[i].nonzeros() > 0 && B[i].leading() < B[i_max].leading())
+            if (B[i].coeffs.nonzeros() > 0 && B[i].coeffs.leading() < B[i_max].coeffs.leading())
                 i_max = i;
         // Move the pivot in position k
         std::swap(B[i_max], B[k]);
         // Annull column j0 to all the rows below the pivot (row k)
-        const int j0 = B[k].leading();
+        const int j0 = B[k].coeffs.leading();
         for (int i=k+1; i<B.size(); i++) { // Get into a row-echelon form
-            if (B[i][j0] != 0)
-                annul_column_of_B_row(B, i, k, j0, inv_coeffs);
+            if (B[i].coeffs[j0] != 0)
+                annul_column_of_B_row(B, i, k, j0);
         }
     }
     // Step 2: Find row-trailing entries and annul all entries above each of them. 
     for (int k=end_row; k>=start_row; k--) {
         // Annul the last column of B[k] to all the rows above the pivot row k
-        const int jN = B[k].trailing();
-        const int j0 = B[k].leading();
+        const int jN = B[k].coeffs.trailing();
+        const int j0 = B[k].coeffs.leading();
         for (int i=k-1; i>=0; i--) { 
-            if (B[i][jN] != 0/* && jN == B[i].trailing()*/)
-                annul_column_of_B_row(B, i, k, jN, inv_coeffs);
+            if (B[i].coeffs[jN] != 0/* && jN == B[i].trailing()*/)
+                annul_column_of_B_row(B, i, k, jN);
         }
     }
 }
 
 //---------------------------------------------------------------------------------------
 
-void print_flow_basis(const flow_basis_t& B) {
+void print_flow_basis(const int_lin_constr_vec_t& B) {
     for (auto&& row : B) {
-        for (size_t i=0; i<row.size(); i++) {
-            if (row.leading() <= i && i <= row.trailing())
-                cout << setw(3) << row[i];
+        for (size_t i=0; i<row.coeffs.size(); i++) {
+            if (row.coeffs.leading() <= i && i <= row.coeffs.trailing())
+                cout << setw(3) << row.coeffs[i];
             else
                 cout << "  .";
         }
@@ -420,30 +423,29 @@ void print_flow_basis(const flow_basis_t& B) {
 
 //---------------------------------------------------------------------------------------
 
-void reorder_basis(flow_basis_t& B, const std::vector<int>& net_to_level) {
+void reorder_basis(int_lin_constr_vec_t& B, const std::vector<int>& net_to_level) {
     for (size_t i=0; i<B.size(); i++) {
-        sparse_vector_t& s = B[i];
-        for (auto& el : s.data())
+        int_lin_constr_t& s = B[i];
+        for (auto& el : s.coeffs.data())
             el.index = net_to_level[el.index];
-        std::sort(s.data().begin(), s.data().end());
-        s.verify_invariants();
-        int dummy_value = 0; // no invariants are provided
-        canonicalize_sign(s, dummy_value);
+        std::sort(s.coeffs.data().begin(), s.coeffs.data().end());
+        s.coeffs.verify_invariants();
+        canonicalize_sign(s);
     }
 }
 
-//---------------------------------------------------------------------------------------
+// //---------------------------------------------------------------------------------------
 
-void reorder_basis(flow_basis_t& B, std::vector<int>& inv_coeffs, const std::vector<int>& net_to_level) {
-    for (size_t i=0; i<B.size(); i++) {
-        sparse_vector_t& s = B[i];
-        for (auto& el : s.data())
-            el.index = net_to_level[el.index];
-        std::sort(s.data().begin(), s.data().end());
-        s.verify_invariants();
-        canonicalize_sign(s, inv_coeffs[i]);
-    }
-}
+// void reorder_basis(flow_basis_t& B, std::vector<int>& inv_coeffs, const std::vector<int>& net_to_level) {
+//     for (size_t i=0; i<B.size(); i++) {
+//         sparse_vector_t& s = B[i];
+//         for (auto& el : s.data())
+//             el.index = net_to_level[el.index];
+//         std::sort(s.data().begin(), s.data().end());
+//         s.verify_invariants();
+//         canonicalize_sign(s, inv_coeffs[i]);
+//     }
+// }
 
 //---------------------------------------------------------------------------------------
 
@@ -507,9 +509,9 @@ struct flow_basis_metric_t {
     // Alternative bound value if bounds are not available
     int alternate_bound = -1;
     // The sorted and reduced flow basis
-    flow_basis_t B;
+    int_lin_constr_vec_t B;
     // The flow invariant' constants (flow * m0)
-    std::vector<int> inv_coeffs;
+    // std::vector<int> inv_coeffs;
     // level to place mapping
     std::vector<int> level_to_net;
     // The token range we have to remember for an invariant at each level.
@@ -530,7 +532,7 @@ struct flow_basis_metric_t {
     bool use_enum = false;
     bool print_enums = false;
     // invariant coefficients are computed from m0 or loaded from file?
-    bool using_inv_coeffs_from_file = false;
+    // bool using_inv_coeffs_from_file = false;
 
     flow_basis_metric_t() {}
     ~flow_basis_metric_t();
@@ -610,19 +612,19 @@ public:
 
     // Return the range of tokens to remember for the specified invariant at the given level
     inline const int_range_t& invariant_range_at_lvl(int inv, int lvl) const {
-        assert(B[inv].leading() <= lvl && lvl <= B[inv].trailing());
+        assert(B[inv].coeffs.leading() <= lvl && lvl <= B[inv].coeffs.trailing());
         // The array ranges[inv] does not have a non-zero for each level, but only
         // one non-zero for each non-zero in B[inv]. Get the closest level.
-        int index = B[inv].lower_bound_nnz(lvl);
+        int index = B[inv].coeffs.lower_bound_nnz(lvl);
         return ranges[inv][index];
     };
 
     std::vector<std::vector<double>> range_scores;
     inline const double range_scores_at_lvl(int inv, int lvl) const {
-        assert(B[inv].leading() <= lvl && lvl <= B[inv].trailing());
+        assert(B[inv].coeffs.leading() <= lvl && lvl <= B[inv].coeffs.trailing());
         // The array ranges[inv] does not have a non-zero for each level, but only
         // one non-zero for each non-zero in B[inv]. Get the closest level.
-        int index = B[inv].lower_bound_nnz(lvl);
+        int index = B[inv].coeffs.lower_bound_nnz(lvl);
         return range_scores[inv][index];
     };
 };
@@ -663,7 +665,7 @@ void compact_basis_row_min(std::vector<int> &net_to_level, flow_basis_metric_t& 
     fbm.compact_basis_row_min(net_to_level);
 }
 
-const flow_basis_t& get_basis(const flow_basis_metric_t& fbm) {
+const int_lin_constr_vec_t& get_basis(const flow_basis_metric_t& fbm) {
     return fbm.B;
 }
 
@@ -689,8 +691,8 @@ void get_lvl_weights_invariants(const flow_basis_metric_t& fbm, std::vector<size
         // Include the leading, exclude the trailing (we don't have to remember anything
         // when the p-flow is concluded). Update the lvl_weights at lvl+1, because the effect
         // of the p-flow is observed at the next level.
-        if (row.nonzeros() > 0)
-            for (size_t lvl=row.leading(); lvl < row.trailing(); lvl++)
+        if (row.coeffs.nonzeros() > 0)
+            for (size_t lvl=row.coeffs.leading(); lvl < row.coeffs.trailing(); lvl++)
                 lvl_weights[lvl]++;
        // for (size_t lvl=row.leading()+1; lvl < row.trailing(); lvl++)
        //      lvl_weights[lvl + 1]++;
@@ -741,11 +743,11 @@ void get_lvl_weights_ranges(const flow_basis_metric_t& fbm, std::vector<cardinal
             continue;
         // Consider all the invariants that are active at this level
         for (int r=0; r<fbm.B.size(); r++) {
-            if (fbm.B[r].nonzeros() == 0)
+            if (fbm.B[r].coeffs.nonzeros() == 0)
                 continue;
-            if (fbm.B[r].leading() <= lvl && lvl <= fbm.B[r].trailing()) {
+            if (fbm.B[r].coeffs.leading() <= lvl && lvl <= fbm.B[r].coeffs.trailing()) {
                 int inv_combs;
-                if (lvl == fbm.B[r].trailing())
+                if (lvl == fbm.B[r].coeffs.trailing())
                     inv_combs = 1;
                 else
                     inv_combs = fbm.invariant_range_at_lvl(r, lvl + 1).size_min1();
@@ -771,7 +773,8 @@ flow_basis_metric_t::~flow_basis_metric_t() {
 //---------------------------------------------------------------------------------------
 
 void flow_basis_metric_t::initialize() {
-    load_flow_basis();
+    // load_flow_basis();
+    get_int_constr_problem();
     // if (!load_flow_basis()) {
     //     cerr << "\nMISSING .pba FILE! CANNOT LOAD P-FLOW BASIS!\n" << endl;
     //     throw rgmedd_exception("Missing pba.");
@@ -885,9 +888,9 @@ void flow_basis_metric_t::print_ILP_Mathematica() {
     //     }
     //     cout << " == " << sum << ",\n";
     // }
-    for (auto&& pflow : B) {
+    for (auto&& constr : B) {
         int sum = 0, cnt = 0;
-        for (auto&& el : pflow) {
+        for (auto&& el : constr.coeffs) {
             const int plc = level_to_net[el.index];
             sum += net_mark[plc].total * el.value;
             cout << std::showpos << el.value << std::noshowpos << "*x" << el.index;
@@ -903,13 +906,13 @@ void flow_basis_metric_t::print_ILP_Mathematica() {
     }
     cout << endl;
 
-    for (auto&& pflow : B) {
+    for (auto&& constr : B) {
         cout << "{";
-        for (int k = pflow.nonzeros() - 1; k >= 0; k--) {
+        for (int k = constr.coeffs.nonzeros() - 1; k >= 0; k--) {
             cout << "MinMax[";
-            for (int i=pflow.nonzeros() - 1; i>=k; i--) {
-                cout << std::showpos << pflow.ith_nonzero(i).value << std::noshowpos 
-                     << "*x"<< pflow.ith_nonzero(i).index;
+            for (int i=constr.coeffs.nonzeros() - 1; i>=k; i--) {
+                cout << std::showpos << constr.coeffs.ith_nonzero(i).value << std::noshowpos 
+                     << "*x"<< constr.coeffs.ith_nonzero(i).index;
             }
             cout << "]" << (k==0 ? "" : ",\n ");
         }
@@ -949,18 +952,18 @@ void flow_basis_metric_t::print_ILP_Mathematica() {
 
 // Compute the allowed ranges for a given p-flow r of B[]
 void flow_basis_metric_t::compute_ranges_of_pflow(size_t r, bool verbose) {
-    const sparse_vector_t& pflow = B[r];
-    ranges[r].resize(pflow.nonzeros());
-    range_scores[r].resize(pflow.nonzeros());
+    const int_lin_constr_t& row = B[r];
+    ranges[r].resize(row.coeffs.nonzeros());
+    range_scores[r].resize(row.coeffs.nonzeros());
     // Get the constant of the product of the invariant r and M0
     // Since the set of invariants changes at every  re-ordering, 
     // these values must be recomputed at every change of variable order.
     // inv_coeff[r] = 0;
-    // for (auto&& elem : pflow)
+    // for (auto&& elem : row)
     //     inv_coeff[r] += elem.value * net_mark[ level_to_net[elem.index] ].total;
 
     int inv_coeff = 0;
-    for (auto&& elem : pflow)
+    for (auto&& elem : row.coeffs)
         inv_coeff += elem.value * net_mark[ level_to_net[elem.index] ].total;
 
 
@@ -968,18 +971,18 @@ void flow_basis_metric_t::compute_ranges_of_pflow(size_t r, bool verbose) {
     //-------------------------------------------
     // Compute the allowed ranges in forward, starting from the final value
     {
-        int_range_t R1 = int_range_t(inv_coeffs[r], inv_coeffs[r]);
-        for (size_t k=0; k<pflow.nonzeros(); k++) {
-            const int plc = level_to_net[pflow.ith_nonzero(k).index];
+        int_range_t R1 = int_range_t(row.const_term, row.const_term);
+        for (size_t k=0; k<row.coeffs.nonzeros(); k++) {
+            const int plc = level_to_net[row.coeffs.ith_nonzero(k).index];
             ranges[r][k] = R1;
-            R1 -= make_range(0, get_bound(plc) * pflow.ith_nonzero(k).value);
+            R1 -= make_range(0, get_bound(plc) * row.coeffs.ith_nonzero(k).value);
         }
 
         // Compute the allowed ranges backward, starting from 0
         int_range_t R2(0, 0);
-        for (ssize_t k=pflow.nonzeros() - 1; k >= 0; k--) {
-            const int plc = level_to_net[pflow.ith_nonzero(k).index];
-            R2 += make_range(0, get_bound(plc) * pflow.ith_nonzero(k).value);
+        for (ssize_t k=row.coeffs.nonzeros() - 1; k >= 0; k--) {
+            const int plc = level_to_net[row.coeffs.ith_nonzero(k).index];
+            R2 += make_range(0, get_bound(plc) * row.coeffs.ith_nonzero(k).value);
             // The actual range is the intersection of the two computed range series
             ranges[r][k] = intersect(ranges[r][k], R2);
         }
@@ -987,15 +990,15 @@ void flow_basis_metric_t::compute_ranges_of_pflow(size_t r, bool verbose) {
 
 
     {
-        std::vector<int_range_t> dec_ranges(pflow.nonzeros());
-        std::vector<int_range_t> inc_ranges(pflow.nonzeros());
-        std::vector<int_range_t> intersection(pflow.nonzeros());
+        std::vector<int_range_t> dec_ranges(row.coeffs.nonzeros());
+        std::vector<int_range_t> inc_ranges(row.coeffs.nonzeros());
+        std::vector<int_range_t> intersection(row.coeffs.nonzeros());
         // Compute the allowed ranges by decrements, starting from the final value
-        int_range_t R1S = int_range_t(inv_coeffs[r], inv_coeffs[r]), R1 = R1S;
-        for (size_t k=0; k<pflow.nonzeros(); k++) {
-            const int plc = level_to_net[pflow.ith_nonzero(k).index];
+        int_range_t R1S = int_range_t(row.const_term, row.const_term), R1 = R1S;
+        for (size_t k=0; k<row.coeffs.nonzeros(); k++) {
+            const int plc = level_to_net[row.coeffs.ith_nonzero(k).index];
             const int bnd = get_bound(plc);
-            const int flow_coeff = pflow.ith_nonzero(k).value;
+            const int flow_coeff = row.coeffs.ith_nonzero(k).value;
             dec_ranges[k] = R1;
 
             if (flow_coeff > 0)
@@ -1007,10 +1010,10 @@ void flow_basis_metric_t::compute_ranges_of_pflow(size_t r, bool verbose) {
         }
         // Compute the allowed ranges by increments, starting from 0
         int_range_t R2S(0, 0), R2 = R2S;
-        for (ssize_t k=pflow.nonzeros() - 1; k >= 0; k--) {
-            const int plc = level_to_net[pflow.ith_nonzero(k).index];
+        for (ssize_t k=row.coeffs.nonzeros() - 1; k >= 0; k--) {
+            const int plc = level_to_net[row.coeffs.ith_nonzero(k).index];
             const int bnd = get_bound(plc);
-            const int flow_coeff = pflow.ith_nonzero(k).value;
+            const int flow_coeff = row.coeffs.ith_nonzero(k).value;
             // inc_ranges[k] = R2;
 
             if (flow_coeff > 0)
@@ -1024,10 +1027,10 @@ void flow_basis_metric_t::compute_ranges_of_pflow(size_t r, bool verbose) {
             intersection[k] = intersect(inc_ranges[k], dec_ranges[k]);
         }
 
-        // for (ssize_t k=pflow.nonzeros()-1; k>=0; k--) {
-        //     const int plc = level_to_net[pflow.ith_nonzero(k).index];
-        //     const int bnd = get_bound(plc), flow = pflow.ith_nonzero(k).value;
-        //     int_range_t prev = (k==pflow.nonzeros()-1) ? R2S : intersection[k+1];
+        // for (ssize_t k=row.coeffs.nonzeros()-1; k>=0; k--) {
+        //     const int plc = level_to_net[row.coeffs.ith_nonzero(k).index];
+        //     const int bnd = get_bound(plc), flow = row.coeffs.ith_nonzero(k).value;
+        //     int_range_t prev = (k==row.coeffs.nonzeros()-1) ? R2S : intersection[k+1];
         //     // int_range_t next = (k==0) ? R1S : intersection[k-1];
         //     // double comb = combinations_between_ranges(intersection[k], next, bnd, flow);
         //     // double comb = combinations_between_ranges(prev, intersection[k], bnd, flow);
@@ -1035,13 +1038,13 @@ void flow_basis_metric_t::compute_ranges_of_pflow(size_t r, bool verbose) {
         // }
 
         if (verbose) {
-            cout << "\nFlow r="<<r<<"  inv_coeff="<<inv_coeffs[r]<<"  ("<<inv_coeff<<")"<<endl;
+            cout << "\nFlow r="<<r<<"  inv_coeff="<<row.const_term<<"  ("<<inv_coeff<<")"<<endl;
             cout << "lvl plc bnd flow |    [dec]   [inc]   [***]" << endl;
             cout << "                 |         " << setw(8) << right << R2S.str() << endl;
-            for (ssize_t k=pflow.nonzeros()-1; k>=0; k--) {
-                cout << right << setw(3) << pflow.ith_nonzero(k).index << " ";
-                const int plc = level_to_net[pflow.ith_nonzero(k).index];
-                const int bnd = get_bound(plc), flow = pflow.ith_nonzero(k).value;
+            for (ssize_t k=row.coeffs.nonzeros()-1; k>=0; k--) {
+                cout << right << setw(3) << row.coeffs.ith_nonzero(k).index << " ";
+                const int plc = level_to_net[row.coeffs.ith_nonzero(k).index];
+                const int bnd = get_bound(plc), flow = row.coeffs.ith_nonzero(k).value;
                 cout << right << setw(3) << plc << " ";
                 cout << right << setw(3) << bnd << " ";
                 cout << right << setw(3) << flow << " ";
@@ -1055,7 +1058,7 @@ void flow_basis_metric_t::compute_ranges_of_pflow(size_t r, bool verbose) {
                 // cout << " (" << (intersection[k].l - u.l) <<","<< (u.r - intersection[k].r) <<")";
                 cout << (intersection[k] != ranges[r][k] ? "!!!!" : "");
 
-                int_range_t prev = (k==pflow.nonzeros()-1) ? R2S : intersection[k+1];
+                int_range_t prev = (k==row.coeffs.nonzeros()-1) ? R2S : intersection[k+1];
                 // cout << "  "<<prev<<"."<<intersection[k];
                 // cout << "  " << range_scores[r][k];
 
@@ -1073,14 +1076,14 @@ void flow_basis_metric_t::compute_ranges_of_pflow(size_t r, bool verbose) {
 // where the p-flow is active
 cardinality_t flow_basis_metric_t::estimate_range_space(size_t r) {
     cardinality_t S = 0;
-    const sparse_vector_t& pflow = B[r];
+    const int_lin_constr_t& row = B[r];
 
-    for (int k=0; k<pflow.nonzeros(); k++) {
+    for (int k=0; k<row.coeffs.nonzeros(); k++) {
         int size = ranges[r][k].size();
         // For how many levels this range will be active?
         int n_levels;
-        if (k < pflow.nonzeros() - 1)
-            n_levels = pflow.ith_nonzero(k + 1).index - pflow.ith_nonzero(k).index;
+        if (k < row.coeffs.nonzeros() - 1)
+            n_levels = row.coeffs.ith_nonzero(k + 1).index - row.coeffs.ith_nonzero(k).index;
         else
             n_levels = 1; // last level
 
@@ -1106,9 +1109,9 @@ cardinality_t flow_basis_metric_t::compute_score()
         // Consider all the invariants active at this level
 
         for (int r=0; r<B.size(); r++) {
-            if (B[r].nonzeros() == 0)
+            if (B[r].coeffs.nonzeros() == 0)
                 continue;
-            if (B[r].leading() <= lvl && lvl <= B[r].trailing()) {
+            if (B[r].coeffs.leading() <= lvl && lvl <= B[r].coeffs.trailing()) {
                 // Compute the maximum sum combinations for invariant r 
                 // we need to remember at this level. This assumes no interactions
                 // between the various invariants of the model (synchronizations).
@@ -1120,7 +1123,7 @@ cardinality_t flow_basis_metric_t::compute_score()
                 //     inv_combs = (invariant_range_at_lvl(r, lvl) / weight).size();
 
                 int inv_combs;
-                if (lvl == B[r].trailing())
+                if (lvl == B[r].coeffs.trailing())
                     inv_combs = 1;
                 else
                     inv_combs = invariant_range_at_lvl(r, lvl + 1).size_min1();
@@ -1165,12 +1168,12 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_A(int var)
         lvl_combinations.resize(0);
         // lvl_rscores.resize(0);
         for (int r=0; r<B.size(); r++) {
-            if (B[r].nonzeros() == 0)
+            if (B[r].coeffs.nonzeros() == 0)
                 continue;
-            if (B[r].leading() <= lvl && lvl <= B[r].trailing()) {
+            if (B[r].coeffs.leading() <= lvl && lvl <= B[r].coeffs.trailing()) {
                 int inv_combs;
                 double inv_rscore;
-                if (lvl == B[r].trailing()) {
+                if (lvl == B[r].coeffs.trailing()) {
                     inv_combs = 1;
                     // inv_rscore = 1.0;
                 }
@@ -1326,13 +1329,13 @@ void flow_basis_metric_t::initialize_LP(const std::vector<int> &net_to_level) {
     for (int r=0; r<B.size(); r++) {
         int j = 0;   // number of elements in the new row
         // inv_coeff[r] = 0; // product of this p-flow with m0
-        for (auto&& elem : B[r]) {
+        for (auto&& elem : B[r].coeffs) {
             row[j] = elem.value;
             col[j] = elem.index + 1;
             // inv_coeff[r] += elem.value * net_mark[ level_to_net[elem.index] ].total;
             j++;
         } 
-        add_constraintex(lp, j, row.data(), col.data(), ROWTYPE_EQ, /*inv_coeff[r]*/inv_coeffs[r]);
+        add_constraintex(lp, j, row.data(), col.data(), ROWTYPE_EQ, /*inv_coeff[r]*/B[r].const_term);
     }
 
     // Conclude LP initialization and prepare for the engine to run
@@ -1364,16 +1367,16 @@ void flow_basis_metric_t::solve_LP() {
             // The target function is the p-flow cut to the considered level
             // Prepare the p-flow in lp-solve format
             int j = 0;   // Number of elements in the objective function row
-            for (ssize_t k = B[r].nonzeros() - 1; k >= 0; k--) {
-                row[j] = B[r].ith_nonzero(k).value;
-                col[j] = B[r].ith_nonzero(k).index + 1;
+            for (ssize_t k = B[r].coeffs.nonzeros() - 1; k >= 0; k--) {
+                row[j] = B[r].coeffs.ith_nonzero(k).value;
+                col[j] = B[r].coeffs.ith_nonzero(k).index + 1;
                 j++;
             }
 
             // Solve two ILPs for each level in which the p-flow is active
-            for (size_t k=0; k<B[r].nonzeros(); k++) {
+            for (size_t k=0; k<B[r].coeffs.nonzeros(); k++) {
                 // Consider the first (k+1) entries of the p-flow
-                set_obj_fnex(lp, B[r].nonzeros() - k, row.data(), col.data());
+                set_obj_fnex(lp, B[r].coeffs.nonzeros() - k, row.data(), col.data());
 
                 status = solve(lp);
                 if (status == OPTIMAL) {
@@ -1565,9 +1568,9 @@ bool flow_basis_metric_t::bound_by_enumeration() {
         weights.resize(0);
         active_ranges.resize(0);
         for (int r=0; r<B.size(); r++) {
-            if (B[r].leading() <= lvl && lvl <= B[r].trailing()) {
+            if (B[r].coeffs.leading() <= lvl && lvl <= B[r].coeffs.trailing()) {
                 set.active_invs.push_back(r);
-                weights.push_back(B[r][lvl]);
+                weights.push_back(B[r].coeffs[lvl]);
                 active_ranges.push_back(invariant_range_at_lvl(r, lvl));
             }
         }
@@ -1663,8 +1666,8 @@ size_t flow_basis_metric_t::compute_rank_score() const {
     for (auto&& row : B) {
         // Note: unlike transition spans, we do not add + 1, since the invariant
         // does not have an impact on the trailing level.
-        if (row.nonzeros() > 0)
-            PSI += (row.trailing() - row.leading()); 
+        if (row.coeffs.nonzeros() > 0)
+            PSI += (row.coeffs.trailing() - row.coeffs.leading()); 
     }
     return PSI;
 }
@@ -1676,11 +1679,11 @@ void compute_lvl_weights(const std::vector<int> &net_to_level,
                          std::vector<size_t>& lvl_weights) 
 {
     // Build a copy of the basis where columns are ordered according to @net_to_level
-    fbm.B = get_flow_basis();
-    reorder_basis(fbm.B, fbm.inv_coeffs, net_to_level);
+    fbm.B = get_int_constr_problem();
+    reorder_basis(fbm.B, net_to_level);
 
     // Gaussian elimination: move B in reduced footprint row form
-    reduced_row_footprint_form(fbm.B, fbm.inv_coeffs);
+    reduced_row_footprint_form(fbm.B);
 
     get_lvl_weights_invariants(fbm, lvl_weights);    
 }
@@ -1693,13 +1696,13 @@ range_matrix_for_representation(flow_basis_metric_t& fbm) {
     std::vector<std::vector<std::string>> RM(fbm.B.size());
 
     for (int r=0; r<fbm.B.size(); r++) {
-        const sparse_vector_t& pflow = fbm.B[r];
-        RM[r].resize(pflow.size());
+        const int_lin_constr_t& row = fbm.B[r];
+        RM[r].resize(row.coeffs.size());
 
-        for (size_t k=0; k<pflow.nonzeros(); k++) {
+        for (size_t k=0; k<row.coeffs.nonzeros(); k++) {
             ostringstream str;
             str << fbm.ranges[r][k];
-            RM[r][pflow.ith_nonzero(k).index] = str.str();
+            RM[r][row.coeffs.ith_nonzero(k).index] = str.str();
         }
     }
     return RM;
@@ -1725,11 +1728,11 @@ range_prod_for_representation(flow_basis_metric_t& fbm, std::vector<std::string>
             size_t prod = 1;
             // Consider all the invariants active at this level
             for (int r=0; r<fbm.B.size(); r++) {
-                if (fbm.B[r].nonzeros() == 0)
+                if (fbm.B[r].coeffs.nonzeros() == 0)
                     continue;
-                if (fbm.B[r].leading() <= lvl && lvl <= fbm.B[r].trailing()) {
+                if (fbm.B[r].coeffs.leading() <= lvl && lvl <= fbm.B[r].coeffs.trailing()) {
                     int inv_combs;
-                    if (lvl == fbm.B[r].trailing())
+                    if (lvl == fbm.B[r].coeffs.trailing())
                         inv_combs = 1;
                     else
                         inv_combs = fbm.invariant_range_at_lvl(r, lvl + 1).size_min1();
@@ -1746,36 +1749,37 @@ range_prod_for_representation(flow_basis_metric_t& fbm, std::vector<std::string>
 
 //---------------------------------------------------------------------------------------
 
-bool initialize_inv_coeffs(std::vector<int> *p_inv_coeffs) {
-    const flow_basis_t& pbasis = get_flow_basis();
-    // Load or compute the invariant coefficients
-    const std::vector<int>& avail_inv_coeffs = load_flow_consts();
-
-    if (avail_inv_coeffs.size() == pbasis.size()) {
-        *p_inv_coeffs = avail_inv_coeffs;
-        return true; // from file
-    }
-    else {
-        // Alternatively, generate the constants from m0
-        p_inv_coeffs->resize(pbasis.size());
-        for (size_t f=0; f<pbasis.size(); f++) {
-            int sum = 0;
-            for (auto&& el : pbasis[f]) {
-                const int plc = el.index;
-                // const int plc = level_to_net[el.index];
-                sum += net_mark[plc].total * el.value;
-            }
-            (*p_inv_coeffs)[f] = sum;
-        }
-        return false; // from m0
-    }
-}
+// bool initialize_inv_coeffs(/*std::vector<int> *p_inv_coeffs*/) {
+//     const int_lin_constr_vec_t& pbasis = get_int_constr_problem();
+//     // Load or compute the invariant coefficients
+//     // const std::vector<int>& avail_inv_coeffs = load_flow_consts();
+// #warning check this method
+//     return false;
+//     // if (avail_inv_coeffs.size() == pbasis.size()) {
+//     //     *p_inv_coeffs = avail_inv_coeffs;
+//     //     return true; // from file
+//     // }
+//     // else {
+//     //     // Alternatively, generate the constants from m0
+//     //     p_inv_coeffs->resize(pbasis.size());
+//     //     for (size_t f=0; f<pbasis.size(); f++) {
+//     //         int sum = 0;
+//     //         for (auto&& el : pbasis[f]) {
+//     //             const int plc = el.index;
+//     //             // const int plc = level_to_net[el.index];
+//     //             sum += net_mark[plc].total * el.value;
+//     //         }
+//     //         (*p_inv_coeffs)[f] = sum;
+//     //     }
+//     //     return false; // from m0
+//     // }
+// }
 
 //---------------------------------------------------------------------------------------
 
 void
 flow_basis_metric_t::reset_B_and_inv_coeffs(const std::vector<int> &net_to_level) {
-    const flow_basis_t& pbasis = get_flow_basis();
+    const int_lin_constr_vec_t& pbasis = get_int_constr_problem();
 
     // Build a copy of the basis 
     B = pbasis;
@@ -1786,7 +1790,7 @@ flow_basis_metric_t::reset_B_and_inv_coeffs(const std::vector<int> &net_to_level
         level_to_net[ net_to_level[i] ] = i;
 
     // get the invariant coefficients
-    using_inv_coeffs_from_file = initialize_inv_coeffs(&inv_coeffs);
+    // using_inv_coeffs_from_file = initialize_inv_coeffs();
     // const std::vector<int>& avail_inv_coeffs = load_flow_consts();
 
     // if (avail_inv_coeffs.size() == B.size()) {
@@ -1807,10 +1811,10 @@ flow_basis_metric_t::reset_B_and_inv_coeffs(const std::vector<int> &net_to_level
     //         inv_coeffs[f] = sum;
     //     }
     // }
-    assert(inv_coeffs.size() == B.size());
+    // assert(inv_coeffs.size() == B.size());
 
     // Move the columns of B according to @net_to_level, and canonicalize
-    reorder_basis(B, inv_coeffs, net_to_level);
+    reorder_basis(B, net_to_level);
 }
 
 //---------------------------------------------------------------------------------------
@@ -1818,14 +1822,14 @@ flow_basis_metric_t::reset_B_and_inv_coeffs(const std::vector<int> &net_to_level
 // verify that the inv_coeffs[] vector is coherent with the flow*m0 products
 void flow_basis_metric_t::verify_inv_coeffs() const {
 #ifndef NDEBUG
-    if (using_inv_coeffs_from_file)
-        return; // cannot verify
+    if (ilcp_model)
+        return; // cannot verify from m0
     for (size_t f=0; f<B.size(); f++) {
         int flow_m0 = 0;
-        for (auto&& elem : B[f])
+        for (auto&& elem : B[f].coeffs)
             flow_m0 += elem.value * net_mark[ level_to_net[elem.index] ].total;
         // cout << "verify: f="<<f<<"  flow_m0=" << flow_m0 << "  inv_coeffs[f]="<<inv_coeffs[f]<<endl;
-        assert(flow_m0 == inv_coeffs[f]);
+        assert(flow_m0 == B[f].const_term);
     }
 #endif
 }
@@ -1835,7 +1839,7 @@ void flow_basis_metric_t::verify_inv_coeffs() const {
 cardinality_t 
 flow_basis_metric_t::measure_PSI(const std::vector<int> &net_to_level)
 {
-    const flow_basis_t& pbasis = get_flow_basis();
+    const int_lin_constr_vec_t& pbasis = get_int_constr_problem();
     cardinality_t PSI;
 
     // Restart from the initial basis/inv_coeffs, and reorder the columns of B
@@ -1848,7 +1852,7 @@ flow_basis_metric_t::measure_PSI(const std::vector<int> &net_to_level)
     // reorder_basis(B, inv_coeffs, net_to_level);
 
     // Gaussian elimination: move B in reduced footprint row form
-    reduced_row_footprint_form(B, inv_coeffs);
+    reduced_row_footprint_form(B);
     verify_inv_coeffs();
 
     // If we just want rank spans, the footprint row form is enough
@@ -1939,8 +1943,8 @@ void flow_basis_metric_t::print_PSI_diagram(const std::vector<int> &net_to_level
         cout << setw(3) << left << lvl << setw(max_plc_len) << left << tabp[plc].place_name;
         int lvl_rank = 0; // # of active invariants at this level
         for (int b=0; b<B.size(); b++) {
-            if (B[b].leading() <= lvl && lvl <= B[b].trailing()) {
-                cout << setw(3) << right << B[b][lvl];
+            if (B[b].coeffs.leading() <= lvl && lvl <= B[b].coeffs.trailing()) {
+                cout << setw(3) << right << B[b].coeffs[lvl];
                 lvl_rank++;
             }
             else
@@ -1951,7 +1955,7 @@ void flow_basis_metric_t::print_PSI_diagram(const std::vector<int> &net_to_level
 
         if (!ranges.empty()) {
             for (int r=0; r<B.size(); r++) {
-                if (B[r].leading() <= lvl && lvl <= B[r].trailing()) {
+                if (B[r].coeffs.leading() <= lvl && lvl <= B[r].coeffs.trailing()) {
                     cout << setw(8) << right << invariant_range_at_lvl(r, lvl).str();
                 }
                 else 
@@ -1961,9 +1965,9 @@ void flow_basis_metric_t::print_PSI_diagram(const std::vector<int> &net_to_level
             cout << setw(5) << combinations[lvl];
             size_t num_terms = 0;
             for (int r=0; r<B.size(); r++) {
-                if (B[r].leading() <= lvl && lvl <= B[r].trailing()) {
+                if (B[r].coeffs.leading() <= lvl && lvl <= B[r].coeffs.trailing()) {
                     int inv_combs;
-                    if (lvl == B[r].trailing())
+                    if (lvl == B[r].coeffs.trailing())
                         inv_combs = 1;
                     else
                         inv_combs = invariant_range_at_lvl(r, lvl + 1).size_min1();
@@ -1980,23 +1984,23 @@ void flow_basis_metric_t::print_PSI_diagram(const std::vector<int> &net_to_level
         cout << endl;
     }
 
-    if (!inv_coeffs.empty()) {
-        cout << setw(max_plc_len+3) << " ";
-        for (int b=0; b<B.size(); b++)
-            cout << "---";
-        cout << endl << setw(max_plc_len+3) << " ";
-        for (int b=0; b<B.size(); b++)
-            cout << setw(3) << inv_coeffs[b];
-    }
+    // if (!inv_coeffs.empty()) {
+    cout << setw(max_plc_len+3) << " ";
+    for (int b=0; b<B.size(); b++)
+        cout << "---";
+    cout << endl << setw(max_plc_len+3) << " ";
+    for (int b=0; b<B.size(); b++)
+        cout << setw(3) << B[b].const_term;
+    // }
     cout << endl << endl;
 }
 
 //---------------------------------------------------------------------------------------
 
-size_t sum_of_footprints(const flow_basis_t& B) {
+size_t sum_of_footprints(const int_lin_constr_vec_t& B) {
     size_t score = 0;
     for (auto&& row : B)
-        score += row.trailing() - row.leading() + 1;
+        score += row.coeffs.trailing() - row.coeffs.leading() + 1;
     return score;
 }
 
@@ -2009,9 +2013,9 @@ void flow_basis_metric_t::annealing_compact(std::vector<int> &net_to_level)
     std::vector<int> rev_order(npl);
     // std::vector<pair<size_t, size_t>> sharing;
     level_to_net.resize(net_to_level.size());
-    const flow_basis_t& pbasis = get_flow_basis();
-    std::vector<int> initial_inv_coeffs;
-    initialize_inv_coeffs(&initial_inv_coeffs);
+    const int_lin_constr_vec_t& pbasis = get_int_constr_problem();
+    // std::vector<int> initial_inv_coeffs;
+    // initialize_inv_coeffs();
 
     init_genrand64(0xA67BD90E);
 
@@ -2021,18 +2025,18 @@ void flow_basis_metric_t::annealing_compact(std::vector<int> &net_to_level)
     auto score_fn = [&](const std::vector<int>& net_to_level) -> size_t {
         // Build a copy of the basis where columns are ordered according to @net_to_level
         B = pbasis;
-        inv_coeffs = initial_inv_coeffs;
+        // inv_coeffs = initial_inv_coeffs;
         for (size_t i=0; i<B.size(); i++) {
-            sparse_vector_t& s = B[i];
+            sparse_vector_t& s = B[i].coeffs;
         // for (sparse_vector_t& s : B) {
             for (auto& el : s.data())
                 el.index = net_to_level[el.index];
             std::sort(s.data().begin(), s.data().end());
             s.verify_invariants();
-            canonicalize_sign(s, inv_coeffs[i]);
+            canonicalize_sign(B[i]);
         }
         // Gaussian elimination: move B in reduced footprint row form
-        row_footprint_form(B, inv_coeffs);
+        row_footprint_form(B);
 
         // for (size_t k=0; k<B.size(); k++) {
         //     extract_reinsert_row(k, net_to_level);
@@ -2053,7 +2057,7 @@ void flow_basis_metric_t::annealing_compact(std::vector<int> &net_to_level)
         size_t row = genrand64_int63() % B.size();
         std::fill(selected.begin(), selected.end(), false);
         // sharing.resize(0);
-        for (auto&& el : B[row]) {
+        for (auto&& el : B[row].coeffs) {
             selected[el.index] = true;
             // Count how many invariants we have above or below
             // pair<size_t, size_t> sh(row, el.index);
@@ -2128,11 +2132,11 @@ void flow_basis_metric_t::compact_basis_row_min(std::vector<int> &net_to_level)
     for (int i=0; i<net_to_level.size(); i++)
         level_to_net[ net_to_level[i] ] = i;
 
-    const flow_basis_t& pbasis = get_flow_basis();
+    const int_lin_constr_vec_t& pbasis = get_int_constr_problem();
     // Reorder B (the method extract_reinsert_row() expects it to be ordered).
     B = pbasis;
-    reorder_basis(B, inv_coeffs, net_to_level);
-    reduced_row_footprint_form(B, inv_coeffs);
+    reorder_basis(B, net_to_level);
+    reduced_row_footprint_form(B);
     size_t best_score = sum_of_footprints(B), new_leading, iter = 0;
     cout << "   starting score="<<best_score<<endl;
 
@@ -2142,7 +2146,7 @@ void flow_basis_metric_t::compact_basis_row_min(std::vector<int> &net_to_level)
         changed = false;
 
         for (size_t r = 0; r<B.size(); r++) {
-            if (B[r].nonzeros() == 1) // constant place
+            if (B[r].coeffs.nonzeros() == 1) // constant place
                 continue; // Any position is ok.
             // Search the leading column that gets the minimum score
             // if the p-flow of row r is made consecutive, starting from such column.
@@ -2170,7 +2174,7 @@ void flow_basis_metric_t::compact_basis_row_min(std::vector<int> &net_to_level)
                 for (size_t j=0, jj_sel=0, jj_nsel=0; j<npl; j++) {
                     if (!selected_cols[j]) {
                         if (jj_nsel == new_leading)
-                            jj_nsel += B[r].nonzeros();
+                            jj_nsel += B[r].coeffs.nonzeros();
                         lvl_to_lvl_map[j] = jj_nsel++;
                     }
                     else { // part of the moved p-flow, make its levels consecutives
@@ -2192,8 +2196,8 @@ void flow_basis_metric_t::compact_basis_row_min(std::vector<int> &net_to_level)
                 // cout << endl;
 
                 // Reorder B (the method extract_reinsert_row() expects it to be ordered).
-                reorder_basis(B, inv_coeffs, lvl_to_lvl_map);
-                reduced_row_footprint_form(B, inv_coeffs);
+                reorder_basis(B, lvl_to_lvl_map);
+                reduced_row_footprint_form(B);
                 assert(sum_of_footprints(B) == new_score);
             }
             iter++; // Another row tested.
@@ -2216,7 +2220,7 @@ size_t flow_basis_metric_t::extract_reinsert_row(size_t row, const std::vector<i
     std::vector<int> lvl_to_lvl_map(npl);
 
 
-    const sparse_vector_t& the_row = B[row];
+    const sparse_vector_t& the_row = B[row].coeffs;
     const size_t ROWNNZ = the_row.nonzeros();
     const size_t NPL = the_row.size();
     std::fill(selected_cols.begin(), selected_cols.end(), false);
@@ -2233,13 +2237,13 @@ size_t flow_basis_metric_t::extract_reinsert_row(size_t row, const std::vector<i
         if (!selected_cols[j])
             lvl_to_lvl_map[j] = jj++;
 
-    flow_basis_t B2 = B; // B *must* be ordered in net_to_level order
-    std::vector<int> inv_coeffs2 = inv_coeffs;
-    reorder_basis(B2, inv_coeffs2, lvl_to_lvl_map);
+    int_lin_constr_vec_t B2 = B; // B *must* be ordered in net_to_level order
+    // std::vector<int> inv_coeffs2 = inv_coeffs;
+    reorder_basis(B2, lvl_to_lvl_map);
     // Beware: it only works in reduced row footprint form, because
     // the method reduced_row_footprint_form_range() used below
     // assumes that all rows above each trailing is zeroed.
-    reduced_row_footprint_form(B2, inv_coeffs2);
+    reduced_row_footprint_form(B2);
 
     size_t best_score = sum_of_footprints(B2);
     size_t best_k = 0;
@@ -2249,10 +2253,10 @@ size_t flow_basis_metric_t::extract_reinsert_row(size_t row, const std::vector<i
         // Advance all columns in [k, k+ROWNNZ) of one position
         size_t start_row = B2.size(), end_row = 0;
         for (size_t i=0; i<B2.size(); i++) {
-            if (B2[i].trailing() < hh || hh+ROWNNZ < B2[i].leading())
+            if (B2[i].coeffs.trailing() < hh || hh+ROWNNZ < B2[i].coeffs.leading())
                 continue; // No need to sort
             bool changed = false;
-            for (auto& el : B2[i].data()) {
+            for (auto& el : B2[i].coeffs.data()) {
                 if (el.index == hh + ROWNNZ) {
                     el.index = hh;
                     changed = true;
@@ -2263,15 +2267,15 @@ size_t flow_basis_metric_t::extract_reinsert_row(size_t row, const std::vector<i
                 }
             }
             if (changed) {
-                std::sort(B2[i].data().begin(), B2[i].data().end());
-                B2[i].verify_invariants();
-                canonicalize_sign(B2[i], inv_coeffs2[i]);
+                std::sort(B2[i].coeffs.data().begin(), B2[i].coeffs.data().end());
+                B2[i].coeffs.verify_invariants();
+                canonicalize_sign(B2[i]);
                 start_row = min(start_row, i);
                 end_row = max(end_row, i);
             }
         }
         // Rebuild the row footprint form
-        reduced_row_footprint_form_range(B2, inv_coeffs2, start_row, end_row);
+        reduced_row_footprint_form_range(B2, start_row, end_row);
 
         // Get the new score after the column repositioning
         size_t score = sum_of_footprints(B2);
@@ -2316,7 +2320,7 @@ size_t flow_basis_metric_t::extract_reinsert_row(size_t row, const std::vector<i
         for (size_t pl=0; pl<npl; pl++)
             tmp_order[pl] = lvl_to_lvl_map[ net_to_level[pl] ];
 
-        B3 = get_flow_basis();
+        B3 = get_int_constr_problem();
         reorder_basis(B3, tmp_order);
         row_footprint_form(B3);
         sc = sum_of_footprints(B3);
@@ -2541,7 +2545,7 @@ void reduced_row_footprint_form(flow_matrix_t& B) {
 //---------------------------------------------------------------------------------------
 
 void initialize_flow_matrix(flow_matrix_t& B) {
-    const flow_basis_t& pbasis = get_flow_basis();
+    const flow_basis_t& pbasis = get_int_constr_problem();
     B = flow_matrix_t(pbasis.size(), npl);
     for (size_t i=0; i<pbasis.size(); i++) {
         flow_vector_t row(npl);
@@ -2747,9 +2751,9 @@ struct ti_force {
     const trans_span_set_t& trns_set;
     bool use_trn_cogs;
     // P-invariant basis
-    const flow_basis_t& pbasis;
+    const int_lin_constr_vec_t& pbasis;
     const size_t ninv;
-    std::vector<int> initial_inv_coeffs;
+    // std::vector<int> initial_inv_coeffs;
     // Support vectors
     std::vector<int> level_to_net;
     std::vector<int> num_trns_of_place, num_inv_of_place;
@@ -2761,9 +2765,9 @@ struct ti_force {
 
     ti_force(flow_basis_metric_t& _fbm, const trans_span_set_t& _ts, bool _ut) 
     : fbm(_fbm), trns_set(_ts), use_trn_cogs(_ut), 
-      pbasis(get_flow_basis()), ninv(get_num_invariants())
+      pbasis(get_int_constr_problem()), ninv(get_num_invariants())
     {
-        initialize_inv_coeffs(&initial_inv_coeffs);
+        // initialize_inv_coeffs();
     }
 
     void initialize() {
@@ -2781,7 +2785,7 @@ struct ti_force {
 
         // Count the number of invariants that span each place
         for (auto&& row : fbm.B) {
-            for (auto&& el : row) {
+            for (auto&& el : row.coeffs) {
                 num_inv_per_place[ level_to_net[el.index] ]++;
             }
         }
@@ -2803,12 +2807,12 @@ struct ti_force {
         // var_position = net_to_level;
 
         // Move the P-invariant basis in footprint form according to the current variable order
-        flow_basis_t& B = fbm.B; // Use the fbm's B, do not reallocate
-        std::vector<int>& inv_coeffs = fbm.inv_coeffs;
+        int_lin_constr_vec_t& B = fbm.B; // Use the fbm's B, do not reallocate
+        // std::vector<int>& inv_coeffs = fbm.inv_coeffs;
         B = pbasis;
-        inv_coeffs = initial_inv_coeffs;
-        reorder_basis(B, inv_coeffs, var_position);
-        reduced_row_footprint_form(B, inv_coeffs);
+        // inv_coeffs = initial_inv_coeffs;
+        reorder_basis(B, var_position);
+        reduced_row_footprint_form(B);
 
         // Level -> place mapping
         for (int i=0; i<var_position.size(); i++)
@@ -2817,7 +2821,7 @@ struct ti_force {
         // Count the number of invariants that span each place
         std::fill(num_inv_per_place.begin(), num_inv_per_place.end(), 0);
         for (auto&& row : fbm.B) {
-            for (auto&& el : row)
+            for (auto&& el : row.coeffs)
                 num_inv_per_place[ level_to_net[el.index] ]++;
         }
 
@@ -2826,7 +2830,7 @@ struct ti_force {
         for (size_t i=0; i<B.size(); i++) {
             i_cog[i] = 0.0;
             size_t num_pl = 0;
-            for (auto&& el : B[i]) {
+            for (auto&& el : B[i].coeffs) {
                 i_cog[i] += var_position[ level_to_net[el.index] ];
                 num_pl++;
             }
@@ -2852,7 +2856,7 @@ struct ti_force {
         std::fill(hy_pos.begin(), hy_pos.end(), 0.0);
 
         for (size_t i=0; i<B.size(); i++) {
-            for (auto&& el : B[i])
+            for (auto&& el : B[i].coeffs)
                 hy_pos[ level_to_net[el.index] ] += i_cog[i] * IW;
         }
         if (use_trn_cogs) {
@@ -2868,7 +2872,7 @@ struct ti_force {
         // Compute a PTS-like score from the new hyper_positions
         double score = 0.0;
         for (size_t i=0; i<B.size(); i++) {
-            for (auto&& el : B[i]) {
+            for (auto&& el : B[i].coeffs) {
                 score += std::abs( hy_pos[ level_to_net[el.index] ] - i_cog[i] ) * IW;
             }
         }
@@ -2996,11 +3000,11 @@ struct inv_group_repositioner {
         // Select a row at random and compact all its places
         size_t row = genrand64_int63() % fbm->B.size();
         std::fill(selected.begin(), selected.end(), false);
-        for (auto&& el : fbm->B[row]) {
+        for (auto&& el : fbm->B[row].coeffs) {
             selected[el.index] = true;
         }
         // Randomly select the new position of the place group
-        size_t new_leading = genrand64_int63() % (npl - fbm->B[row].nonzeros());
+        size_t new_leading = genrand64_int63() % (npl - fbm->B[row].coeffs.nonzeros());
 
         size_t j = 0;
         for (size_t p=0; p<new_leading; p++)

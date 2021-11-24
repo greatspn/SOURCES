@@ -1740,16 +1740,49 @@ get_int_constr_problem() {
                 // generate the ILCP from the P-semiflows
                 buffer.reserve(psf.size());
                 for (const sparse_vector_t& f : psf) {
+                    // Determine the const_term
+                    int const_term = 0;
+                    if (psfc.empty()) { // Use the p-invariant law
+                        for (auto&& el : f) {
+                            const int plc = el.index;
+                            // const int plc = level_to_net[el.index];
+                            const_term += net_mark[plc].total * el.value;
+                        }
+                    }
+                    else
+                        const_term = psfc[buffer.size()];
+
+                    // Add a new ILCP constraint from the p-flow
                     buffer.emplace_back(int_lin_constr_t{
-                        .coeffs = f, .op = CI_EQ,
-                        .const_term = psfc.empty() ? 0 : psfc[buffer.size()]
+                        .coeffs = f, .op = CI_EQ, .const_term = const_term
                     });
                 }
+
                 cout << "ILCP from PSF. " << p_icp->size() << endl;
             }
         }
+        cout << endl << *p_icp << endl << endl;
     }
     return *p_icp;
+}
+
+//---------------------------------------------------------------------------------------
+
+ostream& operator<<(ostream& os, const int_lin_constr_vec_t& ilcp) {
+    for (const int_lin_constr_t& row : ilcp) {
+        size_t cnt = 0;
+        for (auto el : row.coeffs) {
+            if (0 != cnt++)
+                os << " + ";
+            if (el.value == -1)
+                os << "-";
+            else if (el.value != 1)
+                os << el.value << "*";
+            os << tabp[el.index].place_name;
+        }
+        os << " " << s_constr_ineq_op_str[row.op] << " " << row.const_term << endl;
+    }
+    return os;
 }
 
 //---------------------------------------------------------------------------------------
@@ -2330,11 +2363,11 @@ int measure_PSF(const std::vector<int> &varorder) {
 
 // Sum of P-flows spans
 int measure_PF(const std::vector<int> &varorder) {
-    flow_basis_t pfb = get_pflows();
-    reorder_basis(pfb, varorder);
+    int_lin_constr_vec_t ilcp = get_int_constr_problem();
+    reorder_basis(ilcp, varorder);
     int PF = 0;
-    for (auto&& row : pfb)
-        PF += (row.trailing() - row.leading());
+    for (auto&& row : ilcp)
+        PF += (row.coeffs.trailing() - row.coeffs.leading());
     return PF;
 }
 

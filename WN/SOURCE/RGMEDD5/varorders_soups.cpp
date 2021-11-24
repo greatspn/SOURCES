@@ -835,7 +835,7 @@ double EPS_string_width(const char* str, int pts) {
 
 // Write the diagram of the transition spans in EPS format
 void write_incidence_as_EPS(const char* filename, const trans_span_set_t &trn_set,
-                            const std::vector<int> &net_to_level, const flow_basis_t& basis, 
+                            const std::vector<int> &net_to_level, const int_lin_constr_vec_t& basis, 
                             const std::vector<std::vector<std::string>>* rangeMat,
                             LevelInfoEPS* ppLvlInfo[], const size_t numLvlInfo,
                             const DDEPS* ddeps, bool write_trn_matrix)
@@ -1049,16 +1049,16 @@ void write_incidence_as_EPS(const char* filename, const trans_span_set_t &trn_se
            "closepath\ngsave setrgbcolor fill\ngrestore 0 setgray stroke\n} def\n\n";
     eps << "\n0.8 setlinewidth 2 setlinecap\n";
     for (int r=0; r<basis.size(); r++) {
-        bool is_int_flow = basis[r].end() != 
-            std::find_if(basis[r].begin(), basis[r].end(), 
+        bool is_int_flow = basis[r].coeffs.end() != 
+            std::find_if(basis[r].coeffs.begin(), basis[r].coeffs.end(), 
                          [](sparse_vector_t::index_value_pair iv){ return iv.value < 0; });
         eps << "/Times findfont 5 scalefont setfont\n0 setgray\n";
-        const ssize_t leading = (basis[r].nonzeros() > 0 ? basis[r].leading() : 0);
-        const ssize_t trailing = (basis[r].nonzeros() > 0 ? basis[r].trailing() : -1);
+        const ssize_t leading = (basis[r].coeffs.nonzeros() > 0 ? basis[r].coeffs.leading() : 0);
+        const ssize_t trailing = (basis[r].coeffs.nonzeros() > 0 ? basis[r].coeffs.trailing() : -1);
         eps << "gsave\n"<< (X_START_OF_BASIS+iMatW*r) << " " << (10*leading+Y0) << " translate\n";
         int f_m0 = 0; // p-flow * m_0
         for (int lvl=leading; lvl<=trailing; lvl++) {
-            int value = basis[r][lvl];
+            int value = basis[r].coeffs[lvl];
             f_m0 += net_mark[ level_to_net[lvl] ].total * value;
             int type = (value == 0) ? 0 : (value > 0 ? 1 : 2); // inactive/positive/negative entry
             static const char* s_clrs_basis[2][2] = { 

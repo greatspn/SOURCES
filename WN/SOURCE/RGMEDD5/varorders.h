@@ -298,7 +298,7 @@ struct DDEPS {
 
 // Write the incidence matrix and the invariants matrix in EPS format
 void write_incidence_as_EPS(const char* filename, const trans_span_set_t &trn_set,
-                            const std::vector<int> &varorder, const flow_basis_t& basis, 
+                            const std::vector<int> &varorder, const int_lin_constr_vec_t& basis, 
                             const std::vector<std::vector<std::string>>* rangeMat = nullptr,
                             LevelInfoEPS* ppLvlInfo[] = nullptr, const size_t numLvlInfo = 0,
                             const DDEPS* ddeps = nullptr, bool write_trn_matrix = true);
@@ -350,12 +350,12 @@ void compute_lvl_weights(const std::vector<int> &net_to_level,
                          flow_basis_metric_t& fbm, std::vector<size_t>& lvl_weights);
 
 
-const flow_basis_t& get_basis(const flow_basis_metric_t& fbm);
+const int_lin_constr_vec_t& get_basis(const flow_basis_metric_t& fbm);
 
 // Reorder p-flows' variables according to a variable order
-void reorder_basis(flow_basis_t& B, const std::vector<int>& net_to_level);
+void reorder_basis(int_lin_constr_vec_t& B, const std::vector<int>& net_to_level);
 // also canonicalize the vector of invariant constants
-void reorder_basis(flow_basis_t& B, std::vector<int>& consts, const std::vector<int>& net_to_level);
+void reorder_basis(int_lin_constr_vec_t& B, std::vector<int>& consts, const std::vector<int>& net_to_level);
 
 // transitions/invariants force
 void var_order_ti_force(flow_basis_metric_t& fbm, 
