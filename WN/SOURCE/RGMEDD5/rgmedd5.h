@@ -1121,10 +1121,12 @@ ostream &operator<<(ostream &out, class RSRG &rs);
 // Print a DD in dot format
 void write_dd_as_dot(const RSRG* rs, const dd_edge& e, 
                      const char* dot_name, bool level_labels, 
-                     bool write_terminals, bool skip_extra_levels);
+                     bool write_terminals, bool skip_extra_levels,
+                     const std::vector<bool> *pSingletonLevel);
 void write_dd_as_pdf(const RSRG* rs, const dd_edge& e, 
                      const char* dot_name, bool level_labels, 
-                     bool write_terminals, bool skip_extra_levels);
+                     bool write_terminals, bool skip_extra_levels,
+                     const std::vector<bool> *pSingletonLevel);
 
 //-----------------------------------------------------------------------------
 

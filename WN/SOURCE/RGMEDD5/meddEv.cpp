@@ -3358,6 +3358,7 @@ struct dot_of_DD {
     std::set<node_handle> visited;
     expert_forest *forest;
     std::vector<std::vector<std::string>> nodes_per_lvl; // unprimed and primed
+    const std::vector<bool> *pSingletonLevel;
     const RSRG *rs;
     bool write_level_labels = false;
     bool write_terminals = false;
@@ -3410,7 +3411,10 @@ struct dot_of_DD {
                     edges << "  n"<<node<<":i"<<i<<" -> n"<<rnode->d(i)<<":n;\n";
                 }
             }
-            dot << "\"];\n";
+            dot << "\"";
+            if (pSingletonLevel != nullptr && (*pSingletonLevel)[node_level])
+                dot << " penwidth=8 color=\"#9900cc\"";
+            dot << "];\n";
             dot << edges.str();
         }
         // Visit recursively
@@ -3488,13 +3492,15 @@ struct dot_of_DD {
 
 void write_dd_as_dot(const RSRG* rs, const dd_edge& e, 
                      const char* dot_name, bool level_labels, 
-                     bool write_terminals, bool skip_extra_levels)
+                     bool write_terminals, bool skip_extra_levels,
+                     const std::vector<bool> *pSingletonLevel)
 {
     dot_of_DD d;
     d.rs = rs;
     d.write_level_labels = level_labels;
     d.write_terminals    = write_terminals;
     d.skip_extra_levels  = skip_extra_levels;
+    d.pSingletonLevel    = pSingletonLevel;
     d.dot.open(dot_name);
     // throw rgmedd_exception("Cannot open .dot file for writing!");
 
@@ -3505,13 +3511,14 @@ void write_dd_as_dot(const RSRG* rs, const dd_edge& e,
 
 void write_dd_as_pdf(const RSRG* rs, const dd_edge& e, 
                      const char* base_name, bool level_labels, 
-                     bool write_terminals, bool skip_extra_levels)
+                     bool write_terminals, bool skip_extra_levels,
+                     const std::vector<bool> *pSingletonLevel)
 {
     std::string dot_name(base_name), pdf_name(base_name);
     dot_name += ".dot";
     pdf_name += ".pdf";
 
-    write_dd_as_dot(rs, e, dot_name.c_str(), level_labels, write_terminals, skip_extra_levels);
+    write_dd_as_dot(rs, e, dot_name.c_str(), level_labels, write_terminals, skip_extra_levels, pSingletonLevel);
 
     std::string cmd = "dot -Tpdf \""+std::string(dot_name)+"\" -o \""+
                       pdf_name+"\" > /dev/null 2>&1";
@@ -4061,7 +4068,9 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
     // cardinality_t score5 = measure_score_experimental(*p_fbm, 3);
     // lvl_combinations_for_representation(*p_fbm, RP5);
 
-
+    const dd_edge* p_DDshown = nullptr;
+    bool write_transitions_matrix = true;
+    std::vector<bool> singletonLevel(npl+1, false);
     LevelInfoEPS DD[2], Sing[2];
     for (int i=0; i<2; i++) {
         NodesPerLevelCounter nplc;
@@ -4073,6 +4082,8 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
                 p_edge = &rs;
                 DD[i] = LevelInfoEPS{ .header="RS" };
                 Sing[i] = LevelInfoEPS{ .header="Sing" };
+                p_DDshown = &rs;
+                write_transitions_matrix = true;
                 break;
 
             case 1: // LRS info
@@ -4081,6 +4092,8 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
                 p_edge = &lrs;
                 DD[i] = LevelInfoEPS{ .header="LRS" };
                 Sing[i] = LevelInfoEPS{ .header="Sing" };
+                p_DDshown = &lrs;
+                write_transitions_matrix = false;
                 break;
         }
         countNodesPerLevel(nplc, *p_edge);
@@ -4108,6 +4121,7 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
             if (nplc.nodesPerLvl[lvl] == nplc.singletoneNodesPerLvl[lvl]) {
                 Sing[i].bold[lvl] = true;
                 Sing[i].clrIndex[lvl] = 1;
+                singletonLevel[lvl+1] = true;
             }
         }
         // allInfo.push_back(&Sing[i]);
@@ -4176,16 +4190,6 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
     // P-flow basis in footprint form
     auto && pfb = get_basis(*p_fbm);
 
-    const dd_edge* p_DDshown;
-    bool write_transitions_matrix = true;
-    if (shouldBuildLRS()) {
-        p_DDshown = &lrs;
-        write_transitions_matrix = false;
-    }
-    else
-        p_DDshown = &rs;
-
-
     // Generate the DD as an EPS and incorporate it inside the diagram
     DDEPS ddeps;
     size_t nodeCount = p_DDshown->getNodeCount();
@@ -4197,7 +4201,7 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
         cout << dot_name << endl;
         close(fd);
 
-        write_dd_as_dot(this, *p_DDshown, dot_name, false, false, true);
+        write_dd_as_dot(this, *p_DDshown, dot_name, false, false, true, &singletonLevel);
         has_dot_file = true;
 
         snprintf(ddEPS_name, sizeof(ddEPS_name), "%s.eps", dot_name);

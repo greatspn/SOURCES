@@ -777,7 +777,8 @@ void determine_var_order(const var_order_selector& sel,
         // // }
 
 
-        // cardinality_t B_RANK = measure_PSI(net_to_mddLevel, true, false, false, false, fbm);
+        cardinality_t iRank = measure_PSI(net_to_mddLevel, true, false, false, false, fbm);
+        cout << "iRank: " << iRank << endl;
         // swir_score_t SWIR = measure_swir(net_to_mddLevel, trns_set, lw_invs);
         // clock_t time_SOUPS = clock();
         // uint64_t SOUPS = measure_soups(net_to_mddLevel, trns_set);

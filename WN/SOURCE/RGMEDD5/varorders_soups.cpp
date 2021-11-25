@@ -835,7 +835,7 @@ double EPS_string_width(const char* str, int pts) {
 
 // Write the diagram of the transition spans in EPS format
 void write_incidence_as_EPS(const char* filename, const trans_span_set_t &trn_set,
-                            const std::vector<int> &net_to_level, const int_lin_constr_vec_t& basis, 
+                            const std::vector<int> &net_to_level, const int_lin_constr_vec_t& ilcp, 
                             const std::vector<std::vector<std::string>>* rangeMat,
                             LevelInfoEPS* ppLvlInfo[], const size_t numLvlInfo,
                             const DDEPS* ddeps, bool write_trn_matrix)
@@ -883,8 +883,8 @@ void write_incidence_as_EPS(const char* filename, const trans_span_set_t &trn_se
     const double Y_START_OF_TRN   = Y0 + 10*npl+4; // initial Y position of the transition names
     const double X_START_OF_PLC   = X_START_OF_M0 + 15; // initial X position of the place names
     const double X_START_OF_BND   = X_START_OF_PLC + max_plc_width + 5; // X position of place bounds
-    const double X_START_OF_BASIS = X_START_OF_BND + 15; // X position of invariants matrix
-    double X_START_OF_LVL_INFO = X_START_OF_BASIS + basis.size() * iMatW + 8; // X position of LevelInfo[]s
+    const double X_START_OF_ILCP  = X_START_OF_BND + 15; // X position of invariants matrix
+    double X_START_OF_LVL_INFO = X_START_OF_ILCP + ilcp.size() * iMatW + 8; // X position of LevelInfo[]s
     for (size_t l=0; l<numLvlInfo; l++) {
         ppLvlInfo[l]->startX = X_START_OF_LVL_INFO;
         X_START_OF_LVL_INFO += ppLvlInfo[l]->width + 5;
@@ -999,6 +999,7 @@ void write_incidence_as_EPS(const char* filename, const trans_span_set_t &trn_se
     for (int p=0; p<npl; p++) {
         const int level_of_place = net_to_level[p];
         eps << "newpath "<<X_START_OF_PLC<<" "<<(10*level_of_place+10/4+Y0)<<" moveto\n";
+        eps << (tabp[p].is_slack_var ? "0.60 0 0" : "0 0 0") << " setrgbcolor\n";
         eps << "(" << tabp[p].place_name << ") show\n";
     }
 
@@ -1031,41 +1032,41 @@ void write_incidence_as_EPS(const char* filename, const trans_span_set_t &trn_se
             eps << "(-) show\n";
     }
 
-    // Write grid of p-flow basis
+    // Write grid for the constraint matrix
     eps << "\n0.8 setgray 0.5 setlinewidth 2 setlinecap\n";
-    for (int r=0; r<=basis.size(); r++) {
-        eps << "newpath "<<(X_START_OF_BASIS+iMatW*r)<<" "<<Y0<<"\n";
-        eps << "moveto "<<(X_START_OF_BASIS+iMatW*r)<<" "<<(10*npl+Y0)<<" lineto\n";
+    for (int r=0; r<=ilcp.size(); r++) {
+        eps << "newpath "<<(X_START_OF_ILCP+iMatW*r)<<" "<<Y0<<"\n";
+        eps << "moveto "<<(X_START_OF_ILCP+iMatW*r)<<" "<<(10*npl+Y0)<<" lineto\n";
         eps << "closepath stroke\n";
     }
     for (int p=0; p<=npl; p++) {
-        eps << "newpath "<<X_START_OF_BASIS<<" "<<(10*p+Y0)<<"\n";
-        eps << "moveto "<<(X_START_OF_BASIS+iMatW*basis.size())<<" "<<(10*p+Y0)<<" lineto\n";
+        eps << "newpath "<<X_START_OF_ILCP<<" "<<(10*p+Y0)<<"\n";
+        eps << "moveto "<<(X_START_OF_ILCP+iMatW*ilcp.size())<<" "<<(10*p+Y0)<<" lineto\n";
         eps << "closepath stroke\n";
     }
 
-    // Write p-flow basis
+    // Write constraint matrix
     eps << "/myblockInv {\nnewpath\n0 0 moveto\n0 10 lineto\n"<<iMatW<<" 10 lineto\n"<<iMatW<<" 0 lineto\n"
            "closepath\ngsave setrgbcolor fill\ngrestore 0 setgray stroke\n} def\n\n";
     eps << "\n0.8 setlinewidth 2 setlinecap\n";
-    for (int r=0; r<basis.size(); r++) {
-        bool is_int_flow = basis[r].coeffs.end() != 
-            std::find_if(basis[r].coeffs.begin(), basis[r].coeffs.end(), 
+    for (int r=0; r<ilcp.size(); r++) {
+        bool is_int_flow = ilcp[r].coeffs.end() != 
+            std::find_if(ilcp[r].coeffs.begin(), ilcp[r].coeffs.end(), 
                          [](sparse_vector_t::index_value_pair iv){ return iv.value < 0; });
         eps << "/Times findfont 5 scalefont setfont\n0 setgray\n";
-        const ssize_t leading = (basis[r].coeffs.nonzeros() > 0 ? basis[r].coeffs.leading() : 0);
-        const ssize_t trailing = (basis[r].coeffs.nonzeros() > 0 ? basis[r].coeffs.trailing() : -1);
-        eps << "gsave\n"<< (X_START_OF_BASIS+iMatW*r) << " " << (10*leading+Y0) << " translate\n";
-        int f_m0 = 0; // p-flow * m_0
+        const ssize_t leading = (ilcp[r].coeffs.nonzeros() > 0 ? ilcp[r].coeffs.leading() : 0);
+        const ssize_t trailing = (ilcp[r].coeffs.nonzeros() > 0 ? ilcp[r].coeffs.trailing() : -1);
+        eps << "gsave\n"<< (X_START_OF_ILCP+iMatW*r) << " " << (10*leading+Y0) << " translate\n";
+        // int f_m0 = 0; // p-flow * m_0
         for (int lvl=leading; lvl<=trailing; lvl++) {
-            int value = basis[r].coeffs[lvl];
-            f_m0 += net_mark[ level_to_net[lvl] ].total * value;
+            int value = ilcp[r].coeffs[lvl];
+            // f_m0 += net_mark[ level_to_net[lvl] ].total * value;
             int type = (value == 0) ? 0 : (value > 0 ? 1 : 2); // inactive/positive/negative entry
-            static const char* s_clrs_basis[2][2] = { 
+            static const char* s_clrs_ilcp[2][2] = { 
                 { "0.8 1 0.8",   "0.6 0.85 0.5" }, // semiflows
                 { "1 0.78 0.62", "1 0.66 0.43"  }  // integer flows
             };
-            eps << s_clrs_basis[is_int_flow ? 1 : 0][value != 0 ? 1 : 0] << " myblockInv\n";
+            eps << s_clrs_ilcp[is_int_flow ? 1 : 0][value != 0 ? 1 : 0] << " myblockInv\n";
             if (value != 0) {
                 eps << "newpath "<<((abs(value)<10 ? 2 : 1) + (value<0 ? 0.5 : 0))<<" 3.5 moveto ("
                     << (value>0 ? "+" : "-") <<abs(value)
@@ -1077,8 +1078,9 @@ void write_incidence_as_EPS(const char* filename, const trans_span_set_t &trn_se
         eps << "grestore\n";
         // Write the p-flow constant
         eps << "/Times findfont "<<(PFLOW_FONT_SIZE)<<" scalefont setfont\n0 setgray\n";
-        eps << "newpath "<<(X_START_OF_BASIS+iMatW*r)<<" "<<(Y0-8)<<" moveto\n";
-        eps << "("<<(abs(f_m0)<10?" ":"")<<(f_m0<0 ? "-" : " ")<<abs(f_m0)<< ") show\n";
+        eps << "newpath "<<(X_START_OF_ILCP+iMatW*r)<<" "<<(Y0-8)<<" moveto\n";
+        int ct = ilcp[r].const_term;
+        eps << "("<<(abs(ct)<10?" ":"")<<(ct<0 ? "-" : " ")<<abs(ct)<< ") show\n";
     }
 
     // Write extra per-level info

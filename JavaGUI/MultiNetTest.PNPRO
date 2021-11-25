@@ -74,12 +74,10 @@
       <binding value="" variable="m"/>
       <binding value="" variable="n"/>
     </bindings-list>
-    <place-tags>
-      <tag name="cc"/>
-    </place-tags>
+    <place-tags/>
     <transition-tags/>
-    <subnet netname="PN2"/>
     <subnet netname="PN1"/>
+    <subnet netname="PN2"/>
   </algebra>
   <multinet name="MultiNet 1">
     <bindings-list>

@@ -513,7 +513,7 @@ bool build_graph(class RSRG &rs) {
         dot_name += "dot";
         pdf_name += "pdf";
         cout << "Writing dot file "<<dot_name<<" ..." << endl;
-        write_dd_as_dot(&rs, rs.getRS(), dot_name.c_str(), true, false, true);
+        write_dd_as_dot(&rs, rs.getRS(), dot_name.c_str(), true, false, true, nullptr);
         ostringstream cmd1, cmd2;
         cout << "Generating PDF with Graphviz ..." << endl;
         cmd1 << "dot -Tpdf \""<<dot_name<<"\" > \""<<pdf_name<<"\"";
@@ -536,7 +536,7 @@ bool build_graph(class RSRG &rs) {
         dot_name += "lrs.dot";
         pdf_name += "lrs.pdf";
         cout << "Writing dot file "<<dot_name<<" ..." << endl;
-        write_dd_as_dot(&rs, rs.getLRS(), dot_name.c_str(), true, false, true);
+        write_dd_as_dot(&rs, rs.getLRS(), dot_name.c_str(), true, false, true, nullptr);
         ostringstream cmd1, cmd2;
         cout << "Generating PDF with Graphviz ..." << endl;
         cmd1 << "dot -Tpdf \""<<dot_name<<"\" > \""<<pdf_name<<"\"";

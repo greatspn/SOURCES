@@ -98,14 +98,13 @@ inline int_range_t merge(const int_range_t& i1, const int_range_t& i2) {
 // Metric based on P-flow basis
 //---------------------------------------------------------------------------------------
 
-// ostream& operator<<(ostream& os, const int_lin_constr_vec_t& fb) {
-//     for (const int_lin_constr_t& s : fb) {
-//         for (size_t i=0; i<s.coeffs.size(); i++)
-//             os << setw(3) << s.coeffs[i];
-//         os << endl;
-//     }
-//     return os;
-// }
+void show_matrix(const int_lin_constr_vec_t& fb) {
+    for (const int_lin_constr_t& s : fb) {
+        for (size_t i=0; i<s.coeffs.size(); i++)
+            cout << setw(3) << s.coeffs[i];
+        cout << endl;
+    }
+}
 
 //-----------------------------------------------------------------------------
 
@@ -699,8 +698,12 @@ void get_lvl_weights_invariants(const flow_basis_metric_t& fbm, std::vector<size
     }
     // For sanity, we put at least 1 to all rank values, 
     // otherwise they could be zero for places not covered by any invariant.
-    for (size_t lvl=0; lvl<npl; lvl++)
+    for (size_t lvl=0; lvl<npl; lvl++) 
         lvl_weights[lvl] = std::max(size_t(1), lvl_weights[lvl]);
+
+    // show_matrix(fbm.B);
+    // for (size_t lvl=0; lvl<npl; lvl++) 
+    //     cout << "lvl_weights["<<lvl<<"] = "<<lvl_weights[lvl]<<endl;
 }
 
 //---------------------------------------------------------------------------------------
@@ -1662,12 +1665,14 @@ bool flow_basis_metric_t::bound_by_enumeration() {
 
 size_t flow_basis_metric_t::compute_rank_score() const {
     size_t PSI = 0;
-    // Sum all the p-flow spans
+    // Sum all the spans of the constraints
     for (auto&& row : B) {
         // Note: unlike transition spans, we do not add + 1, since the invariant
         // does not have an impact on the trailing level.
-        if (row.coeffs.nonzeros() > 0)
+        if (row.coeffs.nonzeros() > 0) {
+            // cout << "Adding "<<(row.coeffs.trailing() - row.coeffs.leading())<<endl;
             PSI += (row.coeffs.trailing() - row.coeffs.leading()); 
+        }
     }
     return PSI;
 }
@@ -2332,415 +2337,6 @@ size_t flow_basis_metric_t::extract_reinsert_row(size_t row, const std::vector<i
     *new_leading = best_k;
     return best_score;
 }
-
-//---------------------------------------------------------------------------------------
-
-#if 0
-typedef dlcrs_mat::doubly_linked_crs_matrix<int> flow_matrix_t;
-typedef flow_matrix_t::row_vector_type  flow_vector_t;
-
-//---------------------------------------------------------------------------------------
-
-void print_flow_matrix(const flow_matrix_t& B) {
-    for (size_t i=0; i<B.num_rows(); i++) {
-        for (size_t j=0; j<B.num_cols(); j++) {
-            if (B[i].leading() <= j && j <= B[i].trailing())
-                cout << setw(3) << B[i][j];
-            else
-                cout << "  .";
-        }
-        cout << endl;
-    }
-    cout << endl;
-}
-
-//---------------------------------------------------------------------------------------
-
-flow_vector_t linear_comb(int mult1, const flow_vector_t& vec1, 
-                          int mult2, const flow_vector_t& vec2) 
-{
-    int val1, val2;
-    ssize_t j;
-    size_t reserved = 0;
-
-    // Phase 1: compute allocation space and verify possible overflows
-    auto it1 = vec1.begin(), it2 = vec2.begin();
-    while(-1 != (j = traverse_both(it1, vec1, val1, it2, vec2, val2))) {
-        ssize_t value = ssize_t(val1) * mult1 + ssize_t(val2) * mult2;
-        if (value > INT_MAX || value < INT_MIN) 
-            throw rgmedd_exception("Integer overflow when combining flows.");
-        if (value != 0)
-            reserved++;
-    }
-
-    // Phase 2: create the vector
-    flow_vector_t res(vec1.size());
-    res.reserve(reserved);
-    it1 = vec1.begin(), it2 = vec2.begin();
-    while(-1 != (j = traverse_both(it1, vec1, val1, it2, vec2, val2))) {
-        ssize_t value = ssize_t(val1) * mult1 + ssize_t(val2) * mult2;
-        if (value != 0)
-            res.insert_element(j, value);
-    }
-
-    return res;
-}
-
-//---------------------------------------------------------------------------------------
-
-void canonicalize_sign(flow_vector_t& vec) {
-    // Always make the first entry positive
-    if (vec.nonzeros() > 0 && vec.front_nonzero().value < 0) {
-        for (size_t i=0; i<vec.nonzeros(); i++)
-            vec.set_nnz_value(i, -vec.ith_nonzero(i).value);
-    }
-}
-
-//---------------------------------------------------------------------------------------
-
-void canonicalize(flow_vector_t& vec) {
-    // Always make the first entry positive
-    canonicalize_sign(vec);
-    // Get the g.c.d. of the vector entries
-    int g = -1;
-    for (size_t i=0; i<vec.nonzeros(); i++) {
-        if (vec.ith_nonzero(i).value != 0) {
-            if (g == -1) // first entry
-                g = abs(vec.ith_nonzero(i).value);
-            else
-                g = gcd(g, abs(vec.ith_nonzero(i).value));
-            if (g == 1)
-                return;
-        }
-    }
-    if (g > 1) {
-        for (size_t i=0; i<vec.nonzeros(); i++)
-            vec.set_nnz_value(i, vec.ith_nonzero(i).value / g);
-    }
-}
-
-//---------------------------------------------------------------------------------------
-
-// Annul column j of row B[i] by summing to it row B[k] with an appropriate multiplier
-inline void annul_column_of_B_row(flow_matrix_t& B, int i, int k, int j) {
-    assert(B[i][j] != 0);
-    // Find multipliers
-    int mult_k = abs(B[i][j]);
-    int mult_i = abs(B[k][j]);
-    int gcd_ik = gcd(mult_k, mult_i);
-    mult_k /= gcd_ik;
-    mult_i /= gcd_ik;
-    if (sign(B[i][j]) == sign(B[k][j]))
-        mult_k *= -1;
-    // Sum and make canonical
-    flow_vector_t new_row_i = linear_comb(mult_k, B[k], mult_i, B[i]);
-    B.replace_row(i, new_row_i);
-    canonicalize(B[i]);
-    assert(B[i][j] == 0);
-}
-
-//---------------------------------------------------------------------------------------
-
-// // Get the basis B into reduced row footprint form
-// void reduced_row_footprint_form(flow_basis_t& B) {
-//     for (int k=0; k<B.size(); k++) {
-//         // Find the k-th pivot row
-//         int i_max = k;
-//         for (int i=k; i<B.size(); i++)
-//             if (B[i].nonzeros() > 0 && B[i].leading() < B[i_max].leading())
-//                 i_max = i;
-//         // Move the pivot in position k
-//         std::swap(B[i_max], B[k]);
-//         // Annull column j0 to all the rows below the pivot (row k)
-//         const int j0 = B[k].leading();
-//         for (int i=k+1; i<B.size(); i++) { // Get into a row-echelon form
-//             if (B[i][j0] != 0)
-//                 annul_column_of_B_row(B, i, k, j0);
-//         }
-//     }
-//     // Step 2: Find row-trailing entries and annul all entries above each of them. 
-//     for (int k=B.size()-1; k>=0; k--) {
-//         // Annul the last column of B[k] to all the rows above the pivot row k
-//         const int jN = B[k].trailing();
-//         // const int j0 = B[k].leading();
-//         for (int i=k-1; i>=0; i--) { // Get into our modified row-echelon form
-//             if (B[i][jN] != 0) /*&& jN == B[i].trailing()*/
-//                 annul_column_of_B_row(B, i, k, jN);
-//         }
-//     }
-// }
-// Get the basis B in row footprint form
-void reduced_row_footprint_form(flow_matrix_t& B, ssize_t start_row, ssize_t end_row) {
-    for (int k=start_row; k<=end_row; k++) {
-        // Find the k-th pivot row
-        int i_max = k;
-        for (int i=k; i<B.num_rows(); i++)
-            if (B[i].nonzeros() > 0 && B[i].leading() < B[i_max].leading())
-                i_max = i;
-        // Move the pivot in position k
-        B.swap_rows(i_max, k);
-        // B.verify_integrity(); // TODO: remove
-        // Annull column j0 to all the rows below the pivot (row k)
-        const int j0 = B[k].leading();
-        flow_matrix_t::column_iterator cit = B.begin_col(k, B[k].begin());
-        cit++;
-        while (cit != B.end_col(j0)) {
-            size_t i = cit->row;
-            cit++;
-            assert(B[i][j0] != 0);
-            annul_column_of_B_row(B, i, k, j0);
-        }
-    }
-    // Step 2: Find row-trailing entries and annul all entries above each of them. 
-    // This step is different from the one of the reduced row footprint form.
-    // We need to check the trailings by columns, and subtract them from the highest
-    // trailing to the lowest trailing, not in row order.
-    for (int k=B.num_rows() - 1; k>=0; k--) {
-        // Annul the last column of B[k] to all the rows above the pivot row k
-        const int jN = B[k].trailing();
-        flow_matrix_t::column_iterator cit = B.begin_col(k, B[k].begin() + (B[k].nonzeros() - 1));
-        cit--;
-        while (cit != B.end_col(jN)) {
-            int i = cit->row;
-            cit--; // do before annull, otherwise the entry could disappear
-            assert(jN <= B[i].trailing());
-            annul_column_of_B_row(B, i, k, jN);
-        }
-    }
-
-    // ssize_t jN = B.num_cols() - 1;
-    // for (ssize_t hh=end_row; hh>=start_row; hh--) {
-    //     // Find the first non-empty column less than jN, and update jN
-    //     flow_matrix_t::column_iterator cit;
-    //     while (jN >= 0) {
-    //         cit = B.last_col(jN);
-
-    //         // Find the row that will annul the others
-    //         while (cit != B.end_col(jN) && B[cit->row].trailing() != jN)
-    //             --cit;
-    //         if (cit != B.end_col(jN))
-    //             break;
-    //         jN--;
-    //     }
-    //     assert(jN >= 0);
-
-    //     int k = cit->row; // row k will annul this column to all rows i, i<k
-    //     cit--;
-    //     while (cit != B.end_col(jN)) {
-    //         int i = cit->row;
-    //         cit--; // do before annull, otherwise the entry could disappear
-    //         assert(jN <= B[i].trailing());
-    //         annul_column_of_B_row(B, i, k, jN);
-    //     }
-    //     jN--;
-    // }
-}
-
-//---------------------------------------------------------------------------------------
-
-void reduced_row_footprint_form(flow_matrix_t& B) {
-    return reduced_row_footprint_form(B, 0, B.num_rows() - 1);
-}
-
-//---------------------------------------------------------------------------------------
-
-void initialize_flow_matrix(flow_matrix_t& B) {
-    const flow_basis_t& pbasis = get_flow_basis();
-    B = flow_matrix_t(pbasis.size(), npl);
-    for (size_t i=0; i<pbasis.size(); i++) {
-        flow_vector_t row(npl);
-        row.reserve(pbasis[i].nonzeros());
-        for (auto&& el : pbasis[i])
-            row.insert_element(el.index, el.value);
-        B.replace_row(i, row);
-    }
-}
-
-//---------------------------------------------------------------------------------------
-
-size_t sum_of_invariant_ranks(const flow_matrix_t& B) {
-    size_t SoIR = 0;
-    for (size_t i=0; i<B.num_rows(); i++)
-        SoIR += B[i].trailing() - B[i].leading() + 1;
-    return SoIR;
-}
-
-//---------------------------------------------------------------------------------------
-
-size_t measure_SoIR(const std::vector<int> &net_to_level)
-{
-    flow_matrix_t B;
-    initialize_flow_matrix(B);
-
-    // Sort columns according to @net_to_level
-    B.sort_columns(net_to_level);
-
-    // Gaussian elimination: move B in reduced footprint row form
-    reduced_row_footprint_form(B);
-
-    return sum_of_invariant_ranks(B);
-}
-
-//---------------------------------------------------------------------------------------
-
-// Find the minimum score that we can obtain if we compact all places of @row.
-// All leading positions are considered. On exit, @new_leading contains the leading
-// position that generates the minimum (returned) score. 
-// The array @selected_cols is initialized to mark the non-zero columns of @row.
-size_t extract_reinsert_row(size_t row, const std::vector<int>& net_to_level,
-                            size_t* new_leading, std::vector<bool>& selected_cols,
-                            flow_matrix_t& B) 
-{
-    assert(net_to_level.size() == npl); // expect to be called with an initial guess
-    assert(selected_cols.size() == npl);
-    std::vector<int> lvl_to_lvl_map(npl);
-
-    const flow_vector_t& the_row = B[row];
-    const size_t ROWNNZ = the_row.nonzeros();
-    std::fill(selected_cols.begin(), selected_cols.end(), false);
-    size_t jj = 0;
-    for (auto&& el : the_row) 
-        selected_cols[el.index] = true;
-
-    // Move all selected rows to the left by remapping the levels
-    jj = 0;
-    for (size_t j=0; j<B.num_cols(); j++)
-        if (selected_cols[j])
-            lvl_to_lvl_map[j] = jj++;
-    for (size_t j=0; j<B.num_cols(); j++)
-        if (!selected_cols[j])
-            lvl_to_lvl_map[j] = jj++;
-
-    flow_matrix_t B2 = B; // B *must* be ordered in net_to_level order
-    B2.sort_columns(lvl_to_lvl_map);
-    // Beware: it only works in reduced row footprint form, because
-    // the method reduced_row_footprint_form_range() used below
-    // assumes that all rows above each trailing is zeroed.
-    reduced_row_footprint_form(B2);
-
-    size_t best_score = sum_of_invariant_ranks(B2);
-    size_t best_k = 0;
-    // cout << setw(4) << best_score;
-
-    for (size_t hh=0; hh < (B2.num_cols() - ROWNNZ - 1); hh++) {
-        // Advance all columns in [k, k+ROWNNZ) of one position
-        size_t start_row, end_row;
-        B2.slide_backward(hh, ROWNNZ, start_row, end_row);
-
-        // Rebuild the row footprint form
-        reduced_row_footprint_form(B2, start_row, end_row);
-
-        // Get the new score after the column repositioning
-        size_t score = sum_of_invariant_ranks(B2);
-        if (score < best_score) {
-            best_score = score;
-            best_k = hh + 1;
-        }
-    }
-    // cout << endl;
-
-    *new_leading = best_k;
-    return best_score;
-}
-
-//---------------------------------------------------------------------------------------
-
-// This method implements an heuristic that compact the dominant p-flows of a variable 
-// order. At each iteration, a p-flow is selected, its places are made consecutive
-// and a new leading position is searched using a sliding window, to reduce the score.
-// If a good position is found, the variable order is updated and the loop restarts.
-void compact_basis_row_min(std::vector<int> &net_to_level)
-{
-    assert(net_to_level.size() == npl); // expect to be called with an initial guess
-    std::vector<bool> selected_cols(npl);
-    std::vector<int> lvl_to_lvl_map(npl);
-    std::vector<int> tmp_order(npl);
-    std::vector<int> level_to_net(npl);
-
-    for (int i=0; i<net_to_level.size(); i++)
-        level_to_net[ net_to_level[i] ] = i;
-
-    flow_matrix_t B;
-    initialize_flow_matrix(B);
-    B.sort_columns(net_to_level);
-    reduced_row_footprint_form(B);
-    size_t best_score = sum_of_invariant_ranks(B), new_leading, iter = 0;
-    cout << "   starting score="<<best_score<<endl;
-
-    // Iterate until a fixed point is reached
-    bool changed = true;
-    do {
-        changed = false;
-
-        for (size_t r = 0; r<B.num_rows(); r++) {
-            if (B[r].nonzeros() == 1) // constant place
-                continue; // Any position is ok.
-            // Search the leading column that gets the minimum score
-            // if the p-flow of row r is made consecutive, starting from such column.
-            size_t new_score = extract_reinsert_row(r, net_to_level,
-                                                    &new_leading, selected_cols, B);
-            if (new_score < best_score) {
-                changed = true;
-                cout << "   iter="<<iter<<"  score="<<new_score<<endl;
-                best_score = new_score;
-
-                // Update the reverse level -> net order
-                for (int i=0; i<net_to_level.size(); i++)
-                    level_to_net[ net_to_level[i] ] = i;
-
-                // cout << "new_leading="<<new_leading<<endl;
-                // for (int k : net_to_level)
-                //     cout << setw(3) << k;
-                // cout << endl;
-
-                // for (int k : selected_cols)
-                //     cout << setw(3) << k;
-                // cout << endl;
-
-                // Build the "old level" -> "new level" transformation
-                for (size_t j=0, jj_sel=0, jj_nsel=0; j<npl; j++) {
-                    if (!selected_cols[j]) {
-                        if (jj_nsel == new_leading)
-                            jj_nsel += B[r].nonzeros();
-                        lvl_to_lvl_map[j] = jj_nsel++;
-                    }
-                    else { // part of the moved p-flow, make its levels consecutives
-                        lvl_to_lvl_map[j] = new_leading + jj_sel++;
-                    }
-                }
-
-                // Update the net->level order
-                for (size_t pl=0; pl<npl; pl++)
-                    tmp_order[pl] = lvl_to_lvl_map[ net_to_level[pl] ];
-                std::swap(net_to_level, tmp_order);
-
-                // for (int k : net_to_level)
-                //     cout << setw(3) << k;
-                // cout << endl;
-
-                // for (int k : lvl_to_lvl_map)
-                //     cout << setw(3) << k;
-                // cout << endl;
-
-                // Reorder B (the method extract_reinsert_row() expects it to be ordered).
-                B.sort_columns(lvl_to_lvl_map);
-                reduced_row_footprint_form(B);
-
-                // if (sum_of_invariant_ranks(B) != new_score) {
-                //     cout << "sum_of_invariant_ranks(B) = " << sum_of_invariant_ranks(B) << endl;
-                //     cout << "new_score = " << new_score << endl;
-                //     print_flow_matrix(B);
-                // }
-                assert(sum_of_invariant_ranks(B) == new_score);
-            }
-            iter++; // Another row tested.
-        }
-    }
-    while (changed);
-}
-
-#endif
-
 
 //---------------------------------------------------------------------------------------
 

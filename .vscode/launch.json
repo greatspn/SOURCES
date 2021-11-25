@@ -10,8 +10,10 @@
             "request": "launch",
             "program": "${workspaceFolder}/bin/RGMEDD5",
             "args": [
-                "/home/elvio/MCC/2020/extra/Footprint/model",
-                "-lrs", "-NR", "-no-rs"
+                "/Users/elvio/Downloads/Integer Optimization Benchmark Saarland/problem",
+                "-ilcp", "-print-guess", "-xinc-open", "-meta-scores", "-metrics", "-RND"
+                // "/home/elvio/MCC/2020/extra/Footprint/model",
+                // "-lrs", "-NR", "-no-rs"
             ],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
