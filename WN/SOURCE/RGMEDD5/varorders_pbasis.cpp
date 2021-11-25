@@ -1278,9 +1278,11 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
 {
     cout << "\n\ncompute_score_experimental_B" << endl;
     cardinality_t score = 0;
-    typedef std::map<int, int> var_to_psum_t; // variable value -> partial sum at next level
-    typedef std::vector<std::map<int, var_to_psum_t>> psums_at_level_t; // partial sum -> variable assignments
-    typedef std::vector<psums_at_level_t> constr_psums_t; // constraint -> partial sums
+    // vector (one entry per constraint level) containing
+    // a map of distinct partial sums -> allowed variable assignments
+    typedef std::vector<std::map<int, std::vector<int>>> psums_at_level_t; 
+    // constraint -> vector of partial sums
+    typedef std::vector<psums_at_level_t> constr_psums_t; 
 
     // Enumerate the constraint values at level of each constraint
     constr_psums_t constr_psums(B.size());
@@ -1293,7 +1295,7 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
 
         // insert top element
         const size_t trailing_index = constr.coeffs.nonzeros() - 1;
-        psums_at_level[trailing_index].insert(make_pair(0, var_to_psum_t()));
+        psums_at_level[trailing_index].insert(make_pair(0, std::vector<int>()));
 
         for (int ii=trailing_index; ii>=0; --ii) {
             const int lvl = constr.coeffs.ith_nonzero(ii).index;
@@ -1308,29 +1310,33 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
 
                     if (ii == 0) { // last level
                         if (next_ps == constr.const_term) {
-                            cvl_pt.second[v] = next_ps;
+                            cvl_pt.second.push_back(v);
                         }
                     }
                     else {
                         if (psums_at_level[ii - 1].count(next_ps) == 0)
-                            psums_at_level[ii - 1].insert(make_pair(next_ps, var_to_psum_t()));
-                        cvl_pt.second[v] = next_ps;
+                            psums_at_level[ii - 1].insert(make_pair(next_ps, std::vector<int>()));
+                        cvl_pt.second.push_back(v);
                     }
                 }
             }
         }
         // Go backward and remove all nodes that do not have non-empty downward CVLs
         for (int ii=0; ii<=trailing_index; ii++) {
+            const int lvl = constr.coeffs.ith_nonzero(ii).index;
+            const int coeff = constr.coeffs.ith_nonzero(ii).value;
             auto iter = psums_at_level[ii].begin();
             while (iter != psums_at_level[ii].end()) {
                 if (ii != 0) {
                     // remove all empty downward links
-                    for (auto elem = iter->second.begin(); elem != iter->second.end(); ) {
-                        if (psums_at_level[ii - 1].count(elem->second) == 0)
-                            iter->second.erase(elem++);
-                        else
-                            ++elem;
-                    }
+                    const int psum = iter->first;
+                    std::vector<int>& values = iter->second;
+                    values.erase(std::remove_if(values.begin(), values.end(),
+                        [psum,coeff,ii,&psums_at_level](const int& val) { 
+                            int next_ps = psum + val  * coeff;
+                            return psums_at_level[ii - 1].count(next_ps) == 0;
+                        }), values.end()
+                    );
                 }
 
                 if (iter->second.empty())
@@ -1350,10 +1356,10 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
 
             for (const auto& cvl_pt : psums_at_level[ii]) {
                 cout << cvl_pt.first << "[";
-                int v_ps_cnt = 0;
-                for (const auto& v_ps : cvl_pt.second) {
-                    // cout << v_ps.first << ":" << v_ps.second << " ";
-                    cout << (v_ps_cnt++==0 ? "" : ",") << v_ps.first;
+                int count = 0;
+                for (int val : cvl_pt.second) {
+                    // cout << val.first << ":" << val.second << " ";
+                    cout << (count++==0 ? "" : ",") << val;
                 }
                 cout << "] ";
             }
@@ -1382,8 +1388,8 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
             std::vector<bool> value_found(bound+1, false);
 
             for (const auto& cvl_pt : psums_at_level[ii]) {
-                for (const auto& v_ps : cvl_pt.second) {
-                    value_found[v_ps.first] = true;
+                for (int val : cvl_pt.second) {
+                    value_found[val] = true;
                 }
             }
 
@@ -1394,14 +1400,14 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
     }
 
     cout << "\nPOSSIBLE VARIABLE VALUES:" << endl;
-    for (int lvl=0; lvl<npl; lvl++) {
+    for (int lvl=npl-1; lvl>=0; lvl--) {
         cout << " lvl=" << left << setw(3) << lvl<<"  values: ";
         for (size_t v=0; v<var_values[lvl].size(); v++)
             if (var_values[lvl][v])
                 cout << v << " ";
         cout << endl;
     }
-    cout << endl;
+    cout << endl << endl;
 
     // Now remove all the nodes that use a forbidden variable assignment
     for (size_t cc = 0; cc<B.size(); cc++) {
@@ -1412,15 +1418,17 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
         // Go backward and remove all nodes that do not have non-empty downward CVLs
         for (int ii=0; ii<=trailing_index; ii++) {
             const int lvl = constr.coeffs.ith_nonzero(ii).index;
+            const int coeff = constr.coeffs.ith_nonzero(ii).value;
             auto iter = psums_at_level[ii].begin();
             while (iter != psums_at_level[ii].end()) {
-                // remove all empty downward links
-                for (auto elem = iter->second.begin(); elem != iter->second.end(); ) {
-                    if (!var_values[lvl][elem->first])
-                        iter->second.erase(elem++);
-                    else
-                        ++elem;
-                }
+                // remove all non-allowed variable values
+                const int psum = iter->first;
+                std::vector<int>& values = iter->second;
+                values.erase(std::remove_if(values.begin(), values.end(),
+                    [lvl,&var_values](const int& val) { 
+                        return !var_values[lvl][val];
+                    }), values.end()
+                );
 
                 if (iter->second.empty())
                     psums_at_level[ii].erase(iter++);
@@ -1439,10 +1447,10 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
 
             for (const auto& cvl_pt : psums_at_level[ii]) {
                 cout << cvl_pt.first << "[";
-                int v_ps_cnt = 0;
-                for (const auto& v_ps : cvl_pt.second) {
-                    // cout << v_ps.first << ":" << v_ps.second << " ";
-                    cout << (v_ps_cnt++==0 ? "" : ",") << v_ps.first;
+                int count = 0;
+                for (int val : cvl_pt.second) {
+                    // cout << val.first << ":" << val.second << " ";
+                    cout << (count++==0 ? "" : ",") << val;
                 }
                 cout << "] ";
             }
