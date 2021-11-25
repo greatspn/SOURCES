@@ -4184,11 +4184,13 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
     // Array of extra per-level infos
     // LevelInfoEPS *allInfo[] = { &DD, &Sing, &SwirW, &PSI };
 
-    // P-flow matrix
-    // flow_basis_t pfb = get_pflows();
-    // reorder_basis(pfb, net_to_mddLevel);
-    // P-flow basis in footprint form
-    auto && pfb = get_basis(*p_fbm);
+    // flow_basis_t ilcp_matrix = get_pflows();
+    // reorder_basis(ilcp_matrix, net_to_mddLevel);
+
+    // Constraints matrix in footprint form
+    const int_lin_constr_vec_t& ilcp_matrix = get_basis(*p_fbm);
+    // Constraints matrix
+    // const int_lin_constr_vec_t& ilcp_matrix = get_int_constr_problem();
 
     // Generate the DD as an EPS and incorporate it inside the diagram
     DDEPS ddeps;
@@ -4227,7 +4229,7 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
 
     cout << "Writing extended incidence matrix to " << inc_name << " ..." << endl;
     write_incidence_as_EPS((inc_name + ".eps").c_str(), new_trn_set, 
-                           net_to_mddLevel, pfb,
+                           net_to_mddLevel, ilcp_matrix,
                            /*&rangeMat,*/ nullptr,
                            allInfo.data(), allInfo.size(),
                            &ddeps, write_transitions_matrix);

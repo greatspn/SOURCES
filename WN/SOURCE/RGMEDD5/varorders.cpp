@@ -522,12 +522,15 @@ void determine_var_order(const var_order_selector& sel,
     // Apply again a FORCE method over the generated variable ordering
     ForceBasedRefinement refinement = sel.refinement;
     if (refinement == ForceBasedRefinement::BEST_AVAILABLE) {        
-        const bool use_ForceTI = (get_num_invariants() > 1 && get_num_invariants() < 100 && get_max_invariant_coeff() < 100);
-        const bool use_ForcePSF = (get_int_constr_problem().size() > 1);
+        const bool use_ForceTI = (get_num_invariants() > 1 && 
+                                  get_num_invariants() < 100 && 
+                                  get_max_invariant_coeff() < 100 &&
+                                  ntr > 0);
+        const bool use_ForceConstr = (get_int_constr_problem().size() > 1);
         if (use_ForceTI)
             refinement = ForceBasedRefinement::FORCE_TI;
-        else if (use_ForcePSF)
-            refinement = ForceBasedRefinement::FORCE_PSF;
+        else if (use_ForceConstr)
+            refinement = ForceBasedRefinement::FORCE_CONSTR;
         else
             refinement = ForceBasedRefinement::FORCE;
     }
@@ -539,7 +542,7 @@ void determine_var_order(const var_order_selector& sel,
             var_order_FORCE(VOC_FORCE, net_to_mddLevel, net_to_mddLevel, empty_ilcp, sel.verbose);
             break;
 
-        case ForceBasedRefinement::FORCE_PSF:
+        case ForceBasedRefinement::FORCE_CONSTR:
             var_order_FORCE(VOC_FORCE_PINV, net_to_mddLevel, net_to_mddLevel, get_int_constr_problem(), sel.verbose);
             break;
 

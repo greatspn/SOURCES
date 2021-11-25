@@ -290,7 +290,7 @@ void metaheuristic(metaheuristic_context_t& mhctx,
         { VOC_CUTHILL_MCKEE,               1, 0, (npl<5000) && mhctx.is_multi }, // NEW ENTRY 2020
         { VOC_GRADIENT_NU,                 1, 0, mhctx.has_nu },
         // { VOC_MARKOV_CLUSTER,              0, 0, is_clusterable() },
-        { VOC_PCHAINING,                   0, 0, mhctx.has_psf && (npl < 1000) }, // P-INV does not scale well
+        { VOC_PCHAINING,                   1, 0, mhctx.has_psf && (npl < 1000) }, // P-INV does not scale well
         { VOC_GRADIENT_P,                  1, 0, mhctx.has_psf },
         { VOC_TOPOLOGICAL,                 1, 0, mhctx.has_scc },
         { VOC_FORCE_NU,                    1, 0, mhctx.has_nu && mhctx.is_multi }, // NEW ENTRY 2020

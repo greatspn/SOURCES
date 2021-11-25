@@ -596,7 +596,7 @@ enum class GroupAnnealing {
 enum class ForceBasedRefinement {
     NO_REFINEMENT,
     FORCE,
-    FORCE_PSF,
+    FORCE_CONSTR,
     FORCE_TI,
     FORCE_I,
     BEST_AVAILABLE

@@ -1672,7 +1672,7 @@ int initialize(int  argc,  char  *argv[]) {
             g_var_order_sel.refinement = ForceBasedRefinement::FORCE;
         }
         else if (0 == strcmp(argv[ii], "-refine-psf")) {
-            g_var_order_sel.refinement = ForceBasedRefinement::FORCE_PSF;
+            g_var_order_sel.refinement = ForceBasedRefinement::FORCE_CONSTR;
         }
         else if (0 == strcmp(argv[ii], "-refine-ti")) {
             g_var_order_sel.refinement = ForceBasedRefinement::FORCE_TI;

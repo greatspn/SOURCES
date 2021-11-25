@@ -1057,10 +1057,8 @@ void write_incidence_as_EPS(const char* filename, const trans_span_set_t &trn_se
         const ssize_t leading = (ilcp[r].coeffs.nonzeros() > 0 ? ilcp[r].coeffs.leading() : 0);
         const ssize_t trailing = (ilcp[r].coeffs.nonzeros() > 0 ? ilcp[r].coeffs.trailing() : -1);
         eps << "gsave\n"<< (X_START_OF_ILCP+iMatW*r) << " " << (10*leading+Y0) << " translate\n";
-        // int f_m0 = 0; // p-flow * m_0
         for (int lvl=leading; lvl<=trailing; lvl++) {
             int value = ilcp[r].coeffs[lvl];
-            // f_m0 += net_mark[ level_to_net[lvl] ].total * value;
             int type = (value == 0) ? 0 : (value > 0 ? 1 : 2); // inactive/positive/negative entry
             static const char* s_clrs_ilcp[2][2] = { 
                 { "0.8 1 0.8",   "0.6 0.85 0.5" }, // semiflows
@@ -1076,7 +1074,7 @@ void write_incidence_as_EPS(const char* filename, const trans_span_set_t &trn_se
             eps << "0 10 translate\n";
         }
         eps << "grestore\n";
-        // Write the p-flow constant
+        // Write the constant term of constraint r
         eps << "/Times findfont "<<(PFLOW_FONT_SIZE)<<" scalefont setfont\n0 setgray\n";
         eps << "newpath "<<(X_START_OF_ILCP+iMatW*r)<<" "<<(Y0-8)<<" moveto\n";
         int ct = ilcp[r].const_term;
