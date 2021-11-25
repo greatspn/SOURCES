@@ -573,7 +573,10 @@ struct flow_basis_metric_t {
         // one non-zero for each non-zero in B[cc]. Get the closest level.
         int index = B[cc].coeffs.lower_bound_nnz(lvl);
         assert(0 <= index && index < irank2_constr_psums[cc].size());
-        return irank2_constr_psums[cc][index].size();
+        if (B[cc].coeffs.ith_nonzero(index).index == lvl) // at level
+            return irank2_constr_psums[cc][index].size();
+        else // between levels
+            return irank2_constr_psums[cc][index - 1].size();
     };
 
     cardinality_t compute_score_experimental_B(int var);
@@ -1477,6 +1480,17 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
 
     //////////////////////////////
     cardinality_t score = 0;
+
+    // for (int cc=0; cc<B.size(); cc++) {
+    //     for (int lvl = npl-1; lvl>=0; lvl--) {
+    //         if (B[cc].coeffs.leading() <= lvl && lvl <= B[cc].coeffs.trailing()) {
+    //             int lower = B[cc].coeffs.lower_bound_nnz(lvl);
+    //             int upper = B[cc].coeffs.upper_bound_nnz(lvl);
+    //             cout << "cc="<<cc<<" lvl="<<lvl<<" lower="<<lower<<" upper="<<upper<<" size="<<B[cc].coeffs.size()<<endl;
+    //         }
+    //     }
+    //     cout << endl;
+    // }
 
     for (int lvl = npl-1; lvl>=0; lvl--) {
         const int plc = level_to_net[lvl];
