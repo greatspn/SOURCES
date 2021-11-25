@@ -554,6 +554,7 @@ struct flow_basis_metric_t {
 
 
     cardinality_t compute_score_experimental_A(int var);
+    cardinality_t compute_score_experimental_B(int var);
 
 protected:
 
@@ -649,7 +650,10 @@ cardinality_t measure_PSI(const std::vector<int> &net_to_level, bool only_ranks,
 }
 
 cardinality_t measure_score_experimental(flow_basis_metric_t& fbm, int var) {
-    return fbm.compute_score_experimental_A(var);
+    if (var <= 4)
+        return fbm.compute_score_experimental_A(var);
+    else
+        return fbm.compute_score_experimental_B(var);
 }
 
 void print_PSI_diagram(const std::vector<int> &net_to_level, flow_basis_metric_t& fbm) {
@@ -1264,6 +1268,188 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_A(int var)
 
     if (verbose)
         cout << "predicted MDD nodes="<<score<<endl<<endl;
+
+    return score;
+}
+
+//---------------------------------------------------------------------------------------
+
+cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var) 
+{
+    cout << "\n\ncompute_score_experimental_B" << endl;
+    cardinality_t score = 0;
+    typedef std::map<int, int> var_to_psum_t; // variable value -> partial sum at next level
+    typedef std::vector<std::map<int, var_to_psum_t>> psums_at_level_t; // partial sum -> variable assignments
+    typedef std::vector<psums_at_level_t> constr_psums_t; // constraint -> partial sums
+
+    // Enumerate the constraint values at level of each constraint
+    constr_psums_t constr_psums(B.size());
+    for (size_t cc = 0; cc<B.size(); cc++) {
+        const int_lin_constr_t& constr = B[cc];
+        psums_at_level_t& psums_at_level = constr_psums[cc];
+
+        // initialize psums_at_level
+        psums_at_level.resize(constr.coeffs.nonzeros());
+
+        // insert top element
+        const size_t trailing_index = constr.coeffs.nonzeros() - 1;
+        psums_at_level[trailing_index].insert(make_pair(0, var_to_psum_t()));
+
+        for (int ii=trailing_index; ii>=0; --ii) {
+            const int lvl = constr.coeffs.ith_nonzero(ii).index;
+            const int plc = level_to_net[lvl];
+            const int bound = get_bound(plc);
+            const int coeff = constr.coeffs.ith_nonzero(ii).value;
+            for (auto& cvl_pt : psums_at_level[ii]) {
+                assert(cvl_pt.second.empty());
+                // Add the links to downward CVLs
+                for (int v=0; v<=bound; v++) {
+                    int next_ps = cvl_pt.first + v * coeff;
+
+                    if (ii == 0) { // last level
+                        if (next_ps == constr.const_term) {
+                            cvl_pt.second[v] = next_ps;
+                        }
+                    }
+                    else {
+                        if (psums_at_level[ii - 1].count(next_ps) == 0)
+                            psums_at_level[ii - 1].insert(make_pair(next_ps, var_to_psum_t()));
+                        cvl_pt.second[v] = next_ps;
+                    }
+                }
+            }
+        }
+        // Go backward and remove all nodes that do not have non-empty downward CVLs
+        for (int ii=0; ii<=trailing_index; ii++) {
+            auto iter = psums_at_level[ii].begin();
+            while (iter != psums_at_level[ii].end()) {
+                if (ii != 0) {
+                    // remove all empty downward links
+                    for (auto elem = iter->second.begin(); elem != iter->second.end(); ) {
+                        if (psums_at_level[ii - 1].count(elem->second) == 0)
+                            iter->second.erase(elem++);
+                        else
+                            ++elem;
+                    }
+                }
+
+                if (iter->second.empty())
+                    psums_at_level[ii].erase(iter++);
+                else
+                    ++iter;
+            }
+        }
+
+        cout << "CONSTRAINT " << cc << endl;
+        for (int ii=trailing_index; ii>=0; --ii) {
+            const int lvl = constr.coeffs.ith_nonzero(ii).index;
+            const int plc = level_to_net[lvl];
+            const int bound = get_bound(plc);
+            const int coeff = constr.coeffs.ith_nonzero(ii).value;
+            cout << " lvl=" << left << setw(3) << lvl<<"  values: ";
+
+            for (const auto& cvl_pt : psums_at_level[ii]) {
+                cout << cvl_pt.first << "[";
+                int v_ps_cnt = 0;
+                for (const auto& v_ps : cvl_pt.second) {
+                    // cout << v_ps.first << ":" << v_ps.second << " ";
+                    cout << (v_ps_cnt++==0 ? "" : ",") << v_ps.first;
+                }
+                cout << "] ";
+            }
+            cout << endl;
+        }
+        cout << endl;
+    }
+
+    // Now enumerate which variable assignment values are actually possible at each level
+    std::vector<std::vector<bool>> var_values(npl);
+    for (int lvl=0; lvl<npl; lvl++) {
+        const int plc = level_to_net[lvl];
+        const int bound = get_bound(plc);
+        var_values[lvl].resize(bound+1, true);
+    }
+    for (size_t cc = 0; cc<B.size(); cc++) {
+        const int_lin_constr_t& constr = B[cc];
+        const psums_at_level_t& psums_at_level = constr_psums[cc];
+        const size_t trailing_index = constr.coeffs.nonzeros() - 1;
+
+        for (int ii=trailing_index; ii>=0; --ii) {
+            const int lvl = constr.coeffs.ith_nonzero(ii).index;
+            const int plc = level_to_net[lvl];
+            const int bound = get_bound(plc);
+            const int coeff = constr.coeffs.ith_nonzero(ii).value;
+            std::vector<bool> value_found(bound+1, false);
+
+            for (const auto& cvl_pt : psums_at_level[ii]) {
+                for (const auto& v_ps : cvl_pt.second) {
+                    value_found[v_ps.first] = true;
+                }
+            }
+
+            for (size_t v=0; v<=bound; v++)
+                if (!value_found[v])
+                    var_values[lvl][v] = false;
+        }
+    }
+
+    cout << "\nPOSSIBLE VARIABLE VALUES:" << endl;
+    for (int lvl=0; lvl<npl; lvl++) {
+        cout << " lvl=" << left << setw(3) << lvl<<"  values: ";
+        for (size_t v=0; v<var_values[lvl].size(); v++)
+            if (var_values[lvl][v])
+                cout << v << " ";
+        cout << endl;
+    }
+    cout << endl;
+
+    // Now remove all the nodes that use a forbidden variable assignment
+    for (size_t cc = 0; cc<B.size(); cc++) {
+        const int_lin_constr_t& constr = B[cc];
+        psums_at_level_t& psums_at_level = constr_psums[cc];
+        const size_t trailing_index = constr.coeffs.nonzeros() - 1;
+
+        // Go backward and remove all nodes that do not have non-empty downward CVLs
+        for (int ii=0; ii<=trailing_index; ii++) {
+            const int lvl = constr.coeffs.ith_nonzero(ii).index;
+            auto iter = psums_at_level[ii].begin();
+            while (iter != psums_at_level[ii].end()) {
+                // remove all empty downward links
+                for (auto elem = iter->second.begin(); elem != iter->second.end(); ) {
+                    if (!var_values[lvl][elem->first])
+                        iter->second.erase(elem++);
+                    else
+                        ++elem;
+                }
+
+                if (iter->second.empty())
+                    psums_at_level[ii].erase(iter++);
+                else
+                    ++iter;
+            }
+        }
+
+        cout << "CONSTRAINT " << cc << endl;
+        for (int ii=trailing_index; ii>=0; --ii) {
+            const int lvl = constr.coeffs.ith_nonzero(ii).index;
+            const int plc = level_to_net[lvl];
+            const int bound = get_bound(plc);
+            const int coeff = constr.coeffs.ith_nonzero(ii).value;
+            cout << " lvl=" << left << setw(3) << lvl<<"  values: ";
+
+            for (const auto& cvl_pt : psums_at_level[ii]) {
+                cout << cvl_pt.first << "[";
+                int v_ps_cnt = 0;
+                for (const auto& v_ps : cvl_pt.second) {
+                    // cout << v_ps.first << ":" << v_ps.second << " ";
+                    cout << (v_ps_cnt++==0 ? "" : ",") << v_ps.first;
+                }
+                cout << "] ";
+            }
+            cout << endl;
+        }
+        cout << endl;
+    }
 
     return score;
 }

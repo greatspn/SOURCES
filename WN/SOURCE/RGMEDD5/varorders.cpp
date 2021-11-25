@@ -780,8 +780,9 @@ void determine_var_order(const var_order_selector& sel,
         // // }
 
 
-        cardinality_t iRank = measure_PSI(net_to_mddLevel, true, false, false, false, fbm);
-        cout << "iRank: " << iRank << endl;
+        // cardinality_t iRank = measure_PSI(net_to_mddLevel, true, false, false, false, fbm);
+        // cout << "iRank: " << iRank << endl;
+
         // swir_score_t SWIR = measure_swir(net_to_mddLevel, trns_set, lw_invs);
         // clock_t time_SOUPS = clock();
         // uint64_t SOUPS = measure_soups(net_to_mddLevel, trns_set);
@@ -860,14 +861,15 @@ void determine_var_order(const var_order_selector& sel,
         //         cout << "SO_" << mf_name[mf]<<"_w"<<lw_name[lw]<<":   "<<m<<endl;
         //     }
 
-#if 0
+#if 1
+            cout << "\n--------------------------------------\n";
             // clock_t time_PSI_RANK = clock();
             cardinality_t PSI_RANK = measure_PSI(net_to_mddLevel, false, false, false, false, fbm);
             print_PSI_diagram(net_to_mddLevel, fbm);
             cardinality_t score2 = measure_score_experimental(fbm, 0);
             cardinality_t score3 = measure_score_experimental(fbm, 1);
             cardinality_t score4 = measure_score_experimental(fbm, 2);
-            cardinality_t score5 = measure_score_experimental(fbm, 3);
+            cardinality_t score5 = measure_score_experimental(fbm, 10);
             // time_PSI_RANK = clock() - time_PSI_RANK;
             cout << "score1:  " << PSI_RANK << "    (full product of ranges)" <<endl;
             cout << "score2:  " << score2 << "    (hyper-triangular product< / n!)" << endl;
@@ -875,6 +877,7 @@ void determine_var_order(const var_order_selector& sel,
             cout << "score4:  " << score4 << "    (hypervolume? product of ranges / n)" << endl;
             cout << "score5:  " << score5 << "    ( ????? )" << endl;
             // cout << "score4:  " << score4 << "    (...)" << endl;
+            cout << "\n--------------------------------------\n";
             cout << endl;
             // cout << "TIME-PSI:  " << double(time_PSI_RANK) / CLOCKS_PER_SEC << endl;
             // if (g_print_pbasis_metrics)
