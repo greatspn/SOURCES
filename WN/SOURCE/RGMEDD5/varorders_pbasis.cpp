@@ -554,7 +554,31 @@ struct flow_basis_metric_t {
 
 
     cardinality_t compute_score_experimental_A(int var);
+
+    //-------------------------------------------------------------
+    // vector (one entry per constraint level) containing
+    // a map of distinct partial sums -> allowed variable assignments
+    typedef std::vector<std::map<int, std::vector<int>>> psums_at_level_t; 
+    // constraint -> vector of partial sums
+    typedef std::vector<psums_at_level_t> constr_psums_t; 
+
+    // Enumerate the constraint values at level of each constraint
+    constr_psums_t irank2_constr_psums;
+
+    // Return the new iRank2 range of values for constraint cc at level lvl
+    inline const size_t irank2_constr_combinations_at_level(int cc, int lvl) const {
+        assert(irank2_constr_psums.size() == B.size());
+        assert(B[cc].coeffs.leading() <= lvl && lvl <= B[cc].coeffs.trailing());
+        // The array ranges[cc] does not have a non-zero for each level, but only
+        // one non-zero for each non-zero in B[cc]. Get the closest level.
+        int index = B[cc].coeffs.lower_bound_nnz(lvl);
+        assert(0 <= index && index < irank2_constr_psums[cc].size());
+        return irank2_constr_psums[cc][index].size();
+    };
+
     cardinality_t compute_score_experimental_B(int var);
+    //-------------------------------------------------------------
+
 
 protected:
 
@@ -1276,19 +1300,12 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_A(int var)
 
 cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var) 
 {
-    cout << "\n\ncompute_score_experimental_B" << endl;
-    cardinality_t score = 0;
-    // vector (one entry per constraint level) containing
-    // a map of distinct partial sums -> allowed variable assignments
-    typedef std::vector<std::map<int, std::vector<int>>> psums_at_level_t; 
-    // constraint -> vector of partial sums
-    typedef std::vector<psums_at_level_t> constr_psums_t; 
-
     // Enumerate the constraint values at level of each constraint
-    constr_psums_t constr_psums(B.size());
+    irank2_constr_psums.clear();
+    irank2_constr_psums.resize(B.size());
     for (size_t cc = 0; cc<B.size(); cc++) {
         const int_lin_constr_t& constr = B[cc];
-        psums_at_level_t& psums_at_level = constr_psums[cc];
+        psums_at_level_t& psums_at_level = irank2_constr_psums[cc];
 
         // initialize psums_at_level
         psums_at_level.resize(constr.coeffs.nonzeros());
@@ -1376,7 +1393,7 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
     }
     for (size_t cc = 0; cc<B.size(); cc++) {
         const int_lin_constr_t& constr = B[cc];
-        const psums_at_level_t& psums_at_level = constr_psums[cc];
+        const psums_at_level_t& psums_at_level = irank2_constr_psums[cc];
         const size_t trailing_index = constr.coeffs.nonzeros() - 1;
 
         for (int ii=trailing_index; ii>=0; --ii) {
@@ -1400,7 +1417,8 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
 
     cout << "\nPOSSIBLE VARIABLE VALUES:" << endl;
     for (int lvl=npl-1; lvl>=0; lvl--) {
-        cout << " lvl=" << left << setw(3) << lvl<<"  values: ";
+        const int plc = level_to_net[lvl];
+        cout << " lvl=" << left << setw(5) << tabp[plc].place_name <<"  values: ";
         for (size_t v=0; v<var_values[lvl].size(); v++)
             if (var_values[lvl][v])
                 cout << v << " ";
@@ -1411,7 +1429,7 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
     // Now remove all the nodes that use a forbidden variable assignment
     for (size_t cc = 0; cc<B.size(); cc++) {
         const int_lin_constr_t& constr = B[cc];
-        psums_at_level_t& psums_at_level = constr_psums[cc];
+        psums_at_level_t& psums_at_level = irank2_constr_psums[cc];
         const size_t trailing_index = constr.coeffs.nonzeros() - 1;
 
         // Go backward and remove all nodes that do not have non-empty downward CVLs
@@ -1456,6 +1474,36 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
         }
         cout << endl;
     }
+
+    //////////////////////////////
+    cardinality_t score = 0;
+
+    for (int lvl = npl-1; lvl>=0; lvl--) {
+        const int plc = level_to_net[lvl];
+        std::vector<int> lvl_combinations;
+
+        // Consider all the invariants active at this level
+        for (int cc=0; cc<B.size(); cc++) {
+            if (B[cc].coeffs.nonzeros() == 0)
+                continue;
+            if (B[cc].coeffs.leading() <= lvl && lvl <= B[cc].coeffs.trailing()) {
+                int combs = irank2_constr_combinations_at_level(cc, lvl);
+                lvl_combinations.push_back(combs);
+            }
+        }
+
+        cout << "LEVEL: " << setw(3) << lvl << setw(5) << tabp[plc].place_name << ": ";
+        size_t prod = 1;
+        for (int i=0; i<lvl_combinations.size(); i++) {
+            cout << (i==0 ? "" : "*") << lvl_combinations[i];
+            prod *= lvl_combinations[i];
+        }
+        cout << " = " << prod << endl;
+        score += prod;
+    }
+    cout << endl << endl;
+
+
 
     return score;
 }
