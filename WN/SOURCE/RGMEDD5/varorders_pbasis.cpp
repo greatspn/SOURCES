@@ -1352,13 +1352,12 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
             const int plc = level_to_net[lvl];
             const int bound = get_bound(plc);
             const int coeff = constr.coeffs.ith_nonzero(ii).value;
-            cout << " lvl=" << left << setw(3) << lvl<<"  values: ";
+            cout << " @" << left << setw(7) << tabp[plc].place_name <<"  values: ";
 
             for (const auto& cvl_pt : psums_at_level[ii]) {
                 cout << cvl_pt.first << "[";
                 int count = 0;
                 for (int val : cvl_pt.second) {
-                    // cout << val.first << ":" << val.second << " ";
                     cout << (count++==0 ? "" : ",") << val;
                 }
                 cout << "] ";
@@ -1443,13 +1442,12 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
             const int plc = level_to_net[lvl];
             const int bound = get_bound(plc);
             const int coeff = constr.coeffs.ith_nonzero(ii).value;
-            cout << " lvl=" << left << setw(3) << lvl<<"  values: ";
+            cout << " @" << left << setw(7) << tabp[plc].place_name <<"  values: ";
 
             for (const auto& cvl_pt : psums_at_level[ii]) {
                 cout << cvl_pt.first << "[";
                 int count = 0;
                 for (int val : cvl_pt.second) {
-                    // cout << val.first << ":" << val.second << " ";
                     cout << (count++==0 ? "" : ",") << val;
                 }
                 cout << "] ";
