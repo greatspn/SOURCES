@@ -342,6 +342,8 @@ range_matrix_for_representation(flow_basis_metric_t& fbm);
 size_t
 range_prod_for_representation(flow_basis_metric_t& fbm, std::vector<std::string>& RP);
 
+cardinality_t irank2_for_representation(flow_basis_metric_t& fbm, std::vector<std::string>& RP);
+
 // cardinality_t
 // lvl_combinations_for_representation(flow_basis_metric_t& fbm, std::vector<std::string>& RP);
 

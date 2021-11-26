@@ -4054,9 +4054,11 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
     std::vector<std::vector<std::string>> rangeMat;
     rangeMat = range_matrix_for_representation(*p_fbm);
 
-    std::vector<std::string> RP;
+    std::vector<std::string> RP, RP2;
     size_t totalPSI = range_prod_for_representation(*p_fbm, RP);
     // cardinality_t totalPSI = lvl_combinations_for_representation(*p_fbm, RP);
+
+    cardinality_t tot_iRank2 = irank2_for_representation(*p_fbm, RP2);
 
     // std::vector<std::string> RP2, RP3, RP4, RP5;
     // cardinality_t score2 = measure_score_experimental(*p_fbm, 0);
@@ -4145,6 +4147,14 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
     PSI.info.resize(npl);
     PSI.info.swap(RP);
     allInfo.push_back(&PSI);
+
+    // iRank2 level representation
+    const char* colorsiRank2[] = { "0.019 0.341 0.258" };
+    LevelInfoEPS iRank2 { .header="New", .footer=std::to_string(tot_iRank2) };
+    iRank2.colors = (const char **)colorsiRank2;
+    iRank2.info.resize(npl);
+    iRank2.info.swap(RP2);
+    allInfo.push_back(&iRank2);
 
 
     // // Score 2: hyper-triangular product< / n!

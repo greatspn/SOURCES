@@ -501,6 +501,7 @@ void reorder_basis(int_lin_constr_vec_t& B, const std::vector<int>& net_to_level
 //---------------------------------------------------------------------------------------
 // Support structure for the computation of P-flow based metrics
 //---------------------------------------------------------------------------------------
+class iRank2Support;
 
 struct flow_basis_metric_t {
     // Place bound of the model (if available)
@@ -555,33 +556,10 @@ struct flow_basis_metric_t {
 
     cardinality_t compute_score_experimental_A(int var);
 
-    //-------------------------------------------------------------
-    // vector (one entry per constraint level) containing
-    // a map of distinct partial sums -> allowed variable assignments
-    typedef std::vector<std::map<int, std::vector<int>>> psums_at_level_t; 
-    // constraint -> vector of partial sums
-    typedef std::vector<psums_at_level_t> constr_psums_t; 
-
-    // Enumerate the constraint values at level of each constraint
-    constr_psums_t irank2_constr_psums;
-
-    // Return the new iRank2 range of values for constraint cc at level lvl
-    inline const size_t irank2_constr_combinations_at_level(int cc, int lvl) const {
-        assert(irank2_constr_psums.size() == B.size());
-        assert(B[cc].coeffs.leading() <= lvl && lvl <= B[cc].coeffs.trailing());
-        // The array ranges[cc] does not have a non-zero for each level, but only
-        // one non-zero for each non-zero in B[cc]. Get the closest level.
-        int index = B[cc].coeffs.lower_bound_nnz(lvl);
-        assert(0 <= index && index < irank2_constr_psums[cc].size());
-        if (B[cc].coeffs.ith_nonzero(index).index == lvl) // at level
-            return irank2_constr_psums[cc][index].size();
-        else // between levels
-            return irank2_constr_psums[cc][index - 1].size();
-    };
-
+    // iRank2 experimental code
+    unique_ptr<iRank2Support> p_irank2supp;
+    void initialize_irank2();
     cardinality_t compute_score_experimental_B(int var);
-    //-------------------------------------------------------------
-
 
 protected:
 
@@ -1301,7 +1279,45 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_A(int var)
 
 //---------------------------------------------------------------------------------------
 
-cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var) 
+class iRank2Support {
+    const flow_basis_metric_t& fbm;
+    const int_lin_constr_vec_t& B;
+public:
+    iRank2Support(const flow_basis_metric_t& _fbm) : fbm(_fbm), B(_fbm.B) { }
+
+    // vector (one entry per constraint level) containing
+    // a map of distinct partial sums -> allowed variable assignments
+    typedef std::vector<std::map<int, std::vector<int>>> psums_at_level_t; 
+    // constraint -> vector of partial sums
+    typedef std::vector<psums_at_level_t> constr_psums_t; 
+
+    // Enumerate the constraint values at level of each constraint
+    constr_psums_t irank2_constr_psums;
+
+    // Return the new iRank2 range of values for constraint cc at level lvl
+    inline const size_t irank2_constr_combinations_at_level(int cc, int lvl) const {
+        assert(irank2_constr_psums.size() == B.size());
+        assert(B[cc].coeffs.leading() <= lvl && lvl <= B[cc].coeffs.trailing());
+        // The array ranges[cc] does not have a non-zero for each level, but only
+        // one non-zero for each non-zero in B[cc]. Get the closest level.
+        int index = B[cc].coeffs.lower_bound_nnz(lvl);
+        assert(0 <= index && index < irank2_constr_psums[cc].size());
+        if (B[cc].coeffs.ith_nonzero(index).index == lvl) // at level
+            return irank2_constr_psums[cc][index].size();
+        else // between levels
+            return irank2_constr_psums[cc][index - 1].size();
+    };
+
+    void initialize();
+    bool remove_unused_var_values();
+    void print_constraints();
+    cardinality_t compute_score();
+    cardinality_t get_level_representations(std::vector<std::string>& RP) const;
+};
+
+//---------------------------------------------------------------------------------------
+
+void iRank2Support::initialize() 
 {
     // Enumerate the constraint values at level of each constraint
     irank2_constr_psums.clear();
@@ -1319,8 +1335,8 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
 
         for (int ii=trailing_index; ii>=0; --ii) {
             const int lvl = constr.coeffs.ith_nonzero(ii).index;
-            const int plc = level_to_net[lvl];
-            const int bound = get_bound(plc);
+            const int plc = fbm.level_to_net[lvl];
+            const int bound = fbm.get_bound(plc);
             const int coeff = constr.coeffs.ith_nonzero(ii).value;
             for (auto& cvl_pt : psums_at_level[ii]) {
                 assert(cvl_pt.second.empty());
@@ -1365,33 +1381,19 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
                     ++iter;
             }
         }
-
-        cout << "CONSTRAINT " << cc << endl;
-        for (int ii=trailing_index; ii>=0; --ii) {
-            const int lvl = constr.coeffs.ith_nonzero(ii).index;
-            const int plc = level_to_net[lvl];
-            const int bound = get_bound(plc);
-            const int coeff = constr.coeffs.ith_nonzero(ii).value;
-            cout << " @" << left << setw(7) << tabp[plc].place_name <<"  values: ";
-
-            for (const auto& cvl_pt : psums_at_level[ii]) {
-                cout << cvl_pt.first << "[";
-                int count = 0;
-                for (int val : cvl_pt.second) {
-                    cout << (count++==0 ? "" : ",") << val;
-                }
-                cout << "] ";
-            }
-            cout << endl;
-        }
-        cout << endl;
     }
+    print_constraints();
+}
 
+//---------------------------------------------------------------------------------------
+
+bool iRank2Support::remove_unused_var_values() {
+    bool something_changed = false;
     // Now enumerate which variable assignment values are actually possible at each level
     std::vector<std::vector<bool>> var_values(npl);
     for (int lvl=0; lvl<npl; lvl++) {
-        const int plc = level_to_net[lvl];
-        const int bound = get_bound(plc);
+        const int plc = fbm.level_to_net[lvl];
+        const int bound = fbm.get_bound(plc);
         var_values[lvl].resize(bound+1, true);
     }
     for (size_t cc = 0; cc<B.size(); cc++) {
@@ -1401,8 +1403,8 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
 
         for (int ii=trailing_index; ii>=0; --ii) {
             const int lvl = constr.coeffs.ith_nonzero(ii).index;
-            const int plc = level_to_net[lvl];
-            const int bound = get_bound(plc);
+            const int plc = fbm.level_to_net[lvl];
+            const int bound = fbm.get_bound(plc);
             const int coeff = constr.coeffs.ith_nonzero(ii).value;
             std::vector<bool> value_found(bound+1, false);
 
@@ -1417,17 +1419,6 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
                     var_values[lvl][v] = false;
         }
     }
-
-    cout << "\nPOSSIBLE VARIABLE VALUES:" << endl;
-    for (int lvl=npl-1; lvl>=0; lvl--) {
-        const int plc = level_to_net[lvl];
-        cout << " lvl=" << left << setw(5) << tabp[plc].place_name <<"  values: ";
-        for (size_t v=0; v<var_values[lvl].size(); v++)
-            if (var_values[lvl][v])
-                cout << v << " ";
-        cout << endl;
-    }
-    cout << endl << endl;
 
     // Now remove all the nodes that use a forbidden variable assignment
     for (size_t cc = 0; cc<B.size(); cc++) {
@@ -1445,8 +1436,12 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
                 const int psum = iter->first;
                 std::vector<int>& values = iter->second;
                 values.erase(std::remove_if(values.begin(), values.end(),
-                    [lvl,&var_values](const int& val) { 
-                        return !var_values[lvl][val];
+                    [lvl,&var_values,&something_changed](const int& val) { 
+                        if (!var_values[lvl][val]) {
+                            something_changed = true;
+                            return true;
+                        }
+                        return false;
                     }), values.end()
                 );
 
@@ -1456,44 +1451,32 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
                     ++iter;
             }
         }
-
-        cout << "CONSTRAINT " << cc << endl;
-        for (int ii=trailing_index; ii>=0; --ii) {
-            const int lvl = constr.coeffs.ith_nonzero(ii).index;
-            const int plc = level_to_net[lvl];
-            const int bound = get_bound(plc);
-            const int coeff = constr.coeffs.ith_nonzero(ii).value;
-            cout << " @" << left << setw(7) << tabp[plc].place_name <<"  values: ";
-
-            for (const auto& cvl_pt : psums_at_level[ii]) {
-                cout << cvl_pt.first << "[";
-                int count = 0;
-                for (int val : cvl_pt.second) {
-                    cout << (count++==0 ? "" : ",") << val;
-                }
-                cout << "] ";
-            }
-            cout << endl;
-        }
-        cout << endl;
     }
 
-    //////////////////////////////
+    if (something_changed) {
+        cout << "\nPOSSIBLE VARIABLE VALUES:" << endl;
+        for (int lvl=npl-1; lvl>=0; lvl--) {
+            const int plc = fbm.level_to_net[lvl];
+            cout << " lvl=" << left << setw(5) << tabp[plc].place_name <<"  values: ";
+            for (size_t v=0; v<var_values[lvl].size(); v++)
+                if (var_values[lvl][v])
+                    cout << v << " ";
+            cout << endl;
+        }
+        cout << endl << endl;
+        print_constraints();
+    }
+
+    return something_changed;
+}
+
+//---------------------------------------------------------------------------------------
+
+cardinality_t iRank2Support::compute_score() {
     cardinality_t score = 0;
 
-    // for (int cc=0; cc<B.size(); cc++) {
-    //     for (int lvl = npl-1; lvl>=0; lvl--) {
-    //         if (B[cc].coeffs.leading() <= lvl && lvl <= B[cc].coeffs.trailing()) {
-    //             int lower = B[cc].coeffs.lower_bound_nnz(lvl);
-    //             int upper = B[cc].coeffs.upper_bound_nnz(lvl);
-    //             cout << "cc="<<cc<<" lvl="<<lvl<<" lower="<<lower<<" upper="<<upper<<" size="<<B[cc].coeffs.size()<<endl;
-    //         }
-    //     }
-    //     cout << endl;
-    // }
-
     for (int lvl = npl-1; lvl>=0; lvl--) {
-        const int plc = level_to_net[lvl];
+        const int plc = fbm.level_to_net[lvl];
         std::vector<int> lvl_combinations;
 
         // Consider all the invariants active at this level
@@ -1517,29 +1500,121 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
     }
     cout << endl << endl;
 
-
-
     return score;
 }
 
 //---------------------------------------------------------------------------------------
 
-cardinality_t
-lvl_combinations_for_representation(flow_basis_metric_t& fbm, std::vector<std::string>& RP) 
+void iRank2Support::print_constraints() 
+{
+    for (size_t cc = 0; cc<B.size(); cc++) {
+        const int_lin_constr_t& constr = B[cc];
+        psums_at_level_t& psums_at_level = irank2_constr_psums[cc];
+        const size_t trailing_index = constr.coeffs.nonzeros() - 1;
+
+        cout << "CONSTRAINT " << cc << endl;
+        for (int ii=trailing_index; ii>=0; --ii) {
+            const int lvl = constr.coeffs.ith_nonzero(ii).index;
+            const int plc = fbm.level_to_net[lvl];
+            const int bound = fbm.get_bound(plc);
+            const int coeff = constr.coeffs.ith_nonzero(ii).value;
+            cout << " @" << left << setw(7) << tabp[plc].place_name <<"  values: ";
+
+            for (const auto& cvl_pt : psums_at_level[ii]) {
+                cout << cvl_pt.first << "[";
+                int count = 0;
+                for (int val : cvl_pt.second) {
+                    cout << (count++==0 ? "" : ",") << val;
+                }
+                cout << "] ";
+            }
+            cout << endl;
+        }
+        cout << endl;
+    }
+}
+
+//---------------------------------------------------------------------------------------
+
+cardinality_t iRank2Support::get_level_representations(std::vector<std::string>& RP) const
 {
     RP.resize(npl);
-    cardinality_t PSI = 1; // top level
+    cardinality_t iRank2 = 1; // top level
 
     // Compute the score at each level of the DD
     for (int lvl = npl-1; lvl >=0; lvl--) {
         const int plc = fbm.level_to_net[lvl];
-        ostringstream oss;
-        oss << fbm.combinations[lvl];
-        RP[lvl] = oss.str();
-        PSI += fbm.combinations[lvl];
+
+        if (lvl == npl-1) // top level
+            RP[lvl] = "1 [top]";
+        else {
+            ostringstream oss;
+            size_t cnt = 0;
+            cardinality_t prod = 1;
+            // Consider all the invariants active at this level
+            for (int cc=0; cc<B.size(); cc++) {
+                if (B[cc].coeffs.nonzeros() == 0)
+                    continue;
+                if (B[cc].coeffs.leading() <= lvl && lvl <= B[cc].coeffs.trailing()) {
+                    int combs = irank2_constr_combinations_at_level(cc, lvl);
+                    prod *= combs;
+                    oss << (cnt++==0 ? "" : "*") << combs;
+                }
+            }
+            RP[lvl] = std::to_string(prod) + "  [" + oss.str() + "]";
+            iRank2 += prod;
+        }
     }
-    return PSI;
+    return iRank2;
 }
+
+//---------------------------------------------------------------------------------------
+
+cardinality_t irank2_for_representation(flow_basis_metric_t& fbm, std::vector<std::string>& RP) {
+    fbm.initialize_irank2();
+    return fbm.p_irank2supp->get_level_representations(RP); 
+}
+
+//---------------------------------------------------------------------------------------
+
+void flow_basis_metric_t::initialize_irank2() 
+{
+    if (p_irank2supp)
+        return;
+    p_irank2supp = make_unique<iRank2Support>(*this);
+    p_irank2supp->initialize();
+    bool changed;
+    do {
+        changed = p_irank2supp->remove_unused_var_values();
+    } while (changed);
+}
+
+//---------------------------------------------------------------------------------------
+
+cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var) 
+{
+    initialize_irank2();
+    return p_irank2supp->compute_score();
+}
+
+// //---------------------------------------------------------------------------------------
+
+// cardinality_t
+// lvl_combinations_for_representation(flow_basis_metric_t& fbm, std::vector<std::string>& RP) 
+// {
+//     RP.resize(npl);
+//     cardinality_t PSI = 1; // top level
+
+//     // Compute the score at each level of the DD
+//     for (int lvl = npl-1; lvl >=0; lvl--) {
+//         const int plc = fbm.level_to_net[lvl];
+//         ostringstream oss;
+//         oss << fbm.combinations[lvl];
+//         RP[lvl] = oss.str();
+//         PSI += fbm.combinations[lvl];
+//     }
+//     return PSI;
+// }
 
 //---------------------------------------------------------------------------------------
 // ILP solution of the invariant ranges
