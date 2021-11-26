@@ -1436,12 +1436,16 @@ bool iRank2Support::remove_unused_var_values() {
                 const int psum = iter->first;
                 std::vector<int>& values = iter->second;
                 values.erase(std::remove_if(values.begin(), values.end(),
-                    [lvl,&var_values,&something_changed](const int& val) { 
+                    [lvl,ii,psum,coeff,&psums_at_level,&var_values,&something_changed](const int& val) { 
                         if (!var_values[lvl][val]) {
                             something_changed = true;
                             return true;
                         }
-                        return false;
+                        if (ii != 0) {
+                            int next_ps = psum + val  * coeff;
+                            return psums_at_level[ii - 1].count(next_ps) == 0;
+                        }
+                        return false; 
                     }), values.end()
                 );
 

@@ -1287,6 +1287,7 @@ void usage(bool long_banner)
                 "               Also -refine, -refine-psf, -refine-ti, -refine-i.\n"
                 "  -rev         Use reverse order.\n"
                 "  -test-rev    Test if the reverse order is better than the actual.\n"
+                "  -rnd-swap n  Perform n random swaps on the selected variable order.\n"
                 ;
                 // "  -A         RS * Automaton.\n"
     }
