@@ -4101,12 +4101,16 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
         countNodesPerLevel(nplc, *p_edge);
 
         // Nodes per level in the RS DD
-        static const char *colorsDD[] = { "0 0.4 0.7" };
+        static const char *colorsDD[] = { "0 0.4 0.7", "0.6 0 0.8" };
         // LevelInfoEPS DD { .header="DD" };
         DD[i].colors = (const char **)colorsDD;
         DD[i].info.resize(npl);
-        for (size_t lvl=0; lvl<npl; lvl++)
+        DD[i].clrIndex.resize(npl, 0);
+        for (size_t lvl=0; lvl<npl; lvl++) {
             DD[i].info[lvl] = std::to_string(nplc.nodesPerLvl[lvl]);
+            if (nplc.nodesPerLvl[lvl] == nplc.singletoneNodesPerLvl[lvl])
+                DD[i].clrIndex[lvl] = 1;
+        }
         DD[i].footer = std::to_string(std::accumulate(nplc.nodesPerLvl.begin(), 
                                                       nplc.nodesPerLvl.begin() + npl, 0));
         allInfo.push_back(&DD[i]);

@@ -1467,8 +1467,10 @@ bool iRank2Support::remove_unused_var_values() {
             std::set<int> next_allowed_psums;
             while (iter != psums_at_level[ii].end()) {
                 int psum = iter->first;
-                if (allowed_psums.count(psum) == 0)
+                if (allowed_psums.count(psum) == 0) {
                     psums_at_level[ii].erase(iter++);
+                    something_changed = true;
+                }
                 else {
                     for (int val : iter->second) {
                         int next_ps = psum + val  * coeff;
