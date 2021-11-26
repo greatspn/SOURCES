@@ -1426,7 +1426,7 @@ bool iRank2Support::remove_unused_var_values() {
         psums_at_level_t& psums_at_level = irank2_constr_psums[cc];
         const size_t trailing_index = constr.coeffs.nonzeros() - 1;
 
-        // Go backward and remove all nodes that do not have non-empty downward CVLs
+        // Go bottom-up and remove all nodes that do not have non-empty downward CVLs
         for (int ii=0; ii<=trailing_index; ii++) {
             const int lvl = constr.coeffs.ith_nonzero(ii).index;
             const int coeff = constr.coeffs.ith_nonzero(ii).value;
@@ -1437,15 +1437,17 @@ bool iRank2Support::remove_unused_var_values() {
                 std::vector<int>& values = iter->second;
                 values.erase(std::remove_if(values.begin(), values.end(),
                     [lvl,ii,psum,coeff,&psums_at_level,&var_values,&something_changed](const int& val) { 
-                        if (!var_values[lvl][val]) {
-                            something_changed = true;
-                            return true;
+                        bool remove = false;
+                        if (!var_values[lvl][val]) { // value not allowed
+                            remove = true;
                         }
-                        if (ii != 0) {
+                        else if (ii != 0) {
                             int next_ps = psum + val  * coeff;
-                            return psums_at_level[ii - 1].count(next_ps) == 0;
+                            remove = psums_at_level[ii - 1].count(next_ps) == 0; // empty downward node
                         }
-                        return false; 
+                        if (remove)
+                            something_changed = true;
+                        return remove; 
                     }), values.end()
                 );
 
@@ -1454,6 +1456,28 @@ bool iRank2Support::remove_unused_var_values() {
                 else
                     ++iter;
             }
+        }
+        // go top-down and remove the unlinked nodes
+        std::set<int> allowed_psums;
+        allowed_psums.insert(0);
+        for (int ii=trailing_index; ii>=0; ii--) {
+            const int lvl = constr.coeffs.ith_nonzero(ii).index;
+            const int coeff = constr.coeffs.ith_nonzero(ii).value;
+            auto iter = psums_at_level[ii].begin();
+            std::set<int> next_allowed_psums;
+            while (iter != psums_at_level[ii].end()) {
+                int psum = iter->first;
+                if (allowed_psums.count(psum) == 0)
+                    psums_at_level[ii].erase(iter++);
+                else {
+                    for (int val : iter->second) {
+                        int next_ps = psum + val  * coeff;
+                        next_allowed_psums.insert(next_ps);
+                    }
+                    ++iter;
+                }
+            }
+            next_allowed_psums.swap(allowed_psums);
         }
     }
 
