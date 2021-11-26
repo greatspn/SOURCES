@@ -1312,6 +1312,7 @@ public:
     bool remove_unused_var_values();
     void print_constraints();
     cardinality_t compute_score();
+    cardinality_t compute_score2();
     cardinality_t get_level_representations(std::vector<std::string>& RP) const;
 };
 
@@ -1560,6 +1561,60 @@ cardinality_t iRank2Support::compute_score() {
 
 //---------------------------------------------------------------------------------------
 
+cardinality_t iRank2Support::compute_score2() {
+    cardinality_t score = 0;
+
+    for (int lvl = npl-1; lvl>=0; lvl--) {
+        const int plc = fbm.level_to_net[lvl];
+        std::set<int> var_values;
+
+        // Consider all the invariants active at this level
+        for (int cc=0; cc<B.size(); cc++) {
+            if (B[cc].coeffs.nonzeros() == 0)
+                continue;
+            if (B[cc].coeffs.leading() <= lvl && lvl <= B[cc].coeffs.trailing()) {
+                int index = B[cc].coeffs.lower_bound_nnz(lvl);
+                if (B[cc].coeffs.ith_nonzero(index).index == lvl) { // at level
+                    for (const auto& node : irank2_constr_psums[cc][index])
+                        for (int v : node.second)
+                            var_values.insert(v);
+                }
+            }
+        }
+        // Count the combinations at level, partitioned by variable assignment values
+        cardinality_t combs_at_lvl = 0;
+        for (int vval : var_values) {
+            cardinality_t combs_for_vval = 1;
+            // Multiply the count of nodes having vval of each constraint
+            for (int cc=0; cc<B.size(); cc++) {
+                if (B[cc].coeffs.nonzeros() == 0)
+                    continue;
+                if (B[cc].coeffs.leading() <= lvl && lvl <= B[cc].coeffs.trailing()) {
+                    size_t nodes_with_vval = 0;
+                    int index = B[cc].coeffs.lower_bound_nnz(lvl);
+                    if (B[cc].coeffs.ith_nonzero(index).index == lvl) { // at level
+                        for (const auto& node : irank2_constr_psums[cc][index])
+                            for (int v : node.second)
+                                if (v == vval)
+                                    ++nodes_with_vval;
+                    }
+                    else { // not at level - count the memory, i.e. the outgoing edges of the nodes above lvl
+                        size_t memory = irank2_constr_psums[cc][index - 1].size();
+                        nodes_with_vval = memory;
+                    }
+                    combs_for_vval *= nodes_with_vval;
+                }
+            }
+            combs_at_lvl += combs_for_vval;
+        }
+        score += combs_at_lvl;
+
+    }
+    return score;
+}
+
+//---------------------------------------------------------------------------------------
+
 void iRank2Support::print_constraints() 
 {
     for (size_t cc = 0; cc<B.size(); cc++) {
@@ -1649,7 +1704,10 @@ void flow_basis_metric_t::initialize_irank2()
 cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var) 
 {
     initialize_irank2();
-    return p_irank2supp->compute_score();
+    if (var == 10)
+        return p_irank2supp->compute_score();
+    else
+        return p_irank2supp->compute_score2();
 }
 
 // //---------------------------------------------------------------------------------------

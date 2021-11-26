@@ -3990,7 +3990,8 @@ bool RSRG::visitCountNodesPerLevel(const node_handle node, RSRG::NodesPerLevelCo
     const int node_level = forest->getNodeLevel(node);
     unpacked_node *rnode = unpacked_node::newFromNode(forest, node, unpacked_node::storage_style::AS_STORED);
     // assert(rnode->getLevel() >= 1 && rnode->getLevel() <= npl);
-    nplc.nodesPerLvl[node_level-1]++;
+    nplc.nodesPerLvl[node_level - 1]++;
+    nplc.outEdgesPerLvl[node_level - 1] += rnode->isFull() ? rnode->getSize() : rnode->getNNZs();
 
     size_t num_nnz = 0;
     if (rnode->isFull()) {
@@ -4021,6 +4022,7 @@ void RSRG::countNodesPerLevel(NodesPerLevelCounter& nplc, const dd_edge& dd) {
     nplc.visited.resize(numNodes, false);
     int num_vars = dd.getForest()->getDomain()->getNumVariables();
     nplc.nodesPerLvl.resize(num_vars, 0);
+    nplc.outEdgesPerLvl.resize(npl, 0);
     nplc.singletoneNodesPerLvl.resize(num_vars, 0);
     assert(dom->getNumVariables() == npl + extraLvls); 
 
@@ -4073,7 +4075,7 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
     const dd_edge* p_DDshown = nullptr;
     bool write_transitions_matrix = true;
     std::vector<bool> singletonLevel(npl+1, false);
-    LevelInfoEPS DD[2], Sing[2];
+    LevelInfoEPS DD[2], Edges[2], Sing[2];
     for (int i=0; i<2; i++) {
         NodesPerLevelCounter nplc;
         const dd_edge* p_edge;
@@ -4083,6 +4085,7 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
                     continue;
                 p_edge = &rs;
                 DD[i] = LevelInfoEPS{ .header="RS" };
+                Edges[i] = LevelInfoEPS{ .header="Edges" };
                 Sing[i] = LevelInfoEPS{ .header="Sing" };
                 p_DDshown = &rs;
                 write_transitions_matrix = true;
@@ -4093,6 +4096,7 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
                     continue;
                 p_edge = &lrs;
                 DD[i] = LevelInfoEPS{ .header="LRS" };
+                Edges[i] = LevelInfoEPS{ .header="Edges" };
                 Sing[i] = LevelInfoEPS{ .header="Sing" };
                 p_DDshown = &lrs;
                 write_transitions_matrix = false;
@@ -4114,6 +4118,16 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
         DD[i].footer = std::to_string(std::accumulate(nplc.nodesPerLvl.begin(), 
                                                       nplc.nodesPerLvl.begin() + npl, 0));
         allInfo.push_back(&DD[i]);
+
+        /*// Edges per level in the RS DD
+        static const char *colorsEdges[] = { "0 0 1" };
+        // LevelInfoEPS Edges { .header="Edges" };
+        Edges[i].colors = (const char **)colorsEdges;
+        Edges[i].info.resize(npl);
+        for (size_t lvl=0; lvl<npl; lvl++)
+            Edges[i].info[lvl] = std::to_string(nplc.outEdgesPerLvl[lvl]);
+        Edges[i].footer = std::to_string(std::accumulate(nplc.outEdgesPerLvl.begin(), nplc.outEdgesPerLvl.end(), 0));
+        allInfo.push_back(&Edges[i]);*/
 
         // Singleton nodes
         static const char *colorsSing[] = { "0.18 0.31 0.31", "0 0.4 0.7" };
