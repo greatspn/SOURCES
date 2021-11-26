@@ -628,6 +628,12 @@ void determine_var_order(const var_order_selector& sel,
     }
 
 
+    // Perform a fixed number of random swaps of the variables, if requested
+    for (int nn=0; nn<sel.num_random_swaps; nn++) {
+        std::swap(net_to_mddLevel[genrand64_int63() % npl],
+                  net_to_mddLevel[genrand64_int63() % npl]);
+    }
+
 
     // Print the place order we use
     {
@@ -2804,91 +2810,6 @@ struct incremental_noack {
             update_list.resize(0);
         }
     }
-
-    // double get_place_weight2(int p, const pre_post_sets_t& PS) const {
-    //     double f = 0.0;
-    //     int tr_count = 0;
-
-    //     switch (voc) {
-    //         case VOC_TOVCHIGRECHKO2:
-    //             // f(p) = sum_{t in pre(p)} (g1(t)/n_preT)           if n_preT>0
-    //             //      + sum_{t in pre(p)} (g2(t)/n_postT)          if n_postT>0
-    //             //      + sum_{t in post(p)} ((n_preT_S+1)/n_preT)   if n_preT>0
-    //             //      + sum_{t in post(p)} (h(t)/n_postT)          if n_postT>0
-    //             for (auto&& t : PS.preP[p]) { // t in pre(p)
-    //                 if (n_preT[t] == 0 && n_postT[t] == 0)
-    //                     continue;
-    //                 if (n_preT[t] > 0) {
-    //                     if (n_preT_S[t] == 0)
-    //                         f += 0.1 / n_preT[t];
-    //                     else
-    //                         f += double(n_preT_S[t]) / n_preT[t];
-    //                 }
-    //                 if (n_postT[t] > 0) {
-    //                     if (n_postT_S[t] == 0)
-    //                         f += 0.1 / n_postT[t];
-    //                     else
-    //                         f += double(2.0 * n_postT_S[t]) / n_postT[t];
-    //                     ++tr_count;
-    //                 }
-    //             }
-    //             for (auto&& t : PS.postP[p]) { // t in post(p)
-    //                 if (n_preT[t] == 0 && n_postT[t] == 0)
-    //                     continue;
-    //                 if (n_preT[t] > 0)
-    //                     f += (n_preT_S[t] + 1.0) / n_preT[t];
-                    
-    //                 if (n_postT[t] > 0) {
-    //                     if (n_postT_S[t] == 0) 
-    //                         f += 0.2 / n_postT[t];
-    //                     else 
-    //                         f += (2.0 * n_postT_S[t]) / n_postT[t];
-    //                     ++tr_count;
-    //                     // if (is read arc) 
-    //                     //     f += (2.0 * n_postT_S[t]) / n_postT[t];
-    //                 }
-    //             }
-    //             break;
-
-    //         case VOC_NOACK2:
-    //             // f(p) = sum_{t in pre(p)} (g1(t)/n_preT + 2*n_postT_S/n_postT) +
-    //             //        sum_{t in post(p)} (h(t)/n_postT + (1+n_preT_S)/n_preT)
-    //             //        only if n_preT>0 and n_postT>0
-    //             for (auto&& t : PS.preP[p]) { // t in pre(p)
-    //                 if (n_preT[t] > 0 && n_postT[t] > 0) {
-    //                     if (n_preT_S[t] == 0)
-    //                         f += 0.1 / n_preT[t];
-    //                     else 
-    //                         f += double(n_preT_S[t]) / n_preT[t];
-    //                     tr_count++;
-    //                 }
-    //             }
-    //             for (auto&& t : PS.postP[p]) { // t in post(p)
-    //                 if (n_preT[t] > 0 && n_postT[t] > 0) {
-    //                 }
-    //                 if (n_preT[t] > 0 && n_postT[t] > 0) {
-    //                     f += (n_preT_S[t] + 1.0) / n_preT[t];
-    //                     if (n_postT_S[t] == 0)
-    //                         f += 0.2 / n_postT[t];
-    //                     else
-    //                         f += 2.0 * n_postT_S[t] / n_postT[t];
-    //                     tr_count++;
-    //                 }
-    //                 // if (is read arc)
-    //                 //     f += (2.0 * n_postT_S[t]) / n_postT[t];
-    //             }
-    //             break;
-
-    //         default:
-    //             throw rgmedd_exception();
-    //     }
-
-    //     if (tr_count != 0)
-    //         f /= tr_count;
-    //     assert(!isinf(f) && !isnan(f));
-    //     return f;
-    // }
-    
 
     double get_place_weight(int p, const pre_post_sets_t& PS) const {
         double f = 0.0;

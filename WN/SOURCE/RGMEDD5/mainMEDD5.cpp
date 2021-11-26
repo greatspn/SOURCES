@@ -1785,6 +1785,9 @@ int initialize(int  argc,  char  *argv[]) {
             }
             ii += 1;
         }
+        else if (0 == strcmp(argv[ii], "-rnd-swaps") && ii + 1 < argc) {
+            g_var_order_sel.num_random_swaps = atoi(argv[++ii]);
+        }
         // else if (0 == strcmp(argv[ii], "-NOACK-NU")) {
         //     g_var_order_sel.heuristics = VOC_NOACK_NU;
         // }

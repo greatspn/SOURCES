@@ -634,6 +634,9 @@ struct var_order_selector {
     // Improvement with simulated annealing
     Annealing annealing = Annealing::NO_ANN;
     VariableOrderMetric ann_metric = VariableOrderMetric::NO_METRIC;
+
+    // Final random swaps to worsen the variable order
+    size_t num_random_swaps = 0;
 };
 
 //-----------------------------------------------------------------------------
