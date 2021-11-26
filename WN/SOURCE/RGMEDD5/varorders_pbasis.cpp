@@ -1475,6 +1475,7 @@ bool iRank2Support::remove_unused_var_values() {
 cardinality_t iRank2Support::compute_score() {
     cardinality_t score = 0;
 
+    cout << "====================" << endl;
     for (int lvl = npl-1; lvl>=0; lvl--) {
         const int plc = fbm.level_to_net[lvl];
         std::vector<int> lvl_combinations;
@@ -1488,16 +1489,40 @@ cardinality_t iRank2Support::compute_score() {
                 lvl_combinations.push_back(combs);
             }
         }
+        size_t prod = 1;
+        for (int i=0; i<lvl_combinations.size(); i++)
+            prod *= lvl_combinations[i];
+        score += prod;
 
         cout << "LEVEL: " << setw(3) << lvl << setw(5) << tabp[plc].place_name << ": ";
-        size_t prod = 1;
-        for (int i=0; i<lvl_combinations.size(); i++) {
+        for (int i=0; i<lvl_combinations.size(); i++)
             cout << (i==0 ? "" : "*") << lvl_combinations[i];
-            prod *= lvl_combinations[i];
-        }
         cout << " = " << prod << endl;
-        score += prod;
+        for (int cc=0; cc<B.size(); cc++) {
+            if (B[cc].coeffs.nonzeros() == 0)
+                continue;
+            if (B[cc].coeffs.leading() <= lvl && lvl <= B[cc].coeffs.trailing()) {
+                cout << "  constraint "<<setw(2)<<cc<<": ";
+                int index = B[cc].coeffs.lower_bound_nnz(lvl);
+                if (B[cc].coeffs.ith_nonzero(index).index == lvl) {
+                    for (const auto& cvl_pt : irank2_constr_psums[cc][index]) {
+                        cout << cvl_pt.first << "[";
+                        int count = 0;
+                        for (int val : cvl_pt.second) {
+                            cout << (count++==0 ? "" : ",") << val;
+                        }
+                        cout << "] ";
+                    }
+                    cout << endl;   
+                }
+                else {
+                    cout << "memory: " << irank2_constr_psums[cc][index - 1].size() << endl;
+                }
+            }
+        }
+        cout << endl;
     }
+    cout << "====================" << endl;
     cout << endl << endl;
 
     return score;
