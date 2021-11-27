@@ -886,8 +886,8 @@ void determine_var_order(const var_order_selector& sel,
             cardinality_t score5 = measure_score_experimental(fbm, 10);
             cout << "score5:  " << score5 << "    ( new method - nodes )" << endl;
 
-            // cardinality_t score6 = measure_score_experimental(fbm, 11);
-            // cout << "score6:  " << score6 << "    ( new method - edges )" << endl;
+            cardinality_t score6 = measure_score_experimental(fbm, 11);
+            cout << "score6:  " << score6 << "    ( new method - edges )" << endl;
 
             // time_PSI_RANK = clock() - time_PSI_RANK;
             // cout << "score4:  " << score4 << "    (...)" << endl;

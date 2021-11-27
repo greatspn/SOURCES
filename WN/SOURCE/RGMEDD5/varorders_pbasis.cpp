@@ -1294,6 +1294,9 @@ public:
     // Enumerate the constraint values at level of each constraint
     constr_psums_t irank2_constr_psums;
 
+    // stored edge counts
+    std::vector<size_t> edge_counts;
+
     // Return the new iRank2 range of values for constraint cc at level lvl
     inline const size_t irank2_constr_combinations_at_level(int cc, int lvl) const {
         assert(irank2_constr_psums.size() == B.size());
@@ -1311,9 +1314,10 @@ public:
     void initialize();
     bool remove_unused_var_values();
     void print_constraints();
-    cardinality_t compute_score();
-    cardinality_t compute_score2();
-    cardinality_t get_level_representations(std::vector<std::string>& RP) const;
+    cardinality_t compute_score_for_nodes();
+    cardinality_t compute_score_for_edges();
+    cardinality_t get_level_repr_for_nodes(std::vector<std::string>& RP) const;
+    cardinality_t get_level_repr_for_edges(std::vector<std::string>& RP);
 };
 
 //---------------------------------------------------------------------------------------
@@ -1503,7 +1507,7 @@ bool iRank2Support::remove_unused_var_values() {
 
 //---------------------------------------------------------------------------------------
 
-cardinality_t iRank2Support::compute_score() {
+cardinality_t iRank2Support::compute_score_for_nodes() {
     cardinality_t score = 0;
 
     cout << "====================" << endl;
@@ -1561,9 +1565,11 @@ cardinality_t iRank2Support::compute_score() {
 
 //---------------------------------------------------------------------------------------
 
-cardinality_t iRank2Support::compute_score2() {
+cardinality_t iRank2Support::compute_score_for_edges() {
     cardinality_t score = 0;
+    edge_counts.resize(npl);
 
+    cout << "*****************************" << endl;
     for (int lvl = npl-1; lvl>=0; lvl--) {
         const int plc = fbm.level_to_net[lvl];
         std::set<int> var_values;
@@ -1581,10 +1587,14 @@ cardinality_t iRank2Support::compute_score2() {
                 }
             }
         }
+        cout << "LEVEL: " << setw(3) << lvl << setw(5) << tabp[plc].place_name << ": " << endl;
+
         // Count the combinations at level, partitioned by variable assignment values
         cardinality_t combs_at_lvl = 0;
         for (int vval : var_values) {
             cardinality_t combs_for_vval = 1;
+            cout << right << setw(7) << tabp[plc].place_name << "="<<vval<<":  ";
+
             // Multiply the count of nodes having vval of each constraint
             for (int cc=0; cc<B.size(); cc++) {
                 if (B[cc].coeffs.nonzeros() == 0)
@@ -1597,18 +1607,42 @@ cardinality_t iRank2Support::compute_score2() {
                             for (int v : node.second)
                                 if (v == vval)
                                     ++nodes_with_vval;
+                        cout << cc<<":"<<nodes_with_vval<<"  ";
                     }
                     else { // not at level - count the memory, i.e. the outgoing edges of the nodes above lvl
                         size_t memory = irank2_constr_psums[cc][index - 1].size();
                         nodes_with_vval = memory;
+                        cout << "[" << cc<<":"<<nodes_with_vval<<"]  ";
                     }
                     combs_for_vval *= nodes_with_vval;
                 }
             }
+            cout << "= " << combs_for_vval << endl;
             combs_at_lvl += combs_for_vval;
         }
+        cout << "  = "<<combs_at_lvl<<endl<<endl;
+        edge_counts[lvl] = get_ulong(combs_at_lvl);
         score += combs_at_lvl;
+    }
+    cout << "*****************************" << endl;
+    cout << endl << endl;
 
+    return score;
+}
+
+//---------------------------------------------------------------------------------------
+
+cardinality_t iRank2Support::get_level_repr_for_edges(std::vector<std::string>& RP)
+{
+    if (edge_counts.empty())
+        compute_score_for_edges();
+    RP.resize(npl);
+    cardinality_t score = 0; // top level
+
+    for (int lvl = npl-1; lvl >=0; lvl--) {
+        const int plc = fbm.level_to_net[lvl];
+        RP[lvl] = std::to_string(edge_counts[lvl]);
+        score += edge_counts[lvl];
     }
     return score;
 }
@@ -1646,7 +1680,7 @@ void iRank2Support::print_constraints()
 
 //---------------------------------------------------------------------------------------
 
-cardinality_t iRank2Support::get_level_representations(std::vector<std::string>& RP) const
+cardinality_t iRank2Support::get_level_repr_for_nodes(std::vector<std::string>& RP) const
 {
     RP.resize(npl);
     cardinality_t iRank2 = 1; // top level
@@ -1680,9 +1714,16 @@ cardinality_t iRank2Support::get_level_representations(std::vector<std::string>&
 
 //---------------------------------------------------------------------------------------
 
-cardinality_t irank2_for_representation(flow_basis_metric_t& fbm, std::vector<std::string>& RP) {
+cardinality_t irank2_repr_for_nodes(flow_basis_metric_t& fbm, std::vector<std::string>& RP) {
     fbm.initialize_irank2();
-    return fbm.p_irank2supp->get_level_representations(RP); 
+    return fbm.p_irank2supp->get_level_repr_for_nodes(RP); 
+}
+
+//---------------------------------------------------------------------------------------
+
+cardinality_t irank2_repr_for_edges(flow_basis_metric_t& fbm, std::vector<std::string>& RP) {
+    fbm.initialize_irank2();
+    return fbm.p_irank2supp->get_level_repr_for_edges(RP); 
 }
 
 //---------------------------------------------------------------------------------------
@@ -1705,9 +1746,9 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var)
 {
     initialize_irank2();
     if (var == 10)
-        return p_irank2supp->compute_score();
+        return p_irank2supp->compute_score_for_nodes();
     else
-        return p_irank2supp->compute_score2();
+        return p_irank2supp->compute_score_for_edges();
 }
 
 // //---------------------------------------------------------------------------------------

@@ -3990,13 +3990,13 @@ bool RSRG::visitCountNodesPerLevel(const node_handle node, RSRG::NodesPerLevelCo
     const int node_level = forest->getNodeLevel(node);
     unpacked_node *rnode = unpacked_node::newFromNode(forest, node, unpacked_node::storage_style::AS_STORED);
     // assert(rnode->getLevel() >= 1 && rnode->getLevel() <= npl);
-    nplc.nodesPerLvl[node_level - 1]++;
-    nplc.outEdgesPerLvl[node_level - 1] += rnode->isFull() ? rnode->getSize() : rnode->getNNZs();
+    nplc.nodesPerLvl[node_level-1]++;
+    // nplc.outEdgesPerLvl[node_level - 1] += rnode->isFull() ? rnode->getSize() : rnode->getNNZs();
 
     size_t num_nnz = 0;
     if (rnode->isFull()) {
         for (int i = rnode->getSize() - 1; i >= 0; i--) {
-            if (visitCountNodesPerLevel(rnode->d(i), nplc))
+            if (visitCountNodesPerLevel(rnode->d(i), nplc)) 
                 num_nnz++;
         }
     }
@@ -4008,6 +4008,7 @@ bool RSRG::visitCountNodesPerLevel(const node_handle node, RSRG::NodesPerLevelCo
     }
     if (num_nnz == 1)
         nplc.singletoneNodesPerLvl[node_level-1]++;
+    nplc.outEdgesPerLvl.at(node_level-1) += num_nnz;
 
     unpacked_node::recycle(rnode);
     nplc.visited.at(node) = true;
@@ -4022,7 +4023,7 @@ void RSRG::countNodesPerLevel(NodesPerLevelCounter& nplc, const dd_edge& dd) {
     nplc.visited.resize(numNodes, false);
     int num_vars = dd.getForest()->getDomain()->getNumVariables();
     nplc.nodesPerLvl.resize(num_vars, 0);
-    nplc.outEdgesPerLvl.resize(npl, 0);
+    nplc.outEdgesPerLvl.resize(num_vars, 0);
     nplc.singletoneNodesPerLvl.resize(num_vars, 0);
     assert(dom->getNumVariables() == npl + extraLvls); 
 
@@ -4056,15 +4057,16 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
     std::vector<std::vector<std::string>> rangeMat;
     rangeMat = range_matrix_for_representation(*p_fbm);
 
-    std::vector<std::string> RP, RP2;
+    std::vector<std::string> RP, RPnodes, RPedges;
     size_t totalPSI = range_prod_for_representation(*p_fbm, RP);
     // cardinality_t totalPSI = lvl_combinations_for_representation(*p_fbm, RP);
 
-    cardinality_t tot_iRank2 = irank2_for_representation(*p_fbm, RP2);
+    cardinality_t tot_iRank2_nodes = irank2_repr_for_nodes(*p_fbm, RPnodes);
+    cardinality_t tot_iRank2_edges = irank2_repr_for_edges(*p_fbm, RPedges);
 
-    // std::vector<std::string> RP2, RP3, RP4, RP5;
+    // std::vector<std::string> RPnodes, RP3, RP4, RP5;
     // cardinality_t score2 = measure_score_experimental(*p_fbm, 0);
-    // lvl_combinations_for_representation(*p_fbm, RP2);
+    // lvl_combinations_for_representation(*p_fbm, RPnodes);
     // cardinality_t score3 = measure_score_experimental(*p_fbm, 1);
     // lvl_combinations_for_representation(*p_fbm, RP3);
     // cardinality_t score4 = measure_score_experimental(*p_fbm, 2);
@@ -4119,15 +4121,15 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
                                                       nplc.nodesPerLvl.begin() + npl, 0));
         allInfo.push_back(&DD[i]);
 
-        /*// Edges per level in the RS DD
-        static const char *colorsEdges[] = { "0 0 1" };
+        /// Edges per level in the RS DD
+        static const char *colorsEdges[] = { "0 0.33 0" };
         // LevelInfoEPS Edges { .header="Edges" };
         Edges[i].colors = (const char **)colorsEdges;
         Edges[i].info.resize(npl);
         for (size_t lvl=0; lvl<npl; lvl++)
             Edges[i].info[lvl] = std::to_string(nplc.outEdgesPerLvl[lvl]);
         Edges[i].footer = std::to_string(std::accumulate(nplc.outEdgesPerLvl.begin(), nplc.outEdgesPerLvl.end(), 0));
-        allInfo.push_back(&Edges[i]);*/
+        allInfo.push_back(&Edges[i]);//*/
 
         // Singleton nodes
         static const char *colorsSing[] = { "0.18 0.31 0.31", "0 0.4 0.7" };
@@ -4166,13 +4168,21 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
     PSI.info.swap(RP);
     allInfo.push_back(&PSI);
 
-    // iRank2 level representation
-    const char* colorsiRank2[] = { "0.019 0.341 0.258" };
-    LevelInfoEPS iRank2 { .header="New", .footer=std::to_string(tot_iRank2) };
-    iRank2.colors = (const char **)colorsiRank2;
-    iRank2.info.resize(npl);
-    iRank2.info.swap(RP2);
-    allInfo.push_back(&iRank2);
+    // iRank2 level representation for nodes
+    const char* colorsiRank2n[] = { "0.77 0.17 0.35" };
+    LevelInfoEPS iRank2n { .header="New", .footer=std::to_string(tot_iRank2_nodes) };
+    iRank2n.colors = (const char **)colorsiRank2n;
+    iRank2n.info.resize(npl);
+    iRank2n.info.swap(RPnodes);
+    allInfo.push_back(&iRank2n);
+
+    // iRank2 level representation for edges
+    const char* colorsiRank2e[] = { "0 0.46 0" };
+    LevelInfoEPS iRank2e { .header="New", .footer=std::to_string(tot_iRank2_edges) };
+    iRank2e.colors = (const char **)colorsiRank2e;
+    iRank2e.info.resize(npl);
+    iRank2e.info.swap(RPedges);
+    allInfo.push_back(&iRank2e);
 
 
     // // Score 2: hyper-triangular product< / n!
@@ -4180,7 +4190,7 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
     // LevelInfoEPS MM2 { .header="HP<", .footer=std::to_string(score2) };
     // MM2.colors = (const char **)colorsMM2;
     // MM2.info.resize(npl);
-    // MM2.info.swap(RP2);
+    // MM2.info.swap(RPnodes);
     // allInfo.push_back(&MM2);
 
 
