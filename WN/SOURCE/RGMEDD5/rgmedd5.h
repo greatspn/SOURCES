@@ -876,6 +876,7 @@ public:
     struct NodesPerLevelCounter {
         std::vector<bool> visited;
         std::vector<int>  nodesPerLvl;
+        std::vector<int>  outEdgesPerLvl;
         std::vector<int>  singletoneNodesPerLvl;
     };
     // Count the # of nodes for each level in the DD (for visualization purposes)
