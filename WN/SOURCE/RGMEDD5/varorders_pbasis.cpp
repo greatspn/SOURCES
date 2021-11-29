@@ -1294,6 +1294,8 @@ public:
     // Enumerate the constraint values at level of each constraint
     constr_psums_t irank2_constr_psums;
 
+    bool verbose = true;
+
     // Return the new iRank2 range of values for constraint cc at level lvl
     inline const size_t irank2_constr_combinations_at_level(int cc, int lvl) const {
         assert(irank2_constr_psums.size() == B.size());
@@ -1304,7 +1306,7 @@ public:
         assert(0 <= index && index < irank2_constr_psums[cc].size());
         if (B[cc].coeffs.ith_nonzero(index).index == lvl) // at level
             return irank2_constr_psums[cc][index].size();
-        else // between levels
+        else // memory between levels
             return irank2_constr_psums[cc][index - 1].size();
     };
 
@@ -1340,7 +1342,7 @@ void iRank2Support::initialize()
             const int coeff = constr.coeffs.ith_nonzero(ii).value;
             for (auto& cvl_pt : psums_at_level[ii]) {
                 assert(cvl_pt.second.empty());
-                // Add the links to downward CVLs
+                // Add the links to downward nodes
                 for (int v=0; v<=bound; v++) {
                     int next_ps = cvl_pt.first + v * coeff;
 
@@ -1357,7 +1359,7 @@ void iRank2Support::initialize()
                 }
             }
         }
-        // Go backward and remove all nodes that do not have non-empty downward CVLs
+        // Go bottom-up and remove all nodes that do not have non-empty downward nodes
         for (int ii=0; ii<=trailing_index; ii++) {
             const int lvl = constr.coeffs.ith_nonzero(ii).index;
             const int coeff = constr.coeffs.ith_nonzero(ii).value;
@@ -1382,7 +1384,8 @@ void iRank2Support::initialize()
             }
         }
     }
-    print_constraints();
+    if (verbose)
+        print_constraints();
 }
 
 //---------------------------------------------------------------------------------------
@@ -1396,6 +1399,8 @@ bool iRank2Support::remove_unused_var_values() {
         const int bound = fbm.get_bound(plc);
         var_values[lvl].resize(bound+1, true);
     }
+    // mark which  values @ levels are allowed. 
+    // A value is allowed if it appears in at least one node of every constraints
     for (size_t cc = 0; cc<B.size(); cc++) {
         const int_lin_constr_t& constr = B[cc];
         const psums_at_level_t& psums_at_level = irank2_constr_psums[cc];
@@ -1407,13 +1412,13 @@ bool iRank2Support::remove_unused_var_values() {
             const int bound = fbm.get_bound(plc);
             const int coeff = constr.coeffs.ith_nonzero(ii).value;
             std::vector<bool> value_found(bound+1, false);
-
+            // mark the values found for this constraint at lvl
             for (const auto& cvl_pt : psums_at_level[ii]) {
                 for (int val : cvl_pt.second) {
                     value_found[val] = true;
                 }
             }
-
+            // exclude the values that are not at lvl of constraint cc
             for (size_t v=0; v<=bound; v++)
                 if (!value_found[v])
                     var_values[lvl][v] = false;
@@ -1426,7 +1431,7 @@ bool iRank2Support::remove_unused_var_values() {
         psums_at_level_t& psums_at_level = irank2_constr_psums[cc];
         const size_t trailing_index = constr.coeffs.nonzeros() - 1;
 
-        // Go bottom-up and remove all nodes that do not have non-empty downward CVLs
+        // Go bottom-up and remove all nodes that do not have non-empty downward nodes
         for (int ii=0; ii<=trailing_index; ii++) {
             const int lvl = constr.coeffs.ith_nonzero(ii).index;
             const int coeff = constr.coeffs.ith_nonzero(ii).value;
@@ -1483,7 +1488,7 @@ bool iRank2Support::remove_unused_var_values() {
         }
     }
 
-    if (something_changed) {
+    if (verbose && something_changed) {
         cout << "\nPOSSIBLE VARIABLE VALUES:" << endl;
         for (int lvl=npl-1; lvl>=0; lvl--) {
             const int plc = fbm.level_to_net[lvl];
@@ -1505,7 +1510,8 @@ bool iRank2Support::remove_unused_var_values() {
 cardinality_t iRank2Support::compute_score() {
     cardinality_t score = 0;
 
-    cout << "====================" << endl;
+    if (verbose)
+        cout << "\n\n=== SCORE ===\n";
     for (int lvl = npl-1; lvl>=0; lvl--) {
         const int plc = fbm.level_to_net[lvl];
         std::vector<int> lvl_combinations;
@@ -1524,36 +1530,38 @@ cardinality_t iRank2Support::compute_score() {
             prod *= lvl_combinations[i];
         score += prod;
 
-        cout << "LEVEL: " << setw(3) << lvl << setw(5) << tabp[plc].place_name << ": ";
-        for (int i=0; i<lvl_combinations.size(); i++)
-            cout << (i==0 ? "" : "*") << lvl_combinations[i];
-        cout << " = " << prod << endl;
-        for (int cc=0; cc<B.size(); cc++) {
-            if (B[cc].coeffs.nonzeros() == 0)
-                continue;
-            if (B[cc].coeffs.leading() <= lvl && lvl <= B[cc].coeffs.trailing()) {
-                cout << "  constraint "<<setw(2)<<cc<<": ";
-                int index = B[cc].coeffs.lower_bound_nnz(lvl);
-                if (B[cc].coeffs.ith_nonzero(index).index == lvl) {
-                    for (const auto& cvl_pt : irank2_constr_psums[cc][index]) {
-                        cout << cvl_pt.first << "[";
-                        int count = 0;
-                        for (int val : cvl_pt.second) {
-                            cout << (count++==0 ? "" : ",") << val;
+        if (verbose) {
+            cout << "LEVEL: " << setw(3) << lvl << setw(5) << tabp[plc].place_name << ": ";
+            for (int i=0; i<lvl_combinations.size(); i++)
+                cout << (i==0 ? "" : "*") << lvl_combinations[i];
+            cout << " = " << prod << endl;
+            for (int cc=0; cc<B.size(); cc++) {
+                if (B[cc].coeffs.nonzeros() == 0)
+                    continue;
+                if (B[cc].coeffs.leading() <= lvl && lvl <= B[cc].coeffs.trailing()) {
+                    cout << "  constraint "<<setw(2)<<cc<<": ";
+                    int index = B[cc].coeffs.lower_bound_nnz(lvl);
+                    if (B[cc].coeffs.ith_nonzero(index).index == lvl) {
+                        for (const auto& cvl_pt : irank2_constr_psums[cc][index]) {
+                            cout << cvl_pt.first << "[";
+                            int count = 0;
+                            for (int val : cvl_pt.second) {
+                                cout << (count++==0 ? "" : ",") << val;
+                            }
+                            cout << "] ";
                         }
-                        cout << "] ";
+                        cout << endl;   
                     }
-                    cout << endl;   
-                }
-                else {
-                    cout << "memory: " << irank2_constr_psums[cc][index - 1].size() << endl;
+                    else {
+                        cout << "memory: " << irank2_constr_psums[cc][index - 1].size() << endl;
+                    }
                 }
             }
+            cout << endl;
         }
-        cout << endl;
     }
-    cout << "====================" << endl;
-    cout << endl << endl;
+    if (verbose)
+        cout << endl << endl;
 
     return score;
 }

@@ -4143,15 +4143,6 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
     SwirW.footer = std::to_string(std::accumulate(lw_invs.begin(), lw_invs.end(), 0));
     // allInfo.push_back(&SwirW);
 
-
-    // PSI weights (ranges)
-    const char* colorsPSI[] = { "0.64 0.16 0.16" };
-    LevelInfoEPS PSI { .header="Ranges", .footer=std::to_string(totalPSI) };
-    PSI.colors = (const char **)colorsPSI;
-    PSI.info.resize(npl);
-    PSI.info.swap(RP);
-    allInfo.push_back(&PSI);
-
     // iRank2 level representation
     const char* colorsiRank2[] = { "0.019 0.341 0.258" };
     LevelInfoEPS iRank2 { .header="New", .footer=std::to_string(tot_iRank2) };
@@ -4159,6 +4150,14 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
     iRank2.info.resize(npl);
     iRank2.info.swap(RP2);
     allInfo.push_back(&iRank2);
+
+    // Ranges of values for the invariants
+    const char* colorsPSI[] = { "0.64 0.16 0.16" };
+    LevelInfoEPS PSI { .header="Ranges", .footer=std::to_string(totalPSI) };
+    PSI.colors = (const char **)colorsPSI;
+    PSI.info.resize(npl);
+    PSI.info.swap(RP);
+    allInfo.push_back(&PSI);
 
 
     // // Score 2: hyper-triangular product< / n!

@@ -871,7 +871,7 @@ void determine_var_order(const var_order_selector& sel,
             cout << "\n--------------------------------------\n";
             // clock_t time_PSI_RANK = clock();
             cardinality_t PSI_RANK = measure_PSI(net_to_mddLevel, false, false, false, false, fbm);
-            print_PSI_diagram(net_to_mddLevel, fbm);
+            // print_PSI_diagram(net_to_mddLevel, fbm);
             cout << "score1:  " << PSI_RANK << "    (full product of ranges)" <<endl;
 
             cardinality_t score2 = measure_score_experimental(fbm, 0);
