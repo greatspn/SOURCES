@@ -4170,7 +4170,7 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
 
     // iRank2 level representation for nodes
     const char* colorsiRank2n[] = { "0.77 0.17 0.35" };
-    LevelInfoEPS iRank2n { .header="New", .footer=std::to_string(tot_iRank2_nodes) };
+    LevelInfoEPS iRank2n { .header="(New) nodes", .footer=std::to_string(tot_iRank2_nodes) };
     iRank2n.colors = (const char **)colorsiRank2n;
     iRank2n.info.resize(npl);
     iRank2n.info.swap(RPnodes);
@@ -4178,7 +4178,7 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
 
     // iRank2 level representation for edges
     const char* colorsiRank2e[] = { "0 0.46 0" };
-    LevelInfoEPS iRank2e { .header="New", .footer=std::to_string(tot_iRank2_edges) };
+    LevelInfoEPS iRank2e { .header="(New) edges", .footer=std::to_string(tot_iRank2_edges) };
     iRank2e.colors = (const char **)colorsiRank2e;
     iRank2e.info.resize(npl);
     iRank2e.info.swap(RPedges);
