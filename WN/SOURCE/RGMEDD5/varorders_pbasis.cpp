@@ -1278,6 +1278,372 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_A(int var)
 }
 
 //---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+
+#warning dovrebbe essere 1
+constexpr size_t MAX_LOCAL_PSUMS = 1;
+class partial_sum_t {
+    int lvl; // can be negative (terminal levels)
+    std::vector<int> psums;
+    // size_t num_constr;
+    // int psums_buffer[MAX_LOCAL_PSUMS];
+    // int *ppsums;
+public:
+    inline partial_sum_t(int _lvl=int(-100), size_t _num_constr=0) 
+    : lvl(_lvl), psums(_num_constr, -100) { }
+
+    partial_sum_t(const partial_sum_t& ps) = default;
+    partial_sum_t(partial_sum_t&&) = default;
+    partial_sum_t& operator=(const partial_sum_t&) = default;
+    partial_sum_t& operator=(partial_sum_t&&) = default;
+
+    // join two partial sums
+    partial_sum_t(const partial_sum_t& ps1, const partial_sum_t& ps2) 
+    : lvl(max(ps1.lvl, ps2.lvl)), psums(ps1.num_psums() + ps2.num_psums())
+    {
+        size_t j=0;
+        for (size_t i=0; i<ps1.num_psums(); i++)
+            at(j++) = ps1[i];
+        for (size_t i=0; i<ps2.num_psums(); i++)
+            at(j++) = ps2[i];
+    }
+
+    inline void swap(partial_sum_t& ps) {
+        std::swap(lvl, ps.lvl);
+        std::swap(psums, ps.psums);
+    }
+
+    inline ~partial_sum_t() { }
+
+    inline const int& at(size_t index) const { return psums.at(index); }
+    inline int& at(size_t index) { return psums.at(index); }
+    inline const int& operator[](size_t index) const { return at(index); }
+    inline int& operator[](size_t index) { return at(index); }
+    inline size_t num_psums() const { return psums.size(); }
+    inline int level() const { return lvl; }
+    inline bool is_terminal() const { return lvl<0; }
+    inline bool is_true() const { return lvl == -1; }
+    inline bool is_false() const { return lvl == -2; }
+
+    inline bool operator<(const partial_sum_t& rhs) const {
+        assert(num_psums() == rhs.num_psums());
+        if (lvl < rhs.lvl)
+            return true;
+        else if (lvl > rhs.lvl)
+            return false;
+        for (size_t cc=0; cc<num_psums(); cc++) {
+            if (at(cc) < rhs.at(cc))
+                return true; // *this < rhs
+            else if (at(cc) > rhs.at(cc))
+                return false; // *this > rhs
+        }
+        return false; // *this == rhs
+    }
+
+    inline bool operator==(const partial_sum_t& rhs) const {
+        assert(num_psums() == rhs.num_psums());
+        if (lvl != rhs.lvl)
+            return false;
+        for (size_t cc=0; cc<num_psums(); cc++)
+            if (at(cc) != rhs.at(cc))
+                return false;
+        return true;
+    }
+};
+ostream& operator<<(ostream& os, const partial_sum_t& psum) {
+    cout <<"lvl=";
+    if (psum.is_terminal())
+        cout << (psum.is_true() ? "T:" : "F:");
+    else
+        cout << psum.level() << ":";
+    for (size_t i=0; i<psum.num_psums(); i++)
+        os << (i==0?"":",") << psum[i];
+    return os;
+}
+
+//---------------------------------------------------------------------------------------
+
+struct node_t;
+struct edge_t {
+    int value;  // variable assignment value
+};
+
+struct node_t {
+    std::vector<edge_t> ee; // allowed variable assignment values
+};
+
+// Constraint Decision Diagram
+class cdd_t {
+    typedef std::map<partial_sum_t, node_t> psums_at_level_t;
+    
+    std::vector<size_t> constrs; // Constraint indices in fbm.B
+    partial_sum_t T, F; // Terminal 1 and 0
+    partial_sum_t root_psum; // root node
+    psums_at_level_t all_psums; // Forest of nodes
+public:
+    cdd_t(size_t cc) : constrs{cc} { }
+
+    void initialize(const flow_basis_metric_t& fbm);
+    bool collect_unused_nodes(const flow_basis_metric_t& fbm);
+    void show(const flow_basis_metric_t& fbm, ostream& os) const;
+
+    partial_sum_t next(const flow_basis_metric_t& fbm, const partial_sum_t& psum, int value) const;
+
+    void intersection(const flow_basis_metric_t& fbm, const cdd_t& c1, const cdd_t& c2);
+
+    void swap(cdd_t&);
+
+private:
+    bool intersect(const flow_basis_metric_t& fbm, const cdd_t& c1, const cdd_t& c2,
+                            const partial_sum_t& psum1, const partial_sum_t& psum2);
+};
+
+//---------------------------------------------------------------------------------------
+
+void cdd_t::show(const flow_basis_metric_t& fbm, ostream& os) const {
+    os << "CONSTRAINTS";
+    for (size_t cc : constrs) 
+        os << " " << cc;
+    // os << endl;
+
+    int last_lvl = -1;
+    for (psums_at_level_t::const_reverse_iterator it = all_psums.crbegin(); it != all_psums.crend(); ++it) {
+        if (it->first.is_false())
+            continue;
+        if (last_lvl != it->first.level()) {
+            last_lvl = it->first.level();
+            const char* name;
+            if (last_lvl != -1)
+                name = tabp[ fbm.level_to_net[it->first.level()] ].place_name;
+            else
+                name = "TERM";
+            os << "\n @" << left << setw(5) << name;
+        }
+        os << " ";
+        // print the psum
+        for (size_t i=0; i<it->first.num_psums(); i++)
+            os << (i==0?"":",") << it->first[i];
+        os << "[";
+        // print the allowed assignments
+        for (size_t i=0; i<it->second.ee.size(); i++)
+            os << (i==0?"":",") << it->second.ee[i].value;
+        os << "]";
+    }
+    os << endl;
+}
+
+//---------------------------------------------------------------------------------------
+
+void cdd_t::initialize(const flow_basis_metric_t& fbm) {
+    assert(constrs.size() == 1);
+    size_t icc = constrs[0];
+    const int_lin_constr_t& constr = fbm.B[icc];
+
+    // initialize the root element
+    const size_t trailing_index = constr.coeffs.nonzeros() - 1;
+    const int trailing_lvl = constr.coeffs.back_nonzero().index;
+    const int leading_lvl = constr.coeffs.front_nonzero().index;
+    root_psum = partial_sum_t(trailing_lvl, 1);
+    root_psum[0] = 0;
+    all_psums.insert(make_pair(root_psum, node_t()));
+
+    // initialize the terminal elements
+    T = partial_sum_t(-1, 1);
+    T[0] = constr.const_term;
+    all_psums.insert(make_pair(T, node_t()));
+    F = partial_sum_t(-2, 1);
+    F[0] = -1000;
+    all_psums.insert(make_pair(F, node_t()));
+
+    // Fill the DD
+    for (psums_at_level_t::reverse_iterator it = all_psums.rbegin(); it != all_psums.rend(); ++it) {
+        const partial_sum_t& psum = it->first;
+        node_t& node = it->second;
+        if (psum.is_terminal())
+            continue;
+        const int plc = fbm.level_to_net[psum.level()];
+        const int bound = fbm.get_bound(plc);
+        const int coeff = constr.coeffs[psum.level()];
+
+        // Add the links to downward nodes
+        for (int v=0; v<=bound; v++) {
+            partial_sum_t next_ps = next(fbm, psum, v);
+
+            if (next_ps.is_terminal()) { // last level
+                if (next_ps == T) {
+                    node.ee.push_back(edge_t{v});
+                }
+            }
+            else {
+                if (all_psums.count(next_ps) == 0)
+                    all_psums.insert(make_pair(next_ps, node_t()));
+                node.ee.push_back(edge_t{v});
+            }
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------
+
+partial_sum_t cdd_t::next(const flow_basis_metric_t& fbm, const partial_sum_t& psum, int value) const {
+    assert(0 <= psum.level() && psum.level() < npl);
+    // determine the next level
+    int next_lvl = -1;
+    for (size_t cc=0; cc<constrs.size(); cc++) {
+        const int_lin_constr_t& constr = fbm.B[constrs[cc]];
+        if (psum.level() <= constr.coeffs.front_nonzero().index) { // leading term
+            next_lvl = max(next_lvl, -1);
+        }
+        else if (psum.level() > constr.coeffs.back_nonzero().index) { // trailing term
+            // next_lvl = max(next_lvl, int(constr.coeffs.back_nonzero().index));
+        }
+        else {
+            const int ii = constr.coeffs.lower_bound_nnz(psum.level());
+            const int lvl_below = constr.coeffs.ith_nonzero(ii - 1).index;
+            next_lvl = max(next_lvl, lvl_below);
+        }
+    }
+    partial_sum_t next_ps(next_lvl, psum.num_psums());
+    for (size_t cc=0; cc<constrs.size(); cc++) {
+        const int_lin_constr_t& constr = fbm.B[constrs[cc]];
+        next_ps[cc] = psum[cc] + constr.coeffs[psum.level()] * value;
+    }
+    // cout << psum <<" next "<< next_ps<<endl;
+    return next_ps;
+}
+
+//---------------------------------------------------------------------------------------
+
+bool cdd_t::collect_unused_nodes(const flow_basis_metric_t& fbm) {
+    bool removed = false;
+    // Go bottom-up and remove all nodes that do not have non-empty downward nodes
+    psums_at_level_t::iterator it = all_psums.begin(); 
+    while (it != all_psums.end()) {
+        const partial_sum_t& psum = it->first;
+        node_t& node = it->second;
+        if (psum.is_terminal()) {
+            ++it;
+            continue;
+        }
+        // first remove all non-valid edges from this node
+        node.ee.erase(std::remove_if(node.ee.begin(), node.ee.end(),
+            [&psum,&fbm,this](const edge_t& e) { 
+                partial_sum_t next_ps = this->next(fbm, psum, e.value);
+                // cout << psum <<" next "<< next_ps << "  count="<<this->all_psums.count(next_ps)<<endl;
+                return /*!next_ps.is_true() &&*/ this->all_psums.count(next_ps) == 0;
+            }), node.ee.end()
+        );
+        if (node.ee.empty()) {
+            all_psums.erase(it++);
+            removed = true;
+        }
+        else
+            ++it;
+    }
+    return removed;
+}
+
+//---------------------------------------------------------------------------------------
+
+void cdd_t::intersection(const flow_basis_metric_t& fbm, const cdd_t& c1, const cdd_t& c2) {
+    all_psums.clear();
+    constrs.clear();
+    constrs.insert(constrs.end(), c1.constrs.begin(), c1.constrs.end());
+    constrs.insert(constrs.end(), c1.constrs.begin(), c1.constrs.end());
+
+    // join the terminal nodes
+    T = partial_sum_t(c1.T, c2.T);
+    all_psums.insert(make_pair(T, node_t()));
+
+    F = partial_sum_t(c1.F, c2.F);
+    all_psums.insert(make_pair(F, node_t()));
+
+    // join the root nodes
+    root_psum = partial_sum_t(c1.root_psum, c2.root_psum);
+
+    // do the intersection
+    bool ok = intersect(fbm, c1, c2, c1.root_psum, c2.root_psum);
+    if (ok)
+        all_psums.insert(make_pair(root_psum, node_t()));
+    else
+        root_psum = F;
+}
+
+//---------------------------------------------------------------------------------------
+
+bool cdd_t::intersect(const flow_basis_metric_t& fbm, const cdd_t& c1, const cdd_t& c2,
+                               const partial_sum_t& psum1, const partial_sum_t& psum2)
+{
+    if (psum1.is_true()) {
+        return psum2.is_true();
+    }
+    else if (psum1.is_false()) {
+        return false;
+    }
+
+    partial_sum_t ps(psum1, psum2);
+    auto found = all_psums.find(ps);
+    if (found != all_psums.end())
+        return true;
+
+    assert(c1.all_psums.count(psum1) == 1);
+    assert(c2.all_psums.count(psum2) == 1);
+    const node_t& node1 = c1.all_psums.find(psum1)->second;
+    const node_t& node2 = c2.all_psums.find(psum2)->second;
+    node_t nn;
+    // cout << psum1 << " intersect " << psum2<< "  -->  " << ps << " ...  " << endl;
+
+    if (ps.level() != psum2.level()) {
+        for (const edge_t& ee1 : node1.ee) {
+            partial_sum_t next_ps1 = c1.next(fbm, psum1, ee1.value);
+            partial_sum_t next(next_ps1, psum2);
+            if (intersect(fbm, c1, c2, next_ps1, psum2))
+                nn.ee.push_back(edge_t{ee1.value});
+        }
+    }
+    else if (ps.level() != psum1.level()) {
+        for (const edge_t& ee2 : node2.ee) {
+            partial_sum_t next_ps2 = c2.next(fbm, psum2, ee2.value);
+            partial_sum_t next(psum1, next_ps2);
+            if (intersect(fbm, c1, c2, psum1, next_ps2))
+                nn.ee.push_back(edge_t{ee2.value});
+        }
+    }
+    else {
+        for (const edge_t& ee1 : node1.ee) {
+            for (const edge_t& ee2 : node2.ee) {
+                if (ee1.value == ee2.value) {
+                    // Generate the intersection node
+                    partial_sum_t next_ps1 = c1.next(fbm, psum1, ee1.value);
+                    partial_sum_t next_ps2 = c2.next(fbm, psum2, ee2.value);
+                    partial_sum_t next = intersect(fbm, c1, c2, next_ps1, next_ps2);
+                    if (!next.is_false())
+                        nn.ee.push_back(edge_t{ee1.value});
+                }
+            }
+        }
+    }
+
+    if (!nn.ee.empty()) {
+        assert(all_psums.count(ps) == 0);
+        all_psums.insert(make_pair(ps, nn));
+        // cout << psum1 << " intersect " << psum2 << "  -->  " << ps << " : " << nn.ee.size() << endl;
+        return true;
+    }
+    return false;
+}
+
+//---------------------------------------------------------------------------------------
+
+void cdd_t::swap(cdd_t& dd) {
+    std::swap(constrs, dd.constrs);
+    std::swap(T, dd.T);
+    std::swap(F, dd.F);
+    std::swap(root_psum, dd.root_psum);
+    std::swap(all_psums, dd.all_psums);
+}
+
+//---------------------------------------------------------------------------------------
 
 class iRank2Support {
     const flow_basis_metric_t& fbm;
@@ -1320,231 +1686,6 @@ public:
     cardinality_t get_level_repr_for_nodes(std::vector<std::string>& RP) const;
     cardinality_t get_level_repr_for_edges(std::vector<std::string>& RP);
 };
-
-//---------------------------------------------------------------------------------------
-
-constexpr size_t MAX_LOCAL_PSUMS = 1;
-class partial_sum_t {
-    int lvl;
-    int num_constr;
-    int psums_buffer[MAX_LOCAL_PSUMS];
-    int *ppsums;
-public:
-    inline partial_sum_t(int _lvl=int(-100), int _num_constr=0) 
-    : lvl(_lvl), num_constr(_num_constr) {
-        if (num_constr > MAX_LOCAL_PSUMS)
-            ppsums = new int[num_constr];
-        else 
-            ppsums = nullptr;
-    }
-    partial_sum_t(const partial_sum_t&) = default;
-    partial_sum_t(partial_sum_t&&) = default;
-    partial_sum_t& operator=(const partial_sum_t&) = default;
-    partial_sum_t& operator=(partial_sum_t&&) = default;
-
-    inline ~partial_sum_t() {
-        if (ppsums)
-            delete[] ppsums;
-    }
-    inline const int& at(size_t index) const { assert(index < num_constr); return ppsums?ppsums[index]:psums_buffer[index]; }
-    inline int& at(size_t index) { assert(index < num_constr); return ppsums?ppsums[index]:psums_buffer[index]; }
-    inline const int& operator[](size_t index) const { return at(index); }
-    inline int& operator[](size_t index) { return at(index); }
-    inline size_t num_psums() const { return num_constr; }
-    inline int level() const { return lvl; }
-    inline bool is_terminal() const { return lvl==-1; }
-
-    inline bool operator<(const partial_sum_t& rhs) const {
-        assert(num_psums() == rhs.num_psums());
-        if (lvl < rhs.lvl)
-            return true;
-        else if (lvl > rhs.lvl)
-            return false;
-        for (size_t cc=0; cc<num_psums(); cc++) {
-            if (at(cc) < rhs.at(cc))
-                return true; // *this < rhs
-            else if (at(cc) > rhs.at(cc))
-                return false; // *this > rhs
-        }
-        return false; // *this == rhs
-    }
-
-    inline bool operator==(const partial_sum_t& rhs) const {
-        assert(num_psums() == rhs.num_psums());
-        if (lvl != rhs.lvl)
-            return false;
-        for (size_t cc=0; cc<num_psums(); cc++)
-            if (at(cc) != rhs.at(cc))
-                return false;
-        return true;
-    }
-};
-ostream& operator<<(ostream& os, const partial_sum_t& psum) {
-    cout <<"lvl=";
-    if (psum.is_terminal())
-        cout << "TERM:";
-    else
-        cout << psum.level() << ":";
-    for (size_t i=0; i<psum.num_psums(); i++)
-        os << (i==0?"":",") << psum[i];
-    return os;
-}
-
-struct node_t;
-struct edge_t {
-    int value;  // variable assignment value
-};
-
-struct node_t {
-    std::vector<edge_t> ee; // allowed variable assignment values
-};
-
-// Constraint Decision Diagram
-class cdd_t {
-    std::vector<size_t> constrs; // Constraint indices in fbm.B
-    partial_sum_t T; // Terminal 1
-    partial_sum_t root_psum; // root node
-public:
-
-    typedef std::map<partial_sum_t, node_t> psums_at_level_t;
-    // Forest of nodes
-    psums_at_level_t all_psums;
-
-    cdd_t(size_t cc) : constrs{cc} { }
-
-    void initialize(const flow_basis_metric_t& fbm);
-    bool collect_unused_nodes(const flow_basis_metric_t& fbm);
-    void show(const flow_basis_metric_t& fbm, ostream& os) const;
-
-    partial_sum_t next(const flow_basis_metric_t& fbm, const partial_sum_t& psum, int value) const;
-};
-
-void cdd_t::show(const flow_basis_metric_t& fbm, ostream& os) const {
-    os << "CONSTRAINTS";
-    for (size_t cc : constrs) 
-        os << " " << cc;
-    // os << endl;
-
-    int last_lvl = -1;
-    for (psums_at_level_t::const_reverse_iterator it = all_psums.crbegin(); it != all_psums.crend(); ++it) {
-        if (last_lvl != it->first.level()) {
-            last_lvl = it->first.level();
-            const char* name;
-            if (last_lvl != -1)
-                name = tabp[ fbm.level_to_net[it->first.level()] ].place_name;
-            else
-                name = "TERM";
-            os << "\n @" << left << setw(5) << name;
-        }
-        os << " ";
-        // print the psum
-        for (size_t i=0; i<it->first.num_psums(); i++)
-            os << (i==0?"":",") << it->first[i];
-        os << "[";
-        // print the allowed assignments
-        for (size_t i=0; i<it->second.ee.size(); i++)
-            os << (i==0?"":",") << it->second.ee[i].value;
-        os << "]";
-    }
-    os << endl;
-}
-
-
-void cdd_t::initialize(const flow_basis_metric_t& fbm) {
-    assert(constrs.size() == 1);
-    size_t icc = constrs[0];
-    const int_lin_constr_t& constr = fbm.B[icc];
-
-    // initialize the root element
-    const size_t trailing_index = constr.coeffs.nonzeros() - 1;
-    const int trailing_lvl = constr.coeffs.back_nonzero().index;
-    const int leading_lvl = constr.coeffs.front_nonzero().index;
-    root_psum = partial_sum_t(trailing_lvl, 1);
-    root_psum[0] = 0;
-    all_psums.insert(make_pair(root_psum, node_t()));
-
-    // initialize the terminal element
-    T = partial_sum_t(-1, 1);
-    T[0] = constr.const_term;
-    all_psums.insert(make_pair(T, node_t()));
-
-    // Fill the DD
-    for (psums_at_level_t::reverse_iterator it = all_psums.rbegin(); it != all_psums.rend(); ++it) {
-        const partial_sum_t& psum = it->first;
-        node_t& node = it->second;
-        if (psum.is_terminal())
-            continue;
-        const int plc = fbm.level_to_net[psum.level()];
-        const int bound = fbm.get_bound(plc);
-        const int coeff = constr.coeffs[psum.level()];
-
-        // Add the links to downward nodes
-        for (int v=0; v<=bound; v++) {
-            partial_sum_t next_ps = next(fbm, psum, v);
-
-            if (next_ps.is_terminal()) { // last level
-                if (next_ps == T) {
-                    node.ee.push_back(edge_t{v});
-                }
-            }
-            else {
-                if (all_psums.count(next_ps) == 0)
-                    all_psums.insert(make_pair(next_ps, node_t()));
-                node.ee.push_back(edge_t{v});
-            }
-        }
-    }
-    // }
-}
-
-partial_sum_t cdd_t::next(const flow_basis_metric_t& fbm, const partial_sum_t& psum, int value) const {
-    assert(0 <= psum.level() && psum.level() < npl);
-    // determine the next level
-    int next_lvl = -1;
-    for (size_t cc=0; cc<constrs.size(); cc++) {
-        const int_lin_constr_t& constr = fbm.B[constrs[cc]];
-        if (psum.level() == constr.coeffs.front_nonzero().index) { // leading term
-            next_lvl = max(next_lvl, -1);
-        }
-        else {
-            const int ii = constr.coeffs.lower_bound_nnz(psum.level());
-            const int lvl_below = constr.coeffs.ith_nonzero(ii - 1).index;
-            next_lvl = max(next_lvl, lvl_below);
-        }
-    }
-    partial_sum_t next_ps(next_lvl, psum.num_psums());
-    for (size_t cc=0; cc<constrs.size(); cc++) {
-        const int_lin_constr_t& constr = fbm.B[constrs[cc]];
-        next_ps[cc] = psum[cc] + constr.coeffs[psum.level()] * value;
-    }
-    // cout << psum <<" next "<< next_ps<<endl;
-    return next_ps;
-}
-
-bool cdd_t::collect_unused_nodes(const flow_basis_metric_t& fbm) {
-    // Go bottom-up and remove all nodes that do not have non-empty downward nodes
-    psums_at_level_t::iterator it = all_psums.begin(); 
-    while (it != all_psums.end()) {
-        const partial_sum_t& psum = it->first;
-        node_t& node = it->second;
-        if (psum.is_terminal()) {
-            ++it;
-            continue;
-        }
-        // first remove all non-valid edges from this node
-        node.ee.erase(std::remove_if(node.ee.begin(), node.ee.end(),
-            [&psum,&fbm,this](const edge_t& e) { 
-                partial_sum_t next_ps = this->next(fbm, psum, e.value);
-                // cout << psum <<" next "<< next_ps<<endl;
-                return this->all_psums.count(next_ps) == 0;
-            }), node.ee.end()
-        );
-        if (node.ee.empty())
-            all_psums.erase(it++);
-        else
-            ++it;
-    }
-}
 
 //---------------------------------------------------------------------------------------
 
@@ -1613,14 +1754,54 @@ void iRank2Support::initialize()
             }
         }
 
+        /*cout << "\nDD "<<cc<<endl;
+        cdd_t dd(cc);
+        dd.initialize(fbm);
+        dd.collect_unused_nodes(fbm);
+        dd.show(fbm, cout);*/
+    }
+    if (verbose)
+        print_constraints();
+
+    cdd_t isect(0);
+    for (size_t cc = 0; cc<B.size(); cc++) {
         cout << "\nDD "<<cc<<endl;
         cdd_t dd(cc);
         dd.initialize(fbm);
         dd.collect_unused_nodes(fbm);
         dd.show(fbm, cout);
+
+        if (cc == 0) {
+            isect.swap(dd);
+        }
+        else {
+            cout << "\n\nDD intersect"<<endl;
+            cdd_t isect_n(0);
+            isect_n.intersection(fbm, isect, dd);
+            isect_n.collect_unused_nodes(fbm);
+            isect_n.show(fbm, cout);
+            isect_n.swap(isect);
+        }
     }
-    if (verbose)
-        print_constraints();
+
+    /*cout << "\n\nDD 0"<<endl;
+    cdd_t dd0(0);
+    dd0.initialize(fbm);
+    dd0.collect_unused_nodes(fbm);
+    dd0.show(fbm, cout);
+
+    cout << "\n\nDD 1"<<endl;
+    cdd_t dd1(1);
+    dd1.initialize(fbm);
+    dd1.collect_unused_nodes(fbm);
+    dd1.show(fbm, cout);
+
+    cout << "\n\nDD 0 intersect 1"<<endl;
+    cdd_t dd01(0);
+    dd01.intersection(fbm, dd0, dd1);
+    dd0.collect_unused_nodes(fbm);
+    dd01.show(fbm, cout);
+    exit(0);*/
 }
 
 //---------------------------------------------------------------------------------------
