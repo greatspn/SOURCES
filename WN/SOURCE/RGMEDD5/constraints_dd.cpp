@@ -199,16 +199,14 @@ class CDD_t {
 
     // Node table
     std::vector<node_t> forest;
-    // Cache
+    // Node cache
     std::unordered_set<hashed_node_t> cache;
 
-    static const size_t T;
-    static const size_t F;
+    static const size_t T; // terminal True
+    static const size_t F; // terminal False
 
     // Root node
     size_t root_node_id;
-
-    // Nodes by levels
 public:
     CDD_t(const flow_basis_metric_t& _fbm, size_t cc) : fbm(_fbm), constrs{cc} { }
 
@@ -217,10 +215,13 @@ public:
 
     // initialize for a single constraint
     void initialize();
+
     // remove dangling nodes
     bool collect_unused_nodes();
+
     void show(ostream& os) const;
 
+    // Next node after assigning value to the variable at node.level()
     node_t next(const node_t& node, int value) const;
 
     // intersection between two cdds
@@ -385,10 +386,6 @@ size_t CDD_t::add_node(node_t&& node) {
     if (node.ee.empty())
         return F;
     assert(!node.is_terminal());
-    // if (node.is_true())
-    //     return node.psums_equal(forest[T]) ? T : F;
-    // if (node.is_false())
-    //     return F;
 
     // Start by appending at the end of the forest
     size_t node_id = forest.size();
@@ -413,30 +410,48 @@ size_t CDD_t::add_node(node_t&& node) {
 //---------------------------------------------------------------------------------------
 
 node_t CDD_t::next(const node_t& node, int value) const {
+    assert(constrs.size() == 1);
     // determine the next level
-    int next_lvl = -1;
-    for (size_t cc=0; cc<constrs.size(); cc++) {
-        const int_lin_constr_t& constr = fbm.B[constrs[cc]];
-        if (node.level() <= constr.coeffs.leading()) { // leading term
-            next_lvl = max(next_lvl, -1);
-        }
-        else if (node.level() > constr.coeffs.trailing()) { // trailing term
-            next_lvl = max(next_lvl, int(constr.coeffs.trailing()));
-        }
-        else {
-            const int ii = constr.coeffs.lower_bound_nnz(node.level());
-            const int lvl_below = constr.coeffs.ith_nonzero(ii - 1).index;
-            next_lvl = max(next_lvl, lvl_below);
-        }
+    int next_lvl;
+    const int_lin_constr_t& constr = fbm.B[constrs[0]];
+    if (node.level() <= constr.coeffs.leading()) { // leading term
+        next_lvl = -1; // Top level
+    }
+    else {
+        const int ii = constr.coeffs.lower_bound_nnz(node.level());
+        const int lvl_below = constr.coeffs.ith_nonzero(ii - 1).index;
+        next_lvl = lvl_below;
     }
 
-    node_t next_node(next_lvl, node.num_psums());
-    for (size_t cc=0; cc<constrs.size(); cc++) {
-        const int_lin_constr_t& constr = fbm.B[constrs[cc]];
-        next_node.psums[cc] = node.psums[cc] + constr.coeffs[node.level()] * value;
-    }
+    node_t next_node(next_lvl, 1);
+    next_node.psums[0] = node.psums[0] + constr.coeffs[node.level()] * value;
     // cout << node <<" next value="<<value<<" is "<< next_node<<endl;
     return next_node;
+
+    // // determine the next level
+    // int next_lvl = -1;
+    // for (size_t cc=0; cc<constrs.size(); cc++) {
+    //     const int_lin_constr_t& constr = fbm.B[constrs[cc]];
+    //     if (node.level() <= constr.coeffs.leading()) { // leading term
+    //         next_lvl = max(next_lvl, -1);
+    //     }
+    //     else if (node.level() > constr.coeffs.trailing()) { // trailing term
+    //         next_lvl = max(next_lvl, int(constr.coeffs.trailing()));
+    //     }
+    //     else {
+    //         const int ii = constr.coeffs.lower_bound_nnz(node.level());
+    //         const int lvl_below = constr.coeffs.ith_nonzero(ii - 1).index;
+    //         next_lvl = max(next_lvl, lvl_below);
+    //     }
+    // }
+
+    // node_t next_node(next_lvl, node.num_psums());
+    // for (size_t cc=0; cc<constrs.size(); cc++) {
+    //     const int_lin_constr_t& constr = fbm.B[constrs[cc]];
+    //     next_node.psums[cc] = node.psums[cc] + constr.coeffs[node.level()] * value;
+    // }
+    // // cout << node <<" next value="<<value<<" is "<< next_node<<endl;
+    // return next_node;
 }
 
 //---------------------------------------------------------------------------------------
@@ -460,12 +475,6 @@ bool CDD_t::collect_unused_nodes() {
 
     // Mark nodes in use
     mark_recursively(in_use, root_node_id);
-
-    // for (size_t id=0; id<forest.size(); id++) {
-    //     const node_t& node = forest[id];
-    //     cout << " - id=" << id << "  in_use=" << (in_use[id]?"Y":"N") 
-    //          << "   " << node << (node.ee.empty() ? "!!!!!!!!!!!!" : "") << endl;
-    // }
 
     if (std::find(in_use.begin(), in_use.end(), false) == in_use.end())
         return false; // nothing to be removed
@@ -495,18 +504,7 @@ bool CDD_t::collect_unused_nodes() {
     }
 
     // Remap the root node
-    // cout << "root_node_id = " << root_node_id << " -> " << remap[root_node_id] << endl;
     root_node_id = remap[root_node_id];
-
-    // for (size_t id=0; id<forest.size(); id++) {
-    //     const node_t& node = forest[id];
-    //     if (node.is_terminal())
-    //         continue;
-    //     if (node.ee.empty()) {
-    //         cout << " !!!! id=" << id << "  " << node << endl;
-    //     }
-    //     assert(!node.ee.empty());
-    // }
 
     return true;
 }
@@ -553,6 +551,7 @@ size_t CDD_t::intersect_recursive(const CDD_t& c1, const CDD_t& c2,
     const node_t& node1 = c1.forest[node_id1];
     const node_t& node2 = c2.forest[node_id2];
 
+    // Perform edge intersection
     if (new_node.level() != node2.level()) {
         for (const edge_t& ee1 : node1.ee) {
             size_t next_id = intersect_recursive(c1, c2, ee1.node_ref, node_id2, op_cache);
@@ -830,8 +829,9 @@ void experiment_cdd(const flow_basis_metric_t& fbm) {
 
     // Compute discount factors
     for (size_t K=1; K<=fbm.B.size(); K++) {
-        std::vector<double> discount_factors(npl, 1.0);
+        std::vector<double> discount_factors;
         if (K>=2) {
+            discount_factors.resize(npl, 1.0);
             for (size_t start=0; start<fbm.B.size()-1; start+=K-1) {
                 size_t end = min(start+K, fbm.B.size());
                 // cout << "start="<<start<<" K="<<K<<" end="<<end<<endl;
@@ -876,48 +876,16 @@ void experiment_cdd(const flow_basis_metric_t& fbm) {
                     prod *= node_counts[i][lvl];
                 }
             }
-            NK += cardinality_t(std::round(prod * discount_factors[lvl]));
+            if (!discount_factors.empty())
+                prod *= discount_factors[lvl];
+
+            NK += cardinality_t(std::round(prod));
         }
         cout << "N("<<K<<") = " << NK << endl;
     }
 
 
-    // cout << "\n\nSCORE:" << endl;
-    // cardinality_t N1=0, N2=0;
-    // for (ssize_t lvl=npl-1; lvl>=0; lvl--) {
-    //     cardinality_t prod = 1;
-    //     cout << "LVL " << lvl << ": ";
-    //     for (size_t i=0; i<fbm.B.size(); i++) {
-    //         if (node_counts[i][lvl] > 0) {
-    //             prod *= node_counts[i][lvl];
-    //             cout << node_counts[i][lvl] << " ";
-    //         }
-    //     }
-    //     N1 += prod;
-    //     N2 += prod * discount_factors[lvl];
-
-    //     cout << " = " << prod << endl;
-    // }
-    // cout << endl;
-
-    // cout << "N1 = " << N1 << endl;
-    // cout << "N2 = " << N2 << endl;
-
-
-
-    /*unique_ptr<CDD_t> isect = std::move(constr_dd[0]);
-    for (size_t i=1; i<fbm.B.size(); i++) {
-        unique_ptr<CDD_t> isect_n = make_unique<CDD_t>(fbm, 0);
-        isect_n->intersection(*isect, *constr_dd[i]);
-        isect_n->collect_unused_nodes();
-        // isect_n->show(cout);
-        cout << "Nodes: " << isect_n->num_nodes()-2 << endl;
-        cout << "Edges: " << isect_n->num_edges() << endl;
-        cout << endl;
-
-        std::swap(isect_n, isect);
-    }*/
-    exit(0);
+    // exit(0);
 }
 
 //---------------------------------------------------------------------------------------
