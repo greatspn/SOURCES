@@ -214,20 +214,25 @@ public:
     inline size_t num_nodes() const { return forest.size(); }
     size_t num_edges() const;
 
+    // initialize for a single constraint
     void initialize();
+    // remove dangling nodes
     bool collect_unused_nodes();
     void show(ostream& os) const;
 
     node_t next(const node_t& node, int value) const;
 
+    // intersection between two cdds
     void intersection(const CDD_t& c1, const CDD_t& c2);
 
+    // get the domain of the variables for the active levels
     std::map<size_t, std::vector<bool>> mark_var_domains() const;
 
     // remove variable values from all nodes
     void intersect_var_domains(const std::vector<std::vector<bool>>& var_doms);
 
-    // void swap(CDD_t&);
+    // count nodes/edges by level
+    void count_nodes_edges(std::vector<size_t>& nodes, std::vector<size_t>& edges) const;
 
 private:
     typedef std::map<std::pair<size_t, size_t>, size_t> intersection_op_cache_t;
@@ -629,6 +634,24 @@ size_t CDD_t::intersect_var_domains_recursive(const std::vector<std::vector<bool
 
 //---------------------------------------------------------------------------------------
 
+void CDD_t::count_nodes_edges(std::vector<size_t>& nodes, std::vector<size_t>& edges) const {
+    nodes.clear();
+    edges.clear();
+    nodes.resize(npl, 0);
+    edges.resize(npl, 0);
+    for (const node_t& node : forest) {
+        if (node.is_terminal())
+            continue;
+
+        nodes[node.level()]++;
+        edges[node.level()] += node.ee.size();
+    }
+}
+
+//---------------------------------------------------------------------------------------
+
+
+
 
 
 
@@ -649,18 +672,21 @@ std::vector<std::vector<bool>> initialize_level_domains(const flow_basis_metric_
 
 //---------------------------------------------------------------------------------------
 
-void intersect_level_domains(std::vector<std::vector<bool>>& dom,
+bool intersect_level_domains(std::vector<std::vector<bool>>& dom,
                              const std::map<size_t, std::vector<bool>>& level_doms) 
 {
+    bool changed = false;
     for (auto iter : level_doms) {
         const size_t lvl = iter.first;
         assert(iter.second.size() == dom[lvl].size());
         for (size_t i=0; i<iter.second.size(); i++)
-            if (!iter.second[i]) {
+            if (!iter.second[i] && dom[lvl][i]) {
                 dom[lvl][i] = false;
+                changed = true;
                 // cout << "removing " << i << " from level " << lvl << endl;
             }
     }
+    return changed;
 }
 
 //---------------------------------------------------------------------------------------
@@ -674,6 +700,19 @@ void show_level_domains(std::vector<std::vector<bool>>& dom) {
                 cout << " " << i;
         }
         cout << endl;
+    }
+}
+
+//---------------------------------------------------------------------------------------
+
+void propagate(std::vector<size_t>& values, size_t leading, size_t trailing) {
+    assert(0 <= leading && leading <= trailing && trailing < npl);
+    size_t memory = 0;
+    for (size_t l=leading; l<=trailing; l++) {
+        if (values[l] != 0)
+            memory = values[l];
+        else
+            values[l] = memory;
     }
 }
 
@@ -706,33 +745,95 @@ void experiment_cdd(const flow_basis_metric_t& fbm) {
         // show_level_domains(dom);
         // cout << endl;
     }
-    show_level_domains(dom);
-    cout << endl;
 
-    for (size_t i=0; i<fbm.B.size(); i++) {
-        size_t sz1 = constr_dd[i]->num_nodes();
-        constr_dd[i]->intersect_var_domains(dom);
-        size_t sz2 = constr_dd[i]->num_nodes();
-        cout << "constraint " << i << " from " << sz1 << " to " << sz2 << endl;
-        // constr_dd[i]->show(cout);
-        // cout << endl;
+    bool repeat = true;
+    while (repeat) {
+        cout << "\n\nVARIABLE DOMAINS:" << endl;
+        show_level_domains(dom);
+        cout << endl;
+        repeat = false;
+        for (size_t i=0; i<fbm.B.size(); i++) {
+            size_t sz1 = constr_dd[i]->num_nodes();
+            constr_dd[i]->intersect_var_domains(dom);
+            size_t sz2 = constr_dd[i]->num_nodes();
+            // cout << "constraint " << i << " from " << sz1 << " to " << sz2 << endl;
+            // constr_dd[i]->show(cout);
+            cout << endl;
+        }
+
+        for (size_t i=0; i<fbm.B.size(); i++) {
+            std::map<size_t, std::vector<bool>> level_doms;
+            level_doms = constr_dd[i]->mark_var_domains();
+            if (intersect_level_domains(dom, level_doms))
+                repeat = true;
+        }
     }
     cout << "\n\n\n\n\n\n";
     // exit(0);
 
+    std::vector<std::vector<size_t>> node_counts(fbm.B.size());
+    std::vector<size_t> nodes, edges;
+    for (size_t i=0; i<fbm.B.size(); i++) {
+        constr_dd[i]->count_nodes_edges(node_counts[i], edges);
+        propagate(node_counts[i], fbm.B[i].coeffs.leading(), fbm.B[i].coeffs.trailing());
+    }
+    std::vector<double> discount_factors(npl, 1.0);
+
+    
+    for (size_t i=0; i<fbm.B.size() - 1; i++) {
+        CDD_t isect_pair(fbm, 0);
+        isect_pair.intersection(*constr_dd[i], *constr_dd[i+1]);
+        isect_pair.collect_unused_nodes();
+        isect_pair.count_nodes_edges(nodes, edges);
+        propagate(nodes, 
+                  min(fbm.B[i].coeffs.leading(), fbm.B[i+1].coeffs.leading()), 
+                  max(fbm.B[i].coeffs.trailing(), fbm.B[i+1].coeffs.trailing()));
+        for (size_t lvl=0; lvl<npl; lvl++) {      
+            size_t prod = node_counts[i][lvl] * node_counts[i+1][lvl];
+            if (prod > 0) {
+                double discount = double(nodes[lvl]) / prod;
+                discount_factors[lvl] *= discount;
+                // cout << "discount i="<<i<<" lvl="<<lvl<<"  f="<<discount<<endl;
+            }
+        }
+    }
+
+    cout << "\n\nSCORE:" << endl;
+    cardinality_t N1=0, N2=0;
+    for (ssize_t lvl=npl-1; lvl>=0; lvl--) {
+        cardinality_t prod = 1;
+        cout << "LVL " << lvl << ": ";
+        for (size_t i=0; i<fbm.B.size(); i++) {
+            if (node_counts[i][lvl] > 0) {
+                prod *= node_counts[i][lvl];
+                cout << node_counts[i][lvl] << " ";
+            }
+        }
+        N1 += prod;
+        N2 += prod * discount_factors[lvl];
+
+        cout << " = " << prod << endl;
+    }
+    cout << endl;
+
+    cout << "N1 = " << N1 << endl;
+    cout << "N2 = " << N2 << endl;
 
 
-    unique_ptr<CDD_t> isect = std::move(constr_dd[0]);
+
+    /*unique_ptr<CDD_t> isect = std::move(constr_dd[0]);
     for (size_t i=1; i<fbm.B.size(); i++) {
         unique_ptr<CDD_t> isect_n = make_unique<CDD_t>(fbm, 0);
         isect_n->intersection(*isect, *constr_dd[i]);
         isect_n->collect_unused_nodes();
-        isect_n->show(cout);
+        // isect_n->show(cout);
         cout << "Nodes: " << isect_n->num_nodes()-2 << endl;
         cout << "Edges: " << isect_n->num_edges() << endl;
+        cout << endl;
 
         std::swap(isect_n, isect);
-    }
+    }*/
+    // exit(0);
 }
 
 //---------------------------------------------------------------------------------------
