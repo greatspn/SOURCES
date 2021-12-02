@@ -191,6 +191,7 @@ namespace std {
 // Constraint Decision Diagram
 //---------------------------------------------------------------------------------------
 class CDD_t {
+    public:
     // Constraints table
     const flow_basis_metric_t& fbm;
     // Constraint indices in the footprint matrix fbm.B
@@ -220,17 +221,27 @@ public:
 
     node_t next(const node_t& node, int value) const;
 
-    typedef std::map<std::pair<size_t, size_t>, size_t> intersection_op_cache_t;
     void intersection(const CDD_t& c1, const CDD_t& c2);
+
+    std::map<size_t, std::vector<bool>> mark_var_domains() const;
+
+    // remove variable values from all nodes
+    void intersect_var_domains(const std::vector<std::vector<bool>>& var_doms);
 
     // void swap(CDD_t&);
 
 private:
+    typedef std::map<std::pair<size_t, size_t>, size_t> intersection_op_cache_t;
     size_t intersect_recursive(const CDD_t& c1, const CDD_t& c2,
                                const size_t node_id1, const size_t node_id2,
                                intersection_op_cache_t& op_cache);
 
     size_t initialize_recursive(node_t&& node);
+
+    typedef std::map<size_t, size_t> intersect_var_domains_cache_t;
+    size_t intersect_var_domains_recursive(const std::vector<std::vector<bool>>& var_doms,
+                                           const size_t node_id,
+                                           intersect_var_domains_cache_t& op_cache);
 
     size_t add_node(node_t&& node);
 
@@ -382,12 +393,11 @@ size_t CDD_t::add_node(node_t&& node) {
     if (it != cache.end()) { // node exists
         forest.pop_back();
         node_id = it->node_id;
-
-        cout << "USING " << node_id << " as " << forest[node_id] << endl;
+        // cout << "USING " << node_id << " as " << forest[node_id] << endl;
     }
     else { // New node
         cache.emplace(std::move(hn));
-        cout << "NEW " << node_id << " as " << forest[node_id] << endl;
+        // cout << "NEW " << node_id << " as " << forest[node_id] << endl;
     }
 
     return node_id;
@@ -566,29 +576,193 @@ size_t CDD_t::intersect_recursive(const CDD_t& c1, const CDD_t& c2,
 
 //---------------------------------------------------------------------------------------
 
-void experiment_cdd(const flow_basis_metric_t& fbm) {
-
-    unique_ptr<CDD_t> isect;
-    for (size_t i=0; i<fbm.B.size(); i++) {
-        unique_ptr<CDD_t> dd = make_unique<CDD_t>(fbm, i);
-        dd->initialize();
-        dd->collect_unused_nodes();
-        dd->show(cout);
-
-        if (isect == nullptr) {
-            std::swap(isect, dd);
+std::map<size_t, std::vector<bool>> CDD_t::mark_var_domains() const {
+    // initialize the domain
+    std::map<size_t, std::vector<bool>> level_doms;
+    // mark all domain values used by the DD edges
+    for (const node_t& node : forest) {
+        if (node.is_terminal())
+            continue;
+        if (level_doms.count(node.level()) == 0) {
+            // initialize the level
+            const int plc = fbm.level_to_net[node.level()];
+            const int bound = fbm.get_bound(plc);
+            std::vector<bool> ld(bound + 1, false);
+            level_doms[node.level()] = ld;
         }
-        else {
-            unique_ptr<CDD_t> isect_n = make_unique<CDD_t>(fbm, 0);
-            isect_n->intersection(*isect, *dd);
-            isect_n->collect_unused_nodes();
-            isect_n->show(cout);
-            cout << "Nodes: " << isect_n->num_nodes() << endl;
-            cout << "Edges: " << isect_n->num_edges() << endl;
-
-            std::swap(isect_n, isect);
+        std::vector<bool>& doms = level_doms[node.level()];
+        // cout << "marking node: " << node << endl;
+        for (const edge_t& edge : node.ee) {
+            doms[edge.value] = true;
         }
     }
+    return level_doms;
+}
+
+//---------------------------------------------------------------------------------------
+
+void CDD_t::intersect_var_domains(const std::vector<std::vector<bool>>& var_doms) {
+    intersect_var_domains_cache_t op_cache;
+    root_node_id = intersect_var_domains_recursive(var_doms, root_node_id, op_cache);
+    // collect_unused_nodes();
+}
+
+//---------------------------------------------------------------------------------------
+
+size_t CDD_t::intersect_var_domains_recursive(const std::vector<std::vector<bool>>& var_doms,
+                                              const size_t node_id,
+                                              intersect_var_domains_cache_t& op_cache)
+{
+    if (node_id == T || node_id == F)
+        return node_id; // nothing to do
+
+    size_t cache_key = node_id;
+    auto cache = op_cache.find(cache_key);
+    if (cache != op_cache.end())
+        return cache->second;
+
+    node_t& node = forest[node_id];
+    // node_t new_node(base_node.level(), base_node.num_psums());
+    // std::copy(base_node.psums.begin(), base_node.psums.end(), new_node.psums.begin());
+
+    std::vector<edge_t> new_edges;
+    for (const edge_t& edge : node.ee) {
+        if (var_doms[node.level()][edge.value]) {
+            size_t next_id = intersect_var_domains_recursive(var_doms, edge.node_ref, op_cache);
+            if (next_id != F)
+                new_edges.push_back(edge_t{.value=edge.value, .node_ref=next_id});
+        }
+    }
+    std::swap(new_edges, node.ee);
+
+    size_t new_node_id;
+    if (node.ee.empty())
+        new_node_id = F;
+    else 
+        new_node_id = node_id;
+    
+    // cout << "intersect dom: " << node << "  " << node_id << "->" << new_node_id << endl;
+    op_cache.insert(make_pair(cache_key, new_node_id));
+
+    return new_node_id;
+}
+
+//---------------------------------------------------------------------------------------
+
+
+
+
+
+
+//---------------------------------------------------------------------------------------
+
+std::vector<std::vector<bool>> initialize_level_domains(const flow_basis_metric_t& fbm) 
+{
+    std::vector<std::vector<bool>> dom(npl);
+    for (size_t lvl=0; lvl<dom.size(); lvl++) {
+        const int plc = fbm.level_to_net[lvl];
+        const int bound = fbm.get_bound(plc);
+        dom[lvl].resize(bound + 1, true);
+    }
+    return dom;
+}
+
+//---------------------------------------------------------------------------------------
+
+void intersect_level_domains(std::vector<std::vector<bool>>& dom,
+                             const std::map<size_t, std::vector<bool>>& level_doms) 
+{
+    for (auto iter : level_doms) {
+        const size_t lvl = iter.first;
+        assert(iter.second.size() == dom[lvl].size());
+        for (size_t i=0; i<iter.second.size(); i++)
+            if (!iter.second[i]) {
+                dom[lvl][i] = false;
+                // cout << "removing " << i << " from level " << lvl << endl;
+            }
+    }
+}
+
+//---------------------------------------------------------------------------------------
+
+void show_level_domains(std::vector<std::vector<bool>>& dom) {
+    for (ssize_t lvl = dom.size()-1; lvl >=0; lvl--) {
+        cout << "LEVEL " << setw(2) << lvl << ": ";
+        for (size_t i=0; i<dom[lvl].size(); i++) {
+            // cout << " " << (dom[lvl][i] ? "T" : "F");
+            if (dom[lvl][i])
+                cout << " " << i;
+        }
+        cout << endl;
+    }
+}
+
+//---------------------------------------------------------------------------------------
+
+void experiment_cdd(const flow_basis_metric_t& fbm) {
+
+    std::vector<std::vector<bool>> dom = initialize_level_domains(fbm);
+    std::vector<std::unique_ptr<CDD_t>> constr_dd(fbm.B.size());
+
+    for (size_t i=0; i<fbm.B.size(); i++) {
+        constr_dd[i] = make_unique<CDD_t>(fbm, i);
+        constr_dd[i]->initialize();
+        constr_dd[i]->collect_unused_nodes();
+        constr_dd[i]->show(cout);
+        cout << endl;
+
+        std::map<size_t, std::vector<bool>> level_doms;
+        level_doms = constr_dd[i]->mark_var_domains();
+        // for (auto iter : level_doms) {
+        //     cout << "LVL " << iter.first << " : ";
+        //     for (size_t i=0; i<iter.second.size(); i++)
+        //         if (iter.second[i])
+        //             cout << " " << i;
+        //     cout << endl;
+        // }
+        // cout << endl;
+
+        intersect_level_domains(dom, level_doms);
+        // show_level_domains(dom);
+        // cout << endl;
+    }
+    show_level_domains(dom);
+    cout << endl;
+
+    for (size_t i=0; i<fbm.B.size(); i++) {
+        size_t sz1 = constr_dd[i]->num_nodes();
+        size_t root1 = constr_dd[i]->root_node_id;
+        constr_dd[i]->intersect_var_domains(dom);
+        // constr_dd[i]->collect_unused_nodes();
+        size_t sz2 = constr_dd[i]->num_nodes();
+        size_t root2 = constr_dd[i]->root_node_id;
+        cout << "constraint " << i << " from " << sz1 << " to " << sz2 << "    root1:"<<root1<<" root2:"<<root2<< endl;
+        // constr_dd[i]->show(cout);
+        // cout << endl;
+    }
+    cout << "\n\n\n\n\n\n";
+
+    // // unique_ptr<CDD_t> isect;
+    // for (size_t i=0; i<fbm.B.size(); i++) {
+    //     unique_ptr<CDD_t> dd = make_unique<CDD_t>(fbm, i);
+    //     dd->initialize();
+    //     dd->collect_unused_nodes();
+    //     dd->show(cout);
+
+    //     if (isect == nullptr) {
+    //         std::swap(isect, dd);
+    //     }
+    //     else {
+    //         unique_ptr<CDD_t> isect_n = make_unique<CDD_t>(fbm, 0);
+    //         isect_n->intersection(*isect, *dd);
+    //         isect_n->collect_unused_nodes();
+    //         isect_n->show(cout);
+    //         cout << "Nodes: " << isect_n->num_nodes() << endl;
+    //         cout << "Edges: " << isect_n->num_edges() << endl;
+
+    //         std::swap(isect_n, isect);
+    //     }
+    // }
 }
 
 //---------------------------------------------------------------------------------------

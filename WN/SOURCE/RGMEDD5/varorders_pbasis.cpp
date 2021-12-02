@@ -1583,7 +1583,7 @@ void iRank2Support::initialize()
 
     cout << "\n\n\n========================\n";
     experiment_cdd(fbm);
-    exit(0);
+    // exit(0);
 
     // cout << "\n\n\n========================\n";
     // cdd_t isect(0);
