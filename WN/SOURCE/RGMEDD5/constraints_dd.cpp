@@ -806,47 +806,102 @@ void experiment_cdd(const flow_basis_metric_t& fbm) {
         constr_dd[i]->count_nodes_edges(node_counts[i], edges);
         propagate(node_counts[i], fbm.B[i].coeffs.leading(), fbm.B[i].coeffs.trailing());
     }
-    std::vector<double> discount_factors(npl, 1.0);
+
+    // std::vector<double> discount_factors(npl, 1.0);
 
     
-    for (size_t i=0; i<fbm.B.size() - 1; i++) {
-        CDD_t isect_pair(fbm, 0);
-        isect_pair.intersection(*constr_dd[i], *constr_dd[i+1]);
-        isect_pair.collect_unused_nodes();
-        isect_pair.count_nodes_edges(nodes, edges);
-        propagate(nodes, 
-                  min(fbm.B[i].coeffs.leading(), fbm.B[i+1].coeffs.leading()), 
-                  max(fbm.B[i].coeffs.trailing(), fbm.B[i+1].coeffs.trailing()));
-        for (size_t lvl=0; lvl<npl; lvl++) {      
-            size_t prod = node_counts[i][lvl] * node_counts[i+1][lvl];
-            if (prod > 0) {
-                double discount = double(nodes[lvl]) / prod;
-                discount_factors[lvl] *= discount;
-                // cout << "discount i="<<i<<" lvl="<<lvl<<"  f="<<discount<<endl;
+    // for (size_t i=0; i<fbm.B.size() - 1; i++) {
+    //     CDD_t isect_pair(fbm, 0);
+    //     isect_pair.intersection(*constr_dd[i], *constr_dd[i+1]);
+    //     isect_pair.collect_unused_nodes();
+    //     isect_pair.count_nodes_edges(nodes, edges);
+    //     propagate(nodes, 
+    //               min(fbm.B[i].coeffs.leading(), fbm.B[i+1].coeffs.leading()), 
+    //               max(fbm.B[i].coeffs.trailing(), fbm.B[i+1].coeffs.trailing()));
+    //     for (size_t lvl=0; lvl<npl; lvl++) {      
+    //         size_t prod = node_counts[i][lvl] * node_counts[i+1][lvl];
+    //         if (prod > 0) {
+    //             double discount = double(nodes[lvl]) / prod;
+    //             discount_factors[lvl] *= discount;
+    //             // cout << "discount i="<<i<<" lvl="<<lvl<<"  f="<<discount<<endl;
+    //         }
+    //     }
+    // }
+
+    // Compute discount factors
+    for (size_t K=1; K<=fbm.B.size(); K++) {
+        std::vector<double> discount_factors(npl, 1.0);
+        if (K>=2) {
+            for (size_t start=0; start<fbm.B.size()-1; start+=K-1) {
+                size_t end = min(start+K, fbm.B.size());
+                // cout << "start="<<start<<" K="<<K<<" end="<<end<<endl;
+                unique_ptr<CDD_t> isect_n = make_unique<CDD_t>(fbm, 0);
+                isect_n->intersection(*constr_dd[start], *constr_dd[start+1]);
+                isect_n->collect_unused_nodes();
+                for (size_t j=start+2; j<end; j++) {
+                    unique_ptr<CDD_t> isect_swap = make_unique<CDD_t>(fbm, 0);
+                    isect_swap->intersection(*isect_n, *constr_dd[j]); 
+                    isect_swap->collect_unused_nodes();
+                    isect_n = std::move(isect_swap);
+                }
+                isect_n->count_nodes_edges(nodes, edges);
+
+                size_t leading = npl, trailing = 0;
+                for (size_t j=start; j<end; j++) {
+                    leading = min(leading, fbm.B[j].coeffs.leading());
+                    trailing = max(trailing, fbm.B[j].coeffs.trailing());
+                }
+                propagate(nodes, leading, trailing);
+
+                for (size_t lvl=0; lvl<npl; lvl++) {      
+                    size_t prod = 1;
+                    for (size_t j=start; j<end; j++) {
+                        if (node_counts[j][lvl] > 0)
+                            prod *= node_counts[j][lvl];
+                    }
+                    if (prod > 0 && nodes[lvl] > 0) {
+                        double discount = double(nodes[lvl]) / prod;
+                        discount_factors[lvl] *= discount;
+                        // cout << "discount start="<<start<<" lvl="<<lvl<<"  f="<<discount<<endl;
+                    }
+                }
             }
         }
-    }
-
-    cout << "\n\nSCORE:" << endl;
-    cardinality_t N1=0, N2=0;
-    for (ssize_t lvl=npl-1; lvl>=0; lvl--) {
-        cardinality_t prod = 1;
-        cout << "LVL " << lvl << ": ";
-        for (size_t i=0; i<fbm.B.size(); i++) {
-            if (node_counts[i][lvl] > 0) {
-                prod *= node_counts[i][lvl];
-                cout << node_counts[i][lvl] << " ";
+        // Compute the N(K) score
+        cardinality_t NK=0;
+        for (ssize_t lvl=npl-1; lvl>=0; lvl--) {
+            double prod = 1;
+            for (size_t i=0; i<fbm.B.size(); i++) {
+                if (node_counts[i][lvl] > 0) {
+                    prod *= node_counts[i][lvl];
+                }
             }
+            NK += cardinality_t(std::round(prod * discount_factors[lvl]));
         }
-        N1 += prod;
-        N2 += prod * discount_factors[lvl];
-
-        cout << " = " << prod << endl;
+        cout << "N("<<K<<") = " << NK << endl;
     }
-    cout << endl;
 
-    cout << "N1 = " << N1 << endl;
-    cout << "N2 = " << N2 << endl;
+
+    // cout << "\n\nSCORE:" << endl;
+    // cardinality_t N1=0, N2=0;
+    // for (ssize_t lvl=npl-1; lvl>=0; lvl--) {
+    //     cardinality_t prod = 1;
+    //     cout << "LVL " << lvl << ": ";
+    //     for (size_t i=0; i<fbm.B.size(); i++) {
+    //         if (node_counts[i][lvl] > 0) {
+    //             prod *= node_counts[i][lvl];
+    //             cout << node_counts[i][lvl] << " ";
+    //         }
+    //     }
+    //     N1 += prod;
+    //     N2 += prod * discount_factors[lvl];
+
+    //     cout << " = " << prod << endl;
+    // }
+    // cout << endl;
+
+    // cout << "N1 = " << N1 << endl;
+    // cout << "N2 = " << N2 << endl;
 
 
 
@@ -862,7 +917,7 @@ void experiment_cdd(const flow_basis_metric_t& fbm) {
 
         std::swap(isect_n, isect);
     }*/
-    // exit(0);
+    exit(0);
 }
 
 //---------------------------------------------------------------------------------------
