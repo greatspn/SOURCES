@@ -1383,20 +1383,34 @@ class cdd_t {
 public:
     cdd_t(size_t cc) : constrs{cc} { }
 
+    inline size_t num_nodes() const { return all_psums.size(); }
+    size_t num_edges() const;
+
     void initialize(const flow_basis_metric_t& fbm);
     bool collect_unused_nodes(const flow_basis_metric_t& fbm);
     void show(const flow_basis_metric_t& fbm, ostream& os) const;
 
     partial_sum_t next(const flow_basis_metric_t& fbm, const partial_sum_t& psum, int value) const;
 
+    typedef std::map<std::pair<partial_sum_t, partial_sum_t>, partial_sum_t> intersection_op_cache_t;
     void intersection(const flow_basis_metric_t& fbm, const cdd_t& c1, const cdd_t& c2);
 
     void swap(cdd_t&);
 
 private:
     bool intersect(const flow_basis_metric_t& fbm, const cdd_t& c1, const cdd_t& c2,
-                            const partial_sum_t& psum1, const partial_sum_t& psum2);
+                   const partial_sum_t& psum1, const partial_sum_t& psum2,
+                   intersection_op_cache_t& op_cache);
 };
+
+//---------------------------------------------------------------------------------------
+
+size_t cdd_t::num_edges() const {
+    size_t cnt = 0;
+    for (auto& node : all_psums)
+        cnt += node.second.ee.size();
+    return cnt;
+}
 
 //---------------------------------------------------------------------------------------
 
@@ -1491,11 +1505,11 @@ partial_sum_t cdd_t::next(const flow_basis_metric_t& fbm, const partial_sum_t& p
     int next_lvl = -1;
     for (size_t cc=0; cc<constrs.size(); cc++) {
         const int_lin_constr_t& constr = fbm.B[constrs[cc]];
-        if (psum.level() <= constr.coeffs.front_nonzero().index) { // leading term
+        if (psum.level() <= constr.coeffs.leading()) { // leading term
             next_lvl = max(next_lvl, -1);
         }
-        else if (psum.level() > constr.coeffs.back_nonzero().index) { // trailing term
-            // next_lvl = max(next_lvl, int(constr.coeffs.back_nonzero().index));
+        else if (psum.level() > constr.coeffs.trailing()) { // trailing term
+            next_lvl = max(next_lvl, int(constr.coeffs.trailing()));
         }
         else {
             const int ii = constr.coeffs.lower_bound_nnz(psum.level());
@@ -1529,8 +1543,15 @@ bool cdd_t::collect_unused_nodes(const flow_basis_metric_t& fbm) {
         node.ee.erase(std::remove_if(node.ee.begin(), node.ee.end(),
             [&psum,&fbm,this](const edge_t& e) { 
                 partial_sum_t next_ps = this->next(fbm, psum, e.value);
+                if (next_ps.is_true())
+                    return false; // keep
                 // cout << psum <<" next "<< next_ps << "  count="<<this->all_psums.count(next_ps)<<endl;
-                return /*!next_ps.is_true() &&*/ this->all_psums.count(next_ps) == 0;
+                if (this->all_psums.count(next_ps) == 0) {
+                    // cout << "missing node " << next_ps << endl;
+                    return true;
+                }
+
+                return false;
             }), node.ee.end()
         );
         if (node.ee.empty()) {
@@ -1539,6 +1560,13 @@ bool cdd_t::collect_unused_nodes(const flow_basis_metric_t& fbm) {
         }
         else
             ++it;
+    }
+    if (all_psums.count(root_psum) == 0) {
+        cout << "\n\n!!! REMOVED ROOT NODE " << root_psum << endl;
+        root_psum = F;
+        all_psums.clear();
+        all_psums.insert(make_pair(T, node_t()));
+        all_psums.insert(make_pair(F, node_t()));
     }
     return removed;
 }
@@ -1549,7 +1577,7 @@ void cdd_t::intersection(const flow_basis_metric_t& fbm, const cdd_t& c1, const 
     all_psums.clear();
     constrs.clear();
     constrs.insert(constrs.end(), c1.constrs.begin(), c1.constrs.end());
-    constrs.insert(constrs.end(), c1.constrs.begin(), c1.constrs.end());
+    constrs.insert(constrs.end(), c2.constrs.begin(), c2.constrs.end());
 
     // join the terminal nodes
     T = partial_sum_t(c1.T, c2.T);
@@ -1562,9 +1590,15 @@ void cdd_t::intersection(const flow_basis_metric_t& fbm, const cdd_t& c1, const 
     root_psum = partial_sum_t(c1.root_psum, c2.root_psum);
 
     // do the intersection
-    bool ok = intersect(fbm, c1, c2, c1.root_psum, c2.root_psum);
-    if (ok)
-        all_psums.insert(make_pair(root_psum, node_t()));
+    intersection_op_cache_t op_cache;
+    bool ok = intersect(fbm, c1, c2, c1.root_psum, c2.root_psum, op_cache);
+    if (ok) {
+        assert(all_psums.size() > 0);
+        root_psum = all_psums.rbegin()->first; // get the top node as the root
+        // cout << "ROOT = " << all_psums.rbegin()->first << "  -  " << root_psum << endl;
+        // assert(all_psums.count(root_psum) == 1);
+        // all_psums.insert(make_pair(root_psum, node_t()));
+    }
     else
         root_psum = F;
 }
@@ -1572,14 +1606,18 @@ void cdd_t::intersection(const flow_basis_metric_t& fbm, const cdd_t& c1, const 
 //---------------------------------------------------------------------------------------
 
 bool cdd_t::intersect(const flow_basis_metric_t& fbm, const cdd_t& c1, const cdd_t& c2,
-                               const partial_sum_t& psum1, const partial_sum_t& psum2)
+                      const partial_sum_t& psum1, const partial_sum_t& psum2,
+                      intersection_op_cache_t& op_cache)
 {
-    if (psum1.is_true()) {
+    if (psum1.is_true())
         return psum2.is_true();
-    }
-    else if (psum1.is_false()) {
+    else if (psum1.is_false())
         return false;
-    }
+
+    auto cache_key = make_pair(psum1, psum2);
+    auto cache = op_cache.find(cache_key);
+    if (cache != op_cache.end())
+        return true;
 
     partial_sum_t ps(psum1, psum2);
     auto found = all_psums.find(ps);
@@ -1597,7 +1635,7 @@ bool cdd_t::intersect(const flow_basis_metric_t& fbm, const cdd_t& c1, const cdd
         for (const edge_t& ee1 : node1.ee) {
             partial_sum_t next_ps1 = c1.next(fbm, psum1, ee1.value);
             partial_sum_t next(next_ps1, psum2);
-            if (intersect(fbm, c1, c2, next_ps1, psum2))
+            if (intersect(fbm, c1, c2, next_ps1, psum2, op_cache))
                 nn.ee.push_back(edge_t{ee1.value});
         }
     }
@@ -1605,21 +1643,27 @@ bool cdd_t::intersect(const flow_basis_metric_t& fbm, const cdd_t& c1, const cdd
         for (const edge_t& ee2 : node2.ee) {
             partial_sum_t next_ps2 = c2.next(fbm, psum2, ee2.value);
             partial_sum_t next(psum1, next_ps2);
-            if (intersect(fbm, c1, c2, psum1, next_ps2))
+            if (intersect(fbm, c1, c2, psum1, next_ps2, op_cache))
                 nn.ee.push_back(edge_t{ee2.value});
         }
     }
     else {
-        for (const edge_t& ee1 : node1.ee) {
-            for (const edge_t& ee2 : node2.ee) {
-                if (ee1.value == ee2.value) {
-                    // Generate the intersection node
-                    partial_sum_t next_ps1 = c1.next(fbm, psum1, ee1.value);
-                    partial_sum_t next_ps2 = c2.next(fbm, psum2, ee2.value);
-                    partial_sum_t next = intersect(fbm, c1, c2, next_ps1, next_ps2);
-                    if (!next.is_false())
-                        nn.ee.push_back(edge_t{ee1.value});
-                }
+        size_t i1 = 0, i2 = 0;
+        while (i1 < node1.ee.size() && i2 < node2.ee.size()) {
+            if (node1.ee[i1].value < node2.ee[i2].value)
+                i1++;
+            else if (node1.ee[i1].value > node2.ee[i2].value)
+                i2++;
+            else {
+                // Generate the intersection node
+                int value = node1.ee[i1].value;
+                partial_sum_t next_ps1 = c1.next(fbm, psum1, value);
+                partial_sum_t next_ps2 = c2.next(fbm, psum2, value);
+                partial_sum_t next = intersect(fbm, c1, c2, next_ps1, next_ps2, op_cache);
+                if (!next.is_false())
+                    nn.ee.push_back(edge_t{value});
+                i1++;
+                i2++;
             }
         }
     }
@@ -1627,6 +1671,7 @@ bool cdd_t::intersect(const flow_basis_metric_t& fbm, const cdd_t& c1, const cdd
     if (!nn.ee.empty()) {
         assert(all_psums.count(ps) == 0);
         all_psums.insert(make_pair(ps, nn));
+        op_cache.insert(make_pair(cache_key, ps));
         // cout << psum1 << " intersect " << psum2 << "  -->  " << ps << " : " << nn.ee.size() << endl;
         return true;
     }
@@ -1763,6 +1808,7 @@ void iRank2Support::initialize()
     if (verbose)
         print_constraints();
 
+    cout << "\n\n\n========================\n";
     cdd_t isect(0);
     for (size_t cc = 0; cc<B.size(); cc++) {
         cout << "\nDD "<<cc<<endl;
@@ -1780,9 +1826,12 @@ void iRank2Support::initialize()
             isect_n.intersection(fbm, isect, dd);
             isect_n.collect_unused_nodes(fbm);
             isect_n.show(fbm, cout);
+            cout << "Nodes = " << isect_n.num_nodes() << endl;
+            cout << "Edges = " << isect_n.num_edges() << endl;
             isect_n.swap(isect);
         }
     }
+    // exit(0);
 
     /*cout << "\n\nDD 0"<<endl;
     cdd_t dd0(0);
