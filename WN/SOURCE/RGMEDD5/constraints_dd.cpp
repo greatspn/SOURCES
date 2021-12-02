@@ -42,6 +42,10 @@ struct edge_t {
 class node_t {
     int lvl; // can be negative (terminal levels)
 public:
+    std::vector<int> psums; // partial sums of the constraints
+    std::vector<edge_t> ee; // value/node-ref pairs (edges)
+    size_t precompted_hash;
+
     inline node_t(int _lvl=int(-100), size_t _num_constr=0) 
     : lvl(_lvl), psums(_num_constr, -100) { }
 
@@ -49,10 +53,6 @@ public:
     node_t(node_t&&) = default;
     node_t& operator=(const node_t&) = default;
     node_t& operator=(node_t&&) = default;
-
-    std::vector<int> psums; // partial sums of the constraints
-    std::vector<edge_t> ee; // value/node-ref pairs (edges)
-    size_t precompted_hash;
 
     // join two partial sums into a single empty node
     inline node_t(const node_t& ps1, const node_t& ps2) 
@@ -75,7 +75,7 @@ public:
     inline bool is_true() const { return lvl == -1; }
     inline bool is_false() const { return lvl == -2; }
 
-    void precompte_hash();
+    void precompute_hash();
 
     // inline bool operator<(const node_t& rhs) const {
     //     assert(num_psums() == rhs.num_psums());
@@ -102,6 +102,7 @@ void node_t::swap(node_t& ps) {
     std::swap(lvl, ps.lvl);
     std::swap(psums, ps.psums);
     std::swap(ee, ps.ee);
+    std::swap(precompted_hash, ps.precompted_hash);
 }
 
 //---------------------------------------------------------------------------------------
@@ -152,7 +153,7 @@ inline size_t hash_combine(size_t seed, T v, Rest&&... rest) {
 
 //---------------------------------------------------------------------------------------
 
-void node_t::precompte_hash() {
+void node_t::precompute_hash() {
     precompted_hash = 0x3ea4a8cdab71bde9;
     for (size_t cc=0; cc<num_psums(); cc++)
         precompted_hash = hash_combine(precompted_hash, size_t(psums[cc]));
@@ -248,6 +249,8 @@ private:
                                            intersect_var_domains_cache_t& op_cache);
 
     size_t add_node(node_t&& node);
+
+    void mark_recursively(std::vector<bool>& in_use, size_t node_id) const;
 
     friend struct std::hash<hashed_node_t>;
     friend struct hashed_node_t;
@@ -389,7 +392,7 @@ size_t CDD_t::add_node(node_t&& node) {
 
     // Start by appending at the end of the forest
     size_t node_id = forest.size();
-    node.precompte_hash();
+    node.precompute_hash();
     forest.emplace_back(node);
     // Search the node in the cache
     hashed_node_t hn {.node_id=node_id, .p_dd=this};
@@ -436,19 +439,33 @@ node_t CDD_t::next(const node_t& node, int value) const {
     return next_node;
 }
 
-// //---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+
+void CDD_t::mark_recursively(std::vector<bool>& in_use, size_t node_id) const {
+    in_use.at(node_id) = true;
+    if (node_id == T || node_id == F)
+        return;
+    const node_t& node = forest[node_id];
+    for (const edge_t& e : node.ee) {
+        mark_recursively(in_use, e.node_ref);
+    }
+}
+
+//---------------------------------------------------------------------------------------
 
 bool CDD_t::collect_unused_nodes() {
     std::vector<bool> in_use(forest.size(), false);
+    std::fill(in_use.begin(), in_use.end(), false);
     in_use[T] = in_use[F] = in_use[root_node_id] = true;
 
     // Mark nodes in use
-    for (const node_t& node : forest) {
-        if (node.is_terminal())
-            continue;
-        for (const edge_t& e : node.ee)
-            in_use.at(e.node_ref) = true;
-    }
+    mark_recursively(in_use, root_node_id);
+
+    // for (size_t id=0; id<forest.size(); id++) {
+    //     const node_t& node = forest[id];
+    //     cout << " - id=" << id << "  in_use=" << (in_use[id]?"Y":"N") 
+    //          << "   " << node << (node.ee.empty() ? "!!!!!!!!!!!!" : "") << endl;
+    // }
 
     if (std::find(in_use.begin(), in_use.end(), false) == in_use.end())
         return false; // nothing to be removed
@@ -458,7 +475,8 @@ bool CDD_t::collect_unused_nodes() {
     for (size_t i=0; i<forest.size(); i++) {
         if (in_use[i]) {
             remap[i] = count;
-            std::swap(forest[count], forest[i]);
+            if (count != i)
+                std::swap(forest[count], forest[i]);
             count++;
         }
     }
@@ -479,6 +497,16 @@ bool CDD_t::collect_unused_nodes() {
     // Remap the root node
     // cout << "root_node_id = " << root_node_id << " -> " << remap[root_node_id] << endl;
     root_node_id = remap[root_node_id];
+
+    // for (size_t id=0; id<forest.size(); id++) {
+    //     const node_t& node = forest[id];
+    //     if (node.is_terminal())
+    //         continue;
+    //     if (node.ee.empty()) {
+    //         cout << " !!!! id=" << id << "  " << node << endl;
+    //     }
+    //     assert(!node.ee.empty());
+    // }
 
     return true;
 }
@@ -602,6 +630,7 @@ size_t CDD_t::intersect_var_domains_recursive(const std::vector<std::vector<bool
                                               const size_t node_id,
                                               intersect_var_domains_cache_t& op_cache)
 {
+    // cout << "intersect_var_domains_recursive node_id="<<node_id<<"  "<<forest[node_id]<<endl;
     if (node_id == T || node_id == F)
         return node_id; // nothing to do
 
@@ -626,7 +655,7 @@ size_t CDD_t::intersect_var_domains_recursive(const std::vector<std::vector<bool
     if (node.ee.empty())
         new_node_id = F;
     
-    // cout << "intersect dom: " << node << "  " << node_id << "->" << new_node_id << endl;
+    // cout << "intersect dom: " << node_id << "->" << new_node_id << "  " << node << endl;
     op_cache.insert(make_pair(cache_key, new_node_id));
 
     return new_node_id;
@@ -757,7 +786,7 @@ void experiment_cdd(const flow_basis_metric_t& fbm) {
             constr_dd[i]->intersect_var_domains(dom);
             size_t sz2 = constr_dd[i]->num_nodes();
             // cout << "constraint " << i << " from " << sz1 << " to " << sz2 << endl;
-            // constr_dd[i]->show(cout);
+            constr_dd[i]->show(cout);
             cout << endl;
         }
 
