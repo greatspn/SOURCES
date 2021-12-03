@@ -44,7 +44,7 @@ class node_t {
 public:
     std::vector<int> psums; // partial sums of the constraints
     std::vector<edge_t> ee; // value/node-ref pairs (edges)
-    size_t precompted_hash;
+    size_t precomputed_hash;
 
     inline node_t(int _lvl=int(-100), size_t _num_constr=0) 
     : lvl(_lvl), psums(_num_constr, -100) { }
@@ -102,7 +102,7 @@ void node_t::swap(node_t& ps) {
     std::swap(lvl, ps.lvl);
     std::swap(psums, ps.psums);
     std::swap(ee, ps.ee);
-    std::swap(precompted_hash, ps.precompted_hash);
+    std::swap(precomputed_hash, ps.precomputed_hash);
 }
 
 //---------------------------------------------------------------------------------------
@@ -154,9 +154,9 @@ inline size_t hash_combine(size_t seed, T v, Rest&&... rest) {
 //---------------------------------------------------------------------------------------
 
 void node_t::precompute_hash() {
-    precompted_hash = 0x3ea4a8cdab71bde9;
+    precomputed_hash = 0x3ea4a8cdab71bde9;
     for (size_t cc=0; cc<num_psums(); cc++)
-        precompted_hash = hash_combine(precompted_hash, size_t(psums[cc]));
+        precomputed_hash = hash_combine(precomputed_hash, size_t(psums[cc]));
 }
 
 //---------------------------------------------------------------------------------------
@@ -168,9 +168,13 @@ void node_t::precompute_hash() {
 
 class CDD_t;
 struct hashed_node_t {
-    size_t node_id;
-    CDD_t* p_dd;
+    size_t node_id; // node id or -1
+    union {
+        CDD_t* p_dd;          // when node_id !=-1
+        const node_t* p_node; // when node_id == -1
+    };
 
+    inline const node_t& get_node() const;
     bool operator==(const hashed_node_t& rhs) const;
 };
 
@@ -266,16 +270,16 @@ const size_t CDD_t::F = 0;
 
 namespace std {
     std::size_t hash<hashed_node_t>::operator()(const hashed_node_t& k) const {
-        const node_t& node = k.p_dd->forest[k.node_id];
-        return node.precompted_hash;
-        return 0;
+        return k.get_node().precomputed_hash;
     }
 };
 
+const node_t& hashed_node_t::get_node() const { 
+    return (node_id != -1 ? p_dd->forest[node_id] : *p_node); 
+}
+
 bool hashed_node_t::operator==(const hashed_node_t& rhs) const {
-    const node_t& n1 = p_dd->forest[node_id];
-    const node_t& n2 = p_dd->forest[rhs.node_id];
-    return n1.psums_equal(n2);
+    return get_node().psums_equal(rhs.get_node());
 }
 
 //---------------------------------------------------------------------------------------
@@ -358,6 +362,13 @@ size_t CDD_t::initialize_recursive(node_t&& node) {
     if (node.is_false())
         return F;
 
+    // search in cache
+    node.precompute_hash();
+    hashed_node_t hn {.node_id=size_t(-1), .p_node=&node};
+    auto it = cache.find(hn);
+    if (it != cache.end()) // node exists
+        return it->node_id;
+    
     size_t icc = constrs[0];
     const int_lin_constr_t& constr = fbm.B[icc];
 
@@ -368,6 +379,7 @@ size_t CDD_t::initialize_recursive(node_t&& node) {
     // Add the links to downward nodes
     for (int v=0; v<=bound; v++) {
         node_t next_node = next(node, v);
+        assert(next_node.num_psums() == 1);
 
         size_t new_node_id = initialize_recursive(std::move(next_node));
         if (new_node_id != F)
@@ -410,12 +422,17 @@ size_t CDD_t::add_node(node_t&& node) {
 //---------------------------------------------------------------------------------------
 
 node_t CDD_t::next(const node_t& node, int value) const {
+    // cout <<"next "<< node <<"  value="<<value<<endl;
     assert(constrs.size() == 1);
+    assert(node.num_psums() == 1);
     // determine the next level
     int next_lvl;
     const int_lin_constr_t& constr = fbm.B[constrs[0]];
+    const int next_psum = node.psums[0] + constr.coeffs[node.level()] * value;
+
     if (node.level() <= constr.coeffs.leading()) { // leading term
-        next_lvl = -1; // Top level
+        // next_lvl = -1; // Top level
+        return (next_psum == constr.const_term) ? forest[T] : forest[F];
     }
     else {
         const int ii = constr.coeffs.lower_bound_nnz(node.level());
@@ -424,7 +441,7 @@ node_t CDD_t::next(const node_t& node, int value) const {
     }
 
     node_t next_node(next_lvl, 1);
-    next_node.psums[0] = node.psums[0] + constr.coeffs[node.level()] * value;
+    next_node.psums[0] = next_psum;
     // cout << node <<" next value="<<value<<" is "<< next_node<<endl;
     return next_node;
 
@@ -747,13 +764,15 @@ void propagate(std::vector<size_t>& values, size_t leading, size_t trailing) {
 //---------------------------------------------------------------------------------------
 
 void experiment_cdd(const flow_basis_metric_t& fbm) {
-
+    bool verbose = false;
     std::vector<std::vector<bool>> dom = initialize_level_domains(fbm);
     std::vector<std::unique_ptr<CDD_t>> constr_dd(fbm.B.size());
 
     for (size_t i=0; i<fbm.B.size(); i++) {
         constr_dd[i] = make_unique<CDD_t>(fbm, i);
+        cout << "initialize constraint " << i << "/" << fbm.B.size() << endl;
         constr_dd[i]->initialize();
+        cout << "nodes="<<constr_dd[i]->num_nodes()<<" edges="<<constr_dd[i]->num_edges()<<endl;
         constr_dd[i]->collect_unused_nodes();
         constr_dd[i]->show(cout);
         cout << endl;
@@ -796,7 +815,7 @@ void experiment_cdd(const flow_basis_metric_t& fbm) {
                 repeat = true;
         }
     }
-    cout << "\n\n\n\n\n\n";
+    cout << "\n\n";
     // exit(0);
 
     std::vector<std::vector<size_t>> node_counts(fbm.B.size());
@@ -828,13 +847,22 @@ void experiment_cdd(const flow_basis_metric_t& fbm) {
     // }
 
     // Compute discount factors
+    verbose = false;
+    cout << "SCORES WITH DISCOUNT FACTORS:\n";
     for (size_t K=1; K<=fbm.B.size(); K++) {
+        clock_t timeDF = clock();
         std::vector<double> discount_factors;
         if (K>=2) {
             discount_factors.resize(npl, 1.0);
-            for (size_t start=0; start<fbm.B.size()-1; start+=K-1) {
+            for (size_t start=0; start<fbm.B.size()-1; start+=K) {
                 size_t end = min(start+K, fbm.B.size());
-                // cout << "start="<<start<<" K="<<K<<" end="<<end<<endl;
+                if (verbose) {
+                    cout << "DISCOUNT FACTORS start="<<start<<" K="<<K<<" end="<<end<<"  seq=";
+                    for (size_t j=start; j<end; j++)
+                        cout << j << " ";
+                    cout << endl;
+                }
+
                 unique_ptr<CDD_t> isect_n = make_unique<CDD_t>(fbm, 0);
                 isect_n->intersection(*constr_dd[start], *constr_dd[start+1]);
                 isect_n->collect_unused_nodes();
@@ -867,24 +895,40 @@ void experiment_cdd(const flow_basis_metric_t& fbm) {
                 }
             }
         }
+
         // Compute the N(K) score
         cardinality_t NK=0;
+        if (verbose)
+            cout << "\nSCORE K="<<K<<endl;
         for (ssize_t lvl=npl-1; lvl>=0; lvl--) {
             double prod = 1;
+             if (verbose)
+                cout << " lvl "<<setw(3)<<lvl<<setw(5)<<tabp[fbm.level_to_net[lvl]].place_name<<":";
             for (size_t i=0; i<fbm.B.size(); i++) {
                 if (node_counts[i][lvl] > 0) {
                     prod *= node_counts[i][lvl];
+                    if (verbose)
+                        cout << " " << node_counts[i][lvl];
                 }
             }
-            if (!discount_factors.empty())
+            if (!discount_factors.empty()) {
                 prod *= discount_factors[lvl];
+                if (verbose)
+                    cout << " * " << discount_factors[lvl];
+            }
+            if (verbose)
+                cout << " = " << prod << endl;
 
             NK += cardinality_t(std::round(prod));
         }
-        cout << "N("<<K<<") = " << NK << endl;
+        timeDF = clock() - timeDF;
+
+        cout << "N("<<K<<") = " << setw(20) << NK << (verbose?"\n\n":"") 
+             << "\ttime: " << (timeDF/double(CLOCKS_PER_SEC)) << endl;
     }
 
 
+    cout << "\n\n---------------------\n";
     // exit(0);
 }
 
