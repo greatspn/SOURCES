@@ -14,6 +14,7 @@
 
 #include "rgmedd5.h"
 #include "varorders.h"
+#include "irank.h"
 
 #include "implicit_postimage.h"
 

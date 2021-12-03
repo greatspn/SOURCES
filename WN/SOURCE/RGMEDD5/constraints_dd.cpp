@@ -20,13 +20,6 @@
 // #include "utils/mt64.h"
 // #include "dlcrs_matrix.h"
 
-#ifdef HAS_LP_SOLVE_LIB
-#  undef NORMAL
-#  include <lp_lib.h>
-#else
-#  warning "Missing lp_solve library. RGMEDD5 modules that use LP will not be compiled."
-#endif // HAS_LP_SOLVE_LIB
-
 #include "irank.h"
 
 
@@ -240,6 +233,9 @@ public:
     // count nodes/edges by level
     void count_nodes_edges(std::vector<size_t>& nodes, std::vector<size_t>& edges) const;
 
+    // count assigned variable values per level
+    // void count_values_per_level(std::vector<std::map<int, size_t>>& vpl) const;
+
 private:
     typedef std::map<std::pair<size_t, size_t>, size_t> intersection_op_cache_t;
     size_t intersect_recursive(const CDD_t& c1, const CDD_t& c2,
@@ -425,20 +421,16 @@ node_t CDD_t::next(const node_t& node, int value) const {
     // cout <<"next "<< node <<"  value="<<value<<endl;
     assert(constrs.size() == 1);
     assert(node.num_psums() == 1);
-    // determine the next level
-    int next_lvl;
     const int_lin_constr_t& constr = fbm.B[constrs[0]];
     const int next_psum = node.psums[0] + constr.coeffs[node.level()] * value;
 
     if (node.level() <= constr.coeffs.leading()) { // leading term
-        // next_lvl = -1; // Top level
         return (next_psum == constr.const_term) ? forest[T] : forest[F];
     }
-    else {
-        const int ii = constr.coeffs.lower_bound_nnz(node.level());
-        const int lvl_below = constr.coeffs.ith_nonzero(ii - 1).index;
-        next_lvl = lvl_below;
-    }
+    // determine the next level
+    const int ii = constr.coeffs.lower_bound_nnz(node.level());
+    const int lvl_below = constr.coeffs.ith_nonzero(ii - 1).index;
+    int next_lvl = lvl_below;
 
     node_t next_node(next_lvl, 1);
     next_node.psums[0] = next_psum;
@@ -695,6 +687,26 @@ void CDD_t::count_nodes_edges(std::vector<size_t>& nodes, std::vector<size_t>& e
 
 //---------------------------------------------------------------------------------------
 
+// void CDD_t::count_values_per_level(std::vector<std::map<int, size_t>>& vpl) const {
+//     vpl.clear();
+//     vpl.resize(npl);
+//     for (const node_t& node : forest) {
+//         if (node.is_terminal())
+//             continue;
+
+//         for (const edge_t& edge : node.ee) {
+//             auto& vmap = vpl[node.level()];
+//             auto it = vmap.find(edge.value);
+//             if (it == vmap.end())
+//                 vmap[edge.value] = 1;
+//             else
+//                 it->second++;
+//         }
+//     }
+// }
+
+//---------------------------------------------------------------------------------------
+
 
 
 
@@ -825,6 +837,11 @@ void experiment_cdd(const flow_basis_metric_t& fbm) {
         propagate(node_counts[i], fbm.B[i].coeffs.leading(), fbm.B[i].coeffs.trailing());
     }
 
+    // std::vector< std::vector<std::map<int, size_t>> > all_vpl(fbm.B.size());
+    // for (size_t i=0; i<fbm.B.size(); i++) {
+    //     constr_dd[i]->count_values_per_level(all_vpl[i]);
+    // }
+
     // std::vector<double> discount_factors(npl, 1.0);
 
     
@@ -923,8 +940,24 @@ void experiment_cdd(const flow_basis_metric_t& fbm) {
         }
         timeDF = clock() - timeDF;
 
-        cout << "N("<<K<<") = " << setw(20) << NK << (verbose?"\n\n":"") 
+        cout << "  N("<<K<<") = " << setw(20) << NK << (verbose?"\n\n":"") 
              << "\ttime: " << (timeDF/double(CLOCKS_PER_SEC)) << endl;
+
+
+        // // Count the E(K) score
+        // for (ssize_t lvl=npl-1; lvl>=0; lvl--) {
+        //     double prod = 1;
+        //     //  if (verbose)
+        //     //     cout << " lvl "<<setw(3)<<lvl<<setw(5)<<tabp[fbm.level_to_net[lvl]].place_name<<":";
+        //     for (size_t i=0; i<fbm.B.size(); i++) {
+        //         if (node_counts[i][lvl] > 0) {
+        //             prod *= node_counts[i][lvl];
+        //             if (verbose)
+        //                 cout << " " << node_counts[i][lvl];
+        //         }
+        //     }
+        // }
+
     }
 
 

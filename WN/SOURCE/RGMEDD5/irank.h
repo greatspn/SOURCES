@@ -3,6 +3,9 @@
 #define __I_RANK_H__
 //---------------------------------------------------------------------------------------
 
+// Forward declaration
+typedef struct _lprec lprec; // from <lp_lib.h>
+
 //---------------------------------------------------------------------------------------
 // Integer range - used to approximate token ranges in p-basis metric
 //---------------------------------------------------------------------------------------
@@ -67,7 +70,11 @@ void row_footprint_form(int_lin_constr_vec_t& B);
 void reduced_row_footprint_form(int_lin_constr_vec_t& B);
 
 void print_flow_basis(const int_lin_constr_vec_t& B);
+
+// Reorder p-flows' variables according to a variable order
 void reorder_basis(int_lin_constr_vec_t& B, const std::vector<int>& net_to_level);
+// also canonicalize the vector of invariant constants
+// void reorder_basis(int_lin_constr_vec_t& B, std::vector<int>& consts, const std::vector<int>& net_to_level);
 
 //---------------------------------------------------------------------------------------
 // Support structure for the computation of P-flow based metrics
@@ -134,17 +141,17 @@ struct flow_basis_metric_t {
 
 protected:
 
-#ifdef HAS_LP_SOLVE_LIB
+// #ifdef HAS_LP_SOLVE_LIB
     // The ILP structure
     lprec *lp = nullptr;
     // Extra pre-allocated data structure
-    std::vector<REAL> ilp_row;
+    std::vector<double> ilp_row;
     std::vector<int> ilp_col;
 
     void delete_LP();
     void initialize_LP(const std::vector<int> &net_to_level);
     void solve_LP();
-#endif // HAS_LP_SOLVE_LIB
+// #endif // HAS_LP_SOLVE_LIB
 
     // verify that the inv_coeffs[] vector is coherent with the flow*m0 products
     void verify_inv_coeffs() const;
@@ -256,6 +263,9 @@ public:
 };
 
 //---------------------------------------------------------------------------------------
+
+cardinality_t irank2_repr_for_nodes(flow_basis_metric_t& fbm, std::vector<std::string>& RP);
+cardinality_t irank2_repr_for_edges(flow_basis_metric_t& fbm, std::vector<std::string>& RP);
 
 void experiment_cdd(const flow_basis_metric_t& fbm);
 
