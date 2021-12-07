@@ -103,7 +103,8 @@
 			"locale": "cpp",
 			"queue": "cpp",
 			"semaphore": "cpp",
-			"stack": "cpp"
+			"stack": "cpp",
+			"filesystem": "cpp"
 		}
 	},
 	// "C_Cpp.default.includePath": [

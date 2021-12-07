@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="New project" version="121">
-  <gspn name="CPN1" show-fluid-cmd="false" zoom="125">
+  <gspn name="CPN1" show-fluid-cmd="false">
     <nodes>
       <place domain="CC" marking="&lt;All&gt;" name="P0" superposition-tags="pp|aa|bb|cc" x="5.0" y="4.0"/>
       <transition name="T0" nservers-x="0.5" superposition-tags="tt" type="EXP" x="17.55" y="5.0"/>
@@ -265,6 +265,116 @@
     <edges>
       <arc head="T2" kind="INPUT" tail="PX"/>
       <arc head="P0" kind="OUTPUT" tail="T2"/>
+    </edges>
+  </gspn>
+  <gspn name="AA1" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <transition name="T0" nservers-x="0.5" superposition-tags="a|b" type="EXP" x="9.55" y="7.0"/>
+      <place name="P0" x="3.0" y="2.0"/>
+      <place name="P1" x="3.0" y="12.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="T0"/>
+    </edges>
+  </gspn>
+  <gspn name="AA2" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <transition name="T0" nservers-x="0.5" superposition-tags="a" type="EXP" x="8.55" y="7.0"/>
+      <transition name="T1" nservers-x="0.5" superposition-tags="b" type="EXP" x="17.55" y="7.0"/>
+      <place name="Q0" x="11.0" y="1.0"/>
+      <place name="Q1" x="20.0" y="1.0"/>
+      <place name="Q2" x="11.0" y="12.0"/>
+      <place name="Q3" x="20.0" y="12.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" tail="Q0"/>
+      <arc head="Q2" kind="OUTPUT" tail="T0"/>
+      <arc head="T1" kind="INPUT" tail="Q1"/>
+      <arc head="Q3" kind="OUTPUT" tail="T1"/>
+    </edges>
+  </gspn>
+  <gspn name="AA1+AA2" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place label-x="-4.000000000115023E-6" name="P0" x="3.0000020000000003" y="2.0"/>
+      <place label-x="-4.000000000115023E-6" label-y="1.499994000000001" name="P1" x="3.0000020000000003" y="12.000001999999999"/>
+      <place label-x="-1.7763568394002505E-15" label-y="1.5000000000000002" name="Q0" x="24.000002000000002" y="0.9999979999999999"/>
+      <place label-x="-1.7763568394002505E-15" label-y="1.5000000000000002" name="Q1" x="33.000002" y="0.9999979999999999"/>
+      <place label-x="-1.7763568394002505E-15" label-y="1.499994000000001" name="Q2" x="24.000002000000002" y="12.000001999999999"/>
+      <place label-x="-1.7763568394002505E-15" label-y="1.499994000000001" name="Q3" x="33.000002" y="12.000001999999999"/>
+      <transition delay="1.000000000000000" delay-x="0.4999980000000015" delay-y="1.0000039999999988" label-x="-3.999999997006398E-6" label-y="-1.4999979999999997" name="T0" nservers-x="0.5" superposition-tags="a|b" type="EXP" x="9.550002" y="6.999998"/>
+    </nodes>
+    <edges>
+      <arc head="T0" head-magnet="0" kind="INPUT" tail="Q1" tail-magnet="0">
+        <point x="32.322948000000004" y="5.3541"/>
+        <point x="12.047184000000001" y="6.565061999999999"/>
+      </arc>
+      <arc head="T0" head-magnet="0" kind="INPUT" tail="Q0" tail-magnet="0">
+        <point x="23.322948" y="5.3541"/>
+        <point x="10.433904" y="5.53794"/>
+      </arc>
+      <arc head="T0" head-magnet="0" kind="INPUT" tail="P0" tail-magnet="0"/>
+      <arc head="Q3" head-magnet="0" kind="OUTPUT" tail="T0" tail-magnet="0">
+        <point x="11.434938" y="10.04718"/>
+        <point x="32.070642" y="9.784403999999999"/>
+      </arc>
+      <arc head="Q2" head-magnet="0" kind="OUTPUT" tail="T0" tail-magnet="0">
+        <point x="12.462060000000001" y="8.433900000000001"/>
+        <point x="23.070642" y="9.784403999999999"/>
+      </arc>
+      <arc head="P1" head-magnet="0" kind="OUTPUT" tail="T0" tail-magnet="0"/>
+    </edges>
+  </gspn>
+  <gspn name="AA2+AA1" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place label-y="1.5000000000000002" name="Q0" x="11.0" y="0.9999979999999999"/>
+      <place label-x="1.7763568394002505E-15" label-y="1.5000000000000002" name="Q1" x="20.0" y="0.9999979999999999"/>
+      <place label-y="1.499994000000001" name="Q2" x="11.0" y="12.000001999999999"/>
+      <place label-x="1.7763568394002505E-15" label-y="1.499994000000001" name="Q3" x="20.0" y="12.000001999999999"/>
+      <place label-x="-3.999999998782755E-6" name="P0" x="27.000002000000002" y="2.0"/>
+      <place label-x="-3.999999998782755E-6" label-y="1.499994000000001" name="P1" x="27.000002000000002" y="12.000001999999999"/>
+      <transition delay="1.000000000000000" delay-x="0.4999980000000015" delay-y="1.0000039999999988" label-x="1.999999998503199E-6" label-y="-1.4999979999999997" name="T0" nservers-x="0.5" superposition-tags="a" type="EXP" x="8.55" y="6.999998"/>
+      <transition delay="1.000000000000000" delay-x="0.4999980000000015" delay-y="1.0000039999999988" label-x="1.999999998503199E-6" label-y="-1.4999979999999997" name="T1" nservers-x="0.5" superposition-tags="b" type="EXP" x="17.55" y="6.999998"/>
+    </nodes>
+    <edges>
+      <arc head="T0" head-magnet="0" kind="INPUT" tail="P0" tail-magnet="0">
+        <point x="30.880829999999996" y="5.40069"/>
+        <point x="9.433902" y="5.53794"/>
+      </arc>
+      <arc head="T0" head-magnet="0" kind="INPUT" tail="Q0" tail-magnet="0"/>
+      <arc head="P1" head-magnet="0" kind="OUTPUT" tail="T0" tail-magnet="0">
+        <point x="11.462057999999999" y="8.433900000000001"/>
+        <point x="30.880829999999996" y="10.599306"/>
+      </arc>
+      <arc head="Q2" head-magnet="0" kind="OUTPUT" tail="T0" tail-magnet="0"/>
+      <arc head="T1" head-magnet="0" kind="INPUT" tail="Q1" tail-magnet="0"/>
+      <arc head="Q3" head-magnet="0" kind="OUTPUT" tail="T1" tail-magnet="0"/>
+    </edges>
+  </gspn>
+  <gspn name="AA2+AA1 1" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place label-y="1.5000000000000002" name="Q0" x="11.0" y="0.9999979999999999"/>
+      <place label-x="1.7763568394002505E-15" label-y="1.5000000000000002" name="Q1" x="20.0" y="0.9999979999999999"/>
+      <place label-y="1.499994000000001" name="Q2" x="11.0" y="12.000001999999999"/>
+      <place label-x="1.7763568394002505E-15" label-y="1.499994000000001" name="Q3" x="20.0" y="12.000001999999999"/>
+      <place label-x="-3.999999998782755E-6" name="P0" x="27.000002000000002" y="2.0"/>
+      <place label-x="-3.999999998782755E-6" label-y="1.499994000000001" name="P1" x="27.000002000000002" y="12.000001999999999"/>
+      <transition delay="1.000000000000000" delay-x="0.4999980000000015" delay-y="1.0000039999999988" label-x="1.999999998503199E-6" label-y="-1.4999979999999997" name="T0" nservers-x="0.5" superposition-tags="a" type="EXP" x="8.55" y="6.999998"/>
+      <transition delay="1.000000000000000" delay-x="0.4999980000000015" delay-y="1.0000039999999988" label-x="1.999999998503199E-6" label-y="-1.4999979999999997" name="T1" nservers-x="0.5" superposition-tags="b" type="EXP" x="17.55" y="6.999998"/>
+    </nodes>
+    <edges>
+      <arc head="T0" head-magnet="0" kind="INPUT" tail="P0" tail-magnet="0">
+        <point x="30.880829999999996" y="5.40069"/>
+        <point x="9.433902" y="5.53794"/>
+      </arc>
+      <arc head="T0" head-magnet="0" kind="INPUT" tail="Q0" tail-magnet="0"/>
+      <arc head="P1" head-magnet="0" kind="OUTPUT" tail="T0" tail-magnet="0">
+        <point x="11.462057999999999" y="8.433900000000001"/>
+        <point x="30.880829999999996" y="10.599306"/>
+      </arc>
+      <arc head="Q2" head-magnet="0" kind="OUTPUT" tail="T0" tail-magnet="0"/>
+      <arc head="T1" head-magnet="0" kind="INPUT" tail="Q1" tail-magnet="0"/>
+      <arc head="Q3" head-magnet="0" kind="OUTPUT" tail="T1" tail-magnet="0"/>
     </edges>
   </gspn>
   <resource-list>

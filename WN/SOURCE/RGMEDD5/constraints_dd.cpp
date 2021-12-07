@@ -180,6 +180,26 @@ namespace std {
 //---------------------------------------------------------------------------------------
 
 
+//---------------------------------------------------------------------------------------
+// Simple parial sum for single constraint initialization
+struct single_psum_t {
+    int lvl;
+    int psum;
+
+    inline bool operator==(const single_psum_t& sps) const {
+        return lvl==sps.lvl && psum==sps.psum;
+    }
+};
+namespace std {
+    template<> struct hash<single_psum_t> {
+        std::size_t operator()(const single_psum_t& sps) const {
+            return hash_combine(sps.lvl, sps.psum);
+        }
+    };
+}
+//---------------------------------------------------------------------------------------
+
+
 
 
 
@@ -242,7 +262,9 @@ private:
                                const size_t node_id1, const size_t node_id2,
                                intersection_op_cache_t& op_cache);
 
-    size_t initialize_recursive(node_t&& node);
+    typedef std::unordered_map<single_psum_t, size_t> initialize_op_cache_t;
+    size_t initialize_recursive(node_t&& node,
+                                initialize_op_cache_t& op_cache);
 
     typedef std::map<size_t, size_t> intersect_var_domains_cache_t;
     size_t intersect_var_domains_recursive(const std::vector<std::vector<bool>>& var_doms,
@@ -344,13 +366,15 @@ void CDD_t::initialize() {
     node_t root_node(constr.coeffs.trailing(), 1);
     root_node.psums[0] = 0;
 
+    initialize_op_cache_t op_cache;
+
     // Fill the DD
-    root_node_id = initialize_recursive(std::move(root_node));
+    root_node_id = initialize_recursive(std::move(root_node), op_cache);
 }
 
 //---------------------------------------------------------------------------------------
 
-size_t CDD_t::initialize_recursive(node_t&& node) {
+size_t CDD_t::initialize_recursive(node_t&& node, initialize_op_cache_t& op_cache) {
     // cout << "initialize_recursive: " << node << endl;
     assert(constrs.size() == 1);
     if (node.is_true())
@@ -358,7 +382,13 @@ size_t CDD_t::initialize_recursive(node_t&& node) {
     if (node.is_false())
         return F;
 
-    // search in cache
+    // search in operation cache
+    single_psum_t op_key{.lvl=node.level(), .psum=node.psums[0]};
+    auto op_it = op_cache.find(op_key);
+    if (op_it != op_cache.end())
+        return op_it->second;
+
+    // search in node cache
     node.precompute_hash();
     hashed_node_t hn {.node_id=size_t(-1), .p_node=&node};
     auto it = cache.find(hn);
@@ -377,12 +407,15 @@ size_t CDD_t::initialize_recursive(node_t&& node) {
         node_t next_node = next(node, v);
         assert(next_node.num_psums() == 1);
 
-        size_t new_node_id = initialize_recursive(std::move(next_node));
+        size_t new_node_id = initialize_recursive(std::move(next_node), op_cache);
         if (new_node_id != F)
             node.ee.push_back(edge_t{.value=v, .node_ref=new_node_id});
     }
     // Add the node to the forest and to the cache
     size_t node_id = add_node(std::move(node));
+    
+    // Add to the operation cache
+    op_cache.insert(make_pair(op_key, node_id));
 
     return node_id;
 }
