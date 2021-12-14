@@ -9,7 +9,7 @@
 #include <map>
 #include <unordered_set>
 // #include <set>
-// #include <stack>
+#include <stack>
 // #include <cstdint>
 
 #include "rgmedd5.h"
@@ -499,6 +499,8 @@ node_t CDD_t::next(const node_t& node, int value) const {
 //---------------------------------------------------------------------------------------
 
 void CDD_t::mark_recursively(std::vector<bool>& in_use, size_t node_id) const {
+    if (in_use[node_id])
+        return; // already visited and marked recursively
     in_use.at(node_id) = true;
     if (node_id == T || node_id == F)
         return;
@@ -513,10 +515,11 @@ void CDD_t::mark_recursively(std::vector<bool>& in_use, size_t node_id) const {
 bool CDD_t::collect_unused_nodes() {
     std::vector<bool> in_use(forest.size(), false);
     std::fill(in_use.begin(), in_use.end(), false);
-    in_use[T] = in_use[F] = in_use[root_node_id] = true;
 
     // Mark nodes in use
     mark_recursively(in_use, root_node_id);
+    // Anyway, always mark the root and the terminals to avoid removals
+    in_use[T] = in_use[F] = in_use[root_node_id] = true;
 
     if (std::find(in_use.begin(), in_use.end(), false) == in_use.end())
         return false; // nothing to be removed
@@ -817,10 +820,10 @@ void experiment_cdd(const flow_basis_metric_t& fbm) {
         constr_dd[i] = make_unique<CDD_t>(fbm, i);
         cout << "initialize constraint " << i << "/" << fbm.B.size() << endl;
         constr_dd[i]->initialize();
-        cout << "nodes="<<constr_dd[i]->num_nodes()<<" edges="<<constr_dd[i]->num_edges()<<endl;
         constr_dd[i]->collect_unused_nodes();
-        constr_dd[i]->show(cout);
-        cout << endl;
+        cout << "nodes="<<constr_dd[i]->num_nodes()<<" edges="<<constr_dd[i]->num_edges()<<endl;
+        // constr_dd[i]->show(cout);
+        // cout << endl;
 
         std::map<size_t, std::vector<bool>> level_doms;
         level_doms = constr_dd[i]->mark_var_domains();
@@ -849,8 +852,8 @@ void experiment_cdd(const flow_basis_metric_t& fbm) {
             constr_dd[i]->intersect_var_domains(dom);
             size_t sz2 = constr_dd[i]->num_nodes();
             // cout << "constraint " << i << " from " << sz1 << " to " << sz2 << endl;
-            constr_dd[i]->show(cout);
-            cout << endl;
+            // constr_dd[i]->show(cout);
+            // cout << endl;
         }
 
         for (size_t i=0; i<fbm.B.size(); i++) {
@@ -996,6 +999,141 @@ void experiment_cdd(const flow_basis_metric_t& fbm) {
 
     cout << "\n\n---------------------\n";
     // exit(0);
+}
+
+//---------------------------------------------------------------------------------------
+
+std::vector<sparse_vector_t> transpose(const int_lin_constr_vec_t& B) {
+    std::vector<sparse_vector_t> T(B[0].coeffs.size(), sparse_vector_t(B.size()));
+
+    for (size_t r=0; r<B.size(); r++) {
+        const sparse_vector_t& row = B[r].coeffs;
+        for (size_t nz=0; nz<row.nonzeros(); nz++) {
+            auto c = row.ith_nonzero(nz);
+            T[c.index].add_element(r, c.value);
+        }
+    }
+    return T;
+}
+
+//---------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+//---------------------------------------------------------------------------------------
+
+int
+compute_variable_groups(const int_lin_constr_vec_t& B, 
+                        std::vector<int>& varsets, 
+                        int excluded_var=-1) 
+{
+    std::vector<sparse_vector_t> TB = transpose(B);
+
+    // Find all the connected sets
+    varsets.clear();
+    varsets.resize(npl, -1);
+    std::vector<bool> constr_visited(B.size(), false);
+    int set_id = 0;
+    size_t start_var = 0;
+    while (start_var < varsets.size()) {
+        if (varsets[start_var] != -1 || start_var==excluded_var) {
+            ++start_var;
+            continue;
+        }
+
+        std::stack<size_t> visit_constr;
+        for (auto it : TB[start_var]) {
+            if (!constr_visited[it.index]) {
+                visit_constr.push(it.index);
+                constr_visited[it.index] = true;
+            }
+        }
+        // visit the constraints in the visit queue
+        while (!visit_constr.empty()) {
+            size_t cc = visit_constr.top();
+            visit_constr.pop();
+
+            for (auto it : B[cc].coeffs) {
+                size_t vv = it.index; // variables in constraint cc
+                if (varsets[vv] == -1 && vv != excluded_var) {
+                    varsets[vv] = set_id;
+                    // transitively mark all constraints that share vv
+                    for (auto it : TB[vv]) {
+                        if (!constr_visited[it.index]) {
+                            visit_constr.push(it.index);
+                            constr_visited[it.index] = true;
+                        }
+                    }
+                }
+            }
+        }
+        ++set_id;
+        ++start_var;
+    }
+
+    // for (int grp : varsets)
+    //     cout << " " << grp;
+    // cout << endl;
+
+    return set_id;
+}
+
+//---------------------------------------------------------------------------------------
+
+void experiment_footprint_chaining(const std::vector<int>& net_to_mddLevel) {
+    int_lin_constr_vec_t B = get_int_constr_problem();
+    reorder_basis(B, net_to_mddLevel);
+    reduced_row_footprint_form(B);
+
+    // cout << "\n\nB=\n";
+    // print_flow_basis(B);
+    // cout << "\n\nTB=\n";
+    // print_flow_basis(TB);
+    // cout << endl;
+
+    // Find all the connected sets
+    std::vector<int> varsets;
+    int n_groups = compute_variable_groups(B, varsets);
+
+    for (int id=0; id<n_groups; id++) {
+        cout << "GROUP " << id << ": ";
+        for (size_t pl=0; pl<npl; pl++) {
+            int lvl = net_to_mddLevel[pl];
+            if (varsets[lvl] == id) {
+                cout << tabp[pl].place_name << " ";
+            }
+        }
+        cout << endl;
+    }
+
+    // search if there is a separator for two chainings
+    for (size_t pl=0; pl<npl; pl++) {
+        int lvl = net_to_mddLevel[pl];
+        std::vector<int> varsets2;
+        int n_groups2 = compute_variable_groups(B, varsets2, lvl);
+        if (n_groups2 != n_groups) {
+            cout << "Variable " << tabp[pl].place_name << " is a separator." << endl;
+        }
+    }
+
+    // // try random reorders
+    // std::vector<int> reorder = net_to_mddLevel;
+    // for (size_t i=0; i<100; i++) {
+    //     std::swap(reorder[genrand64_int63() % reorder.size()],
+    //               reorder[genrand64_int63() % reorder.size()]);
+    //     B = get_int_constr_problem();
+    //     reorder_basis(B, reorder);
+    //     reduced_row_footprint_form(B);
+
+    //     std::vector<int> varsets2;
+    //     int n_groups2 = compute_variable_groups(B, varsets);
+
+    //     // bool same = 
+    // }
 }
 
 //---------------------------------------------------------------------------------------

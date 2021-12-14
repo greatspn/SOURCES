@@ -253,7 +253,6 @@ void row_footprint_form(int_lin_constr_vec_t& B) {
                 i_max = i;
         // Move the pivot in position k
         std::swap(B[i_max], B[k]);
-        // std::swap(inv_coeffs[i_max], inv_coeffs[k]);
         // Annull column j0 to all the rows below the pivot (row k)
         const int j0 = B[k].coeffs.leading();
         for (int i=k+1; i<B.size(); i++) { // Get into a row-echelon form
@@ -298,7 +297,6 @@ void reduced_row_footprint_form(int_lin_constr_vec_t& B) {
                 i_max = i;
         // Move the pivot in position k
         std::swap(B[i_max], B[k]);
-        // std::swap(inv_coeffs[i_max], inv_coeffs[k]);
         // Annull column j0 to all the rows below the pivot (row k)
         if (B[k].coeffs.nonzeros() > 0) {
             const int j0 = B[k].coeffs.leading();
@@ -313,7 +311,6 @@ void reduced_row_footprint_form(int_lin_constr_vec_t& B) {
         // Annul the last column of B[k] to all the rows above the pivot row k
         if (B[k].coeffs.nonzeros() > 0) {
             const int jN = B[k].coeffs.trailing();
-            // const int j0 = B[k].leading();
             for (int i=k-1; i>=0; i--) { // Get into our modified row-echelon form
                 if (B[i].coeffs[jN] != 0) /*&& jN == B[i].trailing()*/
                     annul_column_of_B_row(B, i, k, jN);
@@ -361,6 +358,21 @@ void print_flow_basis(const int_lin_constr_vec_t& B) {
         for (size_t i=0; i<row.coeffs.size(); i++) {
             if (row.coeffs.leading() <= i && i <= row.coeffs.trailing())
                 cout << setw(3) << row.coeffs[i];
+            else
+                cout << "  .";
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
+//---------------------------------------------------------------------------------------
+
+void print_flow_basis(const std::vector<sparse_vector_t>& B) {
+    for (auto&& row : B) {
+        for (size_t i=0; i<row.size(); i++) {
+            if (row.leading() <= i && i <= row.trailing())
+                cout << setw(3) << row[i];
             else
                 cout << "  .";
         }

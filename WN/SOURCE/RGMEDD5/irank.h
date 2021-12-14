@@ -70,6 +70,7 @@ void row_footprint_form(int_lin_constr_vec_t& B);
 void reduced_row_footprint_form(int_lin_constr_vec_t& B);
 
 void print_flow_basis(const int_lin_constr_vec_t& B);
+void print_flow_basis(const std::vector<sparse_vector_t>& B);
 
 // Reorder p-flows' variables according to a variable order
 void reorder_basis(int_lin_constr_vec_t& B, const std::vector<int>& net_to_level);
@@ -235,7 +236,7 @@ public:
     // Enumerate the constraint values at level of each constraint
     constr_psums_t irank2_constr_psums;
 
-    bool verbose = true;
+    bool verbose = false;
     // stored edge counts
     std::vector<size_t> edge_counts;
 
@@ -268,6 +269,7 @@ cardinality_t irank2_repr_for_nodes(flow_basis_metric_t& fbm, std::vector<std::s
 cardinality_t irank2_repr_for_edges(flow_basis_metric_t& fbm, std::vector<std::string>& RP);
 
 void experiment_cdd(const flow_basis_metric_t& fbm);
+void experiment_footprint_chaining(const std::vector<int>& net_to_mddLevel);
 
 //---------------------------------------------------------------------------------------
 #endif // __I_RANK_H__

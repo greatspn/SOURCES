@@ -19,6 +19,7 @@
 #include "utils/reverse_heap.h"
 #include "optimization_finder.h"
 #include "parallel.h"
+#include "irank.h"
 
 //---------------------------------------------------------------------------------------
 
@@ -895,6 +896,9 @@ void determine_var_order(const var_order_selector& sel,
             cout << endl;
             // cout << "TIME-PSI:  " << double(time_PSI_RANK) / CLOCKS_PER_SEC << endl;
             // if (g_print_pbasis_metrics)
+            experiment_footprint_chaining(net_to_mddLevel);
+            cout << "\n--------------------------------------\n";
+
 #endif
 
         // }
@@ -1702,7 +1706,8 @@ void ilcp_add_slack_variables_to_model() {
                 break; // already standardized
 
             case CI_LESS_EQ: 
-                // x1 + 2*x2 <= 3  -->  x1 + 2*x2 + s1 = 3, s1 >= 0
+                // x1 + 2*x2 <= 3  -->  x1 + 2*x2 + s1 = 3,  s1 >= 0
+                // Ax <= b  -->  Ax + sv = b,  sv >= 0
                 sv = npl + (num_slack_vars++);
                 constr.coeffs.resize(sv+1);
                 constr.coeffs.insert_element(sv, 1);
@@ -1710,6 +1715,7 @@ void ilcp_add_slack_variables_to_model() {
                 break;
 
             case CI_GREAT_EQ: 
+                // Ax >= b  -->  Ax - sv = b,  sv >= 0
                 sv = npl + (num_slack_vars++);
                 constr.coeffs.resize(sv+1);
                 constr.coeffs.insert_element(sv, -1);
@@ -1726,6 +1732,7 @@ void ilcp_add_slack_variables_to_model() {
 
     // resize the place table
     tabp = (struct PLACES *)realloc(tabp, sizeof(struct PLACES) * (npl + num_slack_vars));
+    // Add the descriptors for the slack variables
     for (size_t ii=0; ii<num_slack_vars; ii++) {
         char buffer[32];
         snprintf(buffer, sizeof(buffer), "s%zu", ii);

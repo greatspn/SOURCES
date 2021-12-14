@@ -1585,13 +1585,13 @@ int initialize(int  argc,  char  *argv[]) {
         else if (0 == strcmp(argv[ii], "-F")) {
             g_var_order_sel.heuristics = VOC_FROM_FILE;
         }
-        else if (0 == strcmp(argv[ii], "-set-varorder")) {
+        else if (0 == strcmp(argv[ii], "-set-varord") || 0 == strcmp(argv[ii], "-set-varorder")) {
             if (ii + 1 < argc) {
                 g_var_order_sel.heuristics = VOC_FROM_FILE;
                 g_given_varorder = argv[++ii];
             }
             else {
-                cerr << "\nError:  -set-varorder \"<list of place names>\"\n";
+                cerr << "\nError:  -set-varord \"<list of place names>\"\n";
                 exit(1);
             }
         }
@@ -1704,7 +1704,7 @@ int initialize(int  argc,  char  *argv[]) {
             g_var_order_sel.annealing = Annealing::ANN_MINIMIZE_METRIC;
             g_var_order_sel.ann_metric = VariableOrderMetric::METRIC_SWIR;
         }
-        else if (0 == strcmp(argv[ii], "-ann-iRank")) {
+        else if (0 == strcasecmp(argv[ii], "-ann-iRank")) {
             g_var_order_sel.annealing = Annealing::ANN_MINIMIZE_METRIC;
             g_var_order_sel.ann_metric = VariableOrderMetric::METRIC_iRank;
         }
