@@ -10,6 +10,7 @@ import editor.domain.elements.GspnPage;
 import editor.domain.elements.Place;
 import editor.domain.elements.Transition;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /** Selects which nodes are kept in a composed net
@@ -31,9 +32,14 @@ public class ChoiceFunction {
     // Node names from net1 and net2
     private final Set<String> names1, names2;
     
+    // Rewriting rules for tags
+    private final Map<String, String> rewrite1, rewrite2;
+    
+    
     // Tag-based choice function
     public ChoiceFunction(String[] syncTags12, String[] remTags1, String[] remTags2, 
-                          String[] delTags12, String[] delTags1, String[] delTags2) 
+                          String[] delTags12, String[] delTags1, String[] delTags2,
+                          Map<String, String> rewrite1, Map<String, String> rewrite2) 
     {
         this.syncTags12 = syncTags12;
         this.remTags1 = remTags1;
@@ -43,6 +49,8 @@ public class ChoiceFunction {
         this.delTags2 = delTags2;
         this.names1 = null;
         this.names2 = null;
+        this.rewrite1 = rewrite1;
+        this.rewrite2 = rewrite2;
         this.mergePolicy = MergePolicy.BY_TAG;
     }
     
@@ -65,9 +73,21 @@ public class ChoiceFunction {
         this.delTags12 = null;
         this.delTags1 = null;
         this.delTags2 = null;
+        this.rewrite1 = null;
+        this.rewrite2 = null;
         this.mergePolicy = MergePolicy.BY_NAME;
     }
-    
+
+    //=========================================================================
+    // Tag rewriting rules
+    private String rewriteTag(String tag, Map<String, String> rules) {
+        if (rules == null)
+            return tag; // nothing to apply
+        String newTag = rules.get(tag);
+        return newTag == null ? tag : newTag;
+    }
+    private String rewriteTag1(String tag1) { return rewriteTag(tag1, rewrite1); }
+    private String rewriteTag2(String tag2) { return rewriteTag(tag2, rewrite2); }
     
     
     //=========================================================================
@@ -83,10 +103,12 @@ public class ChoiceFunction {
                 if (syncTags12 == null)
                     return false;
                 for (int n1=0; n1<node1.numTags(); n1++) {
+                    String tag1 = rewriteTag1(node1.getTag(n1));
                     for (int n2=0; n2<node2.numTags(); n2++) {
-                        if (node1.getTag(n1).equals(node2.getTag(n2))) {
+                        String tag2 = rewriteTag2(node2.getTag(n2));
+                        if (tag1.equals(tag2)) {
                             for (String tag : syncTags12)
-                                if (tag.equals(node1.getTag(n1)))
+                                if (tag.equals(tag1))
                                     return true;
                         }
                     }
@@ -99,7 +121,10 @@ public class ChoiceFunction {
     }
     
     // Determine if a non-composed node should be kept in the composed net
-    private boolean nodeShouldBeKept(Node node, String[] remTags, Set<String> names) {
+    private boolean nodeShouldBeKept(Node node, String[] remTags, 
+                                     Map<String, String> rules,
+                                     Set<String> names) 
+    {
         switch (mergePolicy) {
             case BY_NAME:
                 return !names.contains(node.getUniqueName());
@@ -108,8 +133,9 @@ public class ChoiceFunction {
                 if (remTags == null)
                     return true;
                 for (int n1=0; n1<node.numTags(); n1++) {
-                    for (String tag : syncTags12)
-                        if (tag.equals(node.getTag(n1)))
+                    String tag = rewriteTag(node.getTag(n1), rules);
+                    for (String syncTag : syncTags12)
+                        if (syncTag.equals(tag))
                             return false;
                 }
                 return true;
@@ -120,10 +146,10 @@ public class ChoiceFunction {
     }
     
     public boolean node1ShouldBeKept(Node node1) {
-        return nodeShouldBeKept(node1, remTags1, names2);
+        return nodeShouldBeKept(node1, remTags1, rewrite1, names2);
     }
     public boolean node2ShouldBeKept(Node node2) {
-        return nodeShouldBeKept(node2, remTags2, names1);
+        return nodeShouldBeKept(node2, remTags2, rewrite2, names1);
     }
     
     //=========================================================================
@@ -134,31 +160,34 @@ public class ChoiceFunction {
         
         // Take tags from node 1
         for (int n1=0; n1<node1.numTags(); n1++) {
+            String tag1 = rewriteTag1(node1.getTag(n1));
             boolean keep = true;
             if (delTags12 != null) {
                 for (int d=0; d<delTags12.length && keep; d++)
-                    if (delTags12[d].equals(node1.getTag(n1)))
+                    if (delTags12[d].equals(tag1))
                         keep = false;
             }
             if (keep) 
-                sb.append(tagCount++==0 ? "" : "|").append(node1.getTag(n1));
+                sb.append(tagCount++==0 ? "" : "|").append(tag1);
         }
         
         // Take remaining tags from node2
         for (int n2=0; n2<node2.numTags(); n2++) {
+            String tag2 = rewriteTag2(node2.getTag(n2));
             boolean found = false;
             for (int n1=0; n1<node1.numTags() && !found; n1++) {
-                if (node1.getTag(n1).equals(node2.getTag(n2))) {
+                String tag1 = rewriteTag1(node1.getTag(n1));
+                if (tag1.equals(tag2)) {
                     found = true;
                 }
             }
             if (!found && delTags12 != null) {
                 for (int d=0; d<delTags12.length && !found; d++)
-                    if (delTags12[d].equals(node2.getTag(n2)))
+                    if (delTags12[d].equals(tag2))
                         found = false;
             }
             if (!found)
-                sb.append(tagCount++==0 ? "" : "|").append(node2.getTag(n2));
+                sb.append(tagCount++==0 ? "" : "|").append(tag2);
                 
         }
         //System.out.println("mergeTags "+node1.getSuperPosTags()+" "+node2.getSuperPosTags()+" -> "+sb);
@@ -173,14 +202,15 @@ public class ChoiceFunction {
         
         // Take tags from node and check that are not in the delTags[] list
         for (int n1=0; n1<node.numTags(); n1++) {
+            String tag = rewriteTag1(node.getTag(n1));
             boolean keep = true;
             if (delTags != null) {
                 for (int d=0; d<delTags.length && keep; d++)
-                    if (delTags[d].equals(node.getTag(n1)))
+                    if (delTags[d].equals(tag))
                         keep = false;
             }
             if (keep) 
-                sb.append(tagCount++==0 ? "" : "|").append(node.getTag(n1));
+                sb.append(tagCount++==0 ? "" : "|").append(tag);
         }
         
         /*System.out.print("getKeptTags "+node.getSuperPosTags()+" -> "+sb+"   delTags="+(delTags==null ? "null": ""));

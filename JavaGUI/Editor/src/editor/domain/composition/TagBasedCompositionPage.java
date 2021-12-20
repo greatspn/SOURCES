@@ -22,13 +22,14 @@ import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
 import editor.domain.measures.SolverParams;
 import editor.domain.unfolding.Algebra;
 import editor.domain.unfolding.ChoiceFunction;
-import editor.domain.unfolding.MergePolicy;
 import editor.gui.ResourceFactory;
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import javax.swing.Icon;
 import org.w3c.dom.Document;
@@ -221,9 +222,14 @@ public class TagBasedCompositionPage extends MultiNetPage implements Serializabl
         }
         String[] selTagsPl = selTagsP.isEmpty() ? null : selTagsP.toArray(new String[selTagsP.size()]);
         String[] selTagsTr = selTagsT.isEmpty() ? null : selTagsT.toArray(new String[selTagsT.size()]);
+        Map<String, String> tagRewrite1 = null;
+        Map<String, String> tagRewrite2 = null;
+//        tagRewrite1 = new HashMap<String, String>(){{ put("next", "new"); }};
+//        tagRewrite2 = tagRewrite1;
+
         // initial
-        ChoiceFunction cfPl = new ChoiceFunction(selTagsPl, selTagsPl, selTagsPl, null, null, null);
-        ChoiceFunction cfTr = new ChoiceFunction(selTagsTr, selTagsTr, selTagsTr, null, null, null);
+        ChoiceFunction cfPl = new ChoiceFunction(selTagsPl, selTagsPl, selTagsPl, null, null, null, tagRewrite1, tagRewrite2);
+        ChoiceFunction cfTr = new ChoiceFunction(selTagsTr, selTagsTr, selTagsTr, null, null, null, tagRewrite1, tagRewrite2);
         // drop the synchronized tags
 //        ChoiceFunction cfPl = new ChoiceFunction(selTagsPl, selTagsPl, selTagsPl, selTagsPl, selTagsPl, selTagsPl);
 //        ChoiceFunction cfTr = new ChoiceFunction(selTagsTr, selTagsTr, selTagsTr, selTagsTr, selTagsTr, selTagsTr);

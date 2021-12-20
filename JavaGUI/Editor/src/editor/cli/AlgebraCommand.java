@@ -144,8 +144,8 @@ public class AlgebraCommand {
         
         String[] selTagsPl = restSetPl.replace(" ", "").split(",");
         String[] selTagsTr = restSetTr.replace(" ", "").split(",");
-        ChoiceFunction cfPl = new ChoiceFunction(selTagsPl, selTagsPl, selTagsPl, null, null, null);
-        ChoiceFunction cfTr = new ChoiceFunction(selTagsTr, selTagsTr, selTagsTr, null, null, null);
+        ChoiceFunction cfPl = new ChoiceFunction(selTagsPl, selTagsPl, selTagsPl, null, null, null,  null, null);
+        ChoiceFunction cfTr = new ChoiceFunction(selTagsTr, selTagsTr, selTagsTr, null, null, null,  null, null);
 
         Algebra a = new Algebra(net1, net2, cfPl, cfTr,
                                 dx2shift, dy2shift, useBrokenEdges, verbose);
