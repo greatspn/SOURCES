@@ -14,6 +14,7 @@ import editor.domain.unfolding.MergePolicy;
 import java.awt.geom.Rectangle2D;
 import latex.DummyLatexProvider;
 import static editor.cli.Common.*;
+import editor.domain.unfolding.ChoiceFunction;
 
 /**
  *
@@ -140,11 +141,14 @@ public class AlgebraCommand {
 //                dy2shift = Integer.parseInt(textFieldDyShift.getText());
 //                break;
         }
+        
+        String[] selTagsPl = restSetPl.replace(" ", "").split(",");
+        String[] selTagsTr = restSetTr.replace(" ", "").split(",");
+        ChoiceFunction cfPl = new ChoiceFunction(selTagsPl, selTagsPl, selTagsPl, null, null, null);
+        ChoiceFunction cfTr = new ChoiceFunction(selTagsTr, selTagsTr, selTagsTr, null, null, null);
 
-        Algebra a = new Algebra(MergePolicy.BY_TAG, net1, net2, 
-                        restSetTr.replace(" ", "").split(","), 
-                        restSetPl.replace(" ", "").split(","), 
-                        dx2shift, dy2shift, useBrokenEdges, verbose);
+        Algebra a = new Algebra(net1, net2, cfPl, cfTr,
+                                dx2shift, dy2shift, useBrokenEdges, verbose);
         a.compose();
         GspnPage netComp = a.result;
         netComp.setPageName(net1.getPageName()+"_"+net2.getPageName());

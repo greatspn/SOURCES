@@ -22,6 +22,7 @@ import editor.domain.grammar.TemplateBinding;
 import editor.domain.io.XmlExchangeDirection;
 import editor.domain.io.XmlExchangeException;
 import editor.domain.unfolding.Algebra;
+import editor.domain.unfolding.ChoiceFunction;
 import editor.domain.unfolding.MergePolicy;
 import editor.gui.ResourceFactory;
 import java.awt.Color;
@@ -230,8 +231,11 @@ public class NameBasedCompositionPage extends MultiNetPage implements Serializab
 //                    System.out.println("ithPageBounds="+ithPageBounds);
 //                    System.out.println("dx2shift="+dx2shift+" dy2shift="+dy2shift);
                     boolean useBrokenEdges = true;
-                    Algebra a = new Algebra(MergePolicy.BY_NAME, (GspnPage)composedNet, (GspnPage)ithNet, 
-                            null, null, dx2shift, dy2shift, useBrokenEdges, false);
+                    ChoiceFunction cfPl = new ChoiceFunction((GspnPage)composedNet, (GspnPage)ithNet, 'P');
+                    ChoiceFunction cfTr = new ChoiceFunction((GspnPage)composedNet, (GspnPage)ithNet, 'T');
+                    
+                    Algebra a = new Algebra((GspnPage)composedNet, (GspnPage)ithNet, cfPl, cfTr,
+                                            dx2shift, dy2shift, useBrokenEdges, false);
                     a.compose();
                     a.result.setSelectionFlag(false);
                     

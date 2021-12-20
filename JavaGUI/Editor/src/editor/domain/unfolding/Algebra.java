@@ -41,8 +41,10 @@ public class Algebra {
     // Algebra input net operators
     private final GspnPage gspn1, gspn2;
     
-    // Restriction sets
-    private final String[] restSetTr, restSetPl;
+    // Combination functions for places and transitions
+    private final ChoiceFunction cfPl, cfTr;
+//    // Restriction sets
+//    private final String[] restSetTr, restSetPl;
     
     // net2 coordinate shifts
     private final int dx2, dy2;
@@ -50,8 +52,8 @@ public class Algebra {
     // use broken edges between the two composed nets
     private final boolean useBrokenEdges;
 
-    // Merge by shared tags or by common name
-    private final MergePolicy mergePolicy;
+//    // Merge by shared tags or by common name
+//    private final MergePolicy mergePolicy;
 
     private final boolean verbose;
     
@@ -93,51 +95,51 @@ public class Algebra {
     // Unique symbols in the @result net
     private final Set<String> uniqueNamesResult = new HashSet<>();
 
-    //=========================================================================
-    // Determine if two nodes should be merged togheter
-    private boolean nodesShouldBeMerged(Node node1, Node node2, String[] restList) {
-        switch (mergePolicy) {
-            case BY_NAME:
-                // node1 merges node2 if they both have the same name
-                return node1.getUniqueName().equals(node2.getUniqueName());
-                
-            case BY_TAG:
-                // node1 merges node2 if they both share a common tag in the restricted list
-                if (restList == null)
-                    return false;
-                for (int n1=0; n1<node1.numTags(); n1++) {
-                    for (int n2=0; n2<node2.numTags(); n2++) {
-                        if (node1.getTag(n1).equals(node2.getTag(n2))) {
-                            for (String tag : restList)
-                                if (tag.equals(node1.getTag(n1)))
-                                    return true;
-                        }
-                    }
-                }
-                return false;
-                
-            default:
-                throw new IllegalStateException();
-        }
-    }
+//    //=========================================================================
+//    // Determine if two nodes should be merged togheter
+//    private boolean nodesShouldBeMerged(Node node1, Node node2, String[] restList) {
+//        switch (mergePolicy) {
+//            case BY_NAME:
+//                // node1 merges node2 if they both have the same name
+//                return node1.getUniqueName().equals(node2.getUniqueName());
+//                
+//            case BY_TAG:
+//                // node1 merges node2 if they both share a common tag in the restricted list
+//                if (restList == null)
+//                    return false;
+//                for (int n1=0; n1<node1.numTags(); n1++) {
+//                    for (int n2=0; n2<node2.numTags(); n2++) {
+//                        if (node1.getTag(n1).equals(node2.getTag(n2))) {
+//                            for (String tag : restList)
+//                                if (tag.equals(node1.getTag(n1)))
+//                                    return true;
+//                        }
+//                    }
+//                }
+//                return false;
+//                
+//            default:
+//                throw new IllegalStateException();
+//        }
+//    }
     
-    //=========================================================================
-    // Build the union list of all tags of @node1 and @node2
-    private String mergeTags(Node node1, Node node2) {
-        String tags = node1.getSuperPosTags();        
-        for (int n2=0; n2<node2.numTags(); n2++) {
-            boolean found = false;
-            for (int n1=0; n1<node1.numTags() && !found; n1++) {
-                if (node1.getTag(n1).equals(node2.getTag(n2))) {
-                    found = true;
-                }
-            }
-            if (!found)
-                tags += (tags.isEmpty() ? "" : "|") + node2.getTag(n2);
-        }
-        //System.out.println("mergeTags "+node1.getSuperPosTags()+" "+node2.getSuperPosTags()+" -> "+tags);
-        return tags;
-    }
+//    //=========================================================================
+//    // Build the union list of all tags of @node1 and @node2
+//    private String mergeTags(Node node1, Node node2) {
+//        String tags = node1.getSuperPosTags();        
+//        for (int n2=0; n2<node2.numTags(); n2++) {
+//            boolean found = false;
+//            for (int n1=0; n1<node1.numTags() && !found; n1++) {
+//                if (node1.getTag(n1).equals(node2.getTag(n2))) {
+//                    found = true;
+//                }
+//            }
+//            if (!found)
+//                tags += (tags.isEmpty() ? "" : "|") + node2.getTag(n2);
+//        }
+//        //System.out.println("mergeTags "+node1.getSuperPosTags()+" "+node2.getSuperPosTags()+" -> "+tags);
+//        return tags;
+//    }
 
     //=========================================================================
     // Warn for different attributes that cannot be merged
@@ -209,24 +211,23 @@ public class Algebra {
         return n;
     }
     
-    // policy for generating the merged name from the two operand names
-    private String getMergedName(String name1, String name2) {
-        if (mergePolicy == MergePolicy.BY_NAME)
-            return name1;
-        else
-            return name1+"_"+name2;
-    }
+//    // policy for generating the merged name from the two operand names
+//    private String getMergedName(String name1, String name2) {
+//        if (mergePolicy == MergePolicy.BY_NAME)
+//            return name1;
+//        else
+//            return name1+"_"+name2;
+//    }
 
     //=========================================================================
-    public Algebra(MergePolicy mergePolicy, GspnPage gspn1, GspnPage gspn2, 
-                   String[] restSetTr, String[] restSetPl, 
+    public Algebra(GspnPage gspn1, GspnPage gspn2, 
+                   ChoiceFunction cfPl, ChoiceFunction cfTr, 
                    int dx2, int dy2, boolean useBrokenEdges, boolean verbose) 
     {
-        this.mergePolicy = mergePolicy;
         this.gspn1 = gspn1;
         this.gspn2 = gspn2;
-        this.restSetTr = restSetTr;
-        this.restSetPl = restSetPl;
+        this.cfPl = cfPl;
+        this.cfTr = cfTr;
         this.dx2 = dx2;
         this.dy2 = dy2;
         this.useBrokenEdges = useBrokenEdges;
@@ -429,13 +430,46 @@ public class Algebra {
     private void joinPlaces() {
         for (Node node1 : gspn1.nodes) {
             if (node1 instanceof Place) {
+                if (cfPl.node1ShouldBeKept(node1)) {
+                    Place newPlace = (Place)Util.deepCopy(node1);
+                    makeNodeNameUnique(newPlace);
+                    newPlace.setSuperPosTags(cfPl.getKeptTags1(node1));
+                    result.nodes.add(newPlace);
+                    
+                    List<Place> list = plc1InProd.get(node1);
+                    if (list == null)
+                        list = new LinkedList<>();
+                    list.add(newPlace);
+                    plc1InProd.put((Place)node1, list);
+                }
+            }
+        }
+        for (Node node2 : gspn2.nodes) {
+            if (node2 instanceof Place) {
+                if (cfPl.node2ShouldBeKept(node2)) {
+                    Place newPlace = (Place)Util.deepCopy(node2);
+                    makeNodeNameUnique(newPlace);
+                    newPlace.setSuperPosTags(cfPl.getKeptTags2(node2));
+                    shiftNode(newPlace);
+                    result.nodes.add(newPlace);
+                    
+                    List<Place> list = plc2InProd.get(node2);
+                    if (list == null)
+                        list = new LinkedList<>();
+                    list.add(newPlace);
+                    plc2InProd.put((Place)node2, list);
+                }
+            }
+        }
+        for (Node node1 : gspn1.nodes) {
+            if (node1 instanceof Place) {
                 final Place p1 = (Place)node1;
-                List<Place> crossList1 = null;
-                int j = 0;
+                List<Place> crossList1 = plc1InProd.get(node1);
+//                int j = 0;
                 for (Node node2 : gspn2.nodes) {
                     if (node2 instanceof Place) {
                         final Place p2 = (Place)node2;
-                        if (nodesShouldBeMerged(node1, node2, restSetPl)) {
+                        if (cfPl.nodesShouldBeMerged(node1, node2)) {
                             // combine p1 and p2
                             List<Place> crossList2 = plc2InProd.get(p2);
                             if (crossList1 == null)
@@ -444,11 +478,12 @@ public class Algebra {
                                 crossList2 = new LinkedList<>();
 
                             Place newPlace = (Place)Util.deepCopy(p1);
-                            newPlace.setUniqueName(getMergedName(p1.getUniqueName(), p2.getUniqueName()));
+                            newPlace.setUniqueName(cfPl.getMergedName(p1.getUniqueName(), p2.getUniqueName()));
                             makeNodeNameUnique(newPlace);
-                            newPlace.setSuperPosTags(mergeTags(node1, node2));
-                            newPlace.setX(newPlace.getX() + j*3);
-                            newPlace.setY(newPlace.getY() + j*3);
+                            newPlace.setSuperPosTags(cfPl.mergeTags(node1, node2));
+                            int j = crossList1.size() * 3;
+                            newPlace.setX(newPlace.getX() + j);
+                            newPlace.setY(newPlace.getY() + j);
                             
                             checkAttributeConflict(p1, p2, newPlace, 
                                     p1.getColorDomainName(), p2.getColorDomainName(), "color domains");
@@ -485,47 +520,52 @@ public class Algebra {
                     plc1InProd.put((Place)node1, crossList1);
             }
         }
-        
-        for (Node node1 : gspn1.nodes) {
-            if (node1 instanceof Place) {
-                if (!plc1InProd.containsKey((Place)node1)) {
-                    Place newPlace = (Place)Util.deepCopy(node1);
-                    makeNodeNameUnique(newPlace);
-                    result.nodes.add(newPlace);
-                    
-                    LinkedList<Place> list = new LinkedList<>();
-                    list.add(newPlace);
-                    plc1InProd.put((Place)node1, list);
-                }
-            }
-        }
-        for (Node node2 : gspn2.nodes) {
-            if (node2 instanceof Place) {
-                if (!plc2InProd.containsKey((Place)node2)) {
-                    Place newPlace = (Place)Util.deepCopy(node2);
-                    makeNodeNameUnique(newPlace);
-                    shiftNode(newPlace);
-                    result.nodes.add(newPlace);
-                    
-                    LinkedList<Place> list = new LinkedList<>();
-                    list.add(newPlace);
-                    plc2InProd.put((Place)node2, list);
-                }
-            }
-        }
     }
 
    //=========================================================================
     private void joinTransitions() {
         for (Node node1 : gspn1.nodes) {
             if (node1 instanceof Transition) {
+                if (cfTr.node1ShouldBeKept(node1)) {
+                    Transition newTransition = (Transition)Util.deepCopy(node1);
+                    makeNodeNameUnique(newTransition);
+                    newTransition.setSuperPosTags(cfTr.getKeptTags1(node1));
+                    result.nodes.add(newTransition);
+                    
+                    List<Transition> list = trn1InProd.get(node1);
+                    if (list == null)
+                        list = new LinkedList<>();
+                    list.add(newTransition);
+                    trn1InProd.put((Transition)node1, list);
+                }
+            }
+        }
+        for (Node node2 : gspn2.nodes) {
+            if (node2 instanceof Transition) {
+                if (cfTr.node2ShouldBeKept(node2)) {
+                    Transition newTransition = (Transition)Util.deepCopy(node2);
+                    makeNodeNameUnique(newTransition);
+                    newTransition.setSuperPosTags(cfTr.getKeptTags2(node2));
+                    shiftNode(newTransition);
+                    result.nodes.add(newTransition);
+                    
+                    List<Transition> list = trn2InProd.get(node2);
+                    if (list == null)
+                        list = new LinkedList<>();
+                    list.add(newTransition);
+                    trn2InProd.put((Transition)node2, list);
+                }
+            }
+        }
+        for (Node node1 : gspn1.nodes) {
+            if (node1 instanceof Transition) {
                 final Transition t1 = (Transition)node1;
-                List<Transition> crossList1 = null;
-                int j = 0;
+                List<Transition> crossList1 = trn1InProd.get(node1);
+//                int j = 0;
                 for (Node node2 : gspn2.nodes) {
                     if (node2 instanceof Transition) {
                         final Transition t2 = (Transition)node2;
-                        if (nodesShouldBeMerged(node1, node2, restSetTr)) {
+                        if (cfTr.nodesShouldBeMerged(node1, node2)) {
                             // combine t1 and t2
                             List<Transition> crossList2 = trn2InProd.get(t2);
                             if (crossList1 == null)
@@ -534,11 +574,12 @@ public class Algebra {
                                 crossList2 = new LinkedList<>();
 
                             Transition newTransition = (Transition)Util.deepCopy(t1);
-                            newTransition.setUniqueName(getMergedName(t1.getUniqueName(), t2.getUniqueName()));
+                            newTransition.setUniqueName(cfTr.getMergedName(t1.getUniqueName(), t2.getUniqueName()));
                             makeNodeNameUnique(newTransition);
-                            newTransition.setSuperPosTags(mergeTags(node1, node2));
-                            newTransition.setX(newTransition.getX() + j*3);
-                            newTransition.setY(newTransition.getY() + j*3);
+                            newTransition.setSuperPosTags(cfTr.mergeTags(node1, node2));
+                            int j = crossList1.size() * 3;
+                            newTransition.setX(newTransition.getX() + j);
+                            newTransition.setY(newTransition.getY() + j);
                             
                             checkAttributeConflict(t1, t2, newTransition, 
                                 t1.getType().toString(), t2.getType().toString(), "types");
@@ -555,7 +596,7 @@ public class Algebra {
 
                             result.nodes.add(newTransition);
                             mergedTrns.add(newTransition);
-                            j++;
+//                            j++;
 
                             crossList1.add(newTransition);
                             crossList2.add(newTransition);
@@ -566,34 +607,6 @@ public class Algebra {
                 
                 if (crossList1 != null)
                     trn1InProd.put((Transition)node1, crossList1);
-            }
-        }
-        
-        for (Node node1 : gspn1.nodes) {
-            if (node1 instanceof Transition) {
-                if (!trn1InProd.containsKey((Transition)node1)) {
-                    Transition newTransition = (Transition)Util.deepCopy(node1);
-                    makeNodeNameUnique(newTransition);
-                    result.nodes.add(newTransition);
-                    
-                    LinkedList<Transition> list = new LinkedList<>();
-                    list.add(newTransition);
-                    trn1InProd.put((Transition)node1, list);
-                }
-            }
-        }
-        for (Node node2 : gspn2.nodes) {
-            if (node2 instanceof Transition) {
-                if (!trn2InProd.containsKey((Transition)node2)) {
-                    Transition newTransition = (Transition)Util.deepCopy(node2);
-                    makeNodeNameUnique(newTransition);
-                    shiftNode(newTransition);
-                    result.nodes.add(newTransition);
-                    
-                    LinkedList<Transition> list = new LinkedList<>();
-                    list.add(newTransition);
-                    trn2InProd.put((Transition)node2, list);
-                }
             }
         }
     }

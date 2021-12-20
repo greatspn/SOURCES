@@ -21,6 +21,7 @@ import editor.domain.io.XmlExchangeException;
 import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
 import editor.domain.measures.SolverParams;
 import editor.domain.unfolding.Algebra;
+import editor.domain.unfolding.ChoiceFunction;
 import editor.domain.unfolding.MergePolicy;
 import editor.gui.ResourceFactory;
 import java.awt.Color;
@@ -218,10 +219,20 @@ public class TagBasedCompositionPage extends MultiNetPage implements Serializabl
                 dy2shift = Integer.parseInt(alignDy.getExpr());
                 break;
         }
-        Algebra a = new Algebra(MergePolicy.BY_TAG, (GspnPage)net1, (GspnPage)net2, 
-                selTagsT.isEmpty() ? null : selTagsT.toArray(new String[selTagsT.size()]),
-                selTagsP.isEmpty() ? null : selTagsP.toArray(new String[selTagsP.size()]),
-                dx2shift, dy2shift, useBrokenEdges, false);
+        String[] selTagsPl = selTagsP.isEmpty() ? null : selTagsP.toArray(new String[selTagsP.size()]);
+        String[] selTagsTr = selTagsT.isEmpty() ? null : selTagsT.toArray(new String[selTagsT.size()]);
+        // initial
+        ChoiceFunction cfPl = new ChoiceFunction(selTagsPl, selTagsPl, selTagsPl, null, null, null);
+        ChoiceFunction cfTr = new ChoiceFunction(selTagsTr, selTagsTr, selTagsTr, null, null, null);
+        // drop the synchronized tags
+//        ChoiceFunction cfPl = new ChoiceFunction(selTagsPl, selTagsPl, selTagsPl, selTagsPl, selTagsPl, selTagsPl);
+//        ChoiceFunction cfTr = new ChoiceFunction(selTagsTr, selTagsTr, selTagsTr, selTagsTr, selTagsTr, selTagsTr);
+        // CSP sy
+//        ChoiceFunction cfPl = new ChoiceFunction(selTagsPl, null, null, selTagsPl, null, null);
+//        ChoiceFunction cfTr = new ChoiceFunction(selTagsTr, null, null, selTagsTr, null, null);
+        
+        Algebra a = new Algebra((GspnPage)net1, (GspnPage)net2, cfPl, cfTr,
+                                dx2shift, dy2shift, useBrokenEdges, false);
         a.compose();
         a.result.setSelectionFlag(false);
         

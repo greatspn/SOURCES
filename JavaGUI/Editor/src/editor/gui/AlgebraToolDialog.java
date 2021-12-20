@@ -41,6 +41,7 @@ import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import static editor.domain.measures.SolverInvokator.makeFilenameForCmd;
 import editor.domain.unfolding.Algebra;
+import editor.domain.unfolding.ChoiceFunction;
 import editor.domain.unfolding.MergePolicy;
 import java.awt.Dimension;
 import java.awt.geom.Rectangle2D;
@@ -237,11 +238,13 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                                 dy2shift = Integer.parseInt(textFieldDyShift.getText());
                                 break;
                         }
+                        String[] selTagsPl = onPl ? propPlaceTags.replace(" ", "").split(",") : null;
+                        String[] selTagsTr = onTr ? propTransTags.replace(" ", "").split(",") : null;
+                        ChoiceFunction cfPl = new ChoiceFunction(selTagsPl, selTagsPl, selTagsPl, null, null, null);
+                        ChoiceFunction cfTr = new ChoiceFunction(selTagsTr, selTagsTr, selTagsTr, null, null, null);
                         
-                        Algebra a = new Algebra(MergePolicy.BY_TAG, net1, net2, 
-                                        onTr ? propTransTags.replace(" ", "").split(",") : null, 
-                                        onPl ? propPlaceTags.replace(" ", "").split(",") : null, 
-                                        dx2shift, dy2shift, propBrokenEdges, false);
+                        Algebra a = new Algebra(net1, net2, cfPl, cfTr,
+                                                dx2shift, dy2shift, propBrokenEdges, false);
                         a.compose();
                         netComp = a.result;
                         netComp.setPageName(net1.getPageName()+"+"+net2.getPageName());
