@@ -873,22 +873,22 @@ void determine_var_order(const var_order_selector& sel,
             // clock_t time_PSI_RANK = clock();
             cardinality_t PSI_RANK = measure_PSI(net_to_mddLevel, false, false, false, false, fbm);
             // print_PSI_diagram(net_to_mddLevel, fbm);
-            cout << "score1:  " << PSI_RANK << "    (full product of ranges)" <<endl;
+            cout << "metric[score1]:  " << PSI_RANK << "    (full product of ranges)" <<endl;
 
             cardinality_t score2 = measure_score_experimental(fbm, 0);
-            cout << "score2:  " << score2 << "    (hyper-triangular product< / n!)" << endl;
+            cout << "metric[score2]:  " << score2 << "    (hyper-triangular product< / n!)" << endl;
 
             cardinality_t score3 = measure_score_experimental(fbm, 1);
-            cout << "score3:  " << score3 << "    (hyper-triangular product> / n!)" << endl;
+            cout << "metric[score3]:  " << score3 << "    (hyper-triangular product> / n!)" << endl;
 
             cardinality_t score4 = measure_score_experimental(fbm, 2);
-            cout << "score4:  " << score4 << "    (hypervolume? product of ranges / n)" << endl;
+            cout << "metric[score4]:  " << score4 << "    (hypervolume? product of ranges / n)" << endl;
 
             cardinality_t score5 = measure_score_experimental(fbm, 10);
-            cout << "score5:  " << score5 << "    ( new method - nodes )" << endl;
+            cout << "metric[score5]:  " << score5 << "    ( new method - nodes )" << endl;
 
             cardinality_t score6 = measure_score_experimental(fbm, 11);
-            cout << "score6:  " << score6 << "    ( new method - edges )" << endl;
+            cout << "metric[score6]:  " << score6 << "    ( new method - edges )" << endl;
 
             // time_PSI_RANK = clock() - time_PSI_RANK;
             // cout << "score4:  " << score4 << "    (...)" << endl;
@@ -1757,6 +1757,25 @@ void ilcp_add_slack_variables_to_model() {
 
 //---------------------------------------------------------------------------------------
 
+// Manipulate the ILCP problem to add new linearly-dependent constraints
+void ilcp_add_lin_dep_constr(size_t num_constrs) {
+    int_lin_constr_vec_t& ilcp = load_int_constr_problem_nonconst();
+
+    for (size_t nc=0; nc<num_constrs; nc++) {
+        int_lin_constr_t c {.const_term=0, .op=CI_EQ, .coeffs=sparse_vector_t(size_t(npl)) };
+        for (size_t ii=0; ii<ilcp.size(); ii++) {
+            int mult1 = 1;
+            int mult2 = (genrand64_int63() % 6) - 3;
+            c.coeffs = linear_comb(mult1, c.coeffs, mult2, ilcp[ii].coeffs);
+            c.const_term = scalar_linear_comb(mult1, c.const_term, mult2, ilcp[ii].const_term);
+        }
+        // cout << c << endl;
+        ilcp.emplace_back(std::move(c));
+    }
+}
+
+//---------------------------------------------------------------------------------------
+
 // Get the general ILCP problem, which could come either from the ILCP file, or from the PIN file
 const int_lin_constr_vec_t&
 get_int_constr_problem() {
@@ -1768,20 +1787,26 @@ get_int_constr_problem() {
 
 //---------------------------------------------------------------------------------------
 
-ostream& operator<<(ostream& os, const int_lin_constr_vec_t& ilcp) {
-    for (const int_lin_constr_t& row : ilcp) {
-        size_t cnt = 0;
-        for (auto el : row.coeffs) {
-            if (0 != cnt++)
-                os << " + ";
-            if (el.value == -1)
-                os << "-";
-            else if (el.value != 1)
-                os << el.value << "*";
-            os << tabp[el.index].place_name;
-        }
-        os << " " << s_constr_ineq_op_str[row.op] << " " << row.const_term << endl;
+ostream& operator<<(ostream& os, const int_lin_constr_t& row) {
+    size_t cnt = 0;
+    for (auto el : row.coeffs) {
+        if (0 != cnt++)
+            os << " + ";
+        if (el.value == -1)
+            os << "-";
+        else if (el.value != 1)
+            os << el.value << "*";
+        os << tabp[el.index].place_name;
     }
+    os << " " << s_constr_ineq_op_str[row.op] << " " << row.const_term;
+    return os;
+}
+
+//---------------------------------------------------------------------------------------
+
+ostream& operator<<(ostream& os, const int_lin_constr_vec_t& ilcp) {
+    for (const int_lin_constr_t& row : ilcp)
+        os << row << endl;
     return os;
 }
 

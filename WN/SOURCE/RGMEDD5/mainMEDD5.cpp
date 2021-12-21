@@ -228,6 +228,8 @@ bool test_LRS_RS_equiv = false;
 int g_num_extra_levels = 1;
 bool ilcp_model = false;
 void ilcp_add_slack_variables_to_model();
+size_t ilcp_num_lin_dep_constr = 0;
+void ilcp_add_lin_dep_constr(size_t num_constrs);
 
 double GP_WEIGHT = 1.0;
 double GP_EXP = 0.0;
@@ -2041,6 +2043,9 @@ int initialize(int  argc,  char  *argv[]) {
             initLrsMethod = LRSM_PBASIS_CONSTRAINTS;
             ilcp_model = true;
         }
+        else if (0 == strcmp(argv[ii], "-ilcp-ldc") && ii + 1 < argc) {
+            ilcp_num_lin_dep_constr = atoi(argv[++ii]);
+        }
         // else if (0 == strcmp(argv[ii], "-old-nsf-gen")) {
         //     fast_NSF_gen = false;
         // }
@@ -2320,6 +2325,8 @@ int initialize(int  argc,  char  *argv[]) {
     // If the input problem is an ILCP, add the slack variables
     if (ilcp_model) {
         ilcp_add_slack_variables_to_model();
+        if (ilcp_num_lin_dep_constr > 0)
+            ilcp_add_lin_dep_constr(ilcp_num_lin_dep_constr);
     }
 
     /* DIMENSIONAMENTO DELLE STRUTTURE DATI DEL PRODOTTO CARTESIANO */

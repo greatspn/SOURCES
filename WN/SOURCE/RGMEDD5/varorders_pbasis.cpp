@@ -1122,6 +1122,8 @@ void iRank2Support::initialize()
 
         // initialize psums_at_level
         psums_at_level.resize(constr.coeffs.nonzeros());
+        if (constr.coeffs.nonzeros() == 0)
+            continue;
 
         // insert top element
         const size_t trailing_index = constr.coeffs.nonzeros() - 1;
@@ -1255,6 +1257,8 @@ bool iRank2Support::remove_unused_var_values() {
     for (size_t cc = 0; cc<B.size(); cc++) {
         const int_lin_constr_t& constr = B[cc];
         psums_at_level_t& psums_at_level = irank2_constr_psums[cc];
+        if (constr.coeffs.nonzeros() == 0)
+            continue;
         const size_t trailing_index = constr.coeffs.nonzeros() - 1;
 
         // Go bottom-up and remove all nodes that do not have non-empty downward nodes

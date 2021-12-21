@@ -362,14 +362,18 @@ void CDD_t::initialize() {
     forest.push_back(node_t(-1, 1)); // node 1
     forest[T].psums[0] = constr.const_term;
 
-    // initialize the root element
-    node_t root_node(constr.coeffs.trailing(), 1);
-    root_node.psums[0] = 0;
+    if (constr.coeffs.nonzeros() == 0)
+        root_node_id = T;
+    else {
+        // initialize the root element
+        node_t root_node(constr.coeffs.trailing(), 1);
+        root_node.psums[0] = 0;
 
-    initialize_op_cache_t op_cache;
+        initialize_op_cache_t op_cache;
 
-    // Fill the DD
-    root_node_id = initialize_recursive(std::move(root_node), op_cache);
+        // Fill the DD
+        root_node_id = initialize_recursive(std::move(root_node), op_cache);
+    }
 }
 
 //---------------------------------------------------------------------------------------
@@ -869,8 +873,10 @@ void experiment_cdd(const flow_basis_metric_t& fbm) {
     std::vector<std::vector<size_t>> node_counts(fbm.B.size());
     std::vector<size_t> nodes, edges;
     for (size_t i=0; i<fbm.B.size(); i++) {
-        constr_dd[i]->count_nodes_edges(node_counts[i], edges);
-        propagate(node_counts[i], fbm.B[i].coeffs.leading(), fbm.B[i].coeffs.trailing());
+        if (fbm.B[i].coeffs.nonzeros() > 0) {
+            constr_dd[i]->count_nodes_edges(node_counts[i], edges);
+            propagate(node_counts[i], fbm.B[i].coeffs.leading(), fbm.B[i].coeffs.trailing());
+        }
     }
 
     // std::vector< std::vector<std::map<int, size_t>> > all_vpl(fbm.B.size());
@@ -900,6 +906,7 @@ void experiment_cdd(const flow_basis_metric_t& fbm) {
     // }
 
     // Compute discount factors
+    /*
     verbose = false;
     cout << "SCORES WITH DISCOUNT FACTORS:\n";
     for (size_t K=1; K<=fbm.B.size(); K++) {
@@ -958,6 +965,8 @@ void experiment_cdd(const flow_basis_metric_t& fbm) {
              if (verbose)
                 cout << " lvl "<<setw(3)<<lvl<<setw(5)<<tabp[fbm.level_to_net[lvl]].place_name<<":";
             for (size_t i=0; i<fbm.B.size(); i++) {
+                if (fbm.B[i].coeffs.nonzeros() == 0)
+                    continue;
                 if (node_counts[i][lvl] > 0) {
                     prod *= node_counts[i][lvl];
                     if (verbose)
@@ -978,8 +987,7 @@ void experiment_cdd(const flow_basis_metric_t& fbm) {
 
         cout << "  N("<<K<<") = " << setw(20) << NK << (verbose?"\n\n":"") 
              << "\ttime: " << (timeDF/double(CLOCKS_PER_SEC)) << endl;
-
-
+ 
         // // Count the E(K) score
         // for (ssize_t lvl=npl-1; lvl>=0; lvl--) {
         //     double prod = 1;
@@ -994,7 +1002,7 @@ void experiment_cdd(const flow_basis_metric_t& fbm) {
         //     }
         // }
 
-    }
+    }*/
 
 
     cout << "\n\n---------------------\n";

@@ -133,6 +133,7 @@ struct int_lin_constr_t {
     int              const_term;
 };
 typedef std::vector<int_lin_constr_t> int_lin_constr_vec_t;
+std::ostream& operator<<(std::ostream& os, const int_lin_constr_t& row);
 std::ostream& operator<<(std::ostream& os, const int_lin_constr_vec_t& ilcp);
 
 //---------------------------------------------------------------------------------------

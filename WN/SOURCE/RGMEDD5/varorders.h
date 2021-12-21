@@ -66,6 +66,12 @@ void ilcp_add_slack_variables_to_model();
 
 //---------------------------------------------------------------------------------------
 
+int scalar_linear_comb(int mult1, int value1, int mult2, int value2);
+sparse_vector_t linear_comb(int mult1, const sparse_vector_t& vec1, 
+                            int mult2, const sparse_vector_t& vec2);
+
+//---------------------------------------------------------------------------------------
+
 #undef NONE
 // Variant type of a metric value
 enum class metric_value_type { CARD, DOUBLE, UINT64, NONE };
