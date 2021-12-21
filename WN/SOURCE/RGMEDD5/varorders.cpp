@@ -2390,13 +2390,34 @@ int measure_PSF(const std::vector<int> &varorder) {
 
 //---------------------------------------------------------------------------------------
 
-// Sum of P-flows spans
+// Sum of P-flows (or constraints) spans
 int measure_PF(const std::vector<int> &varorder) {
-    int_lin_constr_vec_t ilcp = get_int_constr_problem();
-    reorder_basis(ilcp, varorder);
+    // int PF2 = 0;
+    // {
+    //     int_lin_constr_vec_t ilcp = get_int_constr_problem();
+    //     reorder_basis(ilcp, varorder);
+    //     for (auto&& row : ilcp) {
+    //         cout << "SPAN: " << (row.coeffs.trailing() - row.coeffs.leading()) << endl;
+    //         PF2 += (row.coeffs.trailing() - row.coeffs.leading());
+    //     }
+    //     cout << endl;
+    // }
     int PF = 0;
-    for (auto&& row : ilcp)
-        PF += (row.coeffs.trailing() - row.coeffs.leading());
+    const int_lin_constr_vec_t& ilcp = get_int_constr_problem();
+    for (auto&& row : ilcp) {
+        if (row.coeffs.size() == 0)
+            continue;
+        int top = varorder[ row.coeffs.leading() ];
+        int bot = top;
+        for (auto& elem : row.coeffs) {
+            // cout << "  " << varorder[elem.index] << " " << tabp[elem.index].place_name << endl;
+            top = std::max(top, varorder[ elem.index ]);
+            bot = std::min(bot, varorder[ elem.index ]);
+        }
+        // cout << "SPAN: " << (top - bot + 1) << " " << top << "-" << bot << endl;
+        PF += (top - bot + 1);
+    }
+    // assert(PF == PF2);
     return PF;
 }
 

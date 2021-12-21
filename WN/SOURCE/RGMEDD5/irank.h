@@ -236,7 +236,7 @@ public:
     // Enumerate the constraint values at level of each constraint
     constr_psums_t irank2_constr_psums;
 
-    bool verbose = false;
+    bool verbose = true;
     // stored edge counts
     std::vector<size_t> edge_counts;
 
