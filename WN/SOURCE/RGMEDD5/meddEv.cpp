@@ -2342,7 +2342,7 @@ bool RSRG::buildLRSbyPBasisConstraints() {
     p_ilcp = &load_int_constr_problem();
     if (p_ilcp->empty()) {
         // no ILCP ready. Build one from the P-semiflows
-        const int_lin_constr_vec_t* p_flows = nullptr;
+        // const int_lin_constr_vec_t* p_flows = nullptr;
         const std::vector<int>* p_flow_consts = nullptr;
         for (size_t phase = 0; phase<2; phase++) 
         {
@@ -2351,29 +2351,18 @@ bool RSRG::buildLRSbyPBasisConstraints() {
             if (!check_invariants_satisfy_LRS_requirements(*F))
                 continue;
 
-            p_flows = F;
+            p_ilcp = F;
+
+            // cout << "buildLRSbyPBasisConstraints phase="<<phase<<" size="<<F->size()<<endl;
 
             // p_flow_consts = (phase==0 ? &load_Psemiflow_consts() :
             //                             &load_Psemiflow_leq_consts());
             break;
         }
-        if (p_flows == nullptr) {
+        if (p_ilcp == nullptr) {
             cout << "No set of P-flows covers all places. Cannot do constraint satisfaction." << endl;
             return false;
         }
-
-        // Setup the ILCP from the P-semiflows
-        // ilcp.resize(p_flows->size());
-        // bool has_consts_terms = (p_flow_consts->size() == p_flows->size());
-        // for (size_t i=0; i<ilcp.size(); i++) {
-        //     ilcp[i].coeffs = (*p_flows)[i];
-        //     if (has_consts_terms)
-        //         ilcp[i].const_term = (*p_flow_consts)[i];
-        //     ilcp[i].op = CI_EQ;
-        // }
-        // if (!has_consts_terms)
-        //     fill_const_terms_from_m0(m0, ilcp);
-        // p_ilcp = &ilcp;
     }
 
     auto ret = computeLRSof(*p_ilcp);

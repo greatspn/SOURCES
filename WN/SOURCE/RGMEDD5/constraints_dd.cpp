@@ -1012,6 +1012,8 @@ void experiment_cdd(const flow_basis_metric_t& fbm) {
 //---------------------------------------------------------------------------------------
 
 std::vector<sparse_vector_t> transpose(const int_lin_constr_vec_t& B) {
+    if (B.empty())
+        return std::vector<sparse_vector_t>();
     std::vector<sparse_vector_t> T(B[0].coeffs.size(), sparse_vector_t(B.size()));
 
     for (size_t r=0; r<B.size(); r++) {
@@ -1103,7 +1105,7 @@ void experiment_footprint_chaining(const std::vector<int>& net_to_mddLevel) {
     // print_flow_basis(TB);
     // cout << endl;
 
-    // Find all the connected sets
+    /*/ Find all the connected sets
     std::vector<int> varsets;
     int n_groups = compute_variable_groups(B, varsets);
 
@@ -1126,7 +1128,7 @@ void experiment_footprint_chaining(const std::vector<int>& net_to_mddLevel) {
         if (n_groups2 != n_groups) {
             cout << "Variable " << tabp[pl].place_name << " is a separator." << endl;
         }
-    }
+    }*/
 
     // // try random reorders
     // std::vector<int> reorder = net_to_mddLevel;

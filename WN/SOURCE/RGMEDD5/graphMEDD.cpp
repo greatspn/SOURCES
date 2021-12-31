@@ -606,8 +606,10 @@ bool build_graph(class RSRG &rs) {
         }
         if (!CTL) {
             // Prepare MDD/MxD/forests statistics (only in statespace mode)
-            cout << " RS nodes:                " << rs.getRS().getNodeCount() << endl;
-            cout << " RS edges:                " << rs.getRS().getEdgeCount() << endl;
+            if (rs.has_RS()) {
+                cout << " RS nodes:                " << rs.getRS().getNodeCount() << endl;
+                cout << " RS edges:                " << rs.getRS().getEdgeCount() << endl;
+            }
             // rs.getRS().getForest()->garbageCollect();
             forest* forestMxD = rs.getForestMxD();
             // forestMxD->garbageCollect();
