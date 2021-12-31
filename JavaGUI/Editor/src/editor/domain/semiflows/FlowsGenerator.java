@@ -717,7 +717,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
 //        msa.compute(true);
 //    }
     
-    public static FlowsGenerator init1() {
+    private static FlowsGenerator init1() {
         int M=10, N=14;
         FlowsGenerator fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
         fg.addIncidence(0, 0, 1);
@@ -751,9 +751,30 @@ public class FlowsGenerator extends StructuralAlgorithm {
         return fg;
     }
     
+    private static FlowsGenerator initComp() {
+        int M=3, N=5;
+        FlowsGenerator fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
+        final int a=0, b=1, c=2;
+        // p1 = a + b + c
+        fg.addIncidence(0, a, 1);
+        fg.addIncidence(0, b, 1);
+        fg.addIncidence(0, c, 1);
+        // p2 = -a + c
+        fg.addIncidence(1, a, -1);
+        fg.addIncidence(1, c, 1);
+        // p3 = -b
+        fg.addIncidence(2, b, -1);
+        // p4 = -2c
+        fg.addIncidence(3, c, -2);
+        // p5 = -b -c
+        fg.addIncidence(4, b, -1);
+        fg.addIncidence(4, c, -1);
+        return fg;
+    }
+    
 
     public static void main(String[] args) throws InterruptedException {
-        FlowsGenerator fg = init1();
+        FlowsGenerator fg = initComp(); //init1();
         ProgressObserver obs = (int step, int total, int s, int t) -> { };
         fg.compute(true, obs);
     }
