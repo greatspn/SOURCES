@@ -45,6 +45,7 @@ import editor.domain.unfolding.ChoiceFunction;
 import editor.domain.unfolding.MergePolicy;
 import java.awt.Dimension;
 import java.awt.geom.Rectangle2D;
+import java.util.Map;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
@@ -240,8 +241,9 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                         }
                         String[] selTagsPl = onPl ? propPlaceTags.replace(" ", "").split(",") : null;
                         String[] selTagsTr = onTr ? propTransTags.replace(" ", "").split(",") : null;
-                        ChoiceFunction cfPl = new ChoiceFunction(selTagsPl, selTagsPl, selTagsPl, null, null, null);
-                        ChoiceFunction cfTr = new ChoiceFunction(selTagsTr, selTagsTr, selTagsTr, null, null, null);
+                        Map<String, String> rewrite1 = null, rewrite2 = null;
+                        ChoiceFunction cfPl = new ChoiceFunction(selTagsPl, selTagsPl, selTagsPl, null, null, null, rewrite1, rewrite2);
+                        ChoiceFunction cfTr = new ChoiceFunction(selTagsTr, selTagsTr, selTagsTr, null, null, null, rewrite1, rewrite2);
                         
                         Algebra a = new Algebra(net1, net2, cfPl, cfTr,
                                                 dx2shift, dy2shift, propBrokenEdges, false);

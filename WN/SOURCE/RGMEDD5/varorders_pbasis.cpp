@@ -124,7 +124,7 @@ inline ssize_t traverse_both(typename Container1::const_iterator& it1,
 
 //---------------------------------------------------------------------------------------
 
-inline int scalar_linear_comb(int mult1, int value1, int mult2, int value2) {
+int scalar_linear_comb(int mult1, int value1, int mult2, int value2) {
     long long value = (long long)(value1) * mult1 + (long long)(value2) * mult2;
     if (value > std::numeric_limits<int>::max() || 
         value < std::numeric_limits<int>::min()) 

@@ -1762,7 +1762,7 @@ void ilcp_add_lin_dep_constr(size_t num_constrs) {
     int_lin_constr_vec_t& ilcp = load_int_constr_problem_nonconst();
 
     for (size_t nc=0; nc<num_constrs; nc++) {
-        int_lin_constr_t c {.const_term=0, .op=CI_EQ, .coeffs=sparse_vector_t(size_t(npl)) };
+        int_lin_constr_t c { .coeffs=sparse_vector_t(size_t(npl)), .op=CI_EQ, .const_term=0 };
         for (size_t ii=0; ii<ilcp.size(); ii++) {
             int mult1 = 1;
             int mult2 = (genrand64_int63() % 6) - 3;
