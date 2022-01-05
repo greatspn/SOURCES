@@ -145,13 +145,14 @@ public abstract class Node extends SelectableObject
 //    @Override public int getSynchNodeNetIndex(int i) { return 0; }
 
     // Precomputed set of splitted tags
-    private transient String[] tagList = null;
+    private transient SuperpositionTag[] tagList = null;
     public int numTags() { rebuiltTagList(); return tagList.length; }
-    public String getTag(int i) { rebuiltTagList(); return tagList[i]; }
+    public String getTag(int i) { rebuiltTagList(); return tagList[i].getTag(); }
+    public int getTagCard(int i) { rebuiltTagList(); return tagList[i].getCard(); }
     public boolean hasTag(String tag) { 
         rebuiltTagList();
-        for (String s : tagList)
-            if (s.equals(tag))
+        for (SuperpositionTag st : tagList)
+            if (st.getTag().equals(tag))
                 return true;
         return false;
     }
@@ -160,10 +161,11 @@ public abstract class Node extends SelectableObject
         if (tagList != null)
             return;
         if (!hasSuperPosTags()) {
-            tagList = new String[0];
+            tagList = new SuperpositionTag[0];
             return;
         }
-        tagList = getSuperPosTags().split("\\|"); // | is escaped since it is a regex
+        tagList = SuperpositionTag.parseTags(getSuperPosTags());
+        /*tagList = getSuperPosTags().split("\\|"); // | is escaped since it is a regex
         int nonEmpty = 0;
         for (int i=0; i<tagList.length; i++) {
             tagList[i] = tagList[i].trim();
@@ -179,7 +181,7 @@ public abstract class Node extends SelectableObject
                 if (s != null)
                     nTagList[nonEmpty++] = s;
             tagList = nTagList;
-        }
+        }*/
     }
     
     
@@ -205,6 +207,7 @@ public abstract class Node extends SelectableObject
             boolean ok = true;
             for (int t=0; t<numTags() && ok; t++) {
                 String tag = getTag(t);
+                int card = getTagCard(t);
                 for (int c=0; c<tag.length() && ok; c++) {
                     if (!Character.isLetterOrDigit(tag.charAt(c))) {
                         page.addErrorWarningObject(PageErrorWarning.newError(
@@ -212,6 +215,11 @@ public abstract class Node extends SelectableObject
                                 "Tags list must be a '|'-separated list of alphanumeric identifiers. ", this));
                         ok = false;
                     }
+                }
+                if (card == 0) {
+                    page.addErrorWarningObject(PageErrorWarning.newError(
+                            "Tag '"+tag+"' has zero cardinality.", this));
+                    ok = false;
                 }
             }
         }
@@ -327,7 +335,7 @@ public abstract class Node extends SelectableObject
         @Override public Object getValue() { return getSuperPosTags(); }
 
         @Override public String getVisualizedValue() {
-            AlternateNameFunction anf = AlternateNameFunction.NUMBERS_AS_SUBSCRIPTS;
+            AlternateNameFunction anf = AlternateNameFunction.PLAIN;
             return anf.prepareLatexText(getSuperPosTags(), null, STYLE_ROMAN);
         }
         
