@@ -117,6 +117,8 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         // Tag-based composition Property Panel
         list_TagsP.setCellRenderer(new CellRenderer());
         list_TagsT.setCellRenderer(new CellRenderer());
+        list_TagsP2.setCellRenderer(new CellRenderer());
+        list_TagsT2.setCellRenderer(new CellRenderer());
         
         Dimension minSize = scrollPane_TagsP.getPreferredSize();
         int minHeight = jLabel1.getFontMetrics(jLabel1.getFont()).getHeight() * 8;
@@ -125,6 +127,9 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
 //        scrollPane_TagsP.setMinimumSize(minSize);
         scrollPane_TagsP.setPreferredSize(minSize);
         scrollPane_TagsT.setPreferredSize(minSize);
+        
+        scrollPane_TagsP2.setPreferredSize(minSize);
+        scrollPane_TagsT2.setPreferredSize(minSize);
         
         alignDxCopy = new SolverParams.IntExpr("1");
         alignDyCopy = new SolverParams.IntExpr("1");
@@ -141,6 +146,25 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
             @Override public void onExprModified() {
                 mainInterface.executeUndoableCommand("change dy offset.", (ProjectData proj, ProjectPage elem) -> {
                     TagBasedCompositionPage acp = (TagBasedCompositionPage)currPage;
+                    acp.alignDy.setExpr(alignDyCopy.getExpr());
+                });
+            }
+            @Override public void onEditingText() { }
+        });
+        
+        exprField_algebraDx2.setExprListener(new ExprField.ExprFieldListener() {
+            @Override public void onExprModified() {
+                mainInterface.executeUndoableCommand("change dx offset.", (ProjectData proj, ProjectPage elem) -> {
+                    TagBasedCompositionPage2 acp = (TagBasedCompositionPage2)currPage;
+                    acp.alignDx.setExpr(alignDxCopy.getExpr());
+                });
+            }
+            @Override public void onEditingText() { }
+        });
+        exprField_algebraDy2.setExprListener(new ExprField.ExprFieldListener() {
+            @Override public void onExprModified() {
+                mainInterface.executeUndoableCommand("change dy offset.", (ProjectData proj, ProjectPage elem) -> {
+                    TagBasedCompositionPage2 acp = (TagBasedCompositionPage2)currPage;
                     acp.alignDy.setExpr(alignDyCopy.getExpr());
                 });
             }
@@ -233,6 +257,8 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         
         exprField_algebraDx.deinitialize();
         exprField_algebraDy.deinitialize();
+        exprField_algebraDx2.deinitialize();
+        exprField_algebraDy2.deinitialize();
         for (ExprField ef : exprFieldDx)
             ef.deinitialize();
         for (ExprField ef : exprFieldDy)
@@ -293,6 +319,52 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
             exprField_algebraDx.deinitialize();
             exprField_algebraDy.deinitialize();
             panel_algebra.setVisible(false);
+        }
+        
+        //-----------------------------------------
+        // Algebra Property Panel
+        if (currPage instanceof TagBasedCompositionPage2) {
+            TagBasedCompositionPage2 acp = (TagBasedCompositionPage2)currPage;
+            
+            DefaultListModel<JCheckBox> modelP = new DefaultListModel<JCheckBox>();
+            if (acp.commonTagsP != null) {
+                for (String tag : acp.commonTagsP) {
+                    JCheckBox elem = new JCheckBox(tag, acp.selTagsP.contains(tag));
+                    modelP.addElement(elem);
+                }
+            }
+            list_TagsP2.setModel(modelP);
+            
+            DefaultListModel<JCheckBox> modelT = new DefaultListModel<JCheckBox>();
+            if (acp.commonTagsT != null) {
+                for (String tag : acp.commonTagsT) {
+                    JCheckBox elem = new JCheckBox(tag, acp.selTagsT.contains(tag));
+                    modelT.addElement(elem);
+                }
+            }
+            list_TagsT2.setModel(modelT);
+            toggle_horizontal2.setSelected(acp.alignment == TagBasedCompositionPage2.Alignment.HORIZONTAL);
+            toggle_vertical2.setSelected(acp.alignment == TagBasedCompositionPage2.Alignment.VERTICAL);
+            toggle_custom2.setSelected(acp.alignment == TagBasedCompositionPage2.Alignment.CUSTOM);
+            
+            alignDxCopy.setExpr(acp.alignDx.getExpr());
+            exprField_algebraDx2.initializeFor(alignDxCopy.getEditableValue(), page);
+            alignDyCopy.setExpr(acp.alignDy.getExpr());
+            exprField_algebraDy2.initializeFor(alignDyCopy.getEditableValue(), page);
+            
+            exprField_algebraDx2.setEnabled(acp.alignment == TagBasedCompositionPage2.Alignment.CUSTOM);
+            exprField_algebraDy2.setEnabled(acp.alignment == TagBasedCompositionPage2.Alignment.CUSTOM);
+            
+            checkBox_useBrokenEdges2.setSelected(acp.useBrokenEdges);
+            
+            panel_algebra2.setVisible(true);
+        }
+        else {
+            list_TagsP2.removeAll();
+            list_TagsT2.removeAll();
+            exprField_algebraDx2.deinitialize();
+            exprField_algebraDy2.deinitialize();
+            panel_algebra2.setVisible(false);
         }
         
         //-----------------------------------------
@@ -686,6 +758,25 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         exprField_unfDxMult4 = new editor.domain.measures.ExprField();
         exprField_unfDyMult4 = new editor.domain.measures.ExprField();
         button_resetOffsetMatrix = new javax.swing.JButton();
+        panel_algebra2 = new javax.swing.JPanel();
+        panelTags1 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        scrollPane_TagsT2 = new javax.swing.JScrollPane();
+        list_TagsT2 = new javax.swing.JList<>();
+        scrollPane_TagsP2 = new javax.swing.JScrollPane();
+        list_TagsP2 = new javax.swing.JList<>();
+        panel_alignment1 = new javax.swing.JPanel();
+        jLabel14 = new javax.swing.JLabel();
+        exprField_algebraDx2 = new editor.domain.measures.ExprField();
+        exprField_algebraDy2 = new editor.domain.measures.ExprField();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        panel_toggles1 = new javax.swing.JPanel();
+        toggle_horizontal2 = new javax.swing.JToggleButton();
+        toggle_vertical2 = new javax.swing.JToggleButton();
+        toggle_custom2 = new javax.swing.JToggleButton();
+        checkBox_useBrokenEdges2 = new javax.swing.JCheckBox();
         actionAddSubnet = new common.Action();
         scrollPaneCentral = new javax.swing.JScrollPane();
         toolbar = new javax.swing.JToolBar();
@@ -881,7 +972,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         propertyPanel.add(panel_algebra, gridBagConstraints);
@@ -1006,6 +1097,177 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         propertyPanel.add(panel_unfolding, gridBagConstraints);
+
+        panel_algebra2.setBorder(javax.swing.BorderFactory.createTitledBorder("Tag Options:"));
+        panel_algebra2.setLayout(new java.awt.GridBagLayout());
+
+        panelTags1.setLayout(new java.awt.GridBagLayout());
+
+        jLabel3.setText("Transitions:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
+        panelTags1.add(jLabel3, gridBagConstraints);
+
+        jLabel13.setText("Places:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        panelTags1.add(jLabel13, gridBagConstraints);
+
+        list_TagsT2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                list_TagsT2MouseClicked(evt);
+            }
+        });
+        scrollPane_TagsT2.setViewportView(list_TagsT2);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
+        panelTags1.add(scrollPane_TagsT2, gridBagConstraints);
+
+        list_TagsP2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                list_TagsP2MouseClicked(evt);
+            }
+        });
+        scrollPane_TagsP2.setViewportView(list_TagsP2);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        panelTags1.add(scrollPane_TagsP2, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        panel_algebra2.add(panelTags1, gridBagConstraints);
+
+        panel_alignment1.setLayout(new java.awt.GridBagLayout());
+
+        jLabel14.setText("Alignment:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        panel_alignment1.add(jLabel14, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
+        panel_alignment1.add(exprField_algebraDx2, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
+        panel_alignment1.add(exprField_algebraDy2, gridBagConstraints);
+
+        jLabel15.setText("dx:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(0, 7, 0, 3);
+        panel_alignment1.add(jLabel15, gridBagConstraints);
+
+        jLabel16.setText("dy:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.insets = new java.awt.Insets(0, 7, 0, 3);
+        panel_alignment1.add(jLabel16, gridBagConstraints);
+
+        panel_toggles1.setLayout(new java.awt.GridBagLayout());
+
+        toggle_horizontal2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/editor/gui/icons/12H.png"))); // NOI18N
+        toggle_horizontal2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toggle_horizontal2ActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        panel_toggles1.add(toggle_horizontal2, gridBagConstraints);
+
+        toggle_vertical2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/editor/gui/icons/12V.png"))); // NOI18N
+        toggle_vertical2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toggle_vertical2ActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        panel_toggles1.add(toggle_vertical2, gridBagConstraints);
+
+        toggle_custom2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/editor/gui/icons/12HV.png"))); // NOI18N
+        toggle_custom2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toggle_custom2ActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        panel_toggles1.add(toggle_custom2, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridheight = 2;
+        panel_alignment1.add(panel_toggles1, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        panel_algebra2.add(panel_alignment1, gridBagConstraints);
+
+        checkBox_useBrokenEdges2.setText("Use broken edges.");
+        checkBox_useBrokenEdges2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                checkBox_useBrokenEdges2ActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+        panel_algebra2.add(checkBox_useBrokenEdges2, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        propertyPanel.add(panel_algebra2, gridBagConstraints);
 
         actionAddSubnet.setActionName("Add subnet");
         actionAddSubnet.setIcon(resourceFactory.getMultiNetAdd24());
@@ -1148,13 +1410,89 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         });
     }//GEN-LAST:event_button_resetOffsetMatrixActionPerformed
 
+    
+    
+    
+    
+    
+    private void list_TagsT2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_list_TagsT2MouseClicked
+        JList list = (JList)evt.getSource();
+        if (evt.getClickCount() == 1 && evt.getButton()==MouseEvent.BUTTON1) {
+            final int index = list.locationToIndex(evt.getPoint());
+            if (index == -1) 
+                return; // out of selection
+            final JCheckBox box = (JCheckBox)list.getModel().getElementAt(index);
+            final String tag = box.getText();
+//            System.out.println("list_TagsPMouseClicked "+index+" "+tag);
+            
+            mainInterface.executeUndoableCommand("change transition tag selection.", (ProjectData proj, ProjectPage elem) -> {
+                TagBasedCompositionPage2 acp = (TagBasedCompositionPage2)currPage;
+                if (acp.selTagsT.contains(tag))
+                    acp.selTagsT.remove(tag);
+                else
+                    acp.selTagsT.add(tag);
+            });
+        }
+    }//GEN-LAST:event_list_TagsT2MouseClicked
+
+    private void list_TagsP2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_list_TagsP2MouseClicked
+        JList list = (JList)evt.getSource();
+        if (evt.getClickCount() == 1 && evt.getButton()==MouseEvent.BUTTON1) {
+            final int index = list.locationToIndex(evt.getPoint());
+            if (index == -1) 
+                return; // out of selection
+            final JCheckBox box = (JCheckBox)list.getModel().getElementAt(index);
+            final String tag = box.getText();
+//            System.out.println("list_TagsPMouseClicked "+index+" "+tag);
+            
+            mainInterface.executeUndoableCommand("change place tag selection.", (ProjectData proj, ProjectPage elem) -> {
+                TagBasedCompositionPage2 acp = (TagBasedCompositionPage2)currPage;
+                if (acp.selTagsP.contains(tag))
+                    acp.selTagsP.remove(tag);
+                else
+                    acp.selTagsP.add(tag);
+            });
+        }
+    }//GEN-LAST:event_list_TagsP2MouseClicked
+
+    private void toggle_horizontal2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggle_horizontal2ActionPerformed
+        mainInterface.executeUndoableCommand("toggle horizontal alignment.", (ProjectData proj, ProjectPage elem) -> {
+            TagBasedCompositionPage2 acp = (TagBasedCompositionPage2)currPage;
+            acp.alignment = TagBasedCompositionPage2.Alignment.HORIZONTAL;
+        });
+    }//GEN-LAST:event_toggle_horizontal2ActionPerformed
+
+    private void toggle_vertical2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggle_vertical2ActionPerformed
+        mainInterface.executeUndoableCommand("toggle vertical alignment.", (ProjectData proj, ProjectPage elem) -> {
+            TagBasedCompositionPage2 acp = (TagBasedCompositionPage2)currPage;
+            acp.alignment = TagBasedCompositionPage2.Alignment.VERTICAL;
+        });
+    }//GEN-LAST:event_toggle_vertical2ActionPerformed
+
+    private void toggle_custom2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggle_custom2ActionPerformed
+        mainInterface.executeUndoableCommand("toggle custom alignment.", (ProjectData proj, ProjectPage elem) -> {
+            TagBasedCompositionPage2 acp = (TagBasedCompositionPage2)currPage;
+            acp.alignment = TagBasedCompositionPage2.Alignment.CUSTOM;
+        });
+    }//GEN-LAST:event_toggle_custom2ActionPerformed
+
+    private void checkBox_useBrokenEdges2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBox_useBrokenEdges2ActionPerformed
+        mainInterface.executeUndoableCommand("change broken edge flag.", (ProjectData proj, ProjectPage elem) -> {
+            TagBasedCompositionPage2 acp = (TagBasedCompositionPage2)currPage;
+            acp.useBrokenEdges = checkBox_useBrokenEdges.isSelected();
+        });
+    }//GEN-LAST:event_checkBox_useBrokenEdges2ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private common.Action actionAddSubnet;
     private javax.swing.JButton button_resetOffsetMatrix;
     private javax.swing.JCheckBox checkBox_useBrokenEdges;
+    private javax.swing.JCheckBox checkBox_useBrokenEdges2;
     private editor.domain.measures.ExprField exprField_algebraDx;
+    private editor.domain.measures.ExprField exprField_algebraDx2;
     private editor.domain.measures.ExprField exprField_algebraDy;
+    private editor.domain.measures.ExprField exprField_algebraDy2;
     private editor.domain.measures.ExprField exprField_unfDxMult1;
     private editor.domain.measures.ExprField exprField_unfDxMult2;
     private editor.domain.measures.ExprField exprField_unfDxMult3;
@@ -1167,7 +1505,12 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -1176,23 +1519,34 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
     private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel label_operator;
     private javax.swing.JList<JCheckBox> list_TagsP;
+    private javax.swing.JList<JCheckBox> list_TagsP2;
     private javax.swing.JList<JCheckBox> list_TagsT;
+    private javax.swing.JList<JCheckBox> list_TagsT2;
     private javax.swing.JPanel panelTags;
+    private javax.swing.JPanel panelTags1;
     private javax.swing.JPanel panel_algebra;
+    private javax.swing.JPanel panel_algebra2;
     private javax.swing.JPanel panel_alignment;
+    private javax.swing.JPanel panel_alignment1;
     private javax.swing.JPanel panel_bottom;
     private javax.swing.JPanel panel_netInstanceEditor;
     private javax.swing.JPanel panel_operator;
     private javax.swing.JPanel panel_toggles;
+    private javax.swing.JPanel panel_toggles1;
     private javax.swing.JPanel panel_unfolding;
     private javax.swing.JPanel propertyPanel;
     private editor.gui.ResourceFactory resourceFactory;
     private javax.swing.JScrollPane scrollPaneCentral;
     private javax.swing.JScrollPane scrollPane_TagsP;
+    private javax.swing.JScrollPane scrollPane_TagsP2;
     private javax.swing.JScrollPane scrollPane_TagsT;
+    private javax.swing.JScrollPane scrollPane_TagsT2;
     private javax.swing.JToggleButton toggle_custom;
+    private javax.swing.JToggleButton toggle_custom2;
     private javax.swing.JToggleButton toggle_horizontal;
+    private javax.swing.JToggleButton toggle_horizontal2;
     private javax.swing.JToggleButton toggle_vertical;
+    private javax.swing.JToggleButton toggle_vertical2;
     private javax.swing.JToolBar toolbar;
     private common.JToolbarButton toolbarButton_addSubnet;
     // End of variables declaration//GEN-END:variables

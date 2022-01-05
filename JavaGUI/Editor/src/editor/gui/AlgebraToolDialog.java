@@ -41,9 +41,12 @@ import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import static editor.domain.measures.SolverInvokator.makeFilenameForCmd;
 import editor.domain.unfolding.Algebra;
+import editor.domain.unfolding.Algebra2;
 import editor.domain.unfolding.ChoiceFunction;
 import editor.domain.unfolding.MergePolicy;
+import editor.domain.unfolding.RelabelingFunction;
 import java.awt.Dimension;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Map;
 import javax.swing.JScrollPane;
@@ -247,8 +250,17 @@ public class AlgebraToolDialog extends javax.swing.JDialog {
                         
                         Algebra a = new Algebra(net1, net2, cfPl, cfTr,
                                                 dx2shift, dy2shift, propBrokenEdges, false);
-                        a.compose();
-                        netComp = a.result;
+                        a.compose(); //*/
+                        
+                        /*RelabelingFunction rf1 = new RelabelingFunction(null);
+                        RelabelingFunction rf2 = new RelabelingFunction(null);
+                        Algebra2 a = new Algebra2(new GspnPage[]{ net1, net2 },
+                                                   new RelabelingFunction[]{ rf1, rf2 },
+                                                   new Point2D[]{ new Point2D.Double(0, 0), new Point2D.Double(dx2shift, dy2shift) },
+                                                   selTagsPl, selTagsTr, propBrokenEdges, onTr);
+                        a.compose();//*/
+                        
+                        netComp = a.result;                        
                         netComp.setPageName(net1.getPageName()+"+"+net2.getPageName());
                         netComp.viewProfile = (ViewProfile)Util.deepCopy(net1.viewProfile);
                         

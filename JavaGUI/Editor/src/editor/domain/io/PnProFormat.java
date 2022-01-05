@@ -48,6 +48,7 @@ import editor.domain.composition.TagBasedCompositionPage;
 import editor.domain.composition.NameBasedCompositionPage;
 import editor.domain.composition.MultiNetPage;
 import editor.domain.composition.NetInstanceDescriptor;
+import editor.domain.composition.TagBasedCompositionPage2;
 import editor.domain.composition.UnfoldingCompositionPage;
 import java.io.File;
 import java.util.ArrayList;
@@ -103,6 +104,7 @@ public class PnProFormat {
         XML_CLASS_TO_NODE.put(DtaEdge.class, "edge");
         XML_CLASS_TO_NODE.put(MeasurePage.class, "measures");
         XML_CLASS_TO_NODE.put(TagBasedCompositionPage.class, "algebra");
+        XML_CLASS_TO_NODE.put(TagBasedCompositionPage2.class, "algebra2");
         XML_CLASS_TO_NODE.put(UnfoldingCompositionPage.class, "unfolding");
         XML_CLASS_TO_NODE.put(NameBasedCompositionPage.class, "multinet");
         XML_CLASS_TO_NODE.put(VarMultiAssignment.class, "assignment");
@@ -133,6 +135,7 @@ public class PnProFormat {
         
         XML_COMPOSITION_PAGES = new HashSet<>();
         XML_COMPOSITION_PAGES.add("algebra");
+        XML_COMPOSITION_PAGES.add("algebra2");
         XML_COMPOSITION_PAGES.add("unfolding");
         XML_COMPOSITION_PAGES.add("multinet");
 

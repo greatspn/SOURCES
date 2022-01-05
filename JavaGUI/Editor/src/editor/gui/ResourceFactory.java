@@ -432,6 +432,10 @@ public class ResourceFactory {
     public ImageIcon getNewAlgebraNet24() {
         return loadIcon24("new_algebranet");
     }
+
+    public ImageIcon getNewCompositionNet24() {
+        return loadIcon24("new_compnet");
+    }
     
     public ImageIcon getNewUnfoldingNet24() {
         return loadIcon24("new_unfoldingnet");
@@ -485,6 +489,10 @@ public class ResourceFactory {
         return loadIcon16("page_multinet");
     }
     
+    public ImageIcon getPageCompositionNet16() {
+        return loadIcon16("page_compnet");
+    }
+
     public ImageIcon getPageAlgebra16() {
         return loadIcon16("page_algebra");
     }

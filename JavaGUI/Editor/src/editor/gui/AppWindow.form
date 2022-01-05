@@ -337,6 +337,13 @@
             </Property>
           </Properties>
         </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="jMenuItemNewTagCompPage2">
+          <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+              <ComponentRef name="actionNewMultiPage_TagBasedComposition2"/>
+            </Property>
+          </Properties>
+        </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="jMenuItemNewNameCompPage">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
@@ -974,6 +981,17 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionNewMultiPage_TagBasedCompositionActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="common.Action" name="actionNewMultiPage_TagBasedComposition2">
+      <Properties>
+        <Property name="actionName" type="java.lang.String" value="Add a new Tag-based Composition page."/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getNewCompositionNet24" type="method"/>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionNewMultiPage_TagBasedComposition2ActionPerformed"/>
       </Events>
     </Component>
     <Component class="common.Action" name="actionNewMultiPage_NameBasedComposition">

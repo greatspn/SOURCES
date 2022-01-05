@@ -34,6 +34,7 @@ import editor.domain.composition.NameBasedCompositionPage;
 import editor.domain.composition.MultiNetEditorPanel;
 import editor.domain.composition.MultiNetPage;
 import editor.domain.composition.NetInstanceDescriptor;
+import editor.domain.composition.TagBasedCompositionPage2;
 import editor.domain.composition.UnfoldingCompositionPage;
 import editor.domain.unfolding.Unfolding;
 import editor.gui.net.BaseCellEditor;
@@ -1442,6 +1443,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jMenuItemNewMeasurePage = new javax.swing.JMenuItem();
         jSeparatorMultiPages = new javax.swing.JPopupMenu.Separator();
         jMenuItemNewTagCompPage = new javax.swing.JMenuItem();
+        jMenuItemNewTagCompPage2 = new javax.swing.JMenuItem();
         jMenuItemNewNameCompPage = new javax.swing.JMenuItem();
         jMenuItemNewUnfoldingPage = new javax.swing.JMenuItem();
         jSeparatorLibraryModels = new javax.swing.JPopupMenu.Separator();
@@ -1500,6 +1502,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         actionNewNetPage_GSPN = new common.Action();
         actionNewNetPage_SWN = new common.Action();
         actionNewMultiPage_TagBasedComposition = new common.Action();
+        actionNewMultiPage_TagBasedComposition2 = new common.Action();
         actionNewMultiPage_NameBasedComposition = new common.Action();
         actionNewMultiPage_Unfolding = new common.Action();
         resourceFactory = new editor.gui.ResourceFactory();
@@ -1846,6 +1849,9 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         jMenuItemNewTagCompPage.setAction(actionNewMultiPage_TagBasedComposition);
         jPopupMenuAddPage.add(jMenuItemNewTagCompPage);
+
+        jMenuItemNewTagCompPage2.setAction(actionNewMultiPage_TagBasedComposition2);
+        jPopupMenuAddPage.add(jMenuItemNewTagCompPage2);
 
         jMenuItemNewNameCompPage.setAction(actionNewMultiPage_NameBasedComposition);
         jPopupMenuAddPage.add(jMenuItemNewNameCompPage);
@@ -2225,6 +2231,14 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             }
         });
 
+        actionNewMultiPage_TagBasedComposition2.setActionName("Add a new Tag-based Composition page.");
+        actionNewMultiPage_TagBasedComposition2.setIcon(resourceFactory.getNewCompositionNet24());
+        actionNewMultiPage_TagBasedComposition2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionNewMultiPage_TagBasedComposition2ActionPerformed(evt);
+            }
+        });
+
         actionNewMultiPage_NameBasedComposition.setActionName("Add a new Name-based Composition page.");
         actionNewMultiPage_NameBasedComposition.setIcon(resourceFactory.getNewMultiNet24());
         actionNewMultiPage_NameBasedComposition.addActionListener(new java.awt.event.ActionListener() {
@@ -2486,7 +2500,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jPanelToolBars.setOpaque(false);
         jPanelToolBars.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 2, 2));
 
-        jAppToolBar_File.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "File", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
+        jAppToolBar_File.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "File", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jAppToolBar_File.setFloatable(false);
         jAppToolBar_File.setRollover(true);
 
@@ -2505,7 +2519,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         jPanelToolBars.add(jAppToolBar_File);
 
-        jAppToolBar_Edit.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "Edit", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
+        jAppToolBar_Edit.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Edit", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jAppToolBar_Edit.setFloatable(false);
         jAppToolBar_Edit.setRollover(true);
 
@@ -2542,7 +2556,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         jPanelToolBars.add(jAppToolBar_Edit);
 
-        jAppToolBar_Basic.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "Basic", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
+        jAppToolBar_Basic.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Basic", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jAppToolBar_Basic.setFloatable(false);
         jAppToolBar_Basic.setRollover(true);
 
@@ -2604,7 +2618,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         jPanelToolBars.add(jAppToolBar_Basic);
 
-        jAppToolBar_Advanced.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "Advanced", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
+        jAppToolBar_Advanced.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Advanced", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jAppToolBar_Advanced.setFloatable(false);
         jAppToolBar_Advanced.setRollover(true);
 
@@ -2631,7 +2645,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         jPanelToolBars.add(jAppToolBar_Advanced);
 
-        jPlayToolBar.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "Panel", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
+        jPlayToolBar.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Panel", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jPlayToolBar.setFloatable(false);
         jPlayToolBar.setRollover(true);
 
@@ -3481,6 +3495,20 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         });
     }//GEN-LAST:event_actionNewMultiPage_NameBasedCompositionActionPerformed
 
+    private void actionNewMultiPage_TagBasedComposition2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionNewMultiPage_TagBasedComposition2ActionPerformed
+        executeUndoableCommand("new net composition page.", (ProjectData proj, ProjectPage elem) -> {
+            MultiNetPage newPage = new TagBasedCompositionPage2();
+            newPage.viewProfile.setProfileForNetType(NewProjectDialog.PetriNetType.FullPN);
+            newPage.setPageName(activeProject.generateUniquePageName("Composition"));
+            newPage.netsDescr.add(new NetInstanceDescriptor());
+            newPage.netsDescr.add(new NetInstanceDescriptor());
+            newPage.netsDescr.get(0).targetNetName = (elem instanceof GspnPage ? elem.getPageName() : "");
+            newPage.netsDescr.get(1).targetNetName = "";
+            activeProject.getCurrent().addPage(newPage);
+            switchToProjectPage(activeProject, newPage, null);
+        });
+    }//GEN-LAST:event_actionNewMultiPage_TagBasedComposition2ActionPerformed
+
     
     
     public void startRGTool(RgType rgType) {
@@ -3703,6 +3731,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private common.Action actionNewMeasurePage;
     private common.Action actionNewMultiPage_NameBasedComposition;
     private common.Action actionNewMultiPage_TagBasedComposition;
+    private common.Action actionNewMultiPage_TagBasedComposition2;
     private common.Action actionNewMultiPage_Unfolding;
     private common.Action actionNewNetPage_CPN;
     private common.Action actionNewNetPage_FullGSPN;
@@ -3754,6 +3783,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private javax.swing.JMenuItem jMenuItemNewNetPage_PT;
     private javax.swing.JMenuItem jMenuItemNewNetPage_SWN;
     private javax.swing.JMenuItem jMenuItemNewTagCompPage;
+    private javax.swing.JMenuItem jMenuItemNewTagCompPage2;
     private javax.swing.JMenuItem jMenuItemNewUnfoldingPage;
     private javax.swing.JMenuItem jMenuItemOptions;
     private javax.swing.JMenuItem jMenuItem_ApnnFormat;

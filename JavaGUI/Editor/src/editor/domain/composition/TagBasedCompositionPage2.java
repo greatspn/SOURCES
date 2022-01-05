@@ -12,6 +12,7 @@ import editor.domain.ProjectPage;
 import editor.domain.Selectable;
 import editor.domain.Selectable.DummyNamedSelectable;
 import editor.domain.ViewProfile;
+import static editor.domain.composition.MultiNetPage.UNSUCCESSFULL_GSPN_TARGET;
 import editor.domain.elements.GspnPage;
 import editor.domain.elements.Place;
 import editor.domain.elements.Transition;
@@ -20,12 +21,14 @@ import editor.domain.io.XmlExchangeDirection;
 import editor.domain.io.XmlExchangeException;
 import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
 import editor.domain.measures.SolverParams;
-import editor.domain.unfolding.Algebra;
-import editor.domain.unfolding.ChoiceFunction;
+import editor.domain.unfolding.Algebra2;
+import editor.domain.unfolding.RelabelingFunction;
 import editor.gui.ResourceFactory;
 import java.awt.Color;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -39,11 +42,11 @@ import org.w3c.dom.NodeList;
  *
  * @author elvio
  */
-public class TagBasedCompositionPage extends MultiNetPage implements Serializable {
+public class TagBasedCompositionPage2 extends MultiNetPage implements Serializable {
 
     @Override
     public String getPageTypeName() {
-        return "TAGBASEDCOMPOSITIONPAGE";
+        return "TAGBASEDCOMPOSITIONPAGE2";
     }
 
     @Override
@@ -57,18 +60,18 @@ public class TagBasedCompositionPage extends MultiNetPage implements Serializabl
     }
 
     @Override public Icon getPageIcon() {
-        return ResourceFactory.getInstance().getPageAlgebra16();
+        return ResourceFactory.getInstance().getPageCompositionNet16();
     }
     
     
     @Override
     public boolean hasFixedNumOfOperators() {
-        return true;
+        return false;
     }
 
     @Override
     public int getFixedNumOfOperators() {
-        return 2;
+        throw new IllegalStateException();
     }
     
     @Override
@@ -121,26 +124,24 @@ public class TagBasedCompositionPage extends MultiNetPage implements Serializabl
     @Override
     protected void checkPageFieldsCorrectness(boolean isNewOrModified, boolean dependenciesAreOk, ProjectData proj) 
     {
-        Set<String> net1TagsP = new HashSet<>();
-        Set<String> net1TagsT = new HashSet<>();
-        Set<String> net2TagsP = new HashSet<>();
-        Set<String> net2TagsT = new HashSet<>();
+        Map<String, Integer> countTagsP = new HashMap<>();
+        Map<String, Integer> countTagsT = new HashMap<>();
         commonTagsP = new HashSet<>();
         commonTagsT = new HashSet<>();
         
         // reconstruct the tagLists
         if (!dependenciesAreOk)
             return;
-        getNetTags(netsDescr.get(0).net.getComposedNet(), net1TagsP, net1TagsT);
-        getNetTags(netsDescr.get(1).net.getComposedNet(), net2TagsP, net2TagsT);
+        for (NetInstanceDescriptor nid : netsDescr)
+            getNetTags(nid.net.getComposedNet(), countTagsP, countTagsT);
 
-        // Get the intersection of the set of tags
-        for (String tag : net1TagsP)
-            if (net2TagsP.contains(tag))
-                commonTagsP.add(tag);
-        for (String tag : net1TagsT)
-            if (net2TagsT.contains(tag))
-                commonTagsT.add(tag);
+        // Get the set of common tags
+        for (Map.Entry<String, Integer> tag : countTagsP.entrySet())
+            if (tag.getValue() > 1)
+                commonTagsP.add(tag.getKey());
+        for (Map.Entry<String, Integer> tag : countTagsT.entrySet())
+            if (tag.getValue() > 1)
+                commonTagsT.add(tag.getKey());
         
         // Remove from the selected sets the tags that are not in common
         Iterator<String> it = selTagsP.iterator();
@@ -169,17 +170,23 @@ public class TagBasedCompositionPage extends MultiNetPage implements Serializabl
     private static Selectable horizSelectable = new DummyNamedSelectable("Horizontal offset");
     private static Selectable vertSelectable = new DummyNamedSelectable("Vertical offset");
     
-    private void getNetTags(NetPage net, Set<String> tagsP, Set<String> tagsT) {
+    private void getNetTags(NetPage net, Map<String, Integer> tagsP, Map<String, Integer> tagsT) {
         if (net == null)
             return;
         for (Node node : net.nodes) {
             if (node instanceof Place) {
-                for (int t=0; t<node.numTags(); t++)
-                    tagsP.add(node.getTag(t));
+                for (int t=0; t<node.numTags(); t++) {
+                    Integer count = tagsP.get(node.getTag(t));
+                    int newCount = (count==null ? 1 : count+1);
+                    tagsP.put(node.getTag(t), newCount);
+                }
             }
             else if (node instanceof Transition) {
-                for (int t=0; t<node.numTags(); t++)
-                    tagsT.add(node.getTag(t));
+                for (int t=0; t<node.numTags(); t++) {
+                    Integer count = tagsT.get(node.getTag(t));
+                    int newCount = (count==null ? 1 : count+1);
+                    tagsT.put(node.getTag(t), newCount);
+                }
             }
         }
     }
@@ -194,57 +201,55 @@ public class TagBasedCompositionPage extends MultiNetPage implements Serializabl
 //            compNet.preparePageCheck();
 //            compNet.checkPage(null, null, compNet, null);
 //            if (compNet.isPageCorrect()) {
-        NetPage net1 = netsDescr.get(0).net.getComposedNet();
-        NetPage net2 = netsDescr.get(1).net.getComposedNet();
-        if (!(net1 instanceof GspnPage)) {
-            addPageError(net1.getPageName()+" is not a GSPN page. Cannot compose", null);
-            return;
+        GspnPage[] nets = new GspnPage[netsDescr.size()];
+        for (int nn=0; nn<netsDescr.size(); nn++) {
+            NetPage net = netsDescr.get(nn).net.getComposedNet();
+            if (net instanceof GspnPage) {
+                nets[nn] = (GspnPage)net;
+            }
+            else {
+                addPageError(net.getPageName()+" is not a GSPN page. Cannot compose", null);
+                return;
+            }
         }
-        if (!(net2 instanceof GspnPage)) {
-            addPageError(net2.getPageName()+" is not a GSPN page. Cannot compose", null);
-            return;
-        }
-
+        
+        Point2D[] deltaCoords = new Point2D[nets.length];
+        RelabelingFunction[] relabFns = new RelabelingFunction[nets.length];
         int dx2shift = 0, dy2shift = 0;
-        Rectangle2D pageBounds1 = net1.getPageBounds();
-        switch (alignment) {
-            case HORIZONTAL: 
-                dx2shift = (int)pageBounds1.getWidth() + 5;
-                break;
-            case VERTICAL: 
-                dy2shift = (int)pageBounds1.getHeight() + 5;
-                break;
-            case CUSTOM:
-                dx2shift = Integer.parseInt(alignDx.getExpr());
-                dy2shift = Integer.parseInt(alignDy.getExpr());
-                break;
+        for (int nn=0; nn<netsDescr.size(); nn++) {
+            deltaCoords[nn] = new Point2D.Double(dx2shift, dy2shift);
+            Rectangle2D pageBounds1 = nets[nn].getPageBounds();
+            switch (alignment) {
+                case HORIZONTAL: 
+                    dx2shift += (int)pageBounds1.getWidth() + 5;
+                    break;
+                case VERTICAL: 
+                    dy2shift += (int)pageBounds1.getHeight() + 5;
+                    break;
+                case CUSTOM:
+                    dx2shift += Integer.parseInt(alignDx.getExpr());
+                    dy2shift += Integer.parseInt(alignDy.getExpr());
+                    break;
+            }
+            relabFns[nn] = new RelabelingFunction(null);
         }
         String[] selTagsPl = selTagsP.isEmpty() ? null : selTagsP.toArray(new String[selTagsP.size()]);
         String[] selTagsTr = selTagsT.isEmpty() ? null : selTagsT.toArray(new String[selTagsT.size()]);
-        Map<String, String> tagRewrite1 = null;
-        Map<String, String> tagRewrite2 = null;
-//        tagRewrite1 = new HashMap<String, String>(){{ put("next", "new"); }};
-//        tagRewrite2 = tagRewrite1;
-
-        // initial
-        ChoiceFunction cfPl = new ChoiceFunction(selTagsPl, selTagsPl, selTagsPl, null, null, null, tagRewrite1, tagRewrite2);
-        ChoiceFunction cfTr = new ChoiceFunction(selTagsTr, selTagsTr, selTagsTr, null, null, null, tagRewrite1, tagRewrite2);
-        // drop the synchronized tags
-//        ChoiceFunction cfPl = new ChoiceFunction(selTagsPl, selTagsPl, selTagsPl, selTagsPl, selTagsPl, selTagsPl);
-//        ChoiceFunction cfTr = new ChoiceFunction(selTagsTr, selTagsTr, selTagsTr, selTagsTr, selTagsTr, selTagsTr);
-        // CSP sy
-//        ChoiceFunction cfPl = new ChoiceFunction(selTagsPl, null, null, selTagsPl, null, null);
-//        ChoiceFunction cfTr = new ChoiceFunction(selTagsTr, null, null, selTagsTr, null, null);
         
-        Algebra a = new Algebra((GspnPage)net1, (GspnPage)net2, cfPl, cfTr,
-                                dx2shift, dy2shift, useBrokenEdges, false);
+        Algebra2 a = new Algebra2(nets, relabFns, deltaCoords, selTagsPl, selTagsTr,
+                                  useBrokenEdges, false);
         a.compose();
         a.result.setSelectionFlag(false);
         
-        String uniqueName = net1.getPageName()+"+"+net2.getPageName();
+        String uniqueName = nets[0].getPageName();
+        for (int nn=1; nn<nets.length; nn++)
+            uniqueName += "_" + nets[nn].getPageName();
+        
         a.result.setPageName(uniqueName);
         
-        ViewProfile newProfile = net1.viewProfile.combineWith(net2.viewProfile);
+        ViewProfile newProfile = nets[0].viewProfile;
+        for (int nn=1; nn<nets.length; nn++)
+            newProfile = newProfile.combineWith(nets[nn].viewProfile);
 
         setCompositionSuccessfull(a.result, newProfile,
                 new String[]{uniqueName}, new NetPage[]{a.result});

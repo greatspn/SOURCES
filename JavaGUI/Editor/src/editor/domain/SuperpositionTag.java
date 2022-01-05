@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
 
-/**
+/** Immutable class of a superposition tag
  *
  * @author elvio
  */
@@ -66,6 +66,12 @@ public class SuperpositionTag implements Comparable<SuperpositionTag> {
         }
         
         // Sort and merge the same tags together
+        return mergeTags(tags);
+    }
+    
+    // merge tags with the same name, combining the cardinalities
+    public static SuperpositionTag[] mergeTags(ArrayList<SuperpositionTag> tags) {
+        // Sort and merge the same tags together
         Collections.sort(tags);
         int i=0;
         boolean removed = false;
@@ -95,11 +101,20 @@ public class SuperpositionTag implements Comparable<SuperpositionTag> {
     @Override
     public String toString() {
 //        return card + " " + tag;
+        return toCanonicalString();
+    }
+    
+    // representation in GreatSPN format
+    public String toCanonicalString() {
+        return toCanonicalString(tag, card);
+    }
+    
+    public static String toCanonicalString(String tag, int card) {
         if (card==1) return tag;
         if (card==-1) return tag+"?";
         if (card > 1) return card+"*"+tag;
         if (card < 1) return (-card)+"*"+tag+"?";
-        return "0"+tag;
+        return "0*"+tag;
     }
     
     public static void main(String[] args) {
