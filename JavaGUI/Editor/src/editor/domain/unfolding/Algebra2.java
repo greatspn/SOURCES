@@ -5,6 +5,7 @@
  */
 package editor.domain.unfolding;
 
+import common.IntTuple;
 import common.Triple;
 import common.Tuple;
 import common.Util;
@@ -96,6 +97,9 @@ public class Algebra2 {
     
     // Unique symbols in the @result net
     private final Set<String> uniqueNamesResult = new HashSet<>();
+    
+    // Positions of the generated nodes
+    Set<IntTuple> positions = new HashSet<>();
 
     //=========================================================================
     private void storePlaceSource(Place newPlace, int card, Place origPlace) {
@@ -113,6 +117,25 @@ public class Algebra2 {
             orig2CompTrns.put(origTransition, lst);
         }
         lst.add(new Tuple<>(card, newTransition));
+    }
+    
+    //=========================================================================
+    private IntTuple getNodePosition(Node node) {
+        return new IntTuple((int)(node.getX()/2), (int)(node.getY()/2));
+    }
+    private void storePosition(Node node) {
+        positions.add(getNodePosition(node));
+    }
+    private void relocateAndStorePosition(Node node) {
+        boolean relocate = true;
+        while (relocate) {
+            IntTuple pos = getNodePosition(node);
+            relocate = positions.contains(pos);
+            if (relocate) {
+                node.setNodePosition(node.getX() + 3, node.getY());
+            }
+        }
+        storePosition(node);
     }
     
     
@@ -426,6 +449,7 @@ public class Algebra2 {
                     multiset.add(new Tuple<>(1, (Place)node));*/                    
                     result.nodes.add(newPlace);
                     storePlaceSource(newPlace, 1, (Place)node);
+                    storePosition(newPlace);
                     new2Orig.put(newPlace, (Place)node);
                 }
             }
@@ -520,6 +544,7 @@ public class Algebra2 {
             
             newPlace.setNodePosition(newPlace.getX() / multiset.size(),
                                      newPlace.getY() / multiset.size());
+            relocateAndStorePosition(newPlace);
             result.nodes.add(newPlace);
             for (Tuple<Integer, Place> entry : multiset) {
                 Place origPlc = new2Orig.get(entry.y);
@@ -541,6 +566,7 @@ public class Algebra2 {
                     shiftNode(newTransition, nn);
                     result.nodes.add(newTransition);
                     storeTransitionSource(newTransition, 1, (Transition)node);
+                    storePosition(newTransition);
                     new2Orig.put(newTransition, (Transition)node);
                 }
             }
@@ -628,7 +654,8 @@ public class Algebra2 {
             }
             
             newTransition.setNodePosition(newTransition.getX() / multiset.size(), 
-                                          newTransition.getY() / multiset.size());            
+                                          newTransition.getY() / multiset.size());  
+            relocateAndStorePosition(newTransition);
             result.nodes.add(newTransition);
             for (Tuple<Integer, Transition> entry : multiset) {
                 Transition origTrn = new2Orig.get(entry.y);

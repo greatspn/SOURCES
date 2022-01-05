@@ -132,15 +132,21 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
         // reconstruct the tagLists
         if (!dependenciesAreOk)
             return;
-        for (NetInstanceDescriptor nid : netsDescr)
-            getNetTags(nid.net.getComposedNet(), countTagsP, countTagsT);
+        for (NetInstanceDescriptor nid : netsDescr) {
+            Set<String> tagsP = new HashSet<>();
+            Set<String> tagsT = new HashSet<>();
+            getNetTags(nid.net.getComposedNet(), tagsP, tagsT);
+            mergeTags(countTagsP, tagsP);
+            mergeTags(countTagsT, tagsT);
+        }
 
         // Get the set of common tags
+        int threshold = Math.min(2, netsDescr.size());
         for (Map.Entry<String, Integer> tag : countTagsP.entrySet())
-            if (tag.getValue() > 1)
+            if (tag.getValue() >= threshold)
                 commonTagsP.add(tag.getKey());
         for (Map.Entry<String, Integer> tag : countTagsT.entrySet())
-            if (tag.getValue() > 1)
+            if (tag.getValue() >= threshold)
                 commonTagsT.add(tag.getKey());
         
         // Remove from the selected sets the tags that are not in common
@@ -170,24 +176,28 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
     private static Selectable horizSelectable = new DummyNamedSelectable("Horizontal offset");
     private static Selectable vertSelectable = new DummyNamedSelectable("Vertical offset");
     
-    private void getNetTags(NetPage net, Map<String, Integer> tagsP, Map<String, Integer> tagsT) {
+    private void getNetTags(NetPage net, Set<String> tagsP, Set<String> tagsT) {
         if (net == null)
             return;
         for (Node node : net.nodes) {
             if (node instanceof Place) {
                 for (int t=0; t<node.numTags(); t++) {
-                    Integer count = tagsP.get(node.getTag(t));
-                    int newCount = (count==null ? 1 : count+1);
-                    tagsP.put(node.getTag(t), newCount);
+                    tagsP.add(node.getTag(t));
                 }
             }
             else if (node instanceof Transition) {
                 for (int t=0; t<node.numTags(); t++) {
-                    Integer count = tagsT.get(node.getTag(t));
-                    int newCount = (count==null ? 1 : count+1);
-                    tagsT.put(node.getTag(t), newCount);
+                    tagsT.add(node.getTag(t));
                 }
             }
+        }
+    }
+    
+    private void mergeTags(Map<String, Integer> tagCounts, Set<String> tags) {
+        for (String t : tags) {
+            Integer count = tagCounts.get(t);
+            int newCount = (count==null ? 1 : count+1);
+            tagCounts.put(t, newCount);
         }
     }
     
