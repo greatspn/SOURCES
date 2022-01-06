@@ -48,11 +48,9 @@ public class Algebra2 {
     private final GspnPage[] nets;
     
     // Combination functions for places and transitions
-    private final RelabelingFunction[] relabelFn;
+    private final TagRewritingFunction[] relabelFn;
     // Synchronization tags
     private final String[] syncSetPl, syncSetTr;
-//    // Restriction sets
-//    private final String[] restSetTr, restSetPl;
     
     // net2 coordinate shifts
     private final Point2D[] deltaCoords;
@@ -280,7 +278,7 @@ public class Algebra2 {
     
 
     //=========================================================================
-    public Algebra2(GspnPage[] nets, RelabelingFunction[] relabelFn, 
+    public Algebra2(GspnPage[] nets, TagRewritingFunction[] relabelFn, 
                     Point2D[] deltaCoords, 
                     String[] syncSetPl, String[] syncSetTr,
                     boolean useBrokenEdges, 

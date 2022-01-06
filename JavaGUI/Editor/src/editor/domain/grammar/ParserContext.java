@@ -52,6 +52,8 @@ public class ParserContext implements NodeNamespace {
     public static final int PF_GENERAL_FUNCTION_KEYWORDS = 64;
     // Clock variables may appear in a realExpr
     public static final int PF_CLOCK_VARS_IN_EXPR = 128;
+    // Accept empty text
+    public static final int PF_ALLOW_EMPTY_EXPR = 256;
     
     // Verbatim text starts with this prefix
     public static final String VERBATIM_PREFIX = "FN:";
@@ -295,7 +297,9 @@ public class ParserContext implements NodeNamespace {
         else if (!hasNamespacePage()) { // Missing namespace in evaluation context
             addNewError("Missing evaluation context.");
         }
-        else if (formulaText == null || formulaText.length() == 0) {
+        else if ((formulaText == null || formulaText.length() == 0) && 
+                 (parseFlags & PF_ALLOW_EMPTY_EXPR) == 0) 
+        {
             addNewError("The expression has no text.");
         }
         else try {

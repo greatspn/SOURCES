@@ -74,7 +74,7 @@ public class NetInstanceDescriptor extends SelectableObject implements Serializa
 
         @Override
         protected int getParseFlags() { 
-            return ParserContext.PF_CONST_EXPR; 
+            return ParserContext.PF_CONST_EXPR | ParserContext.PF_ALLOW_EMPTY_EXPR; 
         }
     }
     

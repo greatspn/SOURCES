@@ -22,7 +22,7 @@ import editor.domain.io.XmlExchangeException;
 import static editor.domain.io.XmlExchangeUtils.bindXMLAttrib;
 import editor.domain.measures.SolverParams;
 import editor.domain.unfolding.Algebra2;
-import editor.domain.unfolding.RelabelingFunction;
+import editor.domain.unfolding.TagRewritingFunction;
 import editor.gui.ResourceFactory;
 import java.awt.Color;
 import java.awt.geom.Point2D;
@@ -192,9 +192,9 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
         if (net == null)
             return;
         // try to generate the rewriting rules
-        RelabelingFunction rf = null;
+        TagRewritingFunction rf = null;
         try {
-            rf = new RelabelingFunction(rewriteRules);
+            rf = new TagRewritingFunction(rewriteRules);
         }
         catch (Exception e) { /* syntax errors? */ }
         for (Node node : net.nodes) {
@@ -250,7 +250,7 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
         }
         
         Point2D[] deltaCoords = new Point2D[nets.length];
-        RelabelingFunction[] relabFns = new RelabelingFunction[nets.length];
+        TagRewritingFunction[] relabFns = new TagRewritingFunction[nets.length];
         int dx2shift = 0, dy2shift = 0;
         for (int nn=0; nn<netsDescr.size(); nn++) {
             deltaCoords[nn] = new Point2D.Double(dx2shift, dy2shift);
@@ -267,7 +267,7 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
                     dy2shift += Integer.parseInt(alignDy.getExpr());
                     break;
             }
-            relabFns[nn] = new RelabelingFunction(netsDescr.get(nn).rewriteRules.getExpr());
+            relabFns[nn] = new TagRewritingFunction(netsDescr.get(nn).rewriteRules.getExpr());
         }
         String[] selTagsPl = selTagsP.isEmpty() ? null : selTagsP.toArray(new String[selTagsP.size()]);
         String[] selTagsTr = selTagsT.isEmpty() ? null : selTagsT.toArray(new String[selTagsT.size()]);

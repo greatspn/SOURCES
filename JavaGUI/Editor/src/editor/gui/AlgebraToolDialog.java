@@ -44,7 +44,7 @@ import editor.domain.unfolding.Algebra;
 import editor.domain.unfolding.Algebra2;
 import editor.domain.unfolding.ChoiceFunction;
 import editor.domain.unfolding.MergePolicy;
-import editor.domain.unfolding.RelabelingFunction;
+import editor.domain.unfolding.TagRewritingFunction;
 import java.awt.Dimension;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;

@@ -15,8 +15,9 @@ import java.util.Objects;
  *
  * @author elvio
  */
-public class RelabelingFunction {
+public class TagRewritingFunction {
     
+    // single tag (complementary or not)
     private static class TagId {
         public boolean complementary;
         public String tag;
@@ -61,9 +62,11 @@ public class RelabelingFunction {
     // Rewriting rules for tags
     private final Map<TagId, TagId> rewriteRules = new HashMap<>();
     
+    // For fast search in the rewriteRules
     private static final TagId searchTagId = new TagId(true, "");
 
-    public RelabelingFunction(String rulesListText) {
+    // Construct from the rewriting rules definition
+    public TagRewritingFunction(String rulesListText) {
         String[] rulesList = rulesListText.split(",");
         for (String ruleText : rulesList) {
             if (ruleText.isBlank())
@@ -146,10 +149,10 @@ public class RelabelingFunction {
     }
     
     public static void main(String[] args) {
-        System.out.println(new RelabelingFunction(""));
-        System.out.println(new RelabelingFunction("aa->bb"));
-        System.out.println(new RelabelingFunction("aa->bb, cc->dd"));
-        System.out.println(new RelabelingFunction("aa->bb?, cc?->dd"));
+        System.out.println(new TagRewritingFunction(""));
+        System.out.println(new TagRewritingFunction("aa->bb"));
+        System.out.println(new TagRewritingFunction("aa->bb, cc->dd"));
+        System.out.println(new TagRewritingFunction("aa->bb?, cc?->dd"));
     }
 
 }
