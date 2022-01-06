@@ -307,7 +307,6 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
                                  false);
                 a.compose();
                 a.result.setPageName(netPair[0].getPageName()+"_"+netPair[1].getPageName());
-                System.out.println("deltaCoords["+i+"] = "+deltaCoords[i]);
             }
         }
         else throw new IllegalStateException();
