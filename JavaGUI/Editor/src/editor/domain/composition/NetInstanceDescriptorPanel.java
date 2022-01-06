@@ -97,6 +97,11 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         panel_horizBar.setBackground(editor.gui.net.NetEditorPanel.PAGE_TITLE_BACKGROUND);
         panel_horizBar.setForeground(editor.gui.net.NetEditorPanel.PAGE_TITLE_BACKGROUND);
         
+        Dimension sz = label_numReplicas.getPreferredSize();
+        sz.setSize(sz.width, exprField_replicas.getPreferredSize().height);
+        exprField_replicas.setPreferredSize(sz);
+        exprField_replicas.setMinimumSize(sz);
+        
         initializing = false;
     }
     
@@ -335,6 +340,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weighty = 0.3;
@@ -353,7 +359,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weighty = 0.3;
         add(label_rewriteRules, gridBagConstraints);

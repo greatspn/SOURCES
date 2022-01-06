@@ -122,7 +122,8 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
     public boolean useBrokenEdges = true;
     // Apply restrictions
     public boolean applyRestrictions = true;
-        
+    // Compositional semantics for the net tags
+    public Algebra2.Semantics semantics = Algebra2.Semantics.CCS;
     
     // Tags extracted from the operand nets
     transient public Set<String> commonTagsP;
@@ -250,7 +251,7 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
         }
         
         Point2D[] deltaCoords = new Point2D[nets.length];
-        TagRewritingFunction[] relabFns = new TagRewritingFunction[nets.length];
+        TagRewritingFunction[] rewriteFns = new TagRewritingFunction[nets.length];
         int dx2shift = 0, dy2shift = 0;
         for (int nn=0; nn<netsDescr.size(); nn++) {
             deltaCoords[nn] = new Point2D.Double(dx2shift, dy2shift);
@@ -267,28 +268,57 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
                     dy2shift += Integer.parseInt(alignDy.getExpr());
                     break;
             }
-            relabFns[nn] = new TagRewritingFunction(netsDescr.get(nn).rewriteRules.getExpr());
+            rewriteFns[nn] = new TagRewritingFunction(netsDescr.get(nn).rewriteRules.getExpr());
         }
         String[] selTagsPl = selTagsP.isEmpty() ? null : selTagsP.toArray(new String[selTagsP.size()]);
         String[] selTagsTr = selTagsT.isEmpty() ? null : selTagsT.toArray(new String[selTagsT.size()]);
         
-        Algebra2 a = new Algebra2(nets, relabFns, deltaCoords, selTagsPl, selTagsTr,
-                                  useBrokenEdges, applyRestrictions, false);
-        a.compose();
+        Algebra2 a = null;
+        if (semantics == Algebra2.Semantics.CCS || nets.length==1) {   
+            // Compose all operands together
+            a = new Algebra2(nets, rewriteFns, deltaCoords, selTagsPl, selTagsTr,
+                             semantics, useBrokenEdges, applyRestrictions, false);
+            a.compose();
+            
+            String compPageName = nets[0].getPageName();
+            for (int nn=1; nn<nets.length; nn++)
+                compPageName += "_" + nets[nn].getPageName();
+
+            a.result.setPageName(compPageName);
+        }
+        else if (semantics == Algebra2.Semantics.CSP) {
+            // Compose by pairs
+            TagRewritingFunction nullFn = new TagRewritingFunction("");
+            for (int i=1; i<nets.length; i++) {
+                boolean first = (i == 1);
+                GspnPage page0 = nets[0];
+                if (!first) {
+                    page0 = a.result;
+                    page0.preparePageCheck();
+                    page0.checkPage(null, null, this, null);
+                }
+                GspnPage[] netPair = new GspnPage[]{page0, nets[i]};
+                a = new Algebra2(netPair, 
+                                 new TagRewritingFunction[]{first ? rewriteFns[0] : nullFn, rewriteFns[i]}, 
+                                 new Point2D[]{deltaCoords[0], deltaCoords[i]}, 
+                                 selTagsPl, selTagsTr, semantics,
+                                 useBrokenEdges, 
+                                 (i==nets.length-1) ? applyRestrictions : false, 
+                                 false);
+                a.compose();
+                a.result.setPageName(netPair[0].getPageName()+"_"+netPair[1].getPageName());
+                System.out.println("deltaCoords["+i+"] = "+deltaCoords[i]);
+            }
+        }
+        else throw new IllegalStateException();
         a.result.setSelectionFlag(false);
-        
-        String uniqueName = nets[0].getPageName();
-        for (int nn=1; nn<nets.length; nn++)
-            uniqueName += "_" + nets[nn].getPageName();
-        
-        a.result.setPageName(uniqueName);
         
         ViewProfile newProfile = nets[0].viewProfile;
         for (int nn=1; nn<nets.length; nn++)
             newProfile = newProfile.combineWith(nets[nn].viewProfile);
 
         setCompositionSuccessfull(a.result, newProfile,
-                new String[]{uniqueName}, new NetPage[]{a.result});
+                new String[]{a.result.getPageName()}, new NetPage[]{a.result});
         
         for (String w : a.warnings) {
             addPageWarning("Composition: "+w, null);
@@ -305,6 +335,7 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
         bindXMLAttrib(this, el, exDir, "align-dx", "alignDx.@Expr", "10");
         bindXMLAttrib(this, el, exDir, "align-dy", "alignDy.@Expr", "10");
         bindXMLAttrib(this, el, exDir, "alignment", "alignment", null, Alignment.class);
+        bindXMLAttrib(this, el, exDir, "semantics", "semantics", Algebra2.Semantics.CCS);
         
         Document doc = exDir.getDocument();
         if (exDir.FieldsToXml()) {

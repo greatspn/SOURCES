@@ -23,7 +23,6 @@ import editor.domain.io.XmlExchangeDirection;
 import editor.domain.io.XmlExchangeException;
 import editor.domain.unfolding.Algebra;
 import editor.domain.unfolding.ChoiceFunction;
-import editor.domain.unfolding.MergePolicy;
 import editor.gui.ResourceFactory;
 import java.awt.Color;
 import java.awt.geom.Point2D;
@@ -193,7 +192,7 @@ public class NameBasedCompositionPage extends MultiNetPage implements Serializab
         final int ptMoveDx = 1, ptMoveDy = 1;
         final int textBoxExtraWidth = 2, textBoxExtraHeight = 3;
         int posX = 1, posY = 1;
-        if (flattenedSubNets.size() > 0 && isPageCorrect()) {
+        if (!flattenedSubNets.isEmpty() && isPageCorrect()) {
             composedNet = (NetPage)Util.deepCopy(flattenedSubNets.get(0));
             newProfile = composedNet.viewProfile;
             composedNet.preparePageCheck();

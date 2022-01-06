@@ -44,6 +44,11 @@ import java.util.regex.Pattern;
  */
 public class Algebra2 {
     
+    public enum Semantics {
+        CCS, // Tag are composed when complementary:  aa|bb  joins with  aa?  and  bb?
+        CSP; // Tag are composed when they have the same name in the two operand nets
+    }
+    
     // Algebra input net operators
     private final GspnPage[] nets;
     
@@ -63,6 +68,9 @@ public class Algebra2 {
     
     // Apply restrictions on the selected synchronization tags
     private final boolean restrictTags;
+    
+    // Semantics for interpreting net tags
+    private final Semantics semantics;
 
     private final boolean verbose;
     
@@ -83,6 +91,9 @@ public class Algebra2 {
     // P/T nodes that are just copied into the result net without changes
     private final Map<Place, Place> simplePlcs2Orig = new HashMap<>();
     private final Map<Transition, Transition> simpleTrns2Orig = new HashMap<>();
+    // From which net operand each simple copied P/T cames from
+    private final Map<Place, Integer> simplePlcs2NetId = new HashMap<>();
+    private final Map<Transition, Integer> simpleTrns2NetId = new HashMap<>();
 
     
     // which net owns the originating edge
@@ -164,6 +175,8 @@ public class Algebra2 {
         SuperpositionTag[] mergedTags = SuperpositionTag.mergeTags(tags);
         StringBuilder builder = new StringBuilder();
         for (SuperpositionTag st : mergedTags) {
+            if (semantics == Semantics.CSP)
+                st = new SuperpositionTag(st.getTag(), 1);
             if (st.getCard() != 0) { 
                 // Only merge tags that have not been composed (card != 0)
                 builder.append(builder.length() == 0 ? "" : "|").append(st.toCanonicalString());
@@ -235,7 +248,7 @@ public class Algebra2 {
         int ii = 0;
         while(true) {
             boolean isUnique;
-            isUnique = uniqueNamesResult.contains(newName);
+            isUnique = !uniqueNamesResult.contains(newName);
             for (int i=0; isUnique && i<nets.length; i++)
                 isUnique = isUnique && (nets[i].getNodeByUniqueName(newName) == null);
                 
@@ -281,6 +294,7 @@ public class Algebra2 {
     public Algebra2(GspnPage[] nets, TagRewritingFunction[] relabelFn, 
                     Point2D[] deltaCoords, 
                     String[] syncSetPl, String[] syncSetTr,
+                    Semantics semantics,
                     boolean useBrokenEdges, 
                     boolean restrictTags,
                     boolean verbose) 
@@ -290,6 +304,7 @@ public class Algebra2 {
         this.deltaCoords = deltaCoords;
         this.syncSetPl = syncSetPl;
         this.syncSetTr = syncSetTr;
+        this.semantics = semantics;
         this.useBrokenEdges = useBrokenEdges;
         this.restrictTags = restrictTags;
         this.verbose = verbose;
@@ -463,6 +478,7 @@ public class Algebra2 {
                     storePlaceSource(newPlace, 1, (Place)node);
                     storePosition(newPlace);
                     simplePlcs2Orig.put(newPlace, (Place)node);
+                    simplePlcs2NetId.put(newPlace, nn);
                 }
             }
         }
@@ -494,6 +510,11 @@ public class Algebra2 {
                 if (plcTag2Id.containsKey(place.getTag(t))) {
                     int tagId = plcTag2Id.get(place.getTag(t));
                     int card = place.getTagCard(t);
+                    if (semantics == Semantics.CSP) {
+                        card = Math.abs(card);
+                        if (simplePlcs2NetId.get(place)==1)
+                            card = -card;
+                    }
                     fg.addIncidence(plId, tagId, card);
                 }
             }
@@ -576,6 +597,7 @@ public class Algebra2 {
                     storeTransitionSource(newTransition, 1, (Transition)node);
                     storePosition(newTransition);
                     simpleTrns2Orig.put(newTransition, (Transition)node);
+                    simpleTrns2NetId.put(newTransition, nn);
                 }
             }
         }
@@ -607,6 +629,11 @@ public class Algebra2 {
                 if (trnTag2Id.containsKey(trn.getTag(t))) {
                     int tagId = trnTag2Id.get(trn.getTag(t));
                     int card = trn.getTagCard(t);
+                    if (semantics == Semantics.CSP) {
+                        card = Math.abs(card);
+                        if (simpleTrns2NetId.get(trn)==1)
+                            card = -card;
+                    }
                     fg.addIncidence(plId, tagId, card);
                 }
             }
@@ -714,19 +741,20 @@ public class Algebra2 {
             ArrayList<Point2D> points;
             boolean isBroken;
             String mult;
+            isBroken = useBrokenEdges && !(simplePlcs2Orig.containsKey(resultPlace) && simpleTrns2Orig.containsKey(resultTrans));
             
             if (edges.size() == 1) { // only one originating edge
                 Tuple<Integer, GspnEdge> entry0 = edges.get(0);
                 headMagnet = entry0.y.getHeadMagnet();
                 tailMagnet = entry0.y.getTailMagnet();
                 mult = simpleNeutralMult(entry0.x, entry0.y.getMultiplicity(), entry0.y.getTypeOfConnectedPlace()); 
-                isBroken = entry0.y.isBroken;
+//                isBroken = entry0.y.isBroken;
                 points = composeEdgePoints2(entry0.y, null);
             }
             else { // combine multiple edges
                 headMagnet = -1;
                 tailMagnet = -1;
-                isBroken = useBrokenEdges && (simplePlcs2Orig.containsKey(resultPlace) || simpleTrns2Orig.containsKey(resultTrans));
+//                isBroken = useBrokenEdges;// && (simplePlcs2Orig.containsKey(resultPlace) || simpleTrns2Orig.containsKey(resultTrans));
                 if (edges.size() == 2) {
                     points = composeEdgePoints2(edges.get(0).y, edges.get(1).y);
                 } else {
@@ -779,6 +807,8 @@ public class Algebra2 {
             Node node = iterN.next();
             boolean remove = false;
             if (node instanceof Place) {
+                if (semantics==Semantics.CSP && !simplePlcs2Orig.containsKey(node)) 
+                    continue; // keep this node
                 for (int t=0; t<node.numTags(); t++) {
                     if (plcTag2Id.containsKey(node.getTag(t))) {
                         remove = true;
@@ -787,6 +817,8 @@ public class Algebra2 {
                 }
             }
             else if (node instanceof Transition) {
+                if (semantics==Semantics.CSP && !simpleTrns2Orig.containsKey(node)) 
+                    continue; // keep this node
                 for (int t=0; t<node.numTags(); t++) {
                     if (trnTag2Id.containsKey(node.getTag(t))) {
                         remove = true;

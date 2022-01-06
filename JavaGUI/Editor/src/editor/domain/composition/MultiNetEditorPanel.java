@@ -20,11 +20,13 @@ import editor.domain.ViewProfile;
 import editor.domain.elements.GspnPage;
 import editor.domain.measures.ExprField;
 import editor.domain.measures.SolverParams;
+import editor.domain.unfolding.Algebra2;
 import editor.gui.AbstractPageEditor;
 import editor.gui.CutCopyPasteEngine;
 import editor.gui.MainWindowInterface;
 import editor.gui.PagePrintExportManager;
 import editor.gui.SharedResourceProvider;
+import editor.gui.net.IndeterminateListCellRenderer;
 import editor.gui.net.NetViewerPanel;
 import editor.gui.net.ShowNetMatricesDialog;
 import java.awt.Color;
@@ -201,6 +203,10 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
                 @Override public void onEditingText() { }
             });
         }
+        
+        comboBox_semantics.setRenderer(new IndeterminateListCellRenderer());
+        for (Algebra2.Semantics sem : Algebra2.Semantics.values())
+            comboBox_semantics.addItem(sem);
 
         
         // Add actions to the input map manually
@@ -357,6 +363,8 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
             
             checkBox_useBrokenEdges2.setSelected(acp.useBrokenEdges);
             checkBox_applyRestrictions.setSelected(acp.applyRestrictions);
+            
+            comboBox_semantics.setSelectedItem(acp.semantics);
             
             panel_algebra2.setVisible(true);
         }
@@ -779,6 +787,9 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         toggle_custom2 = new javax.swing.JToggleButton();
         checkBox_useBrokenEdges2 = new javax.swing.JCheckBox();
         checkBox_applyRestrictions = new javax.swing.JCheckBox();
+        panel_semantics2 = new javax.swing.JPanel();
+        label_semantics2 = new javax.swing.JLabel();
+        comboBox_semantics = new javax.swing.JComboBox<>();
         actionAddSubnet = new common.Action();
         scrollPaneCentral = new javax.swing.JScrollPane();
         toolbar = new javax.swing.JToolBar();
@@ -1276,6 +1287,29 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         panel_algebra2.add(checkBox_applyRestrictions, gridBagConstraints);
 
+        panel_semantics2.setLayout(new java.awt.GridBagLayout());
+
+        label_semantics2.setText("Semantics:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 12);
+        panel_semantics2.add(label_semantics2, gridBagConstraints);
+
+        comboBox_semantics.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboBox_semanticsActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 0.1;
+        panel_semantics2.add(comboBox_semantics, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        panel_algebra2.add(panel_semantics2, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -1504,6 +1538,15 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         });
     }//GEN-LAST:event_checkBox_applyRestrictionsActionPerformed
 
+    private void comboBox_semanticsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBox_semanticsActionPerformed
+        if (initializing)
+            return;
+        mainInterface.executeUndoableCommand("change composition semantics.", (ProjectData proj, ProjectPage elem) -> {
+            TagBasedCompositionPage2 acp = (TagBasedCompositionPage2)currPage;
+            acp.semantics = (Algebra2.Semantics)comboBox_semantics.getSelectedItem();
+        });
+    }//GEN-LAST:event_comboBox_semanticsActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private common.Action actionAddSubnet;
@@ -1511,6 +1554,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
     private javax.swing.JCheckBox checkBox_applyRestrictions;
     private javax.swing.JCheckBox checkBox_useBrokenEdges;
     private javax.swing.JCheckBox checkBox_useBrokenEdges2;
+    private javax.swing.JComboBox<Algebra2.Semantics> comboBox_semantics;
     private editor.domain.measures.ExprField exprField_algebraDx;
     private editor.domain.measures.ExprField exprField_algebraDx2;
     private editor.domain.measures.ExprField exprField_algebraDy;
@@ -1540,6 +1584,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel label_operator;
+    private javax.swing.JLabel label_semantics2;
     private javax.swing.JList<JCheckBox> list_TagsP;
     private javax.swing.JList<JCheckBox> list_TagsP2;
     private javax.swing.JList<JCheckBox> list_TagsT;
@@ -1553,6 +1598,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
     private javax.swing.JPanel panel_bottom;
     private javax.swing.JPanel panel_netInstanceEditor;
     private javax.swing.JPanel panel_operator;
+    private javax.swing.JPanel panel_semantics2;
     private javax.swing.JPanel panel_toggles;
     private javax.swing.JPanel panel_toggles1;
     private javax.swing.JPanel panel_unfolding;
