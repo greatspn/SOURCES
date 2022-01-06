@@ -3501,9 +3501,9 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             newPage.viewProfile.setProfileForNetType(NewProjectDialog.PetriNetType.FullPN);
             newPage.setPageName(activeProject.generateUniquePageName("Composition"));
             newPage.netsDescr.add(new NetInstanceDescriptor());
-            newPage.netsDescr.add(new NetInstanceDescriptor());
+//            newPage.netsDescr.add(new NetInstanceDescriptor());
             newPage.netsDescr.get(0).targetNetName = (elem instanceof GspnPage ? elem.getPageName() : "");
-            newPage.netsDescr.get(1).targetNetName = "";
+//            newPage.netsDescr.get(1).targetNetName = "";
             activeProject.getCurrent().addPage(newPage);
             switchToProjectPage(activeProject, newPage, null);
         });

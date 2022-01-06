@@ -62,6 +62,9 @@ public class Algebra2 {
 
 //    // Merge by shared tags or by common name
 //    private final MergePolicy mergePolicy;
+    
+    // Apply restrictions on the selected synchronization tags
+    private final boolean restrictTags;
 
     private final boolean verbose;
     
@@ -75,16 +78,21 @@ public class Algebra2 {
     // Fields that help in the composition of the result net
     
     // Map source places with the list of composed places in the result net
-    Map<Place, List<Tuple<Integer, Place>>> orig2CompPlcs = new HashMap<>();
+    private final Map<Place, List<Tuple<Integer, Place>>> orig2CompPlcs = new HashMap<>();
     // Same for the transitions
-    Map<Transition, List<Tuple<Integer, Transition>>> orig2CompTrns = new HashMap<>();
+    private final Map<Transition, List<Tuple<Integer, Transition>>> orig2CompTrns = new HashMap<>();
+    
+    // P/T nodes that are just copied into the result net without changes
+    private final Map<Place, Place> simplePlcs2Orig = new HashMap<>();
+    private final Map<Transition, Transition> simpleTrns2Orig = new HashMap<>();
+
     
     // which net owns the originating edge
-    Map<GspnEdge, Integer> edge2NetId = new HashMap<>();
+    private final Map<GspnEdge, Integer> edge2NetId = new HashMap<>();
     
     // Associate to each new P/T pair a multiset of edges that are merged in the composed net
-    Map<Triple<Place, Transition, Kind>,
-        List<Tuple<Integer, GspnEdge>>> edgeMap = new HashMap<>();
+    private final Map<Triple<Place, Transition, Kind>,
+                      List<Tuple<Integer, GspnEdge>>> edgeMap = new HashMap<>();
     
     // Duplicated color variables. All ColorVars from net2 are initially duplicated,
     // then only the one used (stored in @usedDupColorVar) actually end up in the @result net
@@ -99,7 +107,11 @@ public class Algebra2 {
     private final Set<String> uniqueNamesResult = new HashSet<>();
     
     // Positions of the generated nodes
-    Set<IntTuple> positions = new HashSet<>();
+    private final Set<IntTuple> positions = new HashSet<>();
+    
+    // P/T sync tags associated to consecutive indices
+    private final Map<String, Integer> plcTag2Id = new HashMap<>();
+    private final Map<String, Integer> trnTag2Id = new HashMap<>();
 
     //=========================================================================
     private void storePlaceSource(Place newPlace, int card, Place origPlace) {
@@ -271,7 +283,9 @@ public class Algebra2 {
     public Algebra2(GspnPage[] nets, RelabelingFunction[] relabelFn, 
                     Point2D[] deltaCoords, 
                     String[] syncSetPl, String[] syncSetTr,
-                    boolean useBrokenEdges, boolean verbose) 
+                    boolean useBrokenEdges, 
+                    boolean restrictTags,
+                    boolean verbose) 
     {
         this.nets = nets;
         this.relabelFn = relabelFn;
@@ -279,6 +293,7 @@ public class Algebra2 {
         this.syncSetPl = syncSetPl;
         this.syncSetTr = syncSetTr;
         this.useBrokenEdges = useBrokenEdges;
+        this.restrictTags = restrictTags;
         this.verbose = verbose;
         
         assert this.nets.length == this.relabelFn.length;
@@ -437,7 +452,6 @@ public class Algebra2 {
             
     //=========================================================================
     private void joinPlaces() {
-        Map<Place, Place> new2Orig = new HashMap<>();
         for (int nn=0; nn<nets.length; nn++) {
             for (Node node : nets[nn].nodes) {
                 if (node instanceof Place) {
@@ -450,7 +464,7 @@ public class Algebra2 {
                     result.nodes.add(newPlace);
                     storePlaceSource(newPlace, 1, (Place)node);
                     storePosition(newPlace);
-                    new2Orig.put(newPlace, (Place)node);
+                    simplePlcs2Orig.put(newPlace, (Place)node);
                 }
             }
         }
@@ -459,14 +473,11 @@ public class Algebra2 {
             return;
         
         ArrayList<Place> placeIds = new ArrayList<>();
-        Map<String, Integer> tag2Id = new HashMap<>();
-        for (int ii=0; ii<syncSetPl.length; ii++)
-            tag2Id.put(syncSetPl[ii], ii);
         // Determine which places have synchronization tags
         for (Node newNode : result.nodes) {
             if (newNode instanceof Place) {
                 for (int t=0; t<newNode.numTags(); t++) {
-                    if (tag2Id.containsKey(newNode.getTag(t))) {
+                    if (plcTag2Id.containsKey(newNode.getTag(t))) {
                         placeIds.add((Place)newNode);
                         break;
                     }
@@ -476,14 +487,14 @@ public class Algebra2 {
         // Setup the synchronization problem.
         FlowsGenerator fg;
         {
-            int M=tag2Id.size(), N=placeIds.size();
+            int M=plcTag2Id.size(), N=placeIds.size();
             fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
         }
         for (int plId=0; plId<placeIds.size(); plId++) {
             Place place = placeIds.get(plId);
             for (int t=0; t<place.numTags(); t++) {
-                if (tag2Id.containsKey(place.getTag(t))) {
-                    int tagId = tag2Id.get(place.getTag(t));
+                if (plcTag2Id.containsKey(place.getTag(t))) {
+                    int tagId = plcTag2Id.get(place.getTag(t));
                     int card = place.getTagCard(t);
                     fg.addIncidence(plId, tagId, card);
                 }
@@ -547,7 +558,7 @@ public class Algebra2 {
             relocateAndStorePosition(newPlace);
             result.nodes.add(newPlace);
             for (Tuple<Integer, Place> entry : multiset) {
-                Place origPlc = new2Orig.get(entry.y);
+                Place origPlc = simplePlcs2Orig.get(entry.y);
                 assert origPlc != null;
                 storePlaceSource(newPlace, entry.x, origPlc);
             }
@@ -556,7 +567,6 @@ public class Algebra2 {
 
    //=========================================================================
     private void joinTransitions() {
-        Map<Transition, Transition> new2Orig = new HashMap<>();
         for (int nn=0; nn<nets.length; nn++) {
             for (Node node : nets[nn].nodes) {
                 if (node instanceof Transition) {
@@ -567,7 +577,7 @@ public class Algebra2 {
                     result.nodes.add(newTransition);
                     storeTransitionSource(newTransition, 1, (Transition)node);
                     storePosition(newTransition);
-                    new2Orig.put(newTransition, (Transition)node);
+                    simpleTrns2Orig.put(newTransition, (Transition)node);
                 }
             }
         }
@@ -576,14 +586,11 @@ public class Algebra2 {
             return;
         
         ArrayList<Transition> trnIds = new ArrayList<>();
-        Map<String, Integer> tag2Id = new HashMap<>();
-        for (int ii=0; ii<syncSetTr.length; ii++)
-            tag2Id.put(syncSetTr[ii], ii);
         // Determine which transitions have synchronization tags
         for (Node newNode : result.nodes) {
             if (newNode instanceof Transition) {
                 for (int t=0; t<newNode.numTags(); t++) {
-                    if (tag2Id.containsKey(newNode.getTag(t))) {
+                    if (trnTag2Id.containsKey(newNode.getTag(t))) {
                         trnIds.add((Transition)newNode);
                         break;
                     }
@@ -593,14 +600,14 @@ public class Algebra2 {
         // Setup the synchronization problem.
         FlowsGenerator fg;
         {
-            int M=tag2Id.size(), N=trnIds.size();
+            int M=trnTag2Id.size(), N=trnIds.size();
             fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
         }
         for (int plId=0; plId<trnIds.size(); plId++) {
             Transition trn = trnIds.get(plId);
             for (int t=0; t<trn.numTags(); t++) {
-                if (tag2Id.containsKey(trn.getTag(t))) {
-                    int tagId = tag2Id.get(trn.getTag(t));
+                if (trnTag2Id.containsKey(trn.getTag(t))) {
+                    int tagId = trnTag2Id.get(trn.getTag(t));
                     int card = trn.getTagCard(t);
                     fg.addIncidence(plId, tagId, card);
                 }
@@ -658,7 +665,7 @@ public class Algebra2 {
             relocateAndStorePosition(newTransition);
             result.nodes.add(newTransition);
             for (Tuple<Integer, Transition> entry : multiset) {
-                Transition origTrn = new2Orig.get(entry.y);
+                Transition origTrn = simpleTrns2Orig.get(entry.y);
                 assert origTrn != null;
                 storeTransitionSource(newTransition, entry.x, origTrn);
             }
@@ -709,8 +716,6 @@ public class Algebra2 {
             ArrayList<Point2D> points;
             boolean isBroken;
             String mult;
-            boolean breakEdge = false; /*useBrokenEdges && (mergedPlcs.contains(resultPlace) || 
-                                                   mergedTrns.contains(resultTrans));*/
             
             if (edges.size() == 1) { // only one originating edge
                 Tuple<Integer, GspnEdge> entry0 = edges.get(0);
@@ -723,7 +728,7 @@ public class Algebra2 {
             else { // combine multiple edges
                 headMagnet = -1;
                 tailMagnet = -1;
-                isBroken = false;
+                isBroken = useBrokenEdges && (simplePlcs2Orig.containsKey(resultPlace) || simpleTrns2Orig.containsKey(resultTrans));
                 if (edges.size() == 2) {
                     points = composeEdgePoints2(edges.get(0).y, edges.get(1).y);
                 } else {
@@ -761,6 +766,50 @@ public class Algebra2 {
             newEdge.setConnectedPlace(resultPlace, kind);
             newEdge.setConnectedTransition(resultTrans, kind);
             result.edges.add(newEdge);
+        }
+    }
+    
+    //=========================================================================
+    // apply restrictions: remove all nodes that have the syncronization tags
+    private void applyRestrictions() {
+        if (!restrictTags)
+            return; // nothing to do
+        // Remove nodes
+        Set<Node> removedNodes = new HashSet<>();
+        Iterator<Node> iterN = result.nodes.iterator();
+        while (iterN.hasNext()) {
+            Node node = iterN.next();
+            boolean remove = false;
+            if (node instanceof Place) {
+                for (int t=0; t<node.numTags(); t++) {
+                    if (plcTag2Id.containsKey(node.getTag(t))) {
+                        remove = true;
+                        break;
+                    }
+                }
+            }
+            else if (node instanceof Transition) {
+                for (int t=0; t<node.numTags(); t++) {
+                    if (trnTag2Id.containsKey(node.getTag(t))) {
+                        remove = true;
+                        break;
+                    }
+                }
+            }
+            if (remove) {
+                iterN.remove();
+                removedNodes.add(node);
+            }
+        }
+        // Remove the edges connected to removed nodes
+        Iterator<Edge> iterE = result.edges.iterator();
+        while (iterE.hasNext()) {
+            Edge edge = iterE.next();
+            if (removedNodes.contains(edge.getHeadNode()) ||
+                removedNodes.contains(edge.getTailNode())) 
+            {
+                iterE.remove();
+            }
         }
     }
     
@@ -993,6 +1042,14 @@ public class Algebra2 {
 
     //=========================================================================
     public void compose() {
+        // Prepare synchronization tags
+        if (syncSetPl != null)
+            for (int ii=0; ii<syncSetPl.length; ii++)
+                plcTag2Id.put(syncSetPl[ii], ii);
+        if (syncSetTr != null)
+            for (int ii=0; ii<syncSetTr.length; ii++)
+                trnTag2Id.put(syncSetTr[ii], ii);
+        
         // Join non-place and non-transition objects
         joinColorClasses();
         joinColorVars();
@@ -1011,6 +1068,9 @@ public class Algebra2 {
         
         // Add the color variables that where used in expression rewritings
         joinDuplicatedColorVarsUsed();
+        
+        // Apply restriction rules
+        applyRestrictions();
     }
     
     

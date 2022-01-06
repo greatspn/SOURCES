@@ -102,8 +102,15 @@ public class PNMLFormat {
     private static void writeTags(PrintWriter pnml, Node n, boolean saveGraphics) {
         if (n.numTags() > 0) {
             pnml.println("\t\t\t\t<toolspecific tool=\"GreatSPN-tags\" version=\"3\">");
-            for (int i=0; i<n.numTags(); i++)
-                pnml.println("\t\t\t\t\t<tag>"+n.getTag(i)+"</tag>");
+            for (int i=0; i<n.numTags(); i++) {
+                pnml.print("\t\t\t\t\t<tag>");
+                pnml.print("<name>"+n.getTag(i)+"</name>");
+                if (Math.abs(n.getTagCard(i)) != 1)
+                    pnml.print("<cardinality>"+Math.abs(n.getTagCard(i))+"</cardinality>");
+                if (n.getTagCard(i) < 0)
+                    pnml.print("<complementary/>");
+                pnml.println("</tag>");
+            }
             
             if (saveGraphics) {
                 int labelX = scaleCoord(n.getSuperPosTagsDecor().getInternalPosX());

@@ -61,7 +61,13 @@ public class SuperpositionTag implements Comparable<SuperpositionTag> {
             }
             
             String tag = tagDef.substring(startTag, endTag);
-            int card = (endCard > 0) ? Integer.parseInt(tagDef.substring(0, endCard)) : 1;
+            int card = 1;
+            if (endCard > 0) {
+                String cardText = tagDef.substring(0, endCard);
+                if (cardText.equals("-"))
+                    cardText = "-1";
+                card = (endCard > 0) ? Integer.parseInt(cardText) : 1;
+            }
             tags.add(new SuperpositionTag(tag, card * sign));
         }
         
@@ -112,13 +118,13 @@ public class SuperpositionTag implements Comparable<SuperpositionTag> {
     public static String toCanonicalString(String tag, int card) {
         if (card==1) return tag;
         if (card==-1) return tag+"?";
-        if (card > 1) return card+"*"+tag;
-        if (card < 1) return (-card)+"*"+tag+"?";
-        return "0*"+tag;
+        if (card > 1) return card+" "+tag;
+        if (card < 1) return (-card)+" "+tag+"?";
+        return "0 "+tag;
     }
     
     public static void main(String[] args) {
-        String def = "a|b|d? | 2*c | 3 * b? | fff | ffg? | -5 xx | -34 zz? ";
+        String def = "a|b|d? | 2*c | 3 * b? | fff | ffg? | -5 xx | -34 yy? | -zz ";
         System.out.println(def);
         SuperpositionTag[] tags = parseTags(def);
         for (SuperpositionTag st : tags)

@@ -356,6 +356,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
             exprField_algebraDy2.setEnabled(acp.alignment == TagBasedCompositionPage2.Alignment.CUSTOM);
             
             checkBox_useBrokenEdges2.setSelected(acp.useBrokenEdges);
+            checkBox_applyRestrictions.setSelected(acp.applyRestrictions);
             
             panel_algebra2.setVisible(true);
         }
@@ -777,6 +778,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         toggle_vertical2 = new javax.swing.JToggleButton();
         toggle_custom2 = new javax.swing.JToggleButton();
         checkBox_useBrokenEdges2 = new javax.swing.JCheckBox();
+        checkBox_applyRestrictions = new javax.swing.JCheckBox();
         actionAddSubnet = new common.Action();
         scrollPaneCentral = new javax.swing.JScrollPane();
         toolbar = new javax.swing.JToolBar();
@@ -1262,6 +1264,18 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
         panel_algebra2.add(checkBox_useBrokenEdges2, gridBagConstraints);
 
+        checkBox_applyRestrictions.setText("Restrict selected tags.");
+        checkBox_applyRestrictions.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                checkBox_applyRestrictionsActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        panel_algebra2.add(checkBox_applyRestrictions, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -1479,14 +1493,22 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
     private void checkBox_useBrokenEdges2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBox_useBrokenEdges2ActionPerformed
         mainInterface.executeUndoableCommand("change broken edge flag.", (ProjectData proj, ProjectPage elem) -> {
             TagBasedCompositionPage2 acp = (TagBasedCompositionPage2)currPage;
-            acp.useBrokenEdges = checkBox_useBrokenEdges.isSelected();
+            acp.useBrokenEdges = checkBox_useBrokenEdges2.isSelected();
         });
     }//GEN-LAST:event_checkBox_useBrokenEdges2ActionPerformed
+
+    private void checkBox_applyRestrictionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBox_applyRestrictionsActionPerformed
+        mainInterface.executeUndoableCommand("change restriction flag.", (ProjectData proj, ProjectPage elem) -> {
+            TagBasedCompositionPage2 acp = (TagBasedCompositionPage2)currPage;
+            acp.applyRestrictions = checkBox_applyRestrictions.isSelected();
+        });
+    }//GEN-LAST:event_checkBox_applyRestrictionsActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private common.Action actionAddSubnet;
     private javax.swing.JButton button_resetOffsetMatrix;
+    private javax.swing.JCheckBox checkBox_applyRestrictions;
     private javax.swing.JCheckBox checkBox_useBrokenEdges;
     private javax.swing.JCheckBox checkBox_useBrokenEdges2;
     private editor.domain.measures.ExprField exprField_algebraDx;

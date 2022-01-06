@@ -115,6 +115,8 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
     
     // Use broken edges
     public boolean useBrokenEdges = true;
+    // Apply restrictions
+    public boolean applyRestrictions = true;
         
     
     // Tags extracted from the operand nets
@@ -247,7 +249,7 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
         String[] selTagsTr = selTagsT.isEmpty() ? null : selTagsT.toArray(new String[selTagsT.size()]);
         
         Algebra2 a = new Algebra2(nets, relabFns, deltaCoords, selTagsPl, selTagsTr,
-                                  useBrokenEdges, false);
+                                  useBrokenEdges, applyRestrictions, false);
         a.compose();
         a.result.setSelectionFlag(false);
         
@@ -275,6 +277,7 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
     public void exchangeXML(Element el, XmlExchangeDirection exDir) throws XmlExchangeException {
         super.exchangeXML(el, exDir);
         bindXMLAttrib(this, el, exDir, "use-broken-edges", "useBrokenEdges", false);
+        bindXMLAttrib(this, el, exDir, "restriction", "applyRestrictions", false);
         bindXMLAttrib(this, el, exDir, "align-dx", "alignDx.@Expr", "10");
         bindXMLAttrib(this, el, exDir, "align-dy", "alignDy.@Expr", "10");
         bindXMLAttrib(this, el, exDir, "alignment", "alignment", null, Alignment.class);
