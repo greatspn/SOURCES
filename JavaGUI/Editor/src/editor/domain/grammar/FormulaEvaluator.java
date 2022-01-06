@@ -181,6 +181,13 @@ public class FormulaEvaluator extends ExprLangBaseVisitor<EvaluatedFormula> {
     public EvaluatedFormula visitMainPlaceColorDomainDef(ExprLangParser.MainPlaceColorDomainDefContext ctx) {
         throw new UnsupportedOperationException("Should not evaluate this kind of formula.");
     }
+
+    @Override
+    public EvaluatedFormula visitMainTagRewriteList(ExprLangParser.MainTagRewriteListContext ctx) {
+        throw new UnsupportedOperationException("Should not evaluate this kind of formula.");
+    }
+    
+    
     
     //==========================================================================
     //  Integer expressions:

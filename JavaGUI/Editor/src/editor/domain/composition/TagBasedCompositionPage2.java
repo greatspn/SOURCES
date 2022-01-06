@@ -84,6 +84,11 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
     public boolean useReplicaCount() {
         return false;
     }
+    
+    @Override
+    public boolean useTagRewritingRules() {
+        return true;
+    }
 
     @Override
     public boolean requireParamBinding() {
@@ -137,7 +142,7 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
         for (NetInstanceDescriptor nid : netsDescr) {
             Set<String> tagsP = new HashSet<>();
             Set<String> tagsT = new HashSet<>();
-            getNetTags(nid.net.getComposedNet(), tagsP, tagsT);
+            getNetTags(nid.net.getComposedNet(), nid.rewriteRules.getExpr(), tagsP, tagsT);
             mergeTags(countTagsP, tagsP);
             mergeTags(countTagsT, tagsT);
         }
@@ -173,23 +178,42 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
         alignDy.checkExprCorrectness(context, this, vertSelectable);
 //        for (String tag : commonTagsP)
 //            System.out.println(getPageName()+" tagsP="+tag);
+
+        for (NetInstanceDescriptor nid : netsDescr) {
+            nid.rewriteRules.checkExprCorrectness(context, this, rewriteRulesSelectable);
+        }
     }
     
     private static Selectable horizSelectable = new DummyNamedSelectable("Horizontal offset");
     private static Selectable vertSelectable = new DummyNamedSelectable("Vertical offset");
+    private static Selectable rewriteRulesSelectable = new DummyNamedSelectable("Tag rewriting rules");
     
-    private void getNetTags(NetPage net, Set<String> tagsP, Set<String> tagsT) {
+    private void getNetTags(NetPage net, String rewriteRules, Set<String> tagsP, Set<String> tagsT) {
         if (net == null)
             return;
+        // try to generate the rewriting rules
+        RelabelingFunction rf = null;
+        try {
+            rf = new RelabelingFunction(rewriteRules);
+        }
+        catch (Exception e) { /* syntax errors? */ }
         for (Node node : net.nodes) {
             if (node instanceof Place) {
                 for (int t=0; t<node.numTags(); t++) {
-                    tagsP.add(node.getTag(t));
+                    String tag = node.getTag(t);
+                    if (rf != null) {
+                        tag = rf.rewriteSingleTag(tag, node.getTagCard(t));
+                    }
+                    tagsP.add(tag);
                 }
             }
             else if (node instanceof Transition) {
                 for (int t=0; t<node.numTags(); t++) {
-                    tagsT.add(node.getTag(t));
+                    String tag = node.getTag(t);
+                    if (rf != null) {
+                        tag = rf.rewriteSingleTag(tag, node.getTagCard(t));
+                    }
+                    tagsT.add(tag);
                 }
             }
         }
@@ -243,7 +267,7 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
                     dy2shift += Integer.parseInt(alignDy.getExpr());
                     break;
             }
-            relabFns[nn] = new RelabelingFunction(null);
+            relabFns[nn] = new RelabelingFunction(netsDescr.get(nn).rewriteRules.getExpr());
         }
         String[] selTagsPl = selTagsP.isEmpty() ? null : selTagsP.toArray(new String[selTagsP.size()]);
         String[] selTagsTr = selTagsT.isEmpty() ? null : selTagsT.toArray(new String[selTagsT.size()]);

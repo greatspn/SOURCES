@@ -974,7 +974,7 @@
     </Component>
     <Component class="common.Action" name="actionNewMultiPage_TagBasedComposition">
       <Properties>
-        <Property name="actionName" type="java.lang.String" value="Add a new Tag-based Composition page."/>
+        <Property name="actionName" type="java.lang.String" value="Add a new Tag-based co-normal Composition page."/>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
           <Connection component="resourceFactory" name="getNewAlgebraNet24" type="method"/>
         </Property>

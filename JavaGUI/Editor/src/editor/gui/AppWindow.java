@@ -2223,7 +2223,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             }
         });
 
-        actionNewMultiPage_TagBasedComposition.setActionName("Add a new Tag-based Composition page.");
+        actionNewMultiPage_TagBasedComposition.setActionName("Add a new Tag-based co-normal Composition page.");
         actionNewMultiPage_TagBasedComposition.setIcon(resourceFactory.getNewAlgebraNet24());
         actionNewMultiPage_TagBasedComposition.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

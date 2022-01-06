@@ -45,12 +45,38 @@ public class NetInstanceDescriptor extends SelectableObject implements Serializa
     // Number of instances
     public final SolverParams.IntExpr numReplicas = new SolverParams.IntExpr("1");
     
+    // Tag-rewriting rules
+    public final TagRewriteListExpr rewriteRules = new TagRewriteListExpr("");
+    
     // Partial parameter instantiations
     // Only parameters that will be assigned/replaced appears in this table
     // For replicated instances, instParams is applied uniformly to all the nets.
     public final TemplateBinding instParams = new TemplateBinding();
     // Variables that are kept unbound
 //    public final Set<String> unboundParams = new HashSet<>();
+    
+    public static class TagRewriteListExpr extends Expr {
+        public TagRewriteListExpr() { }
+
+        public TagRewriteListExpr(String expr) {
+            super(expr);
+        }
+        
+        @Override
+        protected String getExprDescr() {
+            return "Tag rewriting rules list.";
+        }
+
+        @Override
+        protected ParserContext.ParserEntryPoint getParseRule(String exprText) { 
+            return ParserContext.ParserEntryPoint.TAG_REWRITE_RULES_LIST;
+        }
+
+        @Override
+        protected int getParseFlags() { 
+            return ParserContext.PF_CONST_EXPR; 
+        }
+    }
     
     //----------------------------------------------------------
     // Transient reference to the target net
@@ -73,6 +99,7 @@ public class NetInstanceDescriptor extends SelectableObject implements Serializa
     public void exchangeXML(Element el, XmlExchangeDirection exDir) throws XmlExchangeException {
         bindXMLAttrib(this, el, exDir, "netname", "targetNetName", "");
         bindXMLAttrib(this, el, exDir, "replicas", "numReplicas.@Expr", "1");
+        bindXMLAttrib(this, el, exDir, "rewrite-rules", "rewriteRules.@Expr", "");
     }
     
 //    public void copyBindingsInto(TemplateBinding tb, int repNum) {

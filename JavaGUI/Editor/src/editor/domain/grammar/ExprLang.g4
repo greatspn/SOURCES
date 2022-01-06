@@ -82,6 +82,8 @@ mainPlaceColorDomainDef  : placeColorDomainDef EOF;
 mainRealMSetExpr         : realMSetExpr EOF;
 mainIntMSetExpr          : intMSetExpr EOF;
 
+mainTagRewriteList       : tagRewriteList EOF;
+
 // <span style="color:#888888">Verbatim general transition functions are written as: </span>
 //  FN: <span style="color:#c5060b;font-style:italic">text</span>
 
@@ -346,7 +348,18 @@ composite_temporal_op_ctlstar : CTLSTAR_EXISTS_NEXT          # ComposTempOpEX
                               | CTLSTAR_FORALL_GLOBALLY      # ComposTempOpAG
                               ;
 
+//--------------------------------------------------------------------------
+//       Tag rewriting rules
+//--------------------------------------------------------------------------
 
+tag : ID                                               # TagDefinition
+    | ID '?'                                           # TagComplDefinition
+    ;
+tagRewrite : tag '->' tag                              # TagRewriteRule
+           ;
+tagRewriteList :                                       # TagRewriteListEmpty
+               | tagRewrite (',' tagRewrite)*          # TagRewriteListList
+               ; 
 
 //--------------------------------------------------------------------------
 //       Lexer rules:

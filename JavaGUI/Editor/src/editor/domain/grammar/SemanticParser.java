@@ -879,6 +879,14 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         throwIfIncomplete(ctx.EOF(), ctx.getStop());
         return visit(ctx.realMSetExpr());
     }
+
+    @Override
+    public FormattedFormula visitMainTagRewriteList(ExprLangParser.MainTagRewriteListContext ctx) {
+        throwIfIncomplete(ctx.EOF(), ctx.getStop());
+        return visit(ctx.tagRewriteList());
+    }
+    
+    
     
     //==========================================================================
     //  Integer expressions:
@@ -2736,6 +2744,41 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         if (ctx.FORALL_FUTURE() != null)   return temporalOpCTL('A', 'F');
         if (ctx.FORALL_GLOBALLY() != null) return temporalOpCTL('A', 'G');
         throw new IllegalStateException();
+    }
+    
+    //==========================================================================
+    //  Tag rewriting rules:
+    //==========================================================================
+
+    @Override
+    public FormattedFormula visitTagDefinition(ExprLangParser.TagDefinitionContext ctx) {
+        return new FormattedFormula(lang, true, ctx.getText());
+    }
+
+    @Override
+    public FormattedFormula visitTagComplDefinition(ExprLangParser.TagComplDefinitionContext ctx) {
+        return new FormattedFormula(lang, true, ctx.getText()+"?");
+    }
+
+    @Override
+    public FormattedFormula visitTagRewriteRule(ExprLangParser.TagRewriteRuleContext ctx) {
+        return format(false, visit(ctx.tag(0)), " -> ", visit(ctx.tag(1)));
+    }
+
+    @Override
+    public FormattedFormula visitTagRewriteListEmpty(ExprLangParser.TagRewriteListEmptyContext ctx) {
+        requireLatexLanguage();
+        return format(false, "");
+    }
+
+    @Override
+    public FormattedFormula visitTagRewriteListList(ExprLangParser.TagRewriteListListContext ctx) {
+        requireLatexLanguage();
+        FormattedFormula ff = new FormattedFormula(lang, true, "");
+        for (int i=0; i<ctx.tagRewrite().size(); i++) {
+            ff = format(true, ff, (i > 0 ? ", " : ""), visit(ctx.tagRewrite(i)));
+        }
+        return ff;
     }
 
     //==========================================================================

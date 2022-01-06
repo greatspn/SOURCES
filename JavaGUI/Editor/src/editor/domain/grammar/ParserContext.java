@@ -161,7 +161,7 @@ public class ParserContext implements NodeNamespace {
         COLOR_CLASS_DEF, COLOR_VAR_DEF, PLACE_COLOR_DOMAIN_DEF,
         CLOCK_CONSTRAINT, ACTION_SET, STATE_PROP_EXPR, VAR_FLOW,
         ACTION_BINDING, CLOCK_DEF,
-        PERFORMANCE_MEASURE, CSLTA_EXPR
+        PERFORMANCE_MEASURE, CSLTA_EXPR, TAG_REWRITE_RULES_LIST
     }
     
     // Generate a proper parse tree for a formula in a given parser entry point
@@ -238,6 +238,9 @@ public class ParserContext implements NodeNamespace {
                 break;
             case REAL_MULTISET_EXPR:
                 tree = parser.mainRealMSetExpr();
+                break;
+            case TAG_REWRITE_RULES_LIST:
+                tree = parser.mainTagRewriteList();
                 break;
             default:
                 throw new IllegalStateException("Invalid parser entry point.");

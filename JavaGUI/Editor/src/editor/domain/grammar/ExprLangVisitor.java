@@ -359,6 +359,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	T visitVarUpdateListList(@NotNull ExprLangParser.VarUpdateListListContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#TagComplDefinition}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTagComplDefinition(@NotNull ExprLangParser.TagComplDefinitionContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#BoolExprColorTermComp}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -611,6 +618,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	T visitIntExprUnknownId(@NotNull ExprLangParser.IntExprUnknownIdContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#TagRewriteListEmpty}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTagRewriteListEmpty(@NotNull ExprLangParser.TagRewriteListEmptyContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#MeasureX}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -658,6 +672,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitComposTempOpEF(@NotNull ExprLangParser.ComposTempOpEFContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#TagRewriteRule}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTagRewriteRule(@NotNull ExprLangParser.TagRewriteRuleContext ctx);
 
 	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#ClockConstrBetween}.
@@ -919,6 +940,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	T visitIntExprAddSub(@NotNull ExprLangParser.IntExprAddSubContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#mainTagRewriteList}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMainTagRewriteList(@NotNull ExprLangParser.MainTagRewriteListContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#IntTemplateId}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -959,6 +987,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitRealMSetExprParen(@NotNull ExprLangParser.RealMSetExprParenContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#TagDefinition}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTagDefinition(@NotNull ExprLangParser.TagDefinitionContext ctx);
 
 	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#IntMSetExprElemProduct}.
@@ -1155,6 +1190,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitIntExprMulDiv(@NotNull ExprLangParser.IntExprMulDivContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#TagRewriteListList}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTagRewriteListList(@NotNull ExprLangParser.TagRewriteListListContext ctx);
 
 	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#ColorSetSubclassOf2}.

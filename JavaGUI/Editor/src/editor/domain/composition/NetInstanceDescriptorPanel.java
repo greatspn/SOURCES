@@ -23,7 +23,6 @@ import javax.swing.UIManager;
  * @author elvio
  */
 public final class NetInstanceDescriptorPanel extends javax.swing.JPanel 
-        implements ExprField.ExprFieldListener
 {
 
     private MainWindowInterface mainInterface;
@@ -33,6 +32,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
     
     private NetInstanceDescriptor descr;
     private final SolverParams.IntExpr numReplicaExprCopy;
+    private final NetInstanceDescriptor.TagRewriteListExpr rewriteRulesExprCopy;
     
     private final ArrayList<VarBindingPanel> bindPanels = new ArrayList<>();
     
@@ -42,12 +42,37 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         initComponents();
         this.numInst = number;
         numReplicaExprCopy = new SolverParams.IntExpr("1");
+        rewriteRulesExprCopy = new NetInstanceDescriptor.TagRewriteListExpr("");
         label_Num.setText((numInst+1)+"º");
-        exprField_replicas.setExprListener(this);
+        exprField_replicas.setExprListener(new ExprField.ExprFieldListener() {
+            @Override
+            public void onExprModified() {
+                mainInterface.executeUndoableCommand("change replica count.", (ProjectData proj, ProjectPage page) -> {
+                    descr.numReplicas.setExpr(numReplicaExprCopy.getExpr());
+                });
+            }
+            @Override
+            public void onEditingText() {
+                // Editing text in the replica's expression box
+            }
+        });
+        exprField_rewriteRules.setExprListener(new ExprField.ExprFieldListener() {
+            @Override
+            public void onExprModified() {
+                mainInterface.executeUndoableCommand("change tag rewriting rules count.", (ProjectData proj, ProjectPage page) -> {
+                    descr.rewriteRules.setExpr(rewriteRulesExprCopy.getExpr());
+                });
+            }
+            @Override
+            public void onEditingText() {
+                // Editing text in the replica's expression box
+            }
+        });
 
         button_up.setEnabled(numInst != 0);
         label_netName.setVisible(numInst == 0);
         label_numReplicas.setVisible(numInst == 0);
+        label_rewriteRules.setVisible(numInst == 0);
         panel_horizBar.setVisible(numInst == 0);
 
         // Fix combo box size
@@ -59,6 +84,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         
         setBackground(editor.gui.net.NetEditorPanel.PAGE_BACKGROUND_COLOR);
         exprField_replicas.setOpaque(false);
+        exprField_rewriteRules.setOpaque(false);
         label_binding.setForeground(editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR);
         label_Num.setForeground(editor.gui.net.NetEditorPanel.PAGE_FOREGROUND_COLOR);
         
@@ -66,6 +92,8 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         label_netName.setBackground(editor.gui.net.NetEditorPanel.PAGE_TITLE_BACKGROUND);
         label_numReplicas.setForeground(editor.gui.net.NetEditorPanel.PAGE_TITLE_FOREGROUND);
         label_numReplicas.setBackground(editor.gui.net.NetEditorPanel.PAGE_TITLE_BACKGROUND);   
+        label_rewriteRules.setForeground(editor.gui.net.NetEditorPanel.PAGE_TITLE_FOREGROUND);
+        label_rewriteRules.setBackground(editor.gui.net.NetEditorPanel.PAGE_TITLE_BACKGROUND);   
         panel_horizBar.setBackground(editor.gui.net.NetEditorPanel.PAGE_TITLE_BACKGROUND);
         panel_horizBar.setForeground(editor.gui.net.NetEditorPanel.PAGE_TITLE_BACKGROUND);
         
@@ -114,6 +142,11 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         exprField_replicas.initializeFor(numReplicaExprCopy.getEditableValue(), mnPage);
         exprField_replicas.setEnabled(mnPage.useReplicaCount());
         
+        // Tag rewriting rules
+        rewriteRulesExprCopy.setExpr(descr.rewriteRules.getExpr());
+        exprField_rewriteRules.initializeFor(rewriteRulesExprCopy.getEditableValue(), mnPage);
+        exprField_rewriteRules.setEnabled(mnPage.useTagRewritingRules());
+        
         // Bound variables
         for (VarBindingPanel vbp : bindPanels) {
             vbp.deinitialize();
@@ -135,6 +168,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
     
     public void deinitialize() {
         exprField_replicas.deinitialize();
+        exprField_rewriteRules.deinitialize();
         this.mainInterface = null;
         this.currProject = null;
         this.mnPage = null;
@@ -145,19 +179,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         bindPanels.clear();
         panel_bindVars.removeAll();
     }
-
-    @Override
-    public void onExprModified() {
-        mainInterface.executeUndoableCommand("change replica count.", (ProjectData proj, ProjectPage page) -> {
-            descr.numReplicas.setExpr(numReplicaExprCopy.getExpr());
-        });
-    }
-
-    @Override
-    public void onEditingText() {
-        // Editing text in the replica's expression box
-    }
-            
+  
     
 
     /**
@@ -183,6 +205,8 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         panel_horizBar = new javax.swing.JPanel();
         label_netName = new javax.swing.JLabel();
         label_numReplicas = new javax.swing.JLabel();
+        exprField_rewriteRules = new editor.domain.measures.ExprField();
+        label_rewriteRules = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setLayout(new java.awt.GridBagLayout());
@@ -220,7 +244,6 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipady = 3;
-        gridBagConstraints.weightx = 0.5;
         gridBagConstraints.weighty = 0.3;
         add(exprField_replicas, gridBagConstraints);
 
@@ -231,6 +254,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 5;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.ipady = 3;
         add(button_up, gridBagConstraints);
@@ -242,6 +266,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 6;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.ipady = 3;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
@@ -279,7 +304,7 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         panel_horizBar.setLayout(panel_horizBarLayout);
         panel_horizBarLayout.setHorizontalGroup(
             panel_horizBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 434, Short.MAX_VALUE)
+            .addGap(0, 835, Short.MAX_VALUE)
         );
         panel_horizBarLayout.setVerticalGroup(
             panel_horizBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -305,16 +330,33 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         add(label_netName, gridBagConstraints);
 
-        label_numReplicas.setText("Number of Replicas:");
+        label_numReplicas.setText("Tag rewriting rules:");
         label_numReplicas.setOpaque(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weighty = 0.3;
         add(label_numReplicas, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipady = 3;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weighty = 0.3;
+        add(exprField_rewriteRules, gridBagConstraints);
+
+        label_rewriteRules.setText("Replicate:     ");
+        label_rewriteRules.setOpaque(true);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weighty = 0.3;
+        add(label_rewriteRules, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     private void comboBox_modelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBox_modelActionPerformed
@@ -395,10 +437,12 @@ public final class NetInstanceDescriptorPanel extends javax.swing.JPanel
     private javax.swing.JCheckBox checkBox_selected;
     private javax.swing.JComboBox<String> comboBox_model;
     private editor.domain.measures.ExprField exprField_replicas;
+    private editor.domain.measures.ExprField exprField_rewriteRules;
     private javax.swing.JLabel label_Num;
     private javax.swing.JLabel label_binding;
     private javax.swing.JLabel label_netName;
     private javax.swing.JLabel label_numReplicas;
+    private javax.swing.JLabel label_rewriteRules;
     private javax.swing.JPanel panel_bindVars;
     private javax.swing.JPanel panel_binding;
     private javax.swing.JPanel panel_horizBar;

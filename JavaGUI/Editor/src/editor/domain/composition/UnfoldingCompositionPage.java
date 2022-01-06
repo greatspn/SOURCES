@@ -107,6 +107,11 @@ public class UnfoldingCompositionPage extends MultiNetPage implements Serializab
     }
     
     @Override
+    public boolean useTagRewritingRules() {
+        return false;
+    }
+    
+    @Override
     public boolean requireParamBinding() {
         return true;
     }

@@ -322,7 +322,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         }
         
         //-----------------------------------------
-        // Algebra Property Panel
+        // Algebra Property Panel (version 2)
         if (currPage instanceof TagBasedCompositionPage2) {
             TagBasedCompositionPage2 acp = (TagBasedCompositionPage2)currPage;
             

@@ -48,7 +48,7 @@ public class TagBasedCompositionPage extends MultiNetPage implements Serializabl
 
     @Override
     public String getOperatorName() {
-        return "Tag-based composition";
+        return "Tag-based co-normal composition";
     }
 
     @Override
@@ -79,6 +79,11 @@ public class TagBasedCompositionPage extends MultiNetPage implements Serializabl
 
     @Override
     public boolean useReplicaCount() {
+        return false;
+    }
+    
+    @Override
+    public boolean useTagRewritingRules() {
         return false;
     }
 

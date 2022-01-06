@@ -186,6 +186,9 @@ public abstract class MultiNetPage extends ProjectPage implements Serializable, 
     // Is net replication count available
     public abstract boolean useReplicaCount();
     
+    // Is tag rewriting rules used?
+    public abstract boolean useTagRewritingRules();    
+    
     // Net requires to instantiate color class parameters?
     public abstract boolean requireParamBinding();
     

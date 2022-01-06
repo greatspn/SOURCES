@@ -82,6 +82,11 @@ public class NameBasedCompositionPage extends MultiNetPage implements Serializab
     public boolean useReplicaCount() {
         return true;
     }
+
+    @Override
+    public boolean useTagRewritingRules() {
+        return false;
+    }
     
     @Override
     public boolean requireParamBinding() {
