@@ -71,6 +71,9 @@ public class Algebra2 {
     
     // Semantics for interpreting net tags
     private final Semantics semantics;
+    
+    // Do not allow single-net synchronization. Only sync from multiple nets are possible
+    private final boolean avoidSingleNetSynch;
 
     private final boolean verbose;
     
@@ -297,6 +300,7 @@ public class Algebra2 {
                     Semantics semantics,
                     boolean useBrokenEdges, 
                     boolean restrictTags,
+                    boolean avoidSingleNetSynch,
                     boolean verbose) 
     {
         this.nets = nets;
@@ -307,6 +311,7 @@ public class Algebra2 {
         this.semantics = semantics;
         this.useBrokenEdges = useBrokenEdges;
         this.restrictTags = restrictTags;
+        this.avoidSingleNetSynch = avoidSingleNetSynch;
         this.verbose = verbose;
         
         assert this.nets.length == this.relabelFn.length;
@@ -531,15 +536,21 @@ public class Algebra2 {
             int[] syncVec = fg.getFlowVector(ff);
             assert syncVec.length == placeIds.size();
             List<Tuple<Integer, Place>> multiset = new LinkedList<>();
+            Set<Integer> origNetsSet = new HashSet<>();
             for (int pl=0; pl<placeIds.size(); pl++) {
                 if (syncVec[pl] != 0) {
                     int card = syncVec[pl];
                     if (semantics == Semantics.CSP)
                         card = Math.abs(card);
-                    multiset.add(new Tuple<>(card, placeIds.get(pl)));
+                    Place compPl = placeIds.get(pl);
+                    assert simplePlcs2NetId.containsKey(compPl);
+                    multiset.add(new Tuple<>(card, compPl));
+                    origNetsSet.add(simplePlcs2NetId.get(compPl));
                 }
             }
             assert !multiset.isEmpty();
+            if (avoidSingleNetSynch && origNetsSet.size() == 1)
+                continue; // only one source net            
             
             // Generate the new place from the synchronization multiset
             Place newPlace = (Place)Util.deepCopy(multiset.get(0).y);
@@ -654,15 +665,21 @@ public class Algebra2 {
             int[] syncVec = fg.getFlowVector(ff);
             assert syncVec.length == trnIds.size();
             List<Tuple<Integer, Transition>> multiset = new LinkedList<>();
+            Set<Integer> origNetsSet = new HashSet<>();
             for (int tr=0; tr<trnIds.size(); tr++) {
                 if (syncVec[tr] != 0) {
                     int card = syncVec[tr];
                     if (semantics == Semantics.CSP)
                         card = Math.abs(card);
-                    multiset.add(new Tuple<>(card, trnIds.get(tr)));
+                    Transition compTr = trnIds.get(tr);
+                    assert simpleTrns2NetId.containsKey(compTr);
+                    multiset.add(new Tuple<>(card, compTr));
+                    origNetsSet.add(simpleTrns2NetId.get(compTr));
                 }
             }
             assert !multiset.isEmpty();
+            if (avoidSingleNetSynch && origNetsSet.size() == 1)
+                continue; // only one source net   
             
             // Generate the new transition from the synchronization multiset
             Transition newTransition = (Transition)Util.deepCopy(multiset.get(0).y);

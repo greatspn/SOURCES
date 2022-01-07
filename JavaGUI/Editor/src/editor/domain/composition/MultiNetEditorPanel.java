@@ -363,6 +363,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
             
             checkBox_useBrokenEdges2.setSelected(acp.useBrokenEdges);
             checkBox_applyRestrictions.setSelected(acp.applyRestrictions);
+            checkBox_avoidSingleNetSynch.setSelected(acp.avoidSingleNetSynch);
             
             comboBox_semantics.setSelectedItem(acp.semantics);
             
@@ -787,6 +788,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         toggle_custom2 = new javax.swing.JToggleButton();
         checkBox_useBrokenEdges2 = new javax.swing.JCheckBox();
         checkBox_applyRestrictions = new javax.swing.JCheckBox();
+        checkBox_avoidSingleNetSynch = new javax.swing.JCheckBox();
         panel_semantics2 = new javax.swing.JPanel();
         label_semantics2 = new javax.swing.JLabel();
         comboBox_semantics = new javax.swing.JComboBox<>();
@@ -1287,6 +1289,19 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         panel_algebra2.add(checkBox_applyRestrictions, gridBagConstraints);
 
+        checkBox_avoidSingleNetSynch.setText("No synchronizations from a single net.");
+        checkBox_avoidSingleNetSynch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                checkBox_avoidSingleNetSynchActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        panel_algebra2.add(checkBox_avoidSingleNetSynch, gridBagConstraints);
+
         panel_semantics2.setLayout(new java.awt.GridBagLayout());
 
         label_semantics2.setText("Semantics:");
@@ -1306,7 +1321,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         panel_algebra2.add(panel_semantics2, gridBagConstraints);
 
@@ -1547,11 +1562,19 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         });
     }//GEN-LAST:event_comboBox_semanticsActionPerformed
 
+    private void checkBox_avoidSingleNetSynchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBox_avoidSingleNetSynchActionPerformed
+        mainInterface.executeUndoableCommand("change single net syncronization flag.", (ProjectData proj, ProjectPage elem) -> {
+            TagBasedCompositionPage2 acp = (TagBasedCompositionPage2)currPage;
+            acp.avoidSingleNetSynch = checkBox_avoidSingleNetSynch.isSelected();
+        });
+    }//GEN-LAST:event_checkBox_avoidSingleNetSynchActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private common.Action actionAddSubnet;
     private javax.swing.JButton button_resetOffsetMatrix;
     private javax.swing.JCheckBox checkBox_applyRestrictions;
+    private javax.swing.JCheckBox checkBox_avoidSingleNetSynch;
     private javax.swing.JCheckBox checkBox_useBrokenEdges;
     private javax.swing.JCheckBox checkBox_useBrokenEdges2;
     private javax.swing.JComboBox<Algebra2.Semantics> comboBox_semantics;

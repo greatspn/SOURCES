@@ -122,6 +122,8 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
     public boolean useBrokenEdges = false;
     // Apply restrictions
     public boolean applyRestrictions = true;
+    // Avoid generating synhronization from elements of a single net
+    public boolean avoidSingleNetSynch = false;
     // Compositional semantics for the net tags
     public Algebra2.Semantics semantics = Algebra2.Semantics.CCS;
     
@@ -277,7 +279,7 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
         //if (semantics == Algebra2.Semantics.CCS || nets.length==1) {   
         // Compose all operands together
         a = new Algebra2(nets, rewriteFns, deltaCoords, selTagsPl, selTagsTr,
-                         semantics, useBrokenEdges, applyRestrictions, false);
+                         semantics, useBrokenEdges, applyRestrictions, avoidSingleNetSynch, false);
         a.compose();
 
         String compPageName = nets[0].getPageName();
@@ -331,6 +333,7 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
         super.exchangeXML(el, exDir);
         bindXMLAttrib(this, el, exDir, "use-broken-edges", "useBrokenEdges", false);
         bindXMLAttrib(this, el, exDir, "restriction", "applyRestrictions", false);
+        bindXMLAttrib(this, el, exDir, "avoid-single-net-synch", "avoidSingleNetSynch", false);
         bindXMLAttrib(this, el, exDir, "align-dx", "alignDx.@Expr", "10");
         bindXMLAttrib(this, el, exDir, "align-dy", "alignDy.@Expr", "10");
         bindXMLAttrib(this, el, exDir, "alignment", "alignment", null, Alignment.class);
