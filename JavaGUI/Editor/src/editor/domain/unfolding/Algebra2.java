@@ -129,6 +129,14 @@ public class Algebra2 {
         public String nodeName; // merged names
         // multiset of the synchronized nodes
         public List<Tuple<Integer, Node>> multiset = new LinkedList<>();
+
+        @Override
+        public String toString() {
+            String s = nodeName+" "+nodeTags+" = ";
+            for (Tuple<Integer, Node> entry : multiset)
+                s += "("+entry.x+" "+entry.y.getUniqueName()+") ";
+            return s;
+        }
     }
 
     //=========================================================================
@@ -344,6 +352,26 @@ public class Algebra2 {
                 return false; // from multiple nets
         return true;
     }
+    
+    //=========================================================================
+    private void generateSynchSetsCSP(ArrayList<ArrayList<Node>> nodes, int level, int[] sel,
+                                      ArrayList<SynchMultiset> syncMultisets) 
+    {
+        if (level == nets.length) {
+            SynchMultiset sm = new SynchMultiset();
+            for (int i=0; i<nets.length; i++) {
+                sm.multiset.add(new Tuple<>(1, nodes.get(i).get(sel[i])));
+            }
+            syncMultisets.add(sm);
+        }
+        else {
+            // visit recursively
+            for (int i=0; i<nodes.get(level).size(); i++) {
+                sel[level] = i;
+                generateSynchSetsCSP(nodes, level + 1, sel, syncMultisets);
+            }
+        }        
+    }
         
     //=========================================================================
     private ArrayList<SynchMultiset>
@@ -354,6 +382,39 @@ public class Algebra2 {
 
         if (semantics == Semantics.CSP) {
             // For each tag, generate a single synchronization node
+            for (String tag : tagIds.keySet()) {
+                ArrayList<ArrayList<Node>> nodesPerNet = new ArrayList<>();
+                for (int i=0; i<nets.length; i++)
+                    nodesPerNet.add(new ArrayList<>());
+                // Add all nodes that have the tag
+                for (Node node : nodeIds) {
+                    boolean has_tag = false;
+                    for (int t=0; t<node.numTags(); t++) {
+                        if (tag.equals(node.getTag(t))) {
+                            has_tag = true;
+                            break;
+                        }
+                    }
+                    if (has_tag)
+                        nodesPerNet.get(simpleNode2NetId.get(node)).add(node);
+                }
+                boolean canSync = true;
+                for (ArrayList<Node> nodeList : nodesPerNet)
+                    if (nodeList.isEmpty())
+                        canSync = false; // nothing to synchronize
+
+                if (canSync) {
+                    generateSynchSetsCSP(nodesPerNet, 0, new int[nets.length], syncMultisets);
+
+                    for (SynchMultiset sm : syncMultisets) {
+                        sm.nodeName = mergeNames(sm.multiset);
+                        sm.nodeTags = mergeTagsCSP(sm.multiset, tag, tagIds);                
+//                        System.out.println(tag+": "+sm);
+                    }
+                }
+            }
+            
+            /*/ For each tag, generate a single synchronization node
             for (String tag : tagIds.keySet()) {
                 SynchMultiset sm = new SynchMultiset();
                 
@@ -377,60 +438,59 @@ public class Algebra2 {
                     sm.nodeTags = mergeTagsCSP(sm.multiset, tag, tagIds);
                     syncMultisets.add(sm);
                 }
+            }//*/
+        }
+        else { // CCS
+            // Setup the synchronization problem.
+            FlowsGenerator fg;
+            {
+                int M=tagIds.size(), N=nodeIds.size();
+                fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
             }
-            return syncMultisets;
-        }
-        
-        // Setup the synchronization problem.
-        FlowsGenerator fg;
-        {
-            int M=tagIds.size(), N=nodeIds.size();
-            PTFlows.Type type = (semantics==Semantics.CCS) ? PTFlows.Type.PLACE_SEMIFLOWS : PTFlows.Type.PLACE_FLOWS;
-            fg = new FlowsGenerator(N, N, M, type);
-        }
-        for (int nodeId=0; nodeId<nodeIds.size(); nodeId++) {
-            Node node = nodeIds.get(nodeId);
-            for (int t=0; t<node.numTags(); t++) {
-                if (tagIds.containsKey(node.getTag(t))) {
-                    int tagId = tagIds.get(node.getTag(t));
-                    int card = node.getTagCard(t);
-                    if (semantics == Semantics.CSP) {
-                        card = Math.abs(card);
-//                        if (simplePlcs2NetId.get(place)==1)
-//                            card = -card;
-                    }
-                    fg.addIncidence(nodeId, tagId, card);
-                }
-            }
-        }
-        StructuralAlgorithm.ProgressObserver obs = (int step, int total, int s, int t) -> { };
-        try {
-            fg.compute(false, obs);
-        }
-        catch (InterruptedException e) { throw new IllegalStateException("Should not happen."); }
-        
-        // Generate the synchronization nodes
-        for (int ff=0; ff < fg.numFlows(); ff++) {
-            int[] syncVec = fg.getFlowVector(ff);
-            assert syncVec.length == nodeIds.size();
-            SynchMultiset sm = new SynchMultiset();
             for (int nodeId=0; nodeId<nodeIds.size(); nodeId++) {
-                if (syncVec[nodeId] != 0) {
-                    int card = syncVec[nodeId];
-                    if (semantics == Semantics.CSP)
-                        card = Math.abs(card);
-                    Node compPl = nodeIds.get(nodeId);
-                    assert simpleNode2NetId.containsKey(compPl);
-                    sm.multiset.add(new Tuple<>(card, compPl));
+                Node node = nodeIds.get(nodeId);
+                for (int t=0; t<node.numTags(); t++) {
+                    if (tagIds.containsKey(node.getTag(t))) {
+                        int tagId = tagIds.get(node.getTag(t));
+                        int card = node.getTagCard(t);
+    //                    if (semantics == Semantics.CSP) {
+    //                        card = Math.abs(card);
+    ////                        if (simplePlcs2NetId.get(place)==1)
+    ////                            card = -card;
+    //                    }
+                        fg.addIncidence(nodeId, tagId, card);
+                    }
                 }
             }
-            assert !sm.multiset.isEmpty();
-            if (avoidSingleNetSynch && syncMultisetFromSingleSourceNets(sm.multiset))
-                continue; // only one source net     
-            
-            sm.nodeName = mergeNames(sm.multiset);
-            sm.nodeTags = mergeTagsCCS(sm.multiset);
-            syncMultisets.add(sm);
+            StructuralAlgorithm.ProgressObserver obs = (int step, int total, int s, int t) -> { };
+            try {
+                fg.compute(false, obs);
+            }
+            catch (InterruptedException e) { throw new IllegalStateException("Should not happen."); }
+
+            // Generate the synchronization nodes
+            for (int ff=0; ff < fg.numFlows(); ff++) {
+                int[] syncVec = fg.getFlowVector(ff);
+                assert syncVec.length == nodeIds.size();
+                SynchMultiset sm = new SynchMultiset();
+                for (int nodeId=0; nodeId<nodeIds.size(); nodeId++) {
+                    if (syncVec[nodeId] != 0) {
+                        int card = syncVec[nodeId];
+    //                    if (semantics == Semantics.CSP)
+    //                        card = Math.abs(card);
+                        Node compPl = nodeIds.get(nodeId);
+                        assert simpleNode2NetId.containsKey(compPl);
+                        sm.multiset.add(new Tuple<>(card, compPl));
+                    }
+                }
+                assert !sm.multiset.isEmpty();
+                if (avoidSingleNetSynch && syncMultisetFromSingleSourceNets(sm.multiset))
+                    continue; // only one source net     
+
+                sm.nodeName = mergeNames(sm.multiset);
+                sm.nodeTags = mergeTagsCCS(sm.multiset);
+                syncMultisets.add(sm);
+            }
         }
         return syncMultisets;
     }

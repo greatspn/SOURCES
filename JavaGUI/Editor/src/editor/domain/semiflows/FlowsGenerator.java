@@ -793,9 +793,25 @@ public class FlowsGenerator extends StructuralAlgorithm {
         return fg;
     }
     
+    private static FlowsGenerator initAnisimov() {
+        int M=2, N=4;
+        FlowsGenerator fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
+        final int a=0, b=1;
+        // t1 = 2a
+        fg.addIncidence(0, a, 2);
+        // t2 = -b
+        fg.addIncidence(1, b, -1);
+        // t3 = -a + b
+        fg.addIncidence(2, a, -1);
+        fg.addIncidence(2, b, 1);
+        // t4 = -a
+        fg.addIncidence(3, a, -1);
+        return fg;
+    }
+    
 
     public static void main(String[] args) throws InterruptedException {
-        FlowsGenerator fg = initCSP(); //init1();
+        FlowsGenerator fg = initAnisimov(); //init1();
         ProgressObserver obs = (int step, int total, int s, int t) -> { };
         fg.compute(true, obs);
     }
