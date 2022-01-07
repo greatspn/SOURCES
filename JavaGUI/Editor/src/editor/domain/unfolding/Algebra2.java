@@ -265,6 +265,7 @@ public class Algebra2 {
             newName = name + "_" + ii;
             ii++;
         }
+//        System.out.println("generateUniqueCombinedName "+name+" -> "+newName);
         return newName;
     }
     
@@ -355,20 +356,24 @@ public class Algebra2 {
     
     //=========================================================================
     private void generateSynchSetsCSP(ArrayList<ArrayList<Node>> nodes, int level, int[] sel,
-                                      ArrayList<SynchMultiset> syncMultisets) 
+                                      ArrayList<SynchMultiset> syncMultisets,
+                                      String tag, Map<String, Integer> tagIds) 
     {
         if (level == nets.length) {
             SynchMultiset sm = new SynchMultiset();
             for (int i=0; i<nets.length; i++) {
                 sm.multiset.add(new Tuple<>(1, nodes.get(i).get(sel[i])));
             }
+            sm.nodeName = tag + "_" + mergeNames(sm.multiset);
+            sm.nodeTags = mergeTagsCSP(sm.multiset, tag, tagIds);                
+//            System.out.println(tag+": "+sm);
             syncMultisets.add(sm);
         }
         else {
             // visit recursively
             for (int i=0; i<nodes.get(level).size(); i++) {
                 sel[level] = i;
-                generateSynchSetsCSP(nodes, level + 1, sel, syncMultisets);
+                generateSynchSetsCSP(nodes, level + 1, sel, syncMultisets, tag, tagIds);
             }
         }        
     }
@@ -403,15 +408,9 @@ public class Algebra2 {
                     if (nodeList.isEmpty())
                         canSync = false; // nothing to synchronize
 
-                if (canSync) {
-                    generateSynchSetsCSP(nodesPerNet, 0, new int[nets.length], syncMultisets);
-
-                    for (SynchMultiset sm : syncMultisets) {
-                        sm.nodeName = mergeNames(sm.multiset);
-                        sm.nodeTags = mergeTagsCSP(sm.multiset, tag, tagIds);                
-//                        System.out.println(tag+": "+sm);
-                    }
-                }
+                if (canSync)
+                    generateSynchSetsCSP(nodesPerNet, 0, new int[nets.length], 
+                                         syncMultisets, tag, tagIds);
             }
             
             /*/ For each tag, generate a single synchronization node
@@ -440,7 +439,7 @@ public class Algebra2 {
                 }
             }//*/
         }
-        else { // CCS
+        else { // CCS using Anisimov method
             // Setup the synchronization problem.
             FlowsGenerator fg;
             {
@@ -677,7 +676,7 @@ public class Algebra2 {
         // Compute the synchronization place multisets
         ArrayList<SynchMultiset> syncMultisets = synchronizeNodes(placeIds, plcTag2Id);
         
-        // Generate the synchronization places
+        // Generate the synchronization place nodes
         for (SynchMultiset sm : syncMultisets) {
             // Generate the new place from the synchronization multiset
             Place newPlace = (Place)Util.deepCopy(sm.multiset.get(0).y);
@@ -762,7 +761,7 @@ public class Algebra2 {
         // Compute the synchronization transitions multisets 
         ArrayList<SynchMultiset> syncMultisets = synchronizeNodes(trnIds, trnTag2Id);
         
-        // Generate the synchronization transitions
+        // Generate the synchronization transition nodes
         for (SynchMultiset sm : syncMultisets) {
             // Generate the new transition from the synchronization multiset
             Transition newTransition = (Transition)Util.deepCopy(sm.multiset.get(0).y);
