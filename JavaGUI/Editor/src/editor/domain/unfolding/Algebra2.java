@@ -92,12 +92,9 @@ public class Algebra2 {
     private final Map<Transition, List<Tuple<Integer, Transition>>> orig2CompTrns = new HashMap<>();
     
     // P/T nodes that are just copied into the result net without changes
-    private final Map<Place, Place> simplePlcs2Orig = new HashMap<>();
-    private final Map<Transition, Transition> simpleTrns2Orig = new HashMap<>();
+    private final Map<Node, Node> simpleNode2Orig = new HashMap<>();
     // From which net operand each simple copied P/T cames from
-    private final Map<Place, Integer> simplePlcs2NetId = new HashMap<>();
-    private final Map<Transition, Integer> simpleTrns2NetId = new HashMap<>();
-
+    private final Map<Node, Integer> simpleNode2NetId = new HashMap<>();
     
     // which net owns the originating edge
     private final Map<GspnEdge, Integer> edge2NetId = new HashMap<>();
@@ -124,6 +121,15 @@ public class Algebra2 {
     // P/T sync tags associated to consecutive indices
     private final Map<String, Integer> plcTag2Id = new HashMap<>();
     private final Map<String, Integer> trnTag2Id = new HashMap<>();
+    
+    //=========================================================================
+    // A synchronization of a multiset of nodes
+    private static class SynchMultiset {
+        public String nodeTags; // merged tags
+        public String nodeName; // merged names
+        // multiset of the synchronized nodes
+        public List<Tuple<Integer, Node>> multiset = new LinkedList<>();
+    }
 
     //=========================================================================
     private void storePlaceSource(Place newPlace, int card, Place origPlace) {
@@ -165,7 +171,7 @@ public class Algebra2 {
     
     //=========================================================================
     // Build the union list of all tags of @node1 and @node2
-    private String mergeTags(List<Tuple<Integer, Node>> multiset) {
+    private String mergeTagsCCS(List<Tuple<Integer, Node>> multiset) {
         ArrayList<SuperpositionTag> tags = new ArrayList<>();
         
         for (Tuple<Integer, Node> entry : multiset) {
@@ -178,8 +184,8 @@ public class Algebra2 {
         SuperpositionTag[] mergedTags = SuperpositionTag.mergeTags(tags);
         StringBuilder builder = new StringBuilder();
         for (SuperpositionTag st : mergedTags) {
-            if (semantics == Semantics.CSP)
-                st = new SuperpositionTag(st.getTag(), 1);
+//            if (semantics == Semantics.CSP)
+//                st = new SuperpositionTag(st.getTag(), 1);
             if (st.getCard() != 0) { 
                 // Only merge tags that have not been composed (card != 0)
                 builder.append(builder.length() == 0 ? "" : "|").append(st.toCanonicalString());
@@ -187,15 +193,32 @@ public class Algebra2 {
         }
         return builder.toString();
     }
-    @SuppressWarnings("unchecked")
-    private String mergePlaceTags(List<Tuple<Integer, Place>> multiset) {
-        return mergeTags((List<Tuple<Integer, Node>>)(Object)multiset);
+    //=========================================================================
+    // Build the union list of all tags of @node1 and @node2
+    private String mergeTagsCSP(List<Tuple<Integer, Node>> multiset, String syncTag, 
+                                Map<String, Integer> restrictedTagsSet) 
+    {
+        ArrayList<SuperpositionTag> tags = new ArrayList<>();
+        
+        for (Tuple<Integer, Node> entry : multiset) {
+            for (int t=0; t<entry.y.numTags(); t++) {
+                tags.add(new SuperpositionTag(entry.y.getTag(t), 
+                                              entry.x * Math.abs(entry.y.getTagCard(t))));
+            }
+        }
+        
+        SuperpositionTag[] mergedTags = SuperpositionTag.mergeTags(tags);
+        StringBuilder builder = new StringBuilder();
+        for (SuperpositionTag st : mergedTags) {
+            if (st.getTag().equals(syncTag) || !restrictedTagsSet.containsKey(st.getTag())) {
+                if (st.getCard() != 0) { 
+                    // Only merge tags that have not been composed (card != 0)
+                    builder.append(builder.length() == 0 ? "" : "|").append(st.toCanonicalString());
+                }
+            }
+        }
+        return builder.toString();
     }
-    @SuppressWarnings("unchecked")
-    private String mergeTransitionTags(List<Tuple<Integer, Transition>> multiset) {
-        return mergeTags((List<Tuple<Integer, Node>>)(Object)multiset);
-    }
-    
 
     //=========================================================================
     // Warn for different attributes that cannot be merged
@@ -282,16 +305,7 @@ public class Algebra2 {
             name.append(entry.y.getUniqueName());
         }
         return name.toString();
-    }
-    @SuppressWarnings("unchecked")
-    private String mergePlaceNames(List<Tuple<Integer, Place>> multiset) {
-        return mergeNames((List<Tuple<Integer, Node>>)(Object)multiset);
-    }
-    @SuppressWarnings("unchecked")
-    private String mergeTransitionNames(List<Tuple<Integer, Transition>> multiset) {
-        return mergeNames((List<Tuple<Integer, Node>>)(Object)multiset);
-    }
-    
+    }    
 
     //=========================================================================
     public Algebra2(GspnPage[] nets, TagRewritingFunction[] relabelFn, 
@@ -321,6 +335,105 @@ public class Algebra2 {
         warnings = new ArrayList<>();
     }
     
+    //=========================================================================
+    private boolean syncMultisetFromSingleSourceNets(List<Tuple<Integer, Node>> multiset) {
+        assert !multiset.isEmpty();
+        int origNet = simpleNode2NetId.get(multiset.get(0).y);
+        for (Tuple<Integer, Node> entry : multiset)
+            if (simpleNode2NetId.get(entry.y) != origNet)
+                return false; // from multiple nets
+        return true;
+    }
+        
+    //=========================================================================
+    private ArrayList<SynchMultiset>
+         synchronizeNodes(ArrayList<Node> nodeIds, 
+                          Map<String, Integer> tagIds) 
+    {
+        ArrayList<SynchMultiset> syncMultisets = new ArrayList<>();
+
+        if (semantics == Semantics.CSP) {
+            // For each tag, generate a single synchronization node
+            for (String tag : tagIds.keySet()) {
+                SynchMultiset sm = new SynchMultiset();
+                
+                for (int nodeId=0; nodeId<nodeIds.size(); nodeId++) {
+                    Node node = nodeIds.get(nodeId); 
+                    boolean has_tag = false;
+                    for (int t=0; t<node.numTags(); t++) {
+                        if (tag.equals(node.getTag(t))) {
+                            has_tag = true;
+                            break;
+                        }
+                    }
+                    if (has_tag)
+                        sm.multiset.add(new Tuple<>(1, node));
+                }
+                if (!sm.multiset.isEmpty()) {
+                    if (avoidSingleNetSynch && syncMultisetFromSingleSourceNets(sm.multiset))
+                        continue; // only one source net 
+                    
+                    sm.nodeName = mergeNames(sm.multiset);
+                    sm.nodeTags = mergeTagsCSP(sm.multiset, tag, tagIds);
+                    syncMultisets.add(sm);
+                }
+            }
+            return syncMultisets;
+        }
+        
+        // Setup the synchronization problem.
+        FlowsGenerator fg;
+        {
+            int M=tagIds.size(), N=nodeIds.size();
+            PTFlows.Type type = (semantics==Semantics.CCS) ? PTFlows.Type.PLACE_SEMIFLOWS : PTFlows.Type.PLACE_FLOWS;
+            fg = new FlowsGenerator(N, N, M, type);
+        }
+        for (int nodeId=0; nodeId<nodeIds.size(); nodeId++) {
+            Node node = nodeIds.get(nodeId);
+            for (int t=0; t<node.numTags(); t++) {
+                if (tagIds.containsKey(node.getTag(t))) {
+                    int tagId = tagIds.get(node.getTag(t));
+                    int card = node.getTagCard(t);
+                    if (semantics == Semantics.CSP) {
+                        card = Math.abs(card);
+//                        if (simplePlcs2NetId.get(place)==1)
+//                            card = -card;
+                    }
+                    fg.addIncidence(nodeId, tagId, card);
+                }
+            }
+        }
+        StructuralAlgorithm.ProgressObserver obs = (int step, int total, int s, int t) -> { };
+        try {
+            fg.compute(false, obs);
+        }
+        catch (InterruptedException e) { throw new IllegalStateException("Should not happen."); }
+        
+        // Generate the synchronization nodes
+        for (int ff=0; ff < fg.numFlows(); ff++) {
+            int[] syncVec = fg.getFlowVector(ff);
+            assert syncVec.length == nodeIds.size();
+            SynchMultiset sm = new SynchMultiset();
+            for (int nodeId=0; nodeId<nodeIds.size(); nodeId++) {
+                if (syncVec[nodeId] != 0) {
+                    int card = syncVec[nodeId];
+                    if (semantics == Semantics.CSP)
+                        card = Math.abs(card);
+                    Node compPl = nodeIds.get(nodeId);
+                    assert simpleNode2NetId.containsKey(compPl);
+                    sm.multiset.add(new Tuple<>(card, compPl));
+                }
+            }
+            assert !sm.multiset.isEmpty();
+            if (avoidSingleNetSynch && syncMultisetFromSingleSourceNets(sm.multiset))
+                continue; // only one source net     
+            
+            sm.nodeName = mergeNames(sm.multiset);
+            sm.nodeTags = mergeTagsCCS(sm.multiset);
+            syncMultisets.add(sm);
+        }
+        return syncMultisets;
+    }
     
     
     //=========================================================================
@@ -477,13 +590,11 @@ public class Algebra2 {
                     makeNodeNameUnique(newPlace);
                     newPlace.setSuperPosTags(relabelFn[nn].getKeptTags(node));
                     shiftNode(newPlace, nn);
-                    /*List<Tuple<Integer, Place>> multiset = new LinkedList<>();
-                    multiset.add(new Tuple<>(1, (Place)node));*/                    
                     result.nodes.add(newPlace);
                     storePlaceSource(newPlace, 1, (Place)node);
                     storePosition(newPlace);
-                    simplePlcs2Orig.put(newPlace, (Place)node);
-                    simplePlcs2NetId.put(newPlace, nn);
+                    simpleNode2Orig.put(newPlace, (Place)node);
+                    simpleNode2NetId.put(newPlace, nn);
                 }
             }
         }
@@ -491,7 +602,7 @@ public class Algebra2 {
         if (syncSetPl==null || syncSetPl.length == 0)
             return;
         
-        ArrayList<Place> placeIds = new ArrayList<>();
+        ArrayList<Node> placeIds = new ArrayList<>();
         // Determine which places have synchronization tags
         for (Node newNode : result.nodes) {
             if (newNode instanceof Place) {
@@ -503,66 +614,22 @@ public class Algebra2 {
                 }
             }
         }
-        // Setup the synchronization problem.
-        FlowsGenerator fg;
-        {
-            int M=plcTag2Id.size(), N=placeIds.size();
-            PTFlows.Type type = (semantics==Semantics.CCS) ? PTFlows.Type.PLACE_SEMIFLOWS : PTFlows.Type.PLACE_FLOWS;
-            fg = new FlowsGenerator(N, N, M, type);
-        }
-        for (int plId=0; plId<placeIds.size(); plId++) {
-            Place place = placeIds.get(plId);
-            for (int t=0; t<place.numTags(); t++) {
-                if (plcTag2Id.containsKey(place.getTag(t))) {
-                    int tagId = plcTag2Id.get(place.getTag(t));
-                    int card = place.getTagCard(t);
-                    if (semantics == Semantics.CSP) {
-                        card = Math.abs(card);
-//                        if (simplePlcs2NetId.get(place)==1)
-//                            card = -card;
-                    }
-                    fg.addIncidence(plId, tagId, card);
-                }
-            }
-        }
-        StructuralAlgorithm.ProgressObserver obs = (int step, int total, int s, int t) -> { };
-        try {
-            fg.compute(false, obs);
-        }
-        catch (InterruptedException e) { throw new IllegalStateException("Should not happen."); }
+        // Compute the synchronization place multisets
+        ArrayList<SynchMultiset> syncMultisets = synchronizeNodes(placeIds, plcTag2Id);
         
         // Generate the synchronization places
-        for (int ff=0; ff < fg.numFlows(); ff++) {
-            int[] syncVec = fg.getFlowVector(ff);
-            assert syncVec.length == placeIds.size();
-            List<Tuple<Integer, Place>> multiset = new LinkedList<>();
-            Set<Integer> origNetsSet = new HashSet<>();
-            for (int pl=0; pl<placeIds.size(); pl++) {
-                if (syncVec[pl] != 0) {
-                    int card = syncVec[pl];
-                    if (semantics == Semantics.CSP)
-                        card = Math.abs(card);
-                    Place compPl = placeIds.get(pl);
-                    assert simplePlcs2NetId.containsKey(compPl);
-                    multiset.add(new Tuple<>(card, compPl));
-                    origNetsSet.add(simplePlcs2NetId.get(compPl));
-                }
-            }
-            assert !multiset.isEmpty();
-            if (avoidSingleNetSynch && origNetsSet.size() == 1)
-                continue; // only one source net            
-            
+        for (SynchMultiset sm : syncMultisets) {
             // Generate the new place from the synchronization multiset
-            Place newPlace = (Place)Util.deepCopy(multiset.get(0).y);
-            newPlace.setUniqueName(mergePlaceNames(multiset));
+            Place newPlace = (Place)Util.deepCopy(sm.multiset.get(0).y);
+            newPlace.setUniqueName(sm.nodeName);
             makeNodeNameUnique(newPlace);
-            newPlace.setSuperPosTags(mergePlaceTags(multiset));
+            newPlace.setSuperPosTags(sm.nodeTags);
             
             // Check incompatibilities with the multiset members
-            Iterator<Tuple<Integer, Place>> iter = multiset.iterator();
+            Iterator<Tuple<Integer, Node>> iter = sm.multiset.iterator();
             iter.next(); // skip cloned node
             while (iter.hasNext()) {
-                Place p2 = iter.next().y;
+                Place p2 = (Place)iter.next().y;
                 
                 checkAttributeConflict(newPlace, p2, newPlace, 
                         newPlace.getColorDomainName(), p2.getColorDomainName(), "color domains");
@@ -587,12 +654,12 @@ public class Algebra2 {
                                          newPlace.getY() + p2.getY());
             }
             
-            newPlace.setNodePosition(newPlace.getX() / multiset.size(),
-                                     newPlace.getY() / multiset.size());
+            newPlace.setNodePosition(newPlace.getX() / sm.multiset.size(),
+                                     newPlace.getY() / sm.multiset.size());
             relocateAndStorePosition(newPlace);
             result.nodes.add(newPlace);
-            for (Tuple<Integer, Place> entry : multiset) {
-                Place origPlc = simplePlcs2Orig.get(entry.y);
+            for (Tuple<Integer, Node> entry : sm.multiset) {
+                Place origPlc = (Place)simpleNode2Orig.get(entry.y);
                 assert origPlc != null;
                 storePlaceSource(newPlace, entry.x, origPlc);
             }
@@ -611,8 +678,8 @@ public class Algebra2 {
                     result.nodes.add(newTransition);
                     storeTransitionSource(newTransition, 1, (Transition)node);
                     storePosition(newTransition);
-                    simpleTrns2Orig.put(newTransition, (Transition)node);
-                    simpleTrns2NetId.put(newTransition, nn);
+                    simpleNode2Orig.put(newTransition, (Transition)node);
+                    simpleNode2NetId.put(newTransition, nn);
                 }
             }
         }
@@ -620,7 +687,7 @@ public class Algebra2 {
         if (syncSetTr==null || syncSetTr.length == 0)
             return;
         
-        ArrayList<Transition> trnIds = new ArrayList<>();
+        ArrayList<Node> trnIds = new ArrayList<>();
         // Determine which transitions have synchronization tags
         for (Node newNode : result.nodes) {
             if (newNode instanceof Transition) {
@@ -632,66 +699,22 @@ public class Algebra2 {
                 }
             }
         }
-        // Setup the synchronization problem.
-        FlowsGenerator fg;
-        {
-            int M=trnTag2Id.size(), N=trnIds.size();
-            PTFlows.Type type = (semantics==Semantics.CCS) ? PTFlows.Type.PLACE_SEMIFLOWS : PTFlows.Type.PLACE_FLOWS;
-            fg = new FlowsGenerator(N, N, M, type);
-        }
-        for (int plId=0; plId<trnIds.size(); plId++) {
-            Transition trn = trnIds.get(plId);
-            for (int t=0; t<trn.numTags(); t++) {
-                if (trnTag2Id.containsKey(trn.getTag(t))) {
-                    int tagId = trnTag2Id.get(trn.getTag(t));
-                    int card = trn.getTagCard(t);
-                    if (semantics == Semantics.CSP) {
-                        card = Math.abs(card);
-//                        if (simpleTrns2NetId.get(trn)==1)
-//                            card = -card;
-                    }
-                    fg.addIncidence(plId, tagId, card);
-                }
-            }
-        }
-        StructuralAlgorithm.ProgressObserver obs = (int step, int total, int s, int t) -> { };
-        try {
-            fg.compute(false, obs);
-        }
-        catch (InterruptedException e) { throw new IllegalStateException("Should not happen."); }
+        // Compute the synchronization transitions multisets 
+        ArrayList<SynchMultiset> syncMultisets = synchronizeNodes(trnIds, trnTag2Id);
         
         // Generate the synchronization transitions
-        for (int ff=0; ff < fg.numFlows(); ff++) {
-            int[] syncVec = fg.getFlowVector(ff);
-            assert syncVec.length == trnIds.size();
-            List<Tuple<Integer, Transition>> multiset = new LinkedList<>();
-            Set<Integer> origNetsSet = new HashSet<>();
-            for (int tr=0; tr<trnIds.size(); tr++) {
-                if (syncVec[tr] != 0) {
-                    int card = syncVec[tr];
-                    if (semantics == Semantics.CSP)
-                        card = Math.abs(card);
-                    Transition compTr = trnIds.get(tr);
-                    assert simpleTrns2NetId.containsKey(compTr);
-                    multiset.add(new Tuple<>(card, compTr));
-                    origNetsSet.add(simpleTrns2NetId.get(compTr));
-                }
-            }
-            assert !multiset.isEmpty();
-            if (avoidSingleNetSynch && origNetsSet.size() == 1)
-                continue; // only one source net   
-            
+        for (SynchMultiset sm : syncMultisets) {
             // Generate the new transition from the synchronization multiset
-            Transition newTransition = (Transition)Util.deepCopy(multiset.get(0).y);
-            newTransition.setUniqueName(mergeTransitionNames(multiset));
+            Transition newTransition = (Transition)Util.deepCopy(sm.multiset.get(0).y);
+            newTransition.setUniqueName(sm.nodeName);
             makeNodeNameUnique(newTransition);
-            newTransition.setSuperPosTags(mergeTransitionTags(multiset));
+            newTransition.setSuperPosTags(sm.nodeTags);
             
             // Check incompatibilities with the multiset members
-            Iterator<Tuple<Integer, Transition>> iter = multiset.iterator();
+            Iterator<Tuple<Integer, Node>> iter = sm.multiset.iterator();
             iter.next(); // skip cloned node
             while (iter.hasNext()) {
-                Transition t2 = iter.next().y;
+                Transition t2 = (Transition)iter.next().y;
                 
                 checkAttributeConflict(newTransition, t2, newTransition, 
                     newTransition.getType().toString(), t2.getType().toString(), "types");
@@ -710,12 +733,12 @@ public class Algebra2 {
                                               newTransition.getY() + t2.getY());
             }
             
-            newTransition.setNodePosition(newTransition.getX() / multiset.size(), 
-                                          newTransition.getY() / multiset.size());  
+            newTransition.setNodePosition(newTransition.getX() / sm.multiset.size(), 
+                                          newTransition.getY() / sm.multiset.size());  
             relocateAndStorePosition(newTransition);
             result.nodes.add(newTransition);
-            for (Tuple<Integer, Transition> entry : multiset) {
-                Transition origTrn = simpleTrns2Orig.get(entry.y);
+            for (Tuple<Integer, Node> entry : sm.multiset) {
+                Transition origTrn = (Transition)simpleNode2Orig.get(entry.y);
                 assert origTrn != null;
                 storeTransitionSource(newTransition, entry.x, origTrn);
             }
@@ -766,20 +789,18 @@ public class Algebra2 {
             ArrayList<Point2D> points;
             boolean isBroken;
             String mult;
-            isBroken = useBrokenEdges && !(simplePlcs2Orig.containsKey(resultPlace) && simpleTrns2Orig.containsKey(resultTrans));
+            isBroken = useBrokenEdges && !(simpleNode2Orig.containsKey(resultPlace) && simpleNode2Orig.containsKey(resultTrans));
             
             if (edges.size() == 1) { // only one originating edge
                 Tuple<Integer, GspnEdge> entry0 = edges.get(0);
                 headMagnet = entry0.y.getHeadMagnet();
                 tailMagnet = entry0.y.getTailMagnet();
                 mult = simpleNeutralMult(entry0.x, entry0.y.getMultiplicity(), entry0.y.getTypeOfConnectedPlace()); 
-//                isBroken = entry0.y.isBroken;
                 points = composeEdgePoints2(entry0.y, null);
             }
             else { // combine multiple edges
                 headMagnet = -1;
                 tailMagnet = -1;
-//                isBroken = useBrokenEdges;// && (simplePlcs2Orig.containsKey(resultPlace) || simpleTrns2Orig.containsKey(resultTrans));
                 if (edges.size() == 2) {
                     points = composeEdgePoints2(edges.get(0).y, edges.get(1).y);
                 } else {
@@ -832,7 +853,7 @@ public class Algebra2 {
             Node node = iterN.next();
             boolean remove = false;
             if (node instanceof Place) {
-                if (semantics==Semantics.CSP && !simplePlcs2Orig.containsKey(node)) 
+                if (semantics==Semantics.CSP && !simpleNode2Orig.containsKey(node)) 
                     continue; // keep this node
                 for (int t=0; t<node.numTags(); t++) {
                     if (plcTag2Id.containsKey(node.getTag(t))) {
@@ -842,7 +863,7 @@ public class Algebra2 {
                 }
             }
             else if (node instanceof Transition) {
-                if (semantics==Semantics.CSP && !simpleTrns2Orig.containsKey(node)) 
+                if (semantics==Semantics.CSP && !simpleNode2Orig.containsKey(node)) 
                     continue; // keep this node
                 for (int t=0; t<node.numTags(); t++) {
                     if (trnTag2Id.containsKey(node.getTag(t))) {
