@@ -502,7 +502,8 @@ public class Algebra2 {
         FlowsGenerator fg;
         {
             int M=plcTag2Id.size(), N=placeIds.size();
-            fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
+            PTFlows.Type type = (semantics==Semantics.CCS) ? PTFlows.Type.PLACE_SEMIFLOWS : PTFlows.Type.PLACE_FLOWS;
+            fg = new FlowsGenerator(N, N, M, type);
         }
         for (int plId=0; plId<placeIds.size(); plId++) {
             Place place = placeIds.get(plId);
@@ -512,8 +513,8 @@ public class Algebra2 {
                     int card = place.getTagCard(t);
                     if (semantics == Semantics.CSP) {
                         card = Math.abs(card);
-                        if (simplePlcs2NetId.get(place)==1)
-                            card = -card;
+//                        if (simplePlcs2NetId.get(place)==1)
+//                            card = -card;
                     }
                     fg.addIncidence(plId, tagId, card);
                 }
@@ -532,7 +533,10 @@ public class Algebra2 {
             List<Tuple<Integer, Place>> multiset = new LinkedList<>();
             for (int pl=0; pl<placeIds.size(); pl++) {
                 if (syncVec[pl] != 0) {
-                    multiset.add(new Tuple<>(syncVec[pl], placeIds.get(pl)));
+                    int card = syncVec[pl];
+                    if (semantics == Semantics.CSP)
+                        card = Math.abs(card);
+                    multiset.add(new Tuple<>(card, placeIds.get(pl)));
                 }
             }
             assert !multiset.isEmpty();
@@ -621,7 +625,8 @@ public class Algebra2 {
         FlowsGenerator fg;
         {
             int M=trnTag2Id.size(), N=trnIds.size();
-            fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
+            PTFlows.Type type = (semantics==Semantics.CCS) ? PTFlows.Type.PLACE_SEMIFLOWS : PTFlows.Type.PLACE_FLOWS;
+            fg = new FlowsGenerator(N, N, M, type);
         }
         for (int plId=0; plId<trnIds.size(); plId++) {
             Transition trn = trnIds.get(plId);
@@ -631,8 +636,8 @@ public class Algebra2 {
                     int card = trn.getTagCard(t);
                     if (semantics == Semantics.CSP) {
                         card = Math.abs(card);
-                        if (simpleTrns2NetId.get(trn)==1)
-                            card = -card;
+//                        if (simpleTrns2NetId.get(trn)==1)
+//                            card = -card;
                     }
                     fg.addIncidence(plId, tagId, card);
                 }
@@ -649,9 +654,12 @@ public class Algebra2 {
             int[] syncVec = fg.getFlowVector(ff);
             assert syncVec.length == trnIds.size();
             List<Tuple<Integer, Transition>> multiset = new LinkedList<>();
-            for (int pl=0; pl<trnIds.size(); pl++) {
-                if (syncVec[pl] != 0) {
-                    multiset.add(new Tuple<>(syncVec[pl], trnIds.get(pl)));
+            for (int tr=0; tr<trnIds.size(); tr++) {
+                if (syncVec[tr] != 0) {
+                    int card = syncVec[tr];
+                    if (semantics == Semantics.CSP)
+                        card = Math.abs(card);
+                    multiset.add(new Tuple<>(card, trnIds.get(tr)));
                 }
             }
             assert !multiset.isEmpty();

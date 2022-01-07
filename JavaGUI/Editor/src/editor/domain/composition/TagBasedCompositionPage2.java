@@ -119,7 +119,7 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
     public final SolverParams.IntExpr alignDy = new SolverParams.IntExpr("10");
     
     // Use broken edges
-    public boolean useBrokenEdges = true;
+    public boolean useBrokenEdges = false;
     // Apply restrictions
     public boolean applyRestrictions = true;
     // Compositional semantics for the net tags
@@ -274,42 +274,42 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
         String[] selTagsTr = selTagsT.isEmpty() ? null : selTagsT.toArray(new String[selTagsT.size()]);
         
         Algebra2 a = null;
-        if (semantics == Algebra2.Semantics.CCS || nets.length==1) {   
-            // Compose all operands together
-            a = new Algebra2(nets, rewriteFns, deltaCoords, selTagsPl, selTagsTr,
-                             semantics, useBrokenEdges, applyRestrictions, false);
-            a.compose();
-            
-            String compPageName = nets[0].getPageName();
-            for (int nn=1; nn<nets.length; nn++)
-                compPageName += "_" + nets[nn].getPageName();
+        //if (semantics == Algebra2.Semantics.CCS || nets.length==1) {   
+        // Compose all operands together
+        a = new Algebra2(nets, rewriteFns, deltaCoords, selTagsPl, selTagsTr,
+                         semantics, useBrokenEdges, applyRestrictions, false);
+        a.compose();
 
-            a.result.setPageName(compPageName);
-        }
-        else if (semantics == Algebra2.Semantics.CSP) {
-            // Compose by pairs
-            TagRewritingFunction nullFn = new TagRewritingFunction("");
-            for (int i=1; i<nets.length; i++) {
-                boolean first = (i == 1);
-                GspnPage page0 = nets[0];
-                if (!first) {
-                    page0 = a.result;
-                    page0.preparePageCheck();
-                    page0.checkPage(null, null, this, null);
-                }
-                GspnPage[] netPair = new GspnPage[]{page0, nets[i]};
-                a = new Algebra2(netPair, 
-                                 new TagRewritingFunction[]{first ? rewriteFns[0] : nullFn, rewriteFns[i]}, 
-                                 new Point2D[]{deltaCoords[0], deltaCoords[i]}, 
-                                 selTagsPl, selTagsTr, semantics,
-                                 useBrokenEdges, 
-                                 (i==nets.length-1) ? applyRestrictions : false, 
-                                 false);
-                a.compose();
-                a.result.setPageName(netPair[0].getPageName()+"_"+netPair[1].getPageName());
-            }
-        }
-        else throw new IllegalStateException();
+        String compPageName = nets[0].getPageName();
+        for (int nn=1; nn<nets.length; nn++)
+            compPageName += "_" + nets[nn].getPageName();
+
+        a.result.setPageName(compPageName);
+//        }
+//        else if (semantics == Algebra2.Semantics.CSP) {
+//            // Compose by pairs
+//            TagRewritingFunction nullFn = new TagRewritingFunction("");
+//            for (int i=1; i<nets.length; i++) {
+//                boolean first = (i == 1);
+//                GspnPage page0 = nets[0];
+//                if (!first) {
+//                    page0 = a.result;
+//                    page0.preparePageCheck();
+//                    page0.checkPage(null, null, this, null);
+//                }
+//                GspnPage[] netPair = new GspnPage[]{page0, nets[i]};
+//                a = new Algebra2(netPair, 
+//                                 new TagRewritingFunction[]{first ? rewriteFns[0] : nullFn, rewriteFns[i]}, 
+//                                 new Point2D[]{deltaCoords[0], deltaCoords[i]}, 
+//                                 selTagsPl, selTagsTr, semantics,
+//                                 useBrokenEdges, 
+//                                 (i==nets.length-1) ? applyRestrictions : false, 
+//                                 false);
+//                a.compose();
+//                a.result.setPageName(netPair[0].getPageName()+"_"+netPair[1].getPageName());
+//            }
+//        }
+//        else throw new IllegalStateException();
         a.result.setSelectionFlag(false);
         
         ViewProfile newProfile = nets[0].viewProfile;
