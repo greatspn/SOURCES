@@ -1538,7 +1538,7 @@ load_flows_from_file(ifstream& pif, size_t max_index, bool allow_neg_card) {
             flows[i].coeffs.insert_element(pl - 1, card);
             // flows[i].ith_nonzero(j).index = pl - 1;
             // flows[i].ith_nonzero(j).value = card;
-            if (pl < npl) // real place index, not a supplementray variable
+            if (pl-1 < npl) // real place index, not a supplementray variable
                 flows[i].const_term += net_mark[pl - 1].total * card;
         }
     }
