@@ -124,6 +124,8 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
     public boolean applyRestrictions = true;
     // Avoid generating synhronization from elements of a single net
     public boolean avoidSingleNetSynch = false;
+    // For CCS, generate only the solutions of minimal synchronization
+    public boolean onlyMinimalSynch = true;
     // Compositional semantics for the net tags
     public Algebra2.Semantics semantics = Algebra2.Semantics.CCS;
     
@@ -279,7 +281,8 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
         //if (semantics == Algebra2.Semantics.CCS || nets.length==1) {   
         // Compose all operands together
         a = new Algebra2(nets, rewriteFns, deltaCoords, selTagsPl, selTagsTr,
-                         semantics, useBrokenEdges, applyRestrictions, avoidSingleNetSynch, false);
+                         semantics, useBrokenEdges, applyRestrictions, 
+                         avoidSingleNetSynch, onlyMinimalSynch, false);
         a.compose();
 
         String compPageName = nets[0].getPageName();

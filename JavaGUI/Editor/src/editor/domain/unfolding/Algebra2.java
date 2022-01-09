@@ -28,7 +28,6 @@ import editor.domain.semiflows.PTFlows;
 import editor.domain.semiflows.StructuralAlgorithm;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -75,6 +74,10 @@ public class Algebra2 {
     
     // Do not allow single-net synchronization. Only sync from multiple nets are possible
     private final boolean avoidSingleNetSynch;
+    
+    // For CCS semantics, generate only the minimal synchronization sets
+    // instead of generating any possible combinations of the synch sets
+    private final boolean onlyMinimalSynch;
 
     private final boolean verbose;
     
@@ -325,6 +328,7 @@ public class Algebra2 {
                     boolean useBrokenEdges, 
                     boolean restrictTags,
                     boolean avoidSingleNetSynch,
+                    boolean onlyMinimalSynch,
                     boolean verbose) 
     {
         this.nets = nets;
@@ -336,6 +340,7 @@ public class Algebra2 {
         this.useBrokenEdges = useBrokenEdges;
         this.restrictTags = restrictTags;
         this.avoidSingleNetSynch = avoidSingleNetSynch;
+        this.onlyMinimalSynch = onlyMinimalSynch;
         this.verbose = verbose;
         
         assert this.nets.length == this.relabelFn.length;
@@ -385,80 +390,86 @@ public class Algebra2 {
                           Map<String, Integer> tagIds) 
     {
         ArrayList<SynchMultiset> syncMultisets = new ArrayList<>();
+        
+        switch (semantics) {
+            case CSP:
+                // For each tag, generate a single synchronization node
+                for (String tag : tagIds.keySet()) {
+                    ArrayList<ArrayList<Node>> nodesPerNet = new ArrayList<>();
+                    for (int i=0; i<nets.length; i++)
+                        nodesPerNet.add(new ArrayList<>());
+                    // Add all nodes that have the tag
+                    for (Node node : nodeIds) {
+                        boolean has_tag = false;
+                        for (int t=0; t<node.numTags(); t++) {
+                            if (tag.equals(node.getTag(t))) {
+                                has_tag = true;
+                                break;
+                            }
+                        }
+                        if (has_tag)
+                            nodesPerNet.get(simpleNode2NetId.get(node)).add(node);
+                    }
+                    boolean canSync = true;
+                    for (ArrayList<Node> nodeList : nodesPerNet)
+                        if (nodeList.isEmpty())
+                            canSync = false; // nothing to synchronize
 
-        if (semantics == Semantics.CSP) {
-            // For each tag, generate a single synchronization node
-            for (String tag : tagIds.keySet()) {
-                ArrayList<ArrayList<Node>> nodesPerNet = new ArrayList<>();
-                for (int i=0; i<nets.length; i++)
-                    nodesPerNet.add(new ArrayList<>());
-                // Add all nodes that have the tag
-                for (Node node : nodeIds) {
-                    boolean has_tag = false;
-                    for (int t=0; t<node.numTags(); t++) {
-                        if (tag.equals(node.getTag(t))) {
-                            has_tag = true;
-                            break;
+                    if (canSync)
+                        generateSynchSetsCSP(nodesPerNet, 0, new int[nets.length], 
+                                             syncMultisets, tag, tagIds);
+                }
+                break;
+                
+            case CCS: { // CCS using Anisimov method
+                    // Setup the synchronization problem.
+                    FlowsGenerator fg;
+                    {
+                        int M=tagIds.size(), N=nodeIds.size();
+                        fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
+                    }
+                    for (int nodeId=0; nodeId<nodeIds.size(); nodeId++) {
+                        Node node = nodeIds.get(nodeId);
+                        for (int t=0; t<node.numTags(); t++) {
+                            if (tagIds.containsKey(node.getTag(t))) {
+                                int tagId = tagIds.get(node.getTag(t));
+                                int card = node.getTagCard(t);
+                                fg.addIncidence(nodeId, tagId, card);
+                            }
                         }
                     }
-                    if (has_tag)
-                        nodesPerNet.get(simpleNode2NetId.get(node)).add(node);
-                }
-                boolean canSync = true;
-                for (ArrayList<Node> nodeList : nodesPerNet)
-                    if (nodeList.isEmpty())
-                        canSync = false; // nothing to synchronize
+                    StructuralAlgorithm.ProgressObserver obs = (int step, int total, int s, int t) -> { };
+                    try {
+                        if (onlyMinimalSynch)
+                            fg.compute(false, obs); // semiflows algorithm
+                        else
+                            fg.computeAllCanonicalSemiflows(true, obs);
+                    }
+                    catch (InterruptedException e) { throw new IllegalStateException("Should not happen."); }
 
-                if (canSync)
-                    generateSynchSetsCSP(nodesPerNet, 0, new int[nets.length], 
-                                         syncMultisets, tag, tagIds);
-            }
-        }
-        else { // CCS using Anisimov method
-            // Setup the synchronization problem.
-            FlowsGenerator fg;
-            {
-                int M=tagIds.size(), N=nodeIds.size();
-                fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
-            }
-            for (int nodeId=0; nodeId<nodeIds.size(); nodeId++) {
-                Node node = nodeIds.get(nodeId);
-                for (int t=0; t<node.numTags(); t++) {
-                    if (tagIds.containsKey(node.getTag(t))) {
-                        int tagId = tagIds.get(node.getTag(t));
-                        int card = node.getTagCard(t);
-                        fg.addIncidence(nodeId, tagId, card);
+                    // Generate the synchronization nodes
+                    for (int ff=0; ff < fg.numFlows(); ff++) {
+                        int[] syncVec = fg.getFlowVector(ff);
+                        assert syncVec.length == nodeIds.size();
+                        SynchMultiset sm = new SynchMultiset();
+                        for (int nodeId=0; nodeId<nodeIds.size(); nodeId++) {
+                            if (syncVec[nodeId] != 0) {
+                                int card = syncVec[nodeId];
+                                Node compPl = nodeIds.get(nodeId);
+                                assert simpleNode2NetId.containsKey(compPl);
+                                sm.multiset.add(new Tuple<>(card, compPl));
+                            }
+                        }
+                        assert !sm.multiset.isEmpty();
+                        if (avoidSingleNetSynch && syncMultisetFromSingleSourceNets(sm.multiset))
+                            continue; // only one source net     
+
+                        sm.nodeName = mergeNames(sm.multiset);
+                        sm.nodeTags = mergeTagsCCS(sm.multiset);
+                        syncMultisets.add(sm);
                     }
                 }
-            }
-            StructuralAlgorithm.ProgressObserver obs = (int step, int total, int s, int t) -> { };
-            try {
-                fg.compute(false, obs);
-//                fg.computeAny(true, obs);
-            }
-            catch (InterruptedException e) { throw new IllegalStateException("Should not happen."); }
-
-            // Generate the synchronization nodes
-            for (int ff=0; ff < fg.numFlows(); ff++) {
-                int[] syncVec = fg.getFlowVector(ff);
-                assert syncVec.length == nodeIds.size();
-                SynchMultiset sm = new SynchMultiset();
-                for (int nodeId=0; nodeId<nodeIds.size(); nodeId++) {
-                    if (syncVec[nodeId] != 0) {
-                        int card = syncVec[nodeId];
-                        Node compPl = nodeIds.get(nodeId);
-                        assert simpleNode2NetId.containsKey(compPl);
-                        sm.multiset.add(new Tuple<>(card, compPl));
-                    }
-                }
-                assert !sm.multiset.isEmpty();
-                if (avoidSingleNetSynch && syncMultisetFromSingleSourceNets(sm.multiset))
-                    continue; // only one source net     
-
-                sm.nodeName = mergeNames(sm.multiset);
-                sm.nodeTags = mergeTagsCCS(sm.multiset);
-                syncMultisets.add(sm);
-            }
+                break;
         }
         return syncMultisets;
     }    

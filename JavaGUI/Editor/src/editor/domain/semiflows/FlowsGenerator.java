@@ -274,9 +274,11 @@ public class FlowsGenerator extends StructuralAlgorithm {
     }
     
     //-----------------------------------------------------------------------
-    public void computeAny(boolean log, ProgressObserver obs) throws InterruptedException {
+    // Compute all canonical semiflows, even if they are not minimal
+    public void computeAllCanonicalSemiflows(boolean log, ProgressObserver obs) throws InterruptedException {
         if (log)
             System.out.println(this);
+        int initFlows = numFlows();
         // Matrix A starts with the flow matrix, D is the identity.
         // for every transition i=[0,M), repeat:
         for (int i = 0; i < M; i++) {
@@ -300,11 +302,11 @@ public class FlowsGenerator extends StructuralAlgorithm {
                     
                     int mult1, mult2;
 //                    if (type.isSemiflow()) { // (non-negative) semiflows
-                        if (sign(mA.get(r1)[i]) == sign(mA.get(r2)[i]))
-                            continue;
-//                        mult1 = Math.abs(mA.get(r1)[i]);
-//                        mult2 = Math.abs(mA.get(r2)[i]);
-                        mult1 = mult2 = 1;
+                    if (sign(mA.get(r1)[i]) == sign(mA.get(r2)[i]))
+                        continue;
+//                    mult1 = Math.abs(mA.get(r1)[i]);
+//                    mult2 = Math.abs(mA.get(r2)[i]);
+                    mult1 = mult2 = 1; // Do all 1-steps
 //                    }
 //                    else { // integer flows
 //                        mult1 = Math.abs(mA.get(r1)[i]);
@@ -394,6 +396,10 @@ public class FlowsGenerator extends StructuralAlgorithm {
 //            if (!type.isBasis())
 //                removeNonMinimalFlows(log, obs);
         }
+        
+        // Remove all initial flows
+        mA = new ArrayList<>(mA.subList(initFlows, mA.size()));
+        mD = new ArrayList<>(mD.subList(initFlows, mD.size()));
         
 //        if (type.isTrapsOrSiphons())
 //            dropSupplementaryVariablesAndReduce(log, obs);
