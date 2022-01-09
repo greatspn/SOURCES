@@ -28,6 +28,7 @@ import editor.domain.semiflows.PTFlows;
 import editor.domain.semiflows.StructuralAlgorithm;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -412,32 +413,6 @@ public class Algebra2 {
                     generateSynchSetsCSP(nodesPerNet, 0, new int[nets.length], 
                                          syncMultisets, tag, tagIds);
             }
-            
-            /*/ For each tag, generate a single synchronization node
-            for (String tag : tagIds.keySet()) {
-                SynchMultiset sm = new SynchMultiset();
-                
-                for (int nodeId=0; nodeId<nodeIds.size(); nodeId++) {
-                    Node node = nodeIds.get(nodeId); 
-                    boolean has_tag = false;
-                    for (int t=0; t<node.numTags(); t++) {
-                        if (tag.equals(node.getTag(t))) {
-                            has_tag = true;
-                            break;
-                        }
-                    }
-                    if (has_tag)
-                        sm.multiset.add(new Tuple<>(1, node));
-                }
-                if (!sm.multiset.isEmpty()) {
-                    if (avoidSingleNetSynch && syncMultisetFromSingleSourceNets(sm.multiset))
-                        continue; // only one source net 
-                    
-                    sm.nodeName = mergeNames(sm.multiset);
-                    sm.nodeTags = mergeTagsCSP(sm.multiset, tag, tagIds);
-                    syncMultisets.add(sm);
-                }
-            }//*/
         }
         else { // CCS using Anisimov method
             // Setup the synchronization problem.
@@ -452,11 +427,6 @@ public class Algebra2 {
                     if (tagIds.containsKey(node.getTag(t))) {
                         int tagId = tagIds.get(node.getTag(t));
                         int card = node.getTagCard(t);
-    //                    if (semantics == Semantics.CSP) {
-    //                        card = Math.abs(card);
-    ////                        if (simplePlcs2NetId.get(place)==1)
-    ////                            card = -card;
-    //                    }
                         fg.addIncidence(nodeId, tagId, card);
                     }
                 }
@@ -464,6 +434,7 @@ public class Algebra2 {
             StructuralAlgorithm.ProgressObserver obs = (int step, int total, int s, int t) -> { };
             try {
                 fg.compute(false, obs);
+//                fg.computeAny(true, obs);
             }
             catch (InterruptedException e) { throw new IllegalStateException("Should not happen."); }
 
@@ -475,8 +446,6 @@ public class Algebra2 {
                 for (int nodeId=0; nodeId<nodeIds.size(); nodeId++) {
                     if (syncVec[nodeId] != 0) {
                         int card = syncVec[nodeId];
-    //                    if (semantics == Semantics.CSP)
-    //                        card = Math.abs(card);
                         Node compPl = nodeIds.get(nodeId);
                         assert simpleNode2NetId.containsKey(compPl);
                         sm.multiset.add(new Tuple<>(card, compPl));
@@ -492,8 +461,7 @@ public class Algebra2 {
             }
         }
         return syncMultisets;
-    }
-    
+    }    
     
     //=========================================================================
     private void joinColorClasses() {

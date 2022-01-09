@@ -87,7 +87,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
         return mD.get(i);
     }
 
-    private static int gcd(int a, int b) {
+    public static int gcd(int a, int b) {
         assert a >= 0 && b >= 0;
         if (a == 0)
             return b;
@@ -272,6 +272,145 @@ public class FlowsGenerator extends StructuralAlgorithm {
             }
         }        
     }
+    
+    //-----------------------------------------------------------------------
+    public void computeAny(boolean log, ProgressObserver obs) throws InterruptedException {
+        if (log)
+            System.out.println(this);
+        // Matrix A starts with the flow matrix, D is the identity.
+        // for every transition i=[0,M), repeat:
+        for (int i = 0; i < M; i++) {
+            if (log)
+                System.out.println("\nStep "+i+"/"+(M-1)+"\n"+this);
+            // Append to the matrix [D|A] every rows resulting as a non-negative
+            // linear combination of row pairs from [D|A] whose sum zeroes
+            // the i-th column of A.
+//            int nRows = numFlows();
+            int combined_with_i = 0;
+            for (int r1 = 0; r1 < numFlows(); r1++) {
+                if (mA.get(r1)[i] == 0) {
+                    continue;
+                }
+                obs.advance(i, M+1, r1, numFlows());
+                for (int r2 = r1 + 1; r2 < numFlows(); r2++) {
+                    checkInterrupted();
+                    // Find two rows r1 and r2 such that r1[i] and r2[i] have opposite signs.
+                    if (mA.get(r2)[i] == 0)
+                        continue;
+                    
+                    int mult1, mult2;
+//                    if (type.isSemiflow()) { // (non-negative) semiflows
+                        if (sign(mA.get(r1)[i]) == sign(mA.get(r2)[i]))
+                            continue;
+//                        mult1 = Math.abs(mA.get(r1)[i]);
+//                        mult2 = Math.abs(mA.get(r2)[i]);
+                        mult1 = mult2 = 1;
+//                    }
+//                    else { // integer flows
+//                        mult1 = Math.abs(mA.get(r1)[i]);
+//                        mult2 = Math.abs(mA.get(r2)[i]);
+//                        int gcd12 = gcd(mult1, mult2);
+//                        mult1 /= gcd12;
+//                        mult2 /= gcd12;
+//                        if (sign(mA.get(r1)[i]) == sign(mA.get(r2)[i]))
+//                            mult1 *= -1;
+//                    }
+
+                    // Create a new row nr' such that:
+                    //   nr = |r2[i]| * r1 + |ri[i]| * r2
+                    //   nr' = nr / gcd(nr)
+                    int[] nrA = new int[M];
+                    int[] nrD = new int[N];
+                    int gcdAD = -1;
+                    for (int k = 0; k < M; k++) {
+                        // Compute (with arithmetic overflow check):
+                        //   nrA[k] = mult2 * mA.get(r1)[k] + mult1 * mA.get(r2)[k];
+                        nrA[k] = Math.addExact(Math.multiplyExact(mult2, mA.get(r1)[k]),
+                                               Math.multiplyExact(mult1, mA.get(r2)[k]));
+                        gcdAD = (k == 0) ? Math.abs(nrA[k]) : gcd(gcdAD, Math.abs(nrA[k]));
+                    }
+//                    assert nrA[i] == 0;
+                    for (int k = 0; k < N; k++) {
+                        // Compute (with arithmetic overflow check):
+                        //   nrD[k] = mult2 * mD.get(r1)[k] + mult1 * mD.get(r2)[k];
+                        nrD[k] = Math.addExact(Math.multiplyExact(mult2, mD.get(r1)[k]),
+                                               Math.multiplyExact(mult1, mD.get(r2)[k]));
+                        gcdAD = gcd(gcdAD, Math.abs(nrD[k]));
+                    }
+                    if (gcdAD != 1) {
+//                        System.out.println("  gcdAD = " + gcdAD);
+                        for (int k = 0; k < M; k++) {
+                            nrA[k] /= gcdAD;
+                        }
+                        for (int k = 0; k < N; k++) {
+                            nrD[k] /= gcdAD;
+                        }
+                    }
+                    int nnzD = 0;
+                    for (int k = 0; k < N; k++) {
+                        nnzD += (nrD[k] != 0 ? 1 : 0);
+                    }                    
+                    if (nnzD == 0)
+                        continue; // drop empty row
+
+                    if (log)
+                        System.out.println(i + ": ADD row " + r1 + " + row " + r2 + "  nnz(D)=" + nnzD);
+                    
+                    // check if an identical row already exists in D
+                    boolean identical = false;
+                    for (int hh=0; hh<numFlows() && !identical; hh++) {
+                        if (Arrays.equals(mD.get(hh), nrD)) {
+                            identical = true;
+                        }
+                    }
+                    if (identical)
+                        continue;
+
+                    mA.add(nrA);
+                    mD.add(nrD);
+                    ++combined_with_i;
+                }
+                    
+                if (type.isBasis() && combined_with_i>0)
+                    break;
+            }
+            checkInterrupted();
+
+            // Eliminate from [D|A] the rows in which the i-th column of A is not zero.
+            /*int rr = numFlows();
+            while (rr > 0) {
+                rr--;
+                obs.advance(i, M+1, rr, numFlows());
+                if (mA.get(rr)[i] == 0) {
+                    continue;
+                }
+                if (log)
+                    System.out.println(i + ": DEL row " + rr);
+                mA.remove(rr);
+                mD.remove(rr);
+            }*/
+            
+//            // Eliminate frm [D|A] the rows that are not minimal, doing an exhaustive search.
+//            if (!type.isBasis())
+//                removeNonMinimalFlows(log, obs);
+        }
+        
+//        if (type.isTrapsOrSiphons())
+//            dropSupplementaryVariablesAndReduce(log, obs);
+        
+        if (log)
+            System.out.println("\nRESULT:\n"+this);
+
+        obs.advance(M+1, M+1, 1, 1);
+        
+        if (type.isBound()) {
+            computeBoundsFromInvariants();
+//            scAlgo.compute(log, obs);
+        }
+        
+        setComputed();
+    }
+    //-----------------------------------------------------------------------
     
     // Reduce all remaining flows after removing all supplementary variables
     // Supplementary variable are located in D in the positions between N0 and N.
