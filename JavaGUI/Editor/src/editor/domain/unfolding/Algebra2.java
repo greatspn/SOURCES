@@ -312,9 +312,9 @@ public class Algebra2 {
         StringBuilder name = new StringBuilder();
         for (Tuple<Integer, Node> entry : multiset) {
             if (name.length() > 0)
-                name.append("_");
+                name.append("_plus_");
             if (entry.x > 1)
-                name.append(entry.x).append("x");
+                name.append(entry.x).append("_times_");
             name.append(entry.y.getUniqueName());
         }
         return name.toString();
@@ -441,32 +441,38 @@ public class Algebra2 {
                     StructuralAlgorithm.ProgressObserver obs = (int step, int total, int s, int t) -> { };
                     try {
                         if (onlyMinimalSynch)
-                            fg.compute(false, obs); // semiflows algorithm
+                            fg.compute(true, obs); // semiflows algorithm
                         else
                             fg.computeAllCanonicalSemiflows(true, obs);
                     }
                     catch (InterruptedException e) { throw new IllegalStateException("Should not happen."); }
 
                     // Generate the synchronization nodes
-                    for (int ff=0; ff < fg.numFlows(); ff++) {
-                        int[] syncVec = fg.getFlowVector(ff);
-                        assert syncVec.length == nodeIds.size();
-                        SynchMultiset sm = new SynchMultiset();
-                        for (int nodeId=0; nodeId<nodeIds.size(); nodeId++) {
-                            if (syncVec[nodeId] != 0) {
-                                int card = syncVec[nodeId];
-                                Node compPl = nodeIds.get(nodeId);
-                                assert simpleNode2NetId.containsKey(compPl);
-                                sm.multiset.add(new Tuple<>(card, compPl));
+                    for (int phase=0; phase<2; phase++) {
+                        for (int ff=0; ff < fg.numFlows(); ff++) {
+                            // phase 0 -> insert real flows
+                            // phase 1 -> insert incomplete syncrhonizations
+                            if (fg.isFlow(ff) == (phase==0)) {
+                                int[] syncVec = fg.getFlowVector(ff);
+                                assert syncVec.length == nodeIds.size();
+                                SynchMultiset sm = new SynchMultiset();
+                                for (int nodeId=0; nodeId<nodeIds.size(); nodeId++) {
+                                    if (syncVec[nodeId] != 0) {
+                                        int card = syncVec[nodeId];
+                                        Node compPl = nodeIds.get(nodeId);
+                                        assert simpleNode2NetId.containsKey(compPl);
+                                        sm.multiset.add(new Tuple<>(card, compPl));
+                                    }
+                                }
+                                assert !sm.multiset.isEmpty();
+                                if (avoidSingleNetSynch && syncMultisetFromSingleSourceNets(sm.multiset))
+                                    continue; // only one source net     
+
+                                sm.nodeName = mergeNames(sm.multiset);
+                                sm.nodeTags = mergeTagsCCS(sm.multiset);
+                                syncMultisets.add(sm);
                             }
                         }
-                        assert !sm.multiset.isEmpty();
-                        if (avoidSingleNetSynch && syncMultisetFromSingleSourceNets(sm.multiset))
-                            continue; // only one source net     
-
-                        sm.nodeName = mergeNames(sm.multiset);
-                        sm.nodeTags = mergeTagsCCS(sm.multiset);
-                        syncMultisets.add(sm);
                     }
                 }
                 break;

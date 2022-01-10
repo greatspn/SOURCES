@@ -86,6 +86,14 @@ public class FlowsGenerator extends StructuralAlgorithm {
     public int[] getFlowVector(int i) {
         return mD.get(i);
     }
+    
+    // only for generation of all non-minimal flows
+    public boolean isFlow(int i) {
+        for (int v : mA.get(i))
+            if (v != 0)
+                return false;
+        return true; // all zeros
+    }
 
     public static int gcd(int a, int b) {
         assert a >= 0 && b >= 0;
@@ -275,7 +283,9 @@ public class FlowsGenerator extends StructuralAlgorithm {
     
     //-----------------------------------------------------------------------
     // Compute all canonical semiflows, even if they are not minimal
-    public void computeAllCanonicalSemiflows(boolean log, ProgressObserver obs) throws InterruptedException {
+    public void computeAllCanonicalSemiflows(boolean log, ProgressObserver obs) 
+            throws InterruptedException 
+    {
         if (log)
             System.out.println(this);
         int initFlows = numFlows();

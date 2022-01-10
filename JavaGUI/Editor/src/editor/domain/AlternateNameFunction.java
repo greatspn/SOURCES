@@ -127,8 +127,12 @@ public enum AlternateNameFunction implements Serializable {
     }
 
     private static String format_id(String id, int style, boolean numberAsSubscripts) {
+        // Special rules for +/* operators in names
+        id = id.replace("_plus_", "+");
+        id = id.replace("_times_", "*");
         StringBuilder builder = new StringBuilder();
         int pos = 0;
+        boolean prevIsAlpha = false;
         while (pos < id.length()) {
             int to = pos;
             boolean isNumber = Character.isDigit(id.charAt(to));
@@ -147,7 +151,7 @@ public enum AlternateNameFunction implements Serializable {
             }
             
             if (isNumber) {
-                builder.append(numberAsSubscripts ? "_{": "{");
+                builder.append((numberAsSubscripts && prevIsAlpha) ? "_{": "{");
                 builder.append(id, pos, to);
                 builder.append("}");
             }
@@ -194,6 +198,14 @@ public enum AlternateNameFunction implements Serializable {
                         builder.append("\\_");
                         break;
                         
+                    case '*':
+                        builder.append("{\\cdot}");
+                        break;
+                        
+                    case '+':
+                        builder.append("{+}");
+                        break;
+                        
                     default:
                         builder.append(sym);
                         break;
@@ -201,10 +213,11 @@ public enum AlternateNameFunction implements Serializable {
             }
             
             pos = to;
+            prevIsAlpha = isAlpha;
         }
         return builder.toString();
     }
-
+    
     private static String prepareId_NumberAsSubscript(String id, int style) {
         String vis = numbersAsSubscriptsStringTabs.get(style).get(id);
         if (vis != null)
