@@ -648,6 +648,8 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             });
         }
         
+        jMenuItemNewTagCompPage.setVisible(false);
+        
 //        if (!Main.isDeveloperMachine()) { // hide multi-net support
 ////            jMenuItemNewAlgebraPage.setVisible(false);
 //            jMenuItemNewMultiPageOLD.setVisible(false);

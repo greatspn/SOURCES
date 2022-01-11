@@ -441,9 +441,9 @@ public class Algebra2 {
                     StructuralAlgorithm.ProgressObserver obs = (int step, int total, int s, int t) -> { };
                     try {
                         if (onlyMinimalSynch)
-                            fg.compute(true, obs); // semiflows algorithm
+                            fg.compute(false, obs); // semiflows algorithm
                         else
-                            fg.computeAllCanonicalSemiflows(true, obs);
+                            fg.computeAllCanonicalSemiflows(false, obs);
                     }
                     catch (InterruptedException e) { throw new IllegalStateException("Should not happen."); }
 
