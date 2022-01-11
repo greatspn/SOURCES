@@ -99,7 +99,11 @@ public class NetPropertyPanel extends javax.swing.JPanel {
         comboBox_TemplateVarType.setUpdating(false); 
         
         comboBox_altNameFn.setUpdating(true);
-        comboBox_altNameFn.setModel(new DefaultComboBoxModel<>(AlternateNameFunction.values()));
+        comboBox_altNameFn.setModel(new DefaultComboBoxModel<>(
+                new AlternateNameFunction[]{
+                    AlternateNameFunction.PLAIN, 
+                    AlternateNameFunction.NUMBERS_AS_SUBSCRIPTS, 
+                    AlternateNameFunction.LATEX_TEXT}));
         comboBox_altNameFn.setRenderer(listRenderer);
         comboBox_altNameFn.setUpdating(false);
         

@@ -26,7 +26,9 @@ import java.util.Set;
 public enum AlternateNameFunction implements Serializable {
     NUMBERS_AS_SUBSCRIPTS("Default", "default", false),
     PLAIN("Plain ID", "plain", false),
-    LATEX_TEXT("Custom LaTeX", "latex", true);
+    LATEX_TEXT("Custom LaTeX", "latex", true),
+    TAG_LIST("List of tags", "tagList", false)
+    ;
     
     // Name fo the function, as shown in the combo box of the editor panel
     public final String nameOfFunction;
@@ -67,6 +69,9 @@ public enum AlternateNameFunction implements Serializable {
                 assert altText != null;
                 return altText;
                 
+            case TAG_LIST:
+                return prepareTagList(id, style);
+                
             default:
                 throw new IllegalStateException();
         }
@@ -93,14 +98,17 @@ public enum AlternateNameFunction implements Serializable {
     }
     
     private static final ArrayList<Map<String, String>> numbersAsSubscriptsStringTabs;
+    private static final ArrayList<Map<String, String>> tagListStringTabs;
     private static final ArrayList<Map<String, String>> plainStringTabs;
     
     static {
         numbersAsSubscriptsStringTabs = new ArrayList<>();
         plainStringTabs = new ArrayList<>();
+        tagListStringTabs = new ArrayList<>();
         for (int i=0; i<NUM_STYLES; i++) {
             numbersAsSubscriptsStringTabs.add(new HashMap<String, String>());
             plainStringTabs.add(new HashMap<String, String>());
+            tagListStringTabs.add(new HashMap<String, String>());
         }
     }
 
@@ -233,6 +241,63 @@ public enum AlternateNameFunction implements Serializable {
             return vis;
         vis = format_id(id, style, false);
         plainStringTabs.get(style).put(id, vis);
+        return vis;
+    }
+    
+    
+    private static String formatTagList(String allTagDefs) {
+        StringBuilder builder = new StringBuilder();
+        String[] baseTags = allTagDefs.split("\\|"); // | is escaped since it is a regex
+        
+        for (int tt=0; tt<baseTags.length; tt++) {
+            if (tt > 0)
+                builder.append("|");
+            
+            String tagDef = baseTags[tt].strip();
+            
+            // parse cardinality
+            int i=0;
+            if (tagDef.charAt(i)=='-')
+                i++;
+            while (i < tagDef.length() && Character.isDigit(tagDef.charAt(i)))
+                ++i;
+            int endCard = i;
+            // skip '*' or whitespaces
+            while (i < tagDef.length() && (tagDef.charAt(i)=='*' || Character.isWhitespace(tagDef.charAt(i))))
+                ++i;
+            int startTag = i;
+            int endTag = tagDef.length();
+            // remove final '?'
+            boolean bar = false;
+            if (tagDef.charAt(endTag-1) == '?') {
+                --endTag;
+                bar = true;
+            }
+            
+            String tag = tagDef.substring(startTag, endTag);
+            String prefix = tagDef.substring(0, endCard);
+            boolean special = false;
+            if (SPECIAL_LATEX_NAMES.contains(tag)) {
+                special = true;
+            }
+            
+            builder.append(prefix)
+                   .append(bar ? "\\bar{" : "")
+                   .append("\\mathrm{")
+                   .append(special ? "\\" : "")
+                   .append(tag)
+                   .append(bar ? "}" : "")
+                   .append("}");
+        }
+        return builder.toString();
+    }
+    
+    private static String prepareTagList(String id, int style) {
+        String vis = tagListStringTabs.get(style).get(id);
+        if (vis != null)
+            return vis;
+        vis = formatTagList(id);
+        tagListStringTabs.get(style).put(id, vis);
         return vis;
     }
 }

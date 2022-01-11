@@ -335,7 +335,7 @@ public abstract class Node extends SelectableObject
         @Override public Object getValue() { return getSuperPosTags(); }
 
         @Override public String getVisualizedValue() {
-            AlternateNameFunction anf = AlternateNameFunction.PLAIN;
+            AlternateNameFunction anf = AlternateNameFunction.TAG_LIST;
             return anf.prepareLatexText(getSuperPosTags(), null, STYLE_ROMAN);
         }
         
