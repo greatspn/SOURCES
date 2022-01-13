@@ -124,10 +124,8 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
     public boolean applyRestrictions = true;
     // Avoid generating synhronization from elements of a single net
     public boolean avoidSingleNetSynch = false;
-    // For CCS, generate only the solutions of minimal synchronization
-    public boolean onlyMinimalSynch = true;
     // Compositional semantics for the net tags
-    public Algebra2.Semantics semantics = Algebra2.Semantics.CCS;
+    public Algebra2.Semantics semantics = Algebra2.Semantics.UNARY_CONJUGATED_ALL;
     
     // Tags extracted from the operand nets
     transient public Set<String> commonTagsP;
@@ -189,9 +187,9 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
         }
     }
     
-    private static Selectable horizSelectable = new DummyNamedSelectable("Horizontal offset");
-    private static Selectable vertSelectable = new DummyNamedSelectable("Vertical offset");
-    private static Selectable rewriteRulesSelectable = new DummyNamedSelectable("Tag rewriting rules");
+    private static final Selectable horizSelectable = new DummyNamedSelectable("Horizontal offset");
+    private static final Selectable vertSelectable = new DummyNamedSelectable("Vertical offset");
+    private static final Selectable rewriteRulesSelectable = new DummyNamedSelectable("Tag rewriting rules");
     
     private void getNetTags(NetPage net, String rewriteRules, Set<String> tagsP, Set<String> tagsT) {
         if (net == null)
@@ -282,7 +280,7 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
         // Compose all operands together
         a = new Algebra2(nets, rewriteFns, deltaCoords, selTagsPl, selTagsTr,
                          semantics, useBrokenEdges, applyRestrictions, 
-                         avoidSingleNetSynch, onlyMinimalSynch, false);
+                         avoidSingleNetSynch, false);
         a.compose();
 
         String compPageName = nets[0].getPageName();
@@ -340,7 +338,7 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
         bindXMLAttrib(this, el, exDir, "align-dx", "alignDx.@Expr", "10");
         bindXMLAttrib(this, el, exDir, "align-dy", "alignDy.@Expr", "10");
         bindXMLAttrib(this, el, exDir, "alignment", "alignment", null, Alignment.class);
-        bindXMLAttrib(this, el, exDir, "semantics", "semantics", Algebra2.Semantics.CCS);
+        bindXMLAttrib(this, el, exDir, "semantics", "semantics", Algebra2.Semantics.NONE);
         
         Document doc = exDir.getDocument();
         if (exDir.FieldsToXml()) {

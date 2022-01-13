@@ -207,8 +207,10 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         }
         
         comboBox_semantics.setRenderer(new IndeterminateListCellRenderer());
-        for (Algebra2.Semantics sem : Algebra2.Semantics.values())
-            comboBox_semantics.addItem(sem);
+        comboBox_semantics.addItem(Algebra2.Semantics.UNARY_CONJUGATED_MINIMAL);
+        comboBox_semantics.addItem(Algebra2.Semantics.UNARY_CONJUGATED_ALL);
+        comboBox_semantics.addItem(Algebra2.Semantics.BINARY_PARALLEL);
+
 
         
         // Add actions to the input map manually
@@ -366,8 +368,6 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
             checkBox_useBrokenEdges2.setSelected(acp.useBrokenEdges);
             checkBox_applyRestrictions.setSelected(acp.applyRestrictions);
             checkBox_avoidSingleNetSynch.setSelected(acp.avoidSingleNetSynch);
-            checkBox_onlyMinimalSynch.setSelected(acp.onlyMinimalSynch);
-            checkBox_onlyMinimalSynch.setEnabled(acp.semantics == Algebra2.Semantics.CCS);
                     
             comboBox_semantics.setSelectedItem(acp.semantics);
             
@@ -796,7 +796,6 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         panel_semantics2 = new javax.swing.JPanel();
         label_semantics2 = new javax.swing.JLabel();
         comboBox_semantics = new javax.swing.JComboBox<>();
-        checkBox_onlyMinimalSynch = new javax.swing.JCheckBox();
         actionAddSubnet = new common.Action();
         scrollPaneCentral = new javax.swing.JScrollPane();
         toolbar = new javax.swing.JToolBar();
@@ -1330,18 +1329,6 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         panel_algebra2.add(panel_semantics2, gridBagConstraints);
 
-        checkBox_onlyMinimalSynch.setText("Only minimal synchronizations (CCS only).");
-        checkBox_onlyMinimalSynch.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                checkBox_onlyMinimalSynchActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        panel_algebra2.add(checkBox_onlyMinimalSynch, gridBagConstraints);
-
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -1586,20 +1573,12 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         });
     }//GEN-LAST:event_checkBox_avoidSingleNetSynchActionPerformed
 
-    private void checkBox_onlyMinimalSynchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBox_onlyMinimalSynchActionPerformed
-        mainInterface.executeUndoableCommand("change minimal synchronization flag.", (ProjectData proj, ProjectPage elem) -> {
-            TagBasedCompositionPage2 acp = (TagBasedCompositionPage2)currPage;
-            acp.onlyMinimalSynch = checkBox_onlyMinimalSynch.isSelected();
-        });
-    }//GEN-LAST:event_checkBox_onlyMinimalSynchActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private common.Action actionAddSubnet;
     private javax.swing.JButton button_resetOffsetMatrix;
     private javax.swing.JCheckBox checkBox_applyRestrictions;
     private javax.swing.JCheckBox checkBox_avoidSingleNetSynch;
-    private javax.swing.JCheckBox checkBox_onlyMinimalSynch;
     private javax.swing.JCheckBox checkBox_useBrokenEdges;
     private javax.swing.JCheckBox checkBox_useBrokenEdges2;
     private javax.swing.JComboBox<Algebra2.Semantics> comboBox_semantics;

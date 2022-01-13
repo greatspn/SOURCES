@@ -45,8 +45,29 @@ import java.util.regex.Pattern;
 public class Algebra2 {
     
     public enum Semantics {
-        CCS, // Tag are composed when complementary:  aa|bb  joins with  aa?  and  bb?
-        CSP; // Tag are composed when they have the same name in the two operand nets
+        // Nodes are composed when they have conjugated tags:
+        //   aa|bb  joins with  aa?  and  bb?
+        UNARY_CONJUGATED_MINIMAL("Unary conjugated (minimal)"), 
+        // As above, but it is not restricted to the minimal semiflows
+        UNARY_CONJUGATED_ALL("Unary conjugated (all)"), 
+        // Nodes are joined from a parallelo composition of they share the same tag
+        BINARY_PARALLEL("Binary parallel composition"),
+        NONE("None"); 
+        
+        private final String visualizedName;
+
+        private Semantics(String visualizedName) {
+            this.visualizedName = visualizedName;
+        }
+
+        @Override
+        public String toString() {
+            return visualizedName;
+        }
+        
+        public boolean isConjugated() { 
+            return this==UNARY_CONJUGATED_ALL || this==UNARY_CONJUGATED_MINIMAL;
+        }
     }
     
     // Algebra input net operators
@@ -77,7 +98,7 @@ public class Algebra2 {
     
     // For CCS semantics, generate only the minimal synchronization sets
     // instead of generating any possible combinations of the synch sets
-    private final boolean onlyMinimalSynch;
+//    private final boolean onlyMinimalSynch;
 
     private final boolean verbose;
     
@@ -183,7 +204,7 @@ public class Algebra2 {
     
     //=========================================================================
     // Build the union list of all tags of @node1 and @node2
-    private String mergeTagsCCS(List<Tuple<Integer, Node>> multiset) {
+    private String mergeTagsConj(List<Tuple<Integer, Node>> multiset) {
         ArrayList<SuperpositionTag> tags = new ArrayList<>();
         
         for (Tuple<Integer, Node> entry : multiset) {
@@ -196,8 +217,6 @@ public class Algebra2 {
         SuperpositionTag[] mergedTags = SuperpositionTag.mergeTags(tags);
         StringBuilder builder = new StringBuilder();
         for (SuperpositionTag st : mergedTags) {
-//            if (semantics == Semantics.CSP)
-//                st = new SuperpositionTag(st.getTag(), 1);
             if (st.getCard() != 0) { 
                 // Only merge tags that have not been composed (card != 0)
                 builder.append(builder.length() == 0 ? "" : "|").append(st.toCanonicalString());
@@ -211,23 +230,26 @@ public class Algebra2 {
                                 Map<String, Integer> restrictedTagsSet) 
     {
         ArrayList<SuperpositionTag> tags = new ArrayList<>();
-        
+
+        // Join all non-restricted tags (exclude also syncTag)
         for (Tuple<Integer, Node> entry : multiset) {
             for (int t=0; t<entry.y.numTags(); t++) {
-                tags.add(new SuperpositionTag(entry.y.getTag(t), 
-                                              entry.x * Math.abs(entry.y.getTagCard(t))));
+                String tag = entry.y.getTag(t);
+                if (!tag.equals(syncTag) && !restrictedTagsSet.containsKey(tag))
+                    tags.add(new SuperpositionTag(tag, entry.x * Math.abs(entry.y.getTagCard(t))));
             }
         }
+        tags.add(new SuperpositionTag(syncTag, 1));
         
         SuperpositionTag[] mergedTags = SuperpositionTag.mergeTags(tags);
         StringBuilder builder = new StringBuilder();
         for (SuperpositionTag st : mergedTags) {
-            if (st.getTag().equals(syncTag) || !restrictedTagsSet.containsKey(st.getTag())) {
+//            if (st.getTag().equals(syncTag) || !restrictedTagsSet.containsKey(st.getTag())) {
                 if (st.getCard() != 0) { 
                     // Only merge tags that have not been composed (card != 0)
                     builder.append(builder.length() == 0 ? "" : "|").append(st.toCanonicalString());
                 }
-            }
+//            }
         }
         return builder.toString();
     }
@@ -328,7 +350,6 @@ public class Algebra2 {
                     boolean useBrokenEdges, 
                     boolean restrictTags,
                     boolean avoidSingleNetSynch,
-                    boolean onlyMinimalSynch,
                     boolean verbose) 
     {
         this.nets = nets;
@@ -340,7 +361,6 @@ public class Algebra2 {
         this.useBrokenEdges = useBrokenEdges;
         this.restrictTags = restrictTags;
         this.avoidSingleNetSynch = avoidSingleNetSynch;
-        this.onlyMinimalSynch = onlyMinimalSynch;
         this.verbose = verbose;
         
         assert this.nets.length == this.relabelFn.length;
@@ -392,7 +412,7 @@ public class Algebra2 {
         ArrayList<SynchMultiset> syncMultisets = new ArrayList<>();
         
         switch (semantics) {
-            case CSP:
+            case BINARY_PARALLEL:
                 // For each tag, generate a single synchronization node
                 for (String tag : tagIds.keySet()) {
                     ArrayList<ArrayList<Node>> nodesPerNet = new ArrayList<>();
@@ -421,7 +441,9 @@ public class Algebra2 {
                 }
                 break;
                 
-            case CCS: { // CCS using Anisimov method
+            case UNARY_CONJUGATED_ALL: 
+            case UNARY_CONJUGATED_MINIMAL:
+                { 
                     // Setup the synchronization problem.
                     FlowsGenerator fg;
                     {
@@ -440,10 +462,10 @@ public class Algebra2 {
                     }
                     StructuralAlgorithm.ProgressObserver obs = (int step, int total, int s, int t) -> { };
                     try {
-                        if (onlyMinimalSynch)
-                            fg.compute(false, obs); // semiflows algorithm
-                        else
-                            fg.computeAllCanonicalSemiflows(false, obs);
+                        if (semantics == Semantics.UNARY_CONJUGATED_MINIMAL)
+                            fg.compute(false, obs); // minimal semiflows 
+                        else // all semiflows
+                            fg.computeAllCanonicalSemiflows(true, obs);
                     }
                     catch (InterruptedException e) { throw new IllegalStateException("Should not happen."); }
 
@@ -469,7 +491,7 @@ public class Algebra2 {
                                     continue; // only one source net     
 
                                 sm.nodeName = mergeNames(sm.multiset);
-                                sm.nodeTags = mergeTagsCCS(sm.multiset);
+                                sm.nodeTags = mergeTagsConj(sm.multiset);
                                 syncMultisets.add(sm);
                             }
                         }
@@ -897,7 +919,7 @@ public class Algebra2 {
             Node node = iterN.next();
             boolean remove = false;
             if (node instanceof Place) {
-                if (semantics==Semantics.CSP && !simpleNode2Orig.containsKey(node)) 
+                if (semantics==Semantics.BINARY_PARALLEL && !simpleNode2Orig.containsKey(node)) 
                     continue; // keep this node
                 for (int t=0; t<node.numTags(); t++) {
                     if (plcTag2Id.containsKey(node.getTag(t))) {
@@ -907,7 +929,7 @@ public class Algebra2 {
                 }
             }
             else if (node instanceof Transition) {
-                if (semantics==Semantics.CSP && !simpleNode2Orig.containsKey(node)) 
+                if (semantics==Semantics.BINARY_PARALLEL && !simpleNode2Orig.containsKey(node)) 
                     continue; // keep this node
                 for (int t=0; t<node.numTags(); t++) {
                     if (trnTag2Id.containsKey(node.getTag(t))) {
