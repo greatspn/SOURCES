@@ -481,11 +481,12 @@ cardinality_t measure_PSI(const std::vector<int> &net_to_level, bool only_ranks,
     return fbm.measure_PSI(net_to_level);
 }
 
-cardinality_t measure_score_experimental(flow_basis_metric_t& fbm, int var) {
-    if (var <= 4)
-        return fbm.compute_score_experimental_A(var);
-    else
-        return fbm.compute_score_experimental_B(var);
+double measure_score_experimental_dbl(flow_basis_metric_t& fbm, int var) {
+    return fbm.compute_score_experimental_A(var);
+}
+
+cardinality_t measure_iRank2_experimental(flow_basis_metric_t& fbm, bool edge_based) {
+    return fbm.compute_iRank2_score(edge_based);
 }
 
 void print_PSI_diagram(const std::vector<int> &net_to_level, flow_basis_metric_t& fbm) {
@@ -980,9 +981,9 @@ cardinality_t flow_basis_metric_t::compute_score()
 
 //---------------------------------------------------------------------------------------
 
-cardinality_t flow_basis_metric_t::compute_score_experimental_A(int var) 
+double flow_basis_metric_t::compute_score_experimental_A(int var) 
 {
-    cardinality_t score = 0;
+    double score = 0;
     std::vector<int> lvl_combinations;
     lvl_combinations.reserve(B.size());
     combinations.resize(npl);
@@ -1029,9 +1030,31 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_A(int var)
         }
 
         // Now combine all lvl_combinations
-        cardinality_t num = 0;
+        double num;
 
-        if (var == 0) {
+        if (var == 0) { // product of ranges
+            num = 1.0;
+            for (int comb : lvl_combinations)
+                num *= comb;
+        }
+        else if (var == 1) { // sum of ranges
+            num = 0.0;
+            for (int comb : lvl_combinations)
+                num += comb;
+        }
+        else if (var == 2) { // product of log(ranges)
+            num = 1.0;
+            for (int comb : lvl_combinations)
+                num *= log(comb);
+        }
+        else if (var == 3) { // sum of log(ranges)
+            num = 0.0;
+            for (int comb : lvl_combinations)
+                num += log(comb);
+        }
+        else num = 0.0;
+
+        /*if (var == 0) {
             std::sort(lvl_combinations.begin(), lvl_combinations.end());
             num = 1;
             cardinality_t fact = 1;
@@ -1058,7 +1081,7 @@ cardinality_t flow_basis_metric_t::compute_score_experimental_A(int var)
             }
             if (lvl_combinations.size() > 0)
                 num /= lvl_combinations.size(); // divided by n
-        }
+        }*/
         // else if (var == 3) {
         //     double prod_sc = 1.0;
         //     for (double rsc : lvl_rscores)
@@ -1187,8 +1210,8 @@ void iRank2Support::initialize()
     if (verbose)
         print_constraints();
 
-    cout << "\n\n\n========================\n";
-    experiment_cdd(fbm);
+    // cout << "\n\n\n========================\n";
+    // experiment_cdd(fbm);
     // exit(0);
 
     // cout << "\n\n\n========================\n";
@@ -1402,7 +1425,8 @@ cardinality_t iRank2Support::compute_score_for_edges() {
     cardinality_t score = 0;
     edge_counts.resize(npl);
 
-    cout << "*****************************" << endl;
+    if (verbose)
+        cout << "*****************************" << endl;
     for (int lvl = npl-1; lvl>=0; lvl--) {
         const int plc = fbm.level_to_net[lvl];
         std::set<int> var_values;
@@ -1420,13 +1444,15 @@ cardinality_t iRank2Support::compute_score_for_edges() {
                 }
             }
         }
-        cout << "LEVEL: " << setw(3) << lvl << setw(5) << tabp[plc].place_name << ": " << endl;
+        if (verbose)
+            cout << "LEVEL: " << setw(3) << lvl << setw(5) << tabp[plc].place_name << ": " << endl;
 
         // Count the combinations at level, partitioned by variable assignment values
         cardinality_t combs_at_lvl = 0;
         for (int vval : var_values) {
             cardinality_t combs_for_vval = 1;
-            cout << right << setw(7) << tabp[plc].place_name << "="<<vval<<":  ";
+            if (verbose)
+                cout << right << setw(7) << tabp[plc].place_name << "="<<vval<<":  ";
 
             // Multiply the count of nodes having vval of each constraint
             for (int cc=0; cc<B.size(); cc++) {
@@ -1440,25 +1466,29 @@ cardinality_t iRank2Support::compute_score_for_edges() {
                             for (int v : node.second)
                                 if (v == vval)
                                     ++nodes_with_vval;
-                        cout << cc<<":"<<nodes_with_vval<<"  ";
+                        if (verbose)
+                            cout << cc<<":"<<nodes_with_vval<<"  ";
                     }
                     else { // not at level - count the memory, i.e. the outgoing edges of the nodes above lvl
                         size_t memory = irank2_constr_psums[cc][index - 1].size();
                         nodes_with_vval = memory;
-                        cout << "[" << cc<<":"<<nodes_with_vval<<"]  ";
+                        if (verbose)
+                            cout << "[" << cc<<":"<<nodes_with_vval<<"]  ";
                     }
                     combs_for_vval *= nodes_with_vval;
                 }
             }
-            cout << "= " << combs_for_vval << endl;
+            if (verbose)
+                cout << "= " << combs_for_vval << endl;
             combs_at_lvl += combs_for_vval;
         }
-        cout << "  = "<<combs_at_lvl<<endl<<endl;
+        if (verbose)
+            cout << "  = "<<combs_at_lvl<<endl<<endl;
         edge_counts[lvl] = get_ulong(combs_at_lvl);
         score += combs_at_lvl;
     }
-    cout << "*****************************" << endl;
-    cout << endl << endl;
+    if (verbose)
+        cout << "*****************************" << endl;
 
     return score;
 }
@@ -1575,10 +1605,10 @@ void flow_basis_metric_t::initialize_irank2()
 
 //---------------------------------------------------------------------------------------
 
-cardinality_t flow_basis_metric_t::compute_score_experimental_B(int var) 
+cardinality_t flow_basis_metric_t::compute_iRank2_score(bool edge_based) 
 {
     initialize_irank2();
-    if (var == 10)
+    if (!edge_based)
         return p_irank2supp->compute_score_for_nodes();
     else
         return p_irank2supp->compute_score_for_edges();

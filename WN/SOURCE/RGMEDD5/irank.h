@@ -133,12 +133,12 @@ struct flow_basis_metric_t {
     void compact_basis_row_min(std::vector<int> &net_to_level);
 
 
-    cardinality_t compute_score_experimental_A(int var);
+    double compute_score_experimental_A(int var);
 
     // iRank2 experimental code
     unique_ptr<iRank2Support> p_irank2supp;
     void initialize_irank2();
-    cardinality_t compute_score_experimental_B(int var);
+    cardinality_t compute_iRank2_score(bool edge_based);
 
 protected:
 
@@ -236,7 +236,7 @@ public:
     // Enumerate the constraint values at level of each constraint
     constr_psums_t irank2_constr_psums;
 
-    bool verbose = true;
+    bool verbose = false;
     // stored edge counts
     std::vector<size_t> edge_counts;
 

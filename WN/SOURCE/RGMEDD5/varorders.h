@@ -321,7 +321,8 @@ measure_PSI(const std::vector<int> &varorder, bool only_ranks,
             bool use_ilp, bool use_enum, bool print_enums,
             flow_basis_metric_t& fbm);
 
-cardinality_t measure_score_experimental(flow_basis_metric_t& fbm, int var);
+double measure_score_experimental_dbl(flow_basis_metric_t& fbm, int var);
+cardinality_t measure_iRank2_experimental(flow_basis_metric_t& fbm, bool edge_based);
 
 void print_PSI_diagram(const std::vector<int> &varorder, flow_basis_metric_t& fbm);
 

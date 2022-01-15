@@ -873,22 +873,26 @@ void determine_var_order(const var_order_selector& sel,
             // clock_t time_PSI_RANK = clock();
             cardinality_t PSI_RANK = measure_PSI(net_to_mddLevel, false, false, false, false, fbm);
             // print_PSI_diagram(net_to_mddLevel, fbm);
-            cout << "metric[score1]:  " << PSI_RANK << "    (full product of ranges)" <<endl;
+            cout << "  metric[ranges]:            " << PSI_RANK <<endl;
 
-            cardinality_t score2 = measure_score_experimental(fbm, 0);
-            cout << "metric[score2]:  " << score2 << "    (hyper-triangular product< / n!)" << endl;
+            double ranges_prod = measure_score_experimental_dbl(fbm, 0);
+            cout << "  metric[ranges_prod]:       " << ranges_prod << endl;
 
-            cardinality_t score3 = measure_score_experimental(fbm, 1);
-            cout << "metric[score3]:  " << score3 << "    (hyper-triangular product> / n!)" << endl;
+            double ranges_sum = measure_score_experimental_dbl(fbm, 1);
+            cout << "  metric[ranges_sum]:        " << ranges_sum << endl;
 
-            cardinality_t score4 = measure_score_experimental(fbm, 2);
-            cout << "metric[score4]:  " << score4 << "    (hypervolume? product of ranges / n)" << endl;
+            double ranges_prod_log = measure_score_experimental_dbl(fbm, 2);
+            cout << "  metric[ranges_prod_log]:   " << ranges_prod_log << endl;
 
-            cardinality_t score5 = measure_score_experimental(fbm, 10);
-            cout << "metric[score5]:  " << score5 << "    ( new method - nodes )" << endl;
+            double ranges_sum_log = measure_score_experimental_dbl(fbm, 3);
+            cout << "  metric[ranges_sum_log]:    " << ranges_sum_log << endl;
 
-            cardinality_t score6 = measure_score_experimental(fbm, 11);
-            cout << "metric[score6]:  " << score6 << "    ( new method - edges )" << endl;
+
+            cardinality_t iRank2N = measure_iRank2_experimental(fbm, false);
+            cout << "  metric[iRank2N]:           " << iRank2N << endl;
+
+            cardinality_t iRank2E = measure_iRank2_experimental(fbm, true);
+            cout << "  metric[iRank2E]:           " << iRank2E << endl;
 
             // time_PSI_RANK = clock() - time_PSI_RANK;
             // cout << "score4:  " << score4 << "    (...)" << endl;
