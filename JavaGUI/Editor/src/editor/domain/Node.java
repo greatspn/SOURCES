@@ -156,6 +156,13 @@ public abstract class Node extends SelectableObject
                 return true;
         return false;
     }
+    public int findTag(String tag) { 
+        rebuiltTagList();
+        for (int i=0; i<tagList.length; i++)
+            if (getTag(i).equals(tag))
+                return i;
+        return -1;
+    }
     protected void invalidateTagList() { tagList = null; }
     private void rebuiltTagList() {
         if (tagList != null)

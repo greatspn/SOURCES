@@ -388,7 +388,10 @@ public class Algebra2 {
         if (level == nets.length) {
             SynchMultiset sm = new SynchMultiset();
             for (int i=0; i<nets.length; i++) {
-                sm.multiset.add(new Tuple<>(1, nodes.get(i).get(sel[i])));
+                Node ithNode = nodes.get(i).get(sel[i]);
+                int weight = 1;
+//                int weight = ithNode.getTagCard(ithNode.findTag(tag));
+                sm.multiset.add(new Tuple<>(weight, ithNode));
             }
             sm.nodeName = tag + "_" + mergeNames(sm.multiset);
             sm.nodeTags = mergeTagsCSP(sm.multiset, tag, tagIds);                
@@ -465,7 +468,7 @@ public class Algebra2 {
                         if (semantics == Semantics.UNARY_CONJUGATED_MINIMAL)
                             fg.compute(false, obs); // minimal semiflows 
                         else // all semiflows
-                            fg.computeAllCanonicalSemiflows(true, obs);
+                            fg.computeAllCanonicalSemiflows(false, obs);
                     }
                     catch (InterruptedException e) { throw new IllegalStateException("Should not happen."); }
 
