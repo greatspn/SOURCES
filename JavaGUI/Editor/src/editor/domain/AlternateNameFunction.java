@@ -282,7 +282,7 @@ public enum AlternateNameFunction implements Serializable {
             }
             
             builder.append(prefix)
-                   .append(bar ? "\\bar{" : "")
+                   .append(bar ? "\\widehat{" : "")
                    .append("\\mathrm{")
                    .append(special ? "\\" : "")
                    .append(tag)

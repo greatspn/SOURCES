@@ -50,8 +50,8 @@ public class Algebra2 {
         UNARY_CONJUGATED_MINIMAL("Unary conjugated (minimal)"), 
         // As above, but it is not restricted to the minimal semiflows
         UNARY_CONJUGATED_ALL("Unary conjugated (all)"), 
-        // Nodes are joined from a parallelo composition of they share the same tag
-        BINARY_PARALLEL("Binary parallel composition"),
+        // Nodes are joined from parallel composition if they share the same tag
+        BINARY_PARALLEL("N-ary structured composition"),
         NONE("None"); 
         
         private final String visualizedName;
