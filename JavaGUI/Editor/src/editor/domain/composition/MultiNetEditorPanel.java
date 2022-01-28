@@ -206,10 +206,10 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
             });
         }
         
-        comboBox_semantics.setRenderer(new IndeterminateListCellRenderer());
-        comboBox_semantics.addItem(Algebra2.Semantics.UNARY_CONJUGATED_MINIMAL);
-        comboBox_semantics.addItem(Algebra2.Semantics.UNARY_CONJUGATED_ALL);
-        comboBox_semantics.addItem(Algebra2.Semantics.BINARY_PARALLEL);
+        comboBox_policy.setRenderer(new IndeterminateListCellRenderer());
+        comboBox_policy.addItem(Algebra2.Policy.UNARY_CONJUGATED_MINIMAL);
+        comboBox_policy.addItem(Algebra2.Policy.UNARY_CONJUGATED_ALL);
+        comboBox_policy.addItem(Algebra2.Policy.BINARY_PARALLEL);
 
 
         
@@ -368,8 +368,10 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
             checkBox_useBrokenEdges2.setSelected(acp.useBrokenEdges);
             checkBox_applyRestrictions.setSelected(acp.applyRestrictions);
             checkBox_avoidSingleNetSynch.setSelected(acp.avoidSingleNetSynch);
+            
+            checkBox_avoidSingleNetSynch.setEnabled(acp.policy != Algebra2.Policy.BINARY_PARALLEL);
                     
-            comboBox_semantics.setSelectedItem(acp.semantics);
+            comboBox_policy.setSelectedItem(acp.policy);
             
             panel_algebra2.setVisible(true);
         }
@@ -795,7 +797,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         checkBox_avoidSingleNetSynch = new javax.swing.JCheckBox();
         panel_semantics2 = new javax.swing.JPanel();
         label_semantics2 = new javax.swing.JLabel();
-        comboBox_semantics = new javax.swing.JComboBox<>();
+        comboBox_policy = new javax.swing.JComboBox<>();
         actionAddSubnet = new common.Action();
         scrollPaneCentral = new javax.swing.JScrollPane();
         toolbar = new javax.swing.JToolBar();
@@ -1126,7 +1128,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
         panelTags1.add(jLabel3, gridBagConstraints);
 
@@ -1134,7 +1136,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         panelTags1.add(jLabel13, gridBagConstraints);
 
         list_TagsT2.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -1308,20 +1310,20 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
 
         panel_semantics2.setLayout(new java.awt.GridBagLayout());
 
-        label_semantics2.setText("Semantics:");
+        label_semantics2.setText("Policy:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 12);
         panel_semantics2.add(label_semantics2, gridBagConstraints);
 
-        comboBox_semantics.addActionListener(new java.awt.event.ActionListener() {
+        comboBox_policy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                comboBox_semanticsActionPerformed(evt);
+                comboBox_policyActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 0.1;
-        panel_semantics2.add(comboBox_semantics, gridBagConstraints);
+        panel_semantics2.add(comboBox_policy, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1557,14 +1559,14 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
         });
     }//GEN-LAST:event_checkBox_applyRestrictionsActionPerformed
 
-    private void comboBox_semanticsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBox_semanticsActionPerformed
+    private void comboBox_policyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBox_policyActionPerformed
         if (initializing)
             return;
         mainInterface.executeUndoableCommand("change composition semantics.", (ProjectData proj, ProjectPage elem) -> {
             TagBasedCompositionPage2 acp = (TagBasedCompositionPage2)currPage;
-            acp.semantics = (Algebra2.Semantics)comboBox_semantics.getSelectedItem();
+            acp.policy = (Algebra2.Policy)comboBox_policy.getSelectedItem();
         });
-    }//GEN-LAST:event_comboBox_semanticsActionPerformed
+    }//GEN-LAST:event_comboBox_policyActionPerformed
 
     private void checkBox_avoidSingleNetSynchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBox_avoidSingleNetSynchActionPerformed
         mainInterface.executeUndoableCommand("change single net syncronization flag.", (ProjectData proj, ProjectPage elem) -> {
@@ -1581,7 +1583,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
     private javax.swing.JCheckBox checkBox_avoidSingleNetSynch;
     private javax.swing.JCheckBox checkBox_useBrokenEdges;
     private javax.swing.JCheckBox checkBox_useBrokenEdges2;
-    private javax.swing.JComboBox<Algebra2.Semantics> comboBox_semantics;
+    private javax.swing.JComboBox<Algebra2.Policy> comboBox_policy;
     private editor.domain.measures.ExprField exprField_algebraDx;
     private editor.domain.measures.ExprField exprField_algebraDx2;
     private editor.domain.measures.ExprField exprField_algebraDy;

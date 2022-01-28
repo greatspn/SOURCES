@@ -124,8 +124,8 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
     public boolean applyRestrictions = true;
     // Avoid generating synhronization from elements of a single net
     public boolean avoidSingleNetSynch = false;
-    // Compositional semantics for the net tags
-    public Algebra2.Semantics semantics = Algebra2.Semantics.UNARY_CONJUGATED_ALL;
+    // Composition policy for the net tags
+    public Algebra2.Policy policy = Algebra2.Policy.UNARY_CONJUGATED_ALL;
     
     // Tags extracted from the operand nets
     transient public Set<String> commonTagsP;
@@ -279,7 +279,7 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
         //if (semantics == Algebra2.Semantics.CCS || nets.length==1) {   
         // Compose all operands together
         a = new Algebra2(nets, rewriteFns, deltaCoords, selTagsPl, selTagsTr,
-                         semantics, useBrokenEdges, applyRestrictions, 
+                         policy, useBrokenEdges, applyRestrictions, 
                          avoidSingleNetSynch, false);
         a.compose();
 
@@ -338,7 +338,7 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
         bindXMLAttrib(this, el, exDir, "align-dx", "alignDx.@Expr", "10");
         bindXMLAttrib(this, el, exDir, "align-dy", "alignDy.@Expr", "10");
         bindXMLAttrib(this, el, exDir, "alignment", "alignment", null, Alignment.class);
-        bindXMLAttrib(this, el, exDir, "semantics", "semantics", Algebra2.Semantics.NONE);
+        bindXMLAttrib(this, el, exDir, "policy", "policy", Algebra2.Policy.NONE);
         
         Document doc = exDir.getDocument();
         if (exDir.FieldsToXml()) {

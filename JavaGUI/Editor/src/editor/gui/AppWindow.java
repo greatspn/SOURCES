@@ -116,6 +116,7 @@ import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreePath;
 import latex.LatexProvider;
 import editor.domain.semiflows.PTFlows;
+import java.util.Arrays;
 
 /**
  *
@@ -3336,6 +3337,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             jMenuLibraryModels.setEnabled(false);
             return;
         }
+        Arrays.sort(models);
         for (final File model : models) {
             final String modelName = model.getName().replace("."+ProjectFile.PNPRO_EXT, "");
             JMenuItem item = new JMenuItem(modelName);
