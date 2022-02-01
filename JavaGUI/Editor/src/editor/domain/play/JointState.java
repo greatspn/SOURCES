@@ -262,4 +262,38 @@ public class JointState implements Serializable, AbstractMarking {
         return null; // trn is not enabled
     }
     
+    public String ConvertToString() {
+        StringBuilder sb = new StringBuilder();
+        if (isTimedSimulation)
+            sb.append("@").append(String.format(Locale.US, "%.4f", time)).append(": ");
+        if (currLoc != null) {
+            sb.append("[");
+            sb.append(currLoc.getUniqueName());
+            if (isTimedSimulation) {
+                for (Map.Entry<ClockVar, Double> e : continuousVars.entrySet())
+                    sb.append(", ").append(e.getKey().getUniqueName())
+                      .append("=").append(String.format(Locale.US, "%.2f", e.getValue()));
+            }
+            sb.append("] ");
+        }
+        boolean emptyMarking = true;
+        int i = 0;
+        Iterator<Map.Entry<Place, EvaluatedFormula>> it = marking.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Place, EvaluatedFormula> tkn = it.next();
+            if (tkn.getValue().equalsZero())
+                continue;
+            if (i++ > 0)
+                sb.append(", ");
+            sb.append(tkn.getKey().getUniqueName());
+            sb.append("=");
+            sb.append(tkn.getValue().toStringFormat(ExpressionLanguage.PNPRO, "%.2f"));
+            emptyMarking = false;
+        }
+        if (emptyMarking)
+            sb.append("<<empty marking>>");
+        
+        return sb.toString();
+    }
+    
 }
