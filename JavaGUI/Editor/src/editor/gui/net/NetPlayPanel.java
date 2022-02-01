@@ -46,13 +46,19 @@ import java.awt.CardLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Random;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.Icon;
+import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.event.ChangeEvent;
@@ -875,7 +881,10 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
             viewerPanel.getDta().viewProfile.viewRatesDelays = isTimedSimulation();
         }
         
+        ExportTraceButton.setEnabled( !stateHistory.isEmpty());
         viewerPanel.repaint();
+        
+        
     }
 
     @Override
@@ -928,6 +937,7 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
         jPanelStates = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jListPathTrace = new javax.swing.JList<>();
+        ExportTraceButton = new javax.swing.JButton();
         jPanelSpeed = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jSliderSpeed = new javax.swing.JSlider();
@@ -945,7 +955,7 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
 
-        jToolBarPlayCommands.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "Commands", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
+        jToolBarPlayCommands.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Commands", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jToolBarPlayCommands.setFloatable(false);
         jToolBarPlayCommands.setRollover(true);
 
@@ -1074,12 +1084,28 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
         jPanelControls.add(jPanelNextTime, gridBagConstraints);
 
         jPanelStates.setBorder(javax.swing.BorderFactory.createTitledBorder("Path trace:"));
-        jPanelStates.setLayout(new javax.swing.BoxLayout(jPanelStates, javax.swing.BoxLayout.LINE_AXIS));
+        jPanelStates.setLayout(new java.awt.GridBagLayout());
 
         jListPathTrace.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane2.setViewportView(jListPathTrace);
 
-        jPanelStates.add(jScrollPane2);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        jPanelStates.add(jScrollPane2, gridBagConstraints);
+
+        ExportTraceButton.setText("Export Trace ...");
+        ExportTraceButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ExportTraceButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        jPanelStates.add(ExportTraceButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1264,7 +1290,55 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
         mainInterface.invalidateGUI();
     }//GEN-LAST:event_jToolbarButtonSwitchToUntimedActionPerformed
 
+    private void ExportTraceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExportTraceButtonActionPerformed
+        Iterator<JointState> states = stateHistory.iterator();
+        JFileChooser jc = new JFileChooser();
+        jc.showSaveDialog(null);
+        java.io.File f = new File(jc.getSelectedFile() + ".txt");
+        if (f.exists()) {
+            int reply = JOptionPane.showConfirmDialog(null,
+                    "File already exists, would you like to overwrite it?",
+                    "", JOptionPane.YES_NO_OPTION);
+            if (reply == JOptionPane.YES_OPTION) {
+                PrintWriter p = null;
+                try {
+                    p = new PrintWriter(f);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null,
+                            "An error happened while exporting simulation data.\n"
+                                    + "Reason: "+e.getMessage(),
+                            "Export simulation data...",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                while(states.hasNext()) {
+                    p.println(states.next().ConvertToString());
+                }
+                p.close();
+            } else return;
+        }
+        else {
+            PrintWriter p = null;
+            try {
+                p = new PrintWriter(f);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null,
+                        "An error happened while exporting simulation data.\n"
+                                + "Reason: "+e.getMessage(),
+                        "Export simulation data...",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+            while(states.hasNext()) {
+                p.println(states.next().ConvertToString());
+            }
+            p.close();
+            
+        }
+    }//GEN-LAST:event_ExportTraceButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton ExportTraceButton;
     private javax.swing.JCheckBox checkBoxRandomFiring;
     private javax.swing.JCheckBox checkBoxSemiAutoFiring;
     private javax.swing.JButton jButtonRandomTime;
