@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
  */
 public class Algebra2 {
     
-    public enum Semantics {
+    public enum Policy {
         // Nodes are composed when they have conjugated tags:
         //   aa|bb  joins with  aa?  and  bb?
         UNARY_CONJUGATED_MINIMAL("Unary conjugated (minimal)"), 
@@ -56,7 +56,7 @@ public class Algebra2 {
         
         private final String visualizedName;
 
-        private Semantics(String visualizedName) {
+        private Policy(String visualizedName) {
             this.visualizedName = visualizedName;
         }
 
@@ -91,7 +91,7 @@ public class Algebra2 {
     private final boolean restrictTags;
     
     // Semantics for interpreting net tags
-    private final Semantics semantics;
+    private final Policy policy;
     
     // Do not allow single-net synchronization. Only sync from multiple nets are possible
     private final boolean avoidSingleNetSynch;
@@ -346,7 +346,7 @@ public class Algebra2 {
     public Algebra2(GspnPage[] nets, TagRewritingFunction[] relabelFn, 
                     Point2D[] deltaCoords, 
                     String[] syncSetPl, String[] syncSetTr,
-                    Semantics semantics,
+                    Policy policy,
                     boolean useBrokenEdges, 
                     boolean restrictTags,
                     boolean avoidSingleNetSynch,
@@ -357,7 +357,7 @@ public class Algebra2 {
         this.deltaCoords = deltaCoords;
         this.syncSetPl = syncSetPl;
         this.syncSetTr = syncSetTr;
-        this.semantics = semantics;
+        this.policy = policy;
         this.useBrokenEdges = useBrokenEdges;
         this.restrictTags = restrictTags;
         this.avoidSingleNetSynch = avoidSingleNetSynch;
@@ -414,7 +414,7 @@ public class Algebra2 {
     {
         ArrayList<SynchMultiset> syncMultisets = new ArrayList<>();
         
-        switch (semantics) {
+        switch (policy) {
             case BINARY_PARALLEL:
                 // For each tag, generate a single synchronization node
                 for (String tag : tagIds.keySet()) {
@@ -465,7 +465,7 @@ public class Algebra2 {
                     }
                     StructuralAlgorithm.ProgressObserver obs = (int step, int total, int s, int t) -> { };
                     try {
-                        if (semantics == Semantics.UNARY_CONJUGATED_MINIMAL)
+                        if (policy == Policy.UNARY_CONJUGATED_MINIMAL)
                             fg.compute(false, obs); // minimal semiflows 
                         else // all semiflows
                             fg.computeAllCanonicalSemiflows(false, obs);
@@ -922,7 +922,7 @@ public class Algebra2 {
             Node node = iterN.next();
             boolean remove = false;
             if (node instanceof Place) {
-                if (semantics==Semantics.BINARY_PARALLEL && !simpleNode2Orig.containsKey(node)) 
+                if (policy==Policy.BINARY_PARALLEL && !simpleNode2Orig.containsKey(node)) 
                     continue; // keep this node
                 for (int t=0; t<node.numTags(); t++) {
                     if (plcTag2Id.containsKey(node.getTag(t))) {
@@ -932,7 +932,7 @@ public class Algebra2 {
                 }
             }
             else if (node instanceof Transition) {
-                if (semantics==Semantics.BINARY_PARALLEL && !simpleNode2Orig.containsKey(node)) 
+                if (policy==Policy.BINARY_PARALLEL && !simpleNode2Orig.containsKey(node)) 
                     continue; // keep this node
                 for (int t=0; t<node.numTags(); t++) {
                     if (trnTag2Id.containsKey(node.getTag(t))) {
