@@ -1332,6 +1332,7 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
             while(states.hasNext()) {
                 p.println(states.next().ConvertToString());
             }
+            
             p.close();
             
         }
