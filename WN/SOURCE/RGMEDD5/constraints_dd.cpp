@@ -1094,18 +1094,27 @@ compute_variable_groups(const int_lin_constr_vec_t& B,
 
 //---------------------------------------------------------------------------------------
 
-void experiment_footprint_chaining(const std::vector<int>& net_to_mddLevel) {
+size_t experiment_footprint_chaining(const std::vector<int>& net_to_mddLevel) {
     int_lin_constr_vec_t B = get_int_constr_problem();
     reorder_basis(B, net_to_mddLevel);
     reduced_row_footprint_form(B);
 
+    const size_t spacing = 4;
+    for (int i=0; i<npl; i++) {
+        int p;
+        for (p=0; p<npl; p++)
+            if (net_to_mddLevel[p] == i)
+                break;
+        cout << setw(spacing) << tabp[p].place_name;
+    }
+    cout << endl;
     // cout << "\n\nB=\n";
-    // print_flow_basis(B);
+    print_flow_basis(B, spacing);
     // cout << "\n\nTB=\n";
     // print_flow_basis(TB);
-    // cout << endl;
+    cout << endl;
 
-    /*/ Find all the connected sets
+    // Find all the connected sets
     std::vector<int> varsets;
     int n_groups = compute_variable_groups(B, varsets);
 
@@ -1121,29 +1130,65 @@ void experiment_footprint_chaining(const std::vector<int>& net_to_mddLevel) {
     }
 
     // search if there is a separator for two chainings
+    size_t num_separator_vars = 0;
     for (size_t pl=0; pl<npl; pl++) {
         int lvl = net_to_mddLevel[pl];
         std::vector<int> varsets2;
         int n_groups2 = compute_variable_groups(B, varsets2, lvl);
         if (n_groups2 != n_groups) {
             cout << "Variable " << tabp[pl].place_name << " is a separator." << endl;
+            ++num_separator_vars;
         }
-    }*/
+    }
+    cout << "Selected variable order has " << n_groups << " separated groups." << endl;
+    cout << "Found " << num_separator_vars << " separator variables." << endl;
+    //*/
 
-    // // try random reorders
-    // std::vector<int> reorder = net_to_mddLevel;
-    // for (size_t i=0; i<100; i++) {
-    //     std::swap(reorder[genrand64_int63() % reorder.size()],
-    //               reorder[genrand64_int63() % reorder.size()]);
-    //     B = get_int_constr_problem();
-    //     reorder_basis(B, reorder);
-    //     reduced_row_footprint_form(B);
+    // try random reorders
+    for (size_t i=0; i<100; i++) {
+        std::vector<int> reorder = net_to_mddLevel;
+        size_t pos1 = genrand64_int63() % reorder.size();
+        size_t pos2 = genrand64_int63() % reorder.size();
+        std::swap(reorder[pos1], reorder[pos2]);
+        B = get_int_constr_problem();
+        reorder_basis(B, reorder);
+        reduced_row_footprint_form(B);
 
-    //     std::vector<int> varsets2;
-    //     int n_groups2 = compute_variable_groups(B, varsets);
+        std::vector<int> varsets2;
+        int n_groups_reordered = compute_variable_groups(B, varsets);
+        size_t num_separator_vars_reordered = 0;
+        for (size_t pl=0; pl<npl; pl++) {
+            int lvl = reorder[pl];
+            std::vector<int> varsets2;
+            int n_groups3 = compute_variable_groups(B, varsets2, lvl);
+            if (n_groups3 != n_groups_reordered) {
+                ++num_separator_vars_reordered;
+            }
+        }
 
-    //     // bool same = 
-    // }
+        if (num_separator_vars != num_separator_vars_reordered) {
+            cout << "\nSwap " << pos1 << " and " << pos2 << endl;
+            const size_t spacing = 4;
+            for (int i=0; i<npl; i++) {
+                int p;
+                for (p=0; p<npl; p++)
+                    if (reorder[p] == i)
+                        break;
+                cout << setw(spacing) << tabp[p].place_name;
+            }
+            cout << endl;
+            print_flow_basis(B, spacing);
+            cout << endl;
+            cout << "Reordered matrix has " << n_groups_reordered << " separated groups." << endl;
+            cout << "Reordered matrix has " << num_separator_vars_reordered 
+                 << " separator variables." << endl;
+
+            break;
+        }
+    }
+
+
+    return num_separator_vars;
 }
 
 //---------------------------------------------------------------------------------------

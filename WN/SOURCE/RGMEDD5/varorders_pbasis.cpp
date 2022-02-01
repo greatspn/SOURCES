@@ -353,13 +353,13 @@ void reduced_row_footprint_form_range(int_lin_constr_vec_t& B, ssize_t start_row
 
 //---------------------------------------------------------------------------------------
 
-void print_flow_basis(const int_lin_constr_vec_t& B) {
+void print_flow_basis(const int_lin_constr_vec_t& B, const size_t spacing) {
     for (auto&& row : B) {
         for (size_t i=0; i<row.coeffs.size(); i++) {
             if (row.coeffs.leading() <= i && i <= row.coeffs.trailing())
-                cout << setw(3) << row.coeffs[i];
+                cout << setw(spacing) << row.coeffs[i];
             else
-                cout << "  .";
+                cout << setw(spacing) << ".";
         }
         cout << endl;
     }
