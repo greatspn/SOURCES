@@ -1167,7 +1167,24 @@ size_t experiment_footprint_chaining(const std::vector<int>& net_to_mddLevel) {
         }
 
         if (num_separator_vars != num_separator_vars_reordered) {
-            cout << "\nSwap " << pos1 << " and " << pos2 << endl;
+            for (int id=0; id<n_groups; id++) {
+                cout << "NEW GROUP " << id << ": ";
+                for (size_t pl=0; pl<npl; pl++) {
+                    int lvl = net_to_mddLevel[pl];
+                    if (varsets[lvl] == id) {
+                        cout << tabp[pl].place_name << " ";
+                    }
+                }
+                cout << endl;
+            }
+            int var1, var2;
+            for (int jj=0; jj<net_to_mddLevel.size(); jj++) {
+                if (pos1 == net_to_mddLevel[jj])
+                    var1 = jj;
+                if (pos2 == net_to_mddLevel[jj])
+                    var2 = jj;
+            }
+            cout << "\nSwap " << tabp[var1].place_name << " and " << tabp[var2].place_name << endl;
             const size_t spacing = 4;
             for (int i=0; i<npl; i++) {
                 int p;
