@@ -1147,9 +1147,10 @@ size_t experiment_footprint_chaining(const std::vector<int>& net_to_mddLevel) {
     // try random reorders
     for (size_t i=0; i<100; i++) {
         std::vector<int> reorder = net_to_mddLevel;
-        size_t pos1 = genrand64_int63() % reorder.size();
-        size_t pos2 = genrand64_int63() % reorder.size();
-        std::swap(reorder[pos1], reorder[pos2]);
+        // select and swap two place variables
+        size_t swp_place1 = genrand64_int63() % reorder.size();
+        size_t swp_place2 = genrand64_int63() % reorder.size();
+        std::swap(reorder[swp_place1], reorder[swp_place2]);
         B = get_int_constr_problem();
         reorder_basis(B, reorder);
         reduced_row_footprint_form(B);
@@ -1177,14 +1178,7 @@ size_t experiment_footprint_chaining(const std::vector<int>& net_to_mddLevel) {
                 }
                 cout << endl;
             }
-            int var1, var2;
-            for (int jj=0; jj<net_to_mddLevel.size(); jj++) {
-                if (pos1 == net_to_mddLevel[jj])
-                    var1 = jj;
-                if (pos2 == net_to_mddLevel[jj])
-                    var2 = jj;
-            }
-            cout << "\nSwap " << tabp[var1].place_name << " and " << tabp[var2].place_name << endl;
+            cout << "\nSwap " << tabp[swp_place1].place_name << " and " << tabp[swp_place2].place_name << endl;
             const size_t spacing = 4;
             for (int i=0; i<npl; i++) {
                 int p;
