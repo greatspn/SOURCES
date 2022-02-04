@@ -26,7 +26,7 @@
 
 namespace FBGLPK{
 
-LPprob::LPprob(char* fileProb){
+LPprob::LPprob( const char* fileProb){
 
     try{
         ifstream in(fileProb, std::ifstream::in);

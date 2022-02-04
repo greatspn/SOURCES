@@ -28,7 +28,7 @@ normal:	$(name_file).cpp ./class.cpp  ./lsode.cpp
 	 $(C++) -I./  -o  $(name_file).solver  $(name_file).cpp  ./class.cpp  ./lsode.cpp  $(OPTION) $(OPTIONW)
 	 
 fluxb:	$(name_file).cpp ./class.cpp  ./lsode.cpp ./GLPKsolve.cpp ./general.cpp
-	 $(C++) -I./  -o  $(name_file).solver  $(name_file).cpp  ./class.cpp  ./lsode.cpp ./GLPKsolve.cpp ./general.cpp $(OPTION) $(OPTIONW) $(OPTIONGLPK)
+	 $(C++) -D CGLPK -I./  -o  $(name_file).solver  $(name_file).cpp  ./class.cpp  ./lsode.cpp ./GLPKsolve.cpp ./general.cpp $(OPTION) $(OPTIONW) $(OPTIONGLPK)
 	 	 
 doc:
 	doxygen  DoxyFile

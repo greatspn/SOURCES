@@ -150,7 +150,7 @@ else
 echo ${GREATSPN_BINDIR}/PN2ODE $NET_PATH $EXPORT_FORMAT $TRANS_POLICY $AUT $COMPRESS
 ${GREATSPN_BINDIR}/PN2ODE $NET_PATH $EXPORT_FORMAT $TRANS_POLICY $AUT $COMPRESS
 fi
-echo "PN2ODE soluion"
+echo "PN2ODE solution"
 if [ $? -ne 0 ]
 then
 	 echo "Solution failed in module PN2ODE"

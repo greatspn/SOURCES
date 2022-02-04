@@ -94,7 +94,7 @@ namespace FBGLPK{
         //! Empty Constructor.
         LPprob(){};
         //! Constructor by file. It takes as input a file describing the LP problem
-        LPprob(char * FileProb);
+        LPprob( const char * FileProb);
         //! Solve the LP problem
         void solve(){
             cout<<"\n\n-------------------------------------------------------"<<endl;
@@ -124,6 +124,12 @@ namespace FBGLPK{
                 cout<<"X"<<i<<":"<<Value[i]<<endl;
             }
         };
+        
+        void update_bound(int indexR, string TypeBound, double Lb, double Ub){
+            glp_set_col_bnds(lp, indexR, setTypeBound(TypeBound) , Lb, Ub);
+            cout<<"Bound of "<< indexR <<" is updated as: ["<<Lb<<";"<<Ub<<"]"<<endl;
+        };
+        
         //! Deconstruct
         ~LPprob() {
             if (sizeVet){

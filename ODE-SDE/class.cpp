@@ -17,8 +17,13 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
-
+ 
+#ifdef CGLPK
+    #ifndef __CGLPK_H__
+        #define __CGLPK_H__
+        #include "GLPKsolve.hpp"
+    #endif
+#endif
 #include "class.hpp"
 
 double epsilon=1e-20;
