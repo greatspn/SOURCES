@@ -35,17 +35,18 @@
 #include <stdexcept>
 #include <algorithm>
 #include "boost/variant.hpp"
+#include <boost/version.hpp>
 
 #ifdef USE_GMP
 #   include <boost/multiprecision/gmp.hpp>
-	namespace mp = boost::multiprecision;
+	namespace mprec = boost::multiprecision;
     template<int PREC>
-    using base_mpfloat = mp::number<mp::gmp_float<PREC>>;
+    using base_mpfloat = mprec::number<mprec::gmp_float<PREC>>;
 #else
 #   include <boost/multiprecision/cpp_dec_float.hpp>
-	namespace mp = boost::multiprecision;
+	namespace mprec = boost::multiprecision;
 	template<int PREC>
-	using base_mpfloat = mp::number<mp::cpp_dec_float<PREC>>;
+	using base_mpfloat = mprec::number<mprec::cpp_dec_float<PREC>>;
 #endif
 
 #include <boost/math/special_functions/gamma.hpp>
@@ -380,7 +381,7 @@ bool is_poly_x_explx_xh_R0a(const expr& ex, mpfloat& c, mpfloat& l, bool& has_ex
 	if (ex.type() == typeid(Function)) {
 		const Function& fex = boost::get<Function>(ex);
 		if (fex.op == '*') {
-			for (const expr opr : fex.operands) {
+			for (const expr& opr : fex.operands) {
 				bool matched = check_has_c(opr);
 				if (matched)
 					continue;
