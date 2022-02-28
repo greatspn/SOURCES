@@ -225,7 +225,7 @@ To cite the decision-diagram based model checker RGMEDD, please use this referen
 ```
 
 Other recent papers referencing GreatSPN:
-[(PDF)](https://iris.unito.it/retrieve/handle/2318/1764228/685729/A%20CTLstar%20model%20checker%20for%20Petri%20nets.pdf).
+[(link)](https://peerj.com/articles/cs-823/).
 
 ```
 @article{bib:greatspn:starMC,
