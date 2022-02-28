@@ -140,6 +140,15 @@ public:
     inline sparsevector() : maxIndex(0) {}
     inline sparsevector(size_t mi) : maxIndex(mi) {}
     inline sparsevector(size_t mi, storage_type&& s) : maxIndex(mi), spvec(s) {}
+    inline sparsevector(std::initializer_list<value_type> lst) : maxIndex(lst.size()) {
+        index_type i(0);
+        for (value_type v : lst) {
+            if (v != value_type(0))
+                insert_element(i, v);
+            ++i;
+        }
+
+    }
     inline ~sparsevector() {}
     inline sparsevector(const sparsevector&) = default;
     inline sparsevector(sparsevector&&) = default;

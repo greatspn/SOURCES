@@ -228,15 +228,17 @@ Other recent papers referencing GreatSPN:
 [(PDF)](https://iris.unito.it/retrieve/handle/2318/1764228/685729/A%20CTLstar%20model%20checker%20for%20Petri%20nets.pdf).
 
 ```
-@inproceedings{bib:ctlstar:greatspn,
-  author="Amparore, Elvio Gilberto and Donatelli, Susanna and Gall{\`a}, Francesco",
-  title="A CTL* Model Checker for Petri Nets",
-  booktitle="Application and Theory of Petri Nets and Concurrency",
-  year="2020",
-  publisher="Springer International Publishing",
-  address="Cham",
-  pages="403--413",
-  isbn="978-3-030-51831-8"
+@article{bib:greatspn:starMC,
+  author    = {Amparore, Elvio Gilberto and 
+               Donatelli, Susanna and 
+               Gall{\`a}, Francesco},
+  title     = {starMC: an automata based CTL* model checker},
+  journal   = {PeerJ Comput. Sci.},
+  volume    = {8},
+  pages     = {e823},
+  year      = {2022},
+  url       = {https://doi.org/10.7717/peerj-cs.823},
+  doi       = {10.7717/peerj-cs.823},
 }
 ```
 
@@ -245,6 +247,8 @@ Other recent papers referencing GreatSPN:
 
 GreatSPN partecipated to several Model Checking Context (MCC) editions:
 
+ * MCC 2021 Edition [(link)](https://mcc.lip6.fr/2021/results.php):
+    - 🥈 Silver medal in StateSpace category;
  * MCC 2020 Edition [(link)](https://mcc.lip6.fr/2020/results.php):
     - 🥈 Silver medal in StateSpace category;
     - 🥈 Silver medal in GlobalProperties category;

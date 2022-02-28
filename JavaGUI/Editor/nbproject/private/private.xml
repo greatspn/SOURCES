@@ -3,13 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/composition/MultiNetEditorPanel.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/semiflows/FlowsGenerator.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/net/NetPlayPanel.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/composition/TagBasedCompositionPage2.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/measures/ExcelXml.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/unfolding/Algebra2.java</file>
-            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/AppWindow.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/composition/MultiNetEditorPanel.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/unfolding/Algebra2.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/semiflows/FlowsGenerator.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/AlternateNameFunction.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/composition/TagBasedCompositionPage2.java</file>
+            <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/cli/NetLogoCommand.java</file>
         </group>
     </open-files>
 </project-private>

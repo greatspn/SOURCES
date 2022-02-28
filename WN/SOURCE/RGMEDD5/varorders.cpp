@@ -903,6 +903,21 @@ void determine_var_order(const var_order_selector& sel,
             experiment_footprint_chaining(net_to_mddLevel);
             cout << "\n--------------------------------------\n";
 
+
+            // int_lin_constr_vec_t B2{
+            //     int_lin_constr_t{ {  5,   0,  -3,   3,   0,   1,  -3 }, CI_EQ, 0 },
+            //     int_lin_constr_t{ { -1,  -5,  -1, -13,  -2,  -3,  -6 }, CI_EQ, 0 },
+            //     int_lin_constr_t{ {  3,   0,   3,   7,   0,   1,   5 }, CI_EQ, 0 },
+            //     int_lin_constr_t{ {  7,  -2,  -1,   4,   4,   2,   4 }, CI_EQ, 0 },
+            //     int_lin_constr_t{ { -2,   1,   2,  -4,  -4,  -2,  -4 }, CI_EQ, 0 },
+            //     int_lin_constr_t{ {  5,  -1,   1,  -2,   2,   0,   3 }, CI_EQ, 0 },
+            // };
+
+            // cout << "experiment" << endl;
+            // print_flow_basis(B2, 4);
+            // reduced_row_footprint_form(B2);
+            // print_flow_basis(B2, 4);
+
 #endif
 
         // }
