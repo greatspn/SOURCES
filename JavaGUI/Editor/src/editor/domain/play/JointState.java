@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 /** A state of a GSPN and optionally a state of a DTA.
@@ -338,34 +337,35 @@ public class JointState implements Serializable, AbstractMarking {
         Triple<Firable, ColorVarsBinding, Double> nextEvent = null;
         
         //-------------------------------------
-        // Select next immediate transition
-        if (isVanishing()) {
+        // Select next DTA inner edge randomly. 
+        if (isDtaMove()) {
+            // If the DTA is properly deterministic, there should be just one edge.
+            ArrayList<Tuple<Firable, ColorVarsBinding>> firables = new ArrayList<>();
+            for (DtaEdge edge : enabledDtaEdges)
+                firables.add(new Tuple<>(edge, null));
             
+            int firedIndex = StatisticalDistributions.randIntN(firables.size());
+            Tuple<Firable, ColorVarsBinding> tcvb = firables.get(firedIndex);
+            nextEvent = new Triple<>(tcvb.x, tcvb.y, -1.0);
+        }
+        //-------------------------------------
+        // Select next immediate transition
+        else if (isVanishing()) {
             // Use Gillespie algorithm over the immediate transition's weights
             ArrayList<Tuple<Transition, ColorVarsBinding>> firables = new ArrayList<>();
             ArrayList<Double> weights = new ArrayList<>();
             for (FirableWithBindings<Transition> fwb : enabledTransitions) {
                 if (fwb.firable.isFiringInstantaneous()) {
                     for (ColorVarsBinding binding : fwb.bindings) {
-                        firables.add(new Tuple<Transition, ColorVarsBinding>(fwb.firable, binding));
-                        weights.add(fwb.firable.evaluateWeight(gspnContext, this).getScalarReal());
+                        firables.add(new Tuple<>(fwb.firable, binding));
+                        double w = fwb.firable.evaluateWeight(gspnContext, this).getScalarReal();
+                        weights.add(w);
+                        //System.out.println("IMM "+fwb.firable.getUniqueName()+" w="+w);
                     }
                 }
             }
             Tuple<Transition, ColorVarsBinding> tcvb;
             tcvb = firables.get(gillespie(weights));            
-            nextEvent = new Triple<>(tcvb.x, tcvb.y, -1.0);
-        }
-        //-------------------------------------
-        // Select next DTA inner edge randomly. 
-        else if (isDtaMove()) {
-            // If the DTA is properly deterministic, there should be just one edge.
-            ArrayList<Tuple<Firable, ColorVarsBinding>> firables = new ArrayList<>();
-            for (DtaEdge edge : enabledDtaEdges)
-                firables.add(new Tuple<Firable, ColorVarsBinding>(edge, null));
-            
-            int firedIndex = StatisticalDistributions.randIntN(firables.size());
-            Tuple<Firable, ColorVarsBinding> tcvb = firables.get(firedIndex);
             nextEvent = new Triple<>(tcvb.x, tcvb.y, -1.0);
         }
         //-------------------------------------
@@ -376,7 +376,7 @@ public class JointState implements Serializable, AbstractMarking {
             for (FirableWithBindings<Transition> fwb : enabledTransitions) {
                 if (fwb.firable.isFiringInstantaneous()) {
                     for (ColorVarsBinding binding : fwb.bindings) {
-                        firables.add(new Tuple<Transition, ColorVarsBinding>(fwb.firable, binding));
+                        firables.add(new Tuple<>(fwb.firable, binding));
                     }
                 }
             }
@@ -432,7 +432,9 @@ public class JointState implements Serializable, AbstractMarking {
             reachedSel += weights.get(i);
             if (reachedSel > sel)
                 break;
+            i++;
         }
+        System.out.println("gillespie weightsSum="+weightsSum+" sel="+sel+" reachedSel="+reachedSel+" i="+i);
         return i;
     }
     
