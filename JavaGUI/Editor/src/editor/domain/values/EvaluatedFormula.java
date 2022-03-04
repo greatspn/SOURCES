@@ -156,7 +156,7 @@ public abstract class EvaluatedFormula {
             case OBJECT:
                 return ((ObjectValue)this).toStringFormat(lang);
             default:
-                throw new IllegalStateException("Type mismatch in toStringShort()");            
+                throw new IllegalStateException("Type mismatch in toStringShort() type="+getType());            
         }
     }
     
@@ -274,6 +274,7 @@ public abstract class EvaluatedFormula {
                     
                 case ExprLangParser.DIRAC_DELTA_FN:
                     throw new EvaluationException("Cannot evaluate a General Distribution descriptor.");
+                    
                 default:
                     throw new UnsupportedOperationException("Unsupported unary operator "+unaryFn);
             }

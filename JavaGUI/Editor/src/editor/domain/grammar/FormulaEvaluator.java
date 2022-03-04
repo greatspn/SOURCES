@@ -12,6 +12,7 @@ import editor.domain.Expr;
 import editor.domain.elements.ColorClass;
 import editor.domain.elements.Place;
 import editor.domain.elements.TemplateVariable;
+import editor.domain.play.StatisticalDistributions;
 import editor.domain.values.BooleanScalarValue;
 import editor.domain.values.MultiSet;
 import editor.domain.values.IntScalarValue;
@@ -379,6 +380,48 @@ public class FormulaEvaluator extends ExprLangBaseVisitor<EvaluatedFormula> {
                 }
             }
         }
+        if (context.drawStatisticalDistribSamples) {
+            switch (fn) {
+                case ExprLangParser.UNIFORM_FN: 
+                case ExprLangParser.RECT_FN: 
+                {
+                    // The bound is the [expr(0), expr(1)]
+                    context.drawStatisticalDistribSamples = false;
+                    EvaluatedFormula lower = visit(ctx.realExpr(0));
+                    EvaluatedFormula upper = visit(ctx.realExpr(1));
+                    context.drawStatisticalDistribSamples = true;
+                    double sample = StatisticalDistributions.uniformAB(lower.getScalarReal(), upper.getScalarReal());
+                    return RealScalarValue.makeNew(sample);
+                }
+                
+                case ExprLangParser.TRIANGULAR_FN: 
+                case ExprLangParser.PARETO_FN:
+                {
+                    throw new IllegalStateException("Unimplemented");
+                }
+                
+                case ExprLangParser.TRUNCATED_EXP_FN:
+                {
+                    // bound is [0, expr(1)]
+                    context.drawStatisticalDistribSamples = false;
+                    double rate = visit(ctx.realExpr(0)).getScalarReal();
+                    double bound = visit(ctx.realExpr(1)).getScalarReal();
+                    context.drawStatisticalDistribSamples = true;
+                    double sample = Math.min(bound, StatisticalDistributions.randomExpFiringTime(rate));
+                    return RealScalarValue.makeNew(sample);
+                }
+                
+                case ExprLangParser.ERLANG_FN:
+                {
+                    context.drawStatisticalDistribSamples = false;
+                    double rate = visit(ctx.realExpr(0)).getScalarReal();
+                    int stages = (int)Math.round(visit(ctx.realExpr(1)).getScalarReal());
+                    context.drawStatisticalDistribSamples = true;
+                    double sample = StatisticalDistributions.randomErlangFiringTime(rate, stages);
+                    return RealScalarValue.makeNew(sample);
+                }
+            }
+        }
         return visit(ctx.realExpr(0)).evalBinaryFn(fn, visit(ctx.realExpr(1)));
     }
 
@@ -406,6 +449,16 @@ public class FormulaEvaluator extends ExprLangBaseVisitor<EvaluatedFormula> {
                     EvaluatedFormula impulse = visit(ctx.realExpr());
                     context.evaluatePdfBounds = true;
                     return ListOfBounds.makeNew(impulse.getScalarRealOrIntAsReal());
+                }
+            }
+        }
+        if (context.drawStatisticalDistribSamples) {
+            switch (fn) {
+                case ExprLangParser.DIRAC_DELTA_FN: {
+                    context.drawStatisticalDistribSamples = false;
+                    EvaluatedFormula impulse = visit(ctx.realExpr());
+                    context.drawStatisticalDistribSamples = true;
+                    return impulse;
                 }
             }
         }

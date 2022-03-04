@@ -4,6 +4,7 @@
  */
 package editor.gui.net;
 
+import common.Triple;
 import common.Tuple;
 import editor.gui.SharedResourceProvider;
 import common.Util;
@@ -34,11 +35,13 @@ import javax.swing.Timer;
 import static editor.domain.play.GspnDtaPlayEngine.*;
 import editor.domain.elements.Transition;
 import editor.domain.grammar.ColorVarsBinding;
+import editor.domain.grammar.ParserContext;
 import editor.domain.play.ActivityState;
 import editor.domain.play.Firable;
 import editor.domain.play.FirableWithBindings;
 import editor.domain.play.JointFiring;
 import editor.domain.play.JointState;
+import editor.domain.play.StatisticalDistributions;
 import editor.domain.play.TimeElapse;
 import editor.domain.values.Bound;
 import editor.gui.ResourceFactory;
@@ -51,7 +54,6 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.Random;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.Icon;
@@ -88,7 +90,6 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
     private Timer firingTimer = null;
     private java.util.Date startAnimTime = null;
     int standAnimPhase = 0;
-    Random randomGenerator = new Random();
     
     private boolean isFiring() { return lastFiring != null; }
     
@@ -191,7 +192,7 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
                         chooseBindingAndFire(fwb, jListEnabledTransitions, evt.getX(), evt.getY());
                     }
                     else if (obj instanceof Firable)
-                        startNodeFiring((Firable)obj, null);
+                        startNodeFiring((Firable)obj, null, -1);
                 }
             }
         });
@@ -292,7 +293,7 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
                     && currentState().enabledDtaEdges.contains((DtaEdge) e)
                     && e.intersectRectangle(hitRect, net.viewProfile, true)) {
                     // Fire the active edge
-                    startNodeFiring((DtaEdge)e, null);
+                    startNodeFiring((DtaEdge)e, null, -1);
                     return;
                 }
 
@@ -494,12 +495,12 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
     private void setRandomTimeStep() {
         assert isTimedSimulation() && currentState().isTangible();
         int min = jSliderTimeStep.getMinimum(), max = jSliderTimeStep.getMaximum();
-        int sliderPos = min + randomGenerator.nextInt(max - min);
+        int sliderPos = min + StatisticalDistributions.randIntN(max - min);
         if (currentState().nextTimeBound > 0.0) {
             // Measure how probable is that the next time step is the boundary
             double r = currentState().avgTimeNextTransition / currentState().nextTimeBound;
             if (r > 3) { // Already quite probable
-                if (randomGenerator.nextDouble() > 1/r)
+                if (StatisticalDistributions.uniform01() > 1/r)
                     sliderPos = max;
             }
         }
@@ -572,10 +573,16 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
                         (semiAutoFiring && firables.size() == 1))
                     {
                         // Select the firing transition
-                        int firedIndex = randomGenerator.nextInt(firables.size());
+                        ParserContext gspnContext = new ParserContext(origGspn);
+                        Triple<Firable, ColorVarsBinding, Double> firedEvent;
+                        firedEvent = currentState().selectNextFirableEvent(gspnContext);
+                        if (firedEvent != null) {
+                            // Start a new event firing automatically
+                            startNodeFiring(firedEvent.x, firedEvent.y, firedEvent.z);
+                        }
+                        /*int firedIndex = randomGenerator.nextInt(firables.size());                        
+                        startNodeFiring(firables.get(firedIndex).x, firables.get(firedIndex).y);*/
                         
-                        // Start a new event firing automatically
-                        startNodeFiring(firables.get(firedIndex).x, firables.get(firedIndex).y);
                         return;
                     }
                 }
@@ -596,7 +603,7 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
         assert fwb.bindings.size() >= 1;
         if (fwb.bindings.size() == 1) {
             // Just one single choice, do not open the popup menu.
-            startNodeFiring(fwb.firable, fwb.bindings.iterator().next());
+            startNodeFiring(fwb.firable, fwb.bindings.iterator().next(), -1);
             return;
         }
         JPopupMenu popup = new JPopupMenu();
@@ -605,7 +612,7 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
             item.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    startNodeFiring(fwb.firable, bind);
+                    startNodeFiring(fwb.firable, bind, -1);
                 }
             });
             popup.add(item);
@@ -629,13 +636,13 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
 
     
     private final Color TEXTFIELD_TIMESTEP_ERROR_BACKGROUND = new Color(255, 240, 240);
-    private void startNodeFiring(Firable n, ColorVarsBinding binding) {
+    private void startNodeFiring(Firable n, ColorVarsBinding binding, double elapsedTime) {
         // Do not fire continuous transitions
         if (n.isFiringFlow())
             return;
         // Chech if everything is ok
-        double elapsedTime = -1;
-        if (isTimedSimulation()) {
+//        double elapsedTime = -1;
+        if (isTimedSimulation() && elapsedTime < 0) {
             if (currentState().isTangible()) {
                 // Check if this event has a specified firing instant
                 Tuple<Firable, ColorVarsBinding> trnBind = new Tuple<>(n, binding);

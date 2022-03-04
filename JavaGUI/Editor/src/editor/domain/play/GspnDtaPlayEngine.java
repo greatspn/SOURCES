@@ -803,7 +803,7 @@ public class GspnDtaPlayEngine {
                             state.avgTimeNextTransition += delay;
                     }
                     else if (fwb.firable.isExponential()) {
-                        double rate = fwb.firable.evaluateDelay(gspnContext, state, binding).getScalarReal();
+                        double rate = fwb.firable.evaluateDelay(gspnContext, state, binding).getScalarRealOrIntAsReal();
                         state.avgTimeNextTransition += 1.0 / rate;
                     }
                     else throw new UnsupportedOperationException("Missing suggested timing function.");

@@ -458,6 +458,18 @@ public class Transition extends Node implements Serializable, Firable {
             return RealScalarValue.ONE;
         return delayExpr.evaluate(context, new EvaluationArguments(marking, null, binding));
     }
+    public double evaluateGeneralFiringTime(ParserContext context, AbstractMarking marking, ColorVarsBinding binding) {
+        assert hasDelay() && isGeneral();
+        if (isGeneralFunctionVerbatim())
+            return 1.0;
+        context.drawStatisticalDistribSamples = true;
+        EvaluatedFormula ef = delayExpr.evaluate(context, new EvaluationArguments(marking, null, binding));
+        context.drawStatisticalDistribSamples = false;
+        System.out.println("evaluateGeneralFiringTime("+getUniqueName()+") = "+ef);
+        double firingTime = ef.getScalarRealOrIntAsReal();
+        return firingTime;
+    }
+    
     public EvaluatedFormula evaluatePriority(ParserContext context, AbstractMarking marking, ColorVarsBinding binding) {
         assert hasPriority();
         return priorityExpr.evaluate(context, new EvaluationArguments(marking, null, binding));

@@ -4,6 +4,7 @@
  */
 package editor.domain.play;
 
+import common.Triple;
 import common.Tuple;
 import editor.domain.elements.ClockVar;
 import editor.domain.elements.DtaEdge;
@@ -21,11 +22,13 @@ import editor.domain.values.MultiSet;
 import editor.domain.values.RealScalarValue;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 /** A state of a GSPN and optionally a state of a DTA.
@@ -296,4 +299,147 @@ public class JointState implements Serializable, AbstractMarking {
         return sb.toString();
     }
     
+    
+//    // Old code: selects the next event to fire randomly, ignoring transition weights, rates, etc...
+//    public Tuple<Firable, ColorVarsBinding> selectNextFirableEventRandomlyOLD(Random randomGenerator) {
+//        // Make the list of firable transitions
+//        ArrayList<Tuple<Firable, ColorVarsBinding>> firables 
+//                = new ArrayList<>();
+//        for (FirableWithBindings<Transition> fwb : enabledTransitions)
+//            if (fwb.firable.isFiringInstantaneous())
+//                for (ColorVarsBinding binding : fwb.bindings)
+//                    firables.add(new Tuple<Firable, ColorVarsBinding>(fwb.firable, binding));
+//        for (DtaEdge edge : enabledDtaEdges)
+//            firables.add(new Tuple<Firable, ColorVarsBinding>(edge, null));
+//        if (allowTimeElapse())
+//            firables.add(new Tuple<Firable, ColorVarsBinding>(TimeElapse.SINGLETON, null));
+//
+//        if (firables.isEmpty())
+//            return null; // nothing to fire
+//        
+//        // Select the firing transition
+//        int firedIndex = randomGenerator.nextInt(firables.size());
+//        return firables.get(firedIndex);
+//    }
+    
+//    // Generate a random sample from the negative exponential distribution
+//    private static double negExp(double mean, Random randomGenerator) {
+//        return -Math.log(randomGenerator.nextDouble()) * mean;
+//    }
+//    // Generate the firingTime of an exponential transition with a given rate
+//    private static double randomExpFiringTime(double rate, Random randomGenerator) {
+//        return negExp(1.0 / rate, randomGenerator);
+//    }
+    
+    
+    public Triple<Firable, ColorVarsBinding, Double> 
+        selectNextFirableEvent(ParserContext gspnContext) 
+    {
+        Triple<Firable, ColorVarsBinding, Double> nextEvent = null;
+        
+        //-------------------------------------
+        // Select next immediate transition
+        if (isVanishing()) {
+            
+            // Use Gillespie algorithm over the immediate transition's weights
+            ArrayList<Tuple<Transition, ColorVarsBinding>> firables = new ArrayList<>();
+            ArrayList<Double> weights = new ArrayList<>();
+            for (FirableWithBindings<Transition> fwb : enabledTransitions) {
+                if (fwb.firable.isFiringInstantaneous()) {
+                    for (ColorVarsBinding binding : fwb.bindings) {
+                        firables.add(new Tuple<Transition, ColorVarsBinding>(fwb.firable, binding));
+                        weights.add(fwb.firable.evaluateWeight(gspnContext, this).getScalarReal());
+                    }
+                }
+            }
+            Tuple<Transition, ColorVarsBinding> tcvb;
+            tcvb = firables.get(gillespie(weights));            
+            nextEvent = new Triple<>(tcvb.x, tcvb.y, -1.0);
+        }
+        //-------------------------------------
+        // Select next DTA inner edge randomly. 
+        else if (isDtaMove()) {
+            // If the DTA is properly deterministic, there should be just one edge.
+            ArrayList<Tuple<Firable, ColorVarsBinding>> firables = new ArrayList<>();
+            for (DtaEdge edge : enabledDtaEdges)
+                firables.add(new Tuple<Firable, ColorVarsBinding>(edge, null));
+            
+            int firedIndex = StatisticalDistributions.randIntN(firables.size());
+            Tuple<Firable, ColorVarsBinding> tcvb = firables.get(firedIndex);
+            nextEvent = new Triple<>(tcvb.x, tcvb.y, -1.0);
+        }
+        //-------------------------------------
+        // Select next (timed) event
+        else if (isTangible()) {
+            // Get the enabled non-immediate transitions
+            ArrayList<Tuple<Transition, ColorVarsBinding>> firables = new ArrayList<>();
+            for (FirableWithBindings<Transition> fwb : enabledTransitions) {
+                if (fwb.firable.isFiringInstantaneous()) {
+                    for (ColorVarsBinding binding : fwb.bindings) {
+                        firables.add(new Tuple<Transition, ColorVarsBinding>(fwb.firable, binding));
+                    }
+                }
+            }
+            if (!isTimedSimulation) {
+                // there are no rates nor times, select randomly
+                int firedIndex = StatisticalDistributions.randIntN(firables.size());
+                Tuple<Transition, ColorVarsBinding> tcvb = firables.get(firedIndex);
+                nextEvent = new Triple<>(tcvb.x, tcvb.y, -1.0);
+            }
+            else {
+                // Draw firing times from the transition distributions
+                int firedIndex = 0;
+                double minTime = Double.MAX_VALUE;
+                for (int i=0; i<firables.size(); i++) {
+                    Transition trn = (Transition)firables.get(i).x;
+                    double firingTime;
+                    if (trn.isExponential()) {
+                        double rate = trn.evaluateDelay(gspnContext, this, firables.get(i).y).getScalarReal();
+                        // Draw  new sample from the negative exponential distribution of the specified rate
+                        firingTime = StatisticalDistributions.randomExpFiringTime(rate);
+//                        System.out.println("randomExpFiringTime["+trn.getUniqueName()+", lambda="+rate+"] = "+firingTime);
+                    }
+                    else {
+                        firingTime = trn.evaluateGeneralFiringTime(gspnContext, this, firables.get(i).y);
+                        Double age = ageOfTransitions.get(firables.get(i));
+                        if (age != null)
+                            firingTime -= age;
+                    }
+                    if (firingTime < minTime) {
+                        firedIndex = i;
+                        minTime = firingTime;
+                    }
+                }
+                Tuple<Transition, ColorVarsBinding> tcvb = firables.get(firedIndex);
+                nextEvent = new Triple<>(tcvb.x, tcvb.y, minTime);
+            }
+        }
+        
+        return nextEvent;
+    }
+    
+    
+    private int gillespie(ArrayList<Double> weights) {
+        double weightsSum = 0;
+        for (double w : weights)
+            weightsSum += w;
+        
+        // select randomly between 0 and w
+        double sel = StatisticalDistributions.uniform01() * weightsSum;
+        double reachedSel = 0;
+        int i = 0;
+        while (i < weights.size() - 1) {
+            reachedSel += weights.get(i);
+            if (reachedSel > sel)
+                break;
+        }
+        return i;
+    }
+    
+    /*public static void main(String[] args) {
+        Random randGen = new Random();
+        for (int i=0; i<10; i++) {
+            System.out.println(randomExpFiringTime(10, randGen));
+        }
+    }*/
 }

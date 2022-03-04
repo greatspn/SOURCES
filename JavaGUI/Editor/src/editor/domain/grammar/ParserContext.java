@@ -79,6 +79,9 @@ public class ParserContext implements NodeNamespace {
     // Special mode for the evaluation of bounds of probability density functions
     public boolean evaluatePdfBounds = false;
     
+    // Special mode to draw samples from statistical distributions of the general transitions
+    public boolean drawStatisticalDistribSamples = false;
+    
     // ======= Fields used only by the FormulaEvaluator parser ======
     
     // Evaluation stack - avoids infinite evaluation depth
