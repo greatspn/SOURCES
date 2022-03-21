@@ -162,12 +162,15 @@ public abstract class BaseID extends Node implements Serializable {
     }
     
     protected LatexFormula getVisualizedLatex() {
+        float size = getGfxTextSize().getSize() * VARIABLE_LATEX_SIZE * getUnitToPixels();
+        if (shownFormula != null && shownFormula.getSize() != size)
+            shownFormula = null;
         if (shownFormula == null) {
             // Rebuild the shown latex formula
             StringBuilder sb = new StringBuilder();
             for (LabelDecor l : labelSequence)
                 sb.append(l.getVisualizedValue());
-            shownFormula = new LatexFormula(sb.toString(), VARIABLE_LATEX_SIZE * getUnitToPixels());
+            shownFormula = new LatexFormula(sb.toString(), size);
         }
         return shownFormula;
     }

@@ -20,31 +20,13 @@ public abstract class GraphicalElement extends SelectableObject implements XmlEx
     // Default label text scale
     private LabelDecor.Size textSize = LabelDecor.Size.NORMAL;    
 
-    @Override
-    public void exchangeXML(Element el, XmlExchangeDirection exDir) throws XmlExchangeException {
-        bindXMLAttrib(this, el, exDir, "text-size", "textSize", LabelDecor.Size.NORMAL);
-    }
-    
     public EditableValue getLabelTextSizeEditable() {
         return new EditableValue() {
-            @Override
-            public boolean isEditable() {
-                return true;
-            }
-            @Override
-            public Object getValue() {
-                return textSize;
-            }
-            @Override
-            public boolean isCurrentValueValid() {
-                return true;
-            }
-            @Override
-            public boolean isValueValid(ProjectData proj, ProjectPage page, Object value) {
-                return true;
-            }
-            @Override
-            public void setValue(ProjectData project, ProjectPage page, Object value) {
+            @Override public boolean isEditable() { return true; }
+            @Override public Object getValue() { return textSize; }
+            @Override public boolean isCurrentValueValid() { return true; }
+            @Override public boolean isValueValid(ProjectData proj, ProjectPage page, Object value) { return true; }
+            @Override public void setValue(ProjectData project, ProjectPage page, Object value) {
                 setGfxTextSize((LabelDecor.Size)value);
             }
         };
@@ -53,8 +35,13 @@ public abstract class GraphicalElement extends SelectableObject implements XmlEx
     public LabelDecor.Size getGfxTextSize() {
         return textSize;
     }
-
     public void setGfxTextSize(LabelDecor.Size textSize) {
         this.textSize = textSize;
+    }
+    
+    // write gfx properties to file
+    @Override
+    public void exchangeXML(Element el, XmlExchangeDirection exDir) throws XmlExchangeException {
+        bindXMLAttrib(this, el, exDir, "text-size", "textSize", LabelDecor.Size.NORMAL);
     }
 }
