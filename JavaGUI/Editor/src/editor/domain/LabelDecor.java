@@ -13,6 +13,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
+import javax.swing.Icon;
 import javax.swing.SwingConstants;
 import latex.LatexFormula;
 
@@ -23,10 +24,10 @@ import latex.LatexFormula;
 public abstract class LabelDecor extends Decor implements Serializable, EditableCell {
     
     //private String text;
-    private float logicSize;
-    private Point2D pos;     // position relative to the parent center    
-    private int horizAlign;   // SwingConstants .LEFT .RIGHT .CENTER
-    private int vertAlign;
+    private final float logicSize;
+    private final Point2D pos;     // position relative to the parent center    
+    private final int horizAlign;   // SwingConstants .LEFT .RIGHT .CENTER
+    private final int vertAlign;
     private double edgeK;    // position along the edge
 
     // precomputed string sizes, in logic units
@@ -43,7 +44,50 @@ public abstract class LabelDecor extends Decor implements Serializable, Editable
     public static final float DEFAULT_SMALL_TEXT_SIZE = 0.78f;
     public static final float DEFAULT_VERY_SMALL_TEXT_SIZE = 0.70f;
     
+//    public static enum Size {
+//        NORMAL(1.0f, "Normal"),
+//        LARGE(1.25f, "Large");
+//        
+//        float scale;
+//        String text;
+//        Size(float scale, String text) { this.scale=scale; this.text=text; }
+//        
+//        public float scaleSize(float size) {
+//            return size * scale;
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return text;
+//        }
+//    }
+    public static enum Size implements ListRenderable {
+        VERY_SMALL("Script size", 0.67f),
+        SMALL("Small", 0.78f),
+        NORMAL("Normal", 0.9f),
+        LARGE("Large", 1.0f),
+        VERY_LARGE("Very large", 1.2f),
+        HEADER1("Header 1", 1.5f),
+        HEADER2("Header 2", 1.75f),
+        HEADER3("Header 3", 2.0f);
+
+        private Size(String descr, float size) {
+            this.descr = descr;
+            this.size = size;
+        }        
+        private final String descr;
+        private final float size;
+
+        @Override public String getDescription() { return descr; }
+        @Override public Icon getIcon16() { return null; }
+        @Override public int getTextSize() { return -1; /* default*/ }
+        public float getSize() { return size; }
+    }
+    
     public abstract void getAttachPoint(Point2D pt, double K);
+    
+    // Get the text scale used to visualize the label
+    public abstract Size getTextSize();
 
     public LabelDecor(float logicSize, Point2D pos, int horizAlign, int vertAlign) {
         this.pos = new Point2D.Double(pos.getX(), pos.getY());
@@ -77,7 +121,7 @@ public abstract class LabelDecor extends Decor implements Serializable, Editable
     
     private void prepare() {
         String text = getVisualizedValue();
-        float latexSize = logicSize * (float)getUnitToPixels();
+        float latexSize = getTextSize().getSize() * logicSize * (float)getUnitToPixels();
         if (latexText == null || !text.equals(latexText.getLatex()) || latexText.getSize() != latexSize)
             latexText = new LatexFormula(text, latexSize);
     }

@@ -55,7 +55,7 @@ public class TextBox extends Node implements Serializable {
     private static final double imageScale = 1.0;
     
     // Various formatting/styling flags and parameters
-    private TextSize textSize = TextSize.NORMAL;
+//    private TextSize textSize = TextSize.NORMAL;
     private Color fillClr = null;
     private Color borderClr = Color.BLACK;
     private Color textClr = Color.BLACK;
@@ -71,28 +71,28 @@ public class TextBox extends Node implements Serializable {
     
     private static final double DEFAULT_WIDTH = 12, DEFAULT_HEIGHT = 8;
     
-    public static enum TextSize implements ListRenderable {
-        VERY_SMALL("Script size", 0.67f),
-        SMALL("Small", 0.78f),
-        NORMAL("Normal", 0.9f),
-        LARGE("Large", 1.0f),
-        VERY_LARGE("Very large", 1.2f),
-        HEADER1("Header 1", 1.5f),
-        HEADER2("Header 2", 1.75f),
-        HEADER3("Header 3", 2.0f);
-
-        private TextSize(String descr, float size) {
-            this.descr = descr;
-            this.size = size;
-        }        
-        private final String descr;
-        private final float size;
-
-        @Override public String getDescription() { return descr; }
-        @Override public Icon getIcon16() { return null; }
-        @Override public int getTextSize() { return -1; /* default*/ }
-        public float getSize() { return size; }
-    }
+//    public static enum TextSize implements ListRenderable {
+//        VERY_SMALL("Script size", 0.67f),
+//        SMALL("Small", 0.78f),
+//        NORMAL("Normal", 0.9f),
+//        LARGE("Large", 1.0f),
+//        VERY_LARGE("Very large", 1.2f),
+//        HEADER1("Header 1", 1.5f),
+//        HEADER2("Header 2", 1.75f),
+//        HEADER3("Header 3", 2.0f);
+//
+//        private TextSize(String descr, float size) {
+//            this.descr = descr;
+//            this.size = size;
+//        }        
+//        private final String descr;
+//        private final float size;
+//
+//        @Override public String getDescription() { return descr; }
+//        @Override public Icon getIcon16() { return null; }
+//        @Override public int getTextSize() { return -1; /* default*/ }
+//        public float getSize() { return size; }
+//    }
 
     public TextBox(String text, Point2D pos, String uniqueName) {
         initializeNode(pos, uniqueName);
@@ -221,6 +221,11 @@ public class TextBox extends Node implements Serializable {
     }
     
     private LatexFormula getLatexFormula() {
+        float size = getGfxTextSize().getSize() * (float)getUnitToPixels();
+        if (latexText != null) {
+            if (latexText.getSize() != size)
+                latexText = null;
+        }
         if (latexText == null) {
             String fmt = "\\text{";
             if (boldText)
@@ -233,7 +238,7 @@ public class TextBox extends Node implements Serializable {
                 fmt += "}";
             if (italicText)
                 fmt += "}";
-            latexText = new LatexFormula(fmt, textSize.getSize() * (float)getUnitToPixels());
+            latexText = new LatexFormula(fmt, size);
         }
         return latexText;
     }
@@ -255,28 +260,32 @@ public class TextBox extends Node implements Serializable {
     private double getRelativeTextX() {
         LatexFormula lf = getLatexFormula();
         double textWidth = getTextWidth();
-        if (horizPos == SwingConstants.LEFT)
-            return 0 + getLogicImageWidth();
-        else if (horizPos == SwingConstants.CENTER)
-            return (getWidth() - textWidth + getLogicImageWidth()) / 2.0f;
-        else
-            return getWidth() - textWidth;
+        switch (horizPos) {
+            case SwingConstants.LEFT:
+                return 0 + getLogicImageWidth();
+            case SwingConstants.CENTER:
+                return (getWidth() - textWidth + getLogicImageWidth()) / 2.0f;
+            default:
+                return getWidth() - textWidth;
+        }
     }
     
     private double getRelativeTextY() {
         LatexFormula lf = getLatexFormula();
-        if (vertPos == SwingConstants.TOP)
-            return 0;
-        else if (vertPos == SwingConstants.CENTER)
-            return (getHeight() - getTextHeight()) / 2.0f;
-        else
-            return getHeight() - getTextHeight();
+        switch (vertPos) {
+            case SwingConstants.TOP:
+                return 0;
+            case SwingConstants.CENTER:
+                return (getHeight() - getTextHeight()) / 2.0f;
+            default:
+                return getHeight() - getTextHeight();
+        }
     }
 
-    public void setTextSize(TextSize textSize) {
-        this.textSize = textSize;
-        latexText = null;
-    }
+//    public void setTextSize(TextSize textSize) {
+//        this.textSize = textSize;
+//        latexText = null;
+//    }
     
     public double getLogicImageWidth() {
         if (image.isNull())
@@ -290,12 +299,14 @@ public class TextBox extends Node implements Serializable {
     }
     private double getRelativeImageY() {
         LatexFormula lf = getLatexFormula();
-        if (vertPos == SwingConstants.TOP)
-            return 0;
-        else if (vertPos == SwingConstants.CENTER)
-            return (getHeight() - getLogicImageHeight()) / 2.0f;
-        else
-            return getHeight() - getLogicImageHeight();
+        switch (vertPos) {
+            case SwingConstants.TOP:
+                return 0;
+            case SwingConstants.CENTER:
+                return (getHeight() - getLogicImageHeight()) / 2.0f;
+            default:
+                return getHeight() - getLogicImageHeight();
+        }
     }
 
     @Override public Color getFillColor(ActivityState activity) { return fillClr; }
@@ -358,17 +369,17 @@ public class TextBox extends Node implements Serializable {
             @Override public boolean isCurrentValueValid() { return true; }
         };
     }
-    public EditableValue getTextSizeEditable() {
-        return new EditableValue() {
-            @Override public boolean isEditable() { return true; }
-            @Override public Object getValue() { return textSize; }
-            @Override public boolean isValueValid(ProjectData proj, ProjectPage page, Object value) { return true; }
-            @Override public void setValue(ProjectData project, ProjectPage page, Object value) {
-                setTextSize((TextSize)value);
-            }
-            @Override public boolean isCurrentValueValid() { return true; }
-        };
-    }
+//    public EditableValue getTextSizeEditable() {
+//        return new EditableValue() {
+//            @Override public boolean isEditable() { return true; }
+//            @Override public Object getValue() { return textSize; }
+//            @Override public boolean isValueValid(ProjectData proj, ProjectPage page, Object value) { return true; }
+//            @Override public void setValue(ProjectData project, ProjectPage page, Object value) {
+//                setTextSize((TextSize)value);
+//            }
+//            @Override public boolean isCurrentValueValid() { return true; }
+//        };
+//    }
     public EditableValue getHasShadowEditable() {
         return new EditableValue() {
             @Override public boolean isEditable() { return true; }
@@ -488,7 +499,7 @@ public class TextBox extends Node implements Serializable {
         super.exchangeXML(el, exDir); //To change body of generated methods, choose Tools | Templates.
         
         bindXMLContent(this, el, exDir, "text", "");
-        bindXMLAttrib(this, el, exDir, "text-size", "textSize", TextSize.NORMAL);
+//        bindXMLAttrib(this, el, exDir, "text-size", "textSize", TextSize.NORMAL);
         bindXMLAttrib(this, el, exDir, "fill-color", "fillClr", null, Color.class);
         bindXMLAttrib(this, el, exDir, "border-color", "borderClr", null, Color.class);
         bindXMLAttrib(this, el, exDir, "text-color", "textClr", null, Color.class);

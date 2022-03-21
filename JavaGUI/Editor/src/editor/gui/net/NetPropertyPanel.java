@@ -14,6 +14,7 @@ import editor.domain.Edge;
 import editor.domain.EdgeAttachmentModel;
 import editor.domain.EditableMultiValue;
 import editor.domain.EditableValue;
+import editor.domain.LabelDecor;
 import editor.domain.elements.GspnEdge;
 import editor.domain.NetPage;
 import editor.domain.ProjectPage;
@@ -107,11 +108,11 @@ public class NetPropertyPanel extends javax.swing.JPanel {
         comboBox_altNameFn.setRenderer(listRenderer);
         comboBox_altNameFn.setUpdating(false);
         
-        comboBox_textSize.setUpdating(true);
-        comboBox_textSize.setModel(new DefaultComboBoxModel<>(TextBox.TextSize.values()));
-        comboBox_textSize.setRenderer(listRenderer);
-        comboBox_textSize.setUpdating(false);
-        
+//        comboBox_textSize.setUpdating(true);
+//        comboBox_textSize.setModel(new DefaultComboBoxModel<>(TextBox.TextSize.values()));
+//        comboBox_textSize.setRenderer(listRenderer);
+//        comboBox_textSize.setUpdating(false);
+//        
         comboBox_textBoxShape.setUpdating(true);
         comboBox_textBoxShape.setModel(new DefaultComboBoxModel<>(Node.ShapeType.values()));
         comboBox_textBoxShape.setRenderer(listRenderer);
@@ -119,6 +120,11 @@ public class NetPropertyPanel extends javax.swing.JPanel {
         
         comboBox_colorDomain.setRenderer(listRenderer);
         comboBox_colorVarDomain.setRenderer(listRenderer);
+        
+        comboBox_latexTextSize.setUpdating(false);
+        comboBox_latexTextSize.setModel(new DefaultComboBoxModel<>(LabelDecor.Size.values()));
+        comboBox_latexTextSize.setRenderer(listRenderer);
+        comboBox_latexTextSize.setUpdating(true);
         
         if (Util.isOSX()) {
             Dimension nodeRotComboSize = comboBox_NodeRotation.getPreferredSize();
@@ -268,6 +274,8 @@ public class NetPropertyPanel extends javax.swing.JPanel {
         DefaultComboBoxModel<String> simpleColorClassModel = new DefaultComboBoxModel<>();
         
         Set<String> uniqueKroneckerPartitions = new TreeSet<>();
+        
+        EditableMultiValue emvLatexTextSize = new EditableMultiValue(indeterminate);
 ;
         for (Node n : page.nodes) {
             if (n instanceof ColorClass) {
@@ -292,6 +300,7 @@ public class NetPropertyPanel extends javax.swing.JPanel {
             emvEdgeAttachment.add(n.getEdgeAttachmentEditable());
             emvAltNameFn.add(n.getAlternateNameFunctionEditable());
             emvSuperPosTagsFn.add(n.getSuperPosTagsLabelEditable());
+            emvLatexTextSize.add(n.getLabelTextSizeEditable());
             if (n instanceof ColorClass.DomainHolder) { // places, constantIDs, ...
                 selObjWithColorDomain++;
                 emvColorDom.add(((ColorClass.DomainHolder)n).getColorDomainEditable());
@@ -342,7 +351,7 @@ public class NetPropertyPanel extends javax.swing.JPanel {
                 emvTextBoxVertCenter.add(((TextBox)n).getVertPosEditable(SwingConstants.CENTER));
                 emvTextBoxVertBottom.add(((TextBox)n).getVertPosEditable(SwingConstants.BOTTOM));
                 emvTextBoxTextColor.add(((TextBox)n).getTextColorEditable());
-                emvTextBoxTextSize.add(((TextBox)n).getTextSizeEditable());
+//                emvTextBoxTextSize.add(((TextBox)n).getTextSizeEditable());
                 emvTextBoxFillColor.add(((TextBox)n).getFillColorEditable());
                 emvTextBoxBorderColor.add(((TextBox)n).getBorderColorEditable());
                 emvTextBoxShadow.add(((TextBox)n).getHasShadowEditable());
@@ -391,6 +400,7 @@ public class NetPropertyPanel extends javax.swing.JPanel {
                 continue;
             selEdgesCount++;
             emvBrokenEdge.add(e.getBrokenFlagEditable());
+            emvLatexTextSize.add(e.getLabelTextSizeEditable());
             if (e instanceof GspnEdge) {
                 selGspnArcsCount++;
                 emvArcMult.add(((GspnEdge)e).getMultiplicityEditable());
@@ -417,6 +427,7 @@ public class NetPropertyPanel extends javax.swing.JPanel {
         jPanelColorClasses.setVisible(canBeUsed && selColorClasses > 0);
         jPanelColorVars.setVisible(canBeUsed && selColorVars > 0);
         jPanelColorDomain.setVisible(canBeUsed && selObjWithColorDomain > 0);
+        jPanelGraphicalProperties.setVisible(canBeUsed && (selNodesCount + selEdgesCount) > 0);
         
         // Unique ID
         boolean hasUniqueID = (selNodesCount == 1) && !(singleSelNode instanceof TextBox); // TODO: should be a hasUniqueName method.
@@ -480,7 +491,7 @@ public class NetPropertyPanel extends javax.swing.JPanel {
         toggle_textVertCenter.setEditableProxy(pf, page, (selTextBoxes == selNodesCount), emvTextBoxVertCenter);
         toggle_textVertBottom.setEditableProxy(pf, page, (selTextBoxes == selNodesCount), emvTextBoxVertBottom);
         color_textBoxText.setEditableProxy((selTextBoxes == selNodesCount), emvTextBoxTextColor);
-        comboBox_textSize.setEditableProxy(pf, page, (selTextBoxes == selNodesCount), emvTextBoxTextSize);
+//        comboBox_textSize.setEditableProxy(pf, page, (selTextBoxes == selNodesCount), emvTextBoxTextSize);
         color_textBoxFill.setEditableProxy((selTextBoxes == selNodesCount), emvTextBoxFillColor);
         color_textBoxBorder.setEditableProxy((selTextBoxes == selNodesCount), emvTextBoxBorderColor);
         checkBox_textBoxShadow.setEditableProxy(pf, page, (selTextBoxes == selNodesCount), emvTextBoxShadow);
@@ -525,6 +536,9 @@ public class NetPropertyPanel extends javax.swing.JPanel {
         checkBox_ResetClockEdge.setEditableProxy(pf, page, (selEdgesCount==selDtaEdgesCount), emvResetClockEdge);
         textField_ActSet.setEditableProxy(pf, page, (selEdgesCount==selDtaEdgesCount), emvActSetEdge);
         textField_ClockGuard.setEditableProxy(pf, page, (selEdgesCount==selDtaEdgesCount), emvClockGuardEdge);
+        
+        // Graphical properties of both nodes & edges
+        comboBox_latexTextSize.setEditableProxy(pf, page, true, emvLatexTextSize);
     }
     
     /**
@@ -546,13 +560,13 @@ public class NetPropertyPanel extends javax.swing.JPanel {
         jLabel_NodeRotation = new javax.swing.JLabel();
         comboBox_NodeRotation = new editor.gui.net.ComboBoxForEditable();
         jLabel_altNameFn = new javax.swing.JLabel();
-        comboBox_altNameFn = new editor.gui.net.ComboBoxForEditable<AlternateNameFunction>();
+        comboBox_altNameFn = new editor.gui.net.ComboBoxForEditable<>();
         jPanel4 = new javax.swing.JPanel();
         jLabel_NodeWidth = new javax.swing.JLabel();
         jLabel_NodeHeight = new javax.swing.JLabel();
         textField_NodeWidth = new editor.gui.net.TextFieldForEditable();
         textField_NodeHeight = new editor.gui.net.TextFieldForEditable();
-        comboBox_EdgeAttachment = new editor.gui.net.ComboBoxForEditable<EdgeAttachmentModel>();
+        comboBox_EdgeAttachment = new editor.gui.net.ComboBoxForEditable<>();
         jPanel6 = new javax.swing.JPanel();
         textField_alternateName = new editor.gui.net.TextFieldForEditable();
         jLabel_altName = new javax.swing.JLabel();
@@ -563,12 +577,12 @@ public class NetPropertyPanel extends javax.swing.JPanel {
         jLabel_InitMarking = new javax.swing.JLabel();
         textField_initMarking = new editor.gui.net.TextFieldForEditable();
         jLabel_placeType = new javax.swing.JLabel();
-        comboBox_placeType = new editor.gui.net.ComboBoxForEditable<TokenType>();
+        comboBox_placeType = new editor.gui.net.ComboBoxForEditable<>();
         jLabel_placePartition = new javax.swing.JLabel();
-        comboBox_placePartition = new editor.gui.net.ComboBoxForEditable<String>();
+        comboBox_placePartition = new editor.gui.net.ComboBoxForEditable<>();
         jPanelTransitionProperties = new javax.swing.JPanel();
         jLabel_TransitionType = new javax.swing.JLabel();
-        comboBox_TransitionType = new editor.gui.net.ComboBoxForEditable<Transition.Type>();
+        comboBox_TransitionType = new editor.gui.net.ComboBoxForEditable<>();
         jLabel_TransitionPriority = new javax.swing.JLabel();
         textField_TransitionPriority = new editor.gui.net.TextFieldForEditable();
         jLabel_TransitionDelay = new javax.swing.JLabel();
@@ -586,13 +600,13 @@ public class NetPropertyPanel extends javax.swing.JPanel {
         jLabel_ArcMultiplicity = new javax.swing.JLabel();
         jPanelTemplateVariables = new javax.swing.JPanel();
         jLabelTemplateVarType = new javax.swing.JLabel();
-        comboBox_TemplateVarType = new editor.gui.net.ComboBoxForEditable<TemplateVariable.Type>();
+        comboBox_TemplateVarType = new editor.gui.net.ComboBoxForEditable<>();
         buttonTemplatesToConstants = new javax.swing.JButton();
         jPanel_FillVert = new javax.swing.JPanel();
         jPanelDtaLocationProperty = new javax.swing.JPanel();
         checkBox_InitialLocation = new editor.gui.net.CheckBoxForEditable();
         jLabel_FinalDtaLocation = new javax.swing.JLabel();
-        comboBox_FinalLocation = new editor.gui.net.ComboBoxForEditable<DtaLocation.FinalType>();
+        comboBox_FinalLocation = new editor.gui.net.ComboBoxForEditable<>();
         jLabel_StatePropExpr = new javax.swing.JLabel();
         textField_StatePropExpr = new editor.gui.net.TextFieldForEditable();
         textField_varFlowExpr = new editor.gui.net.TextFieldForEditable();
@@ -607,7 +621,7 @@ public class NetPropertyPanel extends javax.swing.JPanel {
         jPanelConstants = new javax.swing.JPanel();
         jLabel_ConstValue = new javax.swing.JLabel();
         textField_ConstValue = new editor.gui.net.TextFieldForEditable();
-        comboBox_ConstType = new editor.gui.net.ComboBoxForEditable<ConstantID.ConstType>();
+        comboBox_ConstType = new editor.gui.net.ComboBoxForEditable<>();
         buttonConstantsToTemplates = new javax.swing.JButton();
         jPanelTextBoxes = new javax.swing.JPanel();
         jLabel_textBoxText = new javax.swing.JLabel();
@@ -621,7 +635,6 @@ public class NetPropertyPanel extends javax.swing.JPanel {
         toggle_textVertBottom = new editor.gui.net.ToggleButtonForEditable();
         jPanel2 = new javax.swing.JPanel();
         color_textBoxText = new editor.gui.net.ColorPickerForEditable();
-        comboBox_textSize = new editor.gui.net.ComboBoxForEditable<TextBox.TextSize>();
         toggle_textBold = new editor.gui.net.ToggleButtonForEditable();
         toggle_textItalic = new editor.gui.net.ToggleButtonForEditable();
         jPanel5 = new javax.swing.JPanel();
@@ -630,7 +643,7 @@ public class NetPropertyPanel extends javax.swing.JPanel {
         checkBox_textBoxShadow = new editor.gui.net.CheckBoxForEditable();
         jLabel_textBoxBorder = new javax.swing.JLabel();
         color_textBoxBorder = new editor.gui.net.ColorPickerForEditable();
-        comboBox_textBoxShape = new editor.gui.net.ComboBoxForEditable<Node.ShapeType>();
+        comboBox_textBoxShape = new editor.gui.net.ComboBoxForEditable<>();
         jPanel7 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         checkBox_textBoxLocked = new editor.gui.net.CheckBoxForEditable();
@@ -643,10 +656,13 @@ public class NetPropertyPanel extends javax.swing.JPanel {
         textField_colorClassDef = new editor.gui.net.TextFieldForEditable();
         jPanelColorVars = new javax.swing.JPanel();
         jLabel_colorVarDomain = new javax.swing.JLabel();
-        comboBox_colorVarDomain = new editor.gui.net.ComboBoxForEditable<String>();
+        comboBox_colorVarDomain = new editor.gui.net.ComboBoxForEditable<>();
         jPanelColorDomain = new javax.swing.JPanel();
-        comboBox_colorDomain = new editor.gui.net.ComboBoxForEditable<String>();
+        comboBox_colorDomain = new editor.gui.net.ComboBoxForEditable<>();
         jLabel_colorDomain = new javax.swing.JLabel();
+        jPanelGraphicalProperties = new javax.swing.JPanel();
+        comboBox_latexTextSize = new editor.gui.net.ComboBoxForEditable<>();
+        jLabel_latexTextSize = new javax.swing.JLabel();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -1446,7 +1462,9 @@ public class NetPropertyPanel extends javax.swing.JPanel {
                 toggle_textHorizLeftActionPerformed(evt);
             }
         });
-        jPanel_textBoxHorizVerts.add(toggle_textHorizLeft, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        jPanel_textBoxHorizVerts.add(toggle_textHorizLeft, gridBagConstraints);
 
         toggle_textHorizCenter.setIcon(resourceFactory.getTextAlignCenter16());
         toggle_textHorizCenter.setRadioToggle(true);
@@ -1512,23 +1530,9 @@ public class NetPropertyPanel extends javax.swing.JPanel {
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
-        jPanel2.add(color_textBoxText, gridBagConstraints);
-
-        comboBox_textSize.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                comboBox_textSizeActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 0.1;
-        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
-        jPanel2.add(comboBox_textSize, gridBagConstraints);
+        gridBagConstraints.gridy = 1;
+        jPanel2.add(color_textBoxText, gridBagConstraints);
 
         toggle_textBold.setIcon(resourceFactory.getTextBold16());
         toggle_textBold.addActionListener(new java.awt.event.ActionListener() {
@@ -1537,9 +1541,8 @@ public class NetPropertyPanel extends javax.swing.JPanel {
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 0);
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
         jPanel2.add(toggle_textBold, gridBagConstraints);
 
         toggle_textItalic.setIcon(resourceFactory.getTextItalic16());
@@ -1549,17 +1552,14 @@ public class NetPropertyPanel extends javax.swing.JPanel {
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 4;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 3);
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
         jPanel2.add(toggle_textItalic, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 0.1;
         jPanelTextBoxes.add(jPanel2, gridBagConstraints);
 
         jPanel5.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(102, 102, 102)));
@@ -1783,6 +1783,38 @@ public class NetPropertyPanel extends javax.swing.JPanel {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 0.1;
         add(jPanelColorDomain, gridBagConstraints);
+
+        jPanelGraphicalProperties.setBorder(javax.swing.BorderFactory.createTitledBorder("Graphical Properties"));
+        jPanelGraphicalProperties.setLayout(new java.awt.GridBagLayout());
+
+        comboBox_latexTextSize.setSynchLabel(jLabel_colorDomain);
+        comboBox_latexTextSize.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboBox_latexTextSizeActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.1;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
+        jPanelGraphicalProperties.add(comboBox_latexTextSize, gridBagConstraints);
+
+        jLabel_latexTextSize.setText("Text Size:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 3);
+        jPanelGraphicalProperties.add(jLabel_latexTextSize, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.1;
+        add(jPanelGraphicalProperties, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
             
@@ -2003,10 +2035,6 @@ public class NetPropertyPanel extends javax.swing.JPanel {
         executeComponentAction("change text color", evt);
     }//GEN-LAST:event_color_textBoxTextActionPerformed
 
-    private void comboBox_textSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBox_textSizeActionPerformed
-        executeComponentAction("change text size", evt);
-    }//GEN-LAST:event_comboBox_textSizeActionPerformed
-
     private void color_textBoxFillActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_color_textBoxFillActionPerformed
         executeComponentAction("change text box fill color", evt);
     }//GEN-LAST:event_color_textBoxFillActionPerformed
@@ -2124,6 +2152,10 @@ public class NetPropertyPanel extends javax.swing.JPanel {
         executeComponentAction("change flow of variables.", evt);
     }//GEN-LAST:event_textField_varFlowExprActionPerformed
 
+    private void comboBox_latexTextSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBox_latexTextSizeActionPerformed
+        executeComponentAction("change label text size of selected elements.", evt);
+    }//GEN-LAST:event_comboBox_latexTextSizeActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonConstantsToTemplates;
     private javax.swing.JButton buttonTemplatesToConstants;
@@ -2147,10 +2179,10 @@ public class NetPropertyPanel extends javax.swing.JPanel {
     private editor.gui.net.ComboBoxForEditable<AlternateNameFunction> comboBox_altNameFn;
     private editor.gui.net.ComboBoxForEditable<String> comboBox_colorDomain;
     private editor.gui.net.ComboBoxForEditable<String> comboBox_colorVarDomain;
+    private editor.gui.net.ComboBoxForEditable<LabelDecor.Size> comboBox_latexTextSize;
     private editor.gui.net.ComboBoxForEditable<String> comboBox_placePartition;
     private editor.gui.net.ComboBoxForEditable<TokenType> comboBox_placeType;
     private editor.gui.net.ComboBoxForEditable<Node.ShapeType> comboBox_textBoxShape;
-    private editor.gui.net.ComboBoxForEditable<TextBox.TextSize> comboBox_textSize;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabelTemplateVarType;
@@ -2177,6 +2209,7 @@ public class NetPropertyPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel_colorClassDef;
     private javax.swing.JLabel jLabel_colorDomain;
     private javax.swing.JLabel jLabel_colorVarDomain;
+    private javax.swing.JLabel jLabel_latexTextSize;
     private javax.swing.JLabel jLabel_placePartition;
     private javax.swing.JLabel jLabel_placeType;
     private javax.swing.JLabel jLabel_superPos;
@@ -2198,6 +2231,7 @@ public class NetPropertyPanel extends javax.swing.JPanel {
     private javax.swing.JPanel jPanelDtaEdgeProperty;
     private javax.swing.JPanel jPanelDtaLocationProperty;
     private javax.swing.JPanel jPanelEdgeProperties;
+    private javax.swing.JPanel jPanelGraphicalProperties;
     private javax.swing.JPanel jPanelGspnArcProperties;
     private javax.swing.JPanel jPanelNodeProperties;
     private javax.swing.JPanel jPanelPlaceProperties;

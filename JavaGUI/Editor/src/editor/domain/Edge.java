@@ -41,7 +41,7 @@ import org.w3c.dom.NodeList;
  *
  * @author Elvio
  */
-public abstract class Edge extends SelectableObject 
+public abstract class Edge extends GraphicalElement 
         implements Serializable, DecorHolder, PlaceableObject, ResourceHolder, XmlExchangeable
 {
     
@@ -75,8 +75,7 @@ public abstract class Edge extends SelectableObject
     public abstract LineType getLineType();
     public abstract boolean canConnectTo(Node node, EndPoint endPt);
     public abstract boolean canBeBroken();
-    
-    
+        
     //---- Precomputed edge representation ----------------
     public transient double tailK = -1, headK = -1;
     transient ArrayList<Double> edgeK;
@@ -1578,6 +1577,7 @@ public abstract class Edge extends SelectableObject
     // Read write edge data in PNPRO format
     @Override
     public void exchangeXML(Element el, XmlExchangeDirection exDir) throws XmlExchangeException {
+        super.exchangeXML(el, exDir);
         // Exchange head & tail nodes
         if (exDir.FieldsToXml()) {
             if (getHeadNode() != null)

@@ -138,6 +138,7 @@ public class DtaLocation extends Node implements Serializable {
         }
         @Override public boolean isEditable() { return true; }
         @Override public boolean editAsMultiline() { return false; }
+        @Override public Size getTextSize() { return getGfxTextSize(); }
     }
     
     class VarFlowLabel extends NodeLabelDecor {
@@ -173,6 +174,7 @@ public class DtaLocation extends Node implements Serializable {
         }
         @Override public boolean isEditable() { return true; }
         @Override public boolean editAsMultiline() { return false; }
+        @Override public Size getTextSize() { return getGfxTextSize(); }
     }
     
     public class InitialArrowDecor extends Decor {

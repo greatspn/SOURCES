@@ -79,6 +79,8 @@ public abstract class BaseID extends Node implements Serializable {
         public double getHeight() {
             return BaseID.this.getHeight();
         }
+        
+        @Override public Size getTextSize() { return getGfxTextSize(); }
     }
     
     class ConstNameLabel extends Node.UniqueNameLabel {
@@ -142,6 +144,7 @@ public abstract class BaseID extends Node implements Serializable {
         }
         @Override public final boolean isEditable() { return true; }
         @Override public boolean editAsMultiline() { return false; }
+        @Override public Size getTextSize() { return getGfxTextSize(); }
       }
     
     

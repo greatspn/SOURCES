@@ -45,7 +45,7 @@ import editor.domain.semiflows.PTFlows;
  *
  * @author Elvio
  */
-public abstract class Node extends SelectableObject 
+public abstract class Node extends GraphicalElement 
         implements Serializable, DecorHolder, PlaceableObject, ResourceHolder, XmlExchangeable//, NodeGroup
 {
     // Position
@@ -288,6 +288,7 @@ public abstract class Node extends SelectableObject
         @Override public boolean isEditable() { return true; }
         @Override public boolean isCurrentValueValid() { return true; }
         @Override public boolean editAsMultiline() { return false; }
+        @Override public Size getTextSize() { return getGfxTextSize(); }
 
         @Override 
         public boolean isVisible(ViewProfile vp) {
@@ -359,6 +360,7 @@ public abstract class Node extends SelectableObject
         @Override public boolean isCurrentValueValid() { return true; }
         @Override public boolean isEditable() { return true; }
         @Override public boolean editAsMultiline() { return false; }
+        @Override public Size getTextSize() { return getGfxTextSize(); }
 
         @Override
         public boolean isVisible(ViewProfile vp) { 
@@ -1321,6 +1323,7 @@ public abstract class Node extends SelectableObject
     // Red/Write PNPRO data
     @Override
     public void exchangeXML(Element el, XmlExchangeDirection exDir) throws XmlExchangeException {
+        super.exchangeXML(el, exDir);
         bindXMLAttrib(this, el, exDir, "name", "@UniqueName", null, String.class);
         // Compatibility - convert field name
         if (exDir.XmlToFields() && 
