@@ -3,6 +3,7 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+<<<<<<< HEAD
             <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/elements/Transition.java</file>
             <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/play/GspnDtaPlayEngine.java</file>
             <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/play/StatisticalDistributions.java</file>
@@ -10,6 +11,10 @@
             <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/unfolding/Algebra2.java</file>
             <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/grammar/FormulaEvaluator.java</file>
             <file>file:/Users/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/net/NetPlayPanel.java</file>
+=======
+            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/net/NetPlayPanel.java</file>
+            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/play/JointState.java</file>
+>>>>>>> c8360b488120e222590e9476941bddf18f087f69
         </group>
     </open-files>
 </project-private>
