@@ -77,8 +77,9 @@ public abstract class LabelDecor extends Decor implements Serializable, Editable
     
     private void prepare() {
         String text = getVisualizedValue();
-        if (latexText == null || !text.equals(latexText.getLatex()))
-            latexText = new LatexFormula(text, logicSize * (float)getUnitToPixels());
+        float latexSize = logicSize * (float)getUnitToPixels();
+        if (latexText == null || !text.equals(latexText.getLatex()) || latexText.getSize() != latexSize)
+            latexText = new LatexFormula(text, latexSize);
     }
     
     public LatexFormula getLatexFormula() {
