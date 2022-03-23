@@ -116,7 +116,7 @@ public class ConstantID extends BaseID implements Serializable, ColorClass.Domai
         this.type = toConstType(tv.getType());
         String expr = tv.getLastBindingExpr().getExpr();
         this.valueExpr.setExpr(expr.length() == 0 ? "0" : expr);
-        this.setGfxTextSize(tv.getGfxTextSize());
+        this.copyGfxPropertiesFrom(tv);
     }
 
     @Override

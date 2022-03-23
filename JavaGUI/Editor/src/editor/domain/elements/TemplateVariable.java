@@ -151,7 +151,7 @@ public class TemplateVariable extends BaseID implements Serializable {
         initializeNode(new Point2D.Double(c.getX(), c.getY()), c.getUniqueName());
         this.type = fromConstType(c.getConstType());
         this.lastBinding.setExpr(c.getConstantExpr().getExpr());
-        this.setGfxTextSize(c.getGfxTextSize());
+        this.copyGfxPropertiesFrom(c);
     }
 
     public static ConstantID.ConstType toConstType(Type type) {

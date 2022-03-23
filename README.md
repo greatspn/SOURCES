@@ -101,12 +101,13 @@ If not, modify the `/etc/ld.so.conf` and/or the environmental variable `LD_LIBRA
 [OGDF](https://ogdf.uos.de/) is used for the automatic Petri net relayout feature of the graphical editor. 
 It can be installed using these commands:
 ```
-git clone https://github.com/ogdf/ogdf
+unzip ogdf.v2020.02.zip
 cd ogdf
 ./makeMakefile.sh
 mkdir build && cd build && cmake .. && make
 sudo make install
 ```
+or driectly from sources (see the [ogdf repository](https://github.com/ogdf/ogdf) for further instructions) to get the latest OGDF version.
 
 
 ### macOS installation instructions:

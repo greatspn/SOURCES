@@ -19,6 +19,10 @@ public abstract class GraphicalElement extends SelectableObject implements XmlEx
 
     // Default label text scale
     private LabelDecor.Size textSize = LabelDecor.Size.NORMAL;    
+    
+    public void copyGfxPropertiesFrom(GraphicalElement el) {
+        setGfxTextSize(el.getGfxTextSize());
+    }
 
     public EditableValue getLabelTextSizeEditable() {
         return new EditableValue() {
@@ -31,7 +35,6 @@ public abstract class GraphicalElement extends SelectableObject implements XmlEx
             }
         };
     }
-
     public LabelDecor.Size getGfxTextSize() {
         return textSize;
     }
