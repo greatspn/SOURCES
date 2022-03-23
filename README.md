@@ -107,7 +107,7 @@ cd ogdf
 mkdir build && cd build && cmake .. && make
 sudo make install
 ```
-or driectly from sources (see the [ogdf repository](https://github.com/ogdf/ogdf) for further instructions) to get the latest OGDF version.
+or directly from [sources](https://github.com/ogdf/ogdf) to get the latest OGDF version.
 
 
 ### macOS installation instructions:
