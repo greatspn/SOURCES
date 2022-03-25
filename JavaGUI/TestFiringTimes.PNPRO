@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="Progetto aTest1" version="121">
+  <gspn name="GSPN 1">
+    <nodes>
+      <place label-x="-1.0" marking="2" name="P0" x="6.0" y="5.0"/>
+      <transition delay="1.5" name="T0" type="EXP" x="14.55" y="2.0"/>
+      <transition name="T1" nservers="N" type="EXP" x="14.55" y="8.0"/>
+      <place label-x="1.0" name="P1" x="22.0" y="5.0"/>
+      <place marking="1" name="P2" x="6.0" y="14.0"/>
+      <transition name="end" type="EXP" x="14.55" y="14.0"/>
+      <constant consttype="INTEGER" name="N" value="2" x="1.3125" y="2.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" tail="P0">
+        <point x="7.0" y="3.0"/>
+      </arc>
+      <arc head="P1" kind="OUTPUT" tail="T0">
+        <point x="23.0" y="3.0"/>
+      </arc>
+      <arc head="T1" kind="INPUT" mult="2" mult-k="1.50400390625" tail="P1">
+        <point x="23.0" y="9.0"/>
+      </arc>
+      <arc head="P0" kind="OUTPUT" mult="2" tail="T1">
+        <point x="7.0" y="9.0"/>
+      </arc>
+      <arc head="end" kind="INPUT" tail="P2"/>
+    </edges>
+  </gspn>
+  <dta name="NextOp">
+    <nodes>
+      <clock name="x" x="2.5625" y="2.0"/>
+      <template last-binding="end" name="act" type="ACTION" x="8.0" y="2.0"/>
+      <location init-arrow-x="1.5" init-arrow-y="9.0" initial="true" name="l0" state-proposition="Phi0" x="3.5" y="8.0"/>
+      <location final="ACCEPTING" init-arrow-x="11.5" init-arrow-y="9.0" name="l1" state-proposition="Phi0" x="13.5" y="8.0"/>
+      <template last-binding="1" name="n" type="INTEGER" x="11.0" y="2.0"/>
+      <location init-arrow-x="11.5" init-arrow-y="14.0" name="l2" state-proposition="Phi0" x="13.5" y="13.0"/>
+      <template last-binding="True" name="Phi0" type="STATEPROP" x="14.0" y="2.0"/>
+    </nodes>
+    <edges>
+      <edge actset="Act\{act}" actset-clock-k="1.00009765625" actset-x="1.9627650258691176E-4" actset-y="-1.5000000070811108" clock-guard="x &gt; 0" clock-guard-x="1.9627650258691176E-4" clock-guard-y="-0.5000000070811108" head="l0" kind="INNER" tail="l0">
+        <point x="5.0" y="6.5"/>
+      </edge>
+      <edge actset="{act}" actset-clock-k="0.5" clock-guard="x &gt; 0" head="l1" kind="INNER" tail="l0"/>
+      <edge actset-clock-k="1.31591796875" clock-guard="x = n" head="l2" kind="BOUNDARY" tail="l0">
+        <point x="8.0" y="14.0"/>
+      </edge>
+    </edges>
+  </dta>
+  <gspn name="GSPN 2">
+    <nodes>
+      <place marking="1" name="P0" x="4.0" y="4.0"/>
+      <transition name="T0" type="EXP" x="10.55" y="4.0"/>
+      <place name="P1" x="16.0" y="4.0"/>
+      <transition name="t0" type="IMM" x="22.85" y="4.0"/>
+      <transition name="t1" type="IMM" x="22.85" y="8.0"/>
+      <place label-x="-1.0" marking="1" name="P2" x="30.0" y="2.0"/>
+      <transition label-x="-1.5" label-y="-1.0" name="end" rotation="1.5707963267948966" type="EXP" x="30.55" y="8.0"/>
+      <place name="P3" x="16.0" y="11.0"/>
+      <transition name="T1" type="EXP" x="10.55" y="11.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" tail="P0"/>
+      <arc head="P1" kind="OUTPUT" tail="T0"/>
+      <arc head="t0" kind="INPUT" tail="P1"/>
+      <arc head="t1" kind="INPUT" mult-k="0.95400390625" tail="P1">
+        <point x="20.0" y="9.0"/>
+      </arc>
+      <arc head="P0" kind="OUTPUT" tail="t0">
+        <point x="26.0" y="5.0"/>
+        <point x="26.0" y="2.0"/>
+        <point x="1.5" y="2.0"/>
+        <point x="1.5" y="4.0"/>
+      </arc>
+      <arc head="end" kind="INPUT" tail="P2"/>
+      <arc head="P3" kind="OUTPUT" tail="t1">
+        <point x="26.0" y="9.0"/>
+        <point x="26.0" y="12.0"/>
+      </arc>
+      <arc head="T1" kind="INPUT" tail="P3"/>
+      <arc head="P0" kind="OUTPUT" tail="T1">
+        <point x="1.5" y="12.0"/>
+        <point x="1.5" y="6.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="GSPN 3">
+    <nodes>
+      <place label-x="-0.5" label-y="-1.5" marking="1" name="P0" x="7.0" y="6.0"/>
+      <transition name="T0" type="EXP" x="12.55" y="4.0"/>
+      <transition name="T1" type="EXP" x="12.55" y="8.0"/>
+      <place name="P1" x="17.0" y="4.0"/>
+      <transition label-x="-1.0" label-y="-1.0" name="t0" rotation="1.5707963267948966" type="IMM" x="7.85" y="10.0"/>
+      <place name="P2" x="17.0" y="8.0"/>
+      <place marking="3" name="P3" x="12.0" y="12.0"/>
+      <transition delay="I[1.0]" name="D0" type="GEN" x="17.55" y="12.0"/>
+      <transition name="t1" type="IMM" x="20.85" y="4.0"/>
+      <constant consttype="INTEGER" name="N" value="3" x="1.3125" y="1.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0" kind="INPUT" tail="P0">
+        <point x="9.5" y="5.0"/>
+      </arc>
+      <arc head="T1" kind="INPUT" tail="P0">
+        <point x="9.5" y="9.0"/>
+      </arc>
+      <arc head="P1" kind="OUTPUT" tail="T0"/>
+      <arc head="T0" kind="INHIBITOR" tail="P1">
+        <point x="15.5" y="3.5"/>
+      </arc>
+      <arc head="P2" kind="OUTPUT" tail="T1"/>
+      <arc head="P0" kind="OUTPUT" tail="t0"/>
+      <arc head="t0" kind="INPUT" tail="P3">
+        <point x="8.0" y="13.0"/>
+      </arc>
+      <arc head="P3" kind="OUTPUT" mult="N" tail="D0"/>
+      <arc head="D0" kind="INPUT" mult="N" mult-k="1.3541992187499998" mult-y="-0.5001562499999999" tail="P2">
+        <point x="23.0" y="9.0"/>
+        <point x="23.0" y="13.0"/>
+      </arc>
+      <arc head="t1" kind="INPUT" tail="P1"/>
+      <arc head="P2" kind="OUTPUT" mult-k="0.50009765625" tail="t1">
+        <point x="23.0" y="5.0"/>
+        <point x="23.0" y="7.5"/>
+        <point x="21.0" y="7.5"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="GSPN 4">
+    <nodes>
+      <constant consttype="INTEGER" name="N" value="3" x="17.0625" y="7.0"/>
+      <place label-x="-1.5" label-y="0.0" marking="N" name="P0" x="4.0" y="7.0"/>
+      <transition name="T0" nservers-x="0.5" type="EXP" x="9.55" y="3.0"/>
+      <transition delay="10" name="T1" nservers-x="0.5" type="EXP" x="9.55" y="11.0"/>
+    </nodes>
+    <edges>
+      <arc head="T1" kind="INPUT" tail="P0"/>
+      <arc head="T0" kind="INPUT" tail="P0"/>
+      <arc head="P0" kind="OUTPUT" tail="T0">
+        <point x="5.0" y="4.0"/>
+      </arc>
+      <arc head="P0" kind="OUTPUT" tail="T1">
+        <point x="5.0" y="12.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="GSPN 5">
+    <nodes>
+      <constant consttype="INTEGER" name="N" value="3" x="19.0625" y="8.0"/>
+      <place label-x="-1.5" label-y="0.0" marking="N" name="P0" x="4.0" y="7.0"/>
+      <transition delay="I[1.0]" name="T0" type="GEN" x="9.55" y="3.0"/>
+      <transition delay="Uniform[2.1, 2.4]" name="T1" type="GEN" x="9.55" y="11.0"/>
+    </nodes>
+    <edges>
+      <arc head="T1" kind="INPUT" tail="P0"/>
+      <arc head="T0" kind="INPUT" tail="P0"/>
+      <arc head="P0" kind="OUTPUT" tail="T0">
+        <point x="5.0" y="4.0"/>
+      </arc>
+      <arc head="P0" kind="OUTPUT" tail="T1">
+        <point x="5.0" y="12.0"/>
+      </arc>
+    </edges>
+  </gspn>
+  <gspn name="GSPN 6">
+    <nodes>
+      <transition delay="I[4.5]" name="D1" type="GEN" x="9.55" y="9.0"/>
+      <place marking="1" name="P0" x="5.0" y="5.0"/>
+      <place name="P3" x="5.0" y="13.0"/>
+      <transition delay="R[1,lambda]" name="D2" type="GEN" x="9.55" y="13.0"/>
+      <transition delay="TruncatedExp[0.75, 2]" name="D3" type="GEN" x="9.55" y="17.0"/>
+      <place name="P2" x="5.0" y="17.0"/>
+      <place name="P6" x="25.0" y="12.0"/>
+      <transition delay="Uniform[3,6]" name="D6" type="GEN" x="29.55" y="12.0"/>
+      <place name="P7" x="25.0" y="16.0"/>
+      <transition delay="Erlang[1.75, 4]" name="D7" type="GEN" x="29.55" y="16.0"/>
+      <place name="P8" x="5.0" y="21.0"/>
+      <transition delay="3*lambda+2" name="T0" nservers-x="0.5" type="EXP" x="15.55" y="23.0"/>
+      <constant consttype="REAL" name="lambda" value="2.3" x="36.0625" y="5.0"/>
+      <constant consttype="REAL" name="mu" value="1.4" x="36.0625" y="7.0"/>
+    </nodes>
+    <edges>
+      <arc head="D2" kind="INPUT" tail="P3"/>
+      <arc head="D3" kind="INPUT" tail="P2"/>
+      <arc head="D6" kind="INPUT" tail="P6"/>
+      <arc head="D7" kind="INPUT" tail="P7"/>
+      <arc head="P3" kind="OUTPUT" tail="D1"/>
+      <arc head="P2" kind="OUTPUT" tail="D2"/>
+      <arc head="P8" kind="OUTPUT" tail="D3"/>
+      <arc head="P7" kind="OUTPUT" tail="T0"/>
+      <arc head="P6" kind="OUTPUT" tail="D7"/>
+      <arc head="P0" kind="OUTPUT" tail="D6"/>
+      <arc head="T0" kind="INPUT" tail="P8"/>
+      <arc head="D1" kind="INPUT" tail="P0"/>
+    </edges>
+  </gspn>
+  <gspn name="GSPN 7">
+    <nodes>
+      <place label-x="-2.0" label-y="0.0" marking="N" name="P1" x="7.0" y="11.0"/>
+      <transition name="t0" priority="2" type="IMM" weight="4" weight-x="2.5" weight-y="2.0" x="10.85" y="7.0"/>
+      <transition name="t1" priority="2" type="IMM" weight="2" weight-x="2.5" weight-y="2.0" x="10.85" y="15.0"/>
+      <place name="P2" x="14.0" y="7.0"/>
+      <place name="P3" x="14.0" y="15.0"/>
+      <constant consttype="INTEGER" name="N" value="6" x="1.0625" y="2.0"/>
+      <place name="P0" x="26.0" y="11.0"/>
+      <transition name="t2" type="IMM" x="22.85" y="7.0"/>
+      <transition name="t3" type="IMM" x="22.85" y="15.0"/>
+      <transition name="T0" nservers-x="0.5" type="EXP" x="15.55" y="21.0"/>
+    </nodes>
+    <edges>
+      <arc head="t0" kind="INPUT" tail="P1"/>
+      <arc head="P2" kind="OUTPUT" tail="t0"/>
+      <arc head="t1" kind="INPUT" tail="P1"/>
+      <arc head="P3" kind="OUTPUT" tail="t1"/>
+      <arc head="t3" kind="INPUT" mult="Max[1,#P3]" mult-x="0.5" mult-y="0.5" tail="P3"/>
+      <arc head="P0" kind="OUTPUT" mult="#P3" mult-x="0.5" mult-y="0.5" tail="t3"/>
+      <arc head="t2" kind="INPUT" mult="Max[1,#P2]" mult-x="0.5" mult-y="0.5" tail="P2"/>
+      <arc head="P0" kind="OUTPUT" mult="#P2" mult-x="0.5" mult-y="-0.5" tail="t2"/>
+      <arc head="T0" kind="INPUT" mult="N" mult-k="2.6807617187500004" tail="P0">
+        <point x="30.0" y="12.0"/>
+        <point x="30.0" y="22.0"/>
+      </arc>
+      <arc head="P1" kind="OUTPUT" mult="N" tail="T0">
+        <point x="8.0" y="22.0"/>
+      </arc>
+    </edges>
+  </gspn>
+</project>
