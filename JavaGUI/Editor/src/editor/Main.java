@@ -390,13 +390,13 @@ public class Main {
         return Util.getPreferences().getBoolean(ALLOW_GSPN_MDEP_ARCS_KEY, false);
     }
 
-    private static final String MODEL_LIBRARY_DIR = "model_library_dir";
-    public static String getModelLibraryDirectory() {
-        return Util.getPreferences().get(MODEL_LIBRARY_DIR, "/usr/local/GreatSPN/models");
-    }
-    public static void setModelLibraryDirectory(String dir) {
-        Util.getPreferences().put(MODEL_LIBRARY_DIR, dir);
-    }
+//    private static final String MODEL_LIBRARY_DIR = "model_library_dir";
+//    public static String getModelLibraryDirectory() {
+//        return Util.getPreferences().get(MODEL_LIBRARY_DIR, "/usr/local/GreatSPN/models");
+//    }
+//    public static void setModelLibraryDirectory(String dir) {
+//        Util.getPreferences().put(MODEL_LIBRARY_DIR, dir);
+//    }
 
     //-------------------------------------------------------------------------
     // Developer switch

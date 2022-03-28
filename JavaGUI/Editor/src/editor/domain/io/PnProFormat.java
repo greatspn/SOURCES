@@ -51,6 +51,8 @@ import editor.domain.composition.NetInstanceDescriptor;
 import editor.domain.composition.TagBasedCompositionPage2;
 import editor.domain.composition.UnfoldingCompositionPage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -339,7 +341,12 @@ public class PnProFormat {
     
     
     public static ProjectFile readXML(File file) throws Exception {
-        
+        ProjectFile pf = readXML(new FileInputStream(file));
+        pf.setFilename(file);
+        return pf;
+    }
+    
+    public static ProjectFile readXML(InputStream file) throws Exception {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 	Document doc = dBuilder.parse(file);
@@ -531,7 +538,6 @@ public class PnProFormat {
         projectData.relinkPageResources();
         
         ProjectFile newProject = new ProjectFile(projectData);
-        newProject.setFilename(file);
         //newProject.setSaved();
  
         return newProject;

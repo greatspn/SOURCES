@@ -338,7 +338,6 @@
                                   <Group type="103" groupAlignment="1" max="-2" attributes="0">
                                       <Component id="jLabelGreatSPN" alignment="1" max="32767" attributes="0"/>
                                       <Component id="jLabelNSolve" alignment="1" min="-2" max="-2" attributes="0"/>
-                                      <Component id="jLabel5" alignment="1" min="-2" max="-2" attributes="0"/>
                                       <Component id="jLabel4" alignment="1" min="-2" max="-2" attributes="0"/>
                                       <Component id="jLabelCosmos" alignment="1" min="-2" max="-2" attributes="0"/>
                                       <Component id="jLabel8" alignment="1" max="32767" attributes="0"/>
@@ -346,9 +345,7 @@
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="filenameGreatSPN" pref="634" max="32767" attributes="0"/>
-                                  <Component id="filenameModelLibrary" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="jLabel7" pref="0" max="32767" attributes="0"/>
+                                  <Component id="filenameGreatSPN" pref="681" max="32767" attributes="0"/>
                                   <Component id="jLabel6" alignment="1" pref="0" max="32767" attributes="0"/>
                                   <Component id="textFieldAdditionalPaths" max="32767" attributes="0"/>
                                   <Component id="filenameNSolve" alignment="0" max="32767" attributes="0"/>
@@ -393,19 +390,12 @@
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jLabel6" min="-2" pref="69" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="filenameModelLibrary" max="32767" attributes="0"/>
-                          <Component id="jLabel5" min="-2" pref="28" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="textField_rgmeddVer" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="90" max="32767" attributes="0"/>
+                      <EmptySpace pref="229" max="32767" attributes="0"/>
                       <Component id="checkBox_allowGreatSPNExt" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="checkBox_allowGreatSPNMdepArcs" min="-2" max="-2" attributes="0"/>
@@ -434,21 +424,9 @@
             </Component>
             <Component class="javax.swing.JTextField" name="textFieldAdditionalPaths">
             </Component>
-            <Component class="javax.swing.JLabel" name="jLabel5">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Model Library:"/>
-              </Properties>
-            </Component>
-            <Component class="common.JFilenameField" name="filenameModelLibrary">
-            </Component>
             <Component class="javax.swing.JLabel" name="jLabel6">
               <Properties>
                 <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;i&gt; When the editor calls the external commands, it adds the &apos;Additional PATH&apos; to the PATH environment variable, and the &apos;Additional Library Paths&apos; to the LD_LIBRARY_PATH variable. &lt;/i&gt;&lt;/html&gt;"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="jLabel7">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;i&gt;&#xa;The directory where the example models are stored. You may add a library model to your projects using&#xa;Add new Page (toolbar icon) &gt; Add Library Model.&#xa;&lt;/i&gt;&lt;/html&gt;"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabelNSolve">

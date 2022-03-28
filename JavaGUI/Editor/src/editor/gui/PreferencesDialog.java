@@ -64,9 +64,6 @@ public class PreferencesDialog extends javax.swing.JDialog {
         textFieldAdditionalPaths.setText(SolverInvokator.getAdditionalPathDir());
         textFieldLibraryPath.setText(SolverInvokator.getAdditionalLibraryPathDir());
         
-        filenameModelLibrary.setText(Main.getModelLibraryDirectory());
-        filenameModelLibrary.setDirPrefKey("model-library-dir-prefkey");
-        
         checkBox_allowGreatSPNExt.setSelected(Main.isGreatSPNExtAllowed());
         checkBox_allowGreatSPNMdepArcs.setSelected(Main.areGreatSPNMdepArcsAllowed());
         
@@ -117,10 +114,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         checkBox_allowGreatSPNExt = new javax.swing.JCheckBox();
         jLabel4 = new javax.swing.JLabel();
         textFieldAdditionalPaths = new javax.swing.JTextField();
-        jLabel5 = new javax.swing.JLabel();
-        filenameModelLibrary = new common.JFilenameField();
         jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
         jLabelNSolve = new javax.swing.JLabel();
         filenameNSolve = new common.JFilenameField();
         jLabelCosmos = new javax.swing.JLabel();
@@ -322,11 +316,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
 
         jLabel4.setText("Additional PATHs:");
 
-        jLabel5.setText("Model Library:");
-
         jLabel6.setText("<html><i> When the editor calls the external commands, it adds the 'Additional PATH' to the PATH environment variable, and the 'Additional Library Paths' to the LD_LIBRARY_PATH variable. </i></html>");
-
-        jLabel7.setText("<html><i>\nThe directory where the example models are stored. You may add a library model to your projects using\nAdd new Page (toolbar icon) > Add Library Model.\n</i></html>");
 
         jLabelNSolve.setText("NSolve directory:");
 
@@ -365,15 +355,12 @@ public class PreferencesDialog extends javax.swing.JDialog {
                             .add(tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
                                 .add(jLabelGreatSPN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .add(jLabelNSolve)
-                                .add(jLabel5)
                                 .add(jLabel4)
                                 .add(jLabelCosmos)
                                 .add(jLabel8, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(filenameGreatSPN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 634, Short.MAX_VALUE)
-                            .add(filenameModelLibrary, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(jLabel7, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .add(filenameGreatSPN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 681, Short.MAX_VALUE)
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabel6, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                             .add(textFieldAdditionalPaths)
                             .add(filenameNSolve, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -409,16 +396,10 @@ public class PreferencesDialog extends javax.swing.JDialog {
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jLabel6, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 69, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                    .add(filenameModelLibrary, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(jLabel5, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 28, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jLabel7, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(39, 39, 39)
                 .add(tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(textField_rgmeddVer, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(jLabel8))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 90, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 229, Short.MAX_VALUE)
                 .add(checkBox_allowGreatSPNExt)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(checkBox_allowGreatSPNMdepArcs)
@@ -454,7 +435,6 @@ public class PreferencesDialog extends javax.swing.JDialog {
         NSolve.setPathToNSolve(filenameNSolve.getText());
         Main.setGreatSPNExtAllowed(checkBox_allowGreatSPNExt.isSelected());
         Main.setGreatSPNMdepArcsAllowed(checkBox_allowGreatSPNMdepArcs.isSelected());
-        Main.setModelLibraryDirectory(filenameModelLibrary.getText());
         RGMEDD2Solver.setRGMEDDName(textField_rgmeddVer.getText());
         
         SolverInvokator.setAdditionalPathDir(textFieldAdditionalPaths.getText());
@@ -492,7 +472,6 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JComboBox<Main.UiSize> comboBoxUiSizes;
     private common.JFilenameField filenameCosmos;
     private common.JFilenameField filenameGreatSPN;
-    private common.JFilenameField filenameModelLibrary;
     private common.JFilenameField filenameNSolve;
     private javax.swing.JButton jButtonCheckUpdates;
     private javax.swing.JButton jButtonClearLaTeXCache;
@@ -503,9 +482,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel jLabelCosmos;

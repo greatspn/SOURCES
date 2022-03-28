@@ -1972,24 +1972,24 @@ $(OBJDIR)/JavaGUI/greatspn-editor.tgz: JavaGUI
 		rm -rf GreatSPN-Editor/ )
 
 
-# # Builds the native application using the jpackage tool
-# $(OBJDIR)/JavaGUI/GreatSPN\ Editor: JavaGUI
-# 	@echo "  [JPACKAGE] " $@
-# 	@jpackage --input JavaGUI/Editor/dist --name GreatSPN\ Editor \
-# 		--main-jar Editor.jar --main-class editor.Main  \
-# 	  --add-modules $(JAVAGUI_MODULES) \
-# 		--java-options "-Djava.library.path=Contents/Java/" \
-# 		--java-options "-Dapple.laf.useScreenMenuBar=true" \
-# 		--java-options "-Dcom.apple.macos.useScreenMenuBar=true" \
-# 		--java-options "-enableassertions" \
-# 		--java-options "-splash:Contents/Java/splash.png" \
-# 		--app-version "$(GUI_VERSION)" \
-# 		--copyright "University of Torino, Italy" \
-# 		--description "The GUI of the GreatSPN framework. Visit https://github.com/greatspn/SOURCES for more informations." \
-# 		--dest objects/JavaGUI/ \
-# 		--icon "JavaGUI/Additional/greatspn.icns" \
-# 		--file-associations JavaGUI/DISTRIB/PNPRO-macos-FileAssoc.txt
-# # 		--type app-image \
+# Builds the native application using the jpackage tool
+$(OBJDIR)/JavaGUI/GreatSPN\ Editor-$(GUI_VERSION).dmg: JavaGUI
+	@echo "  [JPACKAGE] " $@
+	@jpackage --input JavaGUI/Editor/dist --name GreatSPN\ Editor \
+		--main-jar Editor.jar --main-class editor.Main  \
+	  --add-modules $(JAVAGUI_MODULES) \
+		--java-options "-Djava.library.path=Contents/Java/" \
+		--java-options "-Dapple.laf.useScreenMenuBar=true" \
+		--java-options "-Dcom.apple.macos.useScreenMenuBar=true" \
+		--java-options "-enableassertions" \
+		--java-options "-splash:Contents/Java/splash.png" \
+		--app-version "$(GUI_VERSION)" \
+		--copyright "University of Torino, Italy" \
+		--description "The GUI of the GreatSPN framework. Visit https://github.com/greatspn/SOURCES for more informations." \
+		--dest objects/JavaGUI/ \
+		--icon "JavaGUI/Additional/greatspn.icns" \
+		--file-associations JavaGUI/DISTRIB/PNPRO-macos-FileAssoc.txt \
+		--type dmg
 
 
 $(OBJDIR)/JavaGUI/bin/lib/splash.png: JavaGUI/Additional/splash.png

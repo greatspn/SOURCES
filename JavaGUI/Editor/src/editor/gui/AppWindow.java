@@ -116,7 +116,17 @@ import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreePath;
 import latex.LatexProvider;
 import editor.domain.semiflows.PTFlows;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.stream.Stream;
+import models.BuiltinModels;
 
 /**
  *
@@ -3326,57 +3336,51 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private void addPagePopupMenuBecomesVisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_addPagePopupMenuBecomesVisible
         jMenuLibraryModels.removeAll();
         // Add all the models in the library directory
-        File dir = new File(Main.getModelLibraryDirectory());
-        File[] models = dir.listFiles(new java.io.FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                return pathname.getName().endsWith(ProjectFile.PNPRO_EXT);
+        boolean firstModel = true;
+        for (final String[] modelGroup : BuiltinModels.models) {
+            if (firstModel)
+                firstModel = false;
+            else
+                jMenuLibraryModels.add(new JSeparator());
+            for (final String model : modelGroup) {
+                JMenuItem item = new JMenuItem(model);
+                item.addActionListener((ActionEvent event) -> {
+                    try {
+                        final ProjectFile newProj = PnProFormat.readXML(BuiltinModels.getModelStream(model));
+
+                        executeUndoableCommand("add "+model, (ProjectData proj, ProjectPage page) -> {
+                            boolean first = true;
+                            for (int p = 0; p < newProj.getCurrent().getPageCount(); p++) {
+                                ProjectPage newPage = newProj.getCurrent().getPageAt(p);
+                                String newPageName = newPage.getPageName();
+                                newPageName = activeProject.generateUniquePageName(newPageName);
+                                if (!newPageName.equals(newPage.getPageName())) {
+                                    for (int p2 = 0; p2 < newProj.getCurrent().getPageCount(); p2++)
+                                        if (p != p2)
+                                            newProj.getCurrent().getPageAt(p2).onAnotherPageRenaming(newPage.getPageName(), newPageName);
+                                }
+                                newPage.setPageName(newPageName);
+                                proj.addPage(newPage);
+                                if (first) {
+                                    switchToProjectPage(activeProject, newPage, null);
+                                    first = false;
+                                }
+                            }
+                        });
+                        setStatus("Library model "+model+" added.", true);
+                    }
+                    catch (Exception e) {
+                        Main.logException(e, true);
+                        JOptionPane.showMessageDialog(AppWindow.this,
+                                "Could not open the Library model "+model+".\n"+
+                                        "Reason: "+e.getMessage(),
+                                "Could not open file.",
+                                JOptionPane.ERROR_MESSAGE);
+                        setStatus("could not open library model "+model, true);    
+                    }
+                });
+                jMenuLibraryModels.add(item);
             }
-        });
-        if (models == null || models.length == 0) {
-            jMenuLibraryModels.setEnabled(false);
-            return;
-        }
-        Arrays.sort(models);
-        for (final File model : models) {
-            final String modelName = model.getName().replace("."+ProjectFile.PNPRO_EXT, "");
-            JMenuItem item = new JMenuItem(modelName);
-            item.addActionListener((ActionEvent event) -> {
-                try {
-                    final ProjectFile newProj = PnProFormat.readXML(model);
-                    
-                    executeUndoableCommand("add "+modelName, (ProjectData proj, ProjectPage page) -> {
-                        boolean first = true;
-                        for (int p = 0; p < newProj.getCurrent().getPageCount(); p++) {
-                            ProjectPage newPage = newProj.getCurrent().getPageAt(p);
-                            String newPageName = newPage.getPageName();
-                            newPageName = activeProject.generateUniquePageName(newPageName);
-                            if (!newPageName.equals(newPage.getPageName())) {
-                                for (int p2 = 0; p2 < newProj.getCurrent().getPageCount(); p2++)
-                                    if (p != p2)
-                                        newProj.getCurrent().getPageAt(p2).onAnotherPageRenaming(newPage.getPageName(), newPageName);
-                            }
-                            newPage.setPageName(newPageName);
-                            proj.addPage(newPage);
-                            if (first) {
-                                switchToProjectPage(activeProject, newPage, null);
-                                first = false;
-                            }
-                        }
-                    });
-                    setStatus("Library model "+modelName+" added.", true);
-                }
-                catch (Exception e) {
-                    Main.logException(e, true);
-                    JOptionPane.showMessageDialog(AppWindow.this,
-                            "Could not open the Library model "+modelName+".\n"+
-                                    "Reason: "+e.getMessage(),
-                            "Could not open file.",
-                            JOptionPane.ERROR_MESSAGE);
-                    setStatus("could not open library model "+modelName, true);    
-                }
-            });
-            jMenuLibraryModels.add(item);
         }
     }//GEN-LAST:event_addPagePopupMenuBecomesVisible
 
