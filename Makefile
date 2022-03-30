@@ -2091,10 +2091,10 @@ linux-install-JavaGUI: install_JavaGUI_jars
 	@echo "  [INSTALL] JavaGUI XDG resources"
 	@(cd $(OBJDIR)/JavaGUI/ && export INSTALLDIR=$(INSTALLDIR) && bash install.sh -silent -nc )
 
-# Install GUI library of models
-install_JavaGUI_models:
-	@mkdir -p $(INSTALLDIR)/models
-	@cp models/*.PNPRO $(INSTALLDIR)/models/
+# # Install GUI library of models
+# install_JavaGUI_models:
+# 	@mkdir -p $(INSTALLDIR)/models
+# 	@cp models/*.PNPRO $(INSTALLDIR)/models/
 
 
 # On Linux, make install automatically re-installs the Java GUI
@@ -2111,7 +2111,7 @@ all: JavaGUI
 
 clean: clean_JavaGUI
 
-install: install_JavaGUI_models install_JavaGUI_jars
+install: install_JavaGUI_jars
 
 SCRIPTS += unfolding2 algebra2 greatspn_editor
 
