@@ -49,6 +49,6 @@ public class BuiltinModels {
     }
     
     public static void main(String[] args) {
-        System.out.println(Main.getPortableGreatSPN_dir());
+        System.out.println(Main.getAppImageGreatSPN_dir());
     }
 }

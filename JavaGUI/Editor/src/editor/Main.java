@@ -56,6 +56,7 @@ public class Main {
     public static void main(final String[] args) {
         requireJavaVersion(JAVA_VERSION_REQUIRED_MAJOR);
         Util.initApplication(PREF_ROOT_KEY, "/org/unito/mainprefs");
+        isAppImageDistribution();
         
         // For debug purposes
         installCustomEventQueue();
@@ -324,13 +325,13 @@ public class Main {
     
     //-------------------------------------------------------------------------
     
-    private static File portableGreatSPN_dir = null;
-    private static boolean testedPortableGreatSPN = false;
+    private static File appImageGreatSPN_dir = null;
+    private static boolean testedAppImageDistrib = false;
     
     // is an app-image with the portable_greatspn binaries?
-    public static boolean isPortableGreatSPN() {
-        if (!testedPortableGreatSPN) {
-            testedPortableGreatSPN = true;
+    public static boolean isAppImageDistribution() {
+        if (!testedAppImageDistrib) {
+            testedAppImageDistrib = true;
             try {
                 String path = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
                 String decodedPath = URLDecoder.decode(path, "UTF-8");
@@ -341,7 +342,7 @@ public class Main {
                     File portableDir = new File(file.getParent() + File.separator + "portable_greatspn");
 //                    System.out.println(portableDir);
                     if (portableDir.isDirectory()) {
-                        portableGreatSPN_dir = portableDir;
+                        appImageGreatSPN_dir = portableDir;
                         System.out.println("PORTABLE "+portableDir);
                     }
                 }
@@ -356,12 +357,12 @@ public class Main {
             }
             catch (UnsupportedEncodingException e) { }
         }
-        return portableGreatSPN_dir != null;
+        return appImageGreatSPN_dir != null;
     }
     
-    public static File getPortableGreatSPN_dir() {
-        if (isPortableGreatSPN())
-            return portableGreatSPN_dir;
+    public static File getAppImageGreatSPN_dir() {
+        if (isAppImageDistribution())
+            return appImageGreatSPN_dir;
         return null;
     }
     
