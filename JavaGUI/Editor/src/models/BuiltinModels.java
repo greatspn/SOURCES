@@ -5,10 +5,8 @@
  */
 package models;
 
-import java.io.File;
+import editor.Main;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 
 /**
  *
@@ -51,26 +49,6 @@ public class BuiltinModels {
     }
     
     public static void main(String[] args) {
-        try {
-            String path = BuiltinModels.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-            String decodedPath = URLDecoder.decode(path, "UTF-8");
-            System.out.println("decodedPath="+decodedPath);
-            File file = new File(decodedPath);
-            if (file.isFile() && file.exists() && decodedPath.endsWith(".jar")) {
-                // Running from JAR
-                System.out.println(file.getParent());
-            }
-            else if (file.isDirectory() && file.exists() && 
-                    decodedPath.endsWith("JavaGUI/Editor/build/classes/")) 
-            {
-                // Running from class sources
-            }
-            else {
-                // Unknown
-            }
-        }
-        catch (UnsupportedEncodingException e) {
-            
-        }
+        System.out.println(Main.getPortableGreatSPN_dir());
     }
 }

@@ -1934,64 +1934,6 @@ $(OBJDIR)/JavaGUI/bin/Editor.jar: JavaGUI/Editor/dist/Editor.jar JavaGUI/DISTRIB
 	@cp JavaGUI/Additional/pnpro-doc48.png  $(OBJDIR)/JavaGUI/bin/application-x-pnpro-editor.png
 	@cp JavaGUI/DISTRIB/install.sh $(OBJDIR)/JavaGUI/
 
-# jdeps --ignore-missing-deps --print-module-deps \
-# 			--class-path $(OBJDIR)/JavaGUI/bin/lib/*.jar \
-# 			$(OBJDIR)/JavaGUI/bin/Editor.jar
-JAVAGUI_MODULES:=java.base,java.compiler,java.desktop,java.naming,java.prefs,java.sql
-
-JPACKAGE_LINUX_OPTIONS:=--input JavaGUI/Editor/dist --name GreatSPN-Editor \
-		--main-jar Editor.jar --main-class editor.Main  \
-	  --add-modules $(JAVAGUI_MODULES) \
-	  --java-options "-enableassertions" \
-		--java-options "-splash:Contents/Java/splash.png" \
-		--app-version "$(GUI_VERSION)" \
-		--copyright "University of Torino, Italy" \
-		--description "The GUI of the GreatSPN framework. Visit https://github.com/greatspn/SOURCES for more informations." \
-		--dest objects/JavaGUI/ \
-		--icon "JavaGUI/Additional/greatspn48.png" \
-
-# Builds the linux native applications using the jpackage tool
-$(OBJDIR)/JavaGUI/greatspn-editor_$(GUI_VERSION)-1_amd64.deb: JavaGUI
-	@echo "  [JPACKAGE DEB] " $@
-	@jpackage $(JPACKAGE_LINUX_OPTIONS) \
-		--type deb \
-		--file-associations JavaGUI/DISTRIB/PNPRO-linux-FileAssoc.txt
-
-$(OBJDIR)/JavaGUI/greatspn-editor_$(GUI_VERSION)-1_amd64.rpm: JavaGUI
-	@echo "  [JPACKAGE RPM] " $@
-	@jpackage $(JPACKAGE_LINUX_OPTIONS) \
-		--type rpm \
-		--file-associations JavaGUI/DISTRIB/PNPRO-linux-FileAssoc.txt
-
-$(OBJDIR)/JavaGUI/greatspn-editor.tgz: JavaGUI
-	@echo "  [JPACKAGE APP-IMAGE] " $@
-	@jpackage $(JPACKAGE_LINUX_OPTIONS) \
-		--type app-image
-	@(cd objects/JavaGUI/ ; \
-		tar czf greatspn-editor.tgz GreatSPN-Editor/* ; \
-		rm -rf GreatSPN-Editor/ )
-
-
-# Builds the native application using the jpackage tool
-$(OBJDIR)/JavaGUI/GreatSPN\ Editor-$(GUI_VERSION).dmg: JavaGUI
-	@echo "  [JPACKAGE] " $@
-	@jpackage --input JavaGUI/Editor/dist --name GreatSPN\ Editor \
-		--main-jar Editor.jar --main-class editor.Main  \
-	  --add-modules $(JAVAGUI_MODULES) \
-		--java-options "-Djava.library.path=Contents/Java/" \
-		--java-options "-Dapple.laf.useScreenMenuBar=true" \
-		--java-options "-Dcom.apple.macos.useScreenMenuBar=true" \
-		--java-options "-enableassertions" \
-		--java-options "-splash:Contents/Java/splash.png" \
-		--app-version "$(GUI_VERSION)" \
-		--copyright "University of Torino, Italy" \
-		--description "The GUI of the GreatSPN framework. Visit https://github.com/greatspn/SOURCES for more informations." \
-		--dest objects/JavaGUI/ \
-		--icon "JavaGUI/Additional/greatspn.icns" \
-		--file-associations JavaGUI/DISTRIB/PNPRO-macos-FileAssoc.txt \
-		--type dmg
-
-
 $(OBJDIR)/JavaGUI/bin/lib/splash.png: JavaGUI/Additional/splash.png
 	@echo "  [CP]  " $<
 	@$(MKDIR) $(dir $@)
@@ -2124,6 +2066,97 @@ SCRIPTS += unfolding2 algebra2 greatspn_editor
 .PHONY += JavaGUI-increase-version-number JavaGUI-archives
 .PHONY += JavaGUI-win JavaGUI-macosx JavaGUI-linux JavaGUI-jar upload_JavaGUI install_JavaGUI_jars
 
+######################################
+### GreatSPN app-image
+######################################
+
+GREATSPN_APP_VERSION:=3.1
+GREATSPN_APPNAME:=GreatSPN-$(GREATSPN_APP_VERSION)
+
+# jdeps --ignore-missing-deps --print-module-deps \
+# 			--class-path $(OBJDIR)/JavaGUI/bin/lib/*.jar \
+# 			$(OBJDIR)/JavaGUI/bin/Editor.jar
+JAVAGUI_MODULES:=java.base,java.compiler,java.desktop,java.naming,java.prefs,java.sql
+
+JPACKAGE_LINUX_OPTIONS:=--input JavaGUI/Editor/dist \
+		--name $(GREATSPN_APPNAME) \
+		--main-jar Editor.jar \
+		--main-class editor.Main  \
+	  --add-modules $(JAVAGUI_MODULES) \
+	  --java-options "-enableassertions" \
+		--java-options "-splash:Contents/Java/splash.png" \
+		--app-version "$(GREATSPN_APP_VERSION)" \
+		--copyright "University of Torino, Italy" \
+		--description "The GreatSPN framework. Visit https://github.com/greatspn/SOURCES for more informations." \
+		--dest objects/GreatSPN/ \
+		--icon "JavaGUI/Additional/greatspn48.png" \
+
+# # Builds the linux native applications using the jpackage tool
+# $(OBJDIR)/JavaGUI/greatspn-editor_$(GUI_VERSION)-1_amd64.deb: JavaGUI
+# 	@echo "  [JPACKAGE DEB] " $@
+# 	@jpackage $(JPACKAGE_LINUX_OPTIONS) \
+# 		--type deb \
+# 		--file-associations JavaGUI/DISTRIB/PNPRO-linux-FileAssoc.txt
+
+# $(OBJDIR)/JavaGUI/greatspn-editor_$(GUI_VERSION)-1_amd64.rpm: JavaGUI
+# 	@echo "  [JPACKAGE RPM] " $@
+# 	@jpackage $(JPACKAGE_LINUX_OPTIONS) \
+# 		--type rpm \
+# 		--file-associations JavaGUI/DISTRIB/PNPRO-linux-FileAssoc.txt
+
+$(OBJDIR)/GreatSPN/$(GREATSPN_APPNAME): all
+	@echo "  [JPACKAGE APP-IMAGE] " $@
+	@mkdir -p $(OBJDIR)/GreatSPN
+	@jpackage $(JPACKAGE_LINUX_OPTIONS) --type app-image
+	# Add portable binaries and libraries
+	@mkdir -p $@/lib/app/portable_greatspn
+	@mkdir -p $@/lib/app/portable_greatspn/bin
+	@mkdir -p $@/lib/app/portable_greatspn/lib
+	@cp $(BINDIR)/* $@/lib/app/portable_greatspn/bin/
+	@rm -f $@/lib/app/portable_greatspn/bin/DSPN-Tool-Debug # not needed
+	@cp /lib/x86_64-linux-gnu/libgmpxx.so.4 \
+	   /lib/x86_64-linux-gnu/libgmp.so.10 \
+	   ../meddly/src/.libs/libmeddly.so.0 \
+	   ../spot-2.9.6/spot/.libs/libspot.so.0 \
+	   ../spot-2.9.6/buddy/src/.libs/libbddx.so.0 \
+	   /lib/x86_64-linux-gnu/libcolamd.so.2 \
+	   /lib/x86_64-linux-gnu/libsuitesparseconfig.so.5 \
+	   $@/lib/app/portable_greatspn/lib/
+	# Make installable package
+	@echo "  [JPACKAGE DEB] " $@
+	@jpackage --type deb --app-image $@ \
+		--name GreatSPN \
+		--app-version "$(GREATSPN_APP_VERSION)" \
+	  --file-associations JavaGUI/DISTRIB/PNPRO-linux-FileAssoc.txt
+
+
+clean_GreatSPN-App: 
+	@echo "  [CLEAN]  GreatSPN app-image"                              
+	@rm -rf $(OBJDIR)/GreatSPN/$(GREATSPN_APPNAME)
+
+# 	@(cd objects/JavaGUI/ ; \
+# 		tar czf greatspn-editor.tgz GreatSPN-Editor/* ; \
+# 		rm -rf GreatSPN-Editor/ )
+
+
+# # Builds the native application using the jpackage tool
+# $(OBJDIR)/JavaGUI/GreatSPN\ Editor-$(GUI_VERSION).dmg: JavaGUI
+# 	@echo "  [JPACKAGE] " $@
+# 	@jpackage --input JavaGUI/Editor/dist --name GreatSPN\ Editor \
+# 		--main-jar Editor.jar --main-class editor.Main  \
+# 	  --add-modules $(JAVAGUI_MODULES) \
+# 		--java-options "-Djava.library.path=Contents/Java/" \
+# 		--java-options "-Dapple.laf.useScreenMenuBar=true" \
+# 		--java-options "-Dcom.apple.macos.useScreenMenuBar=true" \
+# 		--java-options "-enableassertions" \
+# 		--java-options "-splash:Contents/Java/splash.png" \
+# 		--app-version "$(GUI_VERSION)" \
+# 		--copyright "University of Torino, Italy" \
+# 		--description "The GUI of the GreatSPN framework. Visit https://github.com/greatspn/SOURCES for more informations." \
+# 		--dest objects/JavaGUI/ \
+# 		--icon "JavaGUI/Additional/greatspn.icns" \
+# 		--file-associations JavaGUI/DISTRIB/PNPRO-macos-FileAssoc.txt \
+# 		--type dmg
 
 ######################################
 ### Upgrade procedures for the 
@@ -2324,51 +2357,51 @@ endif
 
 
 
-######################################
-### multisolve package
-######################################
+# ######################################
+# ### multisolve package
+# ######################################
 
-$(BINDIR)/multisolve/MultiSolve.class: multisolve/MultiSolve.java multisolve/NetFilter.java multisolve/Utils.java
-	@echo "  [JAVA]" $@
-	@$(MKDIR) $(dir $@)
-	@javac -sourcepath multisolve/ -d $(BINDIR)/multisolve/ -cp $(BINDIR)/multisolve/ $^
+# $(BINDIR)/multisolve/MultiSolve.class: multisolve/MultiSolve.java multisolve/NetFilter.java multisolve/Utils.java
+# 	@echo "  [JAVA]" $@
+# 	@$(MKDIR) $(dir $@)
+# 	@javac -sourcepath multisolve/ -d $(BINDIR)/multisolve/ -cp $(BINDIR)/multisolve/ $^
 
-$(SCRIPTDIR)/multisolve: $(BINDIR)/multisolve/MultiSolve.class
+# $(SCRIPTDIR)/multisolve: $(BINDIR)/multisolve/MultiSolve.class
 
-install-multisolve:
-	@$(MKDIR) $(INSTALLDIR)/$(BINDIR)/multisolve/
-	@cp $(BINDIR)/multisolve/MultiSolve.class  $(INSTALLDIR)/$(BINDIR)/multisolve/
-	@cp $(BINDIR)/multisolve/NetFilter.class  $(INSTALLDIR)/$(BINDIR)/multisolve/
-	@cp $(BINDIR)/multisolve/Utils.class  $(INSTALLDIR)/$(BINDIR)/multisolve/
+# install-multisolve:
+# 	@$(MKDIR) $(INSTALLDIR)/$(BINDIR)/multisolve/
+# 	@cp $(BINDIR)/multisolve/MultiSolve.class  $(INSTALLDIR)/$(BINDIR)/multisolve/
+# 	@cp $(BINDIR)/multisolve/NetFilter.class  $(INSTALLDIR)/$(BINDIR)/multisolve/
+# 	@cp $(BINDIR)/multisolve/Utils.class  $(INSTALLDIR)/$(BINDIR)/multisolve/
 
-ifdef HAS_JAVA_DEVELOPMENT_KIT
-install: install-multisolve
-endif
+# ifdef HAS_JAVA_DEVELOPMENT_KIT
+# install: install-multisolve
+# endif
 
-multisolve_SOURCEFILE := contrib/multisolve/multisolve.sh
-gspn_st_ex_SOURCEFILE := multisolve/gspn_st_ex
-gspn_st_ex.oc_SOURCEFILE := multisolve/gspn_st_ex.oc
-gspn_tr_ex_SOURCEFILE := multisolve/gspn_tr_ex
-gspn_tr_ex.oc_SOURCEFILE := multisolve/gspn_tr_ex.oc
-swn_st_ex_ord_SOURCEFILE := multisolve/swn_st_ex_ord
-swn_st_ex_ord.oc_SOURCEFILE := multisolve/swn_st_ex_ord.oc
-swn_st_ex_sym_SOURCEFILE := multisolve/swn_st_ex_sym
-swn_st_ex_sym.oc_SOURCEFILE := multisolve/swn_st_ex_sym.oc
-swn_st_sim_ord_SOURCEFILE := multisolve/swn_st_sim_ord
-swn_st_sim_sym_SOURCEFILE := multisolve/swn_st_sim_sym
-swn_tr_ex_ord_SOURCEFILE := multisolve/swn_tr_ex_ord
-swn_tr_ex_ord.oc_SOURCEFILE := multisolve/swn_tr_ex_ord.oc
-swn_tr_ex_sym_SOURCEFILE := multisolve/swn_tr_ex_sym
-swn_tr_ex_sym.oc_SOURCEFILE := multisolve/swn_tr_ex_sym.oc
-GnuPlot_SOURCEFILE := multisolve/GnuPlot
-commands.el_SOURCEFILE := multisolve/commands.el
+# multisolve_SOURCEFILE := contrib/multisolve/multisolve.sh
+# gspn_st_ex_SOURCEFILE := multisolve/gspn_st_ex
+# gspn_st_ex.oc_SOURCEFILE := multisolve/gspn_st_ex.oc
+# gspn_tr_ex_SOURCEFILE := multisolve/gspn_tr_ex
+# gspn_tr_ex.oc_SOURCEFILE := multisolve/gspn_tr_ex.oc
+# swn_st_ex_ord_SOURCEFILE := multisolve/swn_st_ex_ord
+# swn_st_ex_ord.oc_SOURCEFILE := multisolve/swn_st_ex_ord.oc
+# swn_st_ex_sym_SOURCEFILE := multisolve/swn_st_ex_sym
+# swn_st_ex_sym.oc_SOURCEFILE := multisolve/swn_st_ex_sym.oc
+# swn_st_sim_ord_SOURCEFILE := multisolve/swn_st_sim_ord
+# swn_st_sim_sym_SOURCEFILE := multisolve/swn_st_sim_sym
+# swn_tr_ex_ord_SOURCEFILE := multisolve/swn_tr_ex_ord
+# swn_tr_ex_ord.oc_SOURCEFILE := multisolve/swn_tr_ex_ord.oc
+# swn_tr_ex_sym_SOURCEFILE := multisolve/swn_tr_ex_sym
+# swn_tr_ex_sym.oc_SOURCEFILE := multisolve/swn_tr_ex_sym.oc
+# GnuPlot_SOURCEFILE := multisolve/GnuPlot
+# commands.el_SOURCEFILE := multisolve/commands.el
 
-ifdef HAS_JAVA_DEVELOPMENT_KIT
-SCRIPTS += multisolve gspn_st_ex gspn_st_ex.oc gspn_tr_ex gspn_tr_ex.oc \
-		   swn_st_ex_ord swn_st_ex_ord.oc swn_st_ex_sym swn_st_ex_sym.oc \
-		   swn_st_sim_ord swn_st_sim_sym swn_tr_ex_ord swn_tr_ex_ord.oc \
-		   swn_tr_ex_sym swn_tr_ex_sym.oc GnuPlot commands.el
-endif
+# ifdef HAS_JAVA_DEVELOPMENT_KIT
+# SCRIPTS += multisolve gspn_st_ex gspn_st_ex.oc gspn_tr_ex gspn_tr_ex.oc \
+# 		   swn_st_ex_ord swn_st_ex_ord.oc swn_st_ex_sym swn_st_ex_sym.oc \
+# 		   swn_st_sim_ord swn_st_sim_sym swn_tr_ex_ord swn_tr_ex_ord.oc \
+# 		   swn_tr_ex_sym swn_tr_ex_sym.oc GnuPlot commands.el
+# endif
 
 
 

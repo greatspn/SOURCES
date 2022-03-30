@@ -19,9 +19,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -319,6 +321,50 @@ public class Main {
                 pdfFile.getAbsolutePath(), 
                 "Could not open PDF", JOptionPane.ERROR_MESSAGE);
     }
+    
+    //-------------------------------------------------------------------------
+    
+    private static File portableGreatSPN_dir = null;
+    private static boolean testedPortableGreatSPN = false;
+    
+    // is an app-image with the portable_greatspn binaries?
+    public static boolean isPortableGreatSPN() {
+        if (!testedPortableGreatSPN) {
+            testedPortableGreatSPN = true;
+            try {
+                String path = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+                String decodedPath = URLDecoder.decode(path, "UTF-8");
+//                System.out.println("decodedPath="+decodedPath);
+                File file = new File(decodedPath);
+                if (file.isFile() && file.exists() && decodedPath.endsWith(".jar")) {
+                    // Running from JAR
+                    File portableDir = new File(file.getParent() + File.separator + "portable_greatspn");
+//                    System.out.println(portableDir);
+                    if (portableDir.isDirectory()) {
+                        portableGreatSPN_dir = portableDir;
+                        System.out.println("PORTABLE "+portableDir);
+                    }
+                }
+                else if (file.isDirectory() && file.exists() && 
+                        decodedPath.endsWith("JavaGUI/Editor/build/classes/")) 
+                {
+                    // Running from class sources
+                }
+                else {
+                    // Unknown
+                }
+            }
+            catch (UnsupportedEncodingException e) { }
+        }
+        return portableGreatSPN_dir != null;
+    }
+    
+    public static File getPortableGreatSPN_dir() {
+        if (isPortableGreatSPN())
+            return portableGreatSPN_dir;
+        return null;
+    }
+    
 
     //-------------------------------------------------------------------------
     // Application preferences
