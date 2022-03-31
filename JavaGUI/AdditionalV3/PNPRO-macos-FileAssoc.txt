@@ -1,4 +1,4 @@
 mime-type=application/x-petrinet-project
 extension=PNPRO
-icon=JavaGUI/Additional/pnpro-doc48.png
+icon=JavaGUI/AdditionalV3/pnpro-doc.icns
 description=Petri Net PROject File

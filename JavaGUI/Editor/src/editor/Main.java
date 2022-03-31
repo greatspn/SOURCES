@@ -312,7 +312,13 @@ public class Main {
     public static void viewPDF(File pdfFile) {
         if (Desktop.isDesktopSupported()) {
             try {
-                Desktop.getDesktop().open(pdfFile);
+                // Fix GNOME 40 bug
+                if (Util.isLinux()) {
+                    Runtime.getRuntime().exec(new String[]{"xdg-open", pdfFile.getAbsolutePath()});
+                }
+                else {
+                    Desktop.getDesktop().open(pdfFile);
+                }
                 return;
             } catch (IOException ex) {
                 // no application registered for PDFs

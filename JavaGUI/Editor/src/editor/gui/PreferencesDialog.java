@@ -64,6 +64,9 @@ public class PreferencesDialog extends javax.swing.JDialog {
         textFieldAdditionalPaths.setText(SolverInvokator.getAdditionalPathDir());
         textFieldLibraryPath.setText(SolverInvokator.getAdditionalLibraryPathDir());
         
+        checkBox_useAppImageDistrib.setSelected(RGMEDD2Solver.getUseAppImageGreatSPN_Distrib());
+        checkBox_useAppImageDistrib.setText("Use the portable App-Image GreatSPN distribution, when available (currently "+
+                (Main.isAppImageDistribution() ? "AVAILABLE" : "NOT AVAILABLE")+").");
         checkBox_allowGreatSPNExt.setSelected(Main.isGreatSPNExtAllowed());
         checkBox_allowGreatSPNMdepArcs.setSelected(Main.areGreatSPNMdepArcsAllowed());
         
@@ -124,6 +127,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         jLabel9 = new javax.swing.JLabel();
         textFieldLibraryPath = new javax.swing.JTextField();
         checkBox_allowGreatSPNMdepArcs = new javax.swing.JCheckBox();
+        checkBox_useAppImageDistrib = new javax.swing.JCheckBox();
 
         setTitle("Preferences");
         setResizable(false);
@@ -167,7 +171,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .add(jPanel4Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
                     .add(jSpinnerMaxLatexCache)
-                    .add(jSpinnerMaxUndo, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE))
+                    .add(jSpinnerMaxUndo))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel4Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(jLabel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -341,6 +345,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
 
         checkBox_allowGreatSPNMdepArcs.setText("Export marking-dependent arcs in GreatSPN format (extension only support by DSPN-Tool)");
 
+        checkBox_useAppImageDistrib.setText("Use the portable App-Image GreatSPN distribution, when available.");
+
         org.jdesktop.layout.GroupLayout tabSolverPathLayout = new org.jdesktop.layout.GroupLayout(tabSolverPath);
         tabSolverPath.setLayout(tabSolverPathLayout);
         tabSolverPathLayout.setHorizontalGroup(
@@ -367,7 +373,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, filenameCosmos, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .add(textField_rgmeddVer)
                             .add(textFieldLibraryPath)))
-                    .add(checkBox_allowGreatSPNMdepArcs, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .add(checkBox_allowGreatSPNMdepArcs, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 830, Short.MAX_VALUE)
+                    .add(checkBox_useAppImageDistrib, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         tabSolverPathLayout.setVerticalGroup(
@@ -399,7 +406,9 @@ public class PreferencesDialog extends javax.swing.JDialog {
                 .add(tabSolverPathLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(textField_rgmeddVer, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(jLabel8))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 229, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 130, Short.MAX_VALUE)
+                .add(checkBox_useAppImageDistrib)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(checkBox_allowGreatSPNExt)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(checkBox_allowGreatSPNMdepArcs)
@@ -436,6 +445,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         Main.setGreatSPNExtAllowed(checkBox_allowGreatSPNExt.isSelected());
         Main.setGreatSPNMdepArcsAllowed(checkBox_allowGreatSPNMdepArcs.isSelected());
         RGMEDD2Solver.setRGMEDDName(textField_rgmeddVer.getText());
+        RGMEDD2Solver.setUseAppImageGreatSPN_Distrib(checkBox_useAppImageDistrib.isSelected());
         
         SolverInvokator.setAdditionalPathDir(textFieldAdditionalPaths.getText());
         SolverInvokator.setAdditionalLibraryPathDir(textFieldLibraryPath.getText());
@@ -469,6 +479,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox checkBox_allowGreatSPNExt;
     private javax.swing.JCheckBox checkBox_allowGreatSPNMdepArcs;
+    private javax.swing.JCheckBox checkBox_useAppImageDistrib;
     private javax.swing.JComboBox<Main.UiSize> comboBoxUiSizes;
     private common.JFilenameField filenameCosmos;
     private common.JFilenameField filenameGreatSPN;

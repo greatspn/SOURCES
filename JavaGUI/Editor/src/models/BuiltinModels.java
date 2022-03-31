@@ -47,8 +47,4 @@ public class BuiltinModels {
     public static InputStream getModelStream(String model) {
         return BuiltinModels.class.getResourceAsStream("/models/" + model + ".PNPRO");
     }
-    
-    public static void main(String[] args) {
-        System.out.println(Main.getAppImageGreatSPN_dir());
-    }
 }

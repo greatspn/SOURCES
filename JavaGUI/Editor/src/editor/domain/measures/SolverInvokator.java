@@ -737,9 +737,25 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         return path;
     }
     
+    private static final String USE_APPIMAGE_GREATSPN_DISTRIB_KEY = "use_appimage_greatspn_distrib";
+    public static boolean getUseAppImageGreatSPN_Distrib() {
+        return Util.getPreferences().getBoolean(USE_APPIMAGE_GREATSPN_DISTRIB_KEY, true);
+    }
+    public static void setUseAppImageGreatSPN_Distrib(boolean use) {
+        Util.getPreferences().putBoolean(USE_APPIMAGE_GREATSPN_DISTRIB_KEY, use);
+    }
+    
     public static String useGreatSPN_binary(String binName) {
+        String cmd;
+        if (getUseAppImageGreatSPN_Distrib() && Main.isAppImageDistribution()) {
+            // Use the portable GreatSPN app-image distribution
+            cmd = Main.getAppImageGreatSPN_dir().getAbsolutePath() + File.separator + "bin" + File.separator + binName;
+        }
+        else {
+            // Use the system-level GreatSPN
+            cmd = getPathToGreatSPN() + "/bin/" + binName;
+        }
         // Append the command to the step.cmd string
-        String cmd = getPathToGreatSPN() + "/bin/" + binName;
 //        JOptionPane.showMessageDialog(null, "cmd = "+cmd);
         if (Util.isWindows()) { // Verify that the file exists in the WSL subsystem
             if (!checkWSL())
@@ -823,7 +839,8 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         
         if (!nenv.containsKey("PATH"))
             nenv.put("PATH", "");
-        if (!nenv.containsKey("LD_LIBRARY_PATH"))
+        final String LD_LIBRARY_PATH = Util.isOSX() ? "DYLD_LIBRARY_PATH" : "LD_LIBRARY_PATH";
+        if (!nenv.containsKey(LD_LIBRARY_PATH))
             nenv.put("LD_LIBRARY_PATH", "");
         
         if (solver != null)
@@ -838,10 +855,16 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
                     value += (value.isEmpty() ? "" : File.pathSeparator) + getAdditionalPathDir();
 //                System.out.println("PATH="+value);
             }
-            if (e.getKey().equalsIgnoreCase("LD_LIBRARY_PATH")) {
-                if (!getAdditionalLibraryPathDir().isEmpty())
-                    value += (value.isEmpty() ? "" : File.pathSeparator) + getAdditionalLibraryPathDir();
-//                System.out.println("LD_LIBRARY_PATH="+value);
+            if (e.getKey().equalsIgnoreCase(LD_LIBRARY_PATH)) {
+                if (!getAdditionalLibraryPathDir().isEmpty()) {
+                    value += (value.isEmpty() ? "" : File.pathSeparator) + 
+                            getAdditionalLibraryPathDir();
+                }
+                if (getUseAppImageGreatSPN_Distrib() && Main.isAppImageDistribution() && !Util.isWindows()) {
+                    value += (value.isEmpty() ? "" : File.pathSeparator) + 
+                            Main.getAppImageGreatSPN_dir().getAbsolutePath()+"/lib";
+                }
+//                System.out.println(LD_LIBRARY_PATH+"="+value);
             }
             envp[pos++] = e.getKey()+"="+value;
         }

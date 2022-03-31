@@ -103,7 +103,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="1" max="-2" attributes="0">
                               <Component id="jSpinnerMaxLatexCache" max="32767" attributes="0"/>
-                              <Component id="jSpinnerMaxUndo" pref="64" max="32767" attributes="0"/>
+                              <Component id="jSpinnerMaxUndo" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
@@ -328,8 +328,8 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="checkBox_allowGreatSPNExt" max="32767" attributes="0"/>
                           <Group type="102" attributes="0">
@@ -354,7 +354,8 @@
                                   <Component id="textFieldLibraryPath" alignment="0" max="32767" attributes="0"/>
                               </Group>
                           </Group>
-                          <Component id="checkBox_allowGreatSPNMdepArcs" alignment="0" max="32767" attributes="0"/>
+                          <Component id="checkBox_allowGreatSPNMdepArcs" alignment="0" pref="830" max="32767" attributes="0"/>
+                          <Component id="checkBox_useAppImageDistrib" alignment="0" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -395,7 +396,9 @@
                           <Component id="textField_rgmeddVer" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="229" max="32767" attributes="0"/>
+                      <EmptySpace pref="130" max="32767" attributes="0"/>
+                      <Component id="checkBox_useAppImageDistrib" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="checkBox_allowGreatSPNExt" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="checkBox_allowGreatSPNMdepArcs" min="-2" max="-2" attributes="0"/>
@@ -467,6 +470,11 @@
             <Component class="javax.swing.JCheckBox" name="checkBox_allowGreatSPNMdepArcs">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Export marking-dependent arcs in GreatSPN format (extension only support by DSPN-Tool)"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="checkBox_useAppImageDistrib">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Use the portable App-Image GreatSPN distribution, when available."/>
               </Properties>
             </Component>
           </SubComponents>

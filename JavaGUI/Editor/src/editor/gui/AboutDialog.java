@@ -44,6 +44,8 @@ public class AboutDialog extends javax.swing.JDialog {
                         + "</html>");
         
         jLabelCopyrights.setText(jLabelCopyrights.getText().replace("XXXX", buildYear));
+        
+        pack();
     } 
 
     /**
@@ -57,7 +59,6 @@ public class AboutDialog extends javax.swing.JDialog {
         java.awt.GridBagConstraints gridBagConstraints;
 
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabelCopyrights = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -72,14 +73,6 @@ public class AboutDialog extends javax.swing.JDialog {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Credits"));
         jPanel1.setLayout(new java.awt.GridBagLayout());
-
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/editor/gui/icons/icon64.png"))); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
-        jPanel1.add(jLabel1, gridBagConstraints);
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/editor/gui/icons/app-banner.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -264,7 +257,6 @@ public class AboutDialog extends javax.swing.JDialog {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonCloseDialog;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;

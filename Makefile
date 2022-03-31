@@ -2070,8 +2070,11 @@ SCRIPTS += unfolding2 algebra2 greatspn_editor
 ### GreatSPN app-image
 ######################################
 
-GREATSPN_APP_VERSION:=3.1
-GREATSPN_APPNAME:=GreatSPN-$(GREATSPN_APP_VERSION)
+GREATSPN_APP_VERSION_MAJOR:=3
+GREATSPN_APP_VERSION_MINOR:=1
+GREATSPN_APP_VERSION:=v$(GREATSPN_APP_VERSION_MAJOR)r$(GREATSPN_APP_VERSION_MINOR)
+GREATSPN_APP_VERSION_FULLNUMBER=$(shell expr $(GREATSPN_APP_VERSION_MAJOR)00 + $(GREATSPN_APP_VERSION_MINOR) )
+GREATSPN_APPNAME:=GreatSPN
 
 # jdeps --ignore-missing-deps --print-module-deps \
 # 			--class-path $(OBJDIR)/JavaGUI/bin/lib/*.jar \
@@ -2084,25 +2087,25 @@ JPACKAGE_LINUX_OPTIONS:=--input JavaGUI/Editor/dist \
 		--main-class editor.Main  \
 	  --add-modules $(JAVAGUI_MODULES) \
 	  --java-options "-enableassertions" \
-		--java-options "-splash:Contents/Java/splash.png" \
-		--app-version "$(GREATSPN_APP_VERSION)" \
+		--java-options '"-splash:$$APPDIR/GreatSPN Editor.app/Contents/Java/splash.png"' \
+		--app-version "$(GREATSPN_APP_VERSION_FULLNUMBER)" \
 		--copyright "University of Torino, Italy" \
 		--description "The GreatSPN framework. Visit https://github.com/greatspn/SOURCES for more informations." \
 		--dest objects/GreatSPN/ \
-		--icon "JavaGUI/Additional/greatspn48.png" \
+		--icon "JavaGUI/AdditionalV3/GreatSPN.png" \
 
 # # Builds the linux native applications using the jpackage tool
 # $(OBJDIR)/JavaGUI/greatspn-editor_$(GUI_VERSION)-1_amd64.deb: JavaGUI
 # 	@echo "  [JPACKAGE DEB] " $@
 # 	@jpackage $(JPACKAGE_LINUX_OPTIONS) \
 # 		--type deb \
-# 		--file-associations JavaGUI/DISTRIB/PNPRO-linux-FileAssoc.txt
+# 		--file-associations JavaGUI/AdditionalV3/PNPRO-linux-FileAssoc.txt
 
 # $(OBJDIR)/JavaGUI/greatspn-editor_$(GUI_VERSION)-1_amd64.rpm: JavaGUI
 # 	@echo "  [JPACKAGE RPM] " $@
 # 	@jpackage $(JPACKAGE_LINUX_OPTIONS) \
 # 		--type rpm \
-# 		--file-associations JavaGUI/DISTRIB/PNPRO-linux-FileAssoc.txt
+# 		--file-associations JavaGUI/AdditionalV3/PNPRO-linux-FileAssoc.txt
 
 $(OBJDIR)/GreatSPN/$(GREATSPN_APPNAME): all
 	@echo "  [JPACKAGE APP-IMAGE] " $@
@@ -2114,21 +2117,38 @@ $(OBJDIR)/GreatSPN/$(GREATSPN_APPNAME): all
 	@mkdir -p $@/lib/app/portable_greatspn/lib
 	@cp $(BINDIR)/* $@/lib/app/portable_greatspn/bin/
 	@rm -f $@/lib/app/portable_greatspn/bin/DSPN-Tool-Debug # not needed
-	@cp /lib/x86_64-linux-gnu/libgmpxx.so.4 \
-	   /lib/x86_64-linux-gnu/libgmp.so.10 \
-	   ../meddly/src/.libs/libmeddly.so.0 \
-	   ../spot-2.9.6/spot/.libs/libspot.so.0 \
-	   ../spot-2.9.6/buddy/src/.libs/libbddx.so.0 \
-	   /lib/x86_64-linux-gnu/libcolamd.so.2 \
-	   /lib/x86_64-linux-gnu/libsuitesparseconfig.so.5 \
-	   $@/lib/app/portable_greatspn/lib/
-	# Make installable package
-	@echo "  [JPACKAGE DEB] " $@
-	@jpackage --type deb --app-image $@ \
-		--name GreatSPN \
-		--app-version "$(GREATSPN_APP_VERSION)" \
-	  --file-associations JavaGUI/DISTRIB/PNPRO-linux-FileAssoc.txt
+	@cp ../meddly/src/.libs/libmeddly.so.0 \
+	    ../spot-2.9.6/spot/.libs/libspot.so.0 \
+	    ../spot-2.9.6/buddy/src/.libs/libbddx.so.0 \
+	    $@/lib/app/portable_greatspn/lib/
 
+# Make installable DEB package
+# Application icon is taken from the resource-dir directory
+greatspn_$(GREATSPN_APP_VERSION_FULLNUMBER)-full_amd64.deb: 
+	@echo "  [JPACKAGE DEB] " $@
+	@jpackage --type deb \
+	  --app-image $(OBJDIR)/GreatSPN/$(GREATSPN_APPNAME) \
+		--name $(GREATSPN_APPNAME) \
+		--app-version $(GREATSPN_APP_VERSION_FULLNUMBER) \
+		--file-associations JavaGUI/AdditionalV3/PNPRO-linux-FileAssoc.txt \
+		--resource-dir JavaGUI/AdditionalV3 \
+	  --linux-deb-maintainer "Elvio Amparore <amparore@di.unito.it>" \
+	  --linux-menu-group "Science" \
+	  --linux-app-release "full" \
+	  --linux-package-deps "libsuitesparse-dev, libgmpxx4ldbl, libgmp-dev, graphviz"
+
+# Make installable RPM package
+greatspn-$(GREATSPN_APP_VERSION_FULLNUMBER)-full.x86_64.rpm:
+	@echo "  [JPACKAGE RPM] " $@
+	@jpackage --type rpm --app-image $(OBJDIR)/GreatSPN/$(GREATSPN_APPNAME) \
+		--name $(GREATSPN_APPNAME) \
+		--app-version $(GREATSPN_APP_VERSION_FULLNUMBER) \
+		--file-associations JavaGUI/AdditionalV3/PNPRO-linux-FileAssoc.txt \
+		--resource-dir JavaGUI/AdditionalV3 \
+	  --linux-menu-group "Science" \
+	  --linux-app-release "full" \
+	  --linux-package-deps "gmp-c++, gmp, suitesparse, graphviz, lpsolve"
+	  
 
 clean_GreatSPN-App: 
 	@echo "  [CLEAN]  GreatSPN app-image"                              
@@ -2154,8 +2174,8 @@ clean_GreatSPN-App:
 # 		--copyright "University of Torino, Italy" \
 # 		--description "The GUI of the GreatSPN framework. Visit https://github.com/greatspn/SOURCES for more informations." \
 # 		--dest objects/JavaGUI/ \
-# 		--icon "JavaGUI/Additional/greatspn.icns" \
-# 		--file-associations JavaGUI/DISTRIB/PNPRO-macos-FileAssoc.txt \
+# 		--icon "JavaGUI/AdditionalV3/greatspn.icns" \
+# 		--file-associations JavaGUI/AdditionalV3/PNPRO-macos-FileAssoc.txt \
 # 		--type dmg
 
 ######################################
