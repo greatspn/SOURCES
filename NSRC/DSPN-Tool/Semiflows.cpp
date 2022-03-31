@@ -306,10 +306,10 @@ ostream& flow_matrix_t::print(ostream& os, bool highlight_annulled) const {
 
 //-----------------------------------------------------------------------------
 
-flow_matrix_t::flow_matrix_t(size_t _N, size_t _N0, size_t _M, InvariantKind _ik, 
+flow_matrix_t::flow_matrix_t(size_t initN, size_t initN0, size_t initM, InvariantKind _ik, 
                              SystemMatrixType smt, int _suppl_flags, bool _add_extra_vars, 
                              bool _use_Colom_pivoting, bool _extra_vars_in_support) 
-: N(_N), N0(_N0), M(_M), inv_kind(_ik), system_kind(smt), suppl_flags(_suppl_flags), 
+: N(initN), N0(initN0), M(initM), inv_kind(_ik), system_kind(smt), suppl_flags(_suppl_flags), 
 add_extra_vars(_add_extra_vars), use_Colom_pivoting(_use_Colom_pivoting), 
 extra_vars_in_support(_extra_vars_in_support), mat_kind(FlowMatrixKind::EMPTY) 
 { 

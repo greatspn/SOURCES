@@ -80,7 +80,7 @@ class reverse_heap {
     // }
 
 public:
-    reverse_heap(size_t _N) : N(_N) {
+    reverse_heap(size_t initN) : N(initN) {
         heap.reserve(N);
         W.resize(N, -1.0);
         rev_heap.resize(N, -1);

@@ -37,8 +37,8 @@ class full_element_selector : boost::noncopyable {
     const size_t N;	  ///< Selected range size.
 public:
     /// Initialize a full_element_selector instance.
-    ///   \param _N  number of elements in range [0, N).
-    inline full_element_selector(size_t _N);
+    ///   \param initN  number of elements in range [0, N).
+    inline full_element_selector(size_t initN);
 
     /// Test if a value \a k is in the selected range.
     ///   \param k  Tested value.
@@ -55,7 +55,7 @@ public:
     inline size_t operator[](size_t n) const;
 };
 
-inline full_element_selector::full_element_selector(size_t _N) : N(_N) { }
+inline full_element_selector::full_element_selector(size_t initN) : N(initN) { }
 inline bool full_element_selector::isSelected(size_t k) const { return true; }
 inline size_t full_element_selector::count() const { return N; }
 inline size_t full_element_selector::operator[](size_t n) const { return n; }

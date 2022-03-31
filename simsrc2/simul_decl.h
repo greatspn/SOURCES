@@ -10,7 +10,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
-#if !defined(__linux__) && !defined(_HPUX_SOURCE)
+#if !defined(__linux__) && !defined(_HPUX_SOURCE) && !defined(__CYGWIN__)
 #	include <sys/sockio.h>
 #else
 /*#	include <sys/socketio.h>*/

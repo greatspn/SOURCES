@@ -43,8 +43,8 @@ struct RG2;
 
 // Satisfiability set
 struct SAT : public PetriNetObject {
-    inline SAT(size_t _N = 0, boost::optional<marking_t> s0 = boost::optional<marking_t>())
-    /**/ : sat(_N), state(s0) { }
+    inline SAT(size_t initN = 0, boost::optional<marking_t> s0 = boost::optional<marking_t>())
+    /**/ : sat(initN), state(s0) { }
     inline SAT(const SAT &s) = default;
     inline SAT(SAT &&s) = default;
     virtual ~SAT();

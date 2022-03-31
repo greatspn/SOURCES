@@ -4,7 +4,7 @@
 
 ### Global Makefile variables ###
 CC := ./contrib/colorgcc -c
-CPP := ./contrib/colorg++ -c 
+CPP := ./contrib/colorg++ -c
 LD := ./contrib/colorgcc
 LDPP := ./contrib/colorg++
 RM := rm -f
@@ -115,10 +115,18 @@ endif
 ifneq (,$(findstring Microsoft,$(UNAME_R))) 
   ifeq ($(UNAME_S),Linux)
     IS_WSL := 1
-    $(info "Running on WSL.")
+    $(info Running on WSL.)
   endif
 endif
 ###
+
+ifneq (,$(findstring CYGWIN,$(UNAME_S))) 
+  $(info Running on CYGWIN.)
+	IS_CYGWIN := 1
+  CPP := $(CPP) -std=gnu++17
+	ENABLE_Cxx17 := -std=gnu++17
+	ENABLE_Cxx14 := -std=gnu++14
+endif
 
 ifdef IS_WSL
 	LAUNCH4J := 
@@ -1005,6 +1013,10 @@ RGMEDD4_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx17) $(INCLUDE_GMP_LIB) \
 RGMEDD4_LDFLAGS := $(LDFLAGS) $(FLEX-LIB) $(LINK_GMP_LIB) \
           $(LINK_MEDDLY_LIB) $(LINK_SPOT_LIB) -lmeddly -lspot
 
+ifdef IS_CYGWIN
+	RGMEDD4_LDFLAGS := $(RGMEDD4_LDFLAGS)  -lgmp -lgmpxx
+endif
+
 RGMEDD4_SOURCES := WN/SOURCE/SHARED/service.c \
            WN/SOURCE/SHARED/ealloc.c \
            WN/SOURCE/SHARED/token.c \
@@ -1089,6 +1101,10 @@ RGMEDD5_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx17) $(INCLUDE_GMP_LIB) \
 
 RGMEDD5_LDFLAGS := $(LDFLAGS) $(FLEX-LIB) $(LINK_GMP_LIB) \
 					$(LINK_MEDDLY_LIB) $(LINK_SPOT_LIB) -lmeddly -lspot
+
+ifdef IS_CYGWIN
+	RGMEDD5_LDFLAGS := $(RGMEDD4_LDFLAGS)  -lgmp -lgmpxx
+endif
 
 RGMEDD5_SOURCES := WN/SOURCE/SHARED/service.c \
 				   WN/SOURCE/SHARED/ealloc.c \

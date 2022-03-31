@@ -23,7 +23,7 @@ using namespace std;
 //---------------------------------------------------------------------------------------
 
 // Linux requires the program to define the semun data structure
-#ifdef __linux__
+#if defined __linux__ || defined __CYGWIN__ 
 union semun {
     int              val;    /* Value for SETVAL */
     struct semid_ds *buf;    /* Buffer for IPC_STAT, IPC_SET */
