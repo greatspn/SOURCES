@@ -475,7 +475,7 @@ AtomicProp::AtomicProp(atomicprop_t i, const char *s)
 //=============================================================================
 
 bool IsActionId(const char *name, const DTA *pDTA) {
-    for (const ActionName act : pDTA->acts)
+    for (const ActionName &act : pDTA->acts)
         if (act.name == name)
             return true;
     return false;
@@ -484,7 +484,7 @@ bool IsActionId(const char *name, const DTA *pDTA) {
 //=============================================================================
 
 actname_t FindActionInd(const char *name, const DTA *pDTA) {
-    for (const ActionName act : pDTA->acts)
+    for (const ActionName &act : pDTA->acts)
         if (act.name == name)
             return act.index;
     throw program_exception("FindActionInd: Internal error.");

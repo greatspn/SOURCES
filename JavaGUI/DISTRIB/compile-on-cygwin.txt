@@ -1,0 +1,45 @@
+Download cygwin
+
+From setup-x86_64.exe install the following packages:
+(Open the interface and select "Full" on the top-left)
+
+wget git gcc-g++ gcc-core libgmp-devel libgmpxx
+libboost-devel flex libglib2.0-devel autoreconf cmake
+patch libglpk-devel autoconf automake cygwin32-libtool 
+zip unzip byacc graphviz libsuitesparseconfig-devel make 
+libxml++2.6-devel libglibmm2.4-devel libiconv-devel
+
+Then run: 
+
+ln -s /usr/bin/aclocal-1.16 /usr/bin/aclocal
+ln -s /usr/bin/automake-1.16 /usr/bin/automake
+
+----Meddly----
+Compile meddly with make -k
+after compiling:
+cp src/.libs/libmeddly.a /usr/lib/
+
+----Spot----
+No problem.
+
+----OGDF----
+No problem.
+
+----lp_solve----
+It is not present in the remository, and needs to be compiled manually.
+Download lp_solve_5.5.2.11_source.tar.gz from sourceforge
+Go inside the lpsolve55 folder, and run:   
+sh ./ccc
+Then install using
+cp bin/ux64/liblpsolve55.a /usr/local/lib/
+cp ../lp_*.h /usr/local/include/
+
+Compile and install colamd:
+cd ../colamd
+gcc -c colamd.c -o colamd.o
+ar rcs libcolamd.a colamd.o
+cp libcolamd.a /usr/local/lib/
+
+----GreatSPN----
+Should compile the core (no Java) without problems.
+
