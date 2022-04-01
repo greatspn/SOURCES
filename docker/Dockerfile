@@ -25,7 +25,7 @@ RUN git clone  https://github.com/asminer/meddly.git meddly ;\
 RUN wget http://www.lrde.epita.fr/dload/spot/spot-2.9.6.tar.gz ;\
 	tar xzf spot-2.9.6.tar.gz ;\
 	cd spot-2.9.6 ;\
-	./configure --disable-python ;\
+	./configure --disable-python --disable-debug ;\
 	make ${MAKE_ARGS} ;\
 	sudo make install
 
