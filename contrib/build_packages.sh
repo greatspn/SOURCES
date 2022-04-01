@@ -8,6 +8,7 @@ fi
 GREATSPN_APP_VERSION_MAJOR=3
 GREATSPN_APP_VERSION_MINOR=1
 GREATSPN_APP_VERSION=v${GREATSPN_APP_VERSION_MAJOR}r${GREATSPN_APP_VERSION_MINOR}
+GREATSPN_APP_VERSION_NUMDOT=${GREATSPN_APP_VERSION_MAJOR}.${GREATSPN_APP_VERSION_MINOR}
 GREATSPN_APP_VERSION_FULLNUMBER=`expr ${GREATSPN_APP_VERSION_MAJOR}00 + ${GREATSPN_APP_VERSION_MINOR}`
 GREATSPN_APPNAME=GreatSPN
 GREATSPN_APPNAME_ID=greatspn-${GREATSPN_APP_VERSION}
@@ -34,6 +35,7 @@ JPACKAGE_OPTIONS="
 	--mac-package-identifier \"${GREATSPN_APPNAME_ID}\"
 	"
 APPIMAGE_DIR=${APPIMAGE_ROOTDIR}/${GREATSPN_APPNAME}.app
+PORTABLE_GREATSPN_ROOTDIR=${APPIMAGE_DIR}/lib/app/portable_greatspn
 ;;
 
 #----------------------------------------------------------
@@ -43,6 +45,21 @@ JPACKAGE_OPTIONS="
 	--icon JavaGUI/AdditionalV3/GreatSPN.png
 	"
 APPIMAGE_DIR=${APPIMAGE_ROOTDIR}/${GREATSPN_APPNAME}
+PORTABLE_GREATSPN_ROOTDIR=${APPIMAGE_DIR}/lib/app/portable_greatspn
+;;
+
+#----------------------------------------------------------
+cygwin*)   
+echo "CYGWIN"
+JPACKAGE_OPTIONS="
+	--icon JavaGUI/AdditionalV3/GreatSPN.ico
+	--java-options -Dsun.java2d.uiScale.enabled=false
+	--java-options -Dsun.java2d.uiScale=2.0
+	--java-options -Dsun.java2d.win.uiScaleX=2.0 
+	--java-options -Dsun.java2d.win.uiScaleY=2.0
+	"
+APPIMAGE_DIR=${APPIMAGE_ROOTDIR}/${GREATSPN_APPNAME}
+PORTABLE_GREATSPN_ROOTDIR=${APPIMAGE_DIR}/app/portable_greatspn
 ;;
 
 #----------------------------------------------------------
@@ -51,8 +68,6 @@ echo "unknown: $OSTYPE"
 exit 1 
 ;;
 esac
-
-echo ${JPACKAGE_OPTIONS}
 
 
 ###########################################################
@@ -79,12 +94,12 @@ echo 'FIRST STAGE: Building the app-image'
 ###########################################################
 echo 'SECOND STAGE: Creating the Portable GreatSPN distribution'
 
-mkdir -p ${APPIMAGE_DIR}/lib/app/portable_greatspn
-mkdir -p ${APPIMAGE_DIR}/lib/app/portable_greatspn/bin
-mkdir -p ${APPIMAGE_DIR}/lib/app/portable_greatspn/lib
+mkdir -p ${PORTABLE_GREATSPN_ROOTDIR}
+mkdir -p ${PORTABLE_GREATSPN_ROOTDIR}/bin
+mkdir -p ${PORTABLE_GREATSPN_ROOTDIR}/lib
 
-cp bin/* ${APPIMAGE_DIR}/lib/app/portable_greatspn/bin/
-rm -f ${APPIMAGE_DIR}/lib/app/portable_greatspn/bin/DSPN-Tool-Debug # not needed
+cp bin/* ${PORTABLE_GREATSPN_ROOTDIR}/bin/
+rm -f ${PORTABLE_GREATSPN_ROOTDIR}/bin/DSPN-Tool-Debug # not needed
 
 case "$OSTYPE" in
 #----------------------------------------------------------
@@ -92,7 +107,7 @@ darwin*)
 cp  ../meddly/src/.libs/libmeddly.dylib \
     ../spot-2.9.6/spot/.libs/libspot.dylib \
     ../spot-2.9.6/buddy/src/.libs/libbddx.dylib \
-    ${APPIMAGE_DIR}/lib/app/portable_greatspn/lib/
+    ${PORTABLE_GREATSPN_ROOTDIR}/lib/
 ;;
 
 #----------------------------------------------------------
@@ -100,7 +115,21 @@ linux*)
 cp  ../meddly/src/.libs/libmeddly.so.0 \
     ../spot-2.9.6/spot/.libs/libspot.so.0 \
     ../spot-2.9.6/buddy/src/.libs/libbddx.so.0 \
-    ${APPIMAGE_DIR}/lib/app/portable_greatspn/lib/
+    ${PORTABLE_GREATSPN_ROOTDIR}/lib/
+;;
+
+#----------------------------------------------------------
+cygwin*) 
+# derived using ldd bin/RGMEDD5 & other
+# NOTE: everything will be in the bin/ directory in windows
+cp  /usr/bin/cygwin1.dll \
+	/usr/bin/cyggmp-10.dll \
+	/usr/bin/cyggcc_s-seh-1.dll \
+	/usr/bin/cyggmpxx-4.dll \
+	/usr/local/bin/cygspot-0.dll \
+	/usr/local/bin/cygbddx-0.dll \
+	/usr/bin/cygstdc++-6.dll \
+	${PORTABLE_GREATSPN_ROOTDIR}/bin/
 ;;
 
 #----------------------------------------------------------
@@ -159,6 +188,21 @@ jpackage \
 	--linux-app-release "full" \
 	--linux-package-deps "gmp-c++, gmp, suitesparse, graphviz, lpsolve"
 
+;;
+
+#----------------------------------------------------------
+cygwin*)
+echo "CYGWIN"
+# Make the MSI installer
+jpackage \
+	--type msi \
+	--app-image ${APPIMAGE_DIR} \
+	--name ${GREATSPN_APPNAME} \
+	--app-version ${GREATSPN_APP_VERSION_NUMDOT} \
+	--file-associations JavaGUI/AdditionalV3/PNPRO-win-FileAssoc.txt \
+	--resource-dir JavaGUI/AdditionalV3 \
+	--win-menu --win-menu-group "${GREATSPN_APPNAME}" \
+	--win-dir-chooser
 ;;
 
 #----------------------------------------------------------
