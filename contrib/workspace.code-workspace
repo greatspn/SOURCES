@@ -104,7 +104,22 @@
 			"queue": "cpp",
 			"semaphore": "cpp",
 			"stack": "cpp",
-			"filesystem": "cpp"
+			"filesystem": "cpp",
+			"*.mdwnrg": "c",
+			"*.mdwnsrg": "c",
+			"*.pn2ode": "c",
+			"*.cs": "c",
+			"*.esrg": "c",
+			"*.gsrg": "c",
+			"*.gssim": "c",
+			"*.libmcdsrg": "c",
+			"*.libmcesrg": "c",
+			"*.librg": "c",
+			"*.libsrg": "c",
+			"*.libssp": "c",
+			"*.rg": "c",
+			"*.srg": "c",
+			"*.ss": "c"
 		}
 	},
 	// "C_Cpp.default.includePath": [

@@ -1673,8 +1673,8 @@ int initialize(int  argc,  char  *argv[]) {
 
     // compose_name(net, argv[1], "mfp");
     // mfp = efopen(net, "w") ;
-    compose_name(net, argv[1], "net2");
-    nfp2 = efopen(net, "w") ;
+    // compose_name(net, argv[1], "net2");
+    // nfp2 = efopen(net, "w") ;
 
 #ifdef SWN
     parse_DEF = COLOR_CLASS;
@@ -1690,29 +1690,29 @@ int initialize(int  argc,  char  *argv[]) {
 #endif
 #endif
 
-    fclose(nfp2);
+    // fclose(nfp2);
 
 
     /* LETTURA DEL FILE .def E CREAZIONE DEL .net CON SOSTITUZIONE DELLE MACRO */
 
     /* LETTURA DEL FILE .net E DELLA MARCATURA INIZIALE */
 
-#ifdef GREATSPN
-    sprintf(comm, "/bin/cat \"%s.net2\" \"%s.net\" > \"%s.ntp\"", argv[1], argv[1], argv[1]);
-#else
-    sprintf(comm, "/bin/cat \"nets/%s.net2\" \"nets/%s.net\" > \"nets/%s.ntp\"", argv[1], argv[1], argv[1]);
-#endif
-    system(comm);
-    remove_command(comm, argv[1], "net2");
-    system(comm);
-#ifdef GREATSPN
-    sprintf(comm, "cpp \"%s.ntp\" > \"%s.par\"", argv[1], argv[1]);
-#else
-    sprintf(comm, "cpp \"nets/%s.ntp\" > \"nets/%s.par\"", argv[1], argv[1]);
-#endif
-    system(comm);
-    remove_command(comm, argv[1], "ntp");
-    system(comm);
+// #ifdef GREATSPN
+//     sprintf(comm, "/bin/cat \"%s.net2\" \"%s.net\" > \"%s.ntp\"", argv[1], argv[1], argv[1]);
+// #else
+//     sprintf(comm, "/bin/cat \"nets/%s.net2\" \"nets/%s.net\" > \"nets/%s.ntp\"", argv[1], argv[1], argv[1]);
+// #endif
+//     system(comm);
+//     remove_command(comm, argv[1], "net2");
+//     system(comm);
+// #ifdef GREATSPN
+//     sprintf(comm, "cpp \"%s.ntp\" > \"%s.par\"", argv[1], argv[1]);
+// #else
+//     sprintf(comm, "cpp \"nets/%s.ntp\" > \"nets/%s.par\"", argv[1], argv[1]);
+// #endif
+//     system(comm);
+//     remove_command(comm, argv[1], "ntp");
+//     system(comm);
 
     compose_name(net, argv[1], "stat");
     ok = ((pinfp = fopen(net, "r")) != NULL) ;
@@ -1721,7 +1721,7 @@ int initialize(int  argc,  char  *argv[]) {
 
 
 
-    read_NET_file(TRUE /* read post-processed <netname>.par */);
+    read_NET_file(FALSE /* read post-processed <netname>.par */);
 
     parse_DEF = MDRATE;
     read_DEF_file();			   /* OPERAZIONI */

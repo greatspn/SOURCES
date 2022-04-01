@@ -50,7 +50,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         comboBoxUiSizes.setSelectedItem(Main.getStartupUiSize());
         
         // Solvers
-        filenameGreatSPN.setText(RGMEDD2Solver.getPathToGreatSPN());
+        filenameGreatSPN.setText(Main.getPathToGreatSPN());
         filenameGreatSPN.setDirPrefKey("greatspn-dir-pref");
         
         filenameCosmos.setText(RGMEDD2Solver.getPathToCosmos());
@@ -64,7 +64,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         textFieldAdditionalPaths.setText(SolverInvokator.getAdditionalPathDir());
         textFieldLibraryPath.setText(SolverInvokator.getAdditionalLibraryPathDir());
         
-        checkBox_useAppImageDistrib.setSelected(RGMEDD2Solver.getUseAppImageGreatSPN_Distrib());
+        checkBox_useAppImageDistrib.setSelected(Main.getUseAppImageGreatSPN_Distrib());
         checkBox_useAppImageDistrib.setText("Use the portable App-Image GreatSPN distribution, when available (currently "+
                 (Main.isAppImageDistribution() ? "AVAILABLE" : "NOT AVAILABLE")+").");
         checkBox_allowGreatSPNExt.setSelected(Main.isGreatSPNExtAllowed());
@@ -439,13 +439,13 @@ public class PreferencesDialog extends javax.swing.JDialog {
         Main.setStartupUiSize((Main.UiSize)comboBoxUiSizes.getSelectedItem());
         
         // Solvers
-        RGMEDD2Solver.setPathToGreatSPN(filenameGreatSPN.getText());
+        Main.setPathToGreatSPN(filenameGreatSPN.getText());
         CosmosSolver.setPathToCosmos(filenameCosmos.getText());
         NSolve.setPathToNSolve(filenameNSolve.getText());
         Main.setGreatSPNExtAllowed(checkBox_allowGreatSPNExt.isSelected());
         Main.setGreatSPNMdepArcsAllowed(checkBox_allowGreatSPNMdepArcs.isSelected());
         RGMEDD2Solver.setRGMEDDName(textField_rgmeddVer.getText());
-        RGMEDD2Solver.setUseAppImageGreatSPN_Distrib(checkBox_useAppImageDistrib.isSelected());
+        Main.setUseAppImageGreatSPN_Distrib(checkBox_useAppImageDistrib.isSelected());
         
         SolverInvokator.setAdditionalPathDir(textFieldAdditionalPaths.getText());
         SolverInvokator.setAdditionalLibraryPathDir(textFieldLibraryPath.getText());

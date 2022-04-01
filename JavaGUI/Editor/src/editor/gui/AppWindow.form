@@ -1660,11 +1660,6 @@
       </Layout>
       <SubComponents>
         <Container class="javax.swing.JSplitPane" name="jSplitPaneLeftCenterH">
-          <Properties>
-            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-              <Border info="null"/>
-            </Property>
-          </Properties>
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout"/>
           <SubComponents>
@@ -1684,9 +1679,6 @@
               <SubComponents>
                 <Container class="javax.swing.JSplitPane" name="jSplitPaneLeftV">
                   <Properties>
-                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                      <Border info="null"/>
-                    </Property>
                     <Property name="orientation" type="int" value="0"/>
                   </Properties>
 
@@ -1738,7 +1730,6 @@
                           <SubComponents>
                             <Container class="javax.swing.JToolBar" name="jToolBarTree">
                               <Properties>
-                                <Property name="floatable" type="boolean" value="false"/>
                                 <Property name="rollover" type="boolean" value="true"/>
                               </Properties>
 
@@ -1840,9 +1831,6 @@
               <SubComponents>
                 <Container class="javax.swing.JSplitPane" name="jSplitPaneCenterErrListV">
                   <Properties>
-                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                      <Border info="null"/>
-                    </Property>
                     <Property name="orientation" type="int" value="0"/>
                     <Property name="resizeWeight" type="double" value="1.0"/>
                   </Properties>
@@ -1927,7 +1915,6 @@
                 <TitledBorder justification="2" position="5" title="File"/>
               </Border>
             </Property>
-            <Property name="floatable" type="boolean" value="false"/>
             <Property name="rollover" type="boolean" value="true"/>
           </Properties>
 
@@ -1973,7 +1960,6 @@
                 <TitledBorder justification="2" position="5" title="Edit"/>
               </Border>
             </Property>
-            <Property name="floatable" type="boolean" value="false"/>
             <Property name="rollover" type="boolean" value="true"/>
           </Properties>
 
@@ -2044,7 +2030,6 @@
                 <TitledBorder justification="2" position="5" title="Basic"/>
               </Border>
             </Property>
-            <Property name="floatable" type="boolean" value="false"/>
             <Property name="rollover" type="boolean" value="true"/>
           </Properties>
 
@@ -2153,7 +2138,6 @@
                 <TitledBorder justification="2" position="5" title="Advanced"/>
               </Border>
             </Property>
-            <Property name="floatable" type="boolean" value="false"/>
             <Property name="rollover" type="boolean" value="true"/>
           </Properties>
 
@@ -2207,7 +2191,6 @@
                 <TitledBorder justification="2" position="5" title="Panel"/>
               </Border>
             </Property>
-            <Property name="floatable" type="boolean" value="false"/>
             <Property name="rollover" type="boolean" value="true"/>
           </Properties>
 

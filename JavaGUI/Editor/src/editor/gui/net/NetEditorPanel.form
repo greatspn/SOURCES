@@ -569,7 +569,6 @@
       <SubComponents>
         <Container class="javax.swing.JToolBar" name="jToolBar">
           <Properties>
-            <Property name="floatable" type="boolean" value="false"/>
             <Property name="rollover" type="boolean" value="true"/>
           </Properties>
           <Constraints>
@@ -591,6 +590,9 @@
                 <Property name="horizontalTextPosition" type="int" value="0"/>
                 <Property name="verticalTextPosition" type="int" value="3"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jToggleButtonSelectionActionPerformed"/>
+              </Events>
             </Component>
             <Component class="common.JToggleTriState" name="jToggleTriStateAddIntConst">
               <Properties>
@@ -847,7 +849,6 @@
         </Container>
         <Container class="javax.swing.JToolBar" name="jToolBarEdgeCmd">
           <Properties>
-            <Property name="floatable" type="boolean" value="false"/>
             <Property name="rollover" type="boolean" value="true"/>
           </Properties>
           <Constraints>
@@ -927,7 +928,6 @@
           <SubComponents>
             <Container class="javax.swing.JToolBar" name="jToolBar1">
               <Properties>
-                <Property name="floatable" type="boolean" value="false"/>
                 <Property name="rollover" type="boolean" value="true"/>
               </Properties>
 

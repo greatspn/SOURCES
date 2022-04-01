@@ -16,3 +16,4 @@ JavaGUI/Editor/.DS_Store
 WN/.DS_Store
 WN/SOURCE/.DS_Store
 .vscode
+/JavaGUI/Editor/dist/

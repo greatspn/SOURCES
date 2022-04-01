@@ -1615,7 +1615,6 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
 
         jPanelToolbars.setLayout(new java.awt.GridBagLayout());
 
-        jToolBar.setFloatable(false);
         jToolBar.setRollover(true);
 
         jToggleButtonSelection.setAction(actionSelection);
@@ -1624,6 +1623,11 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
         jToggleButtonSelection.setHideActionText(true);
         jToggleButtonSelection.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jToggleButtonSelection.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToggleButtonSelection.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButtonSelectionActionPerformed(evt);
+            }
+        });
         jToolBar.add(jToggleButtonSelection);
 
         jToggleTriStateAddIntConst.setAction(actionAddIntConst);
@@ -1781,7 +1785,6 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         jPanelToolbars.add(jToolBar, gridBagConstraints);
 
-        jToolBarEdgeCmd.setFloatable(false);
         jToolBarEdgeCmd.setRollover(true);
         jToolBarEdgeCmd.add(jSeparator1);
 
@@ -1816,7 +1819,6 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
         jPanel1.setOpaque(false);
         jPanel1.setLayout(new java.awt.GridLayout(1, 0));
 
-        jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
         jToolbarButtonViewProfiles.setIcon(resourceFactory.getThreeTags24());
@@ -2195,6 +2197,10 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
             }
         });
     }//GEN-LAST:event_actionClearAllEdgePointsActionPerformed
+
+    private void jToggleButtonSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonSelectionActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jToggleButtonSelectionActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private common.Action actionAddActionTemplate;

@@ -174,7 +174,11 @@ void read_DEF_file() {
                         }/* Definizione di marcatura */
                         break;
                     case 'f' : if (parse_DEF == FUNCTION)
-                            fprintf(nfp2, "# define %s %s", bufname, tmp);
+                            if (nfp2 != NULL)
+                                fprintf(nfp2, "# define %s %s", bufname, tmp);
+                            else {
+                                fprintf(stderr, "OLD pre-processing of the net/def file is disabled.");
+                            }
                         break;
                     }
                     if (NULL == fgets(tmp, MAXSTRING - 1, def_fp)) { }

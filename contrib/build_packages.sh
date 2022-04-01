@@ -26,7 +26,7 @@ JAVAGUI_MODULES=java.base,java.compiler,java.desktop,java.naming,java.prefs,java
 case "$OSTYPE" in
 #----------------------------------------------------------
 darwin*)
-echo "OSX"
+echo "Running on OSX"
 JPACKAGE_OPTIONS="
 	--java-options \"-Djava.library.path=Contents/Java/\" 
 	--java-options \"-Dapple.laf.useScreenMenuBar=true\" 
@@ -40,7 +40,7 @@ PORTABLE_GREATSPN_ROOTDIR=${APPIMAGE_DIR}/lib/app/portable_greatspn
 
 #----------------------------------------------------------
 linux*)   
-echo "LINUX"
+echo "Running on LINUX"
 JPACKAGE_OPTIONS="
 	--icon JavaGUI/AdditionalV3/GreatSPN.png
 	"
@@ -50,14 +50,14 @@ PORTABLE_GREATSPN_ROOTDIR=${APPIMAGE_DIR}/lib/app/portable_greatspn
 
 #----------------------------------------------------------
 cygwin*)   
-echo "CYGWIN"
+echo "Running on CYGWIN"
 JPACKAGE_OPTIONS="
 	--icon JavaGUI/AdditionalV3/GreatSPN.ico
-	--java-options -Dsun.java2d.uiScale.enabled=false
-	--java-options -Dsun.java2d.uiScale=2.0
-	--java-options -Dsun.java2d.win.uiScaleX=2.0 
-	--java-options -Dsun.java2d.win.uiScaleY=2.0
 	"
+# --java-options -Dsun.java2d.uiScale.enabled=false
+# --java-options -Dsun.java2d.uiScale=2.0
+# --java-options -Dsun.java2d.win.uiScaleX=2.0 
+# --java-options -Dsun.java2d.win.uiScaleY=2.0
 APPIMAGE_DIR=${APPIMAGE_ROOTDIR}/${GREATSPN_APPNAME}
 PORTABLE_GREATSPN_ROOTDIR=${APPIMAGE_DIR}/app/portable_greatspn
 ;;
@@ -142,11 +142,11 @@ esac
 ###########################################################
 echo 'THIRD STAGE: Creating installable packages'
 
+exit
 
 case "$OSTYPE" in
 #----------------------------------------------------------
 darwin*)
-echo "OSX"
 # Make the DMG package
 jpackage \
 	--type dmg \
@@ -161,7 +161,6 @@ jpackage \
 
 #----------------------------------------------------------
 linux*)   
-echo "LINUX"
 # Make installable DEB package
 # Application icon is taken from the resource-dir directory
 jpackage \
@@ -192,7 +191,6 @@ jpackage \
 
 #----------------------------------------------------------
 cygwin*)
-echo "CYGWIN"
 # Make the MSI installer
 jpackage \
 	--type msi \
