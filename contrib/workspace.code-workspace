@@ -119,7 +119,12 @@
 			"*.libssp": "c",
 			"*.rg": "c",
 			"*.srg": "c",
-			"*.ss": "c"
+			"*.ss": "c",
+			"const.h": "c",
+			"struct.h": "c",
+			"fun_ext.h": "c",
+			"macros.h": "c",
+			"decl.h": "c"
 		}
 	},
 	// "C_Cpp.default.includePath": [

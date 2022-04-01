@@ -580,6 +580,15 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
             // step 2:   replace backslash with slash
             fn = fn.replace("\\", "/");
         }
+//        else if (Main.useAppImage() && Util.isWindows()) { // CYGWIN
+//            // step 1:    C:  ->  /cygdrive/c/
+//            if (fn.length()>2 && fn.charAt(1)==':') {
+//                char devLetter = Character.toLowerCase(fn.charAt(0));
+//                fn = "/cygdrive/"+devLetter+"/"+fn.substring(2);
+//            }
+//            // step 2:   replace backslash with slash
+//            fn = fn.replace("\\", "/");
+//        }
         return fn;        
     }
     public static String makeFilenameForCmd(String fname) {
@@ -798,6 +807,9 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         if (!nenv.containsKey(LD_LIBRARY_PATH))
             nenv.put("LD_LIBRARY_PATH", "");
         
+        if (Main.useAppImage() && !nenv.containsKey("GREATSPN_APPIMAGE_DIR"))
+            nenv.put("GREATSPN_APPIMAGE_DIR", Main.getAppImageGreatSPN_dir().getAbsolutePath());
+        
         if (solver != null)
             solver.modifyEnvironmentVars(nenv);
         
@@ -809,6 +821,8 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
                 if (!getAdditionalPathDir().isEmpty())
                     value += (value.isEmpty() ? "" : File.pathSeparator) + getAdditionalPathDir();
 //                System.out.println("PATH="+value);
+//                JOptionPane.showMessageDialog(null, "PATH="+value);
+
             }
             if (e.getKey().equalsIgnoreCase(LD_LIBRARY_PATH)) {
                 if (!getAdditionalLibraryPathDir().isEmpty()) {

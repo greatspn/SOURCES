@@ -8,6 +8,9 @@
 #include <time.h>
 #include <assert.h>
 #include <limits.h>
+// #include <unistd.h>
+// #include <sys/types.h>
+// #include <sys/wait.h>
 #include "../../INCLUDE/const.h"
 #include "../../INCLUDE/struct.h"
 #include "../../INCLUDE/decl.h"
@@ -2252,10 +2255,41 @@ int finalize(void) {
         fprintf(f_dot, "}\n");
         fclose(f_dot);
         if (dot_pdf_filename != NULL) {
-            sprintf(command, "dot \"%s.dot\" -Tpdf -o \"%s.pdf\"", dot_basename, dot_pdf_filename);
-            printf("Generating PDF file using dot...\n  %s\n", command);
-            if (system(command) != 0) {
-                printf("ERROR: failed to invoke dot command!\n");
+            // pid_t pid = fork();
+            // if (pid < 0) { // error
+            //     fprintf(stderr, "ERROR:cannot fork!\n");
+            // } else if (pid == 0) { // parent
+            //     int retcode;
+            //     waitpid(pid, &retcode, 0);
+            //     printf("waitpid returned %d %d\n", WIFEXITED(retcode), WEXITSTATUS(retcode));
+            // }
+            // else { // exec child
+            //     printf("pid = %d\n", pid);
+            //     // char arg1[LINE_MAX], arg2[LINE_MAX];
+            //     // snprintf(arg1, LINE_MAX, "%s.dot", dot_basename);
+            //     // snprintf(arg2, LINE_MAX, "%s.pdf", dot_pdf_filename);
+            //     // const char* args[] = {arg1, "-Tpdf", "-o", arg2, NULL};
+            //     // int ret = execvp("dot", args);
+            //     snprintf(command, LINE_MAX, "dot \"%s.dot\" -Tpdf -o \"%s.pdf\"", 
+            //              dot_basename, dot_pdf_filename);
+            //     printf("Generating PDF file using dot...\n%s\n", command);
+            //     const char* args[] = {"/C", "dot -h", NULL};
+            //     int ret = execvp("cmd", args);
+            //     if (ret != 0) {
+            //         perror("execvp");
+            //         printf("ERROR: failed to invoke dot command! %d\n", ret);
+            //     }
+            //     exit(ret);
+            // }
+
+            printf("RET=%d\n", system("cmd.exe /C \"start .\""));
+            snprintf(command, LINE_MAX, "dot \"%s.dot\" -Tpdf -o \"%s.pdf\"", 
+                    dot_basename, dot_pdf_filename);
+            // printf("PATH = %s\n", getenv("PATH"));
+            printf("Generating PDF file using dot...\n%s\n", command);
+            int ret = system(command);
+            if (ret != 0) {
+                printf("ERROR: failed to invoke dot command! %d\n", ret);
             }
             else if (invoked_from_gui()) { 
                 // Confirm to the GUI the proper invokation of dot and pdf generation.
