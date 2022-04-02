@@ -11,6 +11,7 @@ GREATSPN_APP_VERSION=v${GREATSPN_APP_VERSION_MAJOR}r${GREATSPN_APP_VERSION_MINOR
 GREATSPN_APP_VERSION_NUMDOT=${GREATSPN_APP_VERSION_MAJOR}.${GREATSPN_APP_VERSION_MINOR}
 GREATSPN_APP_VERSION_FULLNUMBER=`expr ${GREATSPN_APP_VERSION_MAJOR}00 + ${GREATSPN_APP_VERSION_MINOR}`
 GREATSPN_APPNAME=GreatSPN
+GREATSPN_APPNAME_LOWERCASE=greatspn
 GREATSPN_APPNAME_ID=greatspn-${GREATSPN_APP_VERSION}
 
 APPIMAGE_ROOTDIR=objects/AppImage
@@ -152,11 +153,16 @@ jpackage \
 	--type dmg \
 	--app-image ${APPIMAGE_DIR} \
 	--name ${GREATSPN_APPNAME} \
-	--app-version "${GREATSPN_APP_VERSION_FULLNUMBER}-`uname -m`" \
+	--app-version "${GREATSPN_APP_VERSION_FULLNUMBER}" \
 	--file-associations JavaGUI/AdditionalV3/PNPRO-macos-FileAssoc.txt \
 	--resource-dir JavaGUI/AdditionalV3 \
 	--mac-package-name "${GREATSPN_APPNAME}-${GREATSPN_APP_VERSION_FULLNUMBER}" \
 	--mac-package-identifier "${GREATSPN_APPNAME_ID}"
+
+OLDDMG=${GREATSPN_APPNAME}-${GREATSPN_APP_VERSION_FULLNUMBER}.dmg
+NEWDMG=${GREATSPN_APPNAME}-${GREATSPN_APP_VERSION_NUMDOT}-`uname -m`.dmg
+echo mv ${OLDDMG} ${NEWDMG}
+
 ;;
 
 #----------------------------------------------------------
@@ -175,6 +181,10 @@ jpackage \
 	--linux-app-release "full" \
 	--linux-package-deps "libsuitesparse-dev, libgmpxx4ldbl, libgmp-dev, graphviz"
 
+OLDDEB=`ls ${GREATSPN_APPNAME_LOWERCASE}_${GREATSPN_APP_VERSION_FULLNUMBER}*.deb`
+NEWDEB=`echo ${OLDDEB} | sed "s/${GREATSPN_APP_VERSION_FULLNUMBER}-full/${GREATSPN_APP_VERSION_NUMDOT}/g"`
+mv ${OLDDEB} ${NEWDEB}
+
 # Make installable RPM package
 jpackage \
 	--type rpm \
@@ -186,6 +196,10 @@ jpackage \
 	--linux-menu-group "Science" \
 	--linux-app-release "full" \
 	--linux-package-deps "gmp-c++, gmp, suitesparse, graphviz, lpsolve"
+
+OLDRPM=`ls ${GREATSPN_APPNAME_LOWERCASE}-${GREATSPN_APP_VERSION_FULLNUMBER}*.rpm`
+NEWRPM=`echo ${OLDRPM} | sed "s/${GREATSPN_APP_VERSION_FULLNUMBER}-full/${GREATSPN_APP_VERSION_NUMDOT}/g"`
+mv ${OLDRPM} ${NEWRPM}
 
 ;;
 
@@ -217,7 +231,7 @@ esac
 ###########################################################
 echo 'FOURTH STAGE: Cleaning temporary files'
 
-# rm -rf ${APPIMAGE_ROOTDIR}
+rm -rf ${APPIMAGE_ROOTDIR}
 
 echo "Done."
 
