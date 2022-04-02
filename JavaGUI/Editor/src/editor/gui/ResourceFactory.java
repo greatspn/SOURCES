@@ -129,8 +129,9 @@ public class ResourceFactory {
 //            }
             // Select the smallest that fits the target width
             int j = 0;
-            while (j < srcSizes.length && srcSizes[j] <= targetHeight) {
-                sel = j;
+            while (j < srcSizes.length) {
+                if (srcSizes[j] <= targetHeight && srcSizes[j] > srcSizes[sel])
+                    sel = j;
                 j++;
             }
 
@@ -297,10 +298,10 @@ public class ResourceFactory {
         if (Util.isLinux())
             return Util.loadIcon("/editor/gui/icons/app-banner123.png");
         AbstractMultiResolutionImage mrImg;
-        mrImg = new MyMultiResolutionImage(new int[]{61,92,123}, 
-                        new String[]{"/editor/gui/icons/app-banner61.png", 
-                                     "/editor/gui/icons/app-banner92.png",
-                                     "/editor/gui/icons/app-banner123.png"});
+        mrImg = new MyMultiResolutionImage(new int[]{123,92,61}, 
+                        new String[]{"/editor/gui/icons/app-banner92.png",
+                                     "/editor/gui/icons/app-banner123.png", 
+                                     "/editor/gui/icons/app-banner61.png" });
         return new ImageIcon(mrImg);
     }
 
