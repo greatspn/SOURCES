@@ -58,6 +58,7 @@ public class AboutDialog extends javax.swing.JDialog {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        resourceFactory1 = new editor.gui.ResourceFactory();
         jPanel1 = new javax.swing.JPanel();
         labelAppBanner = new javax.swing.JLabel();
         jLabelCopyrights = new javax.swing.JLabel();
@@ -74,7 +75,7 @@ public class AboutDialog extends javax.swing.JDialog {
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Credits"));
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        labelAppBanner.setIcon(new javax.swing.ImageIcon(getClass().getResource("/editor/gui/icons/app-banner.png"))); // NOI18N
+        labelAppBanner.setIcon(resourceFactory1.getAppBanner());
         labelAppBanner.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -266,5 +267,6 @@ public class AboutDialog extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel labelAppBanner;
+    private editor.gui.ResourceFactory resourceFactory1;
     // End of variables declaration//GEN-END:variables
 }

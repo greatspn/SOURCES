@@ -173,7 +173,7 @@ public class ResourceFactory {
             return images;
         }
     }
-    
+        
     public static ImageIcon loadPropertyIcon(String name) {
         AbstractMultiResolutionImage mrImg;
         mrImg = new MyMultiResolutionImage(new int[]{16,24}, 
@@ -255,6 +255,19 @@ public class ResourceFactory {
 //        }
 //    }
     
+    ///////////////////////////////////////////////////////////////////////////
+
+    public ImageIcon getAppBanner() {
+        if (Util.isLinux())
+            return Util.loadIcon("/editor/gui/icons/app-banner123.png");
+        AbstractMultiResolutionImage mrImg;
+        mrImg = new MyMultiResolutionImage(new int[]{61,92,123}, 
+                        new String[]{"/editor/gui/icons/app-banner61.png", 
+                                     "/editor/gui/icons/app-banner92.png",
+                                     "/editor/gui/icons/app-banner123.png"});
+        return new ImageIcon(mrImg);
+    }
+
     ///////////////////////////////////////////////////////////////////////////
 
     public ImageIcon getAdvancedTools32() {
