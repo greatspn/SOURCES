@@ -3,12 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="1"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/cygwin64/home/Elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/measures/FormulaLanguage.java</file>
-            <file>file:/C:/cygwin64/home/Elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/measures/SolverInvokator.java</file>
-            <file>file:/C:/cygwin64/home/Elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/ResourceFactory.java</file>
-            <file>file:/C:/cygwin64/home/Elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/common/Util.java</file>
-            <file>file:/C:/cygwin64/home/Elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/Main.java</file>
-            <file>file:/C:/cygwin64/home/Elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/AboutDialog.java</file>
+            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/measures/SolverInvokator.java</file>
+            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/ResourceFactory.java</file>
+            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/domain/measures/GreatSPNSolver.java</file>
+            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/gui/AboutDialog.java</file>
+            <file>file:/home/elvio/GreatSPN/SOURCES/JavaGUI/Editor/src/editor/Main.java</file>
         </group>
     </open-files>
 </project-private>

@@ -8,9 +8,12 @@ package editor.gui;
 
 import common.Util;
 import editor.Main;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.AbstractMultiResolutionImage;
 import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
+import java.awt.image.ImageProducer;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -173,6 +176,39 @@ public class ResourceFactory {
             return images;
         }
     }
+    
+//    private static class StubImage extends Image {
+//        Image image = null;
+//        String src;
+//        int w, h;
+//
+//        @Override public int getWidth(ImageObserver io) { return w; }
+//        @Override public int getHeight(ImageObserver io) { return h; }
+//
+//        @Override
+//        public ImageProducer getSource() {
+//        }
+//
+//        @Override
+//        public Graphics getGraphics() {
+//        }
+//
+//        @Override
+//        public Object getProperty(String string, ImageObserver io) {
+//            return Image.UndefinedProperty;
+//        }
+//        
+//        private void preload() {
+//            if (image == null) {
+//                image = Util.loadImage(src);
+//                if (image.getWidth(null) != w)
+//                    System.out.println("Initial width was incorrect");
+//                if (image.getHeight(null) != h)
+//                    System.out.println("Initial height was incorrect");
+//            }
+//        }
+//        
+//    }
         
     public static ImageIcon loadPropertyIcon(String name) {
         AbstractMultiResolutionImage mrImg;
