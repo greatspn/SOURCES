@@ -35,7 +35,7 @@ JPACKAGE_OPTIONS="
 	--mac-package-identifier \"${GREATSPN_APPNAME_ID}\"
 	"
 APPIMAGE_DIR=${APPIMAGE_ROOTDIR}/${GREATSPN_APPNAME}.app
-PORTABLE_GREATSPN_ROOTDIR=${APPIMAGE_DIR}/lib/app/portable_greatspn
+PORTABLE_GREATSPN_ROOTDIR=${APPIMAGE_DIR}/Contents/app/portable_greatspn
 ;;
 
 #----------------------------------------------------------

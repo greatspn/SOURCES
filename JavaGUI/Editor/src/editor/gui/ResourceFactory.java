@@ -169,7 +169,7 @@ public class ResourceFactory {
 
         @Override
         public List<Image> getResolutionVariants() {
-            System.out.println("getResolutionVariants");
+//            System.out.println("getResolutionVariants");
             return images;
         }
     }
