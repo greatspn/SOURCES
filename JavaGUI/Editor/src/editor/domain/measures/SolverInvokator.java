@@ -815,6 +815,14 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
     }
     
     //==========================================================================
+    private static String addToPath(String path, String dir) {
+        if (path.isEmpty())
+            return dir;
+        else if (dir.isEmpty())
+            return path;
+        else return path + File.pathSeparator + dir;
+    }
+    //==========================================================================
     public static String[] prepareRuntimeEnvironmentVars() {
         return prepareRuntimeEnvironmentVars(null);
     }
@@ -861,19 +869,24 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
             String value = e.getValue();
             if (e.getKey().equalsIgnoreCase("PATH")) {
                 if (!getAdditionalPathDir().isEmpty())
-                    value += (value.isEmpty() ? "" : File.pathSeparator) + getAdditionalPathDir();
+                    value = addToPath(value, getAdditionalPathDir());
+                if (Util.isOSX() && Main.isAppImageDistribution()) {
+                    // FIX: currently the macOS bundle starts with a very basic PATH.
+                    // Add some common directories
+                    value = addToPath(value, "/opt/homebrew/bin");
+                    value = addToPath(value, "/opt/local/bin");
+                }
 //                System.out.println("PATH="+value);
 //                JOptionPane.showMessageDialog(null, "PATH="+value);
 
             }
             if (e.getKey().equalsIgnoreCase(LD_LIBRARY_PATH)) {
                 if (!getAdditionalLibraryPathDir().isEmpty()) {
-                    value += (value.isEmpty() ? "" : File.pathSeparator) + 
-                            getAdditionalLibraryPathDir();
+                    value = addToPath(value, getAdditionalLibraryPathDir());
                 }
                 if (Main.useAppImage()) {
-                    value += (value.isEmpty() ? "" : File.pathSeparator) + 
-                            Main.getAppImageGreatSPN_dir().getAbsolutePath()+File.separator+"lib";
+                    value = addToPath(value, 
+                            Main.getAppImageGreatSPN_dir().getAbsolutePath()+File.separator+"lib");
                 }
 //                System.out.println(LD_LIBRARY_PATH+"="+value);
             }
