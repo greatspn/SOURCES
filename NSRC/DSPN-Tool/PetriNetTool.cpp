@@ -59,6 +59,8 @@ using namespace numerical;
 #include "CSLTA.h"
 #include "LinearProg.h"
 
+#include "../platform/platform_utils.h"
+
 
 
 // TODO: eliminare -old-mrp ed -isomorphism
@@ -621,101 +623,21 @@ struct ToolData {
 
     int GenerateDotFile(const string &DotName, bool openIt) const {
         // use posix_spawn, which provides better compatibility across Unix and Cygwin
-        string dot_fname, pdf_fname;
-        {
-            ostringstream arg_dot, arg_pdf;
-            arg_dot << DotName << ".dot";
-            dot_fname = arg_dot.str();
-            arg_pdf << DotName << ".pdf";
-            pdf_fname = arg_pdf.str();
-        }
-        {
-            const char* const args[] = { "dot", dot_fname.c_str(), "-Tpdf", "-o", pdf_fname.c_str(), nullptr };
-            pid_t pid;
-            int status = posix_spawnp(&pid, args[0], nullptr, nullptr, (char* const*)args, environ);
-            if (status == 0) {
-                cout << "Calling " << args[0] << " ... (pid=" << pid << ")" << endl;
-                do {
-                    if (waitpid(pid, &status, 0) != -1) {
-                        cout << args[0] << " returned " << WEXITSTATUS(status) << endl;
-                    } else {
-                        cout << "ERROR: creating child process.";
-                        return -1;
-                    }
-                } while (!WIFEXITED(status) && !WIFSIGNALED(status));
-            } else {
-                cout << "ERROR: posix_spawn: " << strerror(status) << endl;
-                return -1;
+        string dot_fname = DotName + ".dot";
+        string pdf_fname = DotName + ".pdf";
+
+        int status = dot_to_pdf(dot_fname.c_str(), pdf_fname.c_str());
+
+        if (0==status) {
+            cout << "DOT FILEs SAVED AS " << DotName << ".dot ";
+            cout << "AND " << DotName << ".pdf\n" << endl;
+            if (openIt)
+                open_file(pdf_fname.c_str());
+            if (invoked_from_gui()) {
+                cout << "#{GUI}# RESULT " << (withVanishings ? "RG" : "TRG") << endl;
             }
         }
-
-        if (openIt) {
-#if defined(__linux__) && !defined(__CYGWIN__)
-            ostringstream DotOpenCmd;
-            DotOpenCmd << "xdg-open ";
-            DotOpenCmd << "\"" << DotName << ".pdf\"";
-            if (system(DotOpenCmd.str().c_str()) < 0)
-                return -1;
-#elif defined(__APPLE__)
-            ostringstream DotOpenCmd;
-            DotOpenCmd << "open ";
-            DotOpenCmd << "\"" << DotName << ".pdf\"";
-            if (system(DotOpenCmd.str().c_str()) < 0)
-                return -1;
-#elif defined(__CYGWIN__)
-            const char* const args[] = {"cmd", "/C", "START", pdf_fname.c_str(), nullptr};
-            pid_t pid;
-            int status = posix_spawnp(&pid, args[0], nullptr, nullptr, (char* const*)args, environ);
-            if (status == 0) {
-                cout << "Calling " << args[0] << " ... (pid=" << pid << ")" << endl;
-                do {
-                    if (waitpid(pid, &status, 0) != -1) {
-                        cout << args[0] << " returned " << WEXITSTATUS(status) << endl;
-                    } else {
-                        cout << "ERROR: creating child process.";
-                        return -1;
-                    }
-                } while (!WIFEXITED(status) && !WIFSIGNALED(status));
-            } else {
-                cout << "ERROR: posix_spawn: " << strerror(status) << endl;
-                return -1;
-            }            
-#else
-# warning Unimplemented
-#endif
-        }
-
-//         ostringstream DotCmd;
-//         DotCmd << "dot -Tpdf \"" << DotName << ".dot\" ";
-//         DotCmd << "-o \"" << DotName << ".pdf\"";
-// #ifndef WIN32
-//         DotCmd << " 2> /dev/null";
-// #endif
-//         cout << "USING DOT TOOL..." << endl;
-//         cout << DotCmd.str() << endl;
-//         if (system(DotCmd.str().c_str()) < 0)
-//             throw program_exception("Cannot execute an external command.");
-//         if (openIt) {
-//             ostringstream DotOpenCmd;
-// #ifdef WIN32
-//             DotOpenCmd << "START ";
-// #elif defined(__linux__)
-//             DotOpenCmd << "gnome-open ";
-// #else
-//             DotOpenCmd << "open ";
-// #endif
-//             DotOpenCmd << "\"" << DotName << ".pdf\"";
-//             if (system(DotOpenCmd.str().c_str()) < 0)
-//                 throw program_exception("Cannot execute an external command.");
-//         }
-
-        cout << "DOT FILEs SAVED AS " << DotName << ".dot ";
-        cout << "AND " << DotName << ".pdf\n" << endl;
-
-        if (invoked_from_gui()) {
-            cout << "#{GUI}# RESULT " << (withVanishings ? "RG" : "TRG") << endl;
-        }
-        return 0;
+        return status;
     }
 
 

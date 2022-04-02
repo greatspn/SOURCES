@@ -563,7 +563,8 @@ WNSIM_SOURCES := WN/SOURCE/SHARED/service.c \
 				 WN/SOURCE/READNET/read_t_s.c \
 				 WN/SOURCE/READNET/wn_yac.c \
 				 WN/TRANSL/wn_grammar.y \
-				 WN/TRANSL/wn.l
+				 WN/TRANSL/wn.l \
+				 NSRC/platform/platform_utils.c
 
 WNSYMB_CFLAGS := $(call generate_WN_FLAGS,TOOL_WNSYMB,WNSYMB)
 WNSYMB_LDFLAGS:= $(LDFLAGS) -lm
@@ -615,7 +616,8 @@ WNRG_SOURCES := WN/SOURCE/SHARED/service.c \
 				WN/SOURCE/READNET/read_t_s.c \
 				WN/SOURCE/READNET/wn_yac.c \
 				WN/TRANSL/wn_grammar.y \
-				WN/TRANSL/wn.l
+				WN/TRANSL/wn.l \
+				NSRC/platform/platform_utils.c
 
 WNSRG_CFLAGS := $(call generate_WN_FLAGS,TOOL_WNSRG,WNSRG)
 WNSRG_LDFLAGS:= $(LDFLAGS) -lm
@@ -653,7 +655,8 @@ WNSRG_SOURCES := WN/SOURCE/SHARED/service.c \
 				 WN/SOURCE/READNET/read_t_s.c \
 				 WN/SOURCE/READNET/wn_yac.c \
 				 WN/TRANSL/wn_grammar.y \
-				 WN/TRANSL/wn.l
+				 WN/TRANSL/wn.l \
+				 NSRC/platform/platform_utils.c
 
 MDWNRG_CFLAGS := $(call generate_WN_FLAGS,TOOL_MDWNRG,MDWNRG)
 MDWNRG_LDFLAGS:= $(LDFLAGS) -lm
@@ -687,7 +690,8 @@ MDWNRG_SOURCES := WN/SOURCE/SHARED/service.c \
 				  WN/SOURCE/READNET/read_t_s.c \
 				  WN/SOURCE/READNET/wn_yac.c \
 				  WN/TRANSL/wn_grammar.y \
-				  WN/TRANSL/wn.l
+				  WN/TRANSL/wn.l \
+				  NSRC/platform/platform_utils.c
 
 MDWNSRG_CFLAGS := $(call generate_WN_FLAGS,TOOL_MDWNSRG,MDWNSRG)
 MDWNSRG_LDFLAGS:= $(LDFLAGS) -lm
@@ -725,7 +729,8 @@ MDWNSRG_SOURCES := WN/SOURCE/SHARED/service.c \
 				   WN/SOURCE/READNET/read_t_s.c \
 				   WN/SOURCE/READNET/wn_yac.c \
 				   WN/TRANSL/wn_grammar.y \
-				   WN/TRANSL/wn.l
+				   WN/TRANSL/wn.l \
+				   NSRC/platform/platform_utils.c
 
 WNESRG_CFLAGS := $(call generate_WN_FLAGS,TOOL_WNESRG,WNESRG)
 WNESRG_LDFLAGS:= $(LDFLAGS) -lm
@@ -775,7 +780,8 @@ WNESRG_SOURCES := WN/SOURCE/SHARED/service.c \
 				  WN/SOURCE/REACHAB/E_SRG/READ_WRITE.c \
 				  WN/SOURCE/REACHAB/E_SRG/SAVE.c \
 				  WN/TRANSL/wn_grammar.y \
-				  WN/TRANSL/wn.l
+				  WN/TRANSL/wn.l \
+				  NSRC/platform/platform_utils.c
 
 # RGMEDD_CFLAGS := $(call generate_WN_FLAGS,TOOL_RGMEDD,RGMEDD) \
 # 				 $(FLEX-INCLUDE) 
@@ -975,7 +981,8 @@ RGMEDD3_SOURCES := WN/SOURCE/SHARED/service.c \
            WN/SOURCE/RGMEDD3/graphMEDD.cpp \
            WN/SOURCE/RGMEDD3/CTL.cpp \
            WN/SOURCE/RGMEDD3/CTLParser.yy \
-           WN/SOURCE/RGMEDD3/CTLLexer.ll 
+           WN/SOURCE/RGMEDD3/CTLLexer.ll  \
+			     NSRC/platform/platform_utils.c
 
 # Modify the lexer and the parser generators used by the
 # RGMEDD3_LEX_WN/SOURCE/AUTOMA/AutoLexer.l = $(LEX) -P kk --header-file=$(@:.c=.h)
@@ -1003,86 +1010,86 @@ endif
 
 #### RGMEDD version 4 ########################################
 
-# -DDEBUG_BUILD enables verbose logging, MDD.show() methods, dumping svg / pdf
-RGMEDD4_CFLAGS := $(CFLAGS) $(call generate_WN_FLAGS,TOOL_RGMEDD4,RGMEDD4) \
-          $(FLEX-INCLUDE) #-g #-DDEBUG_BUILD
+# # -DDEBUG_BUILD enables verbose logging, MDD.show() methods, dumping svg / pdf
+# RGMEDD4_CFLAGS := $(CFLAGS) $(call generate_WN_FLAGS,TOOL_RGMEDD4,RGMEDD4) \
+#           $(FLEX-INCLUDE) #-g #-DDEBUG_BUILD
 
-RGMEDD4_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx17) $(INCLUDE_GMP_LIB) \
-          $(RGMEDD4_CFLAGS) $(INCLUDE_MEDDLY_LIB) $(INCLUDE_SPOT_LIB)
+# RGMEDD4_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx17) $(INCLUDE_GMP_LIB) \
+#           $(RGMEDD4_CFLAGS) $(INCLUDE_MEDDLY_LIB) $(INCLUDE_SPOT_LIB)
 
-RGMEDD4_LDFLAGS := $(LDFLAGS) $(FLEX-LIB) $(LINK_GMP_LIB) \
-          $(LINK_MEDDLY_LIB) $(LINK_SPOT_LIB) -lmeddly -lspot
+# RGMEDD4_LDFLAGS := $(LDFLAGS) $(FLEX-LIB) $(LINK_GMP_LIB) \
+#           $(LINK_MEDDLY_LIB) $(LINK_SPOT_LIB) -lmeddly -lspot
 
-ifdef IS_CYGWIN
-	RGMEDD4_LDFLAGS := $(RGMEDD4_LDFLAGS)  -lgmp -lgmpxx
-endif
+# ifdef IS_CYGWIN
+# 	RGMEDD4_LDFLAGS := $(RGMEDD4_LDFLAGS)  -lgmp -lgmpxx
+# endif
 
-RGMEDD4_SOURCES := WN/SOURCE/SHARED/service.c \
-           WN/SOURCE/SHARED/ealloc.c \
-           WN/SOURCE/SHARED/token.c \
-           WN/SOURCE/SHARED/dimensio.c \
-           WN/SOURCE/SHARED/errors.c \
-           WN/SOLVE/compact.c \
-           WN/SOURCE/SHARED/common.c \
-           WN/SOURCE/SHARED/enabling.c \
-           WN/SOURCE/SHARED/fire.c \
-           WN/SOURCE/SHARED/shared1.c \
-           WN/SOURCE/SHARED/shared2.c \
-           WN/SOURCE/SHARED/outdom.c \
-           WN/SOURCE/SHARED/report.c \
-           WN/SOURCE/SHARED/precheck.c \
-           WN/SOURCE/SHARED/flush.c \
-           WN/SOURCE/SHARED/degree.c \
-           WN/SOURCE/REACHAB/graph_se.c \
-           WN/SOURCE/REACHAB/stack.c \
-           WN/SOURCE/REACHAB/convert.c \
-           WN/SOURCE/REACHAB/rg_files.c \
-           WN/SOURCE/REACHAB/rgengwn.c \
-           WN/SOURCE/READNET/read_arc.c \
-           WN/SOURCE/READNET/read_t_c.c \
-           WN/SOURCE/READNET/read_DEF.c \
-           WN/SOURCE/READNET/read_NET.c \
-           WN/SOURCE/READNET/read_PIN.c \
-           WN/SOURCE/READNET/read_t_s.c \
-           WN/SOURCE/READNET/wn_yac.c \
-           WN/TRANSL/wn_grammar.y \
-           WN/TRANSL/wn.l \
-           WN/SOURCE/RGMEDD4/parallel.cpp \
-           WN/SOURCE/RGMEDD4/mainMEDD4.cpp \
-           WN/SOURCE/RGMEDD4/utils/mt19937-64.c \
-           WN/SOURCE/RGMEDD4/varorders.cpp \
-           WN/SOURCE/RGMEDD4/varorders_bgl.cpp \
-           WN/SOURCE/RGMEDD4/varorders_meta.cpp \
-           WN/SOURCE/RGMEDD4/varorders_soups.cpp \
-           WN/SOURCE/RGMEDD4/varorders_pbasis.cpp \
-           WN/SOURCE/RGMEDD4/meddEv.cpp \
-           WN/SOURCE/RGMEDD4/general.cpp \
-           WN/SOURCE/RGMEDD4/graphMEDD.cpp \
-           WN/SOURCE/RGMEDD4/FormulaEval.cpp \
-           WN/SOURCE/RGMEDD4/CTL.cpp \
-           WN/SOURCE/RGMEDD4/LTL.cpp \
-           WN/SOURCE/RGMEDD4/CTLParser.yy \
-           WN/SOURCE/RGMEDD4/CTLLexer.ll
+# RGMEDD4_SOURCES := WN/SOURCE/SHARED/service.c \
+#            WN/SOURCE/SHARED/ealloc.c \
+#            WN/SOURCE/SHARED/token.c \
+#            WN/SOURCE/SHARED/dimensio.c \
+#            WN/SOURCE/SHARED/errors.c \
+#            WN/SOLVE/compact.c \
+#            WN/SOURCE/SHARED/common.c \
+#            WN/SOURCE/SHARED/enabling.c \
+#            WN/SOURCE/SHARED/fire.c \
+#            WN/SOURCE/SHARED/shared1.c \
+#            WN/SOURCE/SHARED/shared2.c \
+#            WN/SOURCE/SHARED/outdom.c \
+#            WN/SOURCE/SHARED/report.c \
+#            WN/SOURCE/SHARED/precheck.c \
+#            WN/SOURCE/SHARED/flush.c \
+#            WN/SOURCE/SHARED/degree.c \
+#            WN/SOURCE/REACHAB/graph_se.c \
+#            WN/SOURCE/REACHAB/stack.c \
+#            WN/SOURCE/REACHAB/convert.c \
+#            WN/SOURCE/REACHAB/rg_files.c \
+#            WN/SOURCE/REACHAB/rgengwn.c \
+#            WN/SOURCE/READNET/read_arc.c \
+#            WN/SOURCE/READNET/read_t_c.c \
+#            WN/SOURCE/READNET/read_DEF.c \
+#            WN/SOURCE/READNET/read_NET.c \
+#            WN/SOURCE/READNET/read_PIN.c \
+#            WN/SOURCE/READNET/read_t_s.c \
+#            WN/SOURCE/READNET/wn_yac.c \
+#            WN/TRANSL/wn_grammar.y \
+#            WN/TRANSL/wn.l \
+#            WN/SOURCE/RGMEDD4/parallel.cpp \
+#            WN/SOURCE/RGMEDD4/mainMEDD4.cpp \
+#            WN/SOURCE/RGMEDD4/utils/mt19937-64.c \
+#            WN/SOURCE/RGMEDD4/varorders.cpp \
+#            WN/SOURCE/RGMEDD4/varorders_bgl.cpp \
+#            WN/SOURCE/RGMEDD4/varorders_meta.cpp \
+#            WN/SOURCE/RGMEDD4/varorders_soups.cpp \
+#            WN/SOURCE/RGMEDD4/varorders_pbasis.cpp \
+#            WN/SOURCE/RGMEDD4/meddEv.cpp \
+#            WN/SOURCE/RGMEDD4/general.cpp \
+#            WN/SOURCE/RGMEDD4/graphMEDD.cpp \
+#            WN/SOURCE/RGMEDD4/FormulaEval.cpp \
+#            WN/SOURCE/RGMEDD4/CTL.cpp \
+#            WN/SOURCE/RGMEDD4/LTL.cpp \
+#            WN/SOURCE/RGMEDD4/CTLParser.yy \
+#            WN/SOURCE/RGMEDD4/CTLLexer.ll
 
-# Modify the lexer and the parser generators used by the
-# RGMEDD4_LEX_WN/SOURCE/AUTOMA/AutoLexer.l = $(LEX) -P kk --header-file=$(@:.c=.h)
-# RGMEDD4_YACCPP_WN/SOURCE/AUTOMA/AutoParser.yy := byacc -v -p kk -d
-RGMEDD4_YACCPP_WN/SOURCE/RGMEDD4/CTLParser.yy := byacc -p mm -v -d
-RGMEDD4_LEXPP_WN/SOURCE/RGMEDD4/CTLLexer.ll = $(LEXPP) -+ -P mm --header-file=$(@:.cpp=.h)
-RGMEDD4_LD := $(LDPP) -shared-libgcc
-RGMEDD4_CPPFLAGS := $(RGMEDD4_CPPFLAGS) -I.
+# # Modify the lexer and the parser generators used by the
+# # RGMEDD4_LEX_WN/SOURCE/AUTOMA/AutoLexer.l = $(LEX) -P kk --header-file=$(@:.c=.h)
+# # RGMEDD4_YACCPP_WN/SOURCE/AUTOMA/AutoParser.yy := byacc -v -p kk -d
+# RGMEDD4_YACCPP_WN/SOURCE/RGMEDD4/CTLParser.yy := byacc -p mm -v -d
+# RGMEDD4_LEXPP_WN/SOURCE/RGMEDD4/CTLLexer.ll = $(LEXPP) -+ -P mm --header-file=$(@:.cpp=.h)
+# RGMEDD4_LD := $(LDPP) -shared-libgcc
+# RGMEDD4_CPPFLAGS := $(RGMEDD4_CPPFLAGS) -I.
 
-$(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/FormulaEval.o: $(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/CTLLexer.ll.cpp
+# $(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/FormulaEval.o: $(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/CTLLexer.ll.cpp
 
-$(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/CTLParser.yy.o: $(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/CTLLexer.ll.cpp
+# $(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/CTLParser.yy.o: $(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/CTLLexer.ll.cpp
 
-$(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/CTLLexer.ll.o: $(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/CTLParser.yy.cpp
+# $(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/CTLLexer.ll.o: $(OBJDIR)/RGMEDD4/WN/SOURCE/RGMEDD4/CTLParser.yy.cpp
 
 
-ifdef HAS_LP_SOLVE_LIB
-  RGMEDD4_CPPFLAGS := $(RGMEDD4_CPPFLAGS) $(INCLUDE_LP_SOLVE_LIB)
-  RGMEDD4_LDFLAGS := $(RGMEDD4_LDFLAGS) $(LINK_LP_SOLVE_LIB) 
-endif
+# ifdef HAS_LP_SOLVE_LIB
+#   RGMEDD4_CPPFLAGS := $(RGMEDD4_CPPFLAGS) $(INCLUDE_LP_SOLVE_LIB)
+#   RGMEDD4_LDFLAGS := $(RGMEDD4_LDFLAGS) $(LINK_LP_SOLVE_LIB) 
+# endif
 
 # ifdef HAS_MEDDLY_LIB
 #   ifdef HAS_SPOT_LIB
@@ -1153,7 +1160,8 @@ RGMEDD5_SOURCES := WN/SOURCE/SHARED/service.c \
 				   WN/SOURCE/RGMEDD5/CTL.cpp \
 				   WN/SOURCE/RGMEDD5/LTL.cpp \
 				   WN/SOURCE/RGMEDD5/CTLParser.yy \
-				   WN/SOURCE/RGMEDD5/CTLLexer.ll
+				   WN/SOURCE/RGMEDD5/CTLLexer.ll \
+			     NSRC/platform/platform_utils.c
 
 # Modify the lexer and the parser generators used by the
 # RGMEDD5_LEX_WN/SOURCE/AUTOMA/AutoLexer.l = $(LEX) -P kk --header-file=$(@:.c=.h)
@@ -1219,7 +1227,8 @@ GSPNRG_SOURCES := WN/SOURCE/SHARED/service.c \
 				  WN/SOURCE/READNET/read_t_s.c \
 				  WN/SOURCE/READNET/wn_yac.c \
 				  WN/TRANSL/gspn_grammar.y \
-				  WN/TRANSL/wn.l
+				  WN/TRANSL/wn.l  \
+				  NSRC/platform/platform_utils.c
 
 GSPNSIM_CFLAGS := $(call generate_WN_FLAGS,TOOL_GSPNSIM,GSPNSIM)
 GSPNSIM_LDFLAGS:= $(LDFLAGS) -lm
@@ -1257,7 +1266,8 @@ GSPNSIM_SOURCES := WN/SOURCE/SHARED/service.c \
 				   WN/SOURCE/READNET/read_t_s.c \
 				   WN/SOURCE/READNET/wn_yac.c \
 				   WN/TRANSL/gspn_grammar.y \
-				   WN/TRANSL/wn.l
+				   WN/TRANSL/wn.l \
+				   NSRC/platform/platform_utils.c
   
 swn-translator_CFLAGS := $(CFLAGS) -DVERSION=1
 swn-translator_LDFLAGS := $(LDFLAGS) $(FLEX-LIB)
@@ -1482,7 +1492,8 @@ libgspnRG.a_SOURCES := WN/SOURCE/SPOT/properties.c \
 					   WN/SOURCE/READNET/read_t_s.c \
 					   WN/SOURCE/READNET/wn_yac.c \
 					   WN/TRANSL/wn_grammar.y \
-					   WN/TRANSL/wn.l
+					   WN/TRANSL/wn.l \
+				     NSRC/platform/platform_utils.c
 LIBRARIES += libgspnRG.a
 
 
@@ -1523,7 +1534,8 @@ libgspnSRG.a_SOURCES := WN/SOURCE/SPOT/properties.c \
 						WN/SOURCE/READNET/read_t_s.c \
 						WN/SOURCE/READNET/wn_yac.c \
 						WN/TRANSL/wn_grammar.y \
-						WN/TRANSL/wn.l
+						WN/TRANSL/wn.l \
+				    NSRC/platform/platform_utils.c
 LIBRARIES += libgspnSRG.a
 
 
@@ -1576,7 +1588,8 @@ libgspnMCESRG.a_SOURCES := WN/SOURCE/SHARED/main.c \
 						   WN/SOURCE/REACHAB/E_SRG/READ_WRITE.c \
 						   WN/SOURCE/REACHAB/E_SRG/SAVE.c \
 						   WN/TRANSL/wn_grammar.y \
-						   WN/TRANSL/wn.l
+						   WN/TRANSL/wn.l \
+				       NSRC/platform/platform_utils.c
 LIBRARIES += libgspnMCESRG.a
 
 
@@ -1640,7 +1653,8 @@ libgspnMCDSRG.a_SOURCES := WN/SOURCE/SPOT/PROPS/TRANS.y \
 						   WN/SOURCE/REACHAB/E_SRG/READ_WRITE.c \
 						   WN/SOURCE/REACHAB/E_SRG/SAVE.c \
 						   WN/TRANSL/wn_grammar.y \
-						   WN/TRANSL/wn.l
+						   WN/TRANSL/wn.l \
+				       NSRC/platform/platform_utils.c
 						   # WN/SOURCE/REACHAB/E_SRG/AFTER_FIRING_CASES.c
 
 # special flags for the lex/yacc files of this library
@@ -2155,7 +2169,8 @@ DSPN-Tool_SOURCES := NSRC/DSPN-Tool/newparser.lyy \
 			         NSRC/DSPN-Tool/SynchProduct.cpp \
 			         NSRC/DSPN-Tool/SynchProductSCC.cpp \
 			         NSRC/DSPN-Tool/utils.cpp \
-			         NSRC/numeric/numeric.cpp
+			         NSRC/numeric/numeric.cpp \
+			         NSRC/platform/platform_utils.c
 
 $(OBJDIR)/DSPN-Tool/NSRC/DSPN-Tool/newparser.lyy.o: NSRC/DSPN-Tool/newparser.lyy bin/lemon
 

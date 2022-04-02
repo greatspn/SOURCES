@@ -19,6 +19,7 @@
 #include "utils/mt64.h"
 // #include "dlcrs_matrix.h"
 
+
 #ifdef HAS_LP_SOLVE_LIB
 #  undef NORMAL
 #  include <lp_lib.h>

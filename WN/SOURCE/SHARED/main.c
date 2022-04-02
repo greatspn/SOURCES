@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -9,8 +8,6 @@
 #include <assert.h>
 #include <limits.h>
 #include <unistd.h>
-#include <spawn.h>
-#include <sys/wait.h>
 #include "../../INCLUDE/const.h"
 #include "../../INCLUDE/struct.h"
 #include "../../INCLUDE/decl.h"
@@ -18,6 +15,7 @@
 #include "../../INCLUDE/fun_ext.h"
 #include "../../INCLUDE/ealloc.h"
 #include "../../INCLUDE/service.h"
+#include "../../../NSRC/platform/platform_utils.h"
 
 #ifdef LIBSPOT
 #include "../../INCLUDE/gspnlib.h"
@@ -183,14 +181,6 @@ long numEvFEL = 0;
 long numEvOrdFEL = 0;
 #endif
 
-/**************************************************************/
-// if defined(WIN) && (_MSC_VER >= 1900)  use *__p__environ();
-#ifdef __APPLE__
-#include <crt_externs.h>
-const char** get_environ() { return _NSGetEnviron(); }
-#else
-const char** get_environ() { return environ; }
-#endif
 /**************************************************************/
 /* NAME : */
 /* DESCRIPTION : */
@@ -2263,28 +2253,12 @@ int finalize(void) {
         fprintf(f_dot, "}\n");
         fclose(f_dot);
         if (dot_pdf_filename != NULL) {
-            int success = 0;
             char arg_dot[LINE_MAX], arg_pdf[LINE_MAX];
             snprintf(arg_dot, LINE_MAX, "%s.dot", dot_basename);
             snprintf(arg_pdf, LINE_MAX, "%s.pdf", dot_pdf_filename);
-            char* const args[] = {"dot", arg_dot, "-Tpdf", "-o", arg_pdf, NULL};
-            pid_t pid;
-            int status = posix_spawnp(&pid, args[0], NULL, NULL, args, get_environ());
-            if (status == 0) {
-                printf("Calling %s... (pid=%d)\n", args[0], pid);
-                do {
-                    if (waitpid(pid, &status, 0) != -1) {
-                        printf("%s returned %d\n", args[0], WEXITSTATUS(status));
-                        success = WEXITSTATUS(status) == 0;
-                    } else {
-                        perror("ERROR: creating child process.");
-                    }
-                } while (!WIFEXITED(status) && !WIFSIGNALED(status));
-            } else {
-                printf("ERROR: posix_spawn: %s\n", strerror(status));
-            }
+            int status = dot_to_pdf(arg_dot, arg_pdf);
 
-            if (success && invoked_from_gui()) { 
+            if (status==0 && invoked_from_gui()) { 
                 // Confirm to the GUI the proper invokation of dot and pdf generation.
                 printf("#{GUI}# RESULT RG\n");
             }

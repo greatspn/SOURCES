@@ -5,6 +5,7 @@
         "*.tcc": "cpp",
         "ostream": "cpp",
         "const.h": "c",
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "platform_utils.h": "c"
     }
 }

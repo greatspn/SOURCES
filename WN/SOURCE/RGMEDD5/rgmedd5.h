@@ -28,6 +28,7 @@
 #include "boost/variant.hpp"
 #include "utils/union_find.h"
 #include "utils/mt64.h"
+#include "../../../NSRC/platform/platform_utils.h"
 
 // Allow std::variant visitors to be written as lambda functions.
 template<class... Ts> struct overload : Ts... { using Ts::operator()...; };
@@ -164,8 +165,6 @@ extern "C" {
     int* sort_according_to_pinv(); 
 };
 extern void print_banner(const char* title);
-// Open a file with the default application/browser
-int open_file(const char * filename);
 
 // A dummy value used to mark an infinite RS cardinality (just an arbitrary negative value)
 const int INFINITE_CARD = -570;
