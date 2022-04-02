@@ -59,7 +59,7 @@ public class AboutDialog extends javax.swing.JDialog {
         java.awt.GridBagConstraints gridBagConstraints;
 
         jPanel1 = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
+        labelAppBanner = new javax.swing.JLabel();
         jLabelCopyrights = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -74,15 +74,15 @@ public class AboutDialog extends javax.swing.JDialog {
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Credits"));
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/editor/gui/icons/app-banner.png"))); // NOI18N
+        labelAppBanner.setIcon(new javax.swing.ImageIcon(getClass().getResource("/editor/gui/icons/app-banner.png"))); // NOI18N
+        labelAppBanner.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.gridwidth = 4;
         gridBagConstraints.gridheight = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        jPanel1.add(jLabel2, gridBagConstraints);
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        jPanel1.add(labelAppBanner, gridBagConstraints);
 
         jLabelCopyrights.setText("<html> Credits:<br/>   &nbsp;&nbsp;&nbsp;GreatSPN framework: &copy; 1985-XXXX : Università di Torino, Italy.<br/>\n  &nbsp;&nbsp;&nbsp;New GreatSPN Editor: &copy; 2013-XXXX : Università di Torino, Italy.<br/>\n  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Main developer of the GUI: <a href=\"amparore@di.unito.it\">Elvio G. Amparore</a> <br/>  </html>");
         jLabelCopyrights.setVerticalAlignment(javax.swing.SwingConstants.TOP);
@@ -257,7 +257,6 @@ public class AboutDialog extends javax.swing.JDialog {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonCloseDialog;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -266,5 +265,6 @@ public class AboutDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabelVersion;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JLabel labelAppBanner;
     // End of variables declaration//GEN-END:variables
 }
