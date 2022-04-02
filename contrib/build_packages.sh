@@ -152,10 +152,10 @@ jpackage \
 	--type dmg \
 	--app-image ${APPIMAGE_DIR} \
 	--name ${GREATSPN_APPNAME} \
-	--app-version ${GREATSPN_APP_VERSION_FULLNUMBER} \
+	--app-version "${GREATSPN_APP_VERSION_FULLNUMBER}-`uname -m`" \
 	--file-associations JavaGUI/AdditionalV3/PNPRO-macos-FileAssoc.txt \
 	--resource-dir JavaGUI/AdditionalV3 \
-	--mac-package-name "${GREATSPN_APPNAME_VER}" \
+	--mac-package-name "${GREATSPN_APPNAME}-${GREATSPN_APP_VERSION_FULLNUMBER}" \
 	--mac-package-identifier "${GREATSPN_APPNAME_ID}"
 ;;
 
