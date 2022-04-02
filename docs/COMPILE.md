@@ -1,11 +1,11 @@
-## How to compile and install GreatSPN on your PC.
+## How to compile and install GreatSPN on your PC
 
 This page describes how to compile the GreatSPN framework.
 GreatSPN can be compiled and installed on most POSIX-compliant systems.
 The framework requires several dependencies to be installed on your computer
 in order to compile it. 
 
-### Linux/Unix installation instructions:
+### Compile GreatSPN on Linux/Unix
 
 In order to compile and install GreatSPN from sources, you need to do the following steps.
 First, install the following dependencies (using the developer packages with the header files):
@@ -101,7 +101,7 @@ sudo make install
 or directly from [sources](https://github.com/ogdf/ogdf) to get the latest OGDF version.
 
 
-### macOS installation instructions:
+### Compile GreatSPN on macOS
 
 GreatSPN compiles and runs successfully on macOS. 
 Before running the Linux/Unix installation steps, you will first need to install the Developer Tools (Xcode)
@@ -122,7 +122,7 @@ needed by some visualization tools.
 
 
 
-### Windows installation instructions
+### Compile GreatSPN on Windows using WSL
 
 GreatSPN is known to compile and run successfully using the *Windows Subsystem for Linux ver.2* (WSL-2, Windows 10 64bit minimum) using Ubuntu 20.04LTS.
 WSL-2 installation is slightly different, since the GUI will be a standard Windows application, while the command line tools will reside and run inside the WSL-2 subsystem.

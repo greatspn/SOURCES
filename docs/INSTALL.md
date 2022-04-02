@@ -52,20 +52,17 @@ GreatSPN will then run directly as a standard macOS application.
 
 
 
-### Pre-installed VirtualBox machine (OLD):
+### Pre-installed VirtualBox machine (OLD)
 
-We offer a pre-installed VirtualBox machine image, based on Fedora Core, that ships with
+We offer a pre-installed VirtualBox machine image, based on Ubuntu, that ships with
 the GreatSPN framework already installed, with all the required dependencies.
 This is the easiest way to get GreatSPN, since you just have to download the image.
 The VirtualBox image can be downloaded from this [repository](http://www.di.unito.it/~greatspn/VBox/).
-In case you need it, the root password of the VirtualBox image is: `user` 
-(on some older images the password was `fedora`).
+In case you need it, the root password of the VirtualBox image is: `user`
 
 Sometimes the virtual box machine will require the re-installation of
 the so-called "Guest Additions", which allows to share directories with the host pc.
 Follow the instruction on the VirtualBox site on how to install the Guest Additions.
-
-
 
 TBD. Instructions on how to update the shared directory.
 
