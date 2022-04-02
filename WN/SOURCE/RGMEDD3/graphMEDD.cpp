@@ -6,6 +6,8 @@
 #include <set>
 #include <signal.h>
 #include <unistd.h>
+#include <spawn.h>
+#include <sys/wait.h>
 
 // #ifndef __PRS_H__
 // #define __PRS_H__
@@ -132,22 +134,66 @@ int steps = 0, maxsteps = 0;
 /*MDD*/
 extern void CTLParser(RSRG *r);
 
+//-----------------------------------------------------------------------------
 // Open a file with the default application/browser
 int open_file(const char * filename) {
 #ifdef __APPLE__
     ostringstream cmd;
     cmd << "open \"" << filename << "\" > /dev/null 2>&1";
     return system(cmd.str().c_str());
-#elif defined __linux__
+#elif defined __linux__ && ! defined(__CYGWIN__)
     ostringstream cmd;
     cmd << "xdg-open \"" << filename << "\" > /dev/null 2>&1";
     return system(cmd.str().c_str());
+#elif defined(__CYGWIN__)
+    const char* const args[] = {"cmd", "/C", "START", filename, nullptr};
+    pid_t pid;
+    int status = posix_spawnp(&pid, args[0], nullptr, nullptr, (char* const*)args, environ);
+    if (status == 0) {
+        cout << "Calling " << args[0] << " ... (pid=" << pid << ")" << endl;
+        do {
+            if (waitpid(pid, &status, 0) != -1) {
+                cout << args[0] << " returned " << WEXITSTATUS(status) << endl;
+            } else {
+                cout << "ERROR: creating child process.";
+                return -1;
+            }
+        } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+    } else {
+        cout << "ERROR: posix_spawn: " << strerror(status) << endl;
+        return -1;
+    }
+    return 0;
 #else
     // Windows should use the START command
     #warning "open_file() is not implemented.!"
     return 0;
 #endif
 }
+
+//-----------------------------------------------------------------------------
+// convert a dot file into a pdf file using Graphviz
+int dot_to_pdf(const char *dot_fname, const char *pdf_fname) {
+    const char* const args[] = {"dot", dot_fname, "-Tpdf", "-o", pdf_fname, nullptr};
+    pid_t pid;
+    int status = posix_spawnp(&pid, args[0], nullptr, nullptr, (char* const*)args, environ);
+    if (status == 0) {
+        cout << "Calling " << args[0] << " ... (pid=" << pid << ")" << endl;
+        do {
+            if (waitpid(pid, &status, 0) != -1) {
+                cout << args[0] << " returned " << WEXITSTATUS(status) << endl;
+            } else {
+                cout << "ERROR: creating child process.";
+                return -1;
+            }
+        } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+    } else {
+        cout << "ERROR: posix_spawn: " << strerror(status) << endl;
+        return -1;
+    }
+    return 0;
+}
+//-----------------------------------------------------------------------------
 
 // Verify that the found value corresponds to the expected value, with a
 // margin of error due to approximations in the MCC format of the expected values
@@ -406,8 +452,9 @@ void build_graph(class RSRG &rs) {
         write_dd_as_dot(&rs, rs.getRS(), dot_name.c_str(), true);
         ostringstream cmd1, cmd2;
         cout << "Generating PDF with Graphviz ..." << endl;
-        cmd1 << "dot -Tpdf \""<<dot_name<<"\" > \""<<pdf_name<<"\"";
-        if (0 == system(cmd1.str().c_str())) {
+        if (dot_to_pdf(dot_name.c_str(), pdf_name.c_str()) == 0) {
+        // cmd1 << "dot -Tpdf \""<<dot_name<<"\" > \""<<pdf_name<<"\"";
+        // if (0 == system(cmd1.str().c_str())) {
             if (g_dot_open_RS) 
                 open_file(pdf_name.c_str());
             if (invoked_from_gui())

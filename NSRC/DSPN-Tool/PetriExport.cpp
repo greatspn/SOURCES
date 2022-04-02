@@ -213,7 +213,7 @@ void SaveRG_AsDotFile(const PN &pn, const RG2 &rg,
     }
     else {
         if (!drawClusters) {
-            dot << "  init[shape=none, label=<>];\n";
+            dot << "  init[shape=none, label=< >];\n";
             dot << "  init -> ";
             if (rg.initState.selfIndex.type() == TANGIBLE)
                 dot << print_rgstate(rg.initState.selfIndex);
@@ -429,7 +429,7 @@ void SaveRG_AsDotFile(const PN &pn, const RG &rg,
             if (rmit->enabledDetInds.size() == 0) {
                 WriteMarkingInDotFormat(pn, *rmit, dot);
                 if (hasSingleInitMark && rmit->index == marking_t(0)) {
-                    dot << "  init[shape=none, label=<>];\n";
+                    dot << "  init[shape=none, label=< >];\n";
                     dot << "  init -> mark0[len=0.5, color=navy];\n";
                 }
             }

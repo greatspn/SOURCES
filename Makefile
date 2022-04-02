@@ -1084,11 +1084,11 @@ ifdef HAS_LP_SOLVE_LIB
   RGMEDD4_LDFLAGS := $(RGMEDD4_LDFLAGS) $(LINK_LP_SOLVE_LIB) 
 endif
 
-ifdef HAS_MEDDLY_LIB
-  ifdef HAS_SPOT_LIB
-    TARGETS += RGMEDD4
-  endif
-endif
+# ifdef HAS_MEDDLY_LIB
+#   ifdef HAS_SPOT_LIB
+#     TARGETS += RGMEDD4
+#   endif
+# endif
 
 # #### RGMEDD version 5 ########################################
 
@@ -2324,7 +2324,7 @@ alphaFactory_LD := $(LDPP)
 # ifeq ($(INCLUDE_ELVIO_CPP_SOLVER),1)
 TARGETS += DSPN-Tool alphaFactory
 ifndef HAS_VBOX_MARK
-TARGETS += DSPN-Tool-Debug
+# TARGETS += DSPN-Tool-Debug
 endif
 # endif
 

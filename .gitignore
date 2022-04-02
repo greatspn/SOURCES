@@ -9,11 +9,11 @@ JavaGUI/Editor/MANIFEST.MF
 JavaGUI/Editor/dist/Editor.jar
 JavaGUI/Editor/dist/GreatSPN Editor.app
 JavaGUI/DISTRIB/GreatSPN Editor.exe
+/JavaGUI/Editor/dist/
 .gdb_history
 .DS_Store
 JavaGUI/.DS_Store
 JavaGUI/Editor/.DS_Store
 WN/.DS_Store
 WN/SOURCE/.DS_Store
-.vscode
-/JavaGUI/Editor/dist/
+.vscode/*

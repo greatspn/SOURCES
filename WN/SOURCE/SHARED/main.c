@@ -8,9 +8,9 @@
 #include <time.h>
 #include <assert.h>
 #include <limits.h>
-// #include <unistd.h>
-// #include <sys/types.h>
-// #include <sys/wait.h>
+#include <spawn.h>
+#include <sys/wait.h>
+extern char** environ; // from unistd.h
 #include "../../INCLUDE/const.h"
 #include "../../INCLUDE/struct.h"
 #include "../../INCLUDE/decl.h"
@@ -2255,46 +2255,75 @@ int finalize(void) {
         fprintf(f_dot, "}\n");
         fclose(f_dot);
         if (dot_pdf_filename != NULL) {
+            int success = 0;
+            char arg_dot[LINE_MAX], arg_pdf[LINE_MAX];
+            snprintf(arg_dot, LINE_MAX, "%s.dot", dot_basename);
+            snprintf(arg_pdf, LINE_MAX, "%s.pdf", dot_pdf_filename);
+            char* const args[] = {"dot", arg_dot, "-Tpdf", "-o", arg_pdf, NULL};
+            pid_t pid;
+            int status = posix_spawnp(&pid, args[0], NULL, NULL, args, environ);
+            if (status == 0) {
+                printf("Calling %s... (pid=%d)\n", args[0], pid);
+                do {
+                    if (waitpid(pid, &status, 0) != -1) {
+                        printf("%s returned %d\n", args[0], WEXITSTATUS(status));
+                        success = WEXITSTATUS(status) == 0;
+                    } else {
+                        perror("ERROR: creating child process.");
+                    }
+                } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+            } else {
+                printf("ERROR: posix_spawn: %s\n", strerror(status));
+            }
+
+            if (success && invoked_from_gui()) { 
+                // Confirm to the GUI the proper invokation of dot and pdf generation.
+                printf("#{GUI}# RESULT RG\n");
+            }
+
             // pid_t pid = fork();
             // if (pid < 0) { // error
             //     fprintf(stderr, "ERROR:cannot fork!\n");
-            // } else if (pid == 0) { // parent
-            //     int retcode;
-            //     waitpid(pid, &retcode, 0);
-            //     printf("waitpid returned %d %d\n", WIFEXITED(retcode), WEXITSTATUS(retcode));
-            // }
-            // else { // exec child
-            //     printf("pid = %d\n", pid);
-            //     // char arg1[LINE_MAX], arg2[LINE_MAX];
-            //     // snprintf(arg1, LINE_MAX, "%s.dot", dot_basename);
-            //     // snprintf(arg2, LINE_MAX, "%s.pdf", dot_pdf_filename);
-            //     // const char* args[] = {arg1, "-Tpdf", "-o", arg2, NULL};
-            //     // int ret = execvp("dot", args);
-            //     snprintf(command, LINE_MAX, "dot \"%s.dot\" -Tpdf -o \"%s.pdf\"", 
-            //              dot_basename, dot_pdf_filename);
-            //     printf("Generating PDF file using dot...\n%s\n", command);
-            //     const char* args[] = {"/C", "dot -h", NULL};
-            //     int ret = execvp("cmd", args);
+            // } else if (pid == 0) { // child
+            //     char arg1[LINE_MAX], arg2[LINE_MAX];
+            //     snprintf(arg1, LINE_MAX, "%s.dot", dot_basename);
+            //     snprintf(arg2, LINE_MAX, "%s.pdf", dot_pdf_filename);
+            //     const char* args[] = {"dot", arg1, "-Tpdf", "-o", arg2, NULL};
+            //     sleep(1);
+            //     printf("Run!\n");
+            //     int ret = execvp("dot", args);
             //     if (ret != 0) {
             //         perror("execvp");
             //         printf("ERROR: failed to invoke dot command! %d\n", ret);
             //     }
             //     exit(ret);
             // }
+            // else { // parent
+            //     int retcode;
+            //     printf("pid = %d\n", pid);
+            //     waitpid(pid, &retcode, 0);
+            //     printf("waitpid returned %d %d\n", WIFEXITED(retcode), WEXITSTATUS(retcode));
+            //     if (WIFSIGNALED(retcode)){
+            //         printf("Error\n");
+            //     }
+            //     else if (WEXITSTATUS(retcode)){
+            //         printf("Exited Normally\n");
+            //     }
+            // }
 
-            printf("RET=%d\n", system("cmd.exe /C \"start .\""));
-            snprintf(command, LINE_MAX, "dot \"%s.dot\" -Tpdf -o \"%s.pdf\"", 
-                    dot_basename, dot_pdf_filename);
-            // printf("PATH = %s\n", getenv("PATH"));
-            printf("Generating PDF file using dot...\n%s\n", command);
-            int ret = system(command);
-            if (ret != 0) {
-                printf("ERROR: failed to invoke dot command! %d\n", ret);
-            }
-            else if (invoked_from_gui()) { 
-                // Confirm to the GUI the proper invokation of dot and pdf generation.
-                printf("#{GUI}# RESULT RG\n");
-            }
+            // printf("RET=%d\n", system("cmd.exe /C \"start .\""));
+            // snprintf(command, LINE_MAX, "dot \"%s.dot\" -Tpdf -o \"%s.pdf\"", 
+            //         dot_basename, dot_pdf_filename);
+            // // printf("PATH = %s\n", getenv("PATH"));
+            // printf("Generating PDF file using dot...\n%s\n", command);
+            // int ret = system(command);
+            // if (ret != 0) {
+            //     printf("ERROR: failed to invoke dot command! %d\n", ret);
+            // }
+            // else if (invoked_from_gui()) { 
+            //     // Confirm to the GUI the proper invokation of dot and pdf generation.
+            //     printf("#{GUI}# RESULT RG\n");
+            // }
         }
         dot_set_max_markings(-1);
     }

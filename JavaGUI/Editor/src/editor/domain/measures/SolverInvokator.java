@@ -801,12 +801,22 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
             nenv.put("WSLENV", "TERM:FREQUENCY:FROM_GUI:LD_LIBRARY_PATH");
         }
         
-        if (!nenv.containsKey("PATH"))
-            nenv.put("PATH", "");
+        // Add missing variables
         final String LD_LIBRARY_PATH = Util.isOSX() ? "DYLD_LIBRARY_PATH" : "LD_LIBRARY_PATH";
-        if (!nenv.containsKey(LD_LIBRARY_PATH))
-            nenv.put("LD_LIBRARY_PATH", "");
-        
+        boolean hasPath = false;
+        boolean hasLibraryPath = false;
+        for (Entry<String, String> e : nenv.entrySet()) {
+            if (e.getKey().equalsIgnoreCase("PATH")) // ignore case is needed in Windows
+                hasPath = true;
+            if (e.getKey().equalsIgnoreCase(LD_LIBRARY_PATH))
+                hasLibraryPath = true;
+        }         
+        if (!hasPath)
+            nenv.put("PATH", "");
+        if (!hasLibraryPath && !Util.isWindows())
+            nenv.put(LD_LIBRARY_PATH, "");
+
+        // Add AppImage root
         if (Main.useAppImage() && !nenv.containsKey("GREATSPN_APPIMAGE_DIR"))
             nenv.put("GREATSPN_APPIMAGE_DIR", Main.getAppImageGreatSPN_dir().getAbsolutePath());
         

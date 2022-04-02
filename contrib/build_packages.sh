@@ -73,23 +73,23 @@ esac
 ###########################################################
 echo 'FIRST STAGE: Building the app-image'
 
-# rm -rf ${APPIMAGE_ROOTDIR}
-# mkdir -p ${APPIMAGE_ROOTDIR}
-# jpackage \
-# 	--type app-image \
-# 	--input JavaGUI/Editor/dist \
-# 	--name ${GREATSPN_APPNAME} \
-# 	--main-jar Editor.jar \
-# 	--main-class editor.Main \
-# 	--add-modules ${JAVAGUI_MODULES} \
-# 	--java-options -enableassertions \
-# 	--java-options '"-splash:\$APPDIR/GreatSPN Editor.app/Contents/Java/splash.png"' \
-# 	--app-version "${GREATSPN_APP_VERSION_FULLNUMBER}" \
-# 	--copyright "University of Torino, Italy" \
-# 	--description "The GreatSPN framework. Visit https://github.com/greatspn/SOURCES for more informations." \
-# 	--dest ${APPIMAGE_ROOTDIR} \
-# 	${JPACKAGE_OPTIONS}
-# RET=$? ; if [ ${RET} -eq 1 ]; then exit ${RET} ; fi
+rm -rf ${APPIMAGE_ROOTDIR}
+mkdir -p ${APPIMAGE_ROOTDIR}
+jpackage \
+	--type app-image \
+	--input JavaGUI/Editor/dist \
+	--name ${GREATSPN_APPNAME} \
+	--main-jar Editor.jar \
+	--main-class editor.Main \
+	--add-modules ${JAVAGUI_MODULES} \
+	--java-options -enableassertions \
+	--java-options '"-splash:\$APPDIR/GreatSPN Editor.app/Contents/Java/splash.png"' \
+	--app-version "${GREATSPN_APP_VERSION_FULLNUMBER}" \
+	--copyright "University of Torino, Italy" \
+	--description "The GreatSPN framework. Visit https://github.com/greatspn/SOURCES for more informations." \
+	--dest ${APPIMAGE_ROOTDIR} \
+	${JPACKAGE_OPTIONS}
+RET=$? ; if [ ${RET} -eq 1 ]; then exit ${RET} ; fi
 
 ###########################################################
 echo 'SECOND STAGE: Creating the Portable GreatSPN distribution'
