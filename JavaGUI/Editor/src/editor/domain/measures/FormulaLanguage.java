@@ -6,6 +6,7 @@ package editor.domain.measures;
 
 import editor.Main;
 import editor.domain.grammar.ParserContext;
+import editor.gui.ResourceFactory;
 import javax.swing.Icon;
 
 /** A language of performance indexes.
@@ -13,30 +14,30 @@ import javax.swing.Icon;
  * @author Elvio
  */
 public enum FormulaLanguage {
-    ALL("Basic place and transition measures.", "basic measures", "property_all.png",
+    ALL("Basic place and transition measures.", "basic measures", "property_all",
             null, 0),
-    STAT("Basic tool statistics", "statistics", "property_stat.png", 
+    STAT("Basic tool statistics", "statistics", "property_stat", 
             null, 0),
-    CTL("CTL formula", null, "property_ctl.png", 
+    CTL("CTL formula", null, "property_ctl", 
             ParserContext.ParserEntryPoint.BOOLEAN_EXPR, ParserContext.PF_CTL_KEYWORDS),
-    LTL("LTL formula", null, "property_ltl.png", 
+    LTL("LTL formula", null, "property_ltl", 
             ParserContext.ParserEntryPoint.BOOLEAN_EXPR, ParserContext.PF_LTL_KEYWORDS),
-    CTLSTAR("CTL* formula", null, "property_ctlstar.png", 
+    CTLSTAR("CTL* formula", null, "property_ctlstar", 
             ParserContext.ParserEntryPoint.BOOLEAN_EXPR, ParserContext.PF_CTLSTAR_KEYWORDS),
-    FAIRNESS("Fairness constraint", null, "property_fair.png", 
+    FAIRNESS("Fairness constraint", null, "property_fair", 
             ParserContext.ParserEntryPoint.BOOLEAN_EXPR, ParserContext.PF_CTLSTAR_KEYWORDS),
-    CSL("CSL formula", null, "property_csl.png", 
+    CSL("CSL formula", null, "property_csl", 
             ParserContext.ParserEntryPoint.INT_EXPR, 0),
-    CSLTA("<html>CSL<font size=-1><sup>TA</sup></font> formula</html>", "CSLTA formula", "property_cslta.png", 
+    CSLTA("<html>CSL<font size=-1><sup>TA</sup></font> formula</html>", "CSLTA formula", "property_cslta", 
             ParserContext.ParserEntryPoint.CSLTA_EXPR, 0),
-    PERFORMANCE_INDEX("Performance Index", null, "property_perf.png", 
+    PERFORMANCE_INDEX("Performance Index", null, "property_perf", 
             ParserContext.ParserEntryPoint.PERFORMANCE_MEASURE, 0),
-    TRG("Tangible Reachability Graph", null, "property_trg.png", 
+    TRG("Tangible Reachability Graph", null, "property_trg", 
             null, 0),
-    RG("Reachability Graph with Vanishings", null, "property_rg.png", 
+    RG("Reachability Graph with Vanishings", null, "property_rg", 
         null, 0),
-    DD("Decision Diagram graph", null, "property_dd.png", null, 0),
-    INC("Incidence matrix", null, "property_inc.png", null, 0);
+    DD("Decision Diagram graph", null, "property_dd", null, 0),
+    INC("Incidence matrix", null, "property_inc", null, 0);
     
     private final String name, shortName;
     private final Icon icon24;
@@ -48,7 +49,7 @@ public enum FormulaLanguage {
     {
         this.name = name;
         this.shortName = (shortName == null) ? name : shortName;
-        this.icon24 = Main.loadImageIcon(icon24_name);
+        this.icon24 = ResourceFactory.loadPropertyIcon(icon24_name);
         this.parseRule = parseRule;
         this.parseFlags = parseFlags;
     }

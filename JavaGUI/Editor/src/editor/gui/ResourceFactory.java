@@ -116,7 +116,7 @@ public class ResourceFactory {
                     return img;
             }
             // Image does not exists. load the closets, resize, store and return
-            int targetWidth = (int)destImageWidth;
+            int targetHeight = (int)destImageHeight;
             int sel = 0;
             
 //            int j = srcSizes.length - 1;
@@ -126,7 +126,7 @@ public class ResourceFactory {
 //            }
             // Select the smallest that fits the target width
             int j = 0;
-            while (j < srcSizes.length && srcSizes[j] <= targetWidth) {
+            while (j < srcSizes.length && srcSizes[j] <= targetHeight) {
                 sel = j;
                 j++;
             }
@@ -138,10 +138,10 @@ public class ResourceFactory {
             }
             Image img = loaded[sel];
             // Resize image if needed
-            if (srcSizes[sel] != targetWidth) {
+            if (srcSizes[sel] != targetHeight) {
                 try {
-//                    System.out.println("RESIZE "+srcSizes[sel]+" into "+targetWidth+" "+srcImages[sel]);
-                    img = resizeCenterImage(loaded[sel], targetWidth, (int)destImageHeight);
+                    System.out.println("RESIZE "+srcSizes[sel]+" into "+targetHeight+" "+srcImages[sel]);
+                    img = resizeCenterImage(loaded[sel], (int)destImageWidth, targetHeight);
                     images.add(img);
                 }
                 catch (IOException e) {
@@ -162,7 +162,7 @@ public class ResourceFactory {
         BufferedImage resizeCenterImage(Image originalImage, int targetWidth, int targetHeight) throws IOException {
             BufferedImage outputImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
             int dx = (targetWidth - originalImage.getWidth(null)) / 2;
-            int dy = (targetWidth - originalImage.getHeight(null)) / 2;
+            int dy = (targetHeight - originalImage.getHeight(null)) / 2;
             outputImage.getGraphics().drawImage(originalImage, dx, dy, null);
             return outputImage;
         }
@@ -172,6 +172,14 @@ public class ResourceFactory {
 //            System.out.println("getResolutionVariants");
             return images;
         }
+    }
+    
+    public static ImageIcon loadPropertyIcon(String name) {
+        AbstractMultiResolutionImage mrImg;
+        mrImg = new MyMultiResolutionImage(new int[]{16,24}, 
+                        new String[]{"/editor/gui/icons/" + name + "16.png", 
+                                     "/editor/gui/icons/" + name + "24.png"});
+        return new ImageIcon(mrImg);
     }
     
     
