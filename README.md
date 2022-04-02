@@ -10,11 +10,12 @@ It implements efficient analysis algorithms to allow its use on rather complex a
 
 ## Install GreatSPN
 
-Follow the [instructions](docs/INSTALL.md) on how to install GreatSPN on Linux, macOS or Windows. The provided binaries install a working subset of GreatSPN, which should be enough for most users.
+Follow the [instructions](docs/INSTALL.md) on how to install GreatSPN on Linux, macOS or Windows. The provided binaries install a working subset of GreatSPN, which should be enough for most users. The binary installation requires *Graphviz* to be installed. Follow the instuctions on how to install it on your platform.
 
-## Compile GreatSPN
 
-GreatSPN full functionalities are available when it is installed from sources.
+## Compile GreatSPN from sources
+
+GreatSPN full functionalities (i.e. scripting) are available when it is installed from sources.
 Follow the [instructions](docs/COMPILE.md) on how to compile the framework from sources.
 
 
@@ -27,7 +28,6 @@ with this command:
 ```
 greatspn_editor
 ```
-
 
 ## How to run the command-line solvers.
 
