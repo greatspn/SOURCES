@@ -124,10 +124,7 @@ public class GreatSPNSolver extends SolverInvokator {
 
             if (hasMeasures) { // Solution of the Markov chain and measure computation
                 // Step 1: empty .gst file
-                cmd = startOfCommand();
-                cmd.add("/bin/cp");
-                cmd.add("/dev/null");
-                cmd.add(makeDefaultModelFilenameForCmd(".gst"));
+                cmd = createEmptyFileCmd(makeDefaultModelFilenameForCmd(".gst"));
                 step.addCmd(cmd);
 //                step.addCmd(startOfCommand() + "/bin/cp /dev/null "+quotedFn(".gst"));
 
@@ -173,10 +170,8 @@ public class GreatSPNSolver extends SolverInvokator {
                 }
 
                 // Step 4: copy .epd into .mpd
-                cmd = startOfCommand();
-                cmd.add("/bin/cp");
-                cmd.add(makeDefaultModelFilenameForCmd(".epd"));
-                cmd.add(makeDefaultModelFilenameForCmd(".mpd"));
+                cmd = createCopyFileCmd(makeDefaultModelFilenameForCmd(".epd"),
+                                        makeDefaultModelFilenameForCmd(".mpd"));
                 step.addCmd(cmd);
 //                step.addCmd(startOfCommand() + "/bin/cp "+quotedFn(".epd")+" "+quotedFn(".mpd"));
 

@@ -762,6 +762,38 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         return sb.toString();
     }
     
+    public static ArrayList<String> createEmptyFileCmd(String filename) {
+        ArrayList<String> cmd;
+        cmd = startOfCommand();
+        if (Util.isWindows() && !Main.useWSL()) { // DOS command
+            cmd.add("COPY");
+            cmd.add("NUL");
+            cmd.add(filename);            
+        }
+        else { // Unix command
+            cmd.add("/bin/cp");
+            cmd.add("/dev/null");
+            cmd.add(filename);
+        }
+        return cmd;
+    }
+    
+    public static ArrayList<String> createCopyFileCmd(String src, String dst) {
+        ArrayList<String> cmd;
+        cmd = startOfCommand();
+        if (Util.isWindows() && !Main.useWSL()) { // DOS command
+            cmd.add("COPY");
+            cmd.add(src);
+            cmd.add(dst);            
+        }
+        else { // Unix command
+            cmd.add("/bin/cp");
+            cmd.add(src);
+            cmd.add(dst);            
+        }
+        return cmd;
+    }
+    
     //==========================================================================
     // ADDITIONAL PATHS for the toolchain invokation
     //==========================================================================
