@@ -142,7 +142,7 @@ esac
 ###########################################################
 echo 'THIRD STAGE: Creating installable packages'
 
-exit
+# exit
 
 case "$OSTYPE" in
 #----------------------------------------------------------

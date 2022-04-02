@@ -253,7 +253,7 @@ void create_statistics_data_structure(int  ok) {
             tabt[ind].tagged = FALSE;
 #endif
         while (TRUE) {
-            fscanf(pinfp, "%s", name);
+            int unused = fscanf(pinfp, "%s", name);
             if (isalpha(name[0])) {
                 /* Non e' una lettera dell'alfabeto */
                 ind = get_tr_in(name);
@@ -591,25 +591,25 @@ void get_CC_SC_relations() {
 void fill_CC_SC_data_structure(int  ok_me) {
     /* Init fill_CC_SC_data_structure */
     int *usp;
-    int ii, jj, na, nc;
+    int ii, jj, na, nc, unused;
     char trans_nm[MAX_TAG_SIZE];
 
     for (ii = 0; ii < ntr; ii++) {
-        fscanf(cfp, " %d", &na);
+        unused = fscanf(cfp, " %d", &na);
         tabt[ii].add_l = usp = (int *)ecalloc(na + 1, sizeof(int));
         *(usp += na) = UNKNOWN;
         while (na--) {
-            fscanf(cfp, "%d", &jj);
+            unused = fscanf(cfp, "%d", &jj);
             *(--usp) = jj - 1;
         }
         while (getc(cfp) != '\n');
     }
     for (ii = 0; ii < ntr; ii++) {
-        fscanf(sfp, "%d", &nc);
+        unused = fscanf(sfp, "%d", &nc);
         tabt[ii].test_l = usp = (int *)ecalloc(nc + 1, sizeof(int));
         *(usp += nc) = UNKNOWN;
         while (nc--) {
-            fscanf(sfp, "%d", &jj);
+            unused = fscanf(sfp, "%d", &jj);
             *(--usp) = jj - 1;
         }
         while (getc(sfp) != '\n');
@@ -621,15 +621,15 @@ void fill_CC_SC_data_structure(int  ok_me) {
         int ind;
 
         while (TRUE) {
-            fscanf(pinfp, " %s", trans_nm);
-            fscanf(pinfp, " %d", &na);
+            unused = fscanf(pinfp, " %s", trans_nm);
+            unused = fscanf(pinfp, " %d", &na);
             ind = get_tr_in(trans_nm);
             if (ind == UNKNOWN)
                 out_error(ERROR_UNKNOWN_TRANSITION_NAME, 0, 0, 0, 0, trans_nm, NULL);
             tabt[ind].me_l = usp = (int *)ecalloc(na + 1, sizeof(int));
             *(usp += na) = UNKNOWN;
             while (na--) {
-                fscanf(pinfp, "%s", trans_nm);
+                unused = fscanf(pinfp, "%s", trans_nm);
                 ind = get_tr_in(trans_nm);
                 if (ind == UNKNOWN)
                     out_error(ERROR_UNKNOWN_TRANSITION_NAME, 0, 0, 0, 0, trans_nm, NULL);
@@ -1203,14 +1203,14 @@ void compose_name(char  *name,  const char  *path,  const char  *postfix) {
 /* PARAMETERS : */
 /* RETURN VALUE : */
 /**************************************************************/
-void remove_command(char  *comm, const char  *path,  const char  *postfix) {
-    /* Init remove_command */
-#ifdef GREATSPN
-    sprintf(comm, "/bin/rm \"%s.%s\"", path, postfix);
-#else
-    sprintf(comm, "/bin/rm \"nets/%s.%s\"", path, postfix);
-#endif
-}/* End remove_command */
+// void remove_command(char  *comm, const char  *path,  const char  *postfix) {
+//     /* Init remove_command */
+// #ifdef GREATSPN
+//     sprintf(comm, "/bin/rm \"%s.%s\"", path, postfix);
+// #else
+//     sprintf(comm, "/bin/rm \"nets/%s.%s\"", path, postfix);
+// #endif
+// }/* End remove_command */
 /**************************************************************/
 /* NAME : */
 /* DESCRIPTION : */
@@ -1439,7 +1439,7 @@ int initialize(int  argc,  char  *argv[]) {
         else if (0 == strcmp("-max-markings", argv[ii]) && ii + 1 < argc) {
             long m = atol(argv[ii + 1]);
             if (m <= 0) {
-                fprintf(stderr, "Marking limit of %d is not valid.\n", m);
+                fprintf(stderr, "Marking limit of %ld is not valid.\n", m);
                 exit(-1);
             }
             g_max_markings_built = m;
@@ -1583,11 +1583,11 @@ int initialize(int  argc,  char  *argv[]) {
     }
 
     if (min_b_dur <= 0 || max_b_dur <= 0) {
-        fprintf(stderr, "Incorrect lower and upper durations %d-%d\n", min_b_dur, max_b_dur);
+        fprintf(stderr, "Incorrect lower and upper durations %lf-%lf\n", min_b_dur, max_b_dur);
         exit(1);
     }
     if (min_b_dur > max_b_dur) {
-        fprintf(stderr, "Error: lower > upper %d-%d\n", min_b_dur, max_b_dur);
+        fprintf(stderr, "Error: lower > upper %lf-%lf\n", min_b_dur, max_b_dur);
         exit(1);
     }
 
@@ -1773,8 +1773,8 @@ int initialize(int  argc,  char  *argv[]) {
         fclose(disfp);
     // remove_command(comm, argv[1], "mfp");
     // system(comm);
-    remove_command(comm, argv[1], "par");
-    system(comm);
+    // remove_command(comm, argv[1], "par");
+    // system(comm);
 
     /* LETTURA DEL FILE .net E DELLA MARCATURA INIZIALE */
 
