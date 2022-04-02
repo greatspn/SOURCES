@@ -12,6 +12,7 @@ GREATSPN_APP_VERSION_NUMDOT=${GREATSPN_APP_VERSION_MAJOR}.${GREATSPN_APP_VERSION
 GREATSPN_APP_VERSION_FULLNUMBER=`expr ${GREATSPN_APP_VERSION_MAJOR}00 + ${GREATSPN_APP_VERSION_MINOR}`
 GREATSPN_APPNAME=GreatSPN
 GREATSPN_APPNAME_ID=greatspn-${GREATSPN_APP_VERSION}
+GREATSPN_APPNAME_VER=${GREATSPN_APPNAME}-${GREATSPN_APP_VERSION_NUMDOT}
 
 APPIMAGE_ROOTDIR=objects/AppImage
 
@@ -196,11 +197,14 @@ jpackage \
 	--type msi \
 	--app-image ${APPIMAGE_DIR} \
 	--name ${GREATSPN_APPNAME} \
-	--app-version ${GREATSPN_APP_VERSION_NUMDOT} \
+	--app-version "${GREATSPN_APP_VERSION_NUMDOT}" \
 	--file-associations JavaGUI/AdditionalV3/PNPRO-win-FileAssoc.txt \
 	--resource-dir JavaGUI/AdditionalV3 \
 	--win-menu --win-menu-group "${GREATSPN_APPNAME}" \
 	--win-dir-chooser
+# add arch
+mv ${GREATSPN_APPNAME_VER}.msi ${GREATSPN_APPNAME_VER}-`uname -m`.msi
+
 ;;
 
 #----------------------------------------------------------
