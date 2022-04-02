@@ -8,9 +8,9 @@
 #include <time.h>
 #include <assert.h>
 #include <limits.h>
+#include <unistd.h>
 #include <spawn.h>
 #include <sys/wait.h>
-extern char** environ; // from unistd.h
 #include "../../INCLUDE/const.h"
 #include "../../INCLUDE/struct.h"
 #include "../../INCLUDE/decl.h"
@@ -183,6 +183,14 @@ long numEvFEL = 0;
 long numEvOrdFEL = 0;
 #endif
 
+/**************************************************************/
+// if defined(WIN) && (_MSC_VER >= 1900)  use *__p__environ();
+#ifdef __APPLE__
+#include <crt_externs.h>
+const char** get_environ() { return _NSGetEnviron(); }
+#else
+const char** get_environ() { return environ; }
+#endif
 /**************************************************************/
 /* NAME : */
 /* DESCRIPTION : */
@@ -2261,7 +2269,7 @@ int finalize(void) {
             snprintf(arg_pdf, LINE_MAX, "%s.pdf", dot_pdf_filename);
             char* const args[] = {"dot", arg_dot, "-Tpdf", "-o", arg_pdf, NULL};
             pid_t pid;
-            int status = posix_spawnp(&pid, args[0], NULL, NULL, args, environ);
+            int status = posix_spawnp(&pid, args[0], NULL, NULL, args, get_environ());
             if (status == 0) {
                 printf("Calling %s... (pid=%d)\n", args[0], pid);
                 do {
