@@ -898,9 +898,9 @@ void write_incidence_as_EPS(const char* filename, const trans_span_set_t &trn_se
     const double X_WIDTH = X_START_OF_DD + DD_WIDTH + 10;
 
     ofstream eps(filename);
-    eps << "%!PS-Adobe EPSF-3.0\n"
-        << "%%BoundingBox: 0 0 " << X_WIDTH + 5 << " "
-        << (Y_START_OF_TRN + max_trn_width + 5) << "\n"
+    eps << "%!PS-Adobe-3.0 EPSF-3.0\n"
+        << "%%BoundingBox: 0 0 " << int(ceil(X_WIDTH + 5)) << " "
+        << int(ceil(Y_START_OF_TRN + max_trn_width + 5)) << "\n"
         << "/Courier findfont 5 scalefont setfont\n";
 
     // draw the grid of the incidence matrix. Squares have size 10*10.
