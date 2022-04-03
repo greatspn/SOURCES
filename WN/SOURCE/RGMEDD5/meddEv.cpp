@@ -3510,9 +3510,10 @@ void write_dd_as_pdf(const RSRG* rs, const dd_edge& e,
 
     write_dd_as_dot(rs, e, dot_name.c_str(), level_labels, write_terminals, skip_extra_levels, pSingletonLevel);
 
-    std::string cmd = "dot -Tpdf \""+std::string(dot_name)+"\" -o \""+
-                      pdf_name+"\" > /dev/null 2>&1";
-    system(cmd.c_str());
+    dot_to_pdf(dot_name.c_str(), pdf_name.c_str());
+    // std::string cmd = "dot -Tpdf \""+std::string(dot_name)+"\" -o \""+
+    //                   pdf_name+"\" > /dev/null 2>&1";
+    // system(cmd.c_str());
     //remove(dot_name.c_str());
 }
 

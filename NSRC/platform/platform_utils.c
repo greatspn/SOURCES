@@ -12,10 +12,10 @@
 // if defined(WIN) && (_MSC_VER >= 1900)  use *__p__environ();
 #ifdef __APPLE__
 #include <crt_externs.h>
-char * const* get_environ() { return _NSGetEnviron(); }
+char* const* get_environ() { return _NSGetEnviron(); }
 #else
 extern char **environ;
-char * const* get_environ() { return environ; }
+char* const* get_environ() { return environ; }
 #endif
 
 //=============================================================================

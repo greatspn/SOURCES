@@ -73,7 +73,10 @@ public class ResourceFactory {
         if (ResourceFactory.class.getResource("/editor/gui/icons/" + test2) == null) {
             System.out.println("WARNING: missing icon /editor/gui/icons/" + test2);
         }
-//        return Util.loadIcon("/editor/gui/icons/" + load);
+        // In Linux/GTK, UI scale is currently not working for Java.
+        // Therefore, use the selected UI size.
+        if (Util.isLinux())
+            return Util.loadIcon("/editor/gui/icons/" + load);
 
         AbstractMultiResolutionImage mrImg;
 //        mrImg = new BaseMultiResolutionImage(
