@@ -75,7 +75,8 @@ public class ResourceFactory {
         }
         // In Linux/GTK, UI scale is currently not working for Java.
         // Therefore, use the selected UI size.
-        if (Util.isLinux())
+//        System.out.println(System.getProperty("sun.java2d.uiScale"));
+        if (Util.isLinux() && System.getProperty("sun.java2d.uiScale")==null)
             return Util.loadIcon("/editor/gui/icons/" + load);
 
         AbstractMultiResolutionImage mrImg;

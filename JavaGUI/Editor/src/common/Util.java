@@ -438,4 +438,42 @@ public final class Util {
         }
         return false;
     }
+
+    //==========================================================================
+    // Support for Windows Subsystem for Linux
+    //==========================================================================
+    public static boolean useWSL() {
+        return Util.isWindows() && !useAppImage();
+    }
+
+    // Verify that we can actually call WSL commands
+    public static boolean checkWSL() {
+        try {
+            Process p = Runtime.getRuntime().exec(new String[]{ 
+                "wsl", "exit", "25"});
+            int exitcode = p.waitFor();
+            //            JOptionPane.showMessageDialog(null, "exit = "+exitcode);
+            return exitcode == 25;
+        } catch (IOException | InterruptedException e) {
+            //            JOptionPane.showMessageDialog(null, "exception "+e);
+            return false;
+        }
+    }
+
+    // Verify the existance of a runnable file in the WSL subsystem
+    public static boolean checkWSLcanExecute(String file) {
+        try {
+            Process p = Runtime.getRuntime().exec(new String[]{ 
+                "wsl", "test", "-x", file});
+            int exitcode = p.waitFor();
+            return exitcode == 0; // 0 means it has the x flag, otherwise test returns 1
+        } catch (IOException | InterruptedException e) {
+            return false;
+        }
+    }
+
+    // Should call the portable GreatSPN distribution inside the AppImage
+    public static boolean useAppImage() {
+        return Main.getUseAppImageGreatSPN_Distrib() && Main.isAppImageDistribution();
+    }
 }

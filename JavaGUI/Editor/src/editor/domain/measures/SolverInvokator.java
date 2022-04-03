@@ -571,7 +571,7 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
     
     public static String makeFilenameForCmd(String fname, String ext) {
         String fn = fname + (ext==null ? "" : ext);
-        if (Main.useWSL()) {
+        if (Util.useWSL()) {
             // step 1:    C:  ->  /mnt/c/
             if (fn.length()>2 && fn.charAt(1)==':') {
                 char devLetter = Character.toLowerCase(fn.charAt(0));
@@ -703,7 +703,7 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
 
     public static String useGreatSPN_binary(String binName) {
         String cmd;
-        if (Main.useAppImage()) {
+        if (Util.useAppImage()) {
             // Use the portable GreatSPN app-image distribution
             cmd = Main.getAppImageGreatSPN_dir().getAbsolutePath() + File.separator + "bin" + File.separator + binName;
             if (Util.isWindows())
@@ -714,18 +714,18 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
             cmd = Main.getPathToGreatSPN() + File.separator + "bin" + File.separator + binName;
         }
         // Append the command to the step.cmd string
-        if (Main.useAppImage()) { // Using portable cygwin-based GreatSPN
+        if (Util.useAppImage()) { // Using portable cygwin-based GreatSPN
             if (!new File(cmd).canExecute()) {
                 throw new IllegalStateException("The path to the "+binName+" solver of GreatSPN is not set.\n"
                         + "Verify that the GreatSPN installation is not damaged.");
             }
         }
-        else if (Main.useWSL()) { // Using WSL
-            if (!Main.checkWSL()) { // Verify that the file exists in the WSL subsystem
+        else if (Util.useWSL()) { // Using WSL
+            if (!Util.checkWSL()) { // Verify that the file exists in the WSL subsystem
                 throw new IllegalStateException("Windows Subsystem for Linux (WSL) is required "
                         + "to run GreatSPN on Windows.\nInstall WSL and GreatSPN and retry.");
             }
-            if (!Main.checkWSLcanExecute(cmd))
+            if (!Util.checkWSLcanExecute(cmd))
                 throw new IllegalStateException("The path to the "+binName+" solver of GreatSPN is not set.\n"
                         + "Check that the GreatSPN path is set correctly (from the Edit > Options menu) and "
                         + "verify that the GreatSPN installation in the Windows Subsystem for Linux (WSL) "
@@ -743,7 +743,7 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         
     public static ArrayList<String> startOfCommand() {
         ArrayList<String> cmd = new ArrayList<>();
-        if (Main.useWSL()) {
+        if (Util.useWSL()) {
             cmd.add("wsl");
             cmd.add("--");
         }
@@ -765,7 +765,7 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
     public static ArrayList<String> createEmptyFileCmd(String filename) {
         ArrayList<String> cmd;
         cmd = startOfCommand();
-        if (Util.isWindows() && !Main.useWSL()) { // DOS command
+        if (Util.isWindows() && !Util.useWSL()) { // DOS command
             cmd.add("COPY");
             cmd.add("NUL");
             cmd.add(filename);            
@@ -781,7 +781,7 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
     public static ArrayList<String> createCopyFileCmd(String src, String dst) {
         ArrayList<String> cmd;
         cmd = startOfCommand();
-        if (Util.isWindows() && !Main.useWSL()) { // DOS command
+        if (Util.isWindows() && !Util.useWSL()) { // DOS command
             cmd.add("COPY");
             cmd.add(src);
             cmd.add(dst);            
@@ -836,7 +836,7 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         nenv.put("FREQUENCY", "10"); // Frequency of terminal updates, in tenths of seconds
         nenv.put("FROM_GUI", "1");   // Tell the solver that is being called from the GUI
         
-        if (Main.useWSL()) {
+        if (Util.useWSL()) {
 //            nenv.put("LD_LIBRARY_PATH", "/usr/local/lib");
             nenv.put("WSLENV", "TERM:FREQUENCY:FROM_GUI:LD_LIBRARY_PATH");
         }
@@ -857,7 +857,7 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
             nenv.put(LD_LIBRARY_PATH, "");
 
         // Add AppImage root
-        if (Main.useAppImage() && !nenv.containsKey("GREATSPN_APPIMAGE_DIR"))
+        if (Util.useAppImage() && !nenv.containsKey("GREATSPN_APPIMAGE_DIR"))
             nenv.put("GREATSPN_APPIMAGE_DIR", Main.getAppImageGreatSPN_dir().getAbsolutePath());
         
         if (solver != null)
@@ -884,7 +884,7 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
                 if (!getAdditionalLibraryPathDir().isEmpty()) {
                     value = addToPath(value, getAdditionalLibraryPathDir());
                 }
-                if (Main.useAppImage()) {
+                if (Util.useAppImage()) {
                     value = addToPath(value, 
                             Main.getAppImageGreatSPN_dir().getAbsolutePath()+File.separator+"lib");
                 }
