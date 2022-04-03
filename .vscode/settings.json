@@ -6,6 +6,8 @@
         "ostream": "cpp",
         "const.h": "c",
         "iosfwd": "cpp",
-        "platform_utils.h": "c"
+        "platform_utils.h": "c",
+        "sstream": "c",
+        "regex": "c"
     }
 }
