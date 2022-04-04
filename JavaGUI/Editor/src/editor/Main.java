@@ -373,6 +373,24 @@ public class Main {
     }
     
     //==========================================================================
+
+    // The AppDir is the directory that contains the running Jar file.
+    // If it is not running from the Jar file, return the @defaultPath.
+    public static String getAppDir(String defaultPath) {
+        try {
+            String path = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+            String decodedPath = URLDecoder.decode(path, "UTF-8");
+            File file = new File(decodedPath);
+            if (file.isFile() && file.exists() && decodedPath.endsWith(".jar")) {
+                // Running from JAR
+                return file.getParent();
+            }
+        }
+        catch (UnsupportedEncodingException e) { }
+        return defaultPath;
+    }
+
+    //==========================================================================
     // GreatSPN tool installation directory finder
     //==========================================================================
 

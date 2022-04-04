@@ -10,12 +10,11 @@ import common.Util;
 import editor.Main;
 import java.awt.Image;
 import java.awt.image.AbstractMultiResolutionImage;
-import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 /**
@@ -214,13 +213,13 @@ public class ResourceFactory {
     ///////////////////////////////////////////////////////////////////////////
 
     public ImageIcon getAppBanner() {
-        if (Util.isLinux())
-            return Util.loadIcon("/editor/gui/icons/app-banner123.png");
+//        if (Util.isLinux())
+//            return Util.loadIcon("/editor/gui/icons/app-banner.png");
         AbstractMultiResolutionImage mrImg;
-        mrImg = new CustomMultiResolutionImage(new int[]{123,92,61}, 
-                        new String[]{"/editor/gui/icons/app-banner123.png",
-                                     "/editor/gui/icons/app-banner92.png",
-                                     "/editor/gui/icons/app-banner61.png" });
+        mrImg = new CustomMultiResolutionImage(new int[]{80,120,160}, 
+                        new String[]{"/editor/gui/icons/app-banner.png",
+                                     "/editor/gui/icons/app-banner@150pct.png",
+                                     "/editor/gui/icons/app-banner@200pct.png" });
         return new ImageIcon(mrImg);
     }
 

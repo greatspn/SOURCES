@@ -26,6 +26,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -71,6 +72,16 @@ public final class Util {
     }
     public static ImageIcon loadIcon(String iconName) {
         return new ImageIcon(loadImage(iconName));
+    }
+
+    // Loading images from the application jar
+    public static Image tryLoadImageFromFile(String imageName) {
+        try {
+            return ImageIO.read(new File(imageName));
+        }
+        catch (IOException | IllegalArgumentException ex) {
+            return null;
+        }
     }
     
 //    public static void main(String[] args) throws Exception {
