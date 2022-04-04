@@ -373,6 +373,24 @@ public class Main {
     }
     
     //==========================================================================
+
+    // The AppDir is the directory that contains the running Jar file.
+    // If it is not running from the Jar file, return the @defaultPath.
+    public static String getAppDir(String defaultPath) {
+        try {
+            String path = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+            String decodedPath = URLDecoder.decode(path, "UTF-8");
+            File file = new File(decodedPath);
+            if (file.isFile() && file.exists() && decodedPath.endsWith(".jar")) {
+                // Running from JAR
+                return file.getParent();
+            }
+        }
+        catch (UnsupportedEncodingException e) { }
+        return defaultPath;
+    }
+
+    //==========================================================================
     // GreatSPN tool installation directory finder
     //==========================================================================
 
@@ -393,50 +411,6 @@ public class Main {
         Util.getPreferences().putBoolean(USE_APPIMAGE_GREATSPN_DISTRIB_KEY, use);
     }
     
-    // Should call the portable GreatSPN distribution inside the AppImage 
-    public static boolean useAppImage() {
-        return getUseAppImageGreatSPN_Distrib() && Main.isAppImageDistribution();
-    }
-    
-    //==========================================================================
-    // Support for Windows Subsystem for Linux
-    //==========================================================================
-    
-    public static boolean useWSL() {
-        return Util.isWindows() && !useAppImage();
-    }
-
-    // Verify that we can actually call bash from the command line
-    public static boolean checkWSL() {
-        try {
-            Process p = Runtime.getRuntime().exec(new String[]{
-                //"bash" ,"-c" ,"exit 25"
-                "wsl", "exit", "25"
-            });
-            int exitcode = p.waitFor();
-//            JOptionPane.showMessageDialog(null, "exit = "+exitcode);
-            return exitcode == 25;
-        }
-        catch (IOException | InterruptedException e) {
-//            JOptionPane.showMessageDialog(null, "exception "+e);
-            return false;
-        }
-    }
-    
-    // Verify the existance of a file in the WSL subsystem
-    public static boolean checkWSLcanExecute(String file) {
-        try {
-            Process p = Runtime.getRuntime().exec(new String[]{
-//                "bash", "-c", "test -x \""+file+"\""
-                "wsl", "test", "-x", file
-            });
-            int exitcode = p.waitFor();
-            return exitcode == 0; // 0 means it has the x flag, otherwise test returns 1
-        }
-        catch (IOException | InterruptedException e) {
-            return false;
-        }
-    }
 
     //-------------------------------------------------------------------------
     // Application preferences

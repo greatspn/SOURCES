@@ -8,17 +8,13 @@ package editor.gui;
 
 import common.Util;
 import editor.Main;
-import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.AbstractMultiResolutionImage;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
-import java.awt.image.ImageProducer;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 /**
@@ -51,17 +47,17 @@ public class ResourceFactory {
         String load, test1, test2;
         switch (Main.getUiSize()) {
             case NORMAL:  
-                load = imageName + size.size1+".png";
+                load = imageName + size.size1+ ".png";
                 test1 = imageName + size.size2 + ".png";
                 test2 = imageName + size.size3 + ".png";
                 break;
             case LARGE:
-                test1 = imageName + size.size1+".png";
+                test1 = imageName + size.size1+ ".png";
                 load = imageName + size.size2 + ".png";
                 test2 = imageName + size.size3 + ".png";
                 break;
             case LARGER:
-                test1 = imageName + size.size1+".png";
+                test1 = imageName + size.size1+ ".png";
                 test2 = imageName + size.size2 + ".png";
                 load = imageName + size.size3 + ".png";
                 break;
@@ -73,7 +69,11 @@ public class ResourceFactory {
         if (ResourceFactory.class.getResource("/editor/gui/icons/" + test2) == null) {
             System.out.println("WARNING: missing icon /editor/gui/icons/" + test2);
         }
-//        return Util.loadIcon("/editor/gui/icons/" + load);
+        // In Linux/GTK, UI scale is currently not working for Java.
+        // Therefore, use the selected UI size.
+//        System.out.println(System.getProperty("sun.java2d.uiScale"));
+        if (Util.isLinux() && System.getProperty("sun.java2d.uiScale")==null)
+            return Util.loadIcon("/editor/gui/icons/" + load);
 
         AbstractMultiResolutionImage mrImg;
 //        mrImg = new BaseMultiResolutionImage(
@@ -86,7 +86,7 @@ public class ResourceFactory {
 //                Util.loadImage("/editor/gui/icons/" + imageName + size.size1 + ".png"),
 //                Util.loadImage("/editor/gui/icons/" + imageName + size.size2 + ".png"),
 //                Util.loadImage("/editor/gui/icons/" + imageName + size.size3 + ".png") );
-        mrImg = new MyMultiResolutionImage(new int[]{size.size1, size.size2, size.size3}, 
+        mrImg = new CustomMultiResolutionImage(new int[]{size.size1, size.size2, size.size3}, 
                 new String[] {"/editor/gui/icons/" + imageName + size.size1 + ".png",
                               "/editor/gui/icons/" + imageName + size.size2 + ".png",
                               "/editor/gui/icons/" + imageName + size.size3 + ".png" } );
@@ -95,88 +95,6 @@ public class ResourceFactory {
     }
     
     
-    private static class MyMultiResolutionImage extends AbstractMultiResolutionImage {
-        List<Image> images = new LinkedList<>();
-        int[] srcSizes;
-        String[] srcImages;
-        Image[] loaded;
-        
-        public MyMultiResolutionImage(int[] srcSizes, String[] srcImages) {
-            this.srcSizes = srcSizes;
-            this.srcImages = srcImages;
-            this.loaded = new Image[this.srcImages.length];
-        }
-
-        @Override
-        protected Image getBaseImage() {
-            return getResolutionVariant(srcSizes[0], srcSizes[0]);
-        }
-
-        @Override
-        public Image getResolutionVariant(double destImageWidth, double destImageHeight) {
-            for (Image img : images) {
-                if (img.getWidth(null) >= destImageWidth)
-                    return img;
-            }
-            // Image does not exists. load the closets, resize, store and return
-            int targetHeight = (int)destImageHeight;
-            int sel = 0;
-            
-//            int j = srcSizes.length - 1;
-//            while (j >= 0 && srcSizes[j] >= targetWidth) {
-//                sel = j;
-//                j--;
-//            }
-            // Select the smallest that fits the target width
-            int j = 0;
-            while (j < srcSizes.length) {
-                if (srcSizes[j] <= targetHeight && srcSizes[j] > srcSizes[sel])
-                    sel = j;
-                j++;
-            }
-
-            // Load image i
-            if (loaded[sel] == null) {
-                loaded[sel] = Util.loadImage(srcImages[sel]);
-                images.add(loaded[sel]);
-            }
-            Image img = loaded[sel];
-            // Resize image if needed
-            if (srcSizes[sel] != targetHeight) {
-                try {
-                    System.out.println("RESIZE "+srcSizes[sel]+" into "+targetHeight+" "+srcImages[sel]);
-                    img = resizeCenterImage(loaded[sel], (int)destImageWidth, targetHeight);
-                    images.add(img);
-                }
-                catch (IOException e) {
-                    Main.logException(e, true);
-                }
-            }
-            return img;
-        }
-        
-//        BufferedImage resizeImage(Image originalImage, int targetWidth, int targetHeight) throws IOException {
-//            Image resultingImage = originalImage.getScaledInstance(targetWidth, targetHeight, Image.SCALE_DEFAULT);
-//            BufferedImage outputImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
-//            outputImage.getGraphics().drawImage(resultingImage, 0, 0, null);
-//            return outputImage;
-//        }
-        
-        // Resize by centering the originalImage inside a larger fraem, without stretching or rescaling
-        BufferedImage resizeCenterImage(Image originalImage, int targetWidth, int targetHeight) throws IOException {
-            BufferedImage outputImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
-            int dx = (targetWidth - originalImage.getWidth(null)) / 2;
-            int dy = (targetHeight - originalImage.getHeight(null)) / 2;
-            outputImage.getGraphics().drawImage(originalImage, dx, dy, null);
-            return outputImage;
-        }
-
-        @Override
-        public List<Image> getResolutionVariants() {
-//            System.out.println("getResolutionVariants");
-            return images;
-        }
-    }
     
 //    private static class StubImage extends Image {
 //        Image image = null;
@@ -213,7 +131,7 @@ public class ResourceFactory {
         
     public static ImageIcon loadPropertyIcon(String name) {
         AbstractMultiResolutionImage mrImg;
-        mrImg = new MyMultiResolutionImage(new int[]{16,24}, 
+        mrImg = new CustomMultiResolutionImage(new int[]{16,24}, 
                         new String[]{"/editor/gui/icons/" + name + "16.png", 
                                      "/editor/gui/icons/" + name + "24.png"});
         return new ImageIcon(mrImg);
@@ -295,13 +213,13 @@ public class ResourceFactory {
     ///////////////////////////////////////////////////////////////////////////
 
     public ImageIcon getAppBanner() {
-        if (Util.isLinux())
-            return Util.loadIcon("/editor/gui/icons/app-banner123.png");
+//        if (Util.isLinux())
+//            return Util.loadIcon("/editor/gui/icons/app-banner.png");
         AbstractMultiResolutionImage mrImg;
-        mrImg = new MyMultiResolutionImage(new int[]{123,92,61}, 
-                        new String[]{"/editor/gui/icons/app-banner92.png",
-                                     "/editor/gui/icons/app-banner123.png", 
-                                     "/editor/gui/icons/app-banner61.png" });
+        mrImg = new CustomMultiResolutionImage(new int[]{80,120,160}, 
+                        new String[]{"/editor/gui/icons/app-banner.png",
+                                     "/editor/gui/icons/app-banner@150pct.png",
+                                     "/editor/gui/icons/app-banner@200pct.png" });
         return new ImageIcon(mrImg);
     }
 

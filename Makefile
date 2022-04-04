@@ -89,7 +89,7 @@ ifeq ($(UNAME_S),Darwin)
    CPPFLAGS += -I/usr/include/malloc -I/usr/local/include/ -I/opt/homebrew/include
    LDFLAGS += -L/usr/local/lib/ -L/opt/homebrew/lib
    ENABLE_Cxx17 := -std=c++17 -stdlib=libc++ -U__STRICT_ANSI__
-   LAUNCH4J := java -jar JavaGUI/launch4j-3.13-macosx/launch4j.jar
+#    LAUNCH4J := java -jar JavaGUI/launch4j-3.13-macosx/launch4j.jar
 
    
 	# CFLAGS += -Wno-implicit-function-declaration \
@@ -108,7 +108,7 @@ ifeq ($(UNAME_S),Darwin)
 endif
 
 ifeq ($(UNAME_S),Linux)
-	LAUNCH4J := java -jar JavaGUI/launch4j-3.13-linux-x64/launch4j.jar
+# 	LAUNCH4J := java -jar JavaGUI/launch4j-3.13-linux-x64/launch4j.jar
 endif
 
 ### - Platform-specific variations - ###
@@ -160,8 +160,8 @@ define search_lib
 $(if $(HAS_$(1)), , \
   $(if $(wildcard $(2)), \
     $(eval HAS_$(1):=1) ; \
-    $(eval LINK_$(1):=-L$(dir $(2)) $(3)) ; \
-    $(eval PATH_TO_$(1):=$(dir $(2))) )\
+    $(eval PATH_TO_$(1):=$(dir $(2))) ; \
+    $(eval LINK_$(1):=-L$(dir $(2)) $(3)) )\
  )
 endef
 # define warn_missing
@@ -215,9 +215,10 @@ $(call search_library,GLIBMM2-4_LIB,libglibmm-2.4.*,"glibmm-2.4 library")
 $(call search_library,GLPK_LIB,libglpk.*,"GLPK library",-lglpk)
 
 
-$(call search_library,LP_SOLVE_LIB,liblpsolve55.*,"lp_solve55 library",-llpsolve55 -ldl -lcolamd)
+$(call search_library,LP_SOLVE_LIB,liblpsolve55.*,"lp_solve55 library", )
 ifdef HAS_LP_SOLVE_LIB
   INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I$(PATH_TO_LP_SOLVE_LIB)../include/lpsolve
+  LINK_LP_SOLVE_LIB := $(LINK_LP_SOLVE_LIB) $(PATH_TO_LP_SOLVE_LIB)liblpsolve55.a $(PATH_TO_LP_SOLVE_LIB)libcolamd.a -ldl
 endif
 
 
@@ -1930,7 +1931,7 @@ JavaGUI/Editor/dist/Editor.jar: $(wildcard JavaGUI/Editor/src/*/*.java \
 	                                       JavaGUI/Editor/src/*/*/*/*/*/*.java ) \
                                  $(JAVA_GUI_DEPS)
 	@echo "  [ANT] " $@                             
-	@ant -quiet -Dplatforms.JDK_15.home=${JAVA_HOME} -buildfile  JavaGUI/Editor/build.xml  jar bundle-app
+	@ant -quiet -Dplatforms.JDK_15.home=${JAVA_HOME} -buildfile  JavaGUI/Editor/build.xml  jar
 
 
 # java-jars: JavaGUI/MathProvider/dist/MathProvider.jar

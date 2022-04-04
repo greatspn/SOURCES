@@ -2,6 +2,7 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 #include <spawn.h>
 #include <sys/wait.h>
 
@@ -11,10 +12,10 @@
 // if defined(WIN) && (_MSC_VER >= 1900)  use *__p__environ();
 #ifdef __APPLE__
 #include <crt_externs.h>
-char * const* get_environ() { return _NSGetEnviron(); }
+char* const* get_environ() { return _NSGetEnviron(); }
 #else
 extern char **environ;
-char * const* get_environ() { return environ; }
+char* const* get_environ() { return environ; }
 #endif
 
 //=============================================================================
@@ -31,6 +32,11 @@ str_has_spaces(const char*p) {
 
 //=============================================================================
 
+// #if defined(__CYGWIN__)
+
+// run a system process using posix_spawn.
+// This is strictly needed on cygwin with the portable GreatSPN distribution,
+// as the system() C API will not work properly. 
 int execp_cmd(const char* const* args, int verbose) {
     // spawn the new process
     pid_t pid;
@@ -63,6 +69,49 @@ int execp_cmd(const char* const* args, int verbose) {
         return -1;
     }
 }
+
+// #elif defined(__linux__) || defined(__APPLE__)
+
+// // Whenever the system() C API works properly, we can use it. 
+// // This also allows to use any custom shell changes to PATH.
+// NOTE: thid could surprisingly does not work in the portable macOS x86 version.
+// int execp_cmd(const char* const* args, int verbose) {
+//     // recompose all arguments into a single string, using quotes when needed
+//     size_t sz = 50, i=0;
+//     while (args[i]) { // reserve space for the cmd string
+//         sz += strlen(args[i]) + 2;
+//         i++;
+//     }
+//     char *cmd = (char*)malloc(sz), *p=cmd;
+//     const char* q;
+//     i=0;
+//     while (args[i]) {
+//         int sp = str_has_spaces(args[i]);
+//         q=args[i];
+//         if (i>0) *p++ = ' ';
+//         if (sp) *p++ = '\"';
+//         while (*q) {
+//             if      (*q == '\"') { *p++ = '\\'; *p++ = '\"'; }
+//             else if (*q == '\'') { *p++ = '\\'; *p++ = '\''; }
+//             else *p++ = *q;
+//             q++;
+//         }
+//         if (sp) *p++ = '\"';
+//         i++;
+//     }
+//     *p = '\0';
+//     if (verbose)
+//         printf("system: %s\n", cmd);
+
+//     int status = system(cmd);
+//     free(cmd);
+
+//     return status;
+// }
+
+// #else
+// #error "Unimplemented! (maybe just need to adapt the above ifdef\'s)"
+// #endif
 
 //=============================================================================
 
