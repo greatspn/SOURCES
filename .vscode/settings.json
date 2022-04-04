@@ -8,6 +8,7 @@
         "iosfwd": "cpp",
         "platform_utils.h": "c",
         "sstream": "c",
-        "regex": "c"
+        "regex": "c",
+        "struct.h": "c"
     }
 }

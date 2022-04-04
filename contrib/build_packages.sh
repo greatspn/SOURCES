@@ -84,7 +84,6 @@ cygwin*)
 echo "Running on CYGWIN"
 JPACKAGE_OPTIONS="
 	--icon JavaGUI/AdditionalV3/GreatSPN.ico
-	--file-associations JavaGUI/AdditionalV3/PNPRO-win-FileAssoc.txt \
 	"
 # --java-options -Dsun.java2d.uiScale.enabled=false
 # --java-options -Dsun.java2d.uiScale=2.0
@@ -255,11 +254,7 @@ jpackage \
 	--win-menu --win-menu-group "${GREATSPN_APPNAME}" \
 	--win-dir-chooser
 # add arch
-wcho mv ${GREATSPN_APPNAME_VER}.msi ${GREATSPN_APPNAME_VER}-windows-`uname -m`.msi
-
-=======
-
-echo "TBD: add renaming cmds."
+mv ${GREATSPN_APPNAME_VER}.msi ${GREATSPN_APPNAME_VER}-windows-`uname -m`.msi
 ;;
 
 #----------------------------------------------------------

@@ -42,18 +42,18 @@ int execp_cmd(const char* const* args, int verbose) {
     pid_t pid;
     int status = posix_spawnp(&pid, args[0], NULL, NULL, 
                               (char* const*)args, get_environ());
+    if (verbose) {
+        printf("exec: ");
+        for (int a=0; args[a]; ++a) {
+            if (str_has_spaces(args[a]))
+                printf("\"%s\" ", args[a]);
+            else
+                printf("%s ", args[a]);
+        }
+        printf("(pid=%d)\n", pid);
+    }
     // verify proper exec
     if (status == 0) {
-        if (verbose) {
-            printf("exec: ");
-            for (int a=0; args[a]; ++a) {
-                if (str_has_spaces(args[a]))
-                    printf("\"%s\" ", args[a]);
-                else
-                    printf("%s ", args[a]);
-            }
-            printf("(pid=%d)\n", pid);
-        }
         do {
             if (waitpid(pid, &status, 0) != -1) {
                 if (WEXITSTATUS(status) != 0)
