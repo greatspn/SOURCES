@@ -14,7 +14,7 @@ GREATSPN_APPNAME=GreatSPN
 GREATSPN_APPNAME_LOWERCASE=greatspn
 GREATSPN_APPNAME_ID=greatspn-${GREATSPN_APP_VERSION}
 
-APPIMAGE_ROOTDIR=objects/AppImage
+OBJECT_ROOTDIR=objects/AppImage
 
 echo "Building ${GREATSPN_APPNAME} version ${GREATSPN_APP_VERSION_FULLNUMBER}"
 
@@ -28,6 +28,17 @@ case "$OSTYPE" in
 #----------------------------------------------------------
 darwin*)
 echo "Running on OSX"
+# macOS jpackage directory structure:
+# 		HelloWorld.app/
+# 		  Contents/
+# 		    Info.plist
+# 		    MacOS/               // Application launchers
+# 		      HelloWorld
+# 		    Resources/           // Icons, etc.
+# 		    app/
+# 		      HelloWorld.cfg     // Configuration info, created by jpackage
+# 		      HelloWorld.jar     // JAR file, copied from the --input directory
+# 		    runtime/             // Java runtime image
 JPACKAGE_OPTIONS="
 	--java-options \"-Djava.library.path=Contents/Java/\" 
 	--java-options \"-Dapple.laf.useScreenMenuBar=true\" 
@@ -36,23 +47,40 @@ JPACKAGE_OPTIONS="
 	--icon JavaGUI/AdditionalV3/GreatSPN.icns
 	--mac-package-identifier \"${GREATSPN_APPNAME_ID}\"
 	"
-APPIMAGE_DIR=${APPIMAGE_ROOTDIR}/${GREATSPN_APPNAME}.app
-PORTABLE_GREATSPN_ROOTDIR=${APPIMAGE_DIR}/Contents/app/portable_greatspn
+OBJECT_APPIMAGE_DIR=${OBJECT_ROOTDIR}/${GREATSPN_APPNAME}.app
+# APPDIR is the same variable used by the native launcher in the GreatSPN.cfg file
+APPDIR=${OBJECT_APPIMAGE_DIR}/Contents/app
 ;;
 
 #----------------------------------------------------------
-linux*)   
+linux*)
 echo "Running on LINUX"
+# Linux jpackage directory structure:
+# 		myapp/
+# 		  bin/              // Application launchers
+# 		    HelloWorld
+# 		  lib/
+# 		    app/
+# 		      HelloWorld.cfg     // Configuration info, created by jpackage
+# 		      HelloWorld.jar     // JAR file, copied from the --input directory
+# 		    runtime/             // Java runtime image
 JPACKAGE_OPTIONS="
 	--icon JavaGUI/AdditionalV3/GreatSPN.png
 	--file-associations JavaGUI/AdditionalV3/PNPRO-linux-FileAssoc.txt \
 	"
-APPIMAGE_DIR=${APPIMAGE_ROOTDIR}/${GREATSPN_APPNAME}
-PORTABLE_GREATSPN_ROOTDIR=${APPIMAGE_DIR}/lib/app/portable_greatspn
+OBJECT_APPIMAGE_DIR=${OBJECT_ROOTDIR}/${GREATSPN_APPNAME}
+APPDIR=${OBJECT_APPIMAGE_DIR}/lib/app
 ;;
 
 #----------------------------------------------------------
-cygwin*)   
+cygwin*)
+# Windows jpackage directory structure:
+# 		HelloWorld/
+# 		  HelloWorld.exe       // Application launchers
+# 		  app/
+# 		    HelloWorld.cfg     // Configuration info, created by jpackage
+# 		    HelloWorld.jar     // JAR file, copied from the --input directory
+# 		  runtime/             // Java runtime image
 echo "Running on CYGWIN"
 JPACKAGE_OPTIONS="
 	--icon JavaGUI/AdditionalV3/GreatSPN.ico
@@ -62,8 +90,8 @@ JPACKAGE_OPTIONS="
 # --java-options -Dsun.java2d.uiScale=2.0
 # --java-options -Dsun.java2d.win.uiScaleX=2.0 
 # --java-options -Dsun.java2d.win.uiScaleY=2.0
-APPIMAGE_DIR=${APPIMAGE_ROOTDIR}/${GREATSPN_APPNAME}
-PORTABLE_GREATSPN_ROOTDIR=${APPIMAGE_DIR}/app/portable_greatspn
+OBJECT_APPIMAGE_DIR=${OBJECT_ROOTDIR}/${GREATSPN_APPNAME}
+APPDIR=${OBJECT_APPIMAGE_DIR}/app
 ;;
 
 #----------------------------------------------------------
@@ -77,8 +105,8 @@ esac
 ###########################################################
 echo 'FIRST STAGE: Building the app-image'
 
-rm -rf ${APPIMAGE_ROOTDIR}
-mkdir -p ${APPIMAGE_ROOTDIR}
+rm -rf ${OBJECT_ROOTDIR}
+mkdir -p ${OBJECT_ROOTDIR}
 jpackage \
 	--type app-image \
 	--input JavaGUI/Editor/dist \
@@ -88,25 +116,25 @@ jpackage \
 	--add-modules ${JAVAGUI_MODULES} \
 	--resource-dir JavaGUI/AdditionalV3 \
 	--java-options -enableassertions \
-	--java-options '"-splash:$APPDIR/GreatSPN Editor.app/Contents/Java/splash.png"' \
+	--java-options '"-splash:$APPDIR/splash.png"' \
 	--app-version "${GREATSPN_APP_VERSION_FULLNUMBER}" \
 	--copyright "University of Torino, Italy" \
 	--description "The GreatSPN framework. Visit https://github.com/greatspn/SOURCES for more informations." \
-	--dest ${APPIMAGE_ROOTDIR} \
+	--dest ${OBJECT_ROOTDIR} \
 	${JPACKAGE_OPTIONS}
 RET=$? ; if [ ${RET} -eq 1 ]; then exit ${RET} ; fi
 
 ###########################################################
 echo 'SECOND STAGE: Creating the Portable GreatSPN distribution'
 
-mkdir -p ${PORTABLE_GREATSPN_ROOTDIR}
-mkdir -p ${PORTABLE_GREATSPN_ROOTDIR}/bin
-mkdir -p ${PORTABLE_GREATSPN_ROOTDIR}/lib
+mkdir -p ${APPDIR}/portable_greatspn
+mkdir -p ${APPDIR}/portable_greatspn/bin
+mkdir -p ${APPDIR}/portable_greatspn/lib
 
-cp bin/* ${PORTABLE_GREATSPN_ROOTDIR}/bin/
-rm -f ${PORTABLE_GREATSPN_ROOTDIR}/bin/DSPN-Tool-Debug # not needed
+cp bin/* ${APPDIR}/portable_greatspn/bin/
+rm -f ${APPDIR}/portable_greatspn/bin/DSPN-Tool-Debug # not needed
 
-cp JavaGUI/AdditionalV3/splash.png ${PORTABLE_GREATSPN_ROOTDIR}/../
+cp JavaGUI/AdditionalV3/splash.png ${APPDIR}/
 
 case "$OSTYPE" in
 #----------------------------------------------------------
@@ -114,7 +142,7 @@ darwin*)
 cp  ../meddly/src/.libs/libmeddly.dylib \
     ../spot-2.9.6/spot/.libs/libspot.dylib \
     ../spot-2.9.6/buddy/src/.libs/libbddx.dylib \
-    ${PORTABLE_GREATSPN_ROOTDIR}/lib/
+    ${APPDIR}/portable_greatspn/lib/
 ;;
 
 #----------------------------------------------------------
@@ -122,7 +150,7 @@ linux*)
 cp  ../meddly/src/.libs/libmeddly.so.0 \
     ../spot-2.9.6/spot/.libs/libspot.so.0 \
     ../spot-2.9.6/buddy/src/.libs/libbddx.so.0 \
-    ${PORTABLE_GREATSPN_ROOTDIR}/lib/
+    ${APPDIR}/portable_greatspn/lib/
 ;;
 
 #----------------------------------------------------------
@@ -136,7 +164,7 @@ cp  /usr/bin/cygwin1.dll \
 	/usr/local/bin/cygspot-0.dll \
 	/usr/local/bin/cygbddx-0.dll \
 	/usr/bin/cygstdc++-6.dll \
-	${PORTABLE_GREATSPN_ROOTDIR}/bin/
+	${APPDIR}/portable_greatspn/bin/
 ;;
 
 #----------------------------------------------------------
@@ -157,7 +185,7 @@ darwin*)
 # Make the DMG package
 jpackage \
 	--type dmg \
-	--app-image ${APPIMAGE_DIR} \
+	--app-image ${OBJECT_APPIMAGE_DIR} \
 	--name ${GREATSPN_APPNAME} \
 	--app-version "${GREATSPN_APP_VERSION_FULLNUMBER}" \
 	--file-associations JavaGUI/AdditionalV3/PNPRO-macos-FileAssoc.txt \
@@ -177,7 +205,7 @@ linux*)
 # Application icon is taken from the resource-dir directory
 jpackage \
 	--type deb \
-	--app-image ${APPIMAGE_DIR} \
+	--app-image ${OBJECT_APPIMAGE_DIR} \
 	--name ${GREATSPN_APPNAME} \
 	--app-version ${GREATSPN_APP_VERSION_FULLNUMBER} \
 	--file-associations JavaGUI/AdditionalV3/PNPRO-linux-FileAssoc.txt \
@@ -194,7 +222,7 @@ mv ${OLDDEB} ${NEWDEB}
 # Make installable RPM package
 jpackage \
 	--type rpm \
-	--app-image ${APPIMAGE_DIR} \
+	--app-image ${OBJECT_APPIMAGE_DIR} \
 	--name ${GREATSPN_APPNAME} \
 	--app-version ${GREATSPN_APP_VERSION_FULLNUMBER} \
 	--file-associations JavaGUI/AdditionalV3/PNPRO-linux-FileAssoc.txt \
@@ -214,7 +242,7 @@ cygwin*)
 # Make the MSI installer
 jpackage \
 	--type msi \
-	--app-image ${APPIMAGE_DIR} \
+	--app-image ${OBJECT_APPIMAGE_DIR} \
 	--name ${GREATSPN_APPNAME} \
 	--app-version ${GREATSPN_APP_VERSION_NUMDOT} \
 	--file-associations JavaGUI/AdditionalV3/PNPRO-win-FileAssoc.txt \
@@ -239,7 +267,7 @@ esac
 ###########################################################
 echo 'FOURTH STAGE: Cleaning temporary files'
 
-rm -rf ${APPIMAGE_ROOTDIR}
+rm -rf ${OBJECT_ROOTDIR}
 
 echo "Done."
 
