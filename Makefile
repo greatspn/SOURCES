@@ -108,7 +108,7 @@ ifeq ($(UNAME_S),Darwin)
 endif
 
 ifeq ($(UNAME_S),Linux)
-	LAUNCH4J := java -jar JavaGUI/launch4j-3.13-linux-x64/launch4j.jar
+# 	LAUNCH4J := java -jar JavaGUI/launch4j-3.13-linux-x64/launch4j.jar
 endif
 
 ### - Platform-specific variations - ###
