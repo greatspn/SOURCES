@@ -303,8 +303,8 @@ public class ResourceFactory {
             return Util.loadIcon("/editor/gui/icons/app-banner123.png");
         AbstractMultiResolutionImage mrImg;
         mrImg = new MyMultiResolutionImage(new int[]{123,92,61}, 
-                        new String[]{"/editor/gui/icons/app-banner92.png",
-                                     "/editor/gui/icons/app-banner123.png", 
+                        new String[]{"/editor/gui/icons/app-banner123.png",
+                                     "/editor/gui/icons/app-banner92.png",
                                      "/editor/gui/icons/app-banner61.png" });
         return new ImageIcon(mrImg);
     }
