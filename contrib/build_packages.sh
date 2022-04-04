@@ -66,7 +66,6 @@ echo "Running on LINUX"
 # 		    runtime/             // Java runtime image
 JPACKAGE_OPTIONS="
 	--icon JavaGUI/AdditionalV3/GreatSPN.png
-	--file-associations JavaGUI/AdditionalV3/PNPRO-linux-FileAssoc.txt \
 	"
 OBJECT_APPIMAGE_DIR=${OBJECT_ROOTDIR}/${GREATSPN_APPNAME}
 APPDIR=${OBJECT_APPIMAGE_DIR}/lib/app
