@@ -84,7 +84,7 @@ jpackage \
 	--main-class editor.Main \
 	--add-modules ${JAVAGUI_MODULES} \
 	--java-options -enableassertions \
-	--java-options '"-splash:\$APPDIR/GreatSPN Editor.app/Contents/Java/splash.png"' \
+	--java-options '"-splash:$APPDIR/GreatSPN Editor.app/Contents/Java/splash.png"' \
 	--app-version "${GREATSPN_APP_VERSION_FULLNUMBER}" \
 	--copyright "University of Torino, Italy" \
 	--description "The GreatSPN framework. Visit https://github.com/greatspn/SOURCES for more informations." \
@@ -101,6 +101,8 @@ mkdir -p ${PORTABLE_GREATSPN_ROOTDIR}/lib
 
 cp bin/* ${PORTABLE_GREATSPN_ROOTDIR}/bin/
 rm -f ${PORTABLE_GREATSPN_ROOTDIR}/bin/DSPN-Tool-Debug # not needed
+
+cp JavaGUI/AdditionalV3/splash.png ${PORTABLE_GREATSPN_ROOTDIR}/../
 
 case "$OSTYPE" in
 #----------------------------------------------------------

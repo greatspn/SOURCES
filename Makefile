@@ -1931,7 +1931,7 @@ JavaGUI/Editor/dist/Editor.jar: $(wildcard JavaGUI/Editor/src/*/*.java \
 	                                       JavaGUI/Editor/src/*/*/*/*/*/*.java ) \
                                  $(JAVA_GUI_DEPS)
 	@echo "  [ANT] " $@                             
-	@ant -quiet -Dplatforms.JDK_15.home=${JAVA_HOME} -buildfile  JavaGUI/Editor/build.xml  jar bundle-app
+	@ant -quiet -Dplatforms.JDK_15.home=${JAVA_HOME} -buildfile  JavaGUI/Editor/build.xml  jar
 
 
 # java-jars: JavaGUI/MathProvider/dist/MathProvider.jar
