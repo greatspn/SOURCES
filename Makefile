@@ -160,8 +160,8 @@ define search_lib
 $(if $(HAS_$(1)), , \
   $(if $(wildcard $(2)), \
     $(eval HAS_$(1):=1) ; \
-    $(eval LINK_$(1):=-L$(dir $(2)) $(3)) ; \
-    $(eval PATH_TO_$(1):=$(dir $(2))) )\
+    $(eval PATH_TO_$(1):=$(dir $(2))) ; \
+    $(eval LINK_$(1):=-L$(dir $(2)) $(3)) )\
  )
 endef
 # define warn_missing
@@ -215,9 +215,10 @@ $(call search_library,GLIBMM2-4_LIB,libglibmm-2.4.*,"glibmm-2.4 library")
 $(call search_library,GLPK_LIB,libglpk.*,"GLPK library",-lglpk)
 
 
-$(call search_library,LP_SOLVE_LIB,liblpsolve55.*,"lp_solve55 library",-llpsolve55 -ldl -lcolamd)
+$(call search_library,LP_SOLVE_LIB,liblpsolve55.*,"lp_solve55 library",-ldl)
 ifdef HAS_LP_SOLVE_LIB
   INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I$(PATH_TO_LP_SOLVE_LIB)../include/lpsolve
+  LINK_LP_SOLVE_LIB := $(LINK_LP_SOLVE_LIB) $(PATH_TO_LP_SOLVE_LIB)liblpsolve55.a $(PATH_TO_LP_SOLVE_LIB)libcolamd.a
 endif
 
 
