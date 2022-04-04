@@ -32,6 +32,7 @@ JPACKAGE_OPTIONS="
 	--java-options \"-Djava.library.path=Contents/Java/\" 
 	--java-options \"-Dapple.laf.useScreenMenuBar=true\" 
 	--java-options \"-Dcom.apple.macos.useScreenMenuBar=true\" 
+	--file-associations JavaGUI/AdditionalV3/PNPRO-macos-FileAssoc.txt \
 	--icon JavaGUI/AdditionalV3/GreatSPN.icns
 	--mac-package-identifier \"${GREATSPN_APPNAME_ID}\"
 	"
@@ -44,6 +45,7 @@ linux*)
 echo "Running on LINUX"
 JPACKAGE_OPTIONS="
 	--icon JavaGUI/AdditionalV3/GreatSPN.png
+	--file-associations JavaGUI/AdditionalV3/PNPRO-linux-FileAssoc.txt \
 	"
 APPIMAGE_DIR=${APPIMAGE_ROOTDIR}/${GREATSPN_APPNAME}
 PORTABLE_GREATSPN_ROOTDIR=${APPIMAGE_DIR}/lib/app/portable_greatspn
@@ -54,6 +56,7 @@ cygwin*)
 echo "Running on CYGWIN"
 JPACKAGE_OPTIONS="
 	--icon JavaGUI/AdditionalV3/GreatSPN.ico
+	--file-associations JavaGUI/AdditionalV3/PNPRO-win-FileAssoc.txt \
 	"
 # --java-options -Dsun.java2d.uiScale.enabled=false
 # --java-options -Dsun.java2d.uiScale=2.0
@@ -83,6 +86,7 @@ jpackage \
 	--main-jar Editor.jar \
 	--main-class editor.Main \
 	--add-modules ${JAVAGUI_MODULES} \
+	--resource-dir JavaGUI/AdditionalV3 \
 	--java-options -enableassertions \
 	--java-options '"-splash:$APPDIR/GreatSPN Editor.app/Contents/Java/splash.png"' \
 	--app-version "${GREATSPN_APP_VERSION_FULLNUMBER}" \

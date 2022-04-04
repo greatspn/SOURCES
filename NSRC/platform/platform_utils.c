@@ -74,6 +74,7 @@ int execp_cmd(const char* const* args, int verbose) {
 
 // // Whenever the system() C API works properly, we can use it. 
 // // This also allows to use any custom shell changes to PATH.
+// NOTE: thid could surprisingly does not work in the portable macOS x86 version.
 // int execp_cmd(const char* const* args, int verbose) {
 //     // recompose all arguments into a single string, using quotes when needed
 //     size_t sz = 50, i=0;
