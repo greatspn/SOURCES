@@ -162,7 +162,7 @@ jpackage \
 	--mac-package-identifier "${GREATSPN_APPNAME_ID}"
 
 OLDDMG=${GREATSPN_APPNAME}-${GREATSPN_APP_VERSION_FULLNUMBER}.dmg
-NEWDMG=${GREATSPN_APPNAME}-${GREATSPN_APP_VERSION_NUMDOT}-`uname -m`.dmg
+NEWDMG=${GREATSPN_APPNAME}-${GREATSPN_APP_VERSION_NUMDOT}-macOS-`uname -m`.dmg
 mv ${OLDDMG} ${NEWDMG}
 
 ;;
@@ -184,7 +184,7 @@ jpackage \
 	--linux-package-deps "libsuitesparse-dev, libgmpxx4ldbl, libgmp-dev, graphviz"
 
 OLDDEB=`ls ${GREATSPN_APPNAME_LOWERCASE}_${GREATSPN_APP_VERSION_FULLNUMBER}*.deb`
-NEWDEB=`echo ${OLDDEB} | sed "s/${GREATSPN_APP_VERSION_FULLNUMBER}-full/${GREATSPN_APP_VERSION_NUMDOT}/g"`
+NEWDEB=`echo ${OLDDEB} | sed "s/${GREATSPN_APP_VERSION_FULLNUMBER}-full/${GREATSPN_APP_VERSION_NUMDOT}-linux/g"`
 mv ${OLDDEB} ${NEWDEB}
 
 # Make installable RPM package
@@ -200,7 +200,7 @@ jpackage \
 	--linux-package-deps "gmp-c++, gmp, suitesparse, graphviz, lpsolve"
 
 OLDRPM=`ls ${GREATSPN_APPNAME_LOWERCASE}-${GREATSPN_APP_VERSION_FULLNUMBER}*.rpm`
-NEWRPM=`echo ${OLDRPM} | sed "s/${GREATSPN_APP_VERSION_FULLNUMBER}-full/${GREATSPN_APP_VERSION_NUMDOT}/g"`
+NEWRPM=`echo ${OLDRPM} | sed "s/${GREATSPN_APP_VERSION_FULLNUMBER}-full/${GREATSPN_APP_VERSION_NUMDOT}-linux/g"`
 mv ${OLDRPM} ${NEWRPM}
 
 ;;
@@ -217,6 +217,8 @@ jpackage \
 	--resource-dir JavaGUI/AdditionalV3 \
 	--win-menu --win-menu-group "${GREATSPN_APPNAME}" \
 	--win-dir-chooser
+
+echo "TBD: add renaming cmds."
 ;;
 
 #----------------------------------------------------------
