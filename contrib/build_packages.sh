@@ -143,6 +143,8 @@ cp  ../meddly/src/.libs/libmeddly.dylib \
     ../spot-2.9.6/spot/.libs/libspot.dylib \
     ../spot-2.9.6/buddy/src/.libs/libbddx.dylib \
     ${APPDIR}/portable_greatspn/lib/
+
+echo "COPY THE splash@2x.png file!"
 ;;
 
 #----------------------------------------------------------
