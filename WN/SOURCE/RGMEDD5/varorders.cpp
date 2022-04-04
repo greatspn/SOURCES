@@ -900,7 +900,7 @@ void determine_var_order(const var_order_selector& sel,
             cout << endl;
             // cout << "TIME-PSI:  " << double(time_PSI_RANK) / CLOCKS_PER_SEC << endl;
             // if (g_print_pbasis_metrics)
-            experiment_footprint_chaining(net_to_mddLevel);
+            // experiment_footprint_chaining(net_to_mddLevel);
             cout << "\n--------------------------------------\n";
 
 
