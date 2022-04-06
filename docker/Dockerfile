@@ -32,7 +32,6 @@ RUN wget http://www.lrde.epita.fr/dload/spot/spot-2.9.6.tar.gz ;\
 # Install ogdf
 RUN git clone https://github.com/ogdf/ogdf ;\
 	cd ogdf ;\
-	./makeMakefile.sh ;\
 	mkdir build && cd build && cmake .. && make ${MAKE_ARGS} ;\
 	sudo make install
 
