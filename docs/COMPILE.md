@@ -92,13 +92,12 @@ If not, modify the `/etc/ld.so.conf` and/or the environmental variable `LD_LIBRA
 [OGDF](https://ogdf.uos.de/) is used for the automatic Petri net relayout feature of the graphical editor. 
 It can be installed using these commands:
 ```
-unzip ogdf.v2020.02.zip
+git clone https://github.com/ogdf/ogdf.git
 cd ogdf
-./makeMakefile.sh
 mkdir build && cd build && cmake .. && make
 sudo make install
 ```
-or directly from [sources](https://github.com/ogdf/ogdf) to get the latest OGDF version.
+or, alternatively, follow the instructions directly from [the OGDF repository.](https://github.com/ogdf/ogdf)
 
 
 ### Compile GreatSPN on macOS
