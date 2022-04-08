@@ -168,7 +168,6 @@ public class FlowsGenerator extends StructuralAlgorithm {
                     int gcdAD = -1;
                     for (int k = 0; k < M; k++) {
                         // Compute (with arithmetic overflow check):
-                        //   nrA[k] = mult2 * mA.get(r1)[k] + mult1 * mA.get(r2)[k];
                         nrA[k] = Math.addExact(Math.multiplyExact(mult2, mA.get(r1)[k]),
                                                Math.multiplyExact(mult1, mA.get(r2)[k]));
                         gcdAD = (k == 0) ? Math.abs(nrA[k]) : gcd(gcdAD, Math.abs(nrA[k]));
@@ -176,24 +175,21 @@ public class FlowsGenerator extends StructuralAlgorithm {
                     assert nrA[i] == 0;
                     for (int k = 0; k < N; k++) {
                         // Compute (with arithmetic overflow check):
-                        //   nrD[k] = mult2 * mD.get(r1)[k] + mult1 * mD.get(r2)[k];
                         nrD[k] = Math.addExact(Math.multiplyExact(mult2, mD.get(r1)[k]),
                                                Math.multiplyExact(mult1, mD.get(r2)[k]));
                         gcdAD = gcd(gcdAD, Math.abs(nrD[k]));
                     }
                     if (gcdAD != 1) {
 //                        System.out.println("  gcdAD = " + gcdAD);
-                        for (int k = 0; k < M; k++) {
+                        for (int k = 0; k < M; k++)
                             nrA[k] /= gcdAD;
-                        }
-                        for (int k = 0; k < N; k++) {
+                        for (int k = 0; k < N; k++)
                             nrD[k] /= gcdAD;
-                        }
                     }
                     int nnzD = 0;
-                    for (int k = 0; k < N; k++) {
-                        nnzD += (nrD[k] != 0 ? 1 : 0);
-                    }                    
+                    for (int k = 0; k < N; k++) 
+                        if (nrD[k] != 0)
+                            nnzD++;                  
                     if (nnzD == 0)
                         continue; // drop empty row
 
@@ -286,6 +282,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
     public void computeAllCanonicalSemiflows(boolean log, ProgressObserver obs) 
             throws InterruptedException 
     {
+        assert type==PTFlows.Type.PLACE_SEMIFLOWS;
         if (log)
             System.out.println(this);
         int initFlows = numFlows();
@@ -298,7 +295,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
             // linear combination of row pairs from [D|A] whose sum zeroes
             // the i-th column of A.
 //            int nRows = numFlows();
-            int combined_with_i = 0;
+//            int combined_with_i = 0;
             for (int r1 = 0; r1 < numFlows(); r1++) {
                 if (mA.get(r1)[i] == 0) {
                     continue;
@@ -310,13 +307,13 @@ public class FlowsGenerator extends StructuralAlgorithm {
                     if (mA.get(r2)[i] == 0)
                         continue;
                     
-                    int mult1, mult2;
+//                    int mult1, mult2;
 //                    if (type.isSemiflow()) { // (non-negative) semiflows
                     if (sign(mA.get(r1)[i]) == sign(mA.get(r2)[i]))
                         continue;
 //                    mult1 = Math.abs(mA.get(r1)[i]);
 //                    mult2 = Math.abs(mA.get(r2)[i]);
-                    mult1 = mult2 = 1; // Do all 1-steps
+//                    mult1 = mult2 = 1; // Do all 1-steps
 //                    }
 //                    else { // integer flows
 //                        mult1 = Math.abs(mA.get(r1)[i]);
@@ -336,55 +333,62 @@ public class FlowsGenerator extends StructuralAlgorithm {
                     int gcdAD = -1;
                     for (int k = 0; k < M; k++) {
                         // Compute (with arithmetic overflow check):
-                        //   nrA[k] = mult2 * mA.get(r1)[k] + mult1 * mA.get(r2)[k];
-                        nrA[k] = Math.addExact(Math.multiplyExact(mult2, mA.get(r1)[k]),
-                                               Math.multiplyExact(mult1, mA.get(r2)[k]));
+//                        nrA[k] = Math.addExact(Math.multiplyExact(mult2, mA.get(r1)[k]),
+//                                               Math.multiplyExact(mult1, mA.get(r2)[k]));
+                        nrA[k] = Math.addExact(mA.get(r1)[k], mA.get(r2)[k]);
                         gcdAD = (k == 0) ? Math.abs(nrA[k]) : gcd(gcdAD, Math.abs(nrA[k]));
                     }
 //                    assert nrA[i] == 0;
                     for (int k = 0; k < N; k++) {
                         // Compute (with arithmetic overflow check):
-                        //   nrD[k] = mult2 * mD.get(r1)[k] + mult1 * mD.get(r2)[k];
-                        nrD[k] = Math.addExact(Math.multiplyExact(mult2, mD.get(r1)[k]),
-                                               Math.multiplyExact(mult1, mD.get(r2)[k]));
+//                        nrD[k] = Math.addExact(Math.multiplyExact(mult2, mD.get(r1)[k]),
+//                                               Math.multiplyExact(mult1, mD.get(r2)[k]));
+                        nrD[k] = Math.addExact(mD.get(r1)[k], mD.get(r2)[k]);
                         gcdAD = gcd(gcdAD, Math.abs(nrD[k]));
                     }
+                    // Make canonic
                     if (gcdAD != 1) {
 //                        System.out.println("  gcdAD = " + gcdAD);
-                        for (int k = 0; k < M; k++) {
+                        for (int k = 0; k < M; k++)
                             nrA[k] /= gcdAD;
-                        }
-                        for (int k = 0; k < N; k++) {
+                        for (int k = 0; k < N; k++)
                             nrD[k] /= gcdAD;
-                        }
                     }
                     int nnzD = 0;
-                    for (int k = 0; k < N; k++) {
-                        nnzD += (nrD[k] != 0 ? 1 : 0);
-                    }                    
+                    for (int k = 0; k < N; k++) 
+                        if (nrD[k] != 0)
+                            nnzD++;
                     if (nnzD == 0)
                         continue; // drop empty row
-
-                    if (log)
-                        System.out.println(i + ": ADD row " + r1 + " + row " + r2 + "  nnz(D)=" + nnzD);
                     
                     // check if an identical row already exists in D
-                    boolean identical = false;
-                    for (int hh=0; hh<numFlows() && !identical; hh++) {
+                    boolean isDuplicated = false;
+                    for (int hh=0; hh<numFlows() && !isDuplicated; hh++) {
                         if (Arrays.equals(mD.get(hh), nrD)) {
-                            identical = true;
+                            isDuplicated = true;
                         }
                     }
-                    if (identical)
+                    if (isDuplicated) {
+                        if (log) {
+                            System.out.println("DROP row:"+r1+" + row:" + r2 + 
+                                               "  nnz(D)=" + nnzD + "  gcdAD="+gcdAD);
+                            System.out.println(String.format("--: %s", rowToString(nrD, nrA)));
+                        }
                         continue;
+                    }
 
+                    if (log) {
+                        System.out.println("ADD  row:"+r1+" + row:" + r2 + 
+                                           "  nnz(D)=" + nnzD + "  gcdAD="+gcdAD);
+                        System.out.println(String.format("%2d: %s", mA.size(), rowToString(nrD, nrA)));
+                    }
                     mA.add(nrA);
                     mD.add(nrD);
-                    ++combined_with_i;
+//                    ++combined_with_i;
                 }
                     
-                if (type.isBasis() && combined_with_i>0)
-                    break;
+//                if (type.isBasis() && combined_with_i>0)
+//                    break;
             }
             checkInterrupted();
 
@@ -407,22 +411,24 @@ public class FlowsGenerator extends StructuralAlgorithm {
 //                removeNonMinimalFlows(log, obs);
         }
         
-        // Remove all initial flows
-        mA = new ArrayList<>(mA.subList(initFlows, mA.size()));
-        mD = new ArrayList<>(mD.subList(initFlows, mD.size()));
-        
-//        if (type.isTrapsOrSiphons())
-//            dropSupplementaryVariablesAndReduce(log, obs);
-        
         if (log)
             System.out.println("\nRESULT:\n"+this);
 
+        // Remove all the initial flows
+        mA = new ArrayList<>(mA.subList(initFlows, mA.size()));
+        mD = new ArrayList<>(mD.subList(initFlows, mD.size()));
+        if (log)
+            System.out.println("\nREMOVING "+initFlows+" initial flows.");
+        
+//        if (type.isTrapsOrSiphons())
+//            dropSupplementaryVariablesAndReduce(log, obs);
+
         obs.advance(M+1, M+1, 1, 1);
         
-        if (type.isBound()) {
-            computeBoundsFromInvariants();
-//            scAlgo.compute(log, obs);
-        }
+//        if (type.isBound()) {
+//            computeBoundsFromInvariants();
+////            scAlgo.compute(log, obs);
+//        }
         
         setComputed();
     }
@@ -459,18 +465,24 @@ public class FlowsGenerator extends StructuralAlgorithm {
         removeNonMinimalFlows(log, obs);
     }
     
+    private String rowToString(int[] rowD, int[] rowA) {
+        StringBuilder sb = new StringBuilder();
+        for (int j = 0; j < N; j++) {
+            sb.append(rowD[j] < 0 ? "" : " ").append(rowD[j]).append(" ");
+        }
+        sb.append("| ");
+        for (int j = 0; j < M; j++) {
+            sb.append(rowA[j] < 0 ? "" : " ").append(rowA[j]).append(" ");
+        }
+        return sb.toString();
+    }
+    
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < numFlows(); i++) {
-            sb.append(i < 10 ? " " : "").append(i).append(":  ");
-            for (int j = 0; j < N; j++) {
-                sb.append(mD.get(i)[j] < 0 ? "" : " ").append(mD.get(i)[j]).append(" ");
-            }
-            sb.append("| ");
-            for (int j = 0; j < M; j++) {
-                sb.append(mA.get(i)[j] < 0 ? "" : " ").append(mA.get(i)[j]).append(" ");
-            }
+            sb.append(String.format("%2d: ", i));
+            sb.append(rowToString(mD.get(i), mA.get(i)));
             sb.append("\n");
         }
         return sb.toString();

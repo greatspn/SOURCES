@@ -56,7 +56,7 @@ GreatSPN will then run directly as a standard macOS application.
 
 We offer a pre-installed VirtualBox machine image, based on Ubuntu, that ships with
 the GreatSPN framework already installed, with all the required dependencies.
-This is the easiest way to get GreatSPN, since you just have to download the image.
+This is the easiest way to get GreatSPN together with the pre-compiled source, since you just have to download the image, but of course the VirtualBox machine will be slower than any native build.
 The VirtualBox image can be downloaded from this [repository](http://www.di.unito.it/~greatspn/VBox/).
 In case you need it, the root password of the VirtualBox image is: `user`
 

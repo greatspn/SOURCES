@@ -106,13 +106,15 @@ public final class Util {
     // Prepara l'avvio dell'applicazione
     public static void initApplication(String appName, String preferencesRootNode) {
         prefRootNode = preferencesRootNode;
-        System.setProperty("apple.laf.useScreenMenuBar","true");
-        System.setProperty("com.apple.macos.useScreenMenuBar","true");
-        System.setProperty("com.apple.eawt.quitStrategy", "CLOSE_ALL_WINDOWS");
-        System.setProperty("com.apple.mrj.application.apple.menu.about.name", appName);
-//        System.setProperty("apple.awt.brushMetalLook","true");
+        if (isOSX()) {
+            System.setProperty("apple.laf.useScreenMenuBar","true");
+            System.setProperty("com.apple.macos.useScreenMenuBar","true");
+//            System.setProperty("com.apple.eawt.quitStrategy", "CLOSE_ALL_WINDOWS");
+//            System.setProperty("com.apple.mrj.application.apple.menu.about.name", appName);
+//            System.setProperty("apple.awt.brushMetalLook","true");
+        }
         
-        if (System.getProperty("file.separator").equals("\\")) {
+        if (isWindows()) {
             // Correzione Known BUG del jdk per Windows -> causa il flickering delle finestre
             System.setProperty("sun.awt.noerasebackground", "true");
         }
@@ -179,7 +181,7 @@ public final class Util {
     
     
     public static final Color UNIFIED_GRAY_PANEL_BKGND = new Color(237, 237, 237);
-    private static final boolean unifiedToolbar = true;
+    private static final boolean unifiedToolbar = false;
     public static boolean useUnifiedToolbar() {
         return unifiedToolbar && isOSX();
     }
