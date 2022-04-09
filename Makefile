@@ -41,6 +41,8 @@ LEXPPFLAGS ?=
 YACCPPFLAGS ?=
 ARFLAGS :=
 UIL ?= /usr/bin/uil
+PAR-PACKER ?= /usr/bin/pp
+EXE_SUFFIX ?=
 ENABLE_Cxx17 ?= -std=c++17
 ENABLE_Cxx14 ?= -std=c++14
 
@@ -126,6 +128,7 @@ ifneq (,$(findstring CYGWIN,$(UNAME_S)))
   CPP := $(CPP) -std=gnu++17
 	ENABLE_Cxx17 := -std=gnu++17
 	ENABLE_Cxx14 := -std=gnu++14
+	EXE_SUFFIX := .exe
 endif
 
 ifdef IS_WSL
@@ -197,6 +200,10 @@ $(call warn_missing,OPENMOTIF,OpenMotif)
 
 $(call search_file,PKGCONFIG,$(shell which pkg-config))
 $(call warn_missing,PKGCONFIG,pkg-config tool)
+
+
+$(call search_file,PAR_PACKER_TOOL,$(PAR-PACKER))
+$(call warn_missing,PAR_PACKER_TOOL,PAR packer Perl)
 
 
 ifeq ($(GLIB-INCLUDE),)
@@ -2251,6 +2258,33 @@ endif
 ifdef HAS_OGDF_LIB
   TARGETS += ogdf
 endif
+
+
+######################################
+# epstopdf
+######################################
+
+$(BINDIR)/epstopdf$(EXE_SUFFIX): NSRC/epstopdf/epstopdf.pl
+	@echo "  [PP]  " $<
+	@$(PAR-PACKER) -o $@  $<
+
+clean_epstopdf:
+	@rm -f $(BINDIR)/epstopdf$(EXE_SUFFIX)
+
+install_epstopdf:
+	@cp $(BINDIR)/epstopdf$(EXE_SUFFIX) $(INSTALLDIR)/bin/
+
+all: $(BINDIR)/epstopdf$(EXE_SUFFIX)
+
+clean: clean_epstopdf
+
+install: install_epstopdf
+
+ifdef HAS_PAR_PACKER_TOOL
+	TARGETS += epstopdf$(EXE_SUFFIX)
+endif
+
+
 
 ######################################
 ##### MAIN PACKAGE LOCATOR SCRIPT #####

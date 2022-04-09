@@ -37,7 +37,7 @@ sudo apt-get install -y gcc g++ libgmp-dev libgmpxx4ldbl libboost-all-dev \
  flexc++ ant libglib2.0-dev patch python3 libglpk-dev liblpsolve55-dev \
  autoconf automake libtool zip flex byacc time graphviz libsuitesparse-dev \
  libmotif-dev make libxml++2.6-dev libglibmm-2.4-dev texlive-font-utils \
- openjdk-16-jdk cmake git
+ openjdk-16-jdk cmake git libpar-packer-perl
 ```
 This list was last tested on Ubuntu 20.04LTS, and it also applies to WSL-2 with Ubuntu.
 
