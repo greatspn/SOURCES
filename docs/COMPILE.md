@@ -28,7 +28,7 @@ For Fedora 32, you can install the dependencies with this command:
 sudo dnf -y install gcc gcc-c++ gmp-devel gmp-c++ gmp boost-devel flex-devel \
  ant glib2-devel patch python glpk-devel lpsolve-devel autoconf automake \
  libtool zip flex git byacc time graphviz suitesparse-devel motif-devel make 
- libxml++-devel glibmm24-devel lpsolve texlive-epstopdf
+ libxml++-devel glibmm24-devel lpsolve texlive-epstopdf perl-PAR-Packer
 ```
 
 For Debian/Ubuntu, the list of dependencies is installed with the command:
