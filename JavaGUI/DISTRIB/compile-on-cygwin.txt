@@ -8,6 +8,7 @@ libboost-devel flex libglib2.0-devel autoreconf cmake
 patch libglpk-devel autoconf automake cygwin32-libtool 
 zip unzip byacc graphviz libsuitesparseconfig-devel make 
 libxml++2.6-devel libglibmm2.4-devel libiconv-devel
+perl-PAR-Packer
 
 Then run: 
 
