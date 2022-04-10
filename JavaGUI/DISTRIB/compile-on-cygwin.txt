@@ -50,6 +50,7 @@ cp libcolamd.a /usr/local/lib/
 
 ----GreatSPN----
 First: compile epstopdf from CMD.
+epstopdf needs to be a standard Win32 application, not a cygwin one.
 In CMD, type:
   c:\Strawberry\perl\site\bin\pp -o bin\epstopdf.exe NSRC\epstopdf\epstopdf.pl
 
