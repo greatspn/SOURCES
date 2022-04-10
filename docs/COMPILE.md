@@ -116,8 +116,15 @@ In that case, download the lp_solve sources from Sourceforge and follow the inst
 to compile the package.
 After you have installed Xcode, brew, and the required dependecies, follow
 the Linux/Unix instructions to compile Meddly and GreatSPN.
-You could also need to install MacTex to have the (optional) `epstopdf` command, 
-needed by some visualization tools.
+
+The `epstopdf` utility requires the PAR packer to be compiled and installed.
+To install PAR packer on macOS, i.e. the Perl compiler (`/usr/bin/pp`), run the commands:
+```
+brew install cpanminus perl
+cpan install Error
+cpan install Tk::Derived
+cpan install pp
+```
 
 
 
