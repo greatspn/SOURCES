@@ -43,7 +43,7 @@ const char* get_appimage_dir();
 
 //=============================================================================
 
-#if defined(WIN32) || defined(_WIN32) 
+#if defined(WIN32) || defined(_WIN32) || defined(__CYGWIN__)
 # define PATH_SEPARATOR      "\\" 
 # define PATH_SEPARATOR_CH   '\\' 
 #else 

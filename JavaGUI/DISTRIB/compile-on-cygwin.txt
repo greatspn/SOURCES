@@ -1,3 +1,10 @@
+###############
+Install Strawberry Perl for Windows https://strawberryperl.com/
+from cmd type:
+cpan install Error
+cpan install pp
+
+###############
 Download cygwin
 
 From setup-x86_64.exe install the following packages:
@@ -42,5 +49,9 @@ ar rcs libcolamd.a colamd.o
 cp libcolamd.a /usr/local/lib/
 
 ----GreatSPN----
-Should compile the core (no Java) without problems.
+First: compile epstopdf from CMD.
+In CMD, type:
+  c:\Strawberry\perl\site\bin\pp -o bin\epstopdf.exe NSRC\epstopdf\epstopdf.pl
+
+Then, in cygwin, everything else should compile (the core, no Java) without problems.
 

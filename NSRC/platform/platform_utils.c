@@ -32,7 +32,7 @@ str_has_spaces(const char*p) {
 
 //=============================================================================
 
-#if defined(__CYGWIN__)
+#ifdef __CYGWIN__
 
 // run a system process using posix_spawn.
 // This is strictly needed on cygwin with the portable GreatSPN distribution,
@@ -151,15 +151,15 @@ int eps_to_pdf(const char *eps_fname, const char *pdf_fname)
     char bin[1024];
     if (get_appimage_dir()) {
         snprintf(bin, sizeof(bin), "%s" PATH_SEPARATOR "bin" PATH_SEPARATOR "epstopdf", get_appimage_dir());
-        printf("%s\n", bin);
-        printf("PATH=%s\n", getenv("PATH"));
-        fflush(stdout);
+        // printf("%s\n", bin);
+        // printf("PATH=%s\n", getenv("PATH"));
+        // fflush(stdout);
     }
     else {
         snprintf(bin, sizeof(bin), "epstopdf");
     }
 
-    const char* const args[] = {bin, "--nosafer", eps_fname, "-o", pdf_fname, NULL };
+    const char* const args[] = {"epstopdf", "--nosafer", eps_fname, "-o", pdf_fname, NULL };
     return execp_cmd(bin, args, 1);
 }
 

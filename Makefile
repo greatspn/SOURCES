@@ -129,6 +129,8 @@ ifneq (,$(findstring CYGWIN,$(UNAME_S)))
 	ENABLE_Cxx17 := -std=gnu++17
 	ENABLE_Cxx14 := -std=gnu++14
 	EXE_SUFFIX := .exe
+	PAR-PACKER := cmd /C C:\\Strawberry\\perl\\site\\bin\\pp
+	HAS_PAR_PACKER_TOOL := 1
 endif
 
 ifdef IS_WSL
@@ -2266,7 +2268,7 @@ endif
 
 $(BINDIR)/epstopdf$(EXE_SUFFIX): NSRC/epstopdf/epstopdf.pl
 	@echo "  [PP]  " $<
-	@$(PAR-PACKER) -o $@  $<
+	$(PAR-PACKER) -o $@  $<
 
 clean_epstopdf:
 	@rm -f $(BINDIR)/epstopdf$(EXE_SUFFIX)

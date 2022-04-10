@@ -840,6 +840,9 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
 //            nenv.put("LD_LIBRARY_PATH", "/usr/local/lib");
             nenv.put("WSLENV", "TERM:FREQUENCY:FROM_GUI:LD_LIBRARY_PATH");
         }
+        if (Util.isWindows() && Main.isAppImageDistribution()) {
+            nenv.put("PAR_GLOBAL_TEMP ",  System.getProperty("java.io.tmpdir"));
+        }
         
         // Add missing variables
         final String LD_LIBRARY_PATH = Util.isOSX() ? "DYLD_LIBRARY_PATH" : "LD_LIBRARY_PATH";

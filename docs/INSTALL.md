@@ -12,7 +12,7 @@ To install GreatSPN, follow your platform's instructions.
 ### Install on Windows
 
 1. Download and install Graphviz from the [official repository](https://graphviz.org/download/).
-   When asked, add Graphviz to the system PATH for all users, so that GreatSPN can find and use it to generate the diagrams.
+   When asked, select **"Add Graphviz to the system PATH for all users"**, so that GreatSPN can find and use it to generate the diagrams.
 
 2. Download and install the `.msi` installer from the [GreatSPN binary repository](https://datacloud.di.unito.it/index.php/s/E3kzX9ntCTnpRNi).
 
