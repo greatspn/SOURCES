@@ -32,7 +32,7 @@ str_has_spaces(const char*p) {
 
 //=============================================================================
 
-// #if defined(__CYGWIN__)
+#if defined(__CYGWIN__)
 
 // run a system process using posix_spawn.
 // This is strictly needed on cygwin with the portable GreatSPN distribution,
@@ -51,67 +51,72 @@ int execp_cmd(const char* exec_name, const char* const* args, int verbose) {
                 printf("%s ", args[a]);
         }
         printf("(pid=%d)\n", pid);
+        fflush(stdout);
     }
     // verify proper exec
     if (status == 0) {
         do {
             if (waitpid(pid, &status, 0) != -1) {
-                if (WEXITSTATUS(status) != 0)
+                if (WEXITSTATUS(status) != 0) {
                     fprintf(stderr, "%s returned %d\n", exec_name, WEXITSTATUS(status));
+                    fflush(stderr);
+                }
                 return WEXITSTATUS(status);
             } else {
                 perror("ERROR: creating child process.");
+                fflush(stderr);
                 return -1;
             }
         } while (!WIFEXITED(status) && !WIFSIGNALED(status));
     } else {
-        fprintf(stderr, "ERROR: posix_spawn: %s\n", strerror(status));
+        fprintf(stderr, "ERROR: posix_spawn[%s]: %s\n", exec_name, strerror(status));
+        fflush(stderr);
         return -1;
     }
 }
 
-// #elif defined(__linux__) || defined(__APPLE__)
+#elif defined(__linux__) || defined(__APPLE__)
 
-// // Whenever the system() C API works properly, we can use it. 
-// // This also allows to use any custom shell changes to PATH.
+// Whenever the system() C API works properly, we can use it. 
+// This also allows to use any custom shell changes to PATH.
 // NOTE: thid could surprisingly does not work in the portable macOS x86 version.
-// int execp_cmd(const char* exec_name, const char* const* args, int verbose) {
-//     // recompose all arguments into a single string, using quotes when needed
-//     size_t sz = 50, i=0;
-//     while (args[i]) { // reserve space for the cmd string
-//         sz += strlen(args[i]) + 2;
-//         i++;
-//     }
-//     char *cmd = (char*)malloc(sz), *p=cmd;
-//     const char* q;
-//     i=0;
-//     while (args[i]) {
-//         int sp = str_has_spaces(args[i]);
-//         q=args[i];
-//         if (i>0) *p++ = ' ';
-//         if (sp) *p++ = '\"';
-//         while (*q) {
-//             if      (*q == '\"') { *p++ = '\\'; *p++ = '\"'; }
-//             else if (*q == '\'') { *p++ = '\\'; *p++ = '\''; }
-//             else *p++ = *q;
-//             q++;
-//         }
-//         if (sp) *p++ = '\"';
-//         i++;
-//     }
-//     *p = '\0';
-//     if (verbose)
-//         printf("system: %s\n", cmd);
+int execp_cmd(const char* exec_name, const char* const* args, int verbose) {
+    // recompose all arguments into a single string, using quotes when needed
+    size_t sz = 50, i=0;
+    while (args[i]) { // reserve space for the cmd string
+        sz += strlen(args[i]) + 2;
+        i++;
+    }
+    char *cmd = (char*)malloc(sz), *p=cmd;
+    const char* q;
+    i=0;
+    while (args[i]) {
+        int sp = str_has_spaces(args[i]);
+        q=args[i];
+        if (i>0) *p++ = ' ';
+        if (sp) *p++ = '\"';
+        while (*q) {
+            if      (*q == '\"') { *p++ = '\\'; *p++ = '\"'; }
+            else if (*q == '\'') { *p++ = '\\'; *p++ = '\''; }
+            else *p++ = *q;
+            q++;
+        }
+        if (sp) *p++ = '\"';
+        i++;
+    }
+    *p = '\0';
+    if (verbose)
+        printf("system: %s\n", cmd);
 
-//     int status = system(cmd);
-//     free(cmd);
+    int status = system(cmd);
+    free(cmd);
 
-//     return status;
-// }
+    return status;
+}
 
-// #else
-// #error "Unimplemented! (maybe just need to adapt the above ifdef\'s)"
-// #endif
+#else
+#error "Unimplemented! (maybe just need to adapt the above ifdef\'s)"
+#endif
 
 //=============================================================================
 
@@ -145,14 +150,17 @@ int eps_to_pdf(const char *eps_fname, const char *pdf_fname)
 {
     char bin[1024];
     if (get_appimage_dir()) {
-        snprintf(bin, sizeof(bin), "%s" PATH_SEPARATOR "epstopdf", get_appimage_dir());
+        snprintf(bin, sizeof(bin), "%s" PATH_SEPARATOR "bin" PATH_SEPARATOR "epstopdf", get_appimage_dir());
+        printf("%s\n", bin);
+        printf("PATH=%s\n", getenv("PATH"));
+        fflush(stdout);
     }
     else {
         snprintf(bin, sizeof(bin), "epstopdf");
     }
 
-    const char* const args[] = { bin, "--nosafer", eps_fname, "-o", pdf_fname, NULL };
-    return execp_cmd("epstopdf", args, 1);
+    const char* const args[] = {bin, "--nosafer", eps_fname, "-o", pdf_fname, NULL };
+    return execp_cmd(bin, args, 1);
 }
 
 //=============================================================================

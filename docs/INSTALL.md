@@ -45,7 +45,7 @@ sudo dnf install -y greatspn-3.1.x86_64.rpm
 
 You first need to install a minimal set of dependencies using a software like [Homebrew](https://brew.sh/), e.g. by running the command:
 ```
-brew install graphviz 
+brew install ghostscript graphviz 
 ```
 After that, download the `.dmg` package from the [GreatSPN binary repository](https://datacloud.di.unito.it/index.php/s/E3kzX9ntCTnpRNi), open it and drag the GreatSPN application bundle in the Application directory.
 GreatSPN will then run directly as a standard macOS application.
@@ -56,7 +56,7 @@ GreatSPN will then run directly as a standard macOS application.
 
 We offer a pre-installed VirtualBox machine image, based on Ubuntu, that ships with
 the GreatSPN framework already installed, with all the required dependencies.
-This is the easiest way to get GreatSPN together with the pre-compiled source, since you just have to download the image, but of course the VirtualBox machine will be slower than any native build.
+This is the easiest way to get GreatSPN together with the pre-compiled source, since you just have to download the image, but of course the VirtualBox machine will be slower than a native build.
 The VirtualBox image can be downloaded from this [repository](http://www.di.unito.it/~greatspn/VBox/).
 In case you need it, the root password of the VirtualBox image is: `user`
 
