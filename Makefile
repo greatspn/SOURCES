@@ -2271,20 +2271,11 @@ $(BINDIR)/epstopdf$(EXE_SUFFIX): NSRC/epstopdf/epstopdf.pl
 clean_epstopdf:
 	@rm -f $(BINDIR)/epstopdf$(EXE_SUFFIX)
 
-install_epstopdf:
-	@cp $(BINDIR)/epstopdf$(EXE_SUFFIX) $(INSTALLDIR)/bin/
-
-all: $(BINDIR)/epstopdf$(EXE_SUFFIX)
-
-clean: clean_epstopdf
-
-install: install_epstopdf
 
 ifdef HAS_PAR_PACKER_TOOL
-	TARGETS += epstopdf$(EXE_SUFFIX)
+EXTRA_BINARIES += $(BINDIR)/epstopdf$(EXE_SUFFIX)
+EXTRA_INSTALLED_BINARIES += $(BINDIR)/epstopdf$(EXE_SUFFIX)
 endif
-
-
 
 ######################################
 ##### MAIN PACKAGE LOCATOR SCRIPT #####
@@ -2507,7 +2498,7 @@ DERIVEDHEADERS := $(YACCDERIVEDHEADERS) $(YACCPPDERIVEDHEADERS) \
 				  $(LEMONDERIVEDHEADERS) $(LEMONPPDERIVEDHEADERS)
 
 ### Target binaries, copyed scripts and generated static libraries ###
-BINARIES := $(foreach target,$(TARGETS),$(addprefix $(BINDIR)/,$(target)))
+BINARIES += $(foreach target,$(TARGETS),$(addprefix $(BINDIR)/,$(target)))
 
 SCRIPT_FILES := $(foreach script,$(SCRIPTS),$(addprefix $(SCRIPTDIR)/,$(script)))
 SCRIPT_SOURCES := $(foreach script,$(SCRIPTS),$($(script)_SOURCEFILE))
@@ -2555,7 +2546,7 @@ reindent_all:
 	@$(REINDENT_CMD) */*.h */*/*.h */*/*/*.h */*/*/*/*.h 
 
 ### Main rules of the makefile ###
-binaries: $(BINARIES)
+binaries: $(BINARIES) $(EXTRA_BINARIES)
 	@
 
 scripts: $(SCRIPT_FILES)
