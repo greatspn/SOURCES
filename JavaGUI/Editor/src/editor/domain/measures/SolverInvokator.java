@@ -876,6 +876,7 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
                 if (Util.isOSX() && Main.isAppImageDistribution()) {
                     // FIX: currently the macOS bundle starts with a very basic PATH.
                     // Add some common directories
+                    value = addToPath(value, Main.getAppImageGreatSPN_dir().getAbsolutePath() + "/bin");
                     value = addToPath(value, "/usr/local/bin");
                     value = addToPath(value, "/opt/homebrew/bin");
                     value = addToPath(value, "/opt/local/bin");
