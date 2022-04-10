@@ -218,15 +218,6 @@ int get_pl_in(char  pl_name[MAX_TAG_SIZE]) {
 
 /**************************************************************/
 
-static int from_GUI = -1;
-int invoked_from_gui() { // Is invoked from the new Java-based GUI?
-    const char *env;
-    if (from_GUI == -1) { // Not yet determined
-        env = getenv("FROM_GUI");
-        from_GUI = (env != NULL && 0 == strcmp(env, "1"));
-    }
-    return (from_GUI != 0);
-}
 int print_stat_for_gui() {
     return (invoked_from_gui() && gui_stat_flag);
 }

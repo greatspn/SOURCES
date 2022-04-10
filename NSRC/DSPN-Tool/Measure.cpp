@@ -33,6 +33,8 @@ using namespace std;
 #include "../numeric/numeric.h"
 using namespace numerical;
 
+# include "../platform/platform_utils.h"
+
 #include "utils.h"
 #include "sparsevector.h"
 #include "PetriNet.h"

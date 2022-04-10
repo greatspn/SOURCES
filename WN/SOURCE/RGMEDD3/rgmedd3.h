@@ -144,8 +144,6 @@ public:
 
 //-----------------------------------------------------------------------------
 
-// Is the application called from the new Java GUI?
-bool invoked_from_gui();
 extern "C" int print_stat_for_gui();
 void set_print_stat_for_gui();
 

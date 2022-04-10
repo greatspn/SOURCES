@@ -175,10 +175,6 @@ enum VerboseLevel {
     VL_VERY_VERBOSE  ///< Very verbose output
 };
 
-// Returns true if the current run of the tool is called by
-// the GUI, which can be used to rearrange some outputs.
-bool invoked_from_gui();
-
 // Should we also print statistics in the format of the GUI?
 bool print_stat_for_gui();
 void enable_print_stat_for_gui();

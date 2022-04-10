@@ -17,15 +17,39 @@ char* const* get_environ();
 // return 0 on success
 int open_file(const char* filename);
 
-// spawn a new process with the given arguments
+// spawn a new process exec_name with the given arguments
 // file arguments don't need to be quoted
 // return 0 on success
-int execp_cmd(const char* const* args, int verbose);
+int execp_cmd(const char* exec_name, const char* const* args, int verbose);
 
 // convert a dot file into a pdf file using Graphviz.
 // file arguments don't need to be quoted
 // return 0 on success
 int dot_to_pdf(const char *dot_fname, const char *pdf_fname);
+
+// convert a eps file into a pdf file, usinf epstopdf
+// return 0 on success
+int eps_to_pdf(const char *eps_fname, const char *pdf_fname);
+
+//=============================================================================
+
+// is the tool being called from the new Java-based GUI?
+// returns 1 if true
+int invoked_from_gui();
+
+// if it is running from the portable app-image directory,
+// returns the directory name, otherwise returns NULL
+const char* get_appimage_dir();
+
+//=============================================================================
+
+#if defined(WIN32) || defined(_WIN32) 
+# define PATH_SEPARATOR      "\\" 
+# define PATH_SEPARATOR_CH   '\\' 
+#else 
+# define PATH_SEPARATOR      "/" 
+# define PATH_SEPARATOR_CH   '/' 
+#endif 
 
 //=============================================================================
 

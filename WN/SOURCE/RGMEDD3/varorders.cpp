@@ -886,18 +886,21 @@ void determine_var_order(const var_order_selector& sel,
         trns_set.build_all_ioh_lists(net_to_mddLevel, true/* mark non-productives */);
         trns_set.compute_unique_productive_nodes(true/* sort transitions */, 
                                                  false /* no activation levels */);
-        write_incidence_as_EPS((inc_name + ".eps").c_str(), trns_set, 
+        std::string eps_fname = inc_name + ".eps";
+        std::string pdf_fname = inc_name + ".pdf";
+        write_incidence_as_EPS(eps_fname.c_str(), trns_set, 
                                net_to_mddLevel, get_basis(fbm));
         // By using the --gsopt -sFONTPATH=... command, Ghostscript encapsulates 
         // arbitrary fonts in the resulting PDF
         // epstopdf test.eps --gsopt -sFONTPATH=/Users/elvio/Desktop/MY-SVN/GreatSPN/
         // SOURCES/JavaGUI/jlatexmath-master/src/org/scilab/forge/jlatexmath/fonts/base/
         // std::string cmd = "ps2pdf -dEPSCrop \""+inc_name+".eps\"  \""+inc_name+".pdf\" > /dev/null 2>&1";
-        std::string cmd = "epstopdf \""+inc_name+".eps\" > /dev/null 2>&1";
-        if (system(cmd.c_str()))
-            cout << "Cannot execute the command: " << cmd << endl;
+        // std::string cmd = "epstopdf \""+inc_name+".eps\" > /dev/null 2>&1";
+        // if (system(cmd.c_str()))
+        //     cout << "Cannot execute the command: " << cmd << endl;
+        eps_to_pdf(eps_fname.c_str(), pdf_fname.c_str());
         if (g_open_saved_incidence) {
-            open_file((inc_name + ".pdf").c_str());
+            open_file(pdf_fname.c_str());
         }
         if (invoked_from_gui())
             cout << "#{GUI}# RESULT INC" << endl;

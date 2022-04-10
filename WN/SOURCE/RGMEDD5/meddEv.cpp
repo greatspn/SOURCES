@@ -45,16 +45,6 @@ const char* s_constr_ineq_op_str[] = {
 
 //-----------------------------------------------------------------------------
 
-static int from_GUI = -1;
-
-bool invoked_from_gui() {
-    if (from_GUI == -1) { // Not yet determined
-        const char *env = getenv("FROM_GUI");
-        from_GUI = (env != NULL && 0 == strcmp(env, "1"));
-    }
-    return from_GUI != 0;
-}
-
 static bool print_stat_for_gui_flag = false;
 extern "C" int print_stat_for_gui() {
     return (invoked_from_gui() && print_stat_for_gui_flag);
@@ -4265,7 +4255,9 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
     }
 
     cout << "Writing extended incidence matrix to " << inc_name << " ..." << endl;
-    write_incidence_as_EPS((inc_name + ".eps").c_str(), new_trn_set, 
+    std::string eps_fname = inc_name + ".eps";
+    std::string pdf_fname = inc_name + ".pdf";
+    write_incidence_as_EPS(eps_fname.c_str(), new_trn_set, 
                            net_to_mddLevel, ilcp_matrix,
                            /*&rangeMat,*/ nullptr,
                            allInfo.data(), allInfo.size(),
@@ -4275,9 +4267,11 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
     // epstopdf test.eps --gsopt -sFONTPATH=/Users/elvio/Desktop/MY-SVN/GreatSPN/
     // SOURCES/JavaGUI/jlatexmath-master/src/org/scilab/forge/jlatexmath/fonts/base/
     // std::string cmd = "eps2eps -dNOSAFER \""+inc_name+".eps\" \""+inc_name+"-merged.eps\"  > /dev/null 2>&1";
-    std::string cmd = "epstopdf --nosafer \""+inc_name+".eps\" > /dev/null 2>&1";
-    if (system(cmd.c_str()))
-        cout << "Cannot execute the command: " << cmd << endl;
+    // std::string cmd = "epstopdf --nosafer \""+inc_name+".eps\" > /dev/null 2>&1";
+    // if (system(cmd.c_str()))
+    //     cout << "Cannot execute the command: " << cmd << endl;
+
+    eps_to_pdf(eps_fname.c_str(), pdf_fname.c_str());
 
     // cmd = "ps2pdf -dEPSCrop \""+inc_name+"-merged.eps\"  \""+inc_name+".pdf\" > /dev/null 2>&1";
     // system(cmd.c_str());

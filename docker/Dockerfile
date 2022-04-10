@@ -8,7 +8,8 @@ RUN dnf -y install git wget
 RUN sudo dnf -y install gcc gcc-c++ gmp-devel gmp-c++ gmp boost-devel flex-devel \
       ant glib2-devel patch python glpk-devel lpsolve-devel autoconf automake \
       libtool zip flex byacc time graphviz suitesparse-devel motif-devel make \
-      libxml++-devel glibmm24-devel lpsolve texlive-epstopdf cmake diffutils
+      libxml++-devel glibmm24-devel lpsolve texlive-epstopdf cmake diffutils \
+      perl-PAR-Packer
 
 ENV MAKE_ARGS=-j16
 

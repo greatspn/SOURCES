@@ -37,10 +37,10 @@ str_has_spaces(const char*p) {
 // run a system process using posix_spawn.
 // This is strictly needed on cygwin with the portable GreatSPN distribution,
 // as the system() C API will not work properly. 
-int execp_cmd(const char* const* args, int verbose) {
+int execp_cmd(const char* exec_name, const char* const* args, int verbose) {
     // spawn the new process
     pid_t pid;
-    int status = posix_spawnp(&pid, args[0], NULL, NULL, 
+    int status = posix_spawnp(&pid, exec_name, NULL, NULL, 
                               (char* const*)args, get_environ());
     if (verbose) {
         printf("exec: ");
@@ -57,7 +57,7 @@ int execp_cmd(const char* const* args, int verbose) {
         do {
             if (waitpid(pid, &status, 0) != -1) {
                 if (WEXITSTATUS(status) != 0)
-                    fprintf(stderr, "%s returned %d\n", args[0], WEXITSTATUS(status));
+                    fprintf(stderr, "%s returned %d\n", exec_name, WEXITSTATUS(status));
                 return WEXITSTATUS(status);
             } else {
                 perror("ERROR: creating child process.");
@@ -75,7 +75,7 @@ int execp_cmd(const char* const* args, int verbose) {
 // // Whenever the system() C API works properly, we can use it. 
 // // This also allows to use any custom shell changes to PATH.
 // NOTE: thid could surprisingly does not work in the portable macOS x86 version.
-// int execp_cmd(const char* const* args, int verbose) {
+// int execp_cmd(const char* exec_name, const char* const* args, int verbose) {
 //     // recompose all arguments into a single string, using quotes when needed
 //     size_t sz = 50, i=0;
 //     while (args[i]) { // reserve space for the cmd string
@@ -126,7 +126,7 @@ int open_file(const char* filename)
 #else
 #error Unimplemented.
 #endif
-    return execp_cmd(args, 1);
+    return execp_cmd(args[0], args, 1);
 }
 
 //=============================================================================
@@ -134,8 +134,55 @@ int open_file(const char* filename)
 int dot_to_pdf(const char *dot_fname, const char *pdf_fname)
 {
     const char* const args[] = { "dot", dot_fname, "-Tpdf", "-o", pdf_fname, NULL };
-    return execp_cmd(args, 1);
+    return execp_cmd(args[0], args, 1);
 }
 
 //=============================================================================
 
+// convert a eps file into a pdf file, usinf epstopdf
+// return 0 on success
+int eps_to_pdf(const char *eps_fname, const char *pdf_fname)
+{
+    char bin[1024];
+    if (get_appimage_dir()) {
+        snprintf(bin, sizeof(bin), "%s" PATH_SEPARATOR "epstopdf", get_appimage_dir());
+    }
+    else {
+        snprintf(bin, sizeof(bin), "epstopdf");
+    }
+
+    const char* const args[] = { bin, "--nosafer", eps_fname, "-o", pdf_fname, NULL };
+    return execp_cmd("epstopdf", args, 1);
+}
+
+//=============================================================================
+
+static int from_GUI = -1;
+
+// Is being invoked from the new Java-based GUI?
+int invoked_from_gui() {
+    const char *env;
+    if (from_GUI == -1) { // Not yet determined
+        env = getenv("FROM_GUI");
+        from_GUI = (env != NULL && 0 == strcmp(env, "1"));
+    }
+    return (from_GUI != 0);
+}
+
+//=============================================================================
+
+static int test_appimage_dir = 1;
+static const char* appimage_dir;
+
+// Is running from the portable app-image directory
+const char* get_appimage_dir() {
+    if (test_appimage_dir) { // Not yet determined
+        appimage_dir = getenv("GREATSPN_APPIMAGE_DIR");
+        if (appimage_dir != NULL && strlen(appimage_dir)==0)
+            appimage_dir = NULL;
+        test_appimage_dir = 0;
+    }
+    return appimage_dir;
+}
+
+//=============================================================================

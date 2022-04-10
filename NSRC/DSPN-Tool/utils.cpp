@@ -33,6 +33,8 @@ using namespace std;
 #include "../numeric/numeric.h"
 using namespace numerical;
 
+#include "../platform/platform_utils.h"
+
 #include "utils.h"
 
 /*TODO:remove
@@ -658,7 +660,7 @@ static int g_useXTermEscapeSequences = -1;
 std::ostream &operator << (std::ostream &os, const console::escape_seq &esc) {
     if (g_useXTermEscapeSequences == -1) {
         const char *term_evar = getenv("TERM");
-        if (numerical::invoked_from_gui() ||
+        if (invoked_from_gui() ||
                 (term_evar != nullptr &&
                  (0 == strcmp(term_evar, "xterm") ||
                   0 == strcmp(term_evar, "xterm-color") ||

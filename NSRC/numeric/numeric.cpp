@@ -12,6 +12,8 @@ using namespace std;
 
 #include <boost/smart_ptr.hpp>
 
+#include "../platform/platform_utils.h"
+
 #include "numeric.h"
 
 //-----------------------------------------------------------------------------
@@ -74,18 +76,6 @@ const char *numerical::IPS_Names[numerical::IPS_NUM_PRECONDITIONER_SOURCES] = {
 const char *numerical::KED_Names[2] = {
     "FORWARD", "BACKWARD"
 };
-
-//-----------------------------------------------------------------------------
-
-int from_GUI = -1;
-
-bool numerical::invoked_from_gui() {
-    if (from_GUI == -1) { // Not yet determined
-        const char *env = getenv("FROM_GUI");
-        from_GUI = (env != nullptr && 0 == strcmp(env, "1"));
-    }
-    return from_GUI != 0;
-}
 
 //-----------------------------------------------------------------------------
 
