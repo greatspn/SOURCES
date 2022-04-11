@@ -41,8 +41,6 @@ LEXPPFLAGS ?=
 YACCPPFLAGS ?=
 ARFLAGS :=
 UIL ?= /usr/bin/uil
-# PAR-PACKER ?= /usr/bin/pp
-EXE_SUFFIX ?=
 ENABLE_Cxx17 ?= -std=c++17
 ENABLE_Cxx14 ?= -std=c++14
 
@@ -128,9 +126,6 @@ ifneq (,$(findstring CYGWIN,$(UNAME_S)))
   CPP := $(CPP) -std=gnu++17
 	ENABLE_Cxx17 := -std=gnu++17
 	ENABLE_Cxx14 := -std=gnu++14
-	EXE_SUFFIX := .exe
-# 	PAR-PACKER := cmd /C C:\\Strawberry\\perl\\site\\bin\\pp
-# 	HAS_PAR_PACKER_TOOL := 1
 endif
 
 ifdef IS_WSL
@@ -202,10 +197,6 @@ $(call warn_missing,OPENMOTIF,OpenMotif)
 
 $(call search_file,PKGCONFIG,$(shell which pkg-config))
 $(call warn_missing,PKGCONFIG,pkg-config tool)
-
-
-# $(call search_file,PAR_PACKER_TOOL,$(PAR-PACKER))
-# $(call warn_missing,PAR_PACKER_TOOL,PAR packer Perl)
 
 
 ifeq ($(GLIB-INCLUDE),)
@@ -2209,7 +2200,7 @@ $(OBJDIR)/DSPN-Tool-Debug/NSRC/DSPN-Tool/DTA.o: $(OBJDIR)/DSPN-Tool-Debug/NSRC/D
 
 $(OBJDIR)/DSPN-Tool-Debug/NSRC/DSPN-Tool/CSLTA.o: $(OBJDIR)/DSPN-Tool-Debug/NSRC/DSPN-Tool/newparser.lyy.o
 
-NSRC/DSPN-Tool/lexer.ll: $(OBJDIR)/DSPN-Tool-Debug/NSRC/DSPN-Tool/newparser.lyy.o bin/lemon
+NSRC/DSPN-Tool/lexer.ll: $(OBJDIR)/DSPN-Tool/NSRC/DSPN-Tool/newparser.lyy.o bin/lemon
 
 DSPN-Tool-Debug_SOURCES := $(DSPN-Tool_SOURCES)
 DSPN-Tool-Debug_CPPFLAGS := -Wall $(ENABLE_Cxx17) \
@@ -2262,22 +2253,6 @@ ifdef HAS_OGDF_LIB
 endif
 
 
-# ######################################
-# # epstopdf
-# ######################################
-
-# $(BINDIR)/epstopdf$(EXE_SUFFIX): NSRC/epstopdf/epstopdf.pl
-# 	@echo "  [PP]  " $<
-# 	$(PAR-PACKER) -o $@  $<
-
-# clean_epstopdf:
-# 	@rm -f $(BINDIR)/epstopdf$(EXE_SUFFIX)
-
-
-# ifdef HAS_PAR_PACKER_TOOL
-# EXTRA_BINARIES += $(BINDIR)/epstopdf$(EXE_SUFFIX)
-# EXTRA_INSTALLED_BINARIES += $(BINDIR)/epstopdf$(EXE_SUFFIX)
-# endif
 
 ######################################
 ##### MAIN PACKAGE LOCATOR SCRIPT #####
