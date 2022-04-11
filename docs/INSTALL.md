@@ -28,7 +28,7 @@ You need first to install the external packages.
 
 On **Ubuntu** or other Debian-based distributions, install the following packages:
 ```
-sudo apt-get install -y graphviz   # optional: texlive-font-utils
+sudo apt-get install -y graphviz ghostscript
 ```
 Then download the `.deb` package from the [GreatSPN binary repository](https://datacloud.di.unito.it/index.php/s/E3kzX9ntCTnpRNi), and install it using:
 ```
@@ -37,7 +37,7 @@ sudo apt install -y greatspn_3.1_amd64.deb
 
 On **Fedora** or other RedHat-based distributions, install the following packages:
 ```
-sudo dnf -y install graphviz   # optional: texlive-font-utils
+sudo dnf -y install graphviz ghostscript
 ```
 Then download the `.rpm` package from the [GreatSPN binary repository](https://datacloud.di.unito.it/index.php/s/E3kzX9ntCTnpRNi), and install it using:
 ```
@@ -48,7 +48,7 @@ sudo dnf install -y greatspn-3.1.x86_64.rpm
 
 You first need to install a minimal set of dependencies using a software like [Homebrew](https://brew.sh/), e.g. by running the command:
 ```
-brew install ghostscript graphviz 
+brew install graphviz ghostscript 
 ```
 After that, download the `.dmg` package from the [GreatSPN binary repository](https://datacloud.di.unito.it/index.php/s/E3kzX9ntCTnpRNi), open it and drag the GreatSPN application bundle in the Application directory.
 GreatSPN will then run directly as a standard macOS application.

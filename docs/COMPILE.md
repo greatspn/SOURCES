@@ -28,7 +28,7 @@ For Fedora 32, you can install the dependencies with this command:
 sudo dnf -y install gcc gcc-c++ gmp-devel gmp-c++ gmp boost-devel flex-devel \
  ant glib2-devel patch python glpk-devel lpsolve-devel autoconf automake \
  libtool zip flex git byacc time graphviz suitesparse-devel motif-devel make 
- libxml++-devel glibmm24-devel lpsolve texlive-epstopdf perl-PAR-Packer
+ libxml++-devel glibmm24-devel lpsolve ghostscript
 ```
 
 For Debian/Ubuntu, the list of dependencies is installed with the command:
@@ -37,7 +37,7 @@ sudo apt-get install -y gcc g++ libgmp-dev libgmpxx4ldbl libboost-all-dev \
  flexc++ ant libglib2.0-dev patch python3 libglpk-dev liblpsolve55-dev \
  autoconf automake libtool zip flex byacc time graphviz libsuitesparse-dev \
  libmotif-dev make libxml++2.6-dev libglibmm-2.4-dev texlive-font-utils \
- openjdk-16-jdk cmake git libpar-packer-perl
+ openjdk-16-jdk cmake git ghostscript
 ```
 This list was last tested on Ubuntu 20.04LTS, and it also applies to WSL-2 with Ubuntu.
 
@@ -109,22 +109,13 @@ Then install all the required dependencies using a software like [Homebrew](http
 by running the command:
 ```
 brew install gmp boost flex byacc ant graphviz libxml++ \
- autoconf automake libtool suitesparse lp_solve
+ autoconf automake libtool suitesparse lp_solve ghostscript
 ```
 In the last Homebrew version, the lp_solve package could require to be built from sources.
 In that case, download the lp_solve sources from Sourceforge and follow the instructions
 to compile the package.
 After you have installed Xcode, brew, and the required dependecies, follow
 the Linux/Unix instructions to compile Meddly and GreatSPN.
-
-The `epstopdf` utility requires the PAR packer to be compiled and installed.
-To install PAR packer on macOS, i.e. the Perl compiler (`/usr/bin/pp`), run the commands:
-```
-brew install cpanminus perl
-cpan install Error
-cpan install Tk::Derived
-cpan install pp
-```
 
 
 

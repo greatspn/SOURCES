@@ -182,6 +182,8 @@ eps_to_pdf_bbox_cmd(const char* cmd, const char *eps_fname, const char *pdf_fnam
     return execp_cmd(args[0], args, 1);
 }
 
+//=============================================================================
+
 // convert a eps file into a pdf file, using ghostscript.
 // need to have the bounding box size, in points.
 // return 0 on success
@@ -189,13 +191,13 @@ int eps_to_pdf_bbox(const char *eps_fname, const char *pdf_fname, int width, int
 {
 #if defined(__CYGWIN__) 
     int ret;
-    // We don't know if the platform has 32-bit or 64-bit ghostscript installed,
-    // so try call both.
+    // In Windows, ghostscript has multiple names, depending if it is the 
+    // 32-bit or the 64-bit version. We don't know which version is installed,
+    // so try calling both.
     ret = eps_to_pdf_bbox_cmd("gswin32c.exe", eps_fname, pdf_fname, width, height);
     if (ret == 0)
-        return ret; // ghostscript found, command completed successfully
-    ret = eps_to_pdf_bbox_cmd("gswin64c.exe", eps_fname, pdf_fname, width, height);
-    return ret;
+        return ret; // 32-bit ghostscript found, command completed successfully
+    return eps_to_pdf_bbox_cmd("gswin64c.exe", eps_fname, pdf_fname, width, height);
 #else
     return eps_to_pdf_bbox_cmd("gs", eps_fname, pdf_fname, width, height);
 #endif
