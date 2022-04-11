@@ -287,6 +287,7 @@ struct DDEPS {
 // Write the incidence matrix and the invariants matrix in EPS format
 void write_incidence_as_EPS(const char* filename, const trans_span_set_t &trn_set,
                             const std::vector<int> &varorder, const flow_basis_t& basis, 
+                            int *out_width, int* out_height,
                             const std::vector<std::vector<std::string>>* rangeMat = nullptr,
                             LevelInfoEPS* ppLvlInfo[] = nullptr, const size_t numLvlInfo = 0,
                             const DDEPS* ddeps = nullptr);

@@ -888,8 +888,9 @@ void determine_var_order(const var_order_selector& sel,
                                                  false /* no activation levels */);
         std::string eps_fname = inc_name + ".eps";
         std::string pdf_fname = inc_name + ".pdf";
-        write_incidence_as_EPS(eps_fname.c_str(), trns_set, 
-                               net_to_mddLevel, get_basis(fbm));
+        int width, height;
+        write_incidence_as_EPS(eps_fname.c_str(), trns_set, net_to_mddLevel, 
+                               get_basis(fbm), &width, &height);
         // By using the --gsopt -sFONTPATH=... command, Ghostscript encapsulates 
         // arbitrary fonts in the resulting PDF
         // epstopdf test.eps --gsopt -sFONTPATH=/Users/elvio/Desktop/MY-SVN/GreatSPN/
@@ -898,7 +899,7 @@ void determine_var_order(const var_order_selector& sel,
         // std::string cmd = "epstopdf \""+inc_name+".eps\" > /dev/null 2>&1";
         // if (system(cmd.c_str()))
         //     cout << "Cannot execute the command: " << cmd << endl;
-        eps_to_pdf(eps_fname.c_str(), pdf_fname.c_str());
+        eps_to_pdf_bbox(eps_fname.c_str(), pdf_fname.c_str(), width, height);
         if (g_open_saved_incidence) {
             open_file(pdf_fname.c_str());
         }

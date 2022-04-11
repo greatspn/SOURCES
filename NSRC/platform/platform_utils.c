@@ -165,6 +165,32 @@ int eps_to_pdf(const char *eps_fname, const char *pdf_fname)
 
 //=============================================================================
 
+// convert a eps file into a pdf file, using ghostscript.
+// need to have the bounding box size, in points.
+// return 0 on success
+int eps_to_pdf_bbox(const char *eps_fname, const char *pdf_fname, int width, int height) 
+{
+    // To compute the bounding box
+    // gs -sDEVICE=bbox -dNOSAFER -dNOPAUSE -dBATCH -f file.eps
+    // To convert EPS to PDF
+    // gs -sDEVICE=pdfwrite -dNOSAFER -dDEVICEWIDTHPOINTS=w -dDEVICEHEIGHTPOINTS=h -o file.pdf file.eps
+    char devW[64], devH[64];
+    snprintf(devW, sizeof(devW), "-dDEVICEWIDTHPOINTS=%d", width);
+    snprintf(devH, sizeof(devH), "-dDEVICEHEIGHTPOINTS=%d", height);
+    const char* const args[] = {
+#if defined(__CYGWIN__) 
+        "gswin32c.exe",
+#else
+        "gs",
+#endif
+        "-sDEVICE=pdfwrite", "-dNOSAFER", "-dQUIET",
+        devW, devH, "-o", pdf_fname, eps_fname, NULL
+    };
+    return execp_cmd(args[0], args, 1);
+}
+
+//=============================================================================
+
 static int from_GUI = -1;
 
 // Is being invoked from the new Java-based GUI?

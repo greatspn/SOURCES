@@ -2788,8 +2788,9 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
     cout << "Writing extended incidence matrix to " << inc_name << " ..." << endl;
     std::string eps_fname = inc_name + ".eps";
     std::string pdf_fname = inc_name + ".pdf";
+    int width, height;
     write_incidence_as_EPS(eps_fname.c_str(), new_trn_set, 
-                           net_to_mddLevel, pfb,
+                           net_to_mddLevel, pfb, &width, &height,
                            /*&rangeMat,*/ nullptr,
                            allInfo.data(), allInfo.size(),
                            &ddeps);
@@ -2802,7 +2803,7 @@ void RSRG::showExtendedIncidenceMatrix(bool show_saved_file) {
     // if (system(cmd.c_str()))
     //     cout << "Cannot execute the command: " << cmd << endl;
 
-    eps_to_pdf(eps_fname.c_str(), pdf_fname.c_str());
+    eps_to_pdf_bbox(eps_fname.c_str(), pdf_fname.c_str(), width, height);
 
     // cmd = "ps2pdf -dEPSCrop \""+inc_name+"-merged.eps\"  \""+inc_name+".pdf\" > /dev/null 2>&1";
     // system(cmd.c_str());

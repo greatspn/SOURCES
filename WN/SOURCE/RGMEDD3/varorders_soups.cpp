@@ -831,6 +831,7 @@ double EPS_string_width(const char* str, int pts) {
 // Write the diagram of the transition spans in EPS format
 void write_incidence_as_EPS(const char* filename, const trans_span_set_t &trn_set,
                             const std::vector<int> &net_to_level, const flow_basis_t& basis, 
+                            int *out_width, int *out_height,
                             const std::vector<std::vector<std::string>>* rangeMat,
                             LevelInfoEPS* ppLvlInfo[], const size_t numLvlInfo,
                             const DDEPS* ddeps)
@@ -889,10 +890,12 @@ void write_incidence_as_EPS(const char* filename, const trans_span_set_t &trn_se
     }
     const double X_WIDTH = X_START_OF_DD + DD_WIDTH + 10;
 
+    *out_width = int(ceil(X_WIDTH + 5));
+    *out_height = int(ceil(Y_START_OF_TRN + max_trn_width + 5));
+
     ofstream eps(filename);
     eps << "%!PS-Adobe-3.0 EPSF-3.0\n"
-        << "%%BoundingBox: 0 0 " << int(ceil(X_WIDTH + 5)) << " "
-        << int(ceil(Y_START_OF_TRN + max_trn_width + 5)) << "\n"
+        << "%%BoundingBox: 0 0 " << *out_width << " " << *out_height << "\n"
         << "/Courier findfont 5 scalefont setfont\n";
 
     // draw the grid of the incidence matrix. Squares have size 10*10.
