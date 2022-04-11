@@ -165,10 +165,8 @@ int eps_to_pdf(const char *eps_fname, const char *pdf_fname)
 
 //=============================================================================
 
-// convert a eps file into a pdf file, using ghostscript.
-// need to have the bounding box size, in points.
-// return 0 on success
-int eps_to_pdf_bbox(const char *eps_fname, const char *pdf_fname, int width, int height) 
+static int 
+eps_to_pdf_bbox_cmd(const char* cmd, const char *eps_fname, const char *pdf_fname, int width, int height) 
 {
     // To compute the bounding box
     // gs -sDEVICE=bbox -dNOSAFER -dNOPAUSE -dBATCH -f file.eps
@@ -178,15 +176,29 @@ int eps_to_pdf_bbox(const char *eps_fname, const char *pdf_fname, int width, int
     snprintf(devW, sizeof(devW), "-dDEVICEWIDTHPOINTS=%d", width);
     snprintf(devH, sizeof(devH), "-dDEVICEHEIGHTPOINTS=%d", height);
     const char* const args[] = {
-#if defined(__CYGWIN__) 
-        "gswin32c.exe",
-#else
-        "gs",
-#endif
-        "-sDEVICE=pdfwrite", "-dNOSAFER", "-dQUIET",
+        cmd, "-sDEVICE=pdfwrite", "-dNOSAFER", "-dQUIET",
         devW, devH, "-o", pdf_fname, eps_fname, NULL
     };
     return execp_cmd(args[0], args, 1);
+}
+
+// convert a eps file into a pdf file, using ghostscript.
+// need to have the bounding box size, in points.
+// return 0 on success
+int eps_to_pdf_bbox(const char *eps_fname, const char *pdf_fname, int width, int height) 
+{
+#if defined(__CYGWIN__) 
+    int ret;
+    // We don't know if the platform has 32-bit or 64-bit ghostscript installed,
+    // so try call both.
+    ret = eps_to_pdf_bbox_cmd("gswin32c.exe", eps_fname, pdf_fname, width, height);
+    if (ret == 0)
+        return ret; // ghostscript found, command completed successfully
+    ret = eps_to_pdf_bbox_cmd("gswin64c.exe", eps_fname, pdf_fname, width, height);
+    return ret;
+#else
+    return eps_to_pdf_bbox_cmd("gs", eps_fname, pdf_fname, width, height);
+#endif
 }
 
 //=============================================================================
