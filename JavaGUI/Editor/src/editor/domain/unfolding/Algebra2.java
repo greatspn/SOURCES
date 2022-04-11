@@ -368,6 +368,19 @@ public class Algebra2 {
         
         result = new GspnPage();
         warnings = new ArrayList<>();
+        
+        // make all nets unique. The implementation assumes that Place/Transition/Edges
+        // pointers are unique, hence if we compose a net with itself, we need to 
+        // duplicate the net first
+        for (int i=0; i<nets.length; i++) {
+            for (int j=i+1; j<nets.length; j++) {
+                if (nets[i] == nets[j]) { // same object, duplicate and revalidate
+                    nets[j] = (GspnPage)Util.deepCopy(nets[j]);                    
+                    nets[j].preparePageCheck();
+                    nets[j].checkPage(null, null, nets[j], null);
+                }
+            }
+        }
     }
     
     //=========================================================================
