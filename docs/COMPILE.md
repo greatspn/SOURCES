@@ -63,7 +63,7 @@ A sample installation procedure could be the following:
 wget http://www.lrde.epita.fr/dload/spot/spot-2.9.6.tar.gz  # The URL could be different
 tar xzf spot-2.9.6.tar.gz
 cd spot-2.9.6
-./configure # --disable-python --disable-debug
+./configure --disable-python --disable-debug
 make
 sudo make install
 ```
@@ -133,4 +133,15 @@ The GUI for Windows is automatically configured to use the tools inside the WSL-
 
 
 GreatSPN command line tools can also build and run using [Cygwin](https://www.cygwin.com/).
+
+
+
+### Compile GreatSPN in a Docker container
+
+A two-stage self-building Dockerfile, based on Fedora, is provided in the `docker` folder.
+
+
+
+
+
 

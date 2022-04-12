@@ -15,7 +15,7 @@ To install GreatSPN, follow your platform's instructions.
    When asked, select **"Add Graphviz to the system PATH for all users"**, so that GreatSPN can find and use it to generate the diagrams.
 
 2. Download and install Ghostscript from the [official repository](https://www.ghostscript.com/releases/gsdnld.html). You have to install the **Postscript and PDF interpreter/renderer**.
-**Note:** only the 32-bit version of Ghostscript will work.
+Once installed, check that Ghostscript is properly added to the PATH Environment Variable.
 
 3. Download and install the `.msi` installer from the [GreatSPN binary repository](https://datacloud.di.unito.it/index.php/s/E3kzX9ntCTnpRNi).
 

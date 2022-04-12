@@ -1,5 +1,5 @@
 
-# The GreatSPN Framework version 3.0
+# The GreatSPN Framework version 3.1
 
 **GreatSPN** (**GR**aphical **E**ditor and **A**nalyzer for **T**imed and **S**tochastic **P**etri **N**ets) 
 is a software package for the modeling, validation, and performance evaluation of distributed systems 
