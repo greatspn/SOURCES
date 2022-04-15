@@ -35,18 +35,17 @@ RUN git clone https://github.com/ogdf/ogdf ;\
     mkdir build && cd build && cmake .. && make ${MAKE_ARGS} ;\
     sudo make install
 
-# Download GreatSPN repository (which contains the lpsolve build script)
-RUN mkdir ~/GreatSPN ;\
-    cd ~/GreatSPN ;\
-    git clone https://github.com/greatspn/SOURCES.git SOURCES
-
 # Install lpsolve (latest)
 RUN wget https://datacloud.di.unito.it/index.php/s/cx9oJ5wjsgEjKcs/download/lp_solve_5.5.2.11_source.tar.gz ;\
+	wget https://raw.githubusercontent.com/greatspn/SOURCES/master/contrib/build_lpsolve.sh ;\
 	tar xzf lp_solve_5.5.2.11_source.tar.gz ;\
-	sh ~/GreatSPN/SOURCES/contrib/build_lpsolve.sh
+	sh ./build_lpsolve.sh
 
 # Install GreatSPN
-RUN cd ~/GreatSPN/SOURCES ;\
+RUN mkdir ~/GreatSPN ;\
+    cd ~/GreatSPN ;\
+    git clone https://github.com/greatspn/SOURCES.git SOURCES ;\
+    cd ~/GreatSPN/SOURCES ;\
 	git pull ;\
     make ${MAKE_ARGS} -k derived_objects ;\
     make ${MAKE_ARGS} ;\

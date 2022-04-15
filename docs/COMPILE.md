@@ -26,9 +26,9 @@ For Fedora 32, you can install the dependencies with this command:
 
 ```
 sudo dnf -y install gcc gcc-c++ gmp-devel gmp-c++ gmp boost-devel flex-devel \
- ant glib2-devel patch python glpk-devel lpsolve-devel autoconf automake \
- libtool zip flex git byacc time graphviz suitesparse-devel motif-devel make 
- libxml++-devel glibmm24-devel lpsolve ghostscript
+ ant glib2-devel patch python glpk-devel autoconf automake ghostscript \
+ libtool zip flex git byacc time graphviz suitesparse-devel motif-devel make \
+ libxml++-devel glibmm24-devel java-latest-openjdk
 ```
 
 For Debian/Ubuntu, the list of dependencies is installed with the command:
@@ -37,7 +37,7 @@ sudo apt-get install -y gcc g++ libgmp-dev libgmpxx4ldbl libboost-all-dev \
  flexc++ ant libglib2.0-dev patch python3 libglpk-dev liblpsolve55-dev \
  autoconf automake libtool zip flex byacc time graphviz libsuitesparse-dev \
  libmotif-dev make libxml++2.6-dev libglibmm-2.4-dev texlive-font-utils \
- openjdk-16-jdk cmake git ghostscript
+ openjdk-17-jdk cmake git ghostscript
 ```
 This list was last tested on Ubuntu 20.04LTS, and it also applies to WSL-2 with Ubuntu.
 
