@@ -6,9 +6,9 @@ FROM fedora AS builder
 RUN dnf -y install git wget
 
 RUN sudo dnf -y install gcc gcc-c++ gmp-devel gmp-c++ gmp boost-devel flex-devel \
-    ant glib2-devel patch python glpk-devel lpsolve-devel autoconf automake \
+    ant glib2-devel patch python glpk-devel autoconf automake ghostscript\
     libtool zip flex byacc time graphviz suitesparse-devel motif-devel make \
-    libxml++-devel glibmm24-devel lpsolve cmake diffutils ghostscript
+    libxml++-devel glibmm24-devel cmake diffutils
 
 ENV MAKE_ARGS=-j16
 
