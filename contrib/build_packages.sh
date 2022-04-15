@@ -141,7 +141,7 @@ cp JavaGUI/AdditionalV3/splash@200pct.png ${APPDIR}/
 case "$OSTYPE" in
 #----------------------------------------------------------
 darwin*)
-cp  ../meddly/src/.libs/libmeddly.dylib \
+cp  ../meddly/src/.libs/libmeddly.0.dylib \
     ../spot-2.9.6/spot/.libs/libspot.dylib \
     ../spot-2.9.6/buddy/src/.libs/libbddx.dylib \
     ${APPDIR}/portable_greatspn/lib/

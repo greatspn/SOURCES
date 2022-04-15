@@ -62,7 +62,7 @@ RUN sudo dnf -y install gmp gmp-c++ gmp boost flex \
     time graphviz suitesparse motif make \
     libxml++ glibmm24 ghostscript
 
-RUN sudo dnf -y install java-11-openjdk gcc gcc-c++ make
+RUN sudo dnf -y install java-latest-openjdk gcc gcc-c++ make
 
 #================================================================================
 # Stage 3: Update the GreatSPN framework by pulling/remaking the latest changes
