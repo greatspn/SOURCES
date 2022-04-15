@@ -44,13 +44,13 @@ esac
 
 echo build lpsolve lib
 (
-	cd lp_solve_5.5/lpsolve55
+	cd ${LIBSOLVE55_DIR}/lpsolve55
 	sh ${RUN}
 )
 
 echo build colamd
 (
-	cd lp_solve_5.5/colamd
+	cd ${LIBSOLVE55_DIR}/colamd
 	gcc -c colamd.c -o colamd.o
 	ar rcs libcolamd.a  colamd.o
 )
@@ -58,11 +58,11 @@ echo build colamd
 echo install
 (
 	# only copy static libraries, to improve portability
-	sudo cp lp_solve_5.5/colamd/libcolamd.a \
-			lp_solve_5.5/lpsolve55/bin/*/liblpsolve55.a \
+	sudo cp ${LIBSOLVE55_DIR}/colamd/libcolamd.a \
+			${LIBSOLVE55_DIR}/lpsolve55/bin/*/liblpsolve55.a \
 			/usr/local/lib/
 	# copy headers
-	sudo cp lp_solve_5.5/*.h lp_solve_5.5/colamd/colamd.h \
+	sudo cp ${LIBSOLVE55_DIR}/*.h lp_solve_5.5/colamd/colamd.h \
 			/usr/local/include/
 )
 echo ok.

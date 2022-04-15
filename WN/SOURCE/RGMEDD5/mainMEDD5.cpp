@@ -1296,7 +1296,8 @@ void usage(bool long_banner)
     // Print GreatSPN banner & maintainer email
     print_banner("");
     cout << "GreatSPN/Meddly." << endl;
-    cout << "  Copyright (C) 1987-2020, University of Torino, Italy." << endl;
+    cout << "  Copyright (C) 1987-2022, University of Torino, Italy." << endl;
+    cout << "  website: https://github.com/greatspn/SOURCES" << endl;
     if (!running_for_MCC()) {
         cout << "  Send files netname.net, .def to e-mail address" << endl;
         cout << "  amparore(at)di.unito.it if you find any bug." << endl;

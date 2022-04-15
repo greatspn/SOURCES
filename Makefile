@@ -220,6 +220,10 @@ ifdef HAS_LP_SOLVE_LIB
   INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I$(PATH_TO_LP_SOLVE_LIB)../include/lpsolve
   LINK_LP_SOLVE_LIB := $(LINK_LP_SOLVE_LIB) $(PATH_TO_LP_SOLVE_LIB)liblpsolve55.a $(PATH_TO_LP_SOLVE_LIB)libcolamd.a -ldl
 endif
+# $(call search_library,LP_SOLVE_LIB,liblpsolve55.*,"lp_solve55 library",-llpsolve55 -ldl -lcolamd)
+# ifdef HAS_LP_SOLVE_LIB
+#   INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I$(PATH_TO_LP_SOLVE_LIB)../include/lpsolve
+# endif
 
 
 $(call search_library,GMP_LIB,/libgmpxx.*,"GMP library",-lgmpxx -lgmp)
@@ -291,8 +295,8 @@ endif
 
 ifneq ("$(wildcard ../PRIVATE)","")
   ifeq ("$(wildcard PRIV)","")
-    $(warning have ../PRIVATE but not PRIV. Making a symbolic link.)
-    $(shell ln -s ../PRIVATE PRIV)
+    $(warning have ../PRIVATE but not PRIV. Make a symbolic link.)
+#     $(shell ln -s ../PRIVATE PRIV)
   endif
 endif
 
