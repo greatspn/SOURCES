@@ -10,7 +10,7 @@ RUN sudo dnf -y install gcc gcc-c++ gmp-devel gmp-c++ gmp boost-devel flex-devel
     libtool zip flex byacc time graphviz suitesparse-devel motif-devel make \
     libxml++-devel glibmm24-devel cmake diffutils java-latest-openjdk
 
-ENV MAKE_ARGS=-j16
+ENV MAKE_ARGS=-j4
 
 # Install Meddly
 RUN git clone  https://github.com/asminer/meddly.git meddly ;\
