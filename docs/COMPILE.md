@@ -127,7 +127,7 @@ or, alternatively, follow the instructions directly from [the OGDF repository.](
 
 ---
 
-### Step 3: compile GreatSPN sources
+### Step 3: compile the GreatSPN sources
 
 Once all dependencies have been compiled and installed, create the main `GreatSPN` source directory. 
 Download, compile and install the sources with these commands:

@@ -131,9 +131,10 @@ public class ResourceFactory {
         
     public static ImageIcon loadPropertyIcon(String name) {
         AbstractMultiResolutionImage mrImg;
-        mrImg = new CustomMultiResolutionImage(new int[]{16,24}, 
+        mrImg = new CustomMultiResolutionImage(new int[]{16,24,32}, 
                         new String[]{"/editor/gui/icons/" + name + "16.png", 
-                                     "/editor/gui/icons/" + name + "24.png"});
+                                     "/editor/gui/icons/" + name + "24.png",
+                                     "/editor/gui/icons/" + name + "32.png"});
         return new ImageIcon(mrImg);
     }
     
