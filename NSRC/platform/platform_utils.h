@@ -27,10 +27,6 @@ int execp_cmd(const char* exec_name, const char* const* args, int verbose);
 // return 0 on success
 int dot_to_pdf(const char *dot_fname, const char *pdf_fname);
 
-// convert a eps file into a pdf file, usinf epstopdf
-// return 0 on success
-int eps_to_pdf(const char *eps_fname, const char *pdf_fname);
-
 // convert a eps file into a pdf file, using ghostscript.
 // need to have the bounding box size, in points.
 // return 0 on success

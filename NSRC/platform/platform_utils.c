@@ -79,7 +79,10 @@ int execp_cmd(const char* exec_name, const char* const* args, int verbose) {
 
 // Whenever the system() C API works properly, we can use it. 
 // This also allows to use any custom shell changes to PATH.
-// NOTE: thid could surprisingly does not work in the portable macOS x86 version.
+// NOTE 1: on Cygwin we cannot use system(), because we do not ship /bin/sh
+// NOTE 2: on macOS we NEED to use system() instead of posix_spawn(), as in the
+//         portable app-image the environmental variables are too basic
+//         and do not incorporate the changes in ~/.zshrc or ~/.bashrc .
 int execp_cmd(const char* exec_name, const char* const* args, int verbose) {
     // recompose all arguments into a single string, using quotes when needed
     size_t sz = 50, i=0;
@@ -144,34 +147,15 @@ int dot_to_pdf(const char *dot_fname, const char *pdf_fname)
 
 //=============================================================================
 
-// convert a eps file into a pdf file, usinf epstopdf
-// return 0 on success
-int eps_to_pdf(const char *eps_fname, const char *pdf_fname)
-{
-    char bin[1024];
-    if (get_appimage_dir()) {
-        snprintf(bin, sizeof(bin), "%s" PATH_SEPARATOR "bin" PATH_SEPARATOR "epstopdf", get_appimage_dir());
-        // printf("%s\n", bin);
-        // printf("PATH=%s\n", getenv("PATH"));
-        // fflush(stdout);
-    }
-    else {
-        snprintf(bin, sizeof(bin), "epstopdf");
-    }
-
-    const char* const args[] = {"epstopdf", "--nosafer", eps_fname, "-o", pdf_fname, NULL };
-    return execp_cmd(bin, args, 1);
-}
-
-//=============================================================================
-
 static int 
-eps_to_pdf_bbox_cmd(const char* cmd, const char *eps_fname, const char *pdf_fname, int width, int height) 
+eps_to_pdf_bbox_cmd(const char* cmd, const char *eps_fname, 
+                    const char *pdf_fname, int width, int height) 
 {
     // To compute the bounding box
     // gs -sDEVICE=bbox -dNOSAFER -dNOPAUSE -dBATCH -f file.eps
     // To convert EPS to PDF
-    // gs -sDEVICE=pdfwrite -dNOSAFER -dDEVICEWIDTHPOINTS=w -dDEVICEHEIGHTPOINTS=h -o file.pdf file.eps
+    // gs -sDEVICE=pdfwrite -dNOSAFER -dDEVICEWIDTHPOINTS=w -dDEVICEHEIGHTPOINTS=h 
+    //    -o file.pdf file.eps
     char devW[64], devH[64];
     snprintf(devW, sizeof(devW), "-dDEVICEWIDTHPOINTS=%d", width);
     snprintf(devH, sizeof(devH), "-dDEVICEHEIGHTPOINTS=%d", height);
