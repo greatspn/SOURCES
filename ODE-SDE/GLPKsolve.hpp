@@ -115,6 +115,16 @@ namespace FBGLPK{
             }
             return Value;
         };
+        //! Return lw/up bounds values
+        double* getLwBounds(int indexR){
+	    double LB = glp_get_col_lb(lp, indexR);
+            return LB;
+        };
+
+        double* getUpBounds(int indexR){
+	    double UB = glp_get_col_ub(lp, indexR);
+            return UB;
+        };
 
         void print(){
             if (!solved) solve();
@@ -127,7 +137,7 @@ namespace FBGLPK{
         
         void update_bound(int indexR, string TypeBound, double Lb, double Ub){
             glp_set_col_bnds(lp, indexR, setTypeBound(TypeBound) , Lb, Ub);
-            cout<<"Bound of "<< indexR <<" is updated as: ["<<Lb<<";"<<Ub<<"]"<<endl;
+            cout<<"Bounds of "<< indexR <<" is updated as: ["<<Lb<<";"<<Ub<<"]"<<endl;
         };
         
         //! Deconstruct
