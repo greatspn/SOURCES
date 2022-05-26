@@ -102,6 +102,12 @@ public class NetLogoFormat {
         ArrayList<String> log = new ArrayList<>();
         PrintWriter pw = new PrintWriter(new BufferedOutputStream(new FileOutputStream(file)));
         
+        // Assign to each agent class a unique color
+        Map<String, Color> agentClass2color = new HashMap<>();
+        for (int i=0; i<agentsColorList.length; i++) {
+            agentClass2color.put(agentsColorList[i], MultiNetPage.BLUE_PALETTE[ i % MultiNetPage.BLUE_PALETTE.length ]);
+        }
+        
         // Get all simple color classes that are not agent classes
         Set<ColorClass> attrColorClasses = new HashSet<>();
         for (Node node : gspn.nodes) {
@@ -132,6 +138,16 @@ public class NetLogoFormat {
                 varSetup += "  set "+cid.getUniqueName()+" "+cid.getConstantExpr().getExpr()+"\n";
             }
         }
+        // Declare names of all the static color subclasses
+        for (ColorClass clrClass : attrColorClasses) {
+            for (int sc=0; sc<clrClass.numSubClasses(); sc++) {
+                ParsedColorSubclass pcsc = clrClass.getSubclass(sc);
+                if (pcsc.isNamed()) {
+                    varNames += pcsc.name+" ";
+                }
+            }
+        }
+        pw.println();
 //        System.out.println("varNames="+varNames);
 //        System.out.println("varSetup="+varSetup);
         
@@ -461,7 +477,36 @@ public class NetLogoFormat {
                 EvaluatedFormula em0 = pl.evaluateInitMarking(context);
                 assert em0.isMultiSetInt();
                 ValuedMultiSet msm0 = (ValuedMultiSet)em0;
+                
+                Map<ArrayList<Integer>, Integer> m0AttrReplicas = new HashMap<>();
                 for (int ii=0; ii<msm0.numElements(); ii++) {
+                    DomainElement domEl = msm0.getElement(ii);
+                    assert plDom == domEl.getDomain();
+                    int elMult = msm0.getValue(ii).getScalarInt();
+                    ArrayList<Integer> initAttrs = new ArrayList<>(plDom.getNumClassesInDomain());
+                    initAttrs.add(-1);
+                    for (int colNum=1; colNum<plDom.getNumClassesInDomain(); colNum++) {
+                        ColorClass simpleColor = plDom.getColorClass(colNum);
+                        int colIndex = domEl.getColor(colNum);
+                        initAttrs.add(colIndex);
+                    }
+                    // Merge together with all the other agents that have the same initial attributes
+                    elMult += m0AttrReplicas.getOrDefault(initAttrs, 0);
+                    m0AttrReplicas.put(initAttrs, elMult);
+                }
+                // Write initial marking code
+                for (Map.Entry<ArrayList<Integer>, Integer> ee : m0AttrReplicas.entrySet()) {
+                    pw.println("  create-"+agentClassName+" "+ee.getValue()+" [");
+                    pw.println("    set place "+pl.getUniqueName());
+                    for (int colNum=1; colNum<plDom.getNumClassesInDomain(); colNum++) {
+                        ColorClass simpleColor = plDom.getColorClass(colNum);
+                        pw.println("    set "+attrs[colNum]+" "+ee.getKey().get(colNum));
+                    }
+                    Color agentClr = agentClass2color.get(agentClassName);
+                    pw.println("    set color ["+agentClr.getRed()+" "+agentClr.getGreen()+" "+agentClr.getBlue()+"]");
+                    pw.println("  ]");
+                }
+                /*for (int ii=0; ii<msm0.numElements(); ii++) {
                     DomainElement domEl = msm0.getElement(ii);
                     assert plDom == domEl.getDomain();
                     int elMult = msm0.getValue(ii).getScalarInt();
@@ -474,7 +519,7 @@ public class NetLogoFormat {
                         pw.println("    set "+attrs[colNum]+" "+colIndex);
                     }
                     pw.println("  ]");
-                }
+                }*/
             }
         }
         pw.println();        
@@ -483,7 +528,7 @@ public class NetLogoFormat {
             for (int sc=0; sc<clrClass.numSubClasses(); sc++) {
                 ParsedColorSubclass pcsc = clrClass.getSubclass(sc);
                 if (pcsc.isNamed()) {
-                    pw.print("  let "+pcsc.name+" (list ");
+                    pw.print("  set "+pcsc.name+" (list ");
                     for (int cc=0; cc<pcsc.getNumColors(); cc++) {
                         int clrIndex = clrClass.getColorIndex(pcsc.getColorName(cc));
                         pw.print(clrIndex+" ");
@@ -501,6 +546,7 @@ public class NetLogoFormat {
             pw.println("  create-"+agentClass.getUniqueName()+" "+agentClass.numColors()+" [");
             pw.println("    set attrValue attrCounter");
             pw.println("    set attrCounter attrCounter + 1");
+            pw.println("    hide-turtle");
             pw.println("  ]");
         }
         pw.println();
@@ -513,7 +559,7 @@ public class NetLogoFormat {
         // Ask all agents to initialize their myrate list
         pw.println("to go");
         pw.println("if STOPTIME > 0 AND time > STOPTIME [ STOP ]");
-        pw.println("let A1 0");
+        pw.println("let _A1 0");
         pw.println(";; ask agents to initialize myrate");
         for (String agentClass : agentClasses) {
             ArrayList<Transition> leadersOf = transitionsOfLeaderAgentClass.get(agentClass);
@@ -576,12 +622,12 @@ public class NetLogoFormat {
 
 
                     indent(pw, ind); 
-                    pw.println((agentNum==1 ? "set" : "let")+" A"+agentNum+" "+agent.agentClass.getUniqueName()+
+                    pw.println((agentNum==1 ? "set" : "let")+" _A"+agentNum+" "+agent.agentClass.getUniqueName()+
                              " with ["+guard+"]"); 
-                    indent(pw, ind); pw.println("if any? A"+agentNum+" ["); ind++;
+                    indent(pw, ind); pw.println("if any? _A"+agentNum+" ["); ind++;
 
                     if (inputFiringAgents.size() == 1) { // single agent transition
-                        indent(pw, ind);  pw.println("ask A"+agentNum+" ["); ind++;
+                        indent(pw, ind);  pw.println("ask _A"+agentNum+" ["); ind++;
                         if (agentNum == 1) {
                              indent(pw, ind); pw.println("let countInstances 1");
                         }
@@ -591,7 +637,7 @@ public class NetLogoFormat {
 //                    }
                     else {
                         // ask the selected agent
-                        indent(pw, ind);  pw.println("ask A"+agentNum+" ["); ind++;
+                        indent(pw, ind);  pw.println("ask _A"+agentNum+" ["); ind++;
                         if (agentNum == 1) {
                              indent(pw, ind); pw.println("let countInstances 0");
                         }
@@ -662,7 +708,7 @@ public class NetLogoFormat {
             pw.println("    ;; select the next action performed by the chosen "+agentClass);
             pw.println("    let indices  n-values (length myrate) [ i -> i ]");
             pw.println("    let pairs (map list indices myrate)");
-            pw.println("    let nextaction  first rnd:weighted-one-of-list pairs [ [p] -> last p ]");
+            pw.println("    let nextaction  first rnd:weighted-one-of-list pairs [ [var_P] -> last var_P ]");
             pw.println("    (");
             pw.println("      if-else");
             // evaluate the transitions where the agent is a leader
@@ -710,11 +756,11 @@ public class NetLogoFormat {
                                 + (guard.isEmpty() ? "" : " AND (" + guard + ")");
 
                     indent(pw, ind); 
-                    pw.println("let AA"+agentNum+" "+agent.agentClass.getUniqueName()+" with ["+guard+"]"); 
-                    indent(pw, ind); pw.println("if any? AA"+agentNum+" ["); ind++;
+                    pw.println("let _AA"+agentNum+" "+agent.agentClass.getUniqueName()+" with ["+guard+"]"); 
+                    indent(pw, ind); pw.println("if any? _AA"+agentNum+" ["); ind++;
 
                     // ask the selected agent
-                    indent(pw, ind);  pw.println("ask AA"+agentNum+" ["); ind++;
+                    indent(pw, ind);  pw.println("ask _AA"+agentNum+" ["); ind++;
                     indent(pw, ind);  pw.println("if NOT bindingSelected ["); ind++;
                     // name self
                     indent(pw, ind); 
@@ -752,6 +798,8 @@ public class NetLogoFormat {
                                     for (int i=1; i<firing.outColorVars.length; i++) {
                                         indent(pw, ind); pw.println("set "+outAttrs[i]+" "+firing.outColorVars[i]);
                                     }
+                                    Color agentClr = agentClass2color.get(firing.agentClass.getUniqueName());
+                                    indent(pw, ind); pw.println("set color ["+agentClr.getRed()+" "+agentClr.getGreen()+" "+agentClr.getBlue()+"]");
                                     indent(pw, ind); pw.println("set myrate 0");
                                     indent(pw, ind); pw.println("set totrate 0");
                                     ind --;
@@ -817,9 +865,11 @@ public class NetLogoFormat {
                 if (node instanceof Place) {
                     Place pl = (Place)node;
                     ColorClass plDom = pl.getColorDomain();
-                    if (plDom.getUniqueName().equals(agentsColorList[i])) {
+                    if (!plDom.isNeutralDomain() && 
+                            plDom.getColorClass(0).getUniqueName().equals(agentsColorList[i])) 
+                    {
                         color = MultiNetPage.RED_PALETTE[plCount % MultiNetPage.RED_PALETTE.length];
-                        detailedPens.append("\"").append(agentsColorList[i]+"_"+pl.getUniqueName())
+                        detailedPens.append("\"").append(agentsColorList[i]).append("_").append(pl.getUniqueName())
                             .append("\" 1.0 0 ").append(color.getRGB())
                             .append(" true \"\" \"plotxy time (count ")
                             .append(agentsColorList[i]).append(" with [Place = ")
