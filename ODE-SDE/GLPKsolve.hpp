@@ -116,12 +116,12 @@ namespace FBGLPK{
             return Value;
         };
         //! Return lw/up bounds values
-        double* getLwBounds(int indexR){
+        double getLwBounds(int indexR){
 	    double LB = glp_get_col_lb(lp, indexR);
             return LB;
         };
 
-        double* getUpBounds(int indexR){
+        double getUpBounds(int indexR){
 	    double UB = glp_get_col_ub(lp, indexR);
             return UB;
         };
