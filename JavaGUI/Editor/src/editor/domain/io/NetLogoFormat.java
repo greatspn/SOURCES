@@ -6,8 +6,10 @@
 package editor.domain.io;
 
 import common.Tuple;
+import common.Util;
 import editor.domain.Edge;
 import editor.domain.Node;
+import editor.domain.composition.MultiNetPage;
 import editor.domain.elements.ColorClass;
 import editor.domain.elements.ConstantID;
 import editor.domain.elements.GspnEdge;
@@ -20,6 +22,7 @@ import editor.domain.grammar.ExpressionLanguage;
 import editor.domain.grammar.ParserContext;
 import editor.domain.values.EvaluatedFormula;
 import editor.domain.values.ValuedMultiSet;
+import java.awt.Color;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -267,12 +270,12 @@ public class NetLogoFormat {
 //                System.out.println(e.getMultiplicity()+" ==> "+nlMult);
                 String[] allTupleTerms = splitTupleSum(nlMult, log);
                 // Separate sum terms
-                ArrayList<String[]> tuples = new ArrayList<>();
+//                ArrayList<String[]> tuples = new ArrayList<>();
                 for (String tupleTerm : allTupleTerms) {
                     String[] colorVars = tupleTerm.split(",");
                     for (int i=0; i<colorVars.length; i++)
                         colorVars[i] = stripVarTerm(colorVars[i], log);
-                    tuples.add(colorVars);
+//                    tuples.add(colorVars);
                     
                     Transition trn = e.getConnectedTransition();
                     if (!trnAgentMap.containsKey(trn)) {
@@ -427,6 +430,7 @@ public class NetLogoFormat {
         pw.println(";; model setup procedure");
         pw.println("to setup");
         pw.println("  ca ;; clear all");
+        pw.println("  if seed != -1 [ random-seed SEED ]");
         pw.println("  reset-ticks");
         pw.print(varSetup);
         
@@ -508,6 +512,7 @@ public class NetLogoFormat {
         ///////////////////////////////////////////
         // Ask all agents to initialize their myrate list
         pw.println("to go");
+        pw.println("if STOPTIME > 0 AND time > STOPTIME [ STOP ]");
         pw.println("let A1 0");
         pw.println(";; ask agents to initialize myrate");
         for (String agentClass : agentClasses) {
@@ -793,6 +798,41 @@ public class NetLogoFormat {
         pw.println("tick");
         pw.println();
         pw.println("end\n");
+        
+        // Write the fixed footer with the GUI commands
+        String footer = Util.loadTextDoc("domain/io/NetLogoFooter.txt", "");
+        // Modify the footer adding one PEN object for every agent
+        StringBuilder pens = new StringBuilder();
+        for (int i=0; i<agentsColorList.length; i++) {
+            // Global count of all agents of a certain type
+            Color color = MultiNetPage.BLUE_PALETTE[i % MultiNetPage.BLUE_PALETTE.length];
+            pens.append("\"").append(agentsColorList[i])
+                .append("\" 1.0 0 ").append(color.getRGB())
+                .append(" true \"\" \"plotxy time (count ")
+                .append(agentsColorList[i]).append(")\"\n");
+            // Detailed count of all agents in a place
+            StringBuilder detailedPens = new StringBuilder();
+            int plCount = 0;
+            for (Node node : gspn.nodes) {
+                if (node instanceof Place) {
+                    Place pl = (Place)node;
+                    ColorClass plDom = pl.getColorDomain();
+                    if (plDom.getUniqueName().equals(agentsColorList[i])) {
+                        color = MultiNetPage.RED_PALETTE[plCount % MultiNetPage.RED_PALETTE.length];
+                        detailedPens.append("\"").append(agentsColorList[i]+"_"+pl.getUniqueName())
+                            .append("\" 1.0 0 ").append(color.getRGB())
+                            .append(" true \"\" \"plotxy time (count ")
+                            .append(agentsColorList[i]).append(" with [Place = ")
+                            .append(pl.getUniqueName()).append("])\"\n");
+                        plCount++;
+                    }
+                }
+            }
+            if (plCount >= 2)
+                pens.append(detailedPens.toString());
+        }
+        footer = footer.replace("#PENS\n", "PENS\n"+pens.toString());
+        pw.println(footer);
         
         
         return reportLog(log, pw);

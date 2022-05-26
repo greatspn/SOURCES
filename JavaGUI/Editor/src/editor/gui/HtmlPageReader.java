@@ -6,10 +6,7 @@
 
 package editor.gui;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.URL;
+import common.Util;
 import javax.swing.JFrame;
 import javax.swing.text.html.HTMLEditorKit;
 
@@ -29,23 +26,24 @@ public class HtmlPageReader extends javax.swing.JDialog {
         HTMLEditorKit kit = new HTMLEditorKit();
         htmlPane.setEditorKit(kit);
         
-        String grammarPage;
-        try {
-            URL url = getClass().getResource("docs/grammar.html");
-            Reader reader = new InputStreamReader(url.openStream());
-            final char[] buffer = new char[1024];
-            final StringBuilder out = new StringBuilder();
-            for (;;) {
-                int rsz = reader.read(buffer, 0, buffer.length);
-                if (rsz < 0)
-                    break;
-                out.append(buffer, 0, rsz);
-            }
-            grammarPage = out.toString();
-        }
-        catch (IOException e) {
-            grammarPage = "<html><body><h1>Error: cannot load the page!</h1></body></html>";            
-        }
+        String grammarPage = "<html><body><h1>Error: cannot load the page!</h1></body></html>";
+        grammarPage = Util.loadTextDoc("gui/docs/grammar.html", grammarPage);
+//        try {
+//            URL url = getClass().getResource("docs/grammar.html");
+//            Reader reader = new InputStreamReader(url.openStream());
+//            final char[] buffer = new char[1024];
+//            final StringBuilder out = new StringBuilder();
+//            for (;;) {
+//                int rsz = reader.read(buffer, 0, buffer.length);
+//                if (rsz < 0)
+//                    break;
+//                out.append(buffer, 0, rsz);
+//            }
+//            grammarPage = out.toString();
+//        }
+//        catch (IOException e) {
+//            grammarPage = "<html><body><h1>Error: cannot load the page!</h1></body></html>";            
+//        }
         htmlPane.setText(grammarPage);
         htmlPane.setCaretPosition(0);
 //        JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();

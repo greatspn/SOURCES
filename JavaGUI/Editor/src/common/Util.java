@@ -28,8 +28,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Reader;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -82,6 +85,29 @@ public final class Util {
         catch (IOException | IllegalArgumentException ex) {
             return null;
         }
+    }
+    
+    
+    // Load a string from a text file inside the application Jar
+    public static String loadTextDoc(String fileName, String defaultText) {
+        String text;
+        try {
+            URL url = Main.class.getResource(fileName);
+            Reader reader = new InputStreamReader(url.openStream());
+            final char[] buffer = new char[1024];
+            final StringBuilder out = new StringBuilder();
+            for (;;) {
+                int rsz = reader.read(buffer, 0, buffer.length);
+                if (rsz < 0)
+                    break;
+                out.append(buffer, 0, rsz);
+            }
+            text = out.toString();
+        }
+        catch (IOException e) {
+            text = defaultText;            
+        }
+        return text;
     }
     
 //    public static void main(String[] args) throws Exception {
