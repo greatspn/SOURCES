@@ -12,10 +12,12 @@ import editor.Main;
 import editor.domain.NetPage;
 import editor.domain.elements.DtaPage;
 import editor.domain.elements.GspnPage;
+import editor.domain.grammar.ParserContext;
 import editor.domain.io.ApnnFormat;
 import editor.domain.io.DtaFormat;
 import editor.domain.io.GRMLFormat;
 import editor.domain.io.GreatSpnFormat;
+import editor.domain.io.NetLogoFormat;
 import editor.domain.io.PNMLFormat;
 import editor.domain.struct.StructInfo;
 import editor.gui.net.ShowNetMatricesDialog;
@@ -469,6 +471,59 @@ public class PagePrintExportManager {
                                           "Export \""+gspn.getPageName()+"\" in APNN format...", 
                                           JOptionPane.ERROR_MESSAGE);            
             mainInterface.setStatus("could not export GSPN in APNN format.", true);
+        }
+    }
+    
+    
+    public static void exportGspnInNetLogoFormat(MainWindowInterface mainInterface, GspnPage gspn) {
+        assert gspn.isPageCorrect();
+        
+        File nlogoFile;
+        boolean repeatChooser;
+        do {
+            repeatChooser = false;
+            final JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Export \""+gspn.getPageName()+"\" in NetLogo format...");
+            String curDir = Util.getPreferences().get("netlogo-export-dir", System.getProperty("user.home"));
+            fileChooser.setCurrentDirectory(curDir!=null ? new File(curDir) : null);
+            fileChooser.setSelectedFile(curDir!=null ? new File(curDir+File.separator+gspn.getPageName()+".nlogo") : null);
+            fileChooser.addChoosableFileFilter(NetLogoFormat.fileFilter);
+            fileChooser.setFileFilter(NetLogoFormat.fileFilter);
+            if (fileChooser.showSaveDialog(mainInterface.getWindowFrame()) != JFileChooser.APPROVE_OPTION)
+                return;
+            nlogoFile = fileChooser.getSelectedFile();
+            curDir = fileChooser.getCurrentDirectory().getAbsolutePath();
+            Util.getPreferences().put("netlogo-export-dir", curDir);
+            if (nlogoFile.exists()) {
+                int r = JOptionPane.showConfirmDialog(mainInterface.getWindowFrame(), 
+                         "The file \""+nlogoFile+"\" already exists! Overwrite it?", 
+                                                       "Overwrite file", 
+                                                       JOptionPane.YES_NO_CANCEL_OPTION, 
+                                                       JOptionPane.WARNING_MESSAGE);
+                if (r == JOptionPane.NO_OPTION)
+                    repeatChooser = true;
+                else if (r == JOptionPane.CANCEL_OPTION)
+                    return;
+            }
+        } while (repeatChooser);
+        
+        try {
+//            StructInfo struct = StructInfo.computeStructInfo(mainInterface.getWindowFrame(), 
+//                                                             (GspnPage)gspn, null, null);
+            ParserContext context = new ParserContext(gspn);
+            gspn.compileParsedInfo(context);
+            String log = NetLogoFormat.export((GspnPage)gspn, nlogoFile, context, true);
+            if (log != null)
+                new ModalLogDialog(mainInterface.getWindowFrame(), log).setVisible(true);
+            mainInterface.setStatus("GSPN exported in NetLogo format.", true);
+        }
+        catch (Exception e) {
+            JOptionPane.showMessageDialog(mainInterface.getWindowFrame(), 
+                                          "An error happened while exporting the page in NetLogo format.\n"
+                                          + "Reason: "+e.getMessage(),
+                                          "Export \""+gspn.getPageName()+"\" in NetLogo format...", 
+                                          JOptionPane.ERROR_MESSAGE);            
+            mainInterface.setStatus("could not export GSPN in NetLogo format.", true);
         }
     }
     

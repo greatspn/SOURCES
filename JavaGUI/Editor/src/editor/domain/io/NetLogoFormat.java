@@ -32,12 +32,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
  * @author elvio
  */
 public class NetLogoFormat {
+    
+     // The file filter
+    public static final FileFilter fileFilter 
+            = new FileNameExtensionFilter("NetLogo File (*.nlogo)", new String[]{"nlogo"});
     
     enum AgentFiringStatus {
         CREATED, MODIFIED, KILLED, SUPPORT;
@@ -94,7 +100,6 @@ public class NetLogoFormat {
     
  
     public static String export(GspnPage gspn, File file, 
-                                String[] agentsColorList, 
                                 ParserContext context,
                                 boolean verbose) 
             throws Exception 
@@ -102,30 +107,48 @@ public class NetLogoFormat {
         ArrayList<String> log = new ArrayList<>();
         PrintWriter pw = new PrintWriter(new BufferedOutputStream(new FileOutputStream(file)));
         
+        // Determine which color classes are agent classes
+        ArrayList<ColorClass> agentsColorClasses = new ArrayList<>();
+        Set<ColorClass> attrColorClasses = new HashSet<>();
+        for (Node node : gspn.nodes) {
+            if (node instanceof ColorClass) {
+                ColorClass cc = (ColorClass)node;
+                if (cc.isSimpleClass()) {
+                    if (cc.isAgent())
+                        agentsColorClasses.add(cc);
+                    else
+                        attrColorClasses.add(cc);
+                }
+            }
+        }
+        String[] agentsColorList = new String[agentsColorClasses.size()];
+        for (int i=0; i<agentsColorClasses.size(); i++)
+            agentsColorList[i] = agentsColorClasses.get(i).getUniqueName();
+        
         // Assign to each agent class a unique color
         Map<String, Color> agentClass2color = new HashMap<>();
         for (int i=0; i<agentsColorList.length; i++) {
             agentClass2color.put(agentsColorList[i], MultiNetPage.BLUE_PALETTE[ i % MultiNetPage.BLUE_PALETTE.length ]);
         }
         
-        // Get all simple color classes that are not agent classes
-        Set<ColorClass> attrColorClasses = new HashSet<>();
-        for (Node node : gspn.nodes) {
-            if (node instanceof ColorClass) {
-                ColorClass cc = (ColorClass)node;
-                if (cc.isSimpleClass()) {
-                    boolean isAgent = false;
-                    for (String agentClass : agentsColorList) {
-                        if (agentClass.equals(cc.getUniqueName())) {
-                            isAgent = true;
-                            break;
-                        }
-                    }
-                    if (!isAgent)
-                        attrColorClasses.add(cc);
-                }
-            }
-        }
+//        // Get all simple color classes that are not agent classes
+//        Set<ColorClass> attrColorClasses = new HashSet<>();
+//        for (Node node : gspn.nodes) {
+//            if (node instanceof ColorClass) {
+//                ColorClass cc = (ColorClass)node;
+//                if (cc.isSimpleClass()) {
+//                    boolean isAgent = cc.is;
+//                    for (String agentClass : agentsColorList) {
+//                        if (agentClass.equals(cc.getUniqueName())) {
+//                            isAgent = true;
+//                            break;
+//                        }
+//                    }
+//                    if (!isAgent)
+//                        attrColorClasses.add(cc);
+//                }
+//            }
+//        }
         
         
         // Get all mark/rate parameters as global variables

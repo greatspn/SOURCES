@@ -505,6 +505,7 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
                 case EXPORT_GREATSPN_FORMAT:
                 case EXPORT_GRML_FORMAT:
                 case EXPORT_APNN_FORMAT:
+                case EXPORT_NETLOGO_FORMAT:
                 case EXPORT_PNML_FORMAT:
                     act.setEnabled(currPage.isPageCorrect() && currPage.getComposedNet() instanceof GspnPage);
                     break;
@@ -550,7 +551,10 @@ public class MultiNetEditorPanel extends javax.swing.JPanel implements AbstractP
                 return;                
             case EXPORT_APNN_FORMAT:
                 PagePrintExportManager.exportGspnInAPNNFormat(mainInterface, (GspnPage)currPage.getComposedNet());
-                return;                        
+                return;
+            case EXPORT_NETLOGO_FORMAT:
+                PagePrintExportManager.exportGspnInNetLogoFormat(mainInterface, (GspnPage)currPage.getComposedNet());
+                return;  
             case EXPORT_AS_PDF:
                 PagePrintExportManager.printAsPdf(mainInterface, currPage.getComposedNet());
                 return;                

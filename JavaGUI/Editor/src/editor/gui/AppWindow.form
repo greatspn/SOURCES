@@ -830,6 +830,12 @@
         <Property name="tooltipDesc" type="java.lang.String" value="Export the current net in the GRML file format (grml)."/>
       </Properties>
     </Component>
+    <Component class="common.Action" name="sharedActionExportNetLogo">
+      <Properties>
+        <Property name="actionName" type="java.lang.String" value="Export in NetLogo format..."/>
+        <Property name="tooltipDesc" type="java.lang.String" value="Export the current net in the NetLogo (nlogo) file format."/>
+      </Properties>
+    </Component>
     <Component class="common.Action" name="sharedActionExportAPNN">
       <Properties>
         <Property name="actionName" type="java.lang.String" value="Export in APNN format..."/>
@@ -1315,6 +1321,14 @@
                     <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
                       <ComponentRef name="sharedActionExportAPNN"/>
                     </Property>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItem_NetLogoFormat">
+                  <Properties>
+                    <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                      <ComponentRef name="sharedActionExportNetLogo"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="Export in NetLogo format..."/>
                   </Properties>
                 </MenuItem>
                 <MenuItem class="javax.swing.JMenuItem" name="jMenuItem_DtaFormat">

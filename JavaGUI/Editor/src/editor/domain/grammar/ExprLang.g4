@@ -239,12 +239,12 @@ colorSet : colorTerm                               # ColorSetTerm
 // Color class declaration:
 //--------------------------------------------------------------------------
 
-colorClassDef : colorClassOrd? colorList ('+' colorList)*         # ColorClassDefNamedSet
+colorClassDef : colorClassOrd* colorList ('+' colorList)*         # ColorClassDefNamedSet
               | SIMPLECOLORCLASS_ID ('*' SIMPLECOLORCLASS_ID)+    # ColorClassDefProduct
               //| 'subset' SIMPLECOLORCLASS_ID 'with' colorList     # ColorClassDefSubset
               ;
 
-colorClassOrd : 'ordered' | 'unordered' | 'circular' | 'enum';
+colorClassOrd : 'ordered' | 'unordered' | 'circular' | 'enum' | 'agent';
 
 colorList : '{' ID (',' ID)* '}' colorSubclassName?                   # ColorListIDs
           | anyID? '{' intConst '..' intConst '}' colorSubclassName?  # ColorListInterval

@@ -1081,6 +1081,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             case EXPORT_PNML_FORMAT:        return sharedActionExportPNML;
             case EXPORT_GRML_FORMAT:        return sharedActionExportGRML;
             case EXPORT_APNN_FORMAT:        return sharedActionExportAPNN;
+            case EXPORT_NETLOGO_FORMAT:     return sharedActionExportNetLogo;
             case EXPORT_DTA_FORMAT:         return sharedActionExportDta;
             case EXPORT_AS_PDF:             return sharedActionExportAsPDF;
             case EXPORT_AS_PNG:             return sharedActionExportAsPNG;
@@ -1498,6 +1499,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         sharedActionExportGreatSpn = new common.Action();
         sharedActionExportPNML = new common.Action();
         sharedActionExportGRML = new common.Action();
+        sharedActionExportNetLogo = new common.Action();
         sharedActionExportAPNN = new common.Action();
         sharedActionExportDta = new common.Action();
         sharedActionExportAsPDF = new common.Action();
@@ -1620,6 +1622,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jMenuItem_PNMLExport = new javax.swing.JMenuItem();
         jMenuItem_GrMLExport = new javax.swing.JMenuItem();
         jMenuItem_ApnnFormat = new javax.swing.JMenuItem();
+        jMenuItem_NetLogoFormat = new javax.swing.JMenuItem();
         jMenuItem_DtaFormat = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
         jMenuItem_PdfExport = new javax.swing.JMenuItem();
@@ -2156,6 +2159,9 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         sharedActionExportGRML.setActionName("Export in GRML format...");
         sharedActionExportGRML.setTooltipDesc("Export the current net in the GRML file format (grml).");
 
+        sharedActionExportNetLogo.setActionName("Export in NetLogo format...");
+        sharedActionExportNetLogo.setTooltipDesc("Export the current net in the NetLogo (nlogo) file format.");
+
         sharedActionExportAPNN.setActionName("Export in APNN format...");
         sharedActionExportAPNN.setTooltipDesc("Export the current net in the Abstract Petri Net Notation (APNN) file format.");
 
@@ -2382,12 +2388,9 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jPanelCenterLeft.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 1, 0, new java.awt.Color(153, 153, 153)));
         jPanelCenterLeft.setLayout(new java.awt.GridLayout(1, 0));
 
-        jSplitPaneLeftCenterH.setBorder(null);
-
         jLeftPanel.setMinimumSize(new java.awt.Dimension(120, 120));
         jLeftPanel.setLayout(new javax.swing.BoxLayout(jLeftPanel, javax.swing.BoxLayout.LINE_AXIS));
 
-        jSplitPaneLeftV.setBorder(null);
         jSplitPaneLeftV.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
         jPanelProjectTree.setLayout(new java.awt.GridBagLayout());
@@ -2427,7 +2430,6 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         jPanelTreeCmds.setLayout(new javax.swing.BoxLayout(jPanelTreeCmds, javax.swing.BoxLayout.X_AXIS));
 
-        jToolBarTree.setFloatable(false);
         jToolBarTree.setRollover(true);
 
         jToolbarButtonMoveUp.setAction(actionMoveUp);
@@ -2475,7 +2477,6 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         jRightPanel.setLayout(new java.awt.GridLayout(1, 0));
 
-        jSplitPaneCenterErrListV.setBorder(null);
         jSplitPaneCenterErrListV.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         jSplitPaneCenterErrListV.setResizeWeight(1.0);
 
@@ -2513,8 +2514,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jPanelToolBars.setOpaque(false);
         jPanelToolBars.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 2, 2));
 
-        jAppToolBar_File.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "File", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
-        jAppToolBar_File.setFloatable(false);
+        jAppToolBar_File.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "File", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jAppToolBar_File.setRollover(true);
 
         jToolbarButtonNew.setAction(actionNewProject);
@@ -2532,8 +2532,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         jPanelToolBars.add(jAppToolBar_File);
 
-        jAppToolBar_Edit.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Edit", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
-        jAppToolBar_Edit.setFloatable(false);
+        jAppToolBar_Edit.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "Edit", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jAppToolBar_Edit.setRollover(true);
 
         jToolbarButtonUndo.setAction(actionUndo);
@@ -2569,8 +2568,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         jPanelToolBars.add(jAppToolBar_Edit);
 
-        jAppToolBar_Basic.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Basic", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
-        jAppToolBar_Basic.setFloatable(false);
+        jAppToolBar_Basic.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "Basic", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jAppToolBar_Basic.setRollover(true);
 
         jToolbarButtonStartPlay.setIcon(resourceFactory.getPlay32());
@@ -2631,8 +2629,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         jPanelToolBars.add(jAppToolBar_Basic);
 
-        jAppToolBar_Advanced.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Advanced", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
-        jAppToolBar_Advanced.setFloatable(false);
+        jAppToolBar_Advanced.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "Advanced", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jAppToolBar_Advanced.setRollover(true);
 
         jToolbarButtonAlgebra.setAction(actionStartAlgebra);
@@ -2658,8 +2655,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         jPanelToolBars.add(jAppToolBar_Advanced);
 
-        jPlayToolBar.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Panel", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
-        jPlayToolBar.setFloatable(false);
+        jPlayToolBar.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "Panel", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jPlayToolBar.setRollover(true);
 
         jToolbarButtonEndPlay.setAction(actionEndPlay);
@@ -2718,6 +2714,10 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         jMenuItem_ApnnFormat.setAction(sharedActionExportAPNN);
         jMenuItem_FileExport.add(jMenuItem_ApnnFormat);
+
+        jMenuItem_NetLogoFormat.setAction(sharedActionExportNetLogo);
+        jMenuItem_NetLogoFormat.setText("Export in NetLogo format...");
+        jMenuItem_FileExport.add(jMenuItem_NetLogoFormat);
 
         jMenuItem_DtaFormat.setAction(sharedActionExportDta);
         jMenuItem_FileExport.add(jMenuItem_DtaFormat);
@@ -3820,6 +3820,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private javax.swing.JMenuItem jMenuItem_GreatSpnImport;
     private javax.swing.JMenuItem jMenuItem_HelpAbout;
     private javax.swing.JMenuItem jMenuItem_HelpShowGrammar;
+    private javax.swing.JMenuItem jMenuItem_NetLogoFormat;
     private javax.swing.JMenuItem jMenuItem_PNMLExport;
     private javax.swing.JMenuItem jMenuItem_PNMLImport;
     private javax.swing.JMenuItem jMenuItem_PdfExport;
@@ -3934,6 +3935,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private common.Action sharedActionExportDta;
     private common.Action sharedActionExportGRML;
     private common.Action sharedActionExportGreatSpn;
+    private common.Action sharedActionExportNetLogo;
     private common.Action sharedActionExportPNML;
     private common.Action sharedActionInvertSelection;
     private common.Action sharedActionMakeEditableNet;

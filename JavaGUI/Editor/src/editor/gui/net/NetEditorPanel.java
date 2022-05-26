@@ -569,6 +569,7 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
                 case EXPORT_GREATSPN_FORMAT:
                 case EXPORT_GRML_FORMAT:
                 case EXPORT_APNN_FORMAT:
+                case EXPORT_NETLOGO_FORMAT:
                 case EXPORT_PNML_FORMAT:
                     act.setEnabled(isGspn && currPage.isPageCorrect());
                     break;
@@ -625,6 +626,10 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
                 
             case EXPORT_APNN_FORMAT:
                 PagePrintExportManager.exportGspnInAPNNFormat(mainInterface, (GspnPage)currPage);
+                return;
+                        
+            case EXPORT_NETLOGO_FORMAT:
+                PagePrintExportManager.exportGspnInNetLogoFormat(mainInterface, (GspnPage)currPage);
                 return;
                         
             case EXPORT_DTA_FORMAT:

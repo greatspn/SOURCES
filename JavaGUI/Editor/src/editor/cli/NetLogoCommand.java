@@ -53,7 +53,7 @@ public class NetLogoCommand {
             System.out.println("Not enough arguments.");
             System.exit(1);
         }
-        String agentColors = "";
+//        String agentColors = "";
         boolean verbose = false;
         int c;
         for (c=0; c<args.length; c++) {
@@ -61,11 +61,11 @@ public class NetLogoCommand {
             if (!args[c].startsWith("-"))
                 break; // end of options
             switch (args[c]) {
-                case "-ac":
-                    if (c+1 == args.length) 
-                        throw new IllegalArgumentException("Missing comma-separated set of agent colors.");
-                    agentColors = args[++c];
-                    break;
+//                case "-ac":
+//                    if (c+1 == args.length) 
+//                        throw new IllegalArgumentException("Missing comma-separated set of agent colors.");
+//                    agentColors = args[++c];
+//                    break;
                     
                 case "-v":
                     verbose = true;
@@ -116,14 +116,14 @@ public class NetLogoCommand {
             System.exit(1);
         }
         
-        String[] agentsColorList = agentColors.split(",");
+//        String[] agentsColorList = agentColors.split(",");
         
         
         // Export in NetLogo format
         long saveStart = System.currentTimeMillis();
         System.out.println("");
         File netLogoFile = new File(outBaseName);
-        String log = NetLogoFormat.export(gspn, netLogoFile, agentsColorList, context, verbose);
+        String log = NetLogoFormat.export(gspn, netLogoFile, context, verbose);
         
         if (log != null) {        
             System.out.println(log);

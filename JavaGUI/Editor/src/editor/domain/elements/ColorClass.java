@@ -189,6 +189,8 @@ public class ColorClass extends BaseID implements Serializable, FormulaPayload {
     private transient ColorClass[] crossProdClasses = null;
     // Is this simple class ordered? (Not defined for domain classes)
     private Boolean isOrdered = null;
+    // Is this class representing the identity of an agent? (for NetLogo support)
+    private Boolean isAgent = null;
     
     public boolean isCrossDomain() {
 //        assert isParseDataOk();
@@ -214,6 +216,10 @@ public class ColorClass extends BaseID implements Serializable, FormulaPayload {
     public boolean isCircular() {
         assert isSimpleClass();
         return isOrdered == true;
+    }
+    
+    public boolean isAgent() {
+        return isAgent;
     }
     
     public boolean isParseDataOk() {
@@ -358,8 +364,9 @@ public class ColorClass extends BaseID implements Serializable, FormulaPayload {
     }
     
     
-    static final String[] ORD_WORD = { "ordered", "unordered", "enum", "circular" };
-    static final Boolean[] IS_ORDERED = { true, false, false, true };
+    static final String[] PREFIX_WORD = { "ordered", "unordered", "enum", "circular", "agent" };
+    static final Boolean[] IS_ORDERED = { true, false, false, true, null };
+    static final Boolean[] IS_AGENT   = { null, null, null, null, true };
 
     // Additional parse method. This method does not substitute the semantic parser,
     // but it is used to collect the color class definition for semantic use.
@@ -369,6 +376,7 @@ public class ColorClass extends BaseID implements Serializable, FormulaPayload {
         crossProdClasses = null;
         subclasses = null;
         isOrdered = null;
+        isAgent = null;
         isCrossDomain = expr.contains("*");
         
         headerText.setValue(null, null, isCrossDomain ? "\\text{\\textbf{domain }}" : 
@@ -386,15 +394,19 @@ public class ColorClass extends BaseID implements Serializable, FormulaPayload {
         else {
             String classDefExpr = expr.trim();
             // Initial keyword for ordered/unordered class
-            for (int i=0; i<ORD_WORD.length; i++) {
-                if (classDefExpr.startsWith(ORD_WORD[i])) {
-                    classDefExpr = classDefExpr.substring(ORD_WORD[i].length());
-                    isOrdered = IS_ORDERED[i];
-                    break;
+            for (int i=0; i<PREFIX_WORD.length; i++) {
+                if (classDefExpr.startsWith(PREFIX_WORD[i])) {
+                    classDefExpr = classDefExpr.substring(PREFIX_WORD[i].length()).trim();
+                    if (IS_ORDERED[i] != null)
+                        isOrdered = IS_ORDERED[i];
+                    if (IS_AGENT[i] != null)
+                        isAgent = IS_AGENT[i];
                 }
             }
             if (isOrdered == null)
                 isOrdered = false; // by default, color classes are unordered.
+            if (isAgent == null)
+                isAgent = false; // by default, color classes are not NetLogo agents.
             
             String[] subclassDefs = classDefExpr.split("\\+");
             subclasses = new ParsedColorSubclass[subclassDefs.length];

@@ -2304,7 +2304,9 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         StringBuilder buffer = new StringBuilder();
         
         if (ctx.colorClassOrd() != null) {
-            buffer.append("\\mathbf{").append(ctx.colorClassOrd().getText()).append("}\\hspace{0.4em}");
+            for (ExprLangParser.ColorClassOrdContext keyword : ctx.colorClassOrd()) {
+                buffer.append("\\mathbf{").append(keyword.getText()).append("}\\hspace{0.4em}");            
+            }
         }
         List<ParsedColorSubclass> subClassList = new LinkedList<>();
         
