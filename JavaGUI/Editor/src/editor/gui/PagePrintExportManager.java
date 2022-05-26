@@ -508,8 +508,6 @@ public class PagePrintExportManager {
         } while (repeatChooser);
         
         try {
-//            StructInfo struct = StructInfo.computeStructInfo(mainInterface.getWindowFrame(), 
-//                                                             (GspnPage)gspn, null, null);
             ParserContext context = new ParserContext(gspn);
             gspn.compileParsedInfo(context);
             String log = NetLogoFormat.export((GspnPage)gspn, nlogoFile, context, true);
