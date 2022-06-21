@@ -687,7 +687,8 @@ public class NetLogoFormat {
                         // determine the transition index inside leadersOfTrn
                         int myratePos = transitionsOfLeaderAgentClass.get(leaderAgentClass).indexOf(trn);                        
                         indent(pw, ind); pw.println(";; summing up all rates");
-                        indent(pw, ind); pw.println("set myrate replace-item "+myratePos+" myrate (countInstances * ("+trn.getDelay()+"))");
+                        String delayExpr = trn.convertDelayLang(context, null, ExpressionLanguage.NETLOGO);
+                        indent(pw, ind); pw.println("set myrate replace-item "+myratePos+" myrate (countInstances * ("+delayExpr+"))");
                     }
                     ind--;
                     indent(pw, ind); pw.println("]");
@@ -797,7 +798,8 @@ public class NetLogoFormat {
                     }
                     
                     if (agentNum == inputFiringAgents.size()) { // last agent may perform the firing
-                        indent(pw, ind); pw.println("set targetRate targetRate - ("+trn.getDelay()+")");
+                        String delayExpr = trn.convertDelayLang(context, null, ExpressionLanguage.NETLOGO);
+                        indent(pw, ind); pw.println("set targetRate targetRate - ("+delayExpr+")");
                         indent(pw, ind); pw.println("if-else targetRate > 0 [ ]");
                         indent(pw, ind); pw.println("[");
                         ind++;

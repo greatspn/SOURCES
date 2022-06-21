@@ -10,6 +10,7 @@ import common.Util;
 import editor.Main;
 import editor.domain.elements.DtaSignature;
 import editor.domain.Expr;
+import editor.domain.NetObject;
 import editor.domain.elements.TemplateVariable;
 import editor.domain.values.EvaluatedFormula;
 import editor.domain.grammar.EvaluationArguments;
@@ -740,7 +741,7 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         }
         return cmd;
     }
-        
+    
     public static ArrayList<String> startOfCommand() {
         ArrayList<String> cmd = new ArrayList<>();
         if (Util.useWSL()) {
@@ -750,10 +751,21 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         return cmd;
     }
     
+    // Does the command line argument @arg need quotes to be run without problems?
+    // NOTE: we only allows alphanumeric & '-' - everything else becomes quoted.
+    private static boolean argumentNeedQuotes(String arg) {
+        for (int i=0; i<arg.length(); i++) {
+            char ch = arg.charAt(i);
+            if (!NetObject.isAsciiLetterOrDigit(ch) && ch!='-')
+                return true;
+        }
+        return false;
+    }
+    
     public static String cmdToString(ArrayList<String> cmd) {
         StringBuffer sb =  new StringBuffer();
         for (String s : cmd) {
-            if (s.contains(" "))
+            if (argumentNeedQuotes(s))
                 sb.append("\"").append(s).append("\"");
             else
                 sb.append(s);

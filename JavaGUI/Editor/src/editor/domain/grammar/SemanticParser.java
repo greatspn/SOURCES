@@ -95,7 +95,8 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 case NETLOGO:
                     if (obj instanceof ColorVar)
                         return "($"+((ColorVar) obj).getUniqueName()+"$)";
-                    throw new UnsupportedOperationException("Cannot convert entity in PNML format.");                    
+                    return ((Node)obj).getUniqueName();
+//                    throw new UnsupportedOperationException("Cannot convert entity in PNML format.");                    
                 default:
                     throw new UnsupportedOperationException("getObjectFormula");
             }
@@ -1098,6 +1099,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case LATEX:
             case GREATSPN:
             case PNPRO:
+            case NETLOGO:
                         return format(true, realConstId);
             default:
                 throw new UnsupportedOperationException();
