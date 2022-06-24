@@ -872,8 +872,12 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
             nenv.put(LD_LIBRARY_PATH, "");
 
         // Add AppImage root
-        if (Util.useAppImage() && !nenv.containsKey("GREATSPN_APPIMAGE_DIR"))
+        if (Util.useAppImage() && !nenv.containsKey("GREATSPN_APPIMAGE_DIR")) {
             nenv.put("GREATSPN_APPIMAGE_DIR", Main.getAppImageGreatSPN_dir().getAbsolutePath());
+        }
+        if (Util.useAppImage() && !nenv.containsKey("GREATSPN_TEMP_DIR")) {
+            nenv.put("GREATSPN_TEMP_DIR", System.getProperty("java.io.tmpdir"));
+        }
         
         if (solver != null)
             solver.modifyEnvironmentVars(nenv);
