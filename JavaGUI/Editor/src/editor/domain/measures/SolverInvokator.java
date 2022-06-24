@@ -877,6 +877,7 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         }
         if (/*Util.useAppImage() &&*/ !nenv.containsKey("GREATSPN_TEMP_DIR")) {
             // Pass the custom TEMP directory. Ensure that is ended by the path separator.
+            // NOTE: this is used by the portable_mkstemp() function in platform_utils.c
             File tmpDir = new File(System.getProperty("java.io.tmpdir"));
             String tmpDirAbs = tmpDir.getAbsolutePath();
             if (!tmpDirAbs.endsWith(File.separator))
