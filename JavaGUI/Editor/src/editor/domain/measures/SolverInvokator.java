@@ -872,8 +872,19 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
             nenv.put(LD_LIBRARY_PATH, "");
 
         // Add AppImage root
-        if (Util.useAppImage() && !nenv.containsKey("GREATSPN_APPIMAGE_DIR"))
+        if (Util.useAppImage() && !nenv.containsKey("GREATSPN_APPIMAGE_DIR")) {
             nenv.put("GREATSPN_APPIMAGE_DIR", Main.getAppImageGreatSPN_dir().getAbsolutePath());
+        }
+        if (/*Util.useAppImage() &&*/ !nenv.containsKey("GREATSPN_TEMP_DIR")) {
+            // Pass the custom TEMP directory. Ensure that is ended by the path separator.
+            // NOTE: this is used by the portable_mkstemp() function in platform_utils.c
+            File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+            String tmpDirAbs = tmpDir.getAbsolutePath();
+            if (!tmpDirAbs.endsWith(File.separator))
+                tmpDirAbs += File.separator;
+            nenv.put("GREATSPN_TEMP_DIR", tmpDirAbs);
+//            System.out.println("tmpDir.getAbsolutePath()=" + tmpDirAbs);
+        }
         
         if (solver != null)
             solver.modifyEnvironmentVars(nenv);

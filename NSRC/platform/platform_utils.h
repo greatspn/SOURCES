@@ -42,14 +42,19 @@ int invoked_from_gui();
 // returns the directory name, otherwise returns NULL
 const char* get_appimage_dir();
 
+// generate a temporary filename, using either the default or the extra TEMP dir
+int portable_mkstemp(char buffer[1024], const char* pattern);
+
 //=============================================================================
 
 #if defined(WIN32) || defined(_WIN32) || defined(__CYGWIN__)
 # define PATH_SEPARATOR      "\\" 
 # define PATH_SEPARATOR_CH   '\\' 
+# define EXE_SUFFIX          ".exe"
 #else 
 # define PATH_SEPARATOR      "/" 
 # define PATH_SEPARATOR_CH   '/' 
+# define EXE_SUFFIX          ""
 #endif 
 
 //=============================================================================

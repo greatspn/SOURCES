@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <limits.h>
 #include <string.h>
 #include <stdlib.h>
 #include <spawn.h>
@@ -215,6 +216,20 @@ const char* get_appimage_dir() {
         test_appimage_dir = 0;
     }
     return appimage_dir;
+}
+
+//=============================================================================
+
+// generate a temporary filename, using either the default or the extra TEMP dir
+int portable_mkstemp(char buffer[1024], const char* pattern) {
+    const char *tmpdir_env = getenv("GREATSPN_TEMP_DIR");
+    if (tmpdir_env != NULL) {
+        snprintf(buffer, PATH_MAX, "%s%s", tmpdir_env, pattern);
+    }
+    else {
+        snprintf(buffer, PATH_MAX, "/tmp/%s", pattern); // assume the default Unix /tmp folder
+    }
+    return mkstemp(buffer);
 }
 
 //=============================================================================

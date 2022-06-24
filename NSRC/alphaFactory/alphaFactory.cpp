@@ -29,6 +29,7 @@
 //=============================================================================
 
 #include <iostream>
+#include <fstream>
 #include <memory>
 #include <utility>
 #include <map>
@@ -997,7 +998,7 @@ mpfloat compute_positive_tgamma(mpfloat a, mpfloat z) {
 		s_pos_tgamma_mem[mem_key] = result;
 		return result;
 	}
-	catch (std::overflow_error ovf) {
+	catch (std::overflow_error const &ovf) {
 
 		mpfloat a_prev = a - 1;
 		mpfloat result = a_prev * compute_positive_tgamma(a_prev, z);
@@ -1865,31 +1866,44 @@ int main (int argc, char **argv) {
 		unit_test();
 		return 0;
 	}
-	if (argc != 4) {
+	if (argc != 4 && argc != 5) {
 		cout << g_banner << endl;
 		return 0;
 	}
 	expr_str = argv[1];
 	ctmc_q = mpfloat(argv[2]);
 	accuracy = mpfloat(argv[3]);
+	bool save_file = (argc==5);
 
-	cout << "Computing alpha-factors of:\n  " << expr_str 
-	     << "\nfor a uniformized CTMC of rate " << ctmc_q <<", accuracy=" << accuracy << endl;
+	if (!save_file)
+		cout << "Computing alpha-factors of:\n  " << expr_str 
+			<< "\nfor a uniformized CTMC of rate " << ctmc_q <<", accuracy=" << accuracy << endl;
 
 	cout << setprecision(numeric_limits<double>::digits10);
 	expr fg = parse(expr_str);
 	expr sfg = simplify(fg);
-	cout << "Using f_g(x) = " << sfg << endl;
+	if (!save_file)
+		cout << "Using f_g(x) = " << sfg << endl;
 	std::vector<pair<mpfloat, mpfloat>> factors;
-	factors = compute_alpha_factors(sfg, ctmc_q, accuracy, true);
-	cout << "Factors:     " << factors.size() << endl;
+	factors = compute_alpha_factors(sfg, ctmc_q, accuracy, !save_file);
 
-	for (size_t i=0; i<factors.size(); i++)
-		cout << factors[i].first << endl;
-	cout << endl;
-	for (size_t i=0; i<factors.size(); i++)
-		cout << factors[i].second << endl;
-	cout << endl;	
+	if (!save_file) {
+		cout << "Factors:     " << factors.size() << endl;
+		for (size_t i=0; i<factors.size(); i++) 
+			cout << factors[i].first << endl;
+		cout << endl;
+		for (size_t i=0; i<factors.size(); i++)
+			cout << factors[i].second << endl;
+		cout << endl;	
+	}
+
+	if (save_file) { // write to the specified file
+		ofstream of(argv[4]);
+		of << factors.size() << "\n";
+		of << setprecision(numeric_limits<double>::digits10);
+		for (size_t i=0; i<factors.size(); i++)
+			of << factors[i].first << " " << factors[i].second << "\n";
+	}
 
 	return 0;
 }

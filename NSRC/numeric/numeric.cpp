@@ -1,5 +1,7 @@
 
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <iomanip>
 #include <cassert>
 #include <vector>
@@ -141,6 +143,17 @@ numerical::AlgoName numerical::AN_CGS = numerical::AlgoName(numerical::ILA_CGS);
 
 //-----------------------------------------------------------------------------
 
+template <typename T>
+std::string to_string_with_precision(const T a_value, const int n = 6)
+{
+    std::ostringstream out;
+    out.precision(n);
+    out << std::fixed << a_value;
+    return out.str();
+}
+
+//-----------------------------------------------------------------------------
+
 static std::map<std::tuple<string, double, double>, 
          std::vector<pair<double, double>>> computed_factors_mem;
 
@@ -150,15 +163,64 @@ ch_compute_alpha_factors_dbl(const char* fg_expr, const double q, const double a
 	auto f_key = make_tuple(string(fg_expr), q, accuracy);
 
 	if (computed_factors_mem.count(f_key) == 0) {
-		const size_t MAX_BUF = 2048;
-		char line[MAX_BUF];
-		ostringstream cmdline;
-		cmdline << "/usr/local/GreatSPN/bin/alphaFactory \"" << fg_expr << "\" " << q << " " << accuracy;
+		// const size_t MAX_BUF = 2048;
+		// char line[MAX_BUF];
+		ostringstream cmdname;
+		const char *appimg_dir = get_appimage_dir();
+		if (appimg_dir != nullptr) {
+			cmdname << appimg_dir << PATH_SEPARATOR_CH << "bin" << PATH_SEPARATOR_CH << "alphaFactory" << EXE_SUFFIX;
+		}
+		else {
+			cmdname << "/usr/local/GreatSPN/bin/alphaFactory";
+		}
+
+		char tmpfname[1024];
+		portable_mkstemp(tmpfname, "af_XXXXXXXX");
+		// std::string tmpfname;
+		// const char *tmpdir_env = getenv("GREATSPN_TEMP_DIR");
+		// cout << "tmpdir_env=" << tmpdir_env << endl;
+		// if (tmpdir_env != nullptr) {
+		// 	tmpfname = tmpdir_env;
+		// 	tmpfname += "af_XXXXXXXX";
+		// }
+		// else {
+		// 	tmpfname = "af_XXXXXXXX";
+		// }
+		// mkstemp(tmpfname.data());
+
+		// std::string tmpfname = std::tmpnam(nullptr);
+		// cmdline << " \"" << fg_expr << "\" " << q << " " << accuracy << " " << tmpfname;
 		std::vector<pair<double, double>> af;
 		// cout << cmdline.str() << endl;
-		cout << "AlphaFactory:  f_g(x)=\"" << fg_expr << "\"  rate=" << q << "  acc=" << accuracy << endl;
+		// char temp [ PATH_MAX ];
+		// cout << "getcwd=" << getcwd(temp, PATH_MAX) << endl;
+		cout << "AlphaFactory:  f_g(x)=\"" << fg_expr << "\"  rate=" << q 
+			 << "  acc=" << accuracy << " tmpfname=" << tmpfname << endl;
 
-		FILE *proc = popen(cmdline.str().c_str(), "r");
+		// Call alphaFactory
+		std::string cmdname_s = cmdname.str();
+		std::string q_s = to_string_with_precision(q, 15);
+		std::string acc_s = to_string_with_precision(accuracy, 15);
+	    const char* const args[] = { cmdname_s.c_str(), fg_expr, q_s.c_str(), acc_s.c_str(), tmpfname, nullptr };
+	    int ret = execp_cmd(args[0], args, 1);
+		if (ret != 0) {
+			cerr << "Cannot communicate with alphaFactory." << endl;
+			throw program_exception("alphaFactory cannot be exec'd.");
+		}
+
+		// Read back the output file
+		ifstream inf(tmpfname);
+		size_t num_factors;
+		inf >> num_factors;
+		// cout << "num_factors=" << num_factors << endl;
+		af.resize(num_factors);
+		for (size_t ii=0; ii<num_factors; ii++)
+			inf >> af[ii].first >> af[ii].second;
+		if (!inf)
+			throw program_exception("Count not read back the output file.");
+		inf.close();
+
+		/*FILE *proc = popen(cmdline.str().c_str(), "r");
 		int num_factors, ii = -1;
 		double factor;
 		while (fgets(line, MAX_BUF, proc)) {
@@ -180,7 +242,9 @@ ch_compute_alpha_factors_dbl(const char* fg_expr, const double q, const double a
 			}
 		}
 		if (0 != pclose(proc))
-			throw "Cannot communicate with /usr/local/GreatSPN/bin/alphaFactory.";
+			throw "Cannot communicate with alphaFactory.";*/
+
+		std::remove(tmpfname);
 
 		computed_factors_mem[f_key] = af;
 	}
