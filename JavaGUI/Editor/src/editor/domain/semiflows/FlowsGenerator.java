@@ -4,6 +4,7 @@
  */
 package editor.domain.semiflows;
 
+import common.Tuple;
 import common.Util;
 import editor.domain.Edge;
 import editor.domain.Node;
@@ -15,6 +16,8 @@ import editor.domain.grammar.TemplateBinding;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /** Farkas algorithm for the computation
  *  of the minimal set of P(T)-(semi)flows in a Petri net.
@@ -93,6 +96,19 @@ public class FlowsGenerator extends StructuralAlgorithm {
             if (v != 0)
                 return false;
         return true; // all zeros
+    }
+    
+    // get a compact matrix of all real flows
+    public int[][] getAnnulers() {
+        int num=0, i=0;
+        for (int f=0; f<numFlows(); f++)
+            if (isFlow(f))
+                num++;
+        int[][] annulers = new int[num][];
+        for (int f=0; f<numFlows(); f++)
+            if (isFlow(f))
+                annulers[i++] = getFlowVector(f);
+        return annulers;
     }
 
     public static int gcd(int a, int b) {
@@ -279,12 +295,13 @@ public class FlowsGenerator extends StructuralAlgorithm {
     
     //-----------------------------------------------------------------------
     // Compute all canonical semiflows, even if they are not minimal
-    public void computeAllCanonicalSemiflows(boolean log, ProgressObserver obs) 
+    public void computeAllCanonicalSemiflows(boolean log, ProgressObserver obs, int[][] annulers) 
             throws InterruptedException 
     {
         assert type==PTFlows.Type.PLACE_SEMIFLOWS;
         if (log)
             System.out.println(this);
+        Set<Tuple<Integer, Integer>> dropped = new HashSet<>();
         int initFlows = numFlows();
         // Matrix A starts with the flow matrix, D is the identity.
         // for every transition i=[0,M), repeat:
@@ -297,6 +314,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
 //            int nRows = numFlows();
 //            int combined_with_i = 0;
             for (int r1 = 0; r1 < numFlows(); r1++) {
+                assert numFlows() < 10000;
                 if (mA.get(r1)[i] == 0) {
                     continue;
                 }
@@ -305,6 +323,9 @@ public class FlowsGenerator extends StructuralAlgorithm {
                     checkInterrupted();
                     // Find two rows r1 and r2 such that r1[i] and r2[i] have opposite signs.
                     if (mA.get(r2)[i] == 0)
+                        continue;
+                    
+                    if (dropped.contains(new Tuple<>(r1, r2)))
                         continue;
                     
 //                    int mult1, mult2;
@@ -368,7 +389,35 @@ public class FlowsGenerator extends StructuralAlgorithm {
                             isDuplicated = true;
                         }
                     }
-                    if (isDuplicated) {
+                    // check if there is an identical support semiflow that is smaller
+                    boolean exceedsMinimalSemiflow = true;
+                    if (!isDuplicated) {
+                        for (int[] minimalSemiflow : annulers) {
+                            boolean isGreater = false;
+                            for (int j=0; j<minimalSemiflow.length && !isGreater; j++) {
+                                if (minimalSemiflow[j] != 0) { // check only in the semiflow support
+                                    isGreater = nrD[j] > minimalSemiflow[j];
+                                }
+                            }
+                            if (!isGreater) {
+                                exceedsMinimalSemiflow = false;
+//                                System.out.println("BOUND: "+rowToString(nrD, nrA)+
+//                                        " > "+rowToString(minimalSemiflow, null));
+                            }
+                        }
+                        if (exceedsMinimalSemiflow) {
+                                System.out.println("BOUND: "+rowToString(nrD, nrA));
+                        }
+//                        for (int hh=0; hh<numFlows() && !sameSupportFlow; hh++) {
+//                            if (mA.get(hh)[i] == 0 && checkForSameSupportSmaller(mD.get(hh), nrD)) {
+//                                sameSupportFlow = true;
+//                                System.out.println("SAME SUPPORT: "+rowToString(nrD, nrA)+
+//                                        "  "+rowToString(mD.get(hh), mA.get(hh)));
+//                            }
+//                        }
+                    }
+                    if (isDuplicated || exceedsMinimalSemiflow) {
+                        dropped.add(new Tuple<>(r1, r2));
                         if (log) {
                             System.out.println("DROP row:"+r1+" + row:" + r2 + 
                                                "  nnz(D)=" + nnzD + "  gcdAD="+gcdAD);
@@ -433,6 +482,18 @@ public class FlowsGenerator extends StructuralAlgorithm {
         setComputed();
     }
     //-----------------------------------------------------------------------
+    private boolean checkForSameSupportSmaller(int[] semiflow, int[] vec) {
+        for (int i=0; i<semiflow.length; i++)
+            if ((semiflow[i]==0) != (vec[i]==0))
+                return false; // support is different
+        // check that vec is not greater than @semiflow
+        for (int i=0; i<semiflow.length; i++)
+            if (vec[i] > semiflow[i])
+                return true; // drop
+        return false; 
+    }
+    
+    //-----------------------------------------------------------------------
     
     // Reduce all remaining flows after removing all supplementary variables
     // Supplementary variable are located in D in the positions between N0 and N.
@@ -470,9 +531,11 @@ public class FlowsGenerator extends StructuralAlgorithm {
         for (int j = 0; j < N; j++) {
             sb.append(rowD[j] < 0 ? "" : " ").append(rowD[j]).append(" ");
         }
-        sb.append("| ");
-        for (int j = 0; j < M; j++) {
-            sb.append(rowA[j] < 0 ? "" : " ").append(rowA[j]).append(" ");
+        if (rowA != null) {
+            sb.append("| ");
+            for (int j = 0; j < M; j++) {
+                sb.append(rowA[j] < 0 ? "" : " ").append(rowA[j]).append(" ");
+            }
         }
         return sb.toString();
     }
