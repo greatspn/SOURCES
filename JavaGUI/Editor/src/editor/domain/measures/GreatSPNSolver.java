@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
+import javax.swing.JOptionPane;
 
 /** GreatSPN toolchain invokator for:  [gspn|swn]_[ord|sym]_[rg|tr|sim]
  *
