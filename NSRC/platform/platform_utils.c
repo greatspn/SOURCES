@@ -227,7 +227,7 @@ int portable_mkstemp(char buffer[1024], const char* pattern) {
         snprintf(buffer, PATH_MAX, "%s%s", tmpdir_env, pattern);
     }
     else {
-        snprintf(buffer, PATH_MAX, "%s", pattern);
+        snprintf(buffer, PATH_MAX, "/tmp/%s", pattern); // assume the default Unix /tmp folder
     }
     return mkstemp(buffer);
 }
