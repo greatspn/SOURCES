@@ -8,6 +8,7 @@ package editor.domain.measures;
 
 import editor.domain.grammar.EvaluatedBinding;
 import editor.domain.grammar.EvaluationArguments;
+import editor.domain.grammar.ExpressionLanguage;
 import editor.domain.grammar.TemplateBinding;
 import java.io.File;
 import java.io.IOException;
@@ -118,7 +119,9 @@ public class MC4CSLTASolver extends SolverInvokator {
                         entry = new ScalarResultEntry(measName, evalBind);
                         measCmd.add("-measure");
                         measCmd.add(measName);
-                        measCmd.add(fm.getFormula().getExpr());
+                        String spnMeas = fm.getFormula().convertLang(getContext(), EvaluationArguments.NO_ARGS, 
+                                        ExpressionLanguage.GREATSPN);
+                        measCmd.add(spnMeas);
 //                        measCmd += " -measure "+measName+" \""+fm.getFormula().getExpr() +"\"";
                         step.entries.add(entry);
                         break;

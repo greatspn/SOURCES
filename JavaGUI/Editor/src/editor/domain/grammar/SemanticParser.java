@@ -2546,9 +2546,9 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case GREATSPN:
             case PNPRO:
                 if (cond == null)
-                    ff = format(true, PEX+"{", f1, "}");
+                    ff = format(true, PEX+"{ ", f1, " }");
                 else
-                    ff = format(true, PEX+"{", f1, " / ", cond, "}");
+                    ff = format(true, PEX+"{ ", f1, " / ", cond, " }");
                 
                 if (mult != null)
                     ff = format(true/* still simple term */, mult, " ", ff);
