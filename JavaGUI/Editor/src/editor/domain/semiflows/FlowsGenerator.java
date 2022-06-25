@@ -391,31 +391,25 @@ public class FlowsGenerator extends StructuralAlgorithm {
                     }
                     // check if there is an identical support semiflow that is smaller
                     boolean exceedsMinimalSemiflow = true;
-                    if (!isDuplicated) {
-                        for (int[] minimalSemiflow : annulers) {
-                            boolean isGreater = false;
-                            for (int j=0; j<minimalSemiflow.length && !isGreater; j++) {
-                                if (minimalSemiflow[j] != 0) { // check only in the semiflow support
-                                    isGreater = nrD[j] > minimalSemiflow[j];
-                                }
-                            }
-                            if (!isGreater) {
-                                exceedsMinimalSemiflow = false;
-//                                System.out.println("BOUND: "+rowToString(nrD, nrA)+
-//                                        " > "+rowToString(minimalSemiflow, null));
-                            }
-                        }
-                        if (exceedsMinimalSemiflow) {
-                                System.out.println("BOUND: "+rowToString(nrD, nrA));
-                        }
-//                        for (int hh=0; hh<numFlows() && !sameSupportFlow; hh++) {
-//                            if (mA.get(hh)[i] == 0 && checkForSameSupportSmaller(mD.get(hh), nrD)) {
-//                                sameSupportFlow = true;
-//                                System.out.println("SAME SUPPORT: "+rowToString(nrD, nrA)+
-//                                        "  "+rowToString(mD.get(hh), mA.get(hh)));
+                    exceedsMinimalSemiflow = false;
+//                    if (!isDuplicated) {
+//                        for (int[] minimalSemiflow : annulers) {
+//                            boolean isGreater = false;
+//                            for (int j=0; j<minimalSemiflow.length && !isGreater; j++) {
+//                                if (minimalSemiflow[j] != 0) { // check only in the semiflow support
+//                                    isGreater = nrD[j] > minimalSemiflow[j];
+//                                }
+//                            }
+//                            if (!isGreater) {
+//                                exceedsMinimalSemiflow = false;
+////                                System.out.println("BOUND: "+rowToString(nrD, nrA)+
+////                                        " > "+rowToString(minimalSemiflow, null));
 //                            }
 //                        }
-                    }
+//                        if (exceedsMinimalSemiflow) {
+//                                System.out.println("BOUND: "+rowToString(nrD, nrA));
+//                        }
+//                    }
                     if (isDuplicated || exceedsMinimalSemiflow) {
                         dropped.add(new Tuple<>(r1, r2));
                         if (log) {
