@@ -21,7 +21,6 @@
             <TitledBorder justification="2" position="5" title="Basic"/>
           </Border>
         </Property>
-        <Property name="floatable" type="boolean" value="false"/>
         <Property name="rollover" type="boolean" value="true"/>
       </Properties>
 
@@ -46,7 +45,6 @@
             <TitledBorder justification="2" position="5" title="Advanced"/>
           </Border>
         </Property>
-        <Property name="floatable" type="boolean" value="false"/>
         <Property name="rollover" type="boolean" value="true"/>
       </Properties>
 

@@ -128,7 +128,7 @@ public class InvariantsCommand {
         
         for (int i=0; i<algo.numFlows(); i++) {
             System.out.print("FLOW "+(i+1)+": ");
-            System.out.println(algo.flowToString(i, netIndex, true, null, null, null));
+            System.out.println(algo.flowToString(i, netIndex, true, null, null, null, -1));
         }
         System.out.println();
     }

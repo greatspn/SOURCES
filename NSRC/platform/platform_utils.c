@@ -210,7 +210,7 @@ static const char* appimage_dir;
 // Is running from the portable app-image directory
 const char* get_appimage_dir() {
     if (test_appimage_dir) { // Not yet determined
-        appimage_dir = getenv("GREATSPN_APPIMAGE_DIR");
+        appimage_dir = getenv("");
         if (appimage_dir != NULL && strlen(appimage_dir)==0)
             appimage_dir = NULL;
         test_appimage_dir = 0;

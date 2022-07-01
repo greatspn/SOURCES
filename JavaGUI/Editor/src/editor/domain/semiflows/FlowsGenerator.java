@@ -840,7 +840,8 @@ public class FlowsGenerator extends StructuralAlgorithm {
     }
     
     public String flowToString(int i, NetIndex netIndex, boolean asInvariant, 
-            Color htmlForegroundColor, Color htmlBackgroundColor, Node selNode) 
+            Color htmlForegroundColor, Color htmlBackgroundColor, Node selNode,
+            int activeIndex) 
     {
         StringBuilder repr = new StringBuilder();
 
@@ -852,12 +853,22 @@ public class FlowsGenerator extends StructuralAlgorithm {
         int[] flow = getFlowVector(i);
         
         boolean selected = (selK == -1) || (flow[selK] != 0);
-
+        boolean active = (i == activeIndex);
+//        System.out.println("selected="+selected+" selK="+selK+" activeIndex="+activeIndex+
+//                " htmlForegroundColor="+htmlForegroundColor+
+//                " htmlBackgroundColor="+htmlBackgroundColor);
 
         boolean useHtml = (htmlForegroundColor != null);
         String negClrHex = null, eqClrHex = null, posClrHex = null;
         if (useHtml) {
-            Color posClr = selected ? htmlForegroundColor : Util.mix(htmlForegroundColor, htmlBackgroundColor, 0.5f);
+            Color posClr;
+            if (active)
+                posClr =  selected ? htmlBackgroundColor : 
+                          (Util.mix(htmlBackgroundColor, htmlForegroundColor, 0.5f));
+            else
+                posClr =  selected ? htmlForegroundColor : 
+                          (Util.mix(htmlForegroundColor, htmlBackgroundColor, 0.5f));
+                           
             Color negClr = Util.mix(posClr, Color.MAGENTA, 0.5f);
             Color eqClr = Util.mix(posClr, Color.CYAN, 0.5f);
             posClrHex = Util.clrToHex(posClr);

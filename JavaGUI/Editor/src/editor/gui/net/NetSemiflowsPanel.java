@@ -360,7 +360,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
                     model.addElement(algo.flowToString(i, netIndex, true, 
                             UIManager.getColor("List.foreground"), 
                             UIManager.getColor("List.background"),
-                            selectedNode));
+                            selectedNode, selIndex));
             }
         }
         jList_flows.setModel(model);
