@@ -127,6 +127,13 @@
 #endif
 
 
+#ifdef CGLPK
+    #ifndef __CGLPK_H__
+        #define __CGLPK_H__
+        #include "GLPKsolve.hpp"
+    #endif
+#endif
+
 namespace SDE
 {
 
@@ -386,7 +393,12 @@ namespace SDE
     class automaton automaton;
 #endif
 //automaton
-
+//fluxb
+/*#ifdef CGLPK
+    class FBGLPK::LPprob fluxb;
+#endif
+*/
+//fluxb    
   public:
     //! Empty Constructor
     SystEq(void){};

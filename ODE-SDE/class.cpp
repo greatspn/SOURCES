@@ -17,13 +17,9 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
- 
-#ifdef CGLPK
-    #ifndef __CGLPK_H__
-        #define __CGLPK_H__
-        #include "GLPKsolve.hpp"
-    #endif
-#endif
+
+
+
 #include "class.hpp"
 
 double epsilon=1e-20;
@@ -2422,7 +2418,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 		out<<endl;
 		}
 
-	while(tout<Max_Time){
+	while(tout<=Max_Time){
 		lsoda(*this,neq, y, &t, tout, itol, rtol, atol, itask, &istate, iopt, jt,
 				iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
 				rwork1, rwork5, rwork6, rwork7, 0);
@@ -2443,6 +2439,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 
 		}
 	}
+	/*
 	lsoda(*this,neq, y, &t, Max_Time, itol, rtol, atol, itask, &istate, iopt, jt,
 					iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
 					rwork1, rwork5, rwork6, rwork7, 0);
@@ -2461,17 +2458,11 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 		throw   Exception("*****Error during the integration step*****\n\n");
 
 	}
-
-	for (int i=0;i<nPlaces;i++)//store resul ode
+*/ 
+	cout<<"\nSolution at time "<<Max_Time<<":\n";
+	for (int i=0;i<nPlaces;i++)//store resul ode and print final time for each trace
 	{
 		FinalValueXRun[i][0]= y[i+1];
-	}
-
-
-	//Print final time for each trace
-	cout<<"\nSolution at time "<<tout<<":\n";
-	for (int i=0;i<nPlaces;i++)//save initial state
-	{
 		cout<<"\t"<<NamePlaces[i]<<": "<<y[i+1]<<"\n";
 	}
 	cout<<endl;
