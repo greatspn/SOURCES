@@ -12,7 +12,6 @@ import common.Util;
 import editor.domain.Edge;
 import editor.domain.Node;
 import editor.domain.SuperpositionTag;
-import editor.domain.ViewProfile;
 import editor.domain.elements.ColorClass;
 import editor.domain.elements.ColorVar;
 import editor.domain.elements.ConstantID;
@@ -817,8 +816,10 @@ public class Algebra2 {
                     newTransition.getWeight(), t2.getWeight(), "weights");
                 checkAttributeConflict(newTransition, t2, newTransition, 
                     newTransition.getNumServers(), t2.getNumServers(), "number of servers");
-                checkAttributeConflict(newTransition, t2, newTransition, 
-                    newTransition.getGuard(), t2.getGuard(), "guards");
+                
+                newTransition.getGuardEditable().setValue(null, null, mergeGuards(newTransition.getGuard(), t2.getGuard()));
+//                checkAttributeConflict(newTransition, t2, newTransition, 
+//                    newTransition.getGuard(), t2.getGuard(), "guards");
                 
                 newTransition.setNodePosition(newTransition.getX() + t2.getX(), 
                                               newTransition.getY() + t2.getY());
@@ -834,6 +835,14 @@ public class Algebra2 {
                 storeTransitionSource(newTransition, entry.x, origTrn);
             }
         }
+    }
+    
+    private String mergeGuards(String g1, String g2) {
+        if (g1.equals("True"))
+            return g2;
+        else if (g2.equals("True"))
+            return g1;
+        else return "("+g1+") && ("+g2+")";
     }
 
     //=========================================================================
