@@ -88,7 +88,9 @@ public abstract class ProjectPage implements Serializable, UuidObject, ResourceH
                                                     ProjectPage invokerPage);
         
     public final void preparePageCheck() {
-        assert chFlag == CheckingFlag.CHECKED;
+        if (chFlag != CheckingFlag.CHECKED) {
+            System.out.println("WARNING: checking flag should be CHECKED!");
+        }
         chFlag = CheckingFlag.NEED_RECHECK;
     }
     

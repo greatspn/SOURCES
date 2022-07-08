@@ -12,6 +12,7 @@ import common.Util;
 import editor.domain.Edge;
 import editor.domain.Node;
 import editor.domain.SuperpositionTag;
+import editor.domain.ViewProfile;
 import editor.domain.elements.ColorClass;
 import editor.domain.elements.ColorVar;
 import editor.domain.elements.ConstantID;
@@ -461,12 +462,12 @@ public class Algebra2 {
             case UNARY_CONJUGATED_MINIMAL:
                 { 
                     // Setup the synchronization problem.
-                    FlowsGenerator fg, fgM=null;
+                    FlowsGenerator fg;//, fgM=null;
                     {
                         int M=tagIds.size(), N=nodeIds.size();
                         fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
-                        if (policy == Policy.UNARY_CONJUGATED_ALL)
-                            fgM = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
+//                        if (policy == Policy.UNARY_CONJUGATED_ALL)
+//                            fgM = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
                     }
                     for (int nodeId=0; nodeId<nodeIds.size(); nodeId++) {
                         Node node = nodeIds.get(nodeId);
@@ -475,21 +476,21 @@ public class Algebra2 {
                                 int tagId = tagIds.get(node.getTag(t));
                                 int card = node.getTagCard(t);
                                 fg.addIncidence(nodeId, tagId, card);
-                                if (fgM != null)
-                                    fgM.addIncidence(nodeId, tagId, card);
+//                                if (fgM != null)
+//                                    fgM.addIncidence(nodeId, tagId, card);
                             }
                         }
                     }
                     StructuralAlgorithm.ProgressObserver obs = (int step, int total, int s, int t) -> { };
                     try {
-//                        if (policy == Policy.UNARY_CONJUGATED_MINIMAL)
-                        fg.compute(false, obs); // minimal semiflows 
-                        if (fgM != null) {
-                            fgM.computeAllCanonicalSemiflows(true, obs, fg.getAnnulers());
-                            fg = fgM;
-                        }   
-//                        else // all semiflows
-//                            fg.computeAllCanonicalSemiflows(true, obs);
+                        if (policy == Policy.UNARY_CONJUGATED_MINIMAL)
+                            fg.compute(false, obs); // minimal semiflows 
+//                        if (fgM != null) {
+//                            fgM.computeAllCanonicalSemiflows(true, obs, fg.getAnnulers());
+//                            fg = fgM;
+//                        }   
+                        else // all semiflows
+                            fg.computeAllCanonicalSemiflows(true, obs);
                     }
                     catch (InterruptedException e) { throw new IllegalStateException("Should not happen."); }
 
