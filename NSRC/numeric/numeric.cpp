@@ -165,16 +165,21 @@ ch_compute_alpha_factors_dbl(const char* fg_expr, const double q, const double a
 	if (computed_factors_mem.count(f_key) == 0) {
 		// const size_t MAX_BUF = 2048;
 		// char line[MAX_BUF];
-		ostringstream cmdname;
-		const char *appimg_dir = get_appimage_dir();
-		if (appimg_dir != nullptr) {
-			cmdname << appimg_dir << PATH_SEPARATOR_CH << "bin" << PATH_SEPARATOR_CH << "alphaFactory" << EXE_SUFFIX;
-		}
-		else {
-			cmdname << "/usr/local/GreatSPN/bin/alphaFactory";
+		char cmdname[FILENAME_MAX];
+		if (0 != search_greatspn_app(cmdname, "alphaFactory" EXE_SUFFIX)) {
+			throw program_exception("alphaFactory cannot be found on the GreatSPN search path.");
 		}
 
-		char tmpfname[1024];
+		// ostringstream cmdname;
+		// const char *appimg_dir = get_appimage_dir();
+		// if (appimg_dir != nullptr) {
+		// 	cmdname << appimg_dir << PATH_SEPARATOR_CH << "bin" << PATH_SEPARATOR_CH << "alphaFactory" << EXE_SUFFIX;
+		// }
+		// else {
+		// 	cmdname << "/usr/local/GreatSPN/bin/alphaFactory";
+		// }
+
+		char tmpfname[FILENAME_MAX];
 		portable_mkstemp(tmpfname, "af_XXXXXXXX");
 		// std::string tmpfname;
 		// const char *tmpdir_env = getenv("GREATSPN_TEMP_DIR");
@@ -198,7 +203,7 @@ ch_compute_alpha_factors_dbl(const char* fg_expr, const double q, const double a
 			 << "  acc=" << accuracy << " tmpfname=" << tmpfname << endl;
 
 		// Call alphaFactory
-		std::string cmdname_s = cmdname.str();
+		std::string cmdname_s = cmdname;
 		std::string q_s = to_string_with_precision(q, 15);
 		std::string acc_s = to_string_with_precision(accuracy, 15);
 	    const char* const args[] = { cmdname_s.c_str(), fg_expr, q_s.c_str(), acc_s.c_str(), tmpfname, nullptr };

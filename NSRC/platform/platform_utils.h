@@ -42,8 +42,12 @@ int invoked_from_gui();
 // returns the directory name, otherwise returns NULL
 const char* get_appimage_dir();
 
+// search for the path where the GreatSPN subcommand @bin can be found
+// returns 0 if the binary is found
+int search_greatspn_app(char cmdname[FILENAME_MAX], const char *bin);
+
 // generate a temporary filename, using either the default or the extra TEMP dir
-int portable_mkstemp(char buffer[1024], const char* pattern);
+int portable_mkstemp(char buffer[FILENAME_MAX], const char* pattern);
 
 //=============================================================================
 
