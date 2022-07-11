@@ -223,9 +223,23 @@ const char* get_appimage_dir() {
 
 //=============================================================================
 
+// remove the final PATH_SEPARATOR form a path, if any
+static void path_remove_final_sep(char *path) {
+    if (path == NULL || path[0] == '\0')
+        return;
+    int len = strlen(path);
+    // printf("path: %s\n", path);
+    if (path[len - 1] == PATH_SEPARATOR_CH)
+        path[len - 1] = '\0';
+    // printf("path: %s\n", path);
+}
+
+//=============================================================================
+
 // search for the path where the GreatSPN subcommand @bin can be found
 // returns 0 if the binary is found
 int search_greatspn_app(char cmdname[FILENAME_MAX], const char *bin) {
+    char tempdir[FILENAME_MAX];
 	const char *appimg_dir = get_appimage_dir(), *prefix;
 	struct stat st;
 	int ii=0;
@@ -235,8 +249,10 @@ int search_greatspn_app(char cmdname[FILENAME_MAX], const char *bin) {
 			case 0:
 				if (appimg_dir != NULL) {
 					// When the application runs inside the appimage, test the appimage path first
+                    strncpy(tempdir, appimg_dir, FILENAME_MAX);
+                    path_remove_final_sep(tempdir);
 					snprintf(cmdname, FILENAME_MAX,
-							 "%s" PATH_SEPARATOR "bin" PATH_SEPARATOR "%s", appimg_dir, bin);
+							 "%s" PATH_SEPARATOR "bin" PATH_SEPARATOR "%s", tempdir, bin);
 					has_path = 1;
 				}
 				break;
@@ -256,8 +272,10 @@ int search_greatspn_app(char cmdname[FILENAME_MAX], const char *bin) {
 			case 3: // Using the GREATSPN_INSTALLDIR environment variable
 				prefix = getenv("GREATSPN_INSTALLDIR");
 				if (prefix != NULL) {
+                    strncpy(tempdir, prefix, FILENAME_MAX);
+                    path_remove_final_sep(tempdir);
 					snprintf(cmdname, FILENAME_MAX,
-							 "%s" PATH_SEPARATOR "bin" PATH_SEPARATOR "%s", prefix, bin);
+							 "%s" PATH_SEPARATOR "bin" PATH_SEPARATOR "%s", tempdir, bin);
 					has_path = 1;
 				}
 				break;
@@ -265,20 +283,22 @@ int search_greatspn_app(char cmdname[FILENAME_MAX], const char *bin) {
 			case 4: // Using the GREATSPN_BINDIR environment variable
 				prefix = getenv("GREATSPN_BINDIR");
 				if (prefix != NULL) {
+                    strncpy(tempdir, prefix, FILENAME_MAX);
+                    path_remove_final_sep(tempdir);
 					snprintf(cmdname, FILENAME_MAX,
-							 "%s" PATH_SEPARATOR "%s", prefix, bin);
+							 "%s" PATH_SEPARATOR "%s", tempdir, bin);
 					has_path = 1;
 				}
 				break;
 
-			case 5: // Global Unix path
+			case 5: // Standard global Unix path
 				snprintf(cmdname, FILENAME_MAX,
 						 "/usr/local/GreatSPN/bin/%s", bin);
 				has_path = 1;
 				break;
 
 #ifdef __CYGWIN__
-			case 6: // Global Windows/Cygwin path
+			case 6: // Standard global Windows/Cygwin path
 				snprintf(cmdname, FILENAME_MAX,
 						 "C:\\Program Files\\GreatSPN\\app\\portable_greatspn\\bin\\%s", bin);
 				has_path = 1;
@@ -333,6 +353,7 @@ int portable_mkstemp(char buffer[FILENAME_MAX], const char* pattern) {
         }
 
         if (has_tempdir) {
+            path_remove_final_sep(tempdir);
             int ret = stat(tempdir, &st);
             //printf("TMPTEST: %s   STAT=%d\n", tempdir, ret);
 			if (0 == ret && S_ISDIR(st.st_mode)) {
@@ -344,16 +365,14 @@ int portable_mkstemp(char buffer[FILENAME_MAX], const char* pattern) {
 
         ii++;
     }
-
-
-    const char *tmpdir_env = getenv("GREATSPN_TEMP_DIR");
-    if (tmpdir_env != NULL) {
-        snprintf(buffer, FILENAME_MAX, "%s%s", tmpdir_env, pattern);
-    }
-    else {
-        snprintf(buffer, FILENAME_MAX, "/tmp/%s", pattern); // assume the default Unix /tmp folder
-    }
-    return mkstemp(buffer);
+    // const char *tmpdir_env = getenv("GREATSPN_TEMP_DIR");
+    // if (tmpdir_env != NULL) {
+    //     snprintf(buffer, FILENAME_MAX, "%s%s", tmpdir_env, pattern);
+    // }
+    // else {
+    //     snprintf(buffer, FILENAME_MAX, "/tmp/%s", pattern); // assume the default Unix /tmp folder
+    // }
+    // return mkstemp(buffer);
 }
 
 //=============================================================================
