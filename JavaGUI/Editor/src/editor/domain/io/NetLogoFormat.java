@@ -779,13 +779,14 @@ public class NetLogoFormat {
                         guard = "place = "+agent.inEdge.getConnectedPlace().getUniqueName() 
                                 + (guard.isEmpty() ? "" : " AND (" + guard + ")");
 
-                    indent(pw, ind); 
-                    pw.println("let _AA"+agentNum+" "+agent.agentClass.getUniqueName()+" with ["+guard+"]"); 
-                    indent(pw, ind); pw.println("if any? _AA"+agentNum+" ["); ind++;
-
-                    // ask the selected agent
-                    indent(pw, ind);  pw.println("ask _AA"+agentNum+" ["); ind++;
-                    indent(pw, ind);  pw.println("if NOT bindingSelected ["); ind++;
+                    if (agentNum > 1) {
+                        indent(pw, ind); 
+                        pw.println("let _AA"+agentNum+" "+agent.agentClass.getUniqueName()+" with ["+guard+"]"); 
+                        indent(pw, ind); pw.println("if any? _AA"+agentNum+" ["); ind++;
+                        // ask the selected agent
+                        indent(pw, ind);  pw.println("ask _AA"+agentNum+" ["); ind++;
+                        indent(pw, ind);  pw.println("if NOT bindingSelected ["); ind++;
+                    }
                     // name self
                     indent(pw, ind); 
                     pw.println("let "+agent.agentName+" ["+whoOfSelf+"] of self");
