@@ -93,18 +93,6 @@ namespace FBGLPK{
         public:
         //! Empty Constructor.
         LPprob(){};
-        //! Copy Constructor
-        LPprob(const LPprob& t){
-        lp=t.lp;
-        ia=t.ia;
-        ja=t.ja;
-        ar=t.ar;
-        Value=t.Value;
-        sizeCol=t.sizeCol;
-        sizeVet=t.sizeVet;
-        sizeRow=t.sizeRow;
-        solved=t.solved;
-        };
         //! Constructor by file. It takes as input a file describing the LP problem
         LPprob( const char * FileProb);
         //! Constructor by file. It takes as input a file describing the LP problem

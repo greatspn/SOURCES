@@ -673,7 +673,11 @@ void build_ODECompact(ofstream &out, std::string path, std::string net)
 
 
     map <std::string,bool> mapOfFunctions;
-    out<<" map <std::string,double (*)(double *Value, map <string,int>& NumTrans, map <string,int>& NumPlaces, const vector <string>& NameTrans, const struct InfTr* Trans,  const int Tran, const double& Time)> mapOfFunctions;\n";
+    if (!FLUXB)
+        out<<" map <std::string,double (*)(double *Value, map <string,int>& NumTrans, map <string,int>& NumPlaces, const vector <string>& NameTrans, const struct InfTr* Trans,  const int Tran, const double& Time)> mapOfFunctions;\n";
+    else
+        out<<" map <std::string,double (*)(double *Value,  vector<class FBGLPK::LPprob>& vec_fluxb, map <string,int>& NumTrans, map <string,int>& NumPlaces, const vector <string>& NameTrans, const struct InfTr* Trans,  const int Tran, const double& Time)> mapOfFunctions;\n";
+    
     out<<" mapOfFunctions[std::string(\"nullptr\")]= nullptr;\n";
 
     for (int tt = 0; tt < ntr; tt++)
@@ -701,7 +705,8 @@ void build_ODECompact(ofstream &out, std::string path, std::string net)
                             GenFun=stoken;
                             FuncT=std::string(stoken);
                             if (mapOfFunctions.find(FuncT)==mapOfFunctions.end()){
-                                out<<"mapOfFunctions[FuncT]=std::string(&)+std::string(stoken);\n";
+                                //out<<"mapOfFunctions[FuncT]=std::string(&)+std::string(stoken);\n";
+                                out<<"mapOfFunctions[\""+FuncT+"\"]=&"+stoken+";\n";
                                 mapOfFunctions[FuncT]=true;
                             }
                          }
@@ -887,10 +892,10 @@ void build_ODECompact(ofstream &out, std::string path, std::string net)
     //automaton
 
    //flux balance
-   if (FLUXB){
+    if (FLUXB){
         out << "\n cout<<\"\\n\\nREADING FLUX BALANCE PROBLEMS...\"<<endl;\n";
         for (unsigned int i=0; i<flux_names.size(); ++i){
-            out << " se.initialize_fluxbalance("+flux_names[i]+");\n";
+            out << " se.initialize_fluxbalance(string(\""+flux_names[i]+"\"));\n";
         }
         out << " cout<<\"\\n\\nDONE.\"<<endl;\n";
     }
