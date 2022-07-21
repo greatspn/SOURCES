@@ -26,6 +26,7 @@
 
 namespace FBGLPK{
 
+
 LPprob::LPprob( const char* fileProb){
 
     try{
@@ -134,6 +135,7 @@ LPprob::LPprob( const char* fileProb){
         if (i!=sizeVet)
             throw Exception("Error wrong number of column bounds");
         glp_load_matrix(lp, sizeVet, ia, ja, ar);
+        filename=string(fileProb);
     }
 	catch (exception& e){
         cout << "Exception: " << e.what() << endl;
@@ -249,7 +251,8 @@ void LPprob::updateLP( const char* fileProb){
         }
         if (i!=sizeVet)
             throw Exception("Error wrong number of column bounds");
-        glp_load_matrix(lp, sizeVet, ia, ja, ar);      
+        glp_load_matrix(lp, sizeVet, ia, ja, ar); 
+        filename=string(fileProb);     
     }
     catch (exception& e){
         cout << "Exception: " << e.what() << endl;

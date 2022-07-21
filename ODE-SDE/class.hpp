@@ -452,7 +452,9 @@ namespace SDE
 #ifdef CGLPK
       void initialize_fluxbalance(std::string flux_name){
       FBGLPK::LPprob l;
+      cout<<"ffff"<<flux_name<<endl;
       vec_fluxb.push_back(l);
+      cout<<"ffffx"<<flux_name<<endl;
       vec_fluxb[vec_fluxb.size()-1].updateLP(flux_name.c_str()); 
       }
 #endif       

@@ -66,7 +66,7 @@ namespace FBGLPK{
         //@}
     };
 
-
+ 
   //!Class LPprob
   /*!
    * This class implement LP problem exploiting GLPK
@@ -89,10 +89,17 @@ namespace FBGLPK{
          unsigned int sizeVet {0};
          //!It is true when the LP problem is solved
          bool solved {false};
-
-        public:
+         //!It is the file name storing the Flux Balance problem 
+         string filename {""};
+        public:     
         //! Empty Constructor.
         LPprob(){};
+           //! Empty Constructor.
+        LPprob(const LPprob& t){
+            if (t.filename!=""){
+                this->updateLP(t.filename.c_str());
+            }
+        };
         //! Constructor by file. It takes as input a file describing the LP problem
         LPprob( const char * FileProb);
         //! Constructor by file. It takes as input a file describing the LP problem
@@ -159,12 +166,14 @@ namespace FBGLPK{
         
         //! Deconstruct
         ~LPprob() {
+            //--count;
             if (sizeVet){
             free(ia);
             free(ja);
             free(ar);
             glp_delete_prob(lp);
-            glp_free_env();
+            //if (count==0)
+            //    glp_free_env();
             };
         };
         private:
@@ -180,5 +189,4 @@ namespace FBGLPK{
             return type;
         }
     };
-
 }
