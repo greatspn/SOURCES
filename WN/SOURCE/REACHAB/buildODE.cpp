@@ -90,7 +90,8 @@ extern "C" {
 
     extern bool MASSACTION;
     extern bool AUTOMATON;
-
+    extern bool FLUXB;
+    extern std::vector<std::string> flux_names;
     int exceeded_markings_bound()
     {
         return FALSE;
@@ -373,7 +374,10 @@ void build_ODECompact(ofstream &out, std::string path, std::string net)
             //vector<std::string>token;
             while (stoken!=NULL){
                 if ((strcmp(stoken,"Discrete")!=0 || strcmp(stoken,"discrete")!=0 || strcmp(stoken,"D")!=0)&& (!isdigit(stoken[0]))&& (function_names.find(stoken)==function_names.end())){
-                   hout<<"double "<<stoken<<"(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n";
+                   if (!FLUXB)
+                        hout<<"double "<<stoken<<"(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n";
+                   else
+                        hout<<"double "<<stoken<<"(double *Value, vector<class FBGLPK::LPprob>& vec_fluxb, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n";
                    function_names.insert(stoken);
                 }
                 stoken=strtok(NULL,delims);
@@ -881,6 +885,17 @@ void build_ODECompact(ofstream &out, std::string path, std::string net)
         out << " cout<<\"\\n\\nDONE.\"<<endl;\n";
     }
     //automaton
+
+   //flux balance
+   if (FLUXB){
+        out << "\n cout<<\"\\n\\nREADING FLUX BALANCE PROBLEMS...\"<<endl;\n";
+        for (unsigned int i=0; i<flux_names.size(); ++i){
+            out << " se.initialize_fluxbalance("+flux_names[i]+");\n";
+        }
+        out << " cout<<\"\\n\\nDONE.\"<<endl;\n";
+    }
+    //flux balance
+
     out << "\n\ntry\t{";
     out << "\n\tif (SOLVE==-1) \{\n\t\t cerr<< \"\\n\\nError: solution methods is not implemented\\nYou should use:  ODE-E or ODE-RKF or ODE45 or LSODA or SDE or HODE or HSDE or TAUG or SSA or STEP\\n\"; \n\t\t exit(EXIT_FAILURE);\n\t}\n\n ";
 
@@ -1000,7 +1015,10 @@ void build_ODE(ofstream &out, std::string path, std::string net)
             //vector<std::string>token;
             while (stoken!=NULL){
                 if ((strcmp(stoken,"Discrete")!=0 || strcmp(stoken,"discrete")!=0 || strcmp(stoken,"D")!=0)&& (!isdigit(stoken[0]))&& (function_names.find(stoken)==function_names.end())){
-                   hout<<"double "<<stoken<<"(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n";
+                   if (!FLUXB)
+                        hout<<"double "<<stoken<<"(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n";
+                   else
+                        hout<<"double "<<stoken<<"(double *Value,vector<class FBGLPK::LPprob>& vec_fluxb,  map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n";
                    function_names.insert(stoken);
                 }
                 stoken=strtok(NULL,delims);
@@ -1409,6 +1427,19 @@ void build_ODE(ofstream &out, std::string path, std::string net)
         out << " cout<<\"\\n\\nDONE.\"<<endl;\n";
     }
     //automaton
+
+   //flux balance
+   if (FLUXB){
+        out << "\n cout<<\"\\n\\nREADING FLUX BALANCE PROBLEMS...\"<<endl;\n";
+        for (unsigned int i=0; i<flux_names.size(); ++i){
+            out << " se.initialize_fluxbalance(string(\""+flux_names[i]+"\"));\n";
+        }
+        out << " cout<<\"\\n\\nDONE.\"<<endl;\n";
+    }
+    //flux balance
+
+
+
     out << "\n\ntry\t{";
     out << "\n\tif (SOLVE==-1) \{\n\t\t cerr<< \"\\n\\nError: solution methods is not implemented\\nYou should use:  ODE-E or ODE-RKF or ODE45 or LSODA or SDE or HODE or HSDE or TAUG or SSA or STEP\\n\"; \n\t\t exit(EXIT_FAILURE);\n\t}\n\n ";
 

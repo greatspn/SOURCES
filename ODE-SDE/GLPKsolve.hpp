@@ -93,8 +93,22 @@ namespace FBGLPK{
         public:
         //! Empty Constructor.
         LPprob(){};
+        //! Copy Constructor
+        LPprob(const LPprob& t){
+        lp=t.lp;
+        ia=t.ia;
+        ja=t.ja;
+        ar=t.ar;
+        Value=t.Value;
+        sizeCol=t.sizeCol;
+        sizeVet=t.sizeVet;
+        sizeRow=t.sizeRow;
+        solved=t.solved;
+        };
         //! Constructor by file. It takes as input a file describing the LP problem
         LPprob( const char * FileProb);
+        //! Constructor by file. It takes as input a file describing the LP problem
+        void updateLP( const char * FileProb);
         //! Solve the LP problem
         void solve(){
             cout<<"\n\n-------------------------------------------------------"<<endl;
@@ -135,6 +149,21 @@ namespace FBGLPK{
             }
         };
         
+
+        void printValue(ofstream& out){
+            getVariables();
+            for (unsigned int i=1;i<=sizeCol;++i){
+                out<<" "<<Value[i];
+            }
+        };
+
+        void printFluxName(ofstream& out){
+            getVariables();
+            for (unsigned int i=1;i<=sizeCol;++i){
+                out<<" flux"<<i;
+            }
+        };
+
         void update_bound(int indexR, string TypeBound, double Lb, double Ub){
             glp_set_col_bnds(lp, indexR, setTypeBound(TypeBound) , Lb, Ub);
             cout<<"Bounds of "<< indexR <<" is updated as: ["<<Lb<<";"<<Ub<<"]"<<endl;
