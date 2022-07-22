@@ -32,7 +32,7 @@ LPprob::LPprob( const char* fileProb){
     try{
         ifstream in(fileProb, std::ifstream::in);
         if (!in){
-            throw Exception(string("Error opening input file:")+fileProb);
+            throw Exception(string("FLUX BALANCE: error opening input file:")+fileProb);
         }
 
         lp = glp_create_prob();
@@ -42,18 +42,31 @@ LPprob::LPprob( const char* fileProb){
         class general::Parser parser;
         char delimC[] = "\t, ;\"";
         string buffer("");
+        //reading flux names
+        getline(in,buffer);
+        parser.update(delimC,buffer);
+        for (unsigned int i=0;i<parser.size();++i){
+             ReactionsNamesId.insert({{ parser.get(i),i}});
+              ReactionsNamesOrd.push_back(parser.get(i));
+        }
+        //reading flux names
 
         getline(in,buffer);
         parser.update(delimC,buffer);
         if (parser.size()!=3){
-                throw Exception("Error first line: model dimension and type");
+                throw Exception("FLUX BALANCE: error second line: model dimension and type");
             }
-            
+
+
         sizeRow=atoi(parser.get(0).c_str());
         sizeCol=atoi(parser.get(1).c_str());        
         sizeVet= sizeCol*sizeRow;
         int typeOBJ=setTypeObj(parser.get(2));
 
+         if (ReactionsNamesId.size()!=sizeCol){
+             
+             throw Exception("FLUX BALANCE: error first line: the number of reaction names is different by the number of columns in Flux Balance problem");
+        }
 
         // allocate memory for ia, ja, ar,
         ia=(int*)malloc(sizeof(int)*(sizeVet+1));
@@ -76,7 +89,7 @@ LPprob::LPprob( const char* fileProb){
         parser.update(delimC,buffer);
 
         if (parser.size()!=sizeCol){
-              throw Exception("Error wrong number of objective coefficients");
+              throw Exception("FLUX BALANCE: error wrong number of objective coefficients");
         }
         //set obj coefficients
         for (unsigned int i=0;i<parser.size();++i){
@@ -98,31 +111,31 @@ LPprob::LPprob( const char* fileProb){
             getline(in,buffer);
             parser.update(delimC,buffer);
             if (parser.size()!=3){
-                throw Exception("Error wrong row bound format: [GLP_FR,GLP_LO,GLP_UP,GLP_DB,GLP_F] double double");
+                throw Exception("FLUX BALANCE: error wrong row bound format: [GLP_FR,GLP_LO,GLP_UP,GLP_DB,GLP_F] double double");
             }
            glp_set_row_bnds(lp,i+1, setTypeBound(parser.get(0)) , atof(parser.get(1).c_str()), atof(parser.get(2).c_str()));
         }
         if (i!=sizeRow)
-            throw Exception("Error wrong number of row bounds");
+            throw Exception("FLUX BALANCE: error wrong number of row bounds");
 
         //set colomn bound: the bounds of the lb<x<ub
         for (i=0;i<sizeCol&&!in.eof();++i){
             getline(in,buffer);
             parser.update(delimC,buffer);
             if (parser.size()!=3){
-                throw Exception("Error wrong column bound format: [GLP_FR,GLP_LO,GLP_UP,GLP_DB,GLP_F] double double");
+                throw Exception("FLUX BALANCE: error wrong column bound format: [GLP_FR,GLP_LO,GLP_UP,GLP_DB,GLP_F] double double");
             }
            glp_set_col_bnds(lp,i+1, setTypeBound(parser.get(0)) , atof(parser.get(1).c_str()), atof(parser.get(2).c_str()));
         }
         if (i!=sizeCol)
-            throw Exception("Error wrong number of column bounds");
+            throw Exception("FLUX BALANCE: error wrong number of column bounds");
 
         //set ia ja ar
           for (i=0;i<sizeVet&&!in.eof();++i){
             getline(in,buffer);
             parser.update(delimC,buffer);
             if (parser.size()!=3){
-                throw Exception("Error wrong column bound format: int int double");
+                throw Exception("FLUX BALANCE: error wrong column bound format: int int double");
             }
             ia[i+1]=atoi(parser.get(0).c_str());
             ja[i+1]=atoi(parser.get(1).c_str());
@@ -133,13 +146,17 @@ LPprob::LPprob( const char* fileProb){
             //cout << "ar[" << i+1 << "]=" << ar[i+1] << endl;
         }
         if (i!=sizeVet)
-            throw Exception("Error wrong number of column bounds");
+            throw Exception("FLUX BALANCE: error wrong number of column bounds");
         glp_load_matrix(lp, sizeVet, ia, ja, ar);
         filename=string(fileProb);
     }
-	catch (exception& e){
+    catch (exception& e){
         cout << "Exception: " << e.what() << endl;
-        return;
+        exit(EXIT_FAILURE);
+    }
+    catch (Exception& e){
+        cout << "Exception: " << e.what() << endl;
+        exit(EXIT_FAILURE);
     }
 
 }
@@ -149,7 +166,7 @@ void LPprob::updateLP( const char* fileProb){
     try{
         ifstream in(fileProb, std::ifstream::in);
         if (!in){
-            throw Exception(string("Error opening input file:")+fileProb);
+            throw Exception(string("FLUX BALANCE: error opening input file:")+fileProb);
         }
 
         lp = glp_create_prob();
@@ -159,17 +176,30 @@ void LPprob::updateLP( const char* fileProb){
         class general::Parser parser;
         char delimC[] = "\t, ;\"";
         string buffer("");
+        
+        //reading flux names
+        getline(in,buffer);
+        parser.update(delimC,buffer);
+        for (unsigned int i=0;i<parser.size();++i){
+            ReactionsNamesId.insert({{ parser.get(i),i }});
+            ReactionsNamesOrd.push_back(parser.get(i));
+        }
+        //reading flux names
 
         getline(in,buffer);
         parser.update(delimC,buffer);
         if (parser.size()!=3){
-                throw Exception("Error first line: model dimension and type");
+                throw Exception("FLUX BALANCE: error first line: model dimension and type");
             }
-            
+    
         sizeRow=atoi(parser.get(0).c_str());
         sizeCol=atoi(parser.get(1).c_str());        
         sizeVet= sizeCol*sizeRow;
         int typeOBJ=setTypeObj(parser.get(2));
+
+        if (ReactionsNamesId.size()!=sizeCol){
+             throw Exception("FLUX BALANCE: error first line: the number of reaction names is different by the number of columns in Flux Balance problem");
+        }
 
 
         // allocate memory for ia, ja, ar,
@@ -193,7 +223,7 @@ void LPprob::updateLP( const char* fileProb){
         parser.update(delimC,buffer);
 
         if (parser.size()!=sizeCol){
-              throw Exception("Error wrong number of objective coefficients");
+              throw Exception("FLUX BALANCE: error wrong number of objective coefficients");
         }
         //set obj coefficients
         for (unsigned int i=0;i<parser.size();++i){
@@ -215,31 +245,31 @@ void LPprob::updateLP( const char* fileProb){
             getline(in,buffer);
             parser.update(delimC,buffer);
             if (parser.size()!=3){
-                throw Exception("Error wrong row bound format: [GLP_FR,GLP_LO,GLP_UP,GLP_DB,GLP_F] double double");
+                throw Exception("FLUX BALANCE: error wrong row bound format: [GLP_FR,GLP_LO,GLP_UP,GLP_DB,GLP_F] double double");
             }
            glp_set_row_bnds(lp,i+1, setTypeBound(parser.get(0)) , atof(parser.get(1).c_str()), atof(parser.get(2).c_str()));
         }
         if (i!=sizeRow)
-            throw Exception("Error wrong number of row bounds");
+            throw Exception("FLUX BALANCE: error wrong number of row bounds");
 
         //set colomn bound: the bounds of the lb<x<ub
         for (i=0;i<sizeCol&&!in.eof();++i){
             getline(in,buffer);
             parser.update(delimC,buffer);
             if (parser.size()!=3){
-                throw Exception("Error wrong column bound format: [GLP_FR,GLP_LO,GLP_UP,GLP_DB,GLP_F] double double");
+                throw Exception("FLUX BALANCE: error wrong column bound format: [GLP_FR,GLP_LO,GLP_UP,GLP_DB,GLP_F] double double");
             }
            glp_set_col_bnds(lp,i+1, setTypeBound(parser.get(0)) , atof(parser.get(1).c_str()), atof(parser.get(2).c_str()));
         }
         if (i!=sizeCol)
-            throw Exception("Error wrong number of column bounds");
+            throw Exception("FLUX BALANCE: error wrong number of column bounds");
 
         //set ia ja ar
           for (i=0;i<sizeVet&&!in.eof();++i){
             getline(in,buffer);
             parser.update(delimC,buffer);
             if (parser.size()!=3){
-                throw Exception("Error wrong column bound format: int int double");
+                throw Exception("FLUX BALANCE: error wrong column bound format: int int double");
             }
             ia[i+1]=atoi(parser.get(0).c_str());
             ja[i+1]=atoi(parser.get(1).c_str());
@@ -250,15 +280,18 @@ void LPprob::updateLP( const char* fileProb){
             //cout << "ar[" << i+1 << "]=" << ar[i+1] << endl;
         }
         if (i!=sizeVet)
-            throw Exception("Error wrong number of column bounds");
+            throw Exception("FLUX BALANCE: error wrong number of column bounds");
         glp_load_matrix(lp, sizeVet, ia, ja, ar); 
         filename=string(fileProb);     
     }
     catch (exception& e){
         cout << "Exception: " << e.what() << endl;
-        return;
+        exit(EXIT_FAILURE);
     }
-
+    catch (Exception& e){
+        cout << "Exception: " << e.what() << endl;
+        exit(EXIT_FAILURE);
+    }
 }
 
 

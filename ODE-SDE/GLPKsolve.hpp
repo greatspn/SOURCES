@@ -37,6 +37,11 @@
 	#include <fstream>
 #endif
 
+#ifndef __UNORDERED_MAP__
+    #define __UNORDERED_MAP__
+    #include <unordered_map>
+#endif
+
 #ifndef __GLPK__
     #define __GLPK__
     #include <glpk.h>
@@ -62,7 +67,7 @@ namespace FBGLPK{
         //! \name Get of methods use to access at the data structures
         //@{
         //!It returns message
-        std::string get(void) {return mess;};
+        std::string what(void) {return mess;};
         //@}
     };
 
@@ -91,6 +96,10 @@ namespace FBGLPK{
          bool solved {false};
          //!It is the file name storing the Flux Balance problem 
          string filename {""};
+         //!It stores the flux names and their numeric id
+         unordered_map <string, unsigned int> ReactionsNamesId;
+         //!It stores the flux names  ordered as stored in the file
+         vector <string> ReactionsNamesOrd;
         public:     
         //! Empty Constructor.
         LPprob(){};
@@ -124,45 +133,56 @@ namespace FBGLPK{
             }
             return Value;
         };
-        //! Return lw/up bounds values
+        //! Return lower bound value
         double getLwBounds(int indexR){
 	    double LB = glp_get_col_lb(lp, indexR);
             return LB;
         };
-
+        //! Return uppper bound value
         double getUpBounds(int indexR){
 	    double UB = glp_get_col_ub(lp, indexR);
             return UB;
         };
-
+        //! Print the last GLPK solution
         void print(){
             if (!solved) solve();
             cout<<"Obj value:"<< getOBJ()<<endl<<endl;
             getVariables();
-            for (unsigned int i=1;i<=sizeCol;++i){
-                cout<<"X"<<i<<":"<<Value[i]<<endl;
+            auto it=ReactionsNamesOrd.begin();
+            for (unsigned int i=1;i<=sizeCol;++i,++it){
+                cout<<*it<<":"<<Value[i]<<endl;
+
             }
         };
         
-
+        //! Print the flux values
         void printValue(ofstream& out){
             getVariables();
             for (unsigned int i=1;i<=sizeCol;++i){
                 out<<" "<<Value[i];
             }
         };
-
+        //! Print the flux names
         void printFluxName(ofstream& out){
-            getVariables();
-            for (unsigned int i=1;i<=sizeCol;++i){
-                out<<" flux"<<i;
+            for (auto it=ReactionsNamesOrd.begin();it!=ReactionsNamesOrd.end();++it){
+                out<<" "<<*it;
             }
         };
 
+        //!Update the bound values of a specified flux
         void update_bound(int indexR, string TypeBound, double Lb, double Ub){
             glp_set_col_bnds(lp, indexR, setTypeBound(TypeBound) , Lb, Ub);
             cout<<"Bounds of "<< indexR <<" is updated as: ["<<Lb<<";"<<Ub<<"]"<<endl;
         };
+        //! Return the numeric id of a flux. If the name is not present return -1
+        int fromNametoid(const string& name){
+            auto it=ReactionsNamesId.find(name);
+            if (it!=ReactionsNamesId.end())
+                return it->second;
+            else
+                return -1;
+
+        }
         
         //! Deconstruct
         ~LPprob() {
