@@ -2442,10 +2442,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 
 	if (Info){
 #ifdef CGLPK
-		cout<<"SONO QUI!!!\n";
-		time=0.0;
 		getValTranFire(y+1);
-		cout<<"SONO QUI!!!\n";
       	for (unsigned int i=0;i<vec_fluxb.size();++i){
 			vec_fluxb[i].printValue(out);
 		}	
@@ -3054,6 +3051,7 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 		}
 		if(Info){
 #ifdef CGLPK
+		getValTranFire(Value);	
       	for (unsigned int i=0;i<vec_fluxb.size();++i){
 			vec_fluxb[i].printValue(out);
 		}	
@@ -3206,6 +3204,7 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 		}
 		if(Info){
 #ifdef CGLPK
+			getValTranFire();
       		for (unsigned int i=0;i<vec_fluxb.size();++i){
 				vec_fluxb[i].printValue(out);
 			}	

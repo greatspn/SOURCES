@@ -1,5 +1,5 @@
 
-OPTION = -g -std=c++11 -lm
+OPTION = -O3 -std=c++11 -lm
 OPTIONW = -Wall
 OPTIONGLPK=  -lglpk
 
