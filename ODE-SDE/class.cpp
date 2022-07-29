@@ -2442,13 +2442,16 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 
 	if (Info){
 #ifdef CGLPK
+		cout<<"SONO QUI!!!\n";
+		time=0.0;
+		getValTranFire(y+1);
+		cout<<"SONO QUI!!!\n";
       	for (unsigned int i=0;i<vec_fluxb.size();++i){
 			vec_fluxb[i].printValue(out);
 		}	
 #endif
 		out<<endl;
 		}
-
 	while(tout<=Max_Time){
 		lsoda(*this,neq, y, &t, tout, itol, rtol, atol, itask, &istate, iopt, jt,
 				iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,

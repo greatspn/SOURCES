@@ -46,7 +46,7 @@ LPprob::LPprob( const char* fileProb){
         getline(in,buffer);
         parser.update(delimC,buffer);
         for (unsigned int i=0;i<parser.size();++i){
-             ReactionsNamesId.insert({{ parser.get(i),i}});
+             ReactionsNamesId.insert({{ parser.get(i),i+1}});
               ReactionsNamesOrd.push_back(parser.get(i));
         }
         //reading flux names
@@ -116,7 +116,7 @@ LPprob::LPprob( const char* fileProb){
            glp_set_row_bnds(lp,i+1, setTypeBound(parser.get(0)) , atof(parser.get(1).c_str()), atof(parser.get(2).c_str()));
         }
         if (i!=sizeRow)
-            throw Exception("FLUX BALANCE: error wrong number of row bounds");
+            throw Exception("FLUX BALANCE: error less number of row bounds");
 
         //set colomn bound: the bounds of the lb<x<ub
         for (i=0;i<sizeCol&&!in.eof();++i){
@@ -128,7 +128,7 @@ LPprob::LPprob( const char* fileProb){
            glp_set_col_bnds(lp,i+1, setTypeBound(parser.get(0)) , atof(parser.get(1).c_str()), atof(parser.get(2).c_str()));
         }
         if (i!=sizeCol)
-            throw Exception("FLUX BALANCE: error wrong number of column bounds");
+            throw Exception("FLUX BALANCE: error less number of column bounds");
 
         //set ia ja ar
           for (i=0;i<sizeVet&&!in.eof();++i){
@@ -181,7 +181,7 @@ void LPprob::updateLP( const char* fileProb){
         getline(in,buffer);
         parser.update(delimC,buffer);
         for (unsigned int i=0;i<parser.size();++i){
-            ReactionsNamesId.insert({{ parser.get(i),i }});
+            ReactionsNamesId.insert({{ parser.get(i),i+1 }});
             ReactionsNamesOrd.push_back(parser.get(i));
         }
         //reading flux names
