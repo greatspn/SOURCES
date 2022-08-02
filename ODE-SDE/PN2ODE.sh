@@ -48,6 +48,7 @@ fi
 NET_PATH=$(perl -e "use File::Spec; print(File::Spec->rel2abs(\"${1}\"),\"\n\")")
 TRANS_POLICY="-I"
 NOPINV="NO"
+FLUXNAMEFILE=()
 
 shift
 
@@ -76,7 +77,14 @@ case "$1" in
     ;;
 
     -H)
-    FLUXB="-H"
+    if [ $# -gt 1 ]
+    then
+        FLUXNAMEFILE+=("-H $2")
+    else
+        printf "**ERROR** You must specify a legal FLUX Balance file path after -H. \n\n"
+        exit 1
+    fi
+    shift
     ;;
     
     
@@ -125,7 +133,7 @@ shift
 
 done
 
-
+echo ${FLUXNAMEFILE[@]}
 
 echo "#Computing p-semiflows and place bounds: "
 if [ "$NOPINV" == "NO" ]
@@ -144,14 +152,18 @@ then
      printf "**ERROR** Objective function and Transition bound files must be specified when using option -P.\n\n"
      exit 1
     fi
-echo ${GREATSPN_BINDIR}/PN2ODE $NET_PATH $EXPORT_FORMAT $TRANS_POLICY -T $TRANS_PATH -F $FUN_PATH
-${GREATSPN_BINDIR}/PN2ODE $NET_PATH $EXPORT_FORMAT $TRANS_POLICY -T $TRANS_PATH -F $FUN_PATH
+  
+echo ${GREATSPN_BINDIR}/PN2ODE $NET_PATH $EXPORT_FORMAT $TRANS_POLICY -T $TRANS_PATH -F $FUN_PATH ${FLUXNAMEFILE[@]}
+${GREATSPN_BINDIR}/PN2ODE $NET_PATH $EXPORT_FORMAT $TRANS_POLICY -T $TRANS_PATH -F $FUN_PATH ${FLUXNAMEFILE[@]}
+PNE2ODEreturn=$?
 else
-echo ${GREATSPN_BINDIR}/PN2ODE $NET_PATH $EXPORT_FORMAT $TRANS_POLICY $AUT $COMPRESS
-${GREATSPN_BINDIR}/PN2ODE $NET_PATH $EXPORT_FORMAT $TRANS_POLICY $AUT $COMPRESS
+echo ${GREATSPN_BINDIR}/PN2ODE $NET_PATH $EXPORT_FORMAT $TRANS_POLICY $AUT $COMPRESS  ${FLUXNAMEFILE[@]}
+${GREATSPN_BINDIR}/PN2ODE $NET_PATH $EXPORT_FORMAT $TRANS_POLICY $AUT $COMPRESS  ${FLUXNAMEFILE[@]}
+PNE2ODEreturn=$?
 fi
-echo "PN2ODE solution"
-if [ $? -ne 0 ]
+echo
+
+if [ $PNE2ODEreturn -ne 0 ]
 then
 	 echo "Solution failed in module PN2ODE"
 	 exit 1
@@ -224,7 +236,7 @@ echo $name_file
   	cp ./readingAutomaton.* ${MyTempDir}
   	cp ./automa.* ${MyTempDir}
   fi	
-  if [ "$FLUXB" == "-H" ]
+  if [[ ${#FLUXNAMEFILE[@]} > 0 ]]
   then
   	cp ./general.* ${MyTempDir}
   	cp ./GLPKsolve.* ${MyTempDir}
@@ -237,7 +249,7 @@ echo $name_file
   then
   	make  automa
   else
-  	if [ "$FLUXB" == "-H" ]
+  	if [[ ${#FLUXNAMEFILE[@]} > 0 ]]
   	then
   		make fluxb
   	else

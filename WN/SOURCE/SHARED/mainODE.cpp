@@ -9,6 +9,7 @@
 #include <fstream>
 #include <iostream>
 #include <sys/resource.h>
+#include <vector>
 
 extern "C" {
 
@@ -114,11 +115,15 @@ extern "C" {
     int out_mc = FALSE;
     int exp_set = FALSE;
     int fast_solve = TRUE;
+    
 #endif
     int dot_flag = 0;
     FILE *f_dot;
     char bname[MAX_TAG_SIZE];
     bool MASSACTION = false;
+    //it is true iff FLUX BALANCE is enable
+    bool FLUXB= false;
+    std::vector<std::string> flux_names;
     bool MATLAB = false;
     bool AUTOMATON = false;
     bool R = false;
@@ -1114,7 +1119,7 @@ int initialize(int  argc,  char  *argv[]) {
 
     if (argc < 2) {
 //automaton
-        std::cerr << "\n\nUSE: PN2ODE <path/net_name> [option]\n\tOption:\n\t\t-R ->\tExport R file\n\t\t-M ->\tGenelarized Mass Action policy\n\t\t-I ->\tInfinity servers policy (default)\n\t\t-O ->\tExport in Matlab format\n\n\n\t\t-A ->\tAutomaton verification";
+        std::cerr << "\n\nUSE: PN2ODE <path/net_name> [option]\n\tOption:\n\t\t-R ->\tExport R file\n\t\t-M ->\tGenelarized Mass Action policy\n\t\t-I ->\tInfinity servers policy (default)\n\t\t-O ->\tExport in Matlab format\n\t\t-A ->\tAutomaton verification\n\t\t-H ->\tEnable FLUX BALANCE\n\n";
         exit(EXIT_FAILURE);
 //automaton
     }
@@ -1169,6 +1174,18 @@ int initialize(int  argc,  char  *argv[]) {
             break;
         case 'C' :
             COMPACT_CPP= true;
+            break;
+        case 'H' :
+            FLUXB= true;
+            if(argv[ii+1]!=NULL){
+                flux_names.push_back(string(argv[++ii]));
+            }
+
+            else
+                {
+                fprintf(stderr, "Missing parameter for -H");
+                exit(1);
+                } 
             break;
         default :
             if(argv[2][1] == 'P'){

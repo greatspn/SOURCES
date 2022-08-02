@@ -55,7 +55,6 @@
 #ifndef __VCT_H__
 #define __VCT_H__
 #include <vector>
-
 #endif
 
 #ifndef __LST_H__
@@ -198,7 +197,13 @@ namespace SDE
     //!it stores for generic transition
     std::string GenFun {""};
     //!it is a pointer to a function   returns the transition intesity
-    double (*FuncT)(double *Value, map <string,int>& NumTrans, map <string,int>& NumPlaces, const vector <string>& NameTrans, const struct InfTr* Trans,  const int Tran, const double& Time) {nullptr};
+
+   #ifdef CGLPK
+    //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
+        double (*FuncT)(double *Value, vector<class FBGLPK::LPprob>& vec_fluxb, map <string,int>& NumTrans, map <string,int>& NumPlaces, const vector <string>& NameTrans, const struct InfTr* Trans,  const int Tran, const double& Time) {nullptr};
+    #else
+        double (*FuncT)(double *Value, map <string,int>& NumTrans, map <string,int>& NumPlaces, const vector <string>& NameTrans, const struct InfTr* Trans,  const int Tran, const double& Time) {nullptr};
+    #endif 
   };
 
   //!Class Elem
@@ -394,10 +399,10 @@ namespace SDE
 #endif
 //automaton
 //fluxb
-/*#ifdef CGLPK
-    class FBGLPK::LPprob fluxb;
+#ifdef CGLPK
+    //!It is a vector of pointers to flux balance problems.
+    vector<class FBGLPK::LPprob> vec_fluxb;
 #endif
-*/
 //fluxb    
   public:
     //! Empty Constructor
@@ -444,7 +449,13 @@ namespace SDE
       void initialize_automaton(char *file_name);
 #endif
 //automaton
-
+#ifdef CGLPK
+      void initialize_fluxbalance(std::string flux_name){
+      FBGLPK::LPprob l;
+      vec_fluxb.push_back(l);
+      vec_fluxb[vec_fluxb.size()-1].updateLP(flux_name.c_str()); 
+      }
+#endif       
     //!It returns the brown noise value for the input transition.
     inline double getBNoiseTran(int Tran) {return Trans[Tran].BrownNoise;};
     //!It reads from a file the softh lower and upper bounds.
