@@ -53,7 +53,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     //   - tests with < or > on colors in circular classes, and do not
     //   - next/prev color using ++/-- on enumerative color classess.
     public static boolean strictColorExpressionChecks = true;
-
+    
 
     public SemanticParser(ParserContext context, int parseFlags) {
         this.context = context;
@@ -96,7 +96,9 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                     if (obj instanceof ColorVar)
                         return "($"+((ColorVar) obj).getUniqueName()+"$)";
                     return ((Node)obj).getUniqueName();
-//                    throw new UnsupportedOperationException("Cannot convert entity in PNML format.");                    
+//                    throw new UnsupportedOperationException("Cannot convert entity in PNML format."); 
+                case CPP:
+                    return  ((Node)obj).getUniqueName();
                 default:
                     throw new UnsupportedOperationException("getObjectFormula");
             }
@@ -107,7 +109,6 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             return "(null)";
         return obj.toString();
     }
-
     private void requireLatexLanguage() {
         if (lang != ExpressionLanguage.LATEX)
             throw new UnsupportedOperationException("Parse rule is supported only in LaTeX mode.");
@@ -286,17 +287,39 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 //        new UnaryFunct(true, ExprLangParser.COLOR_ORDINAL, "\\mathrm{CN}[", "]"),
     };
     
+    static final UnaryFunct cppUnaryFunctions[] = {
+        new UnaryFunct(true, ExprLangParser.OP_PAREN, "(", ")"),
+        new UnaryFunct(false, ExprLangParser.SUB, "-", OperatorPos.PREFIX_SIMPLETERM),
+        new UnaryFunct(false, ExprLangParser.NOT, "! ", OperatorPos.PREFIX_SIMPLETERM),
+        new UnaryFunct(false, ExprLangParser.POSTINCR, "++", OperatorPos.POSTFIX_SIMPLETERM),
+        new UnaryFunct(false, ExprLangParser.POSTDECR, "--", OperatorPos.POSTFIX_SIMPLETERM),
+        new UnaryFunct(false, ExprLangParser.EXP_FN, "exp(", ")"),
+        new UnaryFunct(false, ExprLangParser.LOG_FN, "log(", ")"),
+        new UnaryFunct(true, ExprLangParser.SQRT_FN, "sqrt(", ")"),
+        new UnaryFunct(true, ExprLangParser.ROUND_FN, "round(", ")"),
+        new UnaryFunct(true, ExprLangParser.CEIL_FN, "ceil(", " )"),
+        new UnaryFunct(true, ExprLangParser.FLOOR_FN, "floor(", ")"),
+        new UnaryFunct(true, ExprLangParser.ABS_FN, "abs(", " )"),
+        // come gestire le dirac delta e le rectangular function in cpp?
+        new UnaryFunct(true, ExprLangParser.DIRAC_DELTA_FN, "Dirac_delta(", ")"),
+
+        
+    };
     
+  
+
     public FormattedFormula formatUnaryFn(int unaryIntRealFn, FormattedFormula expr) {
         UnaryFunct[] functs;
         switch (lang) {
-            case LATEX:     functs = latexUnaryFunctions;       break;
+            //case LATEX:     functs = latexUnaryFunctions;       break;
+            case LATEX:     functs = cppUnaryFunctions;         break;
             case PNPRO:     functs = pnproUnaryFunctions;       break;
             case GREATSPN:  functs = greatspnUnaryFunctions;    break;
             case APNN:      functs = apnnUnaryFunctions;        break;
             case GRML:      functs = grmlUnaryFunctions;        break;
             case PNML:      functs = pnmlUnaryFunctions;        break;
             case NETLOGO:   functs = netlogoUnaryFunctions;     break;
+            case CPP :      functs = cppUnaryFunctions;         break;
             default:
                 throw new UnsupportedOperationException("formatUnaryFn: Unsupported language");
         }
@@ -548,19 +571,50 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 //        new BinaryFunct(true, ExprLangParser.TRUNCATED_EXP_FN, "TruncatedExp[", ", ", "]", OperatorPos.FUNCTION),
 //        new BinaryFunct(true, ExprLangParser.PARETO_FN, "Pareto[", ", ", "]", OperatorPos.FUNCTION),
     };
+    
+    static final BinaryFunct cppBinaryFunctions[] = {
+        new BinaryFunct(false, ExprLangParser.ADD, " + ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.SUB, " - ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.MUL, " * ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.DIV, " / ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.FRACT_FN, " / ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.AND, " && ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.OR, " || ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.EQUAL, " == ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.NOT_EQUAL, " != ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.LESS, " < ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.LESS_EQ, " <= ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.GREATER, " > ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.GREATER_EQ, " >= ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.MAX_FN, "max(", ", ", ")", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.MIN_FN, "min(", ", ", ")", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.POW_FN, "pow(", ", ", ")", OperatorPos.FUNCTION),
+        
+
+        //come gestire in cpp le?
+        new BinaryFunct(false, ExprLangParser.RECT_FN, "Rectangular(", ", ", ")", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.TRUNCATED_EXP_FN, "TruncatedExponential(", ", ", ")", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.TRIANGULAR_FN, "Triangular(", ", ", ")", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.PARETO_FN, "Pareto(", ", ", ")", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.UNIFORM_FN, "Uniform(", ", ", ")", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.ERLANG_FN, "Erlang(", ", ", ")", OperatorPos.FUNCTION),
+    
+    };
         
     public FormattedFormula formatBinaryFn(int binaryIntFn, FormattedFormula expr0, 
                                            FormattedFormula expr1) 
     {
         BinaryFunct[] functs;
         switch (lang) {
-            case LATEX:     functs = latexBinaryFunctions;    break;
+            //case LATEX:     functs = latexBinaryFunctions;    break;
+            case LATEX:     functs = cppBinaryFunctions;    break;
             case PNPRO:     functs = pnproBinaryFunctions;    break;
             case GREATSPN:  functs = greatspnBinaryFunctions; break;
             case APNN:      functs = apnnBinaryFunctions;     break;
             case GRML:      functs = grmlBinaryFunctions;     break;
             case PNML:      functs = pnmlBinaryFunctions;     break;
             case NETLOGO:   functs = netlogoBinaryFunctions;     break;
+            case CPP:       functs = cppBinaryFunctions;    break;
             default:
                 throw new UnsupportedOperationException("formatBinaryFn: Unsupported language");
         }
@@ -906,6 +960,8 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case PNML:
                 return format(true, "<numberconstant value=\""+ctx.INT().getText()+"\">"
                         + "<positive/></numberconstant>");
+            case CPP:
+                return format(true, ctx.INT().getText());
             default:
                 throw new UnsupportedOperationException();
         }
@@ -922,6 +978,9 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case GREATSPN:
             case PNPRO:
                     return format(true, intConstId);
+            case CPP:
+                return format(true, intConstId);
+                
             default:
                 throw new UnsupportedOperationException();
         }
@@ -949,17 +1008,16 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         Place place = (Place)context.getNodeByUniqueName(ctx.INT_PLACE_ID().getText());
         switch (lang) { // same for visitRealExprPlaceMarking
             case LATEX:
-                return format(true, "\\#", place.getUniqueNameDecor().getVisualizedValue());
-                
+                return format(true, "\\#", place.getUniqueNameDecor().getVisualizedValue());   
             case GREATSPN:
             case PNPRO:
                 return format(true, "#" + ctx.INT_PLACE_ID().getText());
-                
             case APNN:
                 return format(true, ctx.INT_PLACE_ID().getText());
             case GRML:
                 return format(true, "<attribute name=\"name\">" + place.getUniqueName() +"</attribute>");
-
+            case CPP:
+                return format(true,  ctx.INT_PLACE_ID().getText());
             default:
                 throw new UnsupportedOperationException("visitIntExprPlaceMarking");
         }
@@ -1083,6 +1141,9 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case GREATSPN:
             case PNPRO:
                 return format(true, ctx.REAL().getText());
+            //sbaglio o bisogna portare tutto a reale?
+            case CPP:
+                return format(true, ctx.REAL().getText());
             default:
                 throw new UnsupportedOperationException();
         }
@@ -1100,7 +1161,9 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case GREATSPN:
             case PNPRO:
             case NETLOGO:
-                        return format(true, realConstId);
+                return format(true, realConstId);
+            case CPP:
+                return format(true, realConstId);
             default:
                 throw new UnsupportedOperationException();
         }
@@ -1118,6 +1181,8 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case GREATSPN:
             case PNPRO:
                         return format(true, realVarId);
+            case CPP:
+                return format(true, realVarId);
             default:
                 throw new UnsupportedOperationException();
         }
@@ -1134,11 +1199,12 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case GREATSPN:
             case PNPRO:
                 return format(true, "#" + ctx.REAL_PLACE_ID().getText());
-                
             case APNN:
                 return format(true, ctx.REAL_PLACE_ID().getText());
             case GRML:
                 return format(true, "<attribute name=\"name\">" + place.getUniqueName() +"</attribute>");
+            case CPP:
+                return format(true, ctx.REAL_PLACE_ID().getText());
             default:
                 throw new UnsupportedOperationException("visitRealExprPlaceMarking");
         }

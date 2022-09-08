@@ -1,13 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package editor.domain.io;
 
 import editor.domain.Node;
 import editor.domain.elements.GspnPage;
-import editor.domain.elements.Place;
 import editor.domain.elements.Transition;
+import editor.domain.grammar.ExprSubFormulaAnalysist;
 import editor.domain.grammar.ExpressionLanguage;
 import editor.domain.grammar.ParserContext;
 import java.io.BufferedOutputStream;
@@ -15,84 +11,69 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  *
  * @author Irene
+ * Write che c++ file with the expressions of the general transitions
  */
 public class CppFormat {
 
     public static String export(File file, GspnPage gspn, ParserContext context)
             throws Exception {
 
-        Set<Double> constantList = new HashSet<Double>();
-        Set<Place> placeList = new HashSet<Place>();
-
+        Set<String> placeSet = new HashSet<String>();
+        HashMap<String, String> transitions = new HashMap<>();
         ArrayList<String> log = new ArrayList<>();
         PrintWriter out = new PrintWriter(new BufferedOutputStream(new FileOutputStream(file)));
 
-        for (Node nodePlace : gspn.nodes) {
-            if (nodePlace instanceof Place) {
-                Place plc = (Place) nodePlace;
-                placeList.add(plc);
-                out.print("static double " + plc.getUniqueName() + ";\n");
-            }
-        }
-
         out.println("#include <math.h>");
-        out.println("\n");
 
         for (Node node : gspn.nodes) {
             if (node instanceof Transition) {
                 Transition trn = (Transition) node;
                 if (trn.isGeneral()) {
 
-                    out.println("double " + trn.getUniqueName() + "(double *Value,\n"
-                            + "                         map <string,int>& NumTrans,\n"
-                            + "                         map <string,int>& NumPlaces,\n"
-                            + "                         const vector<string> & NameTrans,\n"
-                            + "                         const struct InfTr* Trans,\n"
-                            + "                         const int T,\n"
-                            + "                         const double& time) {\n");
-                    
-                    
-
-                    out.println("double const = read_constant(\"./" + trn.getUniqueName() + "\", a);\n");
-
                     String cppDelayExpr = trn.convertDelayLang(context, null, ExpressionLanguage.CPP);
-                    
-                    Set<Place> placeListCopy =  new HashSet<Place>();
-                    placeListCopy.addAll(placeList);
-                    for(Place place: placeListCopy ){
-                        boolean isFound = cppDelayExpr.contains(place.getUniqueName());
-                        if(isFound){
-                            //out.println("#define " + place.getUniqueName() + " Value[NumPlaces.find(\"" + place.getUniqueName() + "\")->second]\n");
-                            out.println(place.getUniqueName() + " = Value[NumPlaces.find(\"" + place.getUniqueName() + "\")->second];\n");
-                            placeList.remove(place);
-                        }
-                    }
-                             
-                    
-                    System.out.println(trn.getUniqueName() + " " + cppDelayExpr);
-                    out.println("   double rate = " + cppDelayExpr + ";");
+                    transitions.put(trn.getUniqueName(), cppDelayExpr);
 
-                    // come faccio a definire una macro per ogni posto? senza avere la
-                    //struttura dati degli inidici che è dentro il metodo?
-                    /* for (Node nodePlace : gspn.nodes) {
-                        if (nodePlace instanceof Place) {
-                            Place plc = (Place) nodePlace;
-                            out.println("   #ifndef " + plc.getUniqueName());
-                            out.println("   Value[NumPlaces.find(\"" + plc.getUniqueName() + "\")->second]");
-                            out.println("   #endif\n");
-                        }
-                    }*/
+                    //check the places in the expression
+                    ExprSubFormulaAnalysist expSubForm = new ExprSubFormulaAnalysist(placeSet);
+                    trn.rewriteNode(context, expSubForm);
+
                 }
-
-                out.println("   return rate;");
-                out.println("}\n");
             }
+        }
+        
+        for(String place: placeSet){
+            out.println("static double " + place);
+        }
+
+        for (String transName : transitions.keySet()) {
+
+            out.println("double " + transName + "(double *Value,\n"
+                    + "                         map <string,int>& NumTrans,\n"
+                    + "                         map <string,int>& NumPlaces,\n"
+                    + "                         const vector<string> & NameTrans,\n"
+                    + "                         const struct InfTr* Trans,\n"
+                    + "                         const int T,\n"
+                    + "                         const double& time) {\n");
+
+            out.println("double const = read_constant(\"./" + transName + "\", a);\n");
+            
+            out.println("   double rate = " + transitions.get(transName) + ";");
+            
+            out.println("   return rate;");
+            out.println("}\n");
+
+
+        }
+
+        for (String s : placeSet) {
+            System.out.println(s);
         }
 
         //al log aggiungo messaggi se trovo degli errori durante la stampa.

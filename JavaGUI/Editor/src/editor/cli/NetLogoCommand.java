@@ -103,10 +103,10 @@ public class NetLogoCommand {
         pages.add(gspn);
         ProjectData proj = new ProjectData("project", pages);
         gspn.preparePageCheck();
-        gspn.checkPage(proj, null, gspn, null);
-        
+        gspn.checkPage(proj, null, gspn, null);   
         ParserContext context = new ParserContext(gspn);
         gspn.compileParsedInfo(context);
+        
         if (!gspn.isPageCorrect()) {
             for (int err=0; err < gspn.getNumErrorsAndWarnings(); err++) {
                 PageErrorWarning pew = gspn.getErrorWarning(err);

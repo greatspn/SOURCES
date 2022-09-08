@@ -3950,5 +3950,4 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private common.Action sharedActionTransitionFlows;
     private common.Action sharedActionTransitionSemiflows;
     // End of variables declaration//GEN-END:variables
-
 }
