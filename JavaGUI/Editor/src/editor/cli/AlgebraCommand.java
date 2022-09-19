@@ -14,6 +14,8 @@ import editor.domain.unfolding.MergePolicy;
 import java.awt.geom.Rectangle2D;
 import latex.DummyLatexProvider;
 import static editor.cli.Common.*;
+import editor.domain.elements.Transition;
+import editor.domain.grammar.ExpressionLanguage;
 import editor.domain.unfolding.ChoiceFunction;
 
 /**

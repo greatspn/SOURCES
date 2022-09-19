@@ -254,7 +254,12 @@ inline void SystEqMin::getValTranFire()
 		EnabledTransValueDis[t]=0.0;
 
 		if (Trans[t].FuncT!=nullptr){
-			 EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+#ifdef CGLPK
+ //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
+       		EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,vec_fluxb,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+#else
+   			EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+#endif 
 		}
 		else {
 			if (size==0)
@@ -301,7 +306,13 @@ inline void SystEqMas::getValTranFire()
 		EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
        // cout<<" T:"<<NameTrans[t]<<endl;
 		if (Trans[t].FuncT!=nullptr){
-			 EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+#ifdef CGLPK
+ //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
+			 EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,vec_fluxb,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+#else
+   			EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+#endif 		
+
 		}
 		else {
 
@@ -350,8 +361,12 @@ inline void SystEqMas::getValTranFire()
               //cout<<" T:"<<NameTrans[t]<<endl;
             if (Trans[t].FuncT!=nullptr)
             {
-                 EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
-
+#ifdef CGLPK
+ //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
+				EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,vec_fluxb,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+#else
+   				EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+#endif 	
             }
             else
             {
@@ -402,8 +417,12 @@ inline void SystEqMas::getValTranFire()
             EnabledTransValueDis[t]=0.0;
             if (Trans[t].FuncT!=nullptr)
             {
-
-                 EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+#ifdef CGLPK
+ //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
+				EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,vec_fluxb,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+#else
+   				EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+#endif 	
             }
             else
             {
@@ -2397,6 +2416,12 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 		out<<"Time";
 		for (int i=0;i<nPlaces;i++)
 			out<<" "<<NamePlaces[i];
+#ifdef CGLPK
+      	for (unsigned int i=0;i<vec_fluxb.size();++i){
+			vec_fluxb[i].printFluxName(out);
+		}	
+#endif
+
 		out<<endl<<itime<<" ";
 	}
 	cout.precision(16);
@@ -2414,10 +2439,16 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 		atol[j]=perc1;
 		rtol[j]=perc2;
 	}
+
 	if (Info){
+#ifdef CGLPK
+		getValTranFire(y+1);
+      	for (unsigned int i=0;i<vec_fluxb.size();++i){
+			vec_fluxb[i].printValue(out);
+		}	
+#endif
 		out<<endl;
 		}
-
 	while(tout<=Max_Time){
 		lsoda(*this,neq, y, &t, tout, itol, rtol, atol, itask, &istate, iopt, jt,
 				iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
@@ -2431,9 +2462,19 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
             for (int j=1;j<=nPlaces;j++){
 				out<<y[j]<<" ";
             }
+			
+        	
+#ifdef CGLPK
+        	for (unsigned int i=0;i<vec_fluxb.size();++i){
+				vec_fluxb[i].printValue(out);
+			}
+#endif	
 			out<<endl;
-        }
+		}		
 		tout+=Print_Step;
+
+	
+		
 		if (istate <= 0){
 			throw   Exception("*****Error during the integration step*****\n\n");
 
@@ -2543,21 +2584,65 @@ double SystEq::RichardsonExtrap(double *ValuePrv, map <string,int>& NumTrans, ma
     // let's calculate the first part of the formula with h
     ValuePrv[ider] =  ValuePrv[ider] + hstep;
 	// cout << "hstep = " << hstep << " ValuePrv_tmp = " << ValuePrv_tmp <<"; ValuePrv = " << ValuePrv[ider] <<"\n";
-	double fh = Trans[T].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+//	double fh = Trans[T].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+#ifdef CGLPK
+     //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
+    	double fh = Trans[T].FuncT(ValuePrv,vec_fluxb,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+#else
+    	double fh = Trans[T].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+#endif 	
+
 	ValuePrv[ider] = ValuePrv[ider] + hstep ;
 	// cout << "hstep = " << hstep << " ValuePrv_tmp = " << ValuePrv_tmp <<"; ValuePrv = " << ValuePrv[ider] <<"\n";
+	//double f2h = Trans[T].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+#ifdef CGLPK
+ //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
+	double f2h = Trans[T].FuncT(ValuePrv,vec_fluxb,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+#else
 	double f2h = Trans[T].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+#endif 	
+
     ValuePrv[ider] = ValuePrv_tmp - hstep;
+	//double fmh = Trans[T].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+#ifdef CGLPK
+ //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
+	double fmh = Trans[T].FuncT(ValuePrv,vec_fluxb,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+#else
 	double fmh = Trans[T].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+#endif 	
+
+
 	ValuePrv[ider] = ValuePrv[ider] - hstep;
+//	double fm2h = Trans[T].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+#ifdef CGLPK
+ //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
+	double fm2h = Trans[T].FuncT(ValuePrv,vec_fluxb,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+#else
 	double fm2h = Trans[T].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+#endif 	
+
 	double s1 = (- f2h + 8*fh - 8*fmh + fm2h) / (12*hstep) ;
 
 	// let's calculate the second part of the formula with 2h
 	ValuePrv[ider] = ValuePrv_tmp + hstep + hstep + hstep + hstep;
+//
+//	double f4h = Trans[T].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+#ifdef CGLPK
+ //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
+	double f4h = Trans[T].FuncT(ValuePrv,vec_fluxb,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+#else
 	double f4h = Trans[T].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+#endif 	  
+
     ValuePrv[ider] = ValuePrv_tmp - hstep - hstep - hstep - hstep;
+//	double fm4h = Trans[T].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+#ifdef CGLPK
+ //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
+	double fm4h = Trans[T].FuncT(ValuePrv,vec_fluxb,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+#else
 	double fm4h = Trans[T].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time);
+#endif 	
+
 	double s2 = (- f4h + 8*f2h - 8*fm2h + fm4h) / (12*(hstep + hstep)) ;
 
 	// Set the value of ValuePrv as at the beginning
@@ -2914,6 +2999,11 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 		out<<"Time";
 		for(int i=0;i<nPlaces;i++)
 			out<<" "<<NamePlaces[i];
+#ifdef CGLPK
+      	for (unsigned int i=0;i<vec_fluxb.size();++i){
+			vec_fluxb[i].printFluxName(out);
+		}	
+#endif
 		out<<endl;
 	}
 
@@ -2960,7 +3050,13 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 			}
 		}
 		if(Info){
-			out<<endl;;
+#ifdef CGLPK
+		getValTranFire(Value);	
+      	for (unsigned int i=0;i<vec_fluxb.size();++i){
+			vec_fluxb[i].printValue(out);
+		}	
+#endif
+			out<<endl;
 		}
 
 		double nextTimePoint=tout=Print_Step+itime;
@@ -2992,6 +3088,11 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 
 						out<<" "<<Value[j];
 						}
+#ifdef CGLPK
+      				for (unsigned int i=0;i<vec_fluxb.size();++i){
+						vec_fluxb[i].printValue(out);
+					}	
+#endif
 					out<<endl;
 					}
 					nextTimePoint=(tout+=Print_Step);
@@ -3018,7 +3119,7 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 
 /**************************************************************/
 /* NAME :  Class SystEq*/
-/* DESCRIPTION : It solves the ODE system using  LSODA method*/
+/* DESCRIPTION : It solves the ODE system using  Tau-leaping method*/
 /**************************************************************/
 void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,char *argv){
 
@@ -3051,6 +3152,11 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 		out<<"Time";
 		for(int i=0;i<nPlaces;i++)
 			out<<" "<<NamePlaces[i];
+#ifdef CGLPK
+      	for (unsigned int i=0;i<vec_fluxb.size();++i){
+			vec_fluxb[i].printFluxName(out);
+		}	
+#endif		
 		out<<endl;
 	}
 
@@ -3097,6 +3203,12 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 			}
 		}
 		if(Info){
+#ifdef CGLPK
+			getValTranFire();
+      		for (unsigned int i=0;i<vec_fluxb.size();++i){
+				vec_fluxb[i].printValue(out);
+			}	
+#endif			
 			out<<endl;;
 		}
 
@@ -3205,6 +3317,11 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 
 						out<<" "<<Value[j];
 						}
+#ifdef CGLPK
+      				for (unsigned int i=0;i<vec_fluxb.size();++i){
+						vec_fluxb[i].printValue(out);
+					}	
+#endif						
 					out<<endl;
 					}
 					tout+=Print_Step;
