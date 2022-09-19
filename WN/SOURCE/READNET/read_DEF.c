@@ -73,7 +73,7 @@ void read_DEF_file() {
                         fprintf(stderr, "Missing expected definition in .def file.\n");
                         exit(1);
                     }
-                    if (tabt[nmd].pri == 127 && tabt[nmd].mean_t == 0.0) {
+                    if (/*tabt[nmd].pri == 127 &&*/ tabt[nmd].mean_t == 0.0) {
                         // 12/07/2016 Elvio: do not parse general functions, but store them.
                         // This change allows to encode the general function in the .def
                         // file (like any other marking-dependent functions), for the
