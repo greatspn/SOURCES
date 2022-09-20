@@ -28,6 +28,7 @@ public class CppCommand {
             Main.fixedUiSize = Main.UiSize.NORMAL;
             DummyLatexProvider.initializeProvider();
             long totalStart = System.currentTimeMillis();
+            System.out.println("prova");
 
             toolMain(args);
                         
