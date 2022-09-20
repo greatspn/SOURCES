@@ -3,7 +3,6 @@ package editor.domain.io;
 import editor.domain.Node;
 import editor.domain.elements.GspnPage;
 import editor.domain.elements.Transition;
-import editor.domain.grammar.ExprSubFormulaAnalysist;
 import editor.domain.grammar.ExpressionLanguage;
 import editor.domain.grammar.ParserContext;
 import java.io.BufferedOutputStream;
@@ -11,70 +10,50 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  *
- * @author Irene
- * Write che c++ file with the expressions of the general transitions
+ * @author Irene 
+ * Write che c++ file with the expressions of the
+ * transitions
  */
 public class CppFormat {
 
     public static String export(File file, GspnPage gspn, ParserContext context)
             throws Exception {
 
-        Set<String> placeSet = new HashSet<String>();
-        HashMap<String, String> transitions = new HashMap<>();
         ArrayList<String> log = new ArrayList<>();
-        PrintWriter out = new PrintWriter(new BufferedOutputStream(new FileOutputStream(file)));
 
-        out.println("#include <math.h>");
+        PrintWriter out = new PrintWriter(new BufferedOutputStream(new FileOutputStream(file)));
 
         for (Node node : gspn.nodes) {
             if (node instanceof Transition) {
                 Transition trn = (Transition) node;
-                if (trn.isGeneral()) {
+                //if (trn.isGeneral()) {
 
-                    String cppDelayExpr = trn.convertDelayLang(context, null, ExpressionLanguage.CPP);
-                    transitions.put(trn.getUniqueName(), cppDelayExpr);
+                String cppDelayExpr = trn.convertDelayLang(context, null, ExpressionLanguage.CPP);
 
-                    //check the places in the expression
-                    ExprSubFormulaAnalysist expSubForm = new ExprSubFormulaAnalysist(placeSet);
-                    trn.rewriteNode(context, expSubForm);
+                out.println("double " + trn.getUniqueName() + "_general(double *Value,\n"
+                        + "                         map <string,int>& NumTrans,\n"
+                        + "                         map <string,int>& NumPlaces,\n"
+                        + "                         const vector<string> & NameTrans,\n"
+                        + "                         const struct InfTr* Trans,\n"
+                        + "                         const int T,\n"
+                        + "                         const double& time) {\n");
 
-                }
+                //out.println("double const = read_constant(\"./" + trn.getUniqueName() + "\", a);\n");
+
+
+
+                out.println("   double rate = " + cppDelayExpr + ";");
+                out.println("   return rate;");
+                out.println("}\n");
+
+                //}
             }
         }
-        
-        for(String place: placeSet){
-            out.println("static double " + place);
-        }
 
-        for (String transName : transitions.keySet()) {
-
-            out.println("double " + transName + "(double *Value,\n"
-                    + "                         map <string,int>& NumTrans,\n"
-                    + "                         map <string,int>& NumPlaces,\n"
-                    + "                         const vector<string> & NameTrans,\n"
-                    + "                         const struct InfTr* Trans,\n"
-                    + "                         const int T,\n"
-                    + "                         const double& time) {\n");
-
-            out.println("double const = read_constant(\"./" + transName + "\", a);\n");
-            
-            out.println("   double rate = " + transitions.get(transName) + ";");
-            
-            out.println("   return rate;");
-            out.println("}\n");
-
-
-        }
-
-        for (String s : placeSet) {
-            System.out.println(s);
-        }
+        out.println("\n");
 
         //al log aggiungo messaggi se trovo degli errori durante la stampa.
         //se sarà vuoto tutto bene, se conterrà delle frasi allora ci saranno

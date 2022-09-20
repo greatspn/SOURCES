@@ -20,8 +20,8 @@ AR := ar rcs
 
 ### The following variables can be overridden 
 ### by defining them as environment variables.
-# CFLAGS ?= -g -DGLIBCXX_DEBUG
-CFLAGS ?= -O2
+CFLAGS ?= -g -DGLIBCXX_DEBUG
+#CFLAGS ?= -O2
 CPPFLAGS ?= $(CFLAGS)
 LDFLAGS ?= -O2
 
@@ -2230,7 +2230,7 @@ alphaFactory_LD := $(LDPP)
 
 
 # ifeq ($(INCLUDE_ELVIO_CPP_SOLVER),1)
-TARGETS += DSPN-Tool alphaFactory
+#TARGETS += DSPN-Tool alphaFactory
 ifndef HAS_VBOX_MARK
 # TARGETS += DSPN-Tool-Debug
 endif

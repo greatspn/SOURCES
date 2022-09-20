@@ -53,8 +53,7 @@ public class CppCommand {
         
         
         // GREATSPN_BINDIR=~/tesiMagistrale/SOURCESC-/JavaGUI/Editor/dist
-        // java -ea -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar 
-        //   editor.cli.CppCommand EsempiGen out.cpp
+        // java -ea -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar editor.cli.CppCommand EsempiExpMTDep out.cpp
         
         String inBaseName = args[0]; //immagino il nome del progetto greatspn
         String outBaseName = args[1]; //immagino il nome con cui sarà salvato

@@ -382,6 +382,8 @@ public class Transition extends Node implements Serializable, Firable {
             guardExpr.rewrite(context, rewriter);
     }
     
+    
+    
     @Override
     public double getWidth() {
         return (type == Type.IMM ? IMMED_TRANSITION_WIDTH : TIMED_TRANSITION_WIDTH);

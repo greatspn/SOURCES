@@ -55,12 +55,12 @@ extern "C" {
     Tree_p initial_marking = NULL;
     Tree_p current_marking = NULL;
 
-    Result_p enabled_head = NULL;	/* Puntatori alla lista delle tr. abil. */
+    Result_p enabled_head = NULL;   /* Puntatori alla lista delle tr. abil. */
 
-    int tro;			/* 1 marc. gia' raggiunta, 0 altrimenti */
-    int marcatura = 0;	/* contatore per le marcature		*/
-    int h = 0;			/* per bilanciamento nella insert_tree	*/
-    unsigned long tang = 0;		/* contatori tipi di marc. raggiunte	*/
+    int tro;            /* 1 marc. gia' raggiunta, 0 altrimenti */
+    int marcatura = 0;  /* contatore per le marcature       */
+    int h = 0;          /* per bilanciamento nella insert_tree  */
+    unsigned long tang = 0;     /* contatori tipi di marc. raggiunte    */
     unsigned long evan = 0;
     unsigned long dead = 0;
     int home = 0;
@@ -116,23 +116,23 @@ void LU(double **A, int *P, double *B, const int rows, const int cols)
                 maxPivot = k;
 
         // check for singularity
-        if (0 == A[maxPivot][i])
-        {
-            cout << "matrix is singular" << endl;
-            ErrorLU=true;
-            return;
-        }
+            if (0 == A[maxPivot][i])
+            {
+                cout << "matrix is singular" << endl;
+                ErrorLU=true;
+                return;
+            }
 
         //swap
-        if (maxPivot != i)
-        {
-            swap(P[i], P[maxPivot]);
-            swap(B[i], B[maxPivot]);
-        }
-        for (int k = i; k < cols; k++)
-        {
-            swap(A[i][k], A[maxPivot][k]);
-        }
+            if (maxPivot != i)
+            {
+                swap(P[i], P[maxPivot]);
+                swap(B[i], B[maxPivot]);
+            }
+            for (int k = i; k < cols; k++)
+            {
+                swap(A[i][k], A[maxPivot][k]);
+            }
 
         //swap
 
@@ -338,512 +338,504 @@ void read_bound(std::string &net, int *lbound, int *ubound)
 void build_ODECompact(ofstream &out, std::string path, std::string net)
 {
     /* Init build_ODE */
-   Node_p l_ptr = NULL;
-    int pp;
-    clock_t startGlobal, endGlobal;
-    double timeGlobal;
-    startGlobal = clock();
-    char delims[]=": ()\n\r\t";
+ Node_p l_ptr = NULL;
+ int pp;
+ clock_t startGlobal, endGlobal;
+ double timeGlobal;
+ startGlobal = clock();
+ char delims[]=": ()\n\r\t";
 
-    cout << "\n\n------------------------------------------------" << endl;
-    cout << "               Start  encoding" << endl;
-    cout << "------------------------------------------------\n" << endl;
+ cout << "\n\n------------------------------------------------" << endl;
+ cout << "               Start  encoding" << endl;
+ cout << "------------------------------------------------\n" << endl;
 
 
-    out << "\n#include <iostream>\n#include \"class.hpp\"\n\n";
-    out << "\n#include <iostream>\n#include \""<<path<<".hpp\"\n\n";
+ out << "\n#include <iostream>\n#include \"class.hpp\"\n\n";
+ out << "\n#include <iostream>\n#include \""<<path<<".hpp\"\n\n";
 
     //for transition function rates
-    std::string filename=path+".hpp";
-    ofstream hout(filename.c_str());
+ std::string filename=path+".hpp";
+ ofstream hout(filename.c_str());
 
-    if (!hout)
-    {
-        cerr << "Error: it is not possible to output file "<<filename<<"\n\n";
+ if (!hout)
+ {
+    cerr << "Error: it is not possible to output file "<<filename<<"\n\n";
 
+}
+hout << "namespace SDE {\n";
+for (int i = 0; i < npl; i++)
+{
+    hout << "#define " << tabp[i].place_name << "_place " << i<<endl;
+}
+set<std::string> function_names;
+for (int tt = 0; tt < ntr; tt++)
+{
+    if (tabt[tt].general_function!=NULL){
+         if (!FLUXB)
+            hout<<"double "<<tabt[tt].trans_name<<"_general(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n";
+        else
+            hout<<"double "<<tabt[tt].trans_name<<"_general(double *Value,vector<class FBGLPK::LPprob>& vec_fluxb,  map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n";
     }
-    hout << "namespace SDE {\n";
-    set<std::string> function_names;
-    for (int tt = 0; tt < ntr; tt++)
-    {
-        if (tabt[tt].general_function!=NULL){
-            //cout<<tabt[tt].general_function
-            std::string tmp_st(tabt[tt].general_function);
-            char* stoken=strtok((char*)tmp_st.c_str(),delims);
-             stoken=strtok(NULL,delims);
-            //vector<std::string>token;
-            while (stoken!=NULL){
-                if ((strcmp(stoken,"Discrete")!=0 || strcmp(stoken,"discrete")!=0 || strcmp(stoken,"D")!=0)&& (!isdigit(stoken[0]))&& (function_names.find(stoken)==function_names.end())){
-                   if (!FLUXB)
-                        hout<<"double "<<stoken<<"(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n";
-                   else
-                        hout<<"double "<<stoken<<"(double *Value, vector<class FBGLPK::LPprob>& vec_fluxb, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n";
-                   function_names.insert(stoken);
-                }
-                stoken=strtok(NULL,delims);
-            }
-
-        }
-    }
-    hout<<"};\n";
-    hout.close();
+}
+hout<<"};\n";
+hout.close();
         //for transition function rates
-        out << "using namespace SDE;\nextern double epsilon;\n\n";
+out << "using namespace SDE;\nextern double epsilon;\n\n";
 
-    out << " string places[]={";
-    for (int i = 0; i < npl; i++)
-    {
-        if (i != 0)
-            out << ",";
-        out << "\"" << tabp[i].place_name << "\"";
-    }
-    out << "};\n";
-
-
-    out << " string transitions[]={";
-    for (int i = 0; i < ntr; i++)
-    {
-        if (i != 0)
-            out << ",";
-        out << "\"" << tabt[i].trans_name << "\"";
-    }
-    out << "};\n";
-  int *lbound = (int *) malloc(sizeof(int) * npl);
-    int *ubound = (int *) malloc(sizeof(int) * npl);
-    memset(lbound, 0, npl);
-    memset(ubound, 0, npl);
-    read_bound(path, lbound, ubound);
-    double **A, *B;
-    int *P;
-    map <int, list < pair<int, int> > > implPlace;
-
-    int pinv=read_pinv(path,A,P,B,implPlace);
+out << " string places[]={";
+for (int i = 0; i < npl; i++)
+{
+    if (i != 0)
+        out << ",";
+    out << "\"" << tabp[i].place_name << "\"";
+}
+out << "};\n";
 
 
-    int **TP = (int **) malloc((ntr) *  sizeof(int *));
-    int **TPI = (int **) malloc((ntr) *  sizeof(int *));
-    for (int tt = 0; tt < ntr; tt++)
-    {
-        TP[tt] = (int *) malloc((npl) * sizeof(int));
-        memset(TP[tt], 0, npl * sizeof(int));
-        TPI[tt] = (int *) malloc((npl) * sizeof(int));
-        memset(TPI[tt], 0, npl * sizeof(int));
-    }
+out << " string transitions[]={";
+for (int i = 0; i < ntr; i++)
+{
+    if (i != 0)
+        out << ",";
+    out << "\"" << tabt[i].trans_name << "\"";
+}
+out << "};\n";
+int *lbound = (int *) malloc(sizeof(int) * npl);
+int *ubound = (int *) malloc(sizeof(int) * npl);
+memset(lbound, 0, npl);
+memset(ubound, 0, npl);
+read_bound(path, lbound, ubound);
+double **A, *B;
+int *P;
+map <int, list < pair<int, int> > > implPlace;
+
+int pinv=read_pinv(path,A,P,B,implPlace);
+
+
+int **TP = (int **) malloc((ntr) *  sizeof(int *));
+int **TPI = (int **) malloc((ntr) *  sizeof(int *));
+for (int tt = 0; tt < ntr; tt++)
+{
+    TP[tt] = (int *) malloc((npl) * sizeof(int));
+    memset(TP[tt], 0, npl * sizeof(int));
+    TPI[tt] = (int *) malloc((npl) * sizeof(int));
+    memset(TPI[tt], 0, npl * sizeof(int));
+}
 
 
 
 
-    out << "\nint main(int argc, char **argv) {\n\n";
-    out << " time_t time_1,time_4;\n";
-    out<<  " int who = RUSAGE_SELF;\n struct rusage usage;\n";
-    out << " int SOLVE = 7, runs=1;\n";
-    out << " long int seed = 0;\n";
-    out << " bool OUTPUT=false;\n";
-    out << " std::string fbound=\"\", finit=\"\", fparm=\"\";\n";
-    out << " double hini = 1e-6, atolODE = 1e-6, rtolODE=1e-6, ftime=1.0, stime=0.0, itime=0.0, epsTAU=0.1;\n\n";
-    out << " cout<<\"\\n\\n =========================================================\\n\";\n";
-    out << " cout<<\"|	              ODE/SDE Solver                       |\\n\";\n";
-    out << " cout<<\" =========================================================\\n\";\n";
-    out << " cout<<\"\\n If you find any bug, send an email to beccuti@di.unito.it\\n\";\n\n";
+out << "\nint main(int argc, char **argv) {\n\n";
+out << " time_t time_1,time_4;\n";
+out<<  " int who = RUSAGE_SELF;\n struct rusage usage;\n";
+out << " int SOLVE = 7, runs=1;\n";
+out << " long int seed = 0;\n";
+out << " bool OUTPUT=false;\n";
+out << " std::string fbound=\"\", finit=\"\", fparm=\"\";\n";
+out << " double hini = 1e-6, atolODE = 1e-6, rtolODE=1e-6, ftime=1.0, stime=0.0, itime=0.0, epsTAU=0.1;\n\n";
+out << " cout<<\"\\n\\n =========================================================\\n\";\n";
+out << " cout<<\"|                ODE/SDE Solver                       |\\n\";\n";
+out << " cout<<\" =========================================================\\n\";\n";
+out << " cout<<\"\\n If you find any bug, send an email to beccuti@di.unito.it\\n\";\n\n";
 
 
 
     //automaton
-    if (AUTOMATON)
-    {
-        out << " if (argc<3)\n\t{\n \t";
-        out << " std::cerr<<\"\\n\\nUSE:" << net << "_solve <out_file> <automaton_file> [OPTION ]<type> <hini>  <atol> <rtol> <runs> <ftime> <stime>   -B <bound_file> \";\n\t";
+if (AUTOMATON)
+{
+    out << " if (argc<3)\n\t{\n \t";
+    out << " std::cerr<<\"\\n\\nUSE:" << net << "_solve <out_file> <automaton_file> [OPTION ]<type> <hini>  <atol> <rtol> <runs> <ftime> <stime>   -B <bound_file> \";\n\t";
 
-    }
-    else
-    {
-        out << " if (argc<2)\n\t{\n \t";
-        out << " std::cerr<<\"\\n\\nUSE:" << net << "_solve <out_file> [OPTIONS]\";\n\t";
-    }
+}
+else
+{
+    out << " if (argc<2)\n\t{\n \t";
+    out << " std::cerr<<\"\\n\\nUSE:" << net << "_solve <out_file> [OPTIONS]\";\n\t";
+}
     //automaton
-    out<<"std::cerr<<\"\\n\\n\\tOPTIONS\\n\";\n\t";
-    out << " std::cerr<<\"\\n\\t -type <type>:\\t\\t ODE-E or ODE-RKF or ODE45 or LSODA or HLSODA or (H)SDE or HODE or SSA or TAUG or STEP. Default: LSODA \";\n\t";
-    out << " std::cerr<<\"\\n\\t -hini <double>:\\t Initial step size. Default: 1e-6\";\n\t";
-    out << " std::cerr<<\"\\n\\t -atol <double>:\\t Absolute error tolerance. Dafault: 1e-6\";\n\t";
-    out << " std::cerr<<\"\\n\\t -rtol <double>:\\t Relative error tolerance. Dafault: 1e-6\";\n\t";
-    out << " std::cerr<<\"\\n\\t -taueps <double>:\\t Epsilon value for Tau-leaping algorithm. Dafault: 0.1\";\n\t";
-    out << " std::cerr<<\"\\n\\t -runs <int>:\\t\\t Integer number corresponding to runs (only used in SSA,TAUG, HODE,HLSODA). Default: 1\";\n\t";
-    out << " std::cerr<<\"\\n\\t -ftime <double>:\\t Double number used to set the upper bound of the evolution time. Dafault: 1\";\n\t";
-    out << " std::cerr<<\"\\n\\t -stime <double>:\\t Double number used to set the step in the output. Default: 0.0 (no output)\";\n\t";
-    out << " std::cerr<<\"\\n\\t -itime <double>:\\t Double number used to set the initial simulation time. Default: 0.0 \";\n\t";
-    out << " std::cerr<<\"\\n\\t -b <bound_file>:\\t Soft bound are defined in the file <bound_file>\";\n\t";
-    out << " std::cerr<<\"\\n\\t -seed <double>:\\t Seed of random number generator\";\n\t";
-    out << " std::cerr<<\"\\n\\t -init <init_file>:\\t The file <initial_file> contains the initial marking. Default:  initial marking in the orginal net\";\n\t";
-    out << " std::cerr<<\"\\n\\t -parm <parm_file>:\\t The file <parm_file> contains a set of pairs with format <transition name> <value> or <place name> <value>.\\n\\t\\t\\t\\t For transition  the value is used to set a new rate value, while for place  it is used to set a new initial marking.\";\n\t";
+out<<"std::cerr<<\"\\n\\n\\tOPTIONS\\n\";\n\t";
+out << " std::cerr<<\"\\n\\t -type <type>:\\t\\t ODE-E or ODE-RKF or ODE45 or LSODA or HLSODA or (H)SDE or HODE or SSA or TAUG or STEP. Default: LSODA \";\n\t";
+out << " std::cerr<<\"\\n\\t -hini <double>:\\t Initial step size. Default: 1e-6\";\n\t";
+out << " std::cerr<<\"\\n\\t -atol <double>:\\t Absolute error tolerance. Dafault: 1e-6\";\n\t";
+out << " std::cerr<<\"\\n\\t -rtol <double>:\\t Relative error tolerance. Dafault: 1e-6\";\n\t";
+out << " std::cerr<<\"\\n\\t -taueps <double>:\\t Epsilon value for Tau-leaping algorithm. Dafault: 0.1\";\n\t";
+out << " std::cerr<<\"\\n\\t -runs <int>:\\t\\t Integer number corresponding to runs (only used in SSA,TAUG, HODE,HLSODA). Default: 1\";\n\t";
+out << " std::cerr<<\"\\n\\t -ftime <double>:\\t Double number used to set the upper bound of the evolution time. Dafault: 1\";\n\t";
+out << " std::cerr<<\"\\n\\t -stime <double>:\\t Double number used to set the step in the output. Default: 0.0 (no output)\";\n\t";
+out << " std::cerr<<\"\\n\\t -itime <double>:\\t Double number used to set the initial simulation time. Default: 0.0 \";\n\t";
+out << " std::cerr<<\"\\n\\t -b <bound_file>:\\t Soft bound are defined in the file <bound_file>\";\n\t";
+out << " std::cerr<<\"\\n\\t -seed <double>:\\t Seed of random number generator\";\n\t";
+out << " std::cerr<<\"\\n\\t -init <init_file>:\\t The file <initial_file> contains the initial marking. Default:  initial marking in the orginal net\";\n\t";
+out << " std::cerr<<\"\\n\\t -parm <parm_file>:\\t The file <parm_file> contains a set of pairs with format <transition name> <value> or <place name> <value>.\\n\\t\\t\\t\\t For transition  the value is used to set a new rate value, while for place  it is used to set a new initial marking.\";\n\t";
     //automaton
-    if (AUTOMATON)
-        out << " std::cerr<<\"\\n\\t <automaton_file>:\\t automaton is defined in the file <automaton>\\n\";";
-    out <<" std::cerr<<endl<<endl;";
+if (AUTOMATON)
+    out << " std::cerr<<\"\\n\\t <automaton_file>:\\t automaton is defined in the file <automaton>\\n\";";
+out <<" std::cerr<<endl<<endl;";
     //automaton
-    out << "\n\t exit(EXIT_FAILURE);\n\t}\n\n";
+out << "\n\t exit(EXIT_FAILURE);\n\t}\n\n";
 
 
-    if (AUTOMATON)
-        out<<" int ii=3;\n";
-    else
-        out<<" int ii=2;\n";
-    out<<" for (; ii<argc; ii++){\n";
-        out<<"\t if (strcmp(\"-type\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out << "\t\t\t if ((strcmp(argv[ii],\"ODE-E\")==0)||(strcmp(argv[ii],\"ode-e\")==0)) SOLVE = 1;\n";
-                out << "\t\t\t else if ((strcmp(argv[ii],\"ODE-RKF\")==0)||(strcmp(argv[ii],\"ode-rkf\")==0)) SOLVE = 5;\n";
-                out << "\t\t\t else if ((strcmp(argv[ii],\"ODE45\")==0)||(strcmp(argv[ii],\"ode45\")==0)) SOLVE = 6;\n";
-                out << "\t\t\t else if ((strcmp(argv[ii],\"LSODA\")==0)||(strcmp(argv[ii],\"lsoda\")==0)) SOLVE = 7;\n";
-                out << "\t\t\t else if ((strcmp(argv[ii],\"STEP\")==0)||(strcmp(argv[ii],\"step\")==0)) SOLVE = 4;\n";
-                out << "\t\t\t else if ((strcmp(argv[ii],\"SSA\")==0)||(strcmp(argv[ii],\"ssa\")==0)){\n";
+if (AUTOMATON)
+    out<<" int ii=3;\n";
+else
+    out<<" int ii=2;\n";
+out<<" for (; ii<argc; ii++){\n";
+out<<"\t if (strcmp(\"-type\", argv[ii])==0){\n";
+out<<"\t\t if (++ii<argc){\n";
+out << "\t\t\t if ((strcmp(argv[ii],\"ODE-E\")==0)||(strcmp(argv[ii],\"ode-e\")==0)) SOLVE = 1;\n";
+out << "\t\t\t else if ((strcmp(argv[ii],\"ODE-RKF\")==0)||(strcmp(argv[ii],\"ode-rkf\")==0)) SOLVE = 5;\n";
+out << "\t\t\t else if ((strcmp(argv[ii],\"ODE45\")==0)||(strcmp(argv[ii],\"ode45\")==0)) SOLVE = 6;\n";
+out << "\t\t\t else if ((strcmp(argv[ii],\"LSODA\")==0)||(strcmp(argv[ii],\"lsoda\")==0)) SOLVE = 7;\n";
+out << "\t\t\t else if ((strcmp(argv[ii],\"STEP\")==0)||(strcmp(argv[ii],\"step\")==0)) SOLVE = 4;\n";
+out << "\t\t\t else if ((strcmp(argv[ii],\"SSA\")==0)||(strcmp(argv[ii],\"ssa\")==0)){\n";
                 //out << "\t\t\t\t cout<<\"\\t using simulation\"<<endl;\n\t\t\t\t epsilon=10000000000;\n\t\t\t\t hini=MAXSTEP; \n\t\t\t\t SOLVE=3;\n\t\t\t }\n";
-                out << "\n\t\t\t\t SOLVE=3;\n\t\t\t }\n";
-                out << "\t\t\t else if ((strcmp(argv[ii],\"HODE\")==0)||(strcmp(argv[ii],\"hode\")==0)) SOLVE = 2;\n";
-                out << "\t\t\t else if ((strcmp(argv[ii],\"HLSODA\")==0)||(strcmp(argv[ii],\"hlsoda\")==0)) SOLVE = 8;\n";
-                out << "\t\t\t else if ((strcmp(argv[ii],\"SDE\")==0)||(strcmp(argv[ii],\"sde\")==0) || (strcmp(argv[ii],\"HSDE\")==0)||(strcmp(argv[ii],\"hsde\")==0) ) SOLVE = 0;\n";
-                out << "\t\t\t else if ((strcmp(argv[ii],\"TAUG\")==0)||(strcmp(argv[ii],\"taug\")==0)) SOLVE = 9;\n";
-                 out<<"\t\t\t else{\n";
-                out<< "\t\t\t\t std::cerr<<\"\\n\\tError:  -type  <value>\\n\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-                out<<"\t\t }\n";
-                out<<"\t\t continue;\n";
-        out<<"\t }\n";
+out << "\n\t\t\t\t SOLVE=3;\n\t\t\t }\n";
+out << "\t\t\t else if ((strcmp(argv[ii],\"HODE\")==0)||(strcmp(argv[ii],\"hode\")==0)) SOLVE = 2;\n";
+out << "\t\t\t else if ((strcmp(argv[ii],\"HLSODA\")==0)||(strcmp(argv[ii],\"hlsoda\")==0)) SOLVE = 8;\n";
+out << "\t\t\t else if ((strcmp(argv[ii],\"SDE\")==0)||(strcmp(argv[ii],\"sde\")==0) || (strcmp(argv[ii],\"HSDE\")==0)||(strcmp(argv[ii],\"hsde\")==0) ) SOLVE = 0;\n";
+out << "\t\t\t else if ((strcmp(argv[ii],\"TAUG\")==0)||(strcmp(argv[ii],\"taug\")==0)) SOLVE = 9;\n";
+out<<"\t\t\t else{\n";
+out<< "\t\t\t\t std::cerr<<\"\\n\\tError:  -type  <value>\\n\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+out<<"\t\t }\n";
+out<<"\t\t continue;\n";
+out<<"\t }\n";
  //hini code
-        out<<"\t if (strcmp(\"-hini\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t hini=atof(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -hini  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+out<<"\t if (strcmp(\"-hini\", argv[ii])==0){\n";
+out<<"\t\t if (++ii<argc){\n";
+out<<"\t\t\t hini=atof(argv[ii]);\n\t\t }\n";
+out<<"\t\t else{\n";
+out<< "\t\t\t std::cerr<<\"\\nError:  -hini  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+out<<"\t\t continue;\n";
+out<<"\t }\n";
  //atol code
-        out<<"\t if (strcmp(\"-atol\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t atolODE=atof(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -atol  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+out<<"\t if (strcmp(\"-atol\", argv[ii])==0){\n";
+out<<"\t\t if (++ii<argc){\n";
+out<<"\t\t\t atolODE=atof(argv[ii]);\n\t\t }\n";
+out<<"\t\t else{\n";
+out<< "\t\t\t std::cerr<<\"\\nError:  -atol  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+out<<"\t\t continue;\n";
+out<<"\t }\n";
  //rtol code
-        out<<"\t if (strcmp(\"-rtol\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t rtolODE=atof(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -rtol  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+out<<"\t if (strcmp(\"-rtol\", argv[ii])==0){\n";
+out<<"\t\t if (++ii<argc){\n";
+out<<"\t\t\t rtolODE=atof(argv[ii]);\n\t\t }\n";
+out<<"\t\t else{\n";
+out<< "\t\t\t std::cerr<<\"\\nError:  -rtol  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+out<<"\t\t continue;\n";
+out<<"\t }\n";
  //runs code
-        out<<"\t if (strcmp(\"-runs\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t runs=atoi(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -runs  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+out<<"\t if (strcmp(\"-runs\", argv[ii])==0){\n";
+out<<"\t\t if (++ii<argc){\n";
+out<<"\t\t\t runs=atoi(argv[ii]);\n\t\t }\n";
+out<<"\t\t else{\n";
+out<< "\t\t\t std::cerr<<\"\\nError:  -runs  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+out<<"\t\t continue;\n";
+out<<"\t }\n";
  //ftime code
-        out<<"\t if (strcmp(\"-ftime\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t ftime=atof(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -ftime  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+out<<"\t if (strcmp(\"-ftime\", argv[ii])==0){\n";
+out<<"\t\t if (++ii<argc){\n";
+out<<"\t\t\t ftime=atof(argv[ii]);\n\t\t }\n";
+out<<"\t\t else{\n";
+out<< "\t\t\t std::cerr<<\"\\nError:  -ftime  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+out<<"\t\t continue;\n";
+out<<"\t }\n";
 
 //stime code
-        out<<"\t if (strcmp(\"-stime\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t OUTPUT=true;\n";
-                out<<"\t\t\t stime=atof(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -stime  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+out<<"\t if (strcmp(\"-stime\", argv[ii])==0){\n";
+out<<"\t\t if (++ii<argc){\n";
+out<<"\t\t\t OUTPUT=true;\n";
+out<<"\t\t\t stime=atof(argv[ii]);\n\t\t }\n";
+out<<"\t\t else{\n";
+out<< "\t\t\t std::cerr<<\"\\nError:  -stime  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+out<<"\t\t continue;\n";
+out<<"\t }\n";
 
 //itime code
-        out<<"\t if (strcmp(\"-itime\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t itime=atof(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -itime <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+out<<"\t if (strcmp(\"-itime\", argv[ii])==0){\n";
+out<<"\t\t if (++ii<argc){\n";
+out<<"\t\t\t itime=atof(argv[ii]);\n\t\t }\n";
+out<<"\t\t else{\n";
+out<< "\t\t\t std::cerr<<\"\\nError:  -itime <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+out<<"\t\t continue;\n";
+out<<"\t }\n";
 
 //bound file code
-        out<<"\t if (strcmp(\"-b\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t fbound=string(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -b  <file_name>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+out<<"\t if (strcmp(\"-b\", argv[ii])==0){\n";
+out<<"\t\t if (++ii<argc){\n";
+out<<"\t\t\t fbound=string(argv[ii]);\n\t\t }\n";
+out<<"\t\t else{\n";
+out<< "\t\t\t std::cerr<<\"\\nError:  -b  <file_name>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+out<<"\t\t continue;\n";
+out<<"\t }\n";
 //epsilon TAUleaping
-        out<<"\t if (strcmp(\"-taueps\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t epsTAU=atof(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -taueps  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+out<<"\t if (strcmp(\"-taueps\", argv[ii])==0){\n";
+out<<"\t\t if (++ii<argc){\n";
+out<<"\t\t\t epsTAU=atof(argv[ii]);\n\t\t }\n";
+out<<"\t\t else{\n";
+out<< "\t\t\t std::cerr<<\"\\nError:  -taueps  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+out<<"\t\t continue;\n";
+out<<"\t }\n";
 
 //seed of random number generator
-        out<<"\t if (strcmp(\"-seed\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t seed=atol(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -seed  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+out<<"\t if (strcmp(\"-seed\", argv[ii])==0){\n";
+out<<"\t\t if (++ii<argc){\n";
+out<<"\t\t\t seed=atol(argv[ii]);\n\t\t }\n";
+out<<"\t\t else{\n";
+out<< "\t\t\t std::cerr<<\"\\nError:  -seed  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+out<<"\t\t continue;\n";
+out<<"\t }\n";
 
 
 //initial file code
-        out<<"\t if (strcmp(\"-init\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t finit=string(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -init  <file_name>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+out<<"\t if (strcmp(\"-init\", argv[ii])==0){\n";
+out<<"\t\t if (++ii<argc){\n";
+out<<"\t\t\t finit=string(argv[ii]);\n\t\t }\n";
+out<<"\t\t else{\n";
+out<< "\t\t\t std::cerr<<\"\\nError:  -init  <file_name>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+out<<"\t\t continue;\n";
+out<<"\t }\n";
 
-        out<<"\t if (strcmp(\"-parm\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t fparm=string(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -parm  <file_name>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+out<<"\t if (strcmp(\"-parm\", argv[ii])==0){\n";
+out<<"\t\t if (++ii<argc){\n";
+out<<"\t\t\t fparm=string(argv[ii]);\n\t\t }\n";
+out<<"\t\t else{\n";
+out<< "\t\t\t std::cerr<<\"\\nError:  -parm  <file_name>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+out<<"\t\t continue;\n";
+out<<"\t }\n";
 
-        out<< "\t\t\t std::cerr<<\"\\nError:  unknown parameter \"<<argv[ii]<<\"\\n\\n\";\n\t\t\t exit(EXIT_FAILURE);\n";
-    out<<" }\n\n\n";
+out<< "\t\t\t std::cerr<<\"\\nError:  unknown parameter \"<<argv[ii]<<\"\\n\\n\";\n\t\t\t exit(EXIT_FAILURE);\n";
+out<<" }\n\n\n";
 
 
-    out<<" if (stime==0.0)  stime=ftime;\n\n";
+out<<" if (stime==0.0)  stime=ftime;\n\n";
 
-    out << " time(&time_1);\n\n";
+out << " time(&time_1);\n\n";
 
-    out << " cout<<\"\\n=====================INPUT PARAMETERS======================\\n\";\n";
-    out << " cout<<\"\\n\\tCompact CPP code: On\\n\";\n";
-    out << " cout<<\"\\tType solution: \"<<SOLVE<<\"\\n\";\n";
-    if (MASSACTION)
-        out << " cout<<\"\\tTransition policy: Genelarized Mass Action policy\\n\";\n";
-    else
-        out << " cout<<\"\\tTransition policy: Minimum\\n\";\n";
-    out << " cout<<\"\\tSolution final time: \"<<ftime<<\"\\n\";\n";
-    out << " cout<<\"\\tInitial size step: \"<<hini<<\"\\n\";\n";
-    out << " cout<<\"\\tInitial  time: \"<<itime<<\"\\n\";\n";
-    out << " cout<<\"\\tAbosolute tolerance: \"<<atolODE<<\"\\n\";\n";
-    out << " cout<<\"\\tRelative tolerance: \"<<rtolODE<<\"\\n\";\n";
+out << " cout<<\"\\n=====================INPUT PARAMETERS======================\\n\";\n";
+out << " cout<<\"\\n\\tCompact CPP code: On\\n\";\n";
+out << " cout<<\"\\tType solution: \"<<SOLVE<<\"\\n\";\n";
+if (MASSACTION)
+    out << " cout<<\"\\tTransition policy: Genelarized Mass Action policy\\n\";\n";
+else
+    out << " cout<<\"\\tTransition policy: Minimum\\n\";\n";
+out << " cout<<\"\\tSolution final time: \"<<ftime<<\"\\n\";\n";
+out << " cout<<\"\\tInitial size step: \"<<hini<<\"\\n\";\n";
+out << " cout<<\"\\tInitial  time: \"<<itime<<\"\\n\";\n";
+out << " cout<<\"\\tAbosolute tolerance: \"<<atolODE<<\"\\n\";\n";
+out << " cout<<\"\\tRelative tolerance: \"<<rtolODE<<\"\\n\";\n";
     //out << " if ((strcmp(argv[2],\"ODE\")!=0)&&(strcmp(argv[2],\"ode\")!=0)){\n";
-    out << " cout<<\"\\tEpsilon value for TAU-leaping: \"<<epsTAU<<\"\\n\";\n";
-    out << " cout<<\"\\tSolution runs: \"<<runs<<\"\\n\";\n";
-    out << " if (fbound!=\"\") cout<<\"\\tBound file: \"<<fbound<<\"\\n\";\n";
-    out << " if (finit!=\"\") cout<<\"\\tInitial marking file: \"<<finit<<\"\\n\";\n";
-    out << " if (fparm!=\"\") cout<<\"\\tInitial parameter file: \"<<fparm<<\"\\n\";\n";
+out << " cout<<\"\\tEpsilon value for TAU-leaping: \"<<epsTAU<<\"\\n\";\n";
+out << " cout<<\"\\tSolution runs: \"<<runs<<\"\\n\";\n";
+out << " if (fbound!=\"\") cout<<\"\\tBound file: \"<<fbound<<\"\\n\";\n";
+out << " if (finit!=\"\") cout<<\"\\tInitial marking file: \"<<finit<<\"\\n\";\n";
+out << " if (fparm!=\"\") cout<<\"\\tInitial parameter file: \"<<fparm<<\"\\n\";\n";
     //automaton
-    if (AUTOMATON)
-        out << " cout<<\"\\tAutomaton input: \"<<argv[2]<<\"\\n\";\n";
+if (AUTOMATON)
+    out << " cout<<\"\\tAutomaton input: \"<<argv[2]<<\"\\n\";\n";
     //automaton
-    out << " cout<<\"\\tDetailed output: \"<<stime<<\"\\n\";\n";
-    out << " cout<<\"\\n===========================================================\\n\";";
-    out << " cout<<\"\\n\\nSTART EXECUTION...\"<<endl;\n\n";
+out << " cout<<\"\\tDetailed output: \"<<stime<<\"\\n\";\n";
+out << " cout<<\"\\n===========================================================\\n\";";
+out << " cout<<\"\\n\\nSTART EXECUTION...\"<<endl;\n\n";
 
-    cout << "\n\nSTART EXECUTION..." << endl;
-    out << " struct InfPlace pt;\n";
-    out << " struct InfTr t;\n";
-    out << " Equation eq;\n Elem el;\n";
-    if (MASSACTION)
-        out << " SystEqMas se(" << npl << "," << ntr << ",places,transitions,itime,seed);\n";
-    else
-        out << " SystEqMin se(" << npl << "," << ntr << ",places,transitions,itime,seed);\n";
-    out << " vector< struct InfPlace> Vpl;\n\n";
+cout << "\n\nSTART EXECUTION..." << endl;
+out << " struct InfPlace pt;\n";
+out << " struct InfTr t;\n";
+out << " Equation eq;\n Elem el;\n";
+if (MASSACTION)
+    out << " SystEqMas se(" << npl << "," << ntr << ",places,transitions,itime,seed);\n";
+else
+    out << " SystEqMin se(" << npl << "," << ntr << ",places,transitions,itime,seed);\n";
+out << " vector< struct InfPlace> Vpl;\n\n";
 
     //Opening transition file
-    out<< "\n string fileT=(string(argv[0])+\".transODE\");\n";
-    out<< " ifstream finT(fileT.c_str(), std::ifstream::in);\n";
-    out<< " if (!finT){\n";
-    out<< "\t cerr<<\"Error:  it is not possible to open output file for transition description \"<<fileT<< \"\\n\";\n";
-	out<< "\t return false;\n\t}\n";
+out<< "\n string fileT=(string(argv[0])+\".transODE\");\n";
+out<< " ifstream finT(fileT.c_str(), std::ifstream::in);\n";
+out<< " if (!finT){\n";
+out<< "\t cerr<<\"Error:  it is not possible to open output file for transition description \"<<fileT<< \"\\n\";\n";
+out<< "\t return false;\n\t}\n";
 
 
-    std::string fileT=(path+".solver.transODE");
-    ofstream foutT(fileT.c_str(), std::ofstream::out);
-	if (!foutT)
-	{
-		cerr<<"\nError:  it is not possible to open output file for transition description "<<fileT<< "\n";
-		exit(EXIT_FAILURE);
-	}
+std::string fileT=(path+".solver.transODE");
+ofstream foutT(fileT.c_str(), std::ofstream::out);
+if (!foutT)
+{
+    cerr<<"\nError:  it is not possible to open output file for transition description "<<fileT<< "\n";
+    exit(EXIT_FAILURE);
+}
 
 
-    map <std::string,bool> mapOfFunctions;
-    if (!FLUXB)
-        out<<" map <std::string,double (*)(double *Value, map <string,int>& NumTrans, map <string,int>& NumPlaces, const vector <string>& NameTrans, const struct InfTr* Trans,  const int Tran, const double& Time)> mapOfFunctions;\n";
-    else
-        out<<" map <std::string,double (*)(double *Value,  vector<class FBGLPK::LPprob>& vec_fluxb, map <string,int>& NumTrans, map <string,int>& NumPlaces, const vector <string>& NameTrans, const struct InfTr* Trans,  const int Tran, const double& Time)> mapOfFunctions;\n";
-    
-    out<<" mapOfFunctions[std::string(\"nullptr\")]= nullptr;\n";
+map <std::string,bool> mapOfFunctions;
+if (!FLUXB)
+    out<<" map <std::string,double (*)(double *Value, map <string,int>& NumTrans, map <string,int>& NumPlaces, const vector <string>& NameTrans, const struct InfTr* Trans,  const int Tran, const double& Time)> mapOfFunctions;\n";
+else
+    out<<" map <std::string,double (*)(double *Value,  vector<class FBGLPK::LPprob>& vec_fluxb, map <string,int>& NumTrans, map <string,int>& NumPlaces, const vector <string>& NameTrans, const struct InfTr* Trans,  const int Tran, const double& Time)> mapOfFunctions;\n";
 
-    for (int tt = 0; tt < ntr; tt++)
+out<<" mapOfFunctions[std::string(\"nullptr\")]= nullptr;\n";
+
+for (int tt = 0; tt < ntr; tt++)
+{
+    std::string enable="false";
+    std::string GenFun="nullptr";
+    std::string FuncT="nullptr";
+    std::string rate=std::to_string(tabt[tt].mean_t);
+
+    if (tabt[tt].general_function!=NULL)
     {
-        std::string enable="false";
-        std::string GenFun="nullptr";
-        std::string FuncT="nullptr";
-        std::string rate=std::to_string(tabt[tt].mean_t);
-
-        if (tabt[tt].general_function!=NULL)
-        {
-
-            cout<<tabt[tt].general_function<<endl;
-            std::string tmp_st(tabt[tt].general_function);
-            char* stoken=strtok((char*)tmp_st.c_str(),delims);
+        cout<<tabt[tt].general_function<<endl;
+        std::string tmp_st(tabt[tt].general_function);
+        char* stoken=strtok((char*)tmp_st.c_str(),delims);
             //to remove FN
-            stoken=strtok(NULL,delims);
-            while (stoken!=NULL){
-                if (strcmp(stoken,"Discrete")==0 ||strcmp(stoken,"discrete")==0 || strcmp(stoken,"D")==0)
-                   enable="true";
-                else
-                    if (isdigit(stoken[0]))
-                         rate =stoken;
-                         else{
-                            GenFun=stoken;
-                            FuncT=std::string(stoken);
-                            if (mapOfFunctions.find(FuncT)==mapOfFunctions.end()){
+            //da rivedere
+        stoken=strtok(NULL,delims);
+        while (stoken!=NULL){
+            if (strcmp(stoken,"Discrete")==0 ||strcmp(stoken,"discrete")==0 || strcmp(stoken,"D")==0)
+             enable="true";
+         else
+            if (isdigit(stoken[0]))
+               rate =stoken;
+           else{
+            GenFun=std::string("")+tabt[tt].trans_name+"_general";
+            FuncT=std::string("&")+tabt[tt].trans_name+"_general";
+            if (mapOfFunctions.find(FuncT)==mapOfFunctions.end()){
                                 //out<<"mapOfFunctions[FuncT]=std::string(&)+std::string(stoken);\n";
-                                out<<"mapOfFunctions[\""+FuncT+"\"]=&"+stoken+";\n";
-                                mapOfFunctions[FuncT]=true;
-                            }
-                         }
-                stoken=strtok(NULL,delims);
+                out<<"mapOfFunctions[\""+FuncT+"\"]=&"+std::string("&")+tabt[tt].trans_name+"_general"+";\n";
+                mapOfFunctions[FuncT]=true;
             }
-        rate="1.0";
         }
-        foutT<<enable<<" "<<GenFun<<" "<<FuncT<<" "<<rate<<"\n";
-        l_ptr = GET_INPUT_LIST(tt);
+        stoken=strtok(NULL,delims);
+    }
+    rate="1.0";
+}
+foutT<<enable<<" "<<GenFun<<" "<<FuncT<<" "<<rate<<"\n";
+l_ptr = GET_INPUT_LIST(tt);
 
-        while (l_ptr != NULL)
-        {
-            pp = GET_PLACE_INDEX(l_ptr);
-            TP[tt][pp] = -l_ptr->molt;
-            TPI[tt][pp] = -l_ptr->molt;
-            foutT<<pp<<" "<<l_ptr->molt<<"\n";
-            l_ptr = NEXT_NODE(l_ptr);
-        }
+while (l_ptr != NULL)
+{
+    pp = GET_PLACE_INDEX(l_ptr);
+    TP[tt][pp] = -l_ptr->molt;
+    TPI[tt][pp] = -l_ptr->molt;
+    foutT<<pp<<" "<<l_ptr->molt<<"\n";
+    l_ptr = NEXT_NODE(l_ptr);
+}
         //as separetor
-        foutT<<-1<<" "<<-1<<"\n";
+foutT<<-1<<" "<<-1<<"\n";
         //as separetor
-        l_ptr = GET_INHIBITOR_LIST(tt);
-        while (l_ptr != NULL)
-        {
-            pp = GET_PLACE_INDEX(l_ptr);
+l_ptr = GET_INHIBITOR_LIST(tt);
+while (l_ptr != NULL)
+{
+    pp = GET_PLACE_INDEX(l_ptr);
             //TP[tt][pp]+=l_ptr->molt;
-             foutT<<pp<<" "<<l_ptr->molt<<"\n";
+    foutT<<pp<<" "<<l_ptr->molt<<"\n";
            // out << " pt.Id = " << pp << ";\n pt.Card = " << l_ptr->molt << ";\n t.InhPlaces.push_back(pt);\n";
-            l_ptr = NEXT_NODE(l_ptr);
-        }
+    l_ptr = NEXT_NODE(l_ptr);
+}
         //as separetor
-        foutT<<-1<<" "<<-1<<"\n";
+foutT<<-1<<" "<<-1<<"\n";
         //as separetor
-        l_ptr = GET_OUTPUT_LIST(tt);
-        while (l_ptr != NULL)
-        {
-            pp = GET_PLACE_INDEX(l_ptr);
-            TP[tt][pp] += l_ptr->molt;
-            foutT<<pp<<"\n";
-            l_ptr = NEXT_NODE(l_ptr);
-        }
+l_ptr = GET_OUTPUT_LIST(tt);
+while (l_ptr != NULL)
+{
+    pp = GET_PLACE_INDEX(l_ptr);
+    TP[tt][pp] += l_ptr->molt;
+    foutT<<pp<<"\n";
+    l_ptr = NEXT_NODE(l_ptr);
+}
         //as separetor
-        foutT<<-1<<"\n";
+foutT<<-1<<"\n";
         //as separetor
-        for (int i=0;i<npl;i++){
-            if (TP[tt][i]!=0){
-                foutT<<i<<" "<< TP[tt][i]<<"\n";
-            }
-        }
-        //as separetor
-        foutT<<-1<<" "<<-1<<"\n";
-        //as separetor
+for (int i=0;i<npl;i++){
+    if (TP[tt][i]!=0){
+        foutT<<i<<" "<< TP[tt][i]<<"\n";
     }
-    out<< "//Loop Transitions \n for (int tt = 0; tt <"<<ntr<<"; tt++){";
-    out << "\n\t t.InPlaces.clear();\n\t t.InhPlaces.clear();\n\t t.InOuPlaces.clear();\n\t t.Places.clear();\n\t std::string discrete,GenFun,FuncT;\n";
-    out << "\t finT>> discrete >> GenFun >>FuncT>>t.rate;\n";
-    out << "\t if (discrete==\"false\") t.discrete=false; else t.discrete=true;\n";
-    out << "\t if (GenFun==\"nullptr\") t.GenFun=\"\"; else t.GenFun=GenFun;\n";
-    out << "\t t.FuncT=mapOfFunctions[FuncT];\n";
+}
+        //as separetor
+foutT<<-1<<" "<<-1<<"\n";
+        //as separetor
+}
+out<< "//Loop Transitions \n for (int tt = 0; tt <"<<ntr<<"; tt++){";
+out << "\n\t t.InPlaces.clear();\n\t t.InhPlaces.clear();\n\t t.InOuPlaces.clear();\n\t t.Places.clear();\n\t std::string discrete,GenFun,FuncT;\n";
+out << "\t finT>> discrete >> GenFun >>FuncT>>t.rate;\n";
+out << "\t if (discrete==\"false\") t.discrete=false; else t.discrete=true;\n";
+out << "\t if (GenFun==\"nullptr\") t.GenFun=\"\"; else t.GenFun=GenFun;\n";
+out << "\t t.FuncT=mapOfFunctions[FuncT];\n";
     //input places
-    out << "\n//// Input places\n";
-    out << "\t do{\n";
-    out << "\t\t finT>>pt.Id>>pt.Card;\n";
-    out << "\t\t if (pt.Id!=-1) {\n";
-    out << "\t\t\t t.InPlaces.push_back(pt);\n"<<" \t\t\t t.InOuPlaces.insert(pt.Id);\n\t\t\t}\n";
-    out << "\t } while(pt.Id!=-1);\n";
+out << "\n//// Input places\n";
+out << "\t do{\n";
+out << "\t\t finT>>pt.Id>>pt.Card;\n";
+out << "\t\t if (pt.Id!=-1) {\n";
+out << "\t\t\t t.InPlaces.push_back(pt);\n"<<" \t\t\t t.InOuPlaces.insert(pt.Id);\n\t\t\t}\n";
+out << "\t } while(pt.Id!=-1);\n";
     //inhibitor places
-    out << "\n//// Inhibitor places\n";
-    out << "\t do{\n";
-    out << "\t\t finT>>pt.Id>>pt.Card;\n";
-    out << "\t\t if (pt.Id!=-1) {\n";
-    out << "\t\t\t t.InhPlaces.push_back(pt);\n\t\t\t}\n";
-    out << "\t } while(pt.Id!=-1);\n";
+out << "\n//// Inhibitor places\n";
+out << "\t do{\n";
+out << "\t\t finT>>pt.Id>>pt.Card;\n";
+out << "\t\t if (pt.Id!=-1) {\n";
+out << "\t\t\t t.InhPlaces.push_back(pt);\n\t\t\t}\n";
+out << "\t } while(pt.Id!=-1);\n";
     //output places
-    out << "\n//// Ouput places\n";
-    out << "\t do{\n";
-    out << "\t\t finT>>pt.Id;\n";
-    out << "\t\t if (pt.Id!=-1) {\n";
-    out << "\t\t\t t.InOuPlaces.insert(pt.Id);\n\t\t\t}\n";
-    out << "\t } while(pt.Id!=-1);\n";
-    out << "\t do{\n";
-    out << "\t\t finT>>pt.Id>>pt.Card;\n";
-    out << "\t\t if (pt.Id!=-1) {\n";
-    out << "\t\t\t t.Places.push_back(pt);\n\t\t\t}\n";
-    out << "\t } while(pt.Id!=-1);\n\n";
-    out << "\t se.InsertTran(tt,t);\n";
-    out<< " }\n";
+out << "\n//// Ouput places\n";
+out << "\t do{\n";
+out << "\t\t finT>>pt.Id;\n";
+out << "\t\t if (pt.Id!=-1) {\n";
+out << "\t\t\t t.InOuPlaces.insert(pt.Id);\n\t\t\t}\n";
+out << "\t } while(pt.Id!=-1);\n";
+out << "\t do{\n";
+out << "\t\t finT>>pt.Id>>pt.Card;\n";
+out << "\t\t if (pt.Id!=-1) {\n";
+out << "\t\t\t t.Places.push_back(pt);\n\t\t\t}\n";
+out << "\t } while(pt.Id!=-1);\n\n";
+out << "\t se.InsertTran(tt,t);\n";
+out<< " }\n";
 //to remove implicit places
-    if (ErrorLU)
-    {
-        cout<<"\n\tWarning: no imlicit places are considered.\n\n";
-        implPlace.clear();
-    }
+if (ErrorLU)
+{
+    cout<<"\n\tWarning: no imlicit places are considered.\n\n";
+    implPlace.clear();
+}
 //to remove implicit places
 
-    out<< " finT.close();\n";
-    out<< " mapOfFunctions.clear();\n";
+out<< " finT.close();\n";
+out<< " mapOfFunctions.clear();\n";
 
 //Places
     //Opening transition file
-    out<< "\n string fileP=(string(argv[0])+\".placesODE\");\n";
-    out<< " ifstream finP(fileP.c_str(), std::ifstream::in);\n";
-    out<< " if (!finP){\n";
-    out<< "\t cerr<<\"Error:  it is not possible to open output file for place description \"<<fileT<< \"\\n\";\n";
-	out<< "\t return false;\n\t}\n";
+out<< "\n string fileP=(string(argv[0])+\".placesODE\");\n";
+out<< " ifstream finP(fileP.c_str(), std::ifstream::in);\n";
+out<< " if (!finP){\n";
+out<< "\t cerr<<\"Error:  it is not possible to open output file for place description \"<<fileT<< \"\\n\";\n";
+out<< "\t return false;\n\t}\n";
 
-    std::string fileP=(path+".solver.placesODE");
-    ofstream foutP(fileP.c_str(), std::ofstream::out);
-	if (!foutP)
-	{
-		cerr<<"\nError:  it is not possible to open output file for place description "<<fileT<< "\n";
-		exit(EXIT_FAILURE);
-	}
+std::string fileP=(path+".solver.placesODE");
+ofstream foutP(fileP.c_str(), std::ofstream::out);
+if (!foutP)
+{
+    cerr<<"\nError:  it is not possible to open output file for place description "<<fileT<< "\n";
+    exit(EXIT_FAILURE);
+}
 
 
-    out<< "//Loop Places \n for (int pp = 0; pp <"<<npl<<"; pp++){\n";
-    out << "\t eq.clear();\n";
-    out << "\t int IncDec,tran;\n";
-    out << "\t do{\n";
-    out << "\t\t finP>>IncDec>>tran;\n";
-    out << "\t\t if (tran!=-2) {\n";
-    out << "\t\t\t el.setIncDec(IncDec);\n\t\t\t el.setIdTran(tran);\n\t\t\t eq.Insert(el);\n\t\t\t}\n";
-    out << "\t } while(tran!=-2);\n";
-    out << "\t Vpl.clear();\n";
-    out << "\t do{\n";
-    out << "\t\t finP>>pt.Id>>pt.Card;\n";
-    out << "\t\t if (pt.Id!=-2) {\n";
-    out << "\t\t\t Vpl.push_back(pt);\n\t\t\t}\n";
-    out << "\t } while(pt.Id!=-2);\n";
-    out << "\t eq.Insert(Vpl);\n";
-    out << "\t int total,lbound,ubound;\n";
-    out << "\t finP>>total>>lbound>>ubound;\n";
-    out << "\t se.InsertEq(pp,eq,total,lbound,ubound);\n";
-    out << " }";
+out<< "//Loop Places \n for (int pp = 0; pp <"<<npl<<"; pp++){\n";
+out << "\t eq.clear();\n";
+out << "\t int IncDec,tran;\n";
+out << "\t do{\n";
+out << "\t\t finP>>IncDec>>tran;\n";
+out << "\t\t if (tran!=-2) {\n";
+out << "\t\t\t el.setIncDec(IncDec);\n\t\t\t el.setIdTran(tran);\n\t\t\t eq.Insert(el);\n\t\t\t}\n";
+out << "\t } while(tran!=-2);\n";
+out << "\t Vpl.clear();\n";
+out << "\t do{\n";
+out << "\t\t finP>>pt.Id>>pt.Card;\n";
+out << "\t\t if (pt.Id!=-2) {\n";
+out << "\t\t\t Vpl.push_back(pt);\n\t\t\t}\n";
+out << "\t } while(pt.Id!=-2);\n";
+out << "\t eq.Insert(Vpl);\n";
+out << "\t int total,lbound,ubound;\n";
+out << "\t finP>>total>>lbound>>ubound;\n";
+out << "\t se.InsertEq(pp,eq,total,lbound,ubound);\n";
+out << " }";
 
-    for (pp = 0; pp < npl; pp++)
-    {
+for (pp = 0; pp < npl; pp++)
+{
         for (int tt = 0; tt < ntr; tt++) //all places
         {
             if (TP[tt][pp] != 0)
@@ -953,21 +945,21 @@ void build_ODECompact(ofstream &out, std::string path, std::string net)
     PTout<<"#PLACE  ID\n";
     for (int pp = 0; pp < npl; pp++)
     {
-       PTout<<tabp[pp].place_name<<"\t"<<pp<<endl;
-    }
-    PTout<<"#TRANSITION  ID\n";
-    for (int tt = 0; tt < ntr; tt++)
-    {
-       PTout<<tabt[tt].trans_name<<"\t"<<tt<<endl;
-    }
-    PTout.close();
+     PTout<<tabp[pp].place_name<<"\t"<<pp<<endl;
+ }
+ PTout<<"#TRANSITION  ID\n";
+ for (int tt = 0; tt < ntr; tt++)
+ {
+     PTout<<tabt[tt].trans_name<<"\t"<<tt<<endl;
+ }
+ PTout.close();
 
-    cout << "===================== INFO =====================" << endl;
-    cout << " Total Time: " << setprecision(7) << timeGlobal << " sec" << endl;
-    cout << " Total Used Memory: " << usage1.ru_maxrss << "KB" << endl;
-    cout << " Output saved in: " << net << ".cpp" << "\n";
-    cout << "================================================\n" << endl;
-}/* End build_ODE */
+ cout << "===================== INFO =====================" << endl;
+ cout << " Total Time: " << setprecision(7) << timeGlobal << " sec" << endl;
+ cout << " Total Used Memory: " << usage1.ru_maxrss << "KB" << endl;
+ cout << " Output saved in: " << net << ".cpp" << "\n";
+ cout << "================================================\n" << endl;
+}/* End build_ODECompact */
 
 
 
@@ -978,8 +970,9 @@ void build_ODECompact(ofstream &out, std::string path, std::string net)
 /* PARAMETERS : */
 /* RETURN VALUE : */
 /**************************************************************/
-void build_ODE(ofstream &out, std::string path, std::string net)
-{
+ void 
+ build_ODE(ofstream &out, std::string path, std::string net)
+ {
     /* Init build_ODE */
 
 
@@ -1009,32 +1002,31 @@ void build_ODE(ofstream &out, std::string path, std::string net)
         exit(EXIT_FAILURE);
     }
     hout << "namespace SDE {\n";
+    for (int i = 0; i < npl; i++)
+    {
+        hout << "#define " << tabp[i].place_name << "_place " << i<<endl;
+    }
     set<std::string> function_names;
     for (int tt = 0; tt < ntr; tt++)
     {
-        if (tabt[tt].general_function!=NULL){
-            //cout<<tabt[tt].general_function
-            std::string tmp_st(tabt[tt].general_function);
-            char* stoken=strtok((char*)tmp_st.c_str(),delims);
-             stoken=strtok(NULL,delims);
-            //vector<std::string>token;
-            while (stoken!=NULL){
-                if ((strcmp(stoken,"Discrete")!=0 || strcmp(stoken,"discrete")!=0 || strcmp(stoken,"D")!=0)&& (!isdigit(stoken[0]))&& (function_names.find(stoken)==function_names.end())){
-                   if (!FLUXB)
-                        hout<<"double "<<stoken<<"(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n";
-                   else
-                        hout<<"double "<<stoken<<"(double *Value,vector<class FBGLPK::LPprob>& vec_fluxb,  map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n";
-                   function_names.insert(stoken);
-                }
-                stoken=strtok(NULL,delims);
-            }
-
+        if (tabt[tt].general_function != NULL)
+        {
+            if (!FLUXB)
+                hout<<"double "<<tabt[tt].trans_name<<"_general(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n";
+            else
+                hout<<"double "<<tabt[tt].trans_name<<"_general(double *Value,vector<class FBGLPK::LPprob>& vec_fluxb,  map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n"; 
         }
     }
+    // GESTIONE FITTIZIA DEL VETTORE FILES
+    hout << "extern vector<string> name_file;\n";
+    hout << "#define constantList_txt 0;\n";
+    hout << "#define constantTable_txt 1\n";
     hout<<"};\n";
     hout.close();
         //for transition function rates
-        out << "using namespace SDE;\nextern double epsilon;\n\n";
+    out << "using namespace SDE;\nextern double epsilon;\n\n";
+
+    //then I'll have to define the extern vector files
 
     out << " string places[]={";
     for (int i = 0; i < npl; i++)
@@ -1089,11 +1081,9 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     out << " std::string fbound=\"\", finit=\"\", fparm=\"\";\n";
     out << " double hini = 1e-6, atolODE = 1e-6, rtolODE=1e-6, ftime=1.0, stime=0.0, itime=0.0, epsTAU=0.1;\n\n";
     out << " cout<<\"\\n\\n =========================================================\\n\";\n";
-    out << " cout<<\"|	              ODE/SDE Solver                       |\\n\";\n";
+    out << " cout<<\"|                ODE/SDE Solver                       |\\n\";\n";
     out << " cout<<\" =========================================================\\n\";\n";
     out << " cout<<\"\\n If you find any bug, send an email to beccuti@di.unito.it\\n\";\n\n";
-
-
 
     //automaton
     if (AUTOMATON)
@@ -1135,130 +1125,130 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     else
         out<<" int ii=2;\n";
     out<<" for (; ii<argc; ii++){\n";
-        out<<"\t if (strcmp(\"-type\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out << "\t\t\t if ((strcmp(argv[ii],\"ODE-E\")==0)||(strcmp(argv[ii],\"ode-e\")==0)) SOLVE = 1;\n";
-                out << "\t\t\t else if ((strcmp(argv[ii],\"ODE-RKF\")==0)||(strcmp(argv[ii],\"ode-rkf\")==0)) SOLVE = 5;\n";
-                out << "\t\t\t else if ((strcmp(argv[ii],\"ODE45\")==0)||(strcmp(argv[ii],\"ode45\")==0)) SOLVE = 6;\n";
-                out << "\t\t\t else if ((strcmp(argv[ii],\"LSODA\")==0)||(strcmp(argv[ii],\"lsoda\")==0)) SOLVE = 7;\n";
-                out << "\t\t\t else if ((strcmp(argv[ii],\"STEP\")==0)||(strcmp(argv[ii],\"step\")==0)) SOLVE = 4;\n";
-                out << "\t\t\t else if ((strcmp(argv[ii],\"SSA\")==0)||(strcmp(argv[ii],\"ssa\")==0)){\n";
+    out<<"\t if (strcmp(\"-type\", argv[ii])==0){\n";
+    out<<"\t\t if (++ii<argc){\n";
+    out << "\t\t\t if ((strcmp(argv[ii],\"ODE-E\")==0)||(strcmp(argv[ii],\"ode-e\")==0)) SOLVE = 1;\n";
+    out << "\t\t\t else if ((strcmp(argv[ii],\"ODE-RKF\")==0)||(strcmp(argv[ii],\"ode-rkf\")==0)) SOLVE = 5;\n";
+    out << "\t\t\t else if ((strcmp(argv[ii],\"ODE45\")==0)||(strcmp(argv[ii],\"ode45\")==0)) SOLVE = 6;\n";
+    out << "\t\t\t else if ((strcmp(argv[ii],\"LSODA\")==0)||(strcmp(argv[ii],\"lsoda\")==0)) SOLVE = 7;\n";
+    out << "\t\t\t else if ((strcmp(argv[ii],\"STEP\")==0)||(strcmp(argv[ii],\"step\")==0)) SOLVE = 4;\n";
+    out << "\t\t\t else if ((strcmp(argv[ii],\"SSA\")==0)||(strcmp(argv[ii],\"ssa\")==0)){\n";
                 //out << "\t\t\t\t cout<<\"\\t using simulation\"<<endl;\n\t\t\t\t epsilon=10000000000;\n\t\t\t\t hini=MAXSTEP; \n\t\t\t\t SOLVE=3;\n\t\t\t }\n";
-                out << "\n\t\t\t\t SOLVE=3;\n\t\t\t }\n";
-                out << "\t\t\t else if ((strcmp(argv[ii],\"HODE\")==0)||(strcmp(argv[ii],\"hode\")==0)) SOLVE = 2;\n";
-                out << "\t\t\t else if ((strcmp(argv[ii],\"HLSODA\")==0)||(strcmp(argv[ii],\"hlsoda\")==0)) SOLVE = 8;\n";
-                out << "\t\t\t else if ((strcmp(argv[ii],\"SDE\")==0)||(strcmp(argv[ii],\"sde\")==0) || (strcmp(argv[ii],\"HSDE\")==0)||(strcmp(argv[ii],\"hsde\")==0) ) SOLVE = 0;\n";
-                out << "\t\t\t else if ((strcmp(argv[ii],\"TAUG\")==0)||(strcmp(argv[ii],\"taug\")==0)) SOLVE = 9;\n";
-                 out<<"\t\t\t else{\n";
-                out<< "\t\t\t\t std::cerr<<\"\\n\\tError:  -type  <value>\\n\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-                out<<"\t\t }\n";
-                out<<"\t\t continue;\n";
-        out<<"\t }\n";
+    out << "\n\t\t\t\t SOLVE=3;\n\t\t\t }\n";
+    out << "\t\t\t else if ((strcmp(argv[ii],\"HODE\")==0)||(strcmp(argv[ii],\"hode\")==0)) SOLVE = 2;\n";
+    out << "\t\t\t else if ((strcmp(argv[ii],\"HLSODA\")==0)||(strcmp(argv[ii],\"hlsoda\")==0)) SOLVE = 8;\n";
+    out << "\t\t\t else if ((strcmp(argv[ii],\"SDE\")==0)||(strcmp(argv[ii],\"sde\")==0) || (strcmp(argv[ii],\"HSDE\")==0)||(strcmp(argv[ii],\"hsde\")==0) ) SOLVE = 0;\n";
+    out << "\t\t\t else if ((strcmp(argv[ii],\"TAUG\")==0)||(strcmp(argv[ii],\"taug\")==0)) SOLVE = 9;\n";
+    out<<"\t\t\t else{\n";
+    out<< "\t\t\t\t std::cerr<<\"\\n\\tError:  -type  <value>\\n\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+    out<<"\t\t }\n";
+    out<<"\t\t continue;\n";
+    out<<"\t }\n";
  //hini code
-        out<<"\t if (strcmp(\"-hini\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t hini=atof(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -hini  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+    out<<"\t if (strcmp(\"-hini\", argv[ii])==0){\n";
+    out<<"\t\t if (++ii<argc){\n";
+    out<<"\t\t\t hini=atof(argv[ii]);\n\t\t }\n";
+    out<<"\t\t else{\n";
+    out<< "\t\t\t std::cerr<<\"\\nError:  -hini  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+    out<<"\t\t continue;\n";
+    out<<"\t }\n";
  //atol code
-        out<<"\t if (strcmp(\"-atol\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t atolODE=atof(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -atol  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+    out<<"\t if (strcmp(\"-atol\", argv[ii])==0){\n";
+    out<<"\t\t if (++ii<argc){\n";
+    out<<"\t\t\t atolODE=atof(argv[ii]);\n\t\t }\n";
+    out<<"\t\t else{\n";
+    out<< "\t\t\t std::cerr<<\"\\nError:  -atol  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+    out<<"\t\t continue;\n";
+    out<<"\t }\n";
  //rtol code
-        out<<"\t if (strcmp(\"-rtol\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t rtolODE=atof(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -rtol  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+    out<<"\t if (strcmp(\"-rtol\", argv[ii])==0){\n";
+    out<<"\t\t if (++ii<argc){\n";
+    out<<"\t\t\t rtolODE=atof(argv[ii]);\n\t\t }\n";
+    out<<"\t\t else{\n";
+    out<< "\t\t\t std::cerr<<\"\\nError:  -rtol  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+    out<<"\t\t continue;\n";
+    out<<"\t }\n";
  //runs code
-        out<<"\t if (strcmp(\"-runs\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t runs=atoi(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -runs  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+    out<<"\t if (strcmp(\"-runs\", argv[ii])==0){\n";
+    out<<"\t\t if (++ii<argc){\n";
+    out<<"\t\t\t runs=atoi(argv[ii]);\n\t\t }\n";
+    out<<"\t\t else{\n";
+    out<< "\t\t\t std::cerr<<\"\\nError:  -runs  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+    out<<"\t\t continue;\n";
+    out<<"\t }\n";
  //ftime code
-        out<<"\t if (strcmp(\"-ftime\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t ftime=atof(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -ftime  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+    out<<"\t if (strcmp(\"-ftime\", argv[ii])==0){\n";
+    out<<"\t\t if (++ii<argc){\n";
+    out<<"\t\t\t ftime=atof(argv[ii]);\n\t\t }\n";
+    out<<"\t\t else{\n";
+    out<< "\t\t\t std::cerr<<\"\\nError:  -ftime  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+    out<<"\t\t continue;\n";
+    out<<"\t }\n";
 
 //stime code
-        out<<"\t if (strcmp(\"-stime\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t OUTPUT=true;\n";
-                out<<"\t\t\t stime=atof(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -stime  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+    out<<"\t if (strcmp(\"-stime\", argv[ii])==0){\n";
+    out<<"\t\t if (++ii<argc){\n";
+    out<<"\t\t\t OUTPUT=true;\n";
+    out<<"\t\t\t stime=atof(argv[ii]);\n\t\t }\n";
+    out<<"\t\t else{\n";
+    out<< "\t\t\t std::cerr<<\"\\nError:  -stime  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+    out<<"\t\t continue;\n";
+    out<<"\t }\n";
 
 //itime code
-        out<<"\t if (strcmp(\"-itime\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t itime=atof(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -itime <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+    out<<"\t if (strcmp(\"-itime\", argv[ii])==0){\n";
+    out<<"\t\t if (++ii<argc){\n";
+    out<<"\t\t\t itime=atof(argv[ii]);\n\t\t }\n";
+    out<<"\t\t else{\n";
+    out<< "\t\t\t std::cerr<<\"\\nError:  -itime <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+    out<<"\t\t continue;\n";
+    out<<"\t }\n";
 
 //bound file code
-        out<<"\t if (strcmp(\"-b\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t fbound=string(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -b  <file_name>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+    out<<"\t if (strcmp(\"-b\", argv[ii])==0){\n";
+    out<<"\t\t if (++ii<argc){\n";
+    out<<"\t\t\t fbound=string(argv[ii]);\n\t\t }\n";
+    out<<"\t\t else{\n";
+    out<< "\t\t\t std::cerr<<\"\\nError:  -b  <file_name>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+    out<<"\t\t continue;\n";
+    out<<"\t }\n";
 //epsilon TAUleaping
-        out<<"\t if (strcmp(\"-taueps\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t epsTAU=atof(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -taueps  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+    out<<"\t if (strcmp(\"-taueps\", argv[ii])==0){\n";
+    out<<"\t\t if (++ii<argc){\n";
+    out<<"\t\t\t epsTAU=atof(argv[ii]);\n\t\t }\n";
+    out<<"\t\t else{\n";
+    out<< "\t\t\t std::cerr<<\"\\nError:  -taueps  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+    out<<"\t\t continue;\n";
+    out<<"\t }\n";
 
 //seed of random number generator
-        out<<"\t if (strcmp(\"-seed\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t seed=atol(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -seed  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+    out<<"\t if (strcmp(\"-seed\", argv[ii])==0){\n";
+    out<<"\t\t if (++ii<argc){\n";
+    out<<"\t\t\t seed=atol(argv[ii]);\n\t\t }\n";
+    out<<"\t\t else{\n";
+    out<< "\t\t\t std::cerr<<\"\\nError:  -seed  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+    out<<"\t\t continue;\n";
+    out<<"\t }\n";
 
 
 //initial file code
-        out<<"\t if (strcmp(\"-init\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t finit=string(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -init  <file_name>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+    out<<"\t if (strcmp(\"-init\", argv[ii])==0){\n";
+    out<<"\t\t if (++ii<argc){\n";
+    out<<"\t\t\t finit=string(argv[ii]);\n\t\t }\n";
+    out<<"\t\t else{\n";
+    out<< "\t\t\t std::cerr<<\"\\nError:  -init  <file_name>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+    out<<"\t\t continue;\n";
+    out<<"\t }\n";
 
-        out<<"\t if (strcmp(\"-parm\", argv[ii])==0){\n";
-            out<<"\t\t if (++ii<argc){\n";
-                out<<"\t\t\t fparm=string(argv[ii]);\n\t\t }\n";
-            out<<"\t\t else{\n";
-                out<< "\t\t\t std::cerr<<\"\\nError:  -parm  <file_name>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
-        out<<"\t\t continue;\n";
-        out<<"\t }\n";
+    out<<"\t if (strcmp(\"-parm\", argv[ii])==0){\n";
+    out<<"\t\t if (++ii<argc){\n";
+    out<<"\t\t\t fparm=string(argv[ii]);\n\t\t }\n";
+    out<<"\t\t else{\n";
+    out<< "\t\t\t std::cerr<<\"\\nError:  -parm  <file_name>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
+    out<<"\t\t continue;\n";
+    out<<"\t }\n";
 
-        out<< "\t\t\t std::cerr<<\"\\nError:  unknown parameter \"<<argv[ii]<<\"\\n\\n\";\n\t\t\t exit(EXIT_FAILURE);\n";
+    out<< "\t\t\t std::cerr<<\"\\nError:  unknown parameter \"<<argv[ii]<<\"\\n\\n\";\n\t\t\t exit(EXIT_FAILURE);\n";
     out<<" }\n\n\n";
 
 
@@ -1313,27 +1303,13 @@ void build_ODE(ofstream &out, std::string path, std::string net)
         std::string GenFun="";
         std::string FuncT="nullptr";
         std::string rate=std::to_string(tabt[tt].mean_t);
-        if (tabt[tt].general_function!=NULL)
+        if (tabt[tt].general_function != NULL)
         {
             cout<<tabt[tt].general_function<<endl;
             std::string tmp_st(tabt[tt].general_function);
-            char* stoken=strtok((char*)tmp_st.c_str(),delims);
-            //to remove FN
-            stoken=strtok(NULL,delims);
-            while (stoken!=NULL){
-                if (strcmp(stoken,"Discrete")==0 ||strcmp(stoken,"discrete")==0 || strcmp(stoken,"D")==0)
-                   enable="true";
-                else
-                    if (isdigit(stoken[0]))
-                         rate =stoken;
-                         else{
-                            GenFun=stoken;
-                            FuncT=std::string("&")+std::string(stoken);
-                         }
-                stoken=strtok(NULL,delims);
-            }
-
-        rate="1.0";
+            GenFun=std::string("")+tabt[tt].trans_name+"_general";
+            FuncT=std::string("&")+tabt[tt].trans_name+"_general";
+            rate="1.0";
         }
         out<<" t.discrete= "<<enable<<";\n";
         out<<" t.GenFun= \""<<GenFun<<"\";\n";
@@ -1434,7 +1410,7 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     //automaton
 
    //flux balance
-   if (FLUXB){
+    if (FLUXB){
         out << "\n cout<<\"\\n\\nREADING FLUX BALANCE PROBLEMS...\"<<endl;\n";
         for (unsigned int i=0; i<flux_names.size(); ++i){
             out << " se.initialize_fluxbalance(string(\""+flux_names[i]+"\"));\n";
@@ -1497,20 +1473,20 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     PTout<<"#PLACE  ID\n";
     for (int pp = 0; pp < npl; pp++)
     {
-       PTout<<tabp[pp].place_name<<"\t"<<pp<<endl;
-    }
-    PTout<<"#TRANSITION  ID\n";
-    for (int tt = 0; tt < ntr; tt++)
-    {
-       PTout<<tabt[tt].trans_name<<"\t"<<tt<<endl;
-    }
-    PTout.close();
+     PTout<<tabp[pp].place_name<<"\t"<<pp<<endl;
+ }
+ PTout<<"#TRANSITION  ID\n";
+ for (int tt = 0; tt < ntr; tt++)
+ {
+     PTout<<tabt[tt].trans_name<<"\t"<<tt<<endl;
+ }
+ PTout.close();
 
-    cout << "===================== INFO =====================" << endl;
-    cout << " Total Time: " << setprecision(7) << timeGlobal << " sec" << endl;
-    cout << " Total Used Memory: " << usage1.ru_maxrss << "KB" << endl;
-    cout << " Output saved in: " << net << ".cpp" << "\n";
-    cout << "================================================\n" << endl;
+ cout << "===================== INFO =====================" << endl;
+ cout << " Total Time: " << setprecision(7) << timeGlobal << " sec" << endl;
+ cout << " Total Used Memory: " << usage1.ru_maxrss << "KB" << endl;
+ cout << " Output saved in: " << net << ".cpp" << "\n";
+ cout << "================================================\n" << endl;
 }/* End build_ODE */
 
 
@@ -1522,8 +1498,8 @@ void build_ODE(ofstream &out, std::string path, std::string net)
 /* PARAMETERS : */
 /* RETURN VALUE : */
 /**************************************************************/
-void build_ODEGPU(std::string net)
-{
+ void build_ODEGPU(std::string net)
+ {
     /* Init build_ODEGPU */
 
     Node_p l_ptr = NULL;
@@ -1766,123 +1742,123 @@ void build_ODER(ofstream &out, std::string net)
             if (tabt[tt].mean_t!=0)
                 out<<tabt[tt].trans_name << " = "<<tabt[tt].mean_t;
 
-        if (MASSACTION)
-                    {
-                    int elem=0;
-                    for (int pp1 = 0; pp1 < npl; pp1++){
+            if (MASSACTION)
+            {
+                int elem=0;
+                for (int pp1 = 0; pp1 < npl; pp1++){
                 //cout << "trans " << tabt[tt].trans_name << "-> " <<TPI[tt][pp1]<<"\n" ;
-                        if (TPI[tt][pp1] < - 1){
-                            if (elem>0){
-                                out<<" * factorial("<<abs(TPI[tt][pp1])<<")";
-                            }
-                            else{
-                                out<<" / ( factorial("<<abs(TPI[tt][pp1])<<")";
-                            }
-                            elem++;
+                    if (TPI[tt][pp1] < - 1){
+                        if (elem>0){
+                            out<<" * factorial("<<abs(TPI[tt][pp1])<<")";
                         }
-
+                        else{
+                            out<<" / ( factorial("<<abs(TPI[tt][pp1])<<")";
+                        }
+                        elem++;
                     }
-                    if (elem>0)
-                        out<<" )";
+
                 }
-        out<<"\n";
+                if (elem>0)
+                    out<<" )";
+            }
+            out<<"\n";
 
 #if DEBUG
-        for (int i = 0; i < npl; i++)
-            cout << "\t" << TP[tt][i];
-        cout << endl;
+            for (int i = 0; i < npl; i++)
+                cout << "\t" << TP[tt][i];
+            cout << endl;
 #endif
-    }
+        }
 
-    out << "##End Transition rates\n\n";
+        out << "##End Transition rates\n\n";
 
 
-    out << "funODE <- function(t,y, parms){\n\n";
+        out << "funODE <- function(t,y, parms){\n\n";
 
-    out << "##Places array\n";
+        out << "##Places array\n";
 
-    out << "##Begin Place mapping\n";
+        out << "##Begin Place mapping\n";
 //Initialization variables
-    for (pp = 0; pp < npl; pp++)
-    {
-        out << tabp[pp].place_name << " = y[" << pp + 1 << "]\n";
-
-    }
-    out << "##End Place mapping\n\n";
-//Initialization variables
-    out<<"##Begin ODE Terms (X all transitions)\n";
-    for (int tt = 0; tt < ntr; tt++)
+        for (pp = 0; pp < npl; pp++)
         {
-        out<<"R_"<<tabt[tt].trans_name<<" = ";
+            out << tabp[pp].place_name << " = y[" << pp + 1 << "]\n";
 
-                if (tabt[tt].general_function==NULL)
+        }
+        out << "##End Place mapping\n\n";
+//Initialization variables
+        out<<"##Begin ODE Terms (X all transitions)\n";
+        for (int tt = 0; tt < ntr; tt++)
+        {
+            out<<"R_"<<tabt[tt].trans_name<<" = ";
+
+            if (tabt[tt].general_function==NULL)
+            {
+
+                if (MASSACTION)
                 {
-
-                    if (MASSACTION)
+                    out << " + " << tabt[tt].trans_name;
+                    for (int pp1 = 0; pp1 < npl; pp1++)
                     {
-                        out << " + " << tabt[tt].trans_name;
-                        for (int pp1 = 0; pp1 < npl; pp1++)
+                        if (TPI[tt][pp1] < 0)
                         {
-                            if (TPI[tt][pp1] < 0)
-                            {
-                                out << " * " << tabp[pp1].place_name << "^" << abs(TPI[tt][pp1]);
-                            }
+                            out << " * " << tabp[pp1].place_name << "^" << abs(TPI[tt][pp1]);
                         }
-                    }
-                    else
-                    {
-                        out << "+ " << tabt[tt].trans_name <<"*min( ";
-                        bool first = true;
-                        for (int pp1 = 0; pp1 < npl; pp1++)
-                        {
-                            if (TPI[tt][pp1] < 0)
-                            {
-                                if (first)
-                                {
-                                    out << " " << tabp[pp1].place_name << "/" << abs(TPI[tt][pp1]);
-                                    first = false;
-
-                                }
-                                else
-                                    out << ", " << tabp[pp1].place_name << "/" << abs(TPI[tt][pp1]);
-
-                            }
-
-                        }
-                        out << " )";
                     }
                 }
                 else
                 {
-                    std::string general_function(tabt[tt].general_function);
-                    out<<general_function.substr(3,general_function.size()-4)<<"(y,\""<<tabt[tt].trans_name<<"\")";
+                    out << "+ " << tabt[tt].trans_name <<"*min( ";
+                    bool first = true;
+                    for (int pp1 = 0; pp1 < npl; pp1++)
+                    {
+                        if (TPI[tt][pp1] < 0)
+                        {
+                            if (first)
+                            {
+                                out << " " << tabp[pp1].place_name << "/" << abs(TPI[tt][pp1]);
+                                first = false;
 
+                            }
+                            else
+                                out << ", " << tabp[pp1].place_name << "/" << abs(TPI[tt][pp1]);
+
+                        }
+
+                    }
+                    out << " )";
                 }
+            }
+            else
+            {
+                std::string general_function(tabt[tt].general_function);
+                out<<general_function.substr(3,general_function.size()-4)<<"(y,\""<<tabt[tt].trans_name<<"\")";
+
+            }
 
 
             out<<endl;
         }
-    out<<"##End ODE Terms\n\n";
+        out<<"##End ODE Terms\n\n";
 
 
-    out << "##Begin ODE system\n";
-    for (pp = 0; pp < npl; pp++)
-    {
-        out << "d" << tabp[pp].place_name << " = ";
-        bool found = false;
-         for (int tt = 0; tt < ntr; tt++)
+        out << "##Begin ODE system\n";
+        for (pp = 0; pp < npl; pp++)
         {
-
-            if (TP[tt][pp] != 0)
+            out << "d" << tabp[pp].place_name << " = ";
+            bool found = false;
+            for (int tt = 0; tt < ntr; tt++)
             {
-                found = true;
-                if (TP[tt][pp]>0)
-                out<<"+"<< TP[tt][pp]<<"*";
-                else
-                out<< TP[tt][pp]<<"*";
-                out<<"R_"<<tabt[tt].trans_name;
+
+                if (TP[tt][pp] != 0)
+                {
+                    found = true;
+                    if (TP[tt][pp]>0)
+                        out<<"+"<< TP[tt][pp]<<"*";
+                    else
+                        out<< TP[tt][pp]<<"*";
+                    out<<"R_"<<tabt[tt].trans_name;
+                }
             }
-        }
         if (!found)//case test loop
             out << "0";
         out << "\n";
@@ -1954,196 +1930,196 @@ void build_ODER(ofstream &out, std::string net)
 
 }/* End build_ODER */
 
-struct transition_def
-{
+    struct transition_def
+    {
     //std::string name;
-    double tr_min;
-    double tr_max;
-    double locat;
-};
+        double tr_min;
+        double tr_max;
+        double locat;
+    };
 
 
-void build_ODEOPT(ofstream &out, std::string net, std::string trans_path, std::string obj_funct_path)
-{
+    void build_ODEOPT(ofstream &out, std::string net, std::string trans_path, std::string obj_funct_path)
+    {
 
     /* Init build_ODE with OPT */
 
-    Node_p l_ptr = NULL;
-    int pp;
-    clock_t startGlobal, endGlobal;
-    double timeGlobal;
-    startGlobal = clock();
+        Node_p l_ptr = NULL;
+        int pp;
+        clock_t startGlobal, endGlobal;
+        double timeGlobal;
+        startGlobal = clock();
 
 
-    cout << "\n\n------------------------------------------------" << endl;
-    cout << "               Start  encoding" << endl;
-    cout << "------------------------------------------------\n" << endl << endl;
-    cout << "Transition path: "<< trans_path << endl;
-    cout << "Object Function path: "<< obj_funct_path << endl <<endl;
+        cout << "\n\n------------------------------------------------" << endl;
+        cout << "               Start  encoding" << endl;
+        cout << "------------------------------------------------\n" << endl << endl;
+        cout << "Transition path: "<< trans_path << endl;
+        cout << "Object Function path: "<< obj_funct_path << endl <<endl;
 
-    int **TP = (int **) malloc((ntr) *  sizeof(int *));
-    int **TPI = (int **) malloc((ntr) *  sizeof(int *));
-    for (int tt = 0; tt < ntr; tt++)
-    {
-        TP[tt] = (int *) malloc((npl) * sizeof(int));
-        memset(TP[tt], 0, npl * sizeof(int));
-        TPI[tt] = (int *) malloc((npl) * sizeof(int));
-        memset(TPI[tt], 0, npl * sizeof(int));
-    }
+        int **TP = (int **) malloc((ntr) *  sizeof(int *));
+        int **TPI = (int **) malloc((ntr) *  sizeof(int *));
+        for (int tt = 0; tt < ntr; tt++)
+        {
+            TP[tt] = (int *) malloc((npl) * sizeof(int));
+            memset(TP[tt], 0, npl * sizeof(int));
+            TPI[tt] = (int *) malloc((npl) * sizeof(int));
+            memset(TPI[tt], 0, npl * sizeof(int));
+        }
 
     /* ---------------------------------------------------
                 OPTIMIZATION TRANS. I/O & CHECK
     ------------------------------------------------------ */
-    std::map<std::string,transition_def> transit;
-    std::string line;
-    ifstream myfile(std::string(trans_path).c_str());
-    Parser parser;
-    char delimC[] = "\t,; =[]{}\"";
+        std::map<std::string,transition_def> transit;
+        std::string line;
+        ifstream myfile(std::string(trans_path).c_str());
+        Parser parser;
+        char delimC[] = "\t,; =[]{}\"";
 
-    if (!myfile.is_open())
-    {
-        cerr << "Error: it is not possible to open transitions file \n\n";
-        exit(EXIT_FAILURE);
-    }
-    else
-    {
-        while (!(myfile.eof()))
+        if (!myfile.is_open())
         {
-            getline (myfile,line);
-            if (line!="")
+            cerr << "Error: it is not possible to open transitions file \n\n";
+            exit(EXIT_FAILURE);
+        }
+        else
+        {
+            while (!(myfile.eof()))
             {
-                transition_def k;
-                k.locat = -1;
-                parser.update(delimC,line);
-                std::string tr_name = parser.get(0);
-                k.tr_min = atof(parser.get(1).c_str());
-                k.tr_max = atof(parser.get(2).c_str());
-                k.locat = atof(parser.get(3).c_str());
+                getline (myfile,line);
+                if (line!="")
+                {
+                    transition_def k;
+                    k.locat = -1;
+                    parser.update(delimC,line);
+                    std::string tr_name = parser.get(0);
+                    k.tr_min = atof(parser.get(1).c_str());
+                    k.tr_max = atof(parser.get(2).c_str());
+                    k.locat = atof(parser.get(3).c_str());
                 //transit.push_back(k);
-                transit.insert(std::make_pair(tr_name,k));
+                    transit.insert(std::make_pair(tr_name,k));
+                }
             }
         }
-    }
 
-    myfile.close();
+        myfile.close();
 
     //generating hashmap and hashset of places and transitions names
-    cout << "Places are:" << endl;
-    for (pp = 0; pp < npl; pp++)
-    {
-        Place2Int[std::string(tabp[pp].place_name)] = pp;
-        cout << tabp[pp].place_name << endl;
-    }
+        cout << "Places are:" << endl;
+        for (pp = 0; pp < npl; pp++)
+        {
+            Place2Int[std::string(tabp[pp].place_name)] = pp;
+            cout << tabp[pp].place_name << endl;
+        }
 
-    std::set<std::string> TransNameSet;
-    std::string Trans_NA_names = "";
+        std::set<std::string> TransNameSet;
+        std::string Trans_NA_names = "";
 
-    cout << "\nTransitions are:" << endl;
+        cout << "\nTransitions are:" << endl;
 
-    for(int j=0; j<ntr; j++)
-    {
-        TransNameSet.insert(tabt[j].trans_name);
-        cout << tabt[j].trans_name << endl;
-    }
+        for(int j=0; j<ntr; j++)
+        {
+            TransNameSet.insert(tabt[j].trans_name);
+            cout << tabt[j].trans_name << endl;
+        }
 
-    cout << "\nTransitions bounds are:\n" << endl;
+        cout << "\nTransitions bounds are:\n" << endl;
 
     //constraint check loop
-    std::map<std::string, transition_def>::iterator it;
-    for( it = transit.begin(); it != transit.end(); it++)
-    {
-        cout << it->first<<" ";
-        cout << it->second.tr_min<<" ";
-        cout << it->second.tr_max<<" ";
-        cout << it->second.locat;
-        cout << "\n";
+        std::map<std::string, transition_def>::iterator it;
+        for( it = transit.begin(); it != transit.end(); it++)
+        {
+            cout << it->first<<" ";
+            cout << it->second.tr_min<<" ";
+            cout << it->second.tr_max<<" ";
+            cout << it->second.locat;
+            cout << "\n";
         //check location point constraint (between min and max values)
-        if((it->second.tr_min>it->second.locat||it->second.tr_max<it->second.locat)&&it->second.locat!=0)
-        {
-            cerr << "Error: some value of location is out of bound between min and max research values. \n\n";
-            exit(EXIT_FAILURE);
-        }
+            if((it->second.tr_min>it->second.locat||it->second.tr_max<it->second.locat)&&it->second.locat!=0)
+            {
+                cerr << "Error: some value of location is out of bound between min and max research values. \n\n";
+                exit(EXIT_FAILURE);
+            }
         //check constraint of transition names
-        if(TransNameSet.find(it->first)==TransNameSet.end())
-        {
-            cerr << "Error: Incorrect match between NET and transition names. \n\n";
-            exit(EXIT_FAILURE);
+            if(TransNameSet.find(it->first)==TransNameSet.end())
+            {
+                cerr << "Error: Incorrect match between NET and transition names. \n\n";
+                exit(EXIT_FAILURE);
+            }
         }
-    }
-    cout << "\n";
-    out << "\n###################################################################\n";
-    out <<   "#This file is automatically generated by Greatspn                 #\n";
-    out <<   "#You can report bugs  by sending an e-mail to beccuti@di.unito.it #\n";
-    out <<   "###################################################################\n\n";
+        cout << "\n";
+        out << "\n###################################################################\n";
+        out <<   "#This file is automatically generated by Greatspn                 #\n";
+        out <<   "#You can report bugs  by sending an e-mail to beccuti@di.unito.it #\n";
+        out <<   "###################################################################\n\n";
 
 #if DEBUGOPT
-    out << "library(parallel)"<< endl;
-    out << "library(alabama)" <<endl;
+        out << "library(parallel)"<< endl;
+        out << "library(alabama)" <<endl;
 #endif
 
-    out << "library(deSolve)" << endl;
-    out << "library(GenSA)"<< endl;
+        out << "library(deSolve)" << endl;
+        out << "library(GenSA)"<< endl;
     // out << "#If you want to use a different opt solver library uncomment this:"<< endl;
     //  out << "#library()" << endl;
 
 
-    out << "\n##Begin Transition Rates\n";
+        out << "\n##Begin Transition Rates\n";
     //out << "e=rep(NA,"<<ntr<<")\n\n";
-    for (int tt = 0; tt < ntr; tt++)
-    {
-        l_ptr = GET_INPUT_LIST(tt);
-        while (l_ptr != NULL)
+        for (int tt = 0; tt < ntr; tt++)
         {
-            pp = GET_PLACE_INDEX(l_ptr);
-            TP[tt][pp] = -l_ptr->molt;
-            TPI[tt][pp] = -l_ptr->molt;
-            l_ptr = NEXT_NODE(l_ptr);
-        }
-        l_ptr = GET_OUTPUT_LIST(tt);
-        while (l_ptr != NULL)
-        {
-            pp = GET_PLACE_INDEX(l_ptr);
-            TP[tt][pp] += l_ptr->molt;
-            l_ptr = NEXT_NODE(l_ptr);
-        }
+            l_ptr = GET_INPUT_LIST(tt);
+            while (l_ptr != NULL)
+            {
+                pp = GET_PLACE_INDEX(l_ptr);
+                TP[tt][pp] = -l_ptr->molt;
+                TPI[tt][pp] = -l_ptr->molt;
+                l_ptr = NEXT_NODE(l_ptr);
+            }
+            l_ptr = GET_OUTPUT_LIST(tt);
+            while (l_ptr != NULL)
+            {
+                pp = GET_PLACE_INDEX(l_ptr);
+                TP[tt][pp] += l_ptr->molt;
+                l_ptr = NEXT_NODE(l_ptr);
+            }
         //Encoding transition rates
 
-        bool flag = false;
+            bool flag = false;
 
-        it = transit.find(tabt[tt].trans_name);
-        if (it != transit.end())
-        {
-            flag= true;
-        }
+            it = transit.find(tabt[tt].trans_name);
+            if (it != transit.end())
+            {
+                flag= true;
+            }
 
         //if reaction is part of OPT problem, the value becomes NA.
-        if(!flag)
-        {
+            if(!flag)
+            {
             //out << "e["<< tt+1<< "] = " << tabt[tt].mean_t << ";\n";
-            out << tabt[tt].trans_name << " = " << tabt[tt].mean_t << "\n";
-        }
-        else
-        {
+                out << tabt[tt].trans_name << " = " << tabt[tt].mean_t << "\n";
+            }
+            else
+            {
             //out << "e["<< tt+1<< "] = NA;\n";
-            Trans_NA_names = Trans_NA_names + tabt[tt].trans_name + ",";
-            out << tabt[tt].trans_name << " = NA #" << tabt[tt].mean_t << "\n";
-        }
+                Trans_NA_names = Trans_NA_names + tabt[tt].trans_name + ",";
+                out << tabt[tt].trans_name << " = NA #" << tabt[tt].mean_t << "\n";
+            }
 #if DEBUG
-        for (int i = 0; i < npl; i++)
-            cout << "\t" << TP[tt][i];
-        cout << endl;
+            for (int i = 0; i < npl; i++)
+                cout << "\t" << TP[tt][i];
+            cout << endl;
 #endif
-    }
-    out << "##End Transition Rates";
+        }
+        out << "##End Transition Rates";
 
 
-    out << "\n\n##Setting number of places:\nyini = rep(0," << npl<<")" <<endl;
-    out << "\n##Begin Place Mapping\n";
-    for (pp = 0; pp < npl; pp++)
-    {
-        out << tabp[pp].place_name << " = yini[" << pp + 1 << "] = "<< net_mark[pp].total << "\n";
-    }
-    out << "##End Place Mapping\n\n";
+        out << "\n\n##Setting number of places:\nyini = rep(0," << npl<<")" <<endl;
+        out << "\n##Begin Place Mapping\n";
+        for (pp = 0; pp < npl; pp++)
+        {
+            out << tabp[pp].place_name << " = yini[" << pp + 1 << "] = "<< net_mark[pp].total << "\n";
+        }
+        out << "##End Place Mapping\n\n";
 
     //out << "\n##Initial Marking:\n";
     /*out << "Ptini <- c(";
@@ -2157,167 +2133,167 @@ void build_ODEOPT(ofstream &out, std::string net, std::string trans_path, std::s
     }
     out << ")\n";*/
 
-    out <<"##Token Sum:\n";
-    out <<"tot_token=sum(yini)\n";
+        out <<"##Token Sum:\n";
+        out <<"tot_token=sum(yini)\n";
 
-    out <<"##Object value:\n";
-    out<<"objvalue=.Machine$double.xmax\n";
+        out <<"##Object value:\n";
+        out<<"objvalue=.Machine$double.xmax\n";
 
-    out <<"##Object res:\n";
-    out<<"objres=rep(0,"<<npl+1<<")\n";
-
-
-
-    out <<"\n\n##ODE Result:\n";
-    out <<"res<-matrix(c(0,yini),1)";
+        out <<"##Object res:\n";
+        out<<"objres=rep(0,"<<npl+1<<")\n";
 
 
-    out <<"\n\n##LOWERBOUNDS ARRAY:\n";
-    out <<"LB=c(";
-    it = transit.begin();
-    while(it != transit.end())
-    {
 
-        out << it->second.tr_min;
+        out <<"\n\n##ODE Result:\n";
+        out <<"res<-matrix(c(0,yini),1)";
 
-        ++it;
 
-        if(it!=transit.end())
+        out <<"\n\n##LOWERBOUNDS ARRAY:\n";
+        out <<"LB=c(";
+        it = transit.begin();
+        while(it != transit.end())
         {
-            out << ", ";
+
+            out << it->second.tr_min;
+
+            ++it;
+
+            if(it!=transit.end())
+            {
+                out << ", ";
+            }
         }
-    }
-    out<<")\n";
+        out<<")\n";
 
-    out <<"\n##UPPERBOUNDS ARRAY:\n";
-    out <<"UB=c(";
-    it = transit.begin();
-    while(it != transit.end())
-    {
-
-        out << it->second.tr_max;
-
-        ++it;
-
-        if(it!=transit.end())
+        out <<"\n##UPPERBOUNDS ARRAY:\n";
+        out <<"UB=c(";
+        it = transit.begin();
+        while(it != transit.end())
         {
-            out << ", ";
-        }
-    }
 
-    out<<")\n";
+            out << it->second.tr_max;
 
-    out <<"\n##STARTING-POINTS ARRAY:\n";
-    out <<"k=c(";
-    it = transit.begin();
-    while(it != transit.end())
-    {
+            ++it;
 
-        if(it->second.locat<=0)
-        {
-            out<<(it->second.tr_min+it->second.tr_max)/2;
-        }
-        else
-        {
-            out<<it->second.locat;
+            if(it!=transit.end())
+            {
+                out << ", ";
+            }
         }
 
-        ++it;
+        out<<")\n";
 
-        if(it!=transit.end())
+        out <<"\n##STARTING-POINTS ARRAY:\n";
+        out <<"k=c(";
+        it = transit.begin();
+        while(it != transit.end())
         {
-            out << ", ";
-        }
-    }
-    out<<")\n";
 
-    out <<"\n##ODE Time Range and Step (default values ON):\n";
-    out <<"Times <- seq(from = 0, to = FinalTime, by = step)\n\n";
-    out << "kv=matrix(k,ncol=length(k));\n\n";
+            if(it->second.locat<=0)
+            {
+                out<<(it->second.tr_min+it->second.tr_max)/2;
+            }
+            else
+            {
+                out<<it->second.locat;
+            }
+
+            ++it;
+
+            if(it!=transit.end())
+            {
+                out << ", ";
+            }
+        }
+        out<<")\n";
+
+        out <<"\n##ODE Time Range and Step (default values ON):\n";
+        out <<"Times <- seq(from = 0, to = FinalTime, by = step)\n\n";
+        out << "kv=matrix(k,ncol=length(k));\n\n";
 
     //ODE1 WITHOUT OPT
-    out << "##Function used to calculate the objective function\n";
-    out << "funODE <- function(t,y,parms) {\n\n";
+        out << "##Function used to calculate the objective function\n";
+        out << "funODE <- function(t,y,parms) {\n\n";
 
-    it = transit.begin();
-    int count = 1;
-    while(it != transit.end())
-    {
-        out << it->first << " <- parms["<<count<<"]\n";
-        ++count;
-        ++it;
-    }
-
-    out << "\n##Begin ODE1 System\n";
-
-    for (pp = 0; pp < npl; pp++)
-    {
-        out << tabp[pp].place_name << " = y[" << pp + 1 << "]\n";
-    }
-    out << "\n";
-    out<<"ddy=rep(0,"<<npl<<")\n";
-    for (pp = 0; pp < npl; pp++)
-    {
-
-        out << "ddy["<<pp+1<<"] = d" << tabp[pp].place_name << " = ";
-        bool found = false;
-        for (int tt = 0; tt < ntr; tt++)
+        it = transit.begin();
+        int count = 1;
+        while(it != transit.end())
         {
-            if (TP[tt][pp] != 0)
+            out << it->first << " <- parms["<<count<<"]\n";
+            ++count;
+            ++it;
+        }
+
+        out << "\n##Begin ODE1 System\n";
+
+        for (pp = 0; pp < npl; pp++)
+        {
+            out << tabp[pp].place_name << " = y[" << pp + 1 << "]\n";
+        }
+        out << "\n";
+        out<<"ddy=rep(0,"<<npl<<")\n";
+        for (pp = 0; pp < npl; pp++)
+        {
+
+            out << "ddy["<<pp+1<<"] = d" << tabp[pp].place_name << " = ";
+            bool found = false;
+            for (int tt = 0; tt < ntr; tt++)
             {
-                found = true;
+                if (TP[tt][pp] != 0)
+                {
+                    found = true;
                 //NEW for generic function
-                if (tabt[tt].general_function==NULL)
-                {
-                    if (MASSACTION)
+                    if (tabt[tt].general_function==NULL)
                     {
-                        out << " + " << tabt[tt].trans_name << " * " << TP[tt][pp];
-                        for (int pp1 = 0; pp1 < npl; pp1++)
+                        if (MASSACTION)
                         {
-                            if (TPI[tt][pp1] < 0)
+                            out << " + " << tabt[tt].trans_name << " * " << TP[tt][pp];
+                            for (int pp1 = 0; pp1 < npl; pp1++)
                             {
-                                out << " * " << tabp[pp1].place_name << "^" << abs(TPI[tt][pp1]);
-                            }
+                                if (TPI[tt][pp1] < 0)
+                                {
+                                    out << " * " << tabp[pp1].place_name << "^" << abs(TPI[tt][pp1]);
+                                }
 
+                            }
                         }
+                        else
+                        {
+                            out << "+ " << tabt[tt].trans_name << " * " << TP[tt][pp] << "*min( ";
+                            bool first = true;
+                            for (int pp1 = 0; pp1 < npl; pp1++)
+                            {
+                                if (TPI[tt][pp1] < 0)
+                                {
+                                    if (first)
+                                    {
+                                        out << " " << tabp[pp1].place_name << "/" << abs(TPI[tt][pp1]);
+                                        first = false;
+                                    }
+                                    else
+                                    {
+                                        out << ", " << tabp[pp1].place_name << "/" << abs(TPI[tt][pp1]);
+                                    }
+                                }
+                            }
+                            out << " )";
+                        }
+
                     }
                     else
                     {
-                        out << "+ " << tabt[tt].trans_name << " * " << TP[tt][pp] << "*min( ";
-                        bool first = true;
-                        for (int pp1 = 0; pp1 < npl; pp1++)
+                        std::string general_function(tabt[tt].general_function);
+                        if (TP[tt][pp]>0)
                         {
-                            if (TPI[tt][pp1] < 0)
-                            {
-                                if (first)
-                                {
-                                    out << " " << tabp[pp1].place_name << "/" << abs(TPI[tt][pp1]);
-                                    first = false;
-                                }
-                                else
-                                {
-                                    out << ", " << tabp[pp1].place_name << "/" << abs(TPI[tt][pp1]);
-                                }
-                            }
+                            out<<"+1*"<<general_function.substr(3,general_function.size()-4);
                         }
-                        out << " )";
-                    }
-
-                }
-                else
-                {
-                    std::string general_function(tabt[tt].general_function);
-                    if (TP[tt][pp]>0)
-                    {
-                        out<<"+1*"<<general_function.substr(3,general_function.size()-4);
-                    }
-                    else
-                    {
-                        out<<TP[tt][pp]<<"* "<<general_function.substr(3,general_function.size()-4);
+                        else
+                        {
+                            out<<TP[tt][pp]<<"* "<<general_function.substr(3,general_function.size()-4);
+                        }
                     }
                 }
             }
-        }
         if (!found) //case test loop
         {
             out << "0";
@@ -2532,7 +2508,7 @@ void build_ODEM(ofstream &out, std::string net)
         out << tabt[tt].trans_name << " = " << tabt[tt].mean_t;
 
         if (MASSACTION)
-            {
+        {
             int elem=0;
             for (int pp1 = 0; pp1 < npl; pp1++){
                 cout << "trans " << tabt[tt].trans_name << "-> " <<TPI[tt][pp1]<<"\n" ;
@@ -2663,6 +2639,7 @@ void build_ODEM(ofstream &out, std::string net)
 
 
 }/* End build_ODE */
+
 
 
 

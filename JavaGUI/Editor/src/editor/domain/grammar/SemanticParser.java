@@ -1017,7 +1017,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case GRML:
                 return format(true, "<attribute name=\"name\">" + place.getUniqueName() +"</attribute>");
             case CPP:
-                return format(true,  ctx.INT_PLACE_ID().getText());
+                return format(true, "Value[" + ctx.INT_PLACE_ID().getText() + "_place]");
             default:
                 throw new UnsupportedOperationException("visitIntExprPlaceMarking");
         }
@@ -1204,7 +1204,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case GRML:
                 return format(true, "<attribute name=\"name\">" + place.getUniqueName() +"</attribute>");
             case CPP:
-                return format(true, ctx.REAL_PLACE_ID().getText());
+                return format(true, "Value[" +ctx.REAL_PLACE_ID().getText() + "_place]");
             default:
                 throw new UnsupportedOperationException("visitRealExprPlaceMarking");
         }
