@@ -134,7 +134,7 @@ public class GspnPage extends NetPage implements Serializable {
                     continue;
                 for (ColorVar var : cv) {
                     if (!allowedColorVars.contains(new Tuple<>(trn, var))) {
-                        addPageError("Color variable '"+var.getUniqueName()+"' used in expressions of transition '"+
+                        addPageWarning("Color variable '"+var.getUniqueName()+"' used in expressions of transition '"+
                                      trn.getUniqueName()+"' does not appear on any arc of that transition.", trn);
                     }
                 }

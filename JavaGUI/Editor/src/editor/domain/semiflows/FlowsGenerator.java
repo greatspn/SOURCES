@@ -295,7 +295,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
     
     //-----------------------------------------------------------------------
     // Compute all canonical semiflows, even if they are not minimal
-    public void computeAllCanonicalSemiflows(boolean log, ProgressObserver obs, int[][] annulers) 
+    public void computeAllCanonicalSemiflows(boolean log, ProgressObserver obs)//, int[][] annulers) 
             throws InterruptedException 
     {
         assert type==PTFlows.Type.PLACE_SEMIFLOWS;
@@ -303,6 +303,11 @@ public class FlowsGenerator extends StructuralAlgorithm {
             System.out.println(this);
         Set<Tuple<Integer, Integer>> dropped = new HashSet<>();
         int initFlows = numFlows();
+//        if (log && annulers!=null) {
+//            for (int[] a : annulers)
+//                System.out.println("ANNULER: "+rowToString(a, null));
+//        }
+        
         // Matrix A starts with the flow matrix, D is the identity.
         // for every transition i=[0,M), repeat:
         for (int i = 0; i < M; i++) {
@@ -314,7 +319,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
 //            int nRows = numFlows();
 //            int combined_with_i = 0;
             for (int r1 = 0; r1 < numFlows(); r1++) {
-                assert numFlows() < 10000;
+                assert numFlows() < 1000;
                 if (mA.get(r1)[i] == 0) {
                     continue;
                 }
@@ -382,40 +387,32 @@ public class FlowsGenerator extends StructuralAlgorithm {
                     if (nnzD == 0)
                         continue; // drop empty row
                     
+                    boolean dropVec = false;
                     // check if an identical row already exists in D
-                    boolean isDuplicated = false;
-                    for (int hh=0; hh<numFlows() && !isDuplicated; hh++) {
+                    for (int hh=0; hh<numFlows() && !dropVec; hh++) {
                         if (Arrays.equals(mD.get(hh), nrD)) {
-                            isDuplicated = true;
+                            dropVec = true; // duplicated row
                         }
                     }
                     // check if there is an identical support semiflow that is smaller
-                    boolean exceedsMinimalSemiflow = true;
-                    exceedsMinimalSemiflow = false;
-//                    if (!isDuplicated) {
-//                        for (int[] minimalSemiflow : annulers) {
-//                            boolean isGreater = false;
-//                            for (int j=0; j<minimalSemiflow.length && !isGreater; j++) {
-//                                if (minimalSemiflow[j] != 0) { // check only in the semiflow support
-//                                    isGreater = nrD[j] > minimalSemiflow[j];
-//                                }
-//                            }
-//                            if (!isGreater) {
-//                                exceedsMinimalSemiflow = false;
-////                                System.out.println("BOUND: "+rowToString(nrD, nrA)+
-////                                        " > "+rowToString(minimalSemiflow, null));
-//                            }
-//                        }
-//                        if (exceedsMinimalSemiflow) {
-//                                System.out.println("BOUND: "+rowToString(nrD, nrA));
-//                        }
-//                    }
-                    if (isDuplicated || exceedsMinimalSemiflow) {
+                    if (!dropVec) {
+                        for (int k=initFlows; k<mD.size(); k++) {
+                            if (mA.get(k)[i] == 0) {
+                                if (checkParetoDominance(nrD, mD.get(k))) {
+                                    dropVec = true;
+                                    System.out.println("BOUND: "+rowToString(nrD, nrA)+
+                                                       " < "+rowToString(mD.get(k), mA.get(k)));
+                                    break;                                
+                                }
+                            }
+                        }
+                    }
+                    if (dropVec) {
                         dropped.add(new Tuple<>(r1, r2));
                         if (log) {
                             System.out.println("DROP row:"+r1+" + row:" + r2 + 
                                                "  nnz(D)=" + nnzD + "  gcdAD="+gcdAD);
-                            System.out.println(String.format("--: %s", rowToString(nrD, nrA)));
+//                            System.out.println(String.format("--: %s", rowToString(nrD, nrA)));
                         }
                         continue;
                     }
@@ -434,6 +431,27 @@ public class FlowsGenerator extends StructuralAlgorithm {
 //                    break;
             }
             checkInterrupted();
+            
+            // Eliminate from [D|A] the rows that are >= of the semiflows.
+            int rr = numFlows();
+            while (rr > 0) {
+                rr--;
+                boolean drop = false;
+                for (int jj=0; jj<numFlows() && !drop; jj++) { // loop htrough all semiflows
+                    if (jj != rr && mA.get(jj)[i] == 0) {
+                        if (checkParetoDominance(mD.get(rr), mD.get(jj))) {
+                            drop = true;
+                            System.out.println("DROPX row:"+rr+" >= row:" + jj);
+                            System.out.println(rowToString(mD.get(rr), mA.get(rr))+" >= "+
+                                               rowToString(mD.get(jj), mA.get(jj)));
+                        }
+                    }
+                }
+                if (drop) {
+                    mA.remove(rr);
+                    mD.remove(rr);
+                }
+            }
 
             // Eliminate from [D|A] the rows in which the i-th column of A is not zero.
             /*int rr = numFlows();
@@ -460,8 +478,8 @@ public class FlowsGenerator extends StructuralAlgorithm {
         // Remove all the initial flows
         mA = new ArrayList<>(mA.subList(initFlows, mA.size()));
         mD = new ArrayList<>(mD.subList(initFlows, mD.size()));
-        if (log)
-            System.out.println("\nREMOVING "+initFlows+" initial flows.");
+//        if (log)
+//            System.out.println("\nREMOVING "+initFlows+" initial flows.");
         
 //        if (type.isTrapsOrSiphons())
 //            dropSupplementaryVariablesAndReduce(log, obs);
@@ -475,16 +493,65 @@ public class FlowsGenerator extends StructuralAlgorithm {
         
         setComputed();
     }
+//    //-----------------------------------------------------------------------
+    private boolean checkSameSupport(int[] vec1, int[] vec2) {
+        for (int i=0; i<vec1.length; i++)
+            if ((vec1[i]==0) != (vec2[i]==0))
+                return false; // different supports
+        return true;
+    }
     //-----------------------------------------------------------------------
-    private boolean checkForSameSupportSmaller(int[] semiflow, int[] vec) {
-        for (int i=0; i<semiflow.length; i++)
-            if ((semiflow[i]==0) != (vec[i]==0))
-                return false; // support is different
-        // check that vec is not greater than @semiflow
-        for (int i=0; i<semiflow.length; i++)
-            if (vec[i] > semiflow[i])
-                return true; // drop
-        return false; 
+    // check if vec1 Pareto-dominates vec2, i.e. iff vec1 >= vec2
+    private boolean checkParetoDominance(int[] vec1, int[] vec2) {
+        if (!checkSameSupport(vec1, vec2))
+            return false; // compare only if they have the same support
+        
+        for (int i=0; i<vec1.length; i++) {
+            if (vec1[i] < vec2[i])
+                return false;
+        }
+        return true;
+        
+       /* int eq = 0, greater = 0;
+//        boolean eq = true, greater = true;//, less = true;
+        for (int i=0; i<vec1.length; i++) {
+            if (vec1[i] == vec2[i])  eq++;
+            if (vec1[i] > vec2[i])   greater++;
+//            if (vec1[i] < vec2[i]) {
+//                eq = false;
+//                greater = false;
+//            }
+//            else if (vec1[i] > vec2[i]) {
+//                eq = false;
+//                // less = false;
+//            }
+        }
+//        if (less)
+//            System.out.println("### "+rowToString(vec1, null)+" < "+rowToString(vec2, null));
+//        if (greater)
+//            System.out.println("### "+rowToString(vec1, null)+" > "+rowToString(vec2, null));
+        boolean is_eq = (eq == vec1.length);
+        boolean is_greater_eq = (greater > 0) && (greater + eq == vec1.length);
+        
+        return is_eq || is_greater_eq;// || less;       */ 
+        
+//        boolean eq = true;
+//        for (int i=0; i<vec1.length; i++) {
+//            if (vec1[i] < vec2[i])
+//                eq = false;
+//            else if (vec1[i] > vec2[i])
+//                return true;
+//        }
+//        return !eq;
+        
+//        for (int i=0; i<semiflow.length; i++)
+//            if ((semiflow[i]==0) != (vec[i]==0))
+//                return false; // support is different
+//        // check that vec is not greater than @semiflow
+//        for (int i=0; i<semiflow.length; i++)
+//            if (vec[i] > semiflow[i])
+//                return true; // drop
+//        return false; 
     }
     
     //-----------------------------------------------------------------------
@@ -1044,10 +1111,27 @@ public class FlowsGenerator extends StructuralAlgorithm {
         return fg;
     }
     
+    private static FlowsGenerator initPareto2357() {
+        int M=1, N=4;
+        FlowsGenerator fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
+        final int a=0;
+        // t0 = 2a
+        fg.addIncidence(0, a, 2);
+        // t1 = -3a
+        fg.addIncidence(1, a, -3);
+        // t2 = 5a
+        fg.addIncidence(2, a, 5);
+        // t3 = -7a
+        fg.addIncidence(3, a, -7);
+        return fg;
+    }
+    
 
     public static void main(String[] args) throws InterruptedException {
-        FlowsGenerator fg = initAnisimov(); //init1();
         ProgressObserver obs = (int step, int total, int s, int t) -> { };
-        fg.compute(true, obs);
+//        FlowsGenerator fg = initAnisimov(); //init1();
+//        fg.compute(true, obs);
+        FlowsGenerator fg = initPareto2357();
+        fg.computeAllCanonicalSemiflows(true, obs);
     }
 }

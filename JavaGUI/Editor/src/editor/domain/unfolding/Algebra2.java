@@ -461,12 +461,12 @@ public class Algebra2 {
             case UNARY_CONJUGATED_MINIMAL:
                 { 
                     // Setup the synchronization problem.
-                    FlowsGenerator fg, fgM=null;
+                    FlowsGenerator fg;//, fgM=null;
                     {
                         int M=tagIds.size(), N=nodeIds.size();
                         fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
-                        if (policy == Policy.UNARY_CONJUGATED_ALL)
-                            fgM = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
+//                        if (policy == Policy.UNARY_CONJUGATED_ALL)
+//                            fgM = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
                     }
                     for (int nodeId=0; nodeId<nodeIds.size(); nodeId++) {
                         Node node = nodeIds.get(nodeId);
@@ -475,21 +475,21 @@ public class Algebra2 {
                                 int tagId = tagIds.get(node.getTag(t));
                                 int card = node.getTagCard(t);
                                 fg.addIncidence(nodeId, tagId, card);
-                                if (fgM != null)
-                                    fgM.addIncidence(nodeId, tagId, card);
+//                                if (fgM != null)
+//                                    fgM.addIncidence(nodeId, tagId, card);
                             }
                         }
                     }
                     StructuralAlgorithm.ProgressObserver obs = (int step, int total, int s, int t) -> { };
                     try {
-//                        if (policy == Policy.UNARY_CONJUGATED_MINIMAL)
-                        fg.compute(false, obs); // minimal semiflows 
-                        if (fgM != null) {
-                            fgM.computeAllCanonicalSemiflows(true, obs, fg.getAnnulers());
-                            fg = fgM;
-                        }   
-//                        else // all semiflows
-//                            fg.computeAllCanonicalSemiflows(true, obs);
+                        if (policy == Policy.UNARY_CONJUGATED_MINIMAL)
+                            fg.compute(false, obs); // minimal semiflows 
+//                        if (fgM != null) {
+//                            fgM.computeAllCanonicalSemiflows(true, obs, fg.getAnnulers());
+//                            fg = fgM;
+//                        }   
+                        else // all semiflows
+                            fg.computeAllCanonicalSemiflows(true, obs);
                     }
                     catch (InterruptedException e) { throw new IllegalStateException("Should not happen."); }
 
@@ -816,8 +816,10 @@ public class Algebra2 {
                     newTransition.getWeight(), t2.getWeight(), "weights");
                 checkAttributeConflict(newTransition, t2, newTransition, 
                     newTransition.getNumServers(), t2.getNumServers(), "number of servers");
-                checkAttributeConflict(newTransition, t2, newTransition, 
-                    newTransition.getGuard(), t2.getGuard(), "guards");
+                
+                newTransition.getGuardEditable().setValue(null, null, mergeGuards(newTransition.getGuard(), t2.getGuard()));
+//                checkAttributeConflict(newTransition, t2, newTransition, 
+//                    newTransition.getGuard(), t2.getGuard(), "guards");
                 
                 newTransition.setNodePosition(newTransition.getX() + t2.getX(), 
                                               newTransition.getY() + t2.getY());
@@ -833,6 +835,14 @@ public class Algebra2 {
                 storeTransitionSource(newTransition, entry.x, origTrn);
             }
         }
+    }
+    
+    private String mergeGuards(String g1, String g2) {
+        if (g1.equals("True"))
+            return g2;
+        else if (g2.equals("True"))
+            return g1;
+        else return "("+g1+") && ("+g2+")";
     }
 
     //=========================================================================

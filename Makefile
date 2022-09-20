@@ -225,6 +225,14 @@ endif
 #   INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I$(PATH_TO_LP_SOLVE_LIB)../include/lpsolve
 # endif
 
+ifdef HAS_LP_SOLVE_LIB
+ifeq ("$(wildcard $(PATH_TO_LP_SOLVE_LIB)libcolamd.a)","")
+  $(warning "liblpsolve55 found, but libcolamd.a is missing!")
+  HAS_LP_SOLVE_LIB :=
+  INCLUDE_LP_SOLVE_LIB :=
+  LINK_LP_SOLVE_LIB :=
+endif
+endif
 
 $(call search_library,GMP_LIB,/libgmpxx.*,"GMP library",-lgmpxx -lgmp)
 ifdef HAS_GMP_LIB
@@ -2230,7 +2238,11 @@ alphaFactory_LD := $(LDPP)
 
 
 # ifeq ($(INCLUDE_ELVIO_CPP_SOLVER),1)
-#TARGETS += DSPN-Tool alphaFactory
+
+ifdef HAS_LP_SOLVE_LIB
+TARGETS += DSPN-Tool alphaFactory
+endif
+
 ifndef HAS_VBOX_MARK
 # TARGETS += DSPN-Tool-Debug
 endif

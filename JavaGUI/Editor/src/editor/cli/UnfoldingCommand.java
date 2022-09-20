@@ -294,16 +294,18 @@ public class UnfoldingCommand {
             }
 
             // Save the id -> name map
-            if (saveNameMap && pnmlId2name!=null) {
-                System.out.println("SAVING NAME MAP FILE "+baseName+".id2name ...");
-                File outNameMap = new File(baseName+".id2name");
-                PrintWriter map = new UnixPrintWriter(new BufferedOutputStream(new FileOutputStream(outNameMap)));
-                map.println(pnmlId2name.size());
-                for (Map.Entry<String, String> e : pnmlId2name.entrySet()) {
-                    map.println(e.getKey());                
-                    map.println(e.getValue());                
+            if (saveNameMap) {
+                if (pnmlId2name!=null) {
+                    System.out.println("SAVING NAME MAP FILE "+baseName+".id2name ...");
+                    File outNameMap = new File(baseName+".id2name");
+                    PrintWriter map = new UnixPrintWriter(new BufferedOutputStream(new FileOutputStream(outNameMap)));
+                    map.println(pnmlId2name.size());
+                    for (Map.Entry<String, String> e : pnmlId2name.entrySet()) {
+                        map.println(e.getKey());                
+                        map.println(e.getValue());                
+                    }
+                    map.close();
                 }
-                map.close();
 
                 // Save unfolded relations
                 if (unfolded) {

@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include <spawn.h>
 #include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "platform_utils.h"
 
@@ -220,16 +223,134 @@ const char* get_appimage_dir() {
 
 //=============================================================================
 
+// Append prefix and suffix, using the path separator (if needed)
+static char* path_append(char* buf, const char* prefix, const char* suffix, size_t bufsz) {
+    // Copy the prefix
+    if (buf != prefix)
+        strncpy(buf, prefix, FILENAME_MAX);
+    // Add the path separator (if missing)
+    size_t len = strlen(buf);
+    if (len >= FILENAME_MAX)
+        return NULL;
+    if (buf[len - 1] != PATH_SEPARATOR_CH) {
+        buf[len] = PATH_SEPARATOR_CH;
+        ++len;
+        buf[len] = '\0';
+    }
+    // Append the suffix
+    strncpy(buf + len, suffix, FILENAME_MAX - len);
+    return buf;
+}
+
+//=============================================================================
+
+// search for the path where the GreatSPN subcommand @bin can be found
+// returns 0 if the binary is found
+int search_greatspn_app(char cmdname[FILENAME_MAX], const char *bin) {
+	const char *appimg_dir = get_appimage_dir(), *prefix;
+	struct stat st;
+	int ii=0;
+	while (1) {
+        cmdname[0] = '\0';
+		switch (ii) {
+			case 0:
+				if (appimg_dir != NULL) {
+					// When the application runs inside the appimage, test the appimage path first
+                    path_append(cmdname, appimage_dir, "bin", FILENAME_MAX);
+                    path_append(cmdname, cmdname, bin, FILENAME_MAX);
+				}
+				break;
+
+			case 1: // Local path: ./app
+                path_append(cmdname, ".", bin, FILENAME_MAX);
+				break;
+
+			case 2: // Local path: ./bin/app
+                path_append(cmdname, "." PATH_SEPARATOR "bin", bin, FILENAME_MAX);
+				break;
+
+			case 3: // Using the GREATSPN_INSTALLDIR environment variable
+				prefix = getenv("GREATSPN_INSTALLDIR");
+				if (prefix != NULL) {
+                    path_append(cmdname, prefix, "bin", FILENAME_MAX);
+                    path_append(cmdname, cmdname, bin, FILENAME_MAX);
+				}
+				break;
+
+			case 4: // Using the GREATSPN_BINDIR environment variable
+				prefix = getenv("GREATSPN_BINDIR");
+				if (prefix != NULL) {
+                    path_append(cmdname, prefix, bin, FILENAME_MAX);
+				}
+				break;
+
+			case 5: // Standard global Unix path
+                path_append(cmdname, "/usr/local/GreatSPN/bin", bin, FILENAME_MAX);
+				break;
+
+#ifdef __CYGWIN__
+			case 6: // Standard global Windows/Cygwin path
+                path_append(cmdname, "C:\\Program Files\\GreatSPN\\app\\portable_greatspn\\bin", 
+                            bin, FILENAME_MAX);
+				break;
+#endif
+			default:
+				return -1; // Could not find a suitable path
+		}
+
+		if (cmdname[0] != '\0') {
+			int ret = stat(cmdname, &st);
+            // printf("TEST: %s   STAT=%d\n", cmdname, ret);
+			if (0 == ret && S_ISREG(st.st_mode))
+				return 0; // application find at @cmdname
+		}
+
+		ii++;
+	}
+}
+
+//=============================================================================
+
 // generate a temporary filename, using either the default or the extra TEMP dir
-int portable_mkstemp(char buffer[1024], const char* pattern) {
-    const char *tmpdir_env = getenv("GREATSPN_TEMP_DIR");
-    if (tmpdir_env != NULL) {
-        snprintf(buffer, PATH_MAX, "%s%s", tmpdir_env, pattern);
+int portable_mkstemp(char buffer[FILENAME_MAX], const char* pattern) {
+    char tempdir[FILENAME_MAX];
+    struct stat st;
+    const char *prefix;
+    int ii = 0;
+    while (1) {
+        tempdir[0] = '\0';
+        switch (ii) {
+            case 0: // Get the GreatSPN temporary directory, if defined
+                prefix = getenv("GREATSPN_TEMP_DIR");
+                if (prefix != NULL) {
+                    strncpy(tempdir, prefix, FILENAME_MAX);
+                }
+                break;
+
+            case 1: // Get default Unix temporary directory
+                strncpy(tempdir, "/tmp", FILENAME_MAX);
+                break;
+            
+            case 2: // Use current directory
+                strncpy(tempdir, ".", FILENAME_MAX);
+                break;
+            
+            default:
+                return -1;
+        }
+
+        if (tempdir[0] != '\0') {
+            int ret = stat(tempdir, &st);
+            // printf("TMPTEST: %s   STAT=%d\n", tempdir, ret);
+			if (0 == ret && S_ISDIR(st.st_mode)) {
+                // We have a valid temporary directory
+                path_append(buffer, tempdir, pattern, FILENAME_MAX);
+                return mkstemp(buffer);
+            }
+        }
+
+        ii++;
     }
-    else {
-        snprintf(buffer, PATH_MAX, "/tmp/%s", pattern); // assume the default Unix /tmp folder
-    }
-    return mkstemp(buffer);
 }
 
 //=============================================================================

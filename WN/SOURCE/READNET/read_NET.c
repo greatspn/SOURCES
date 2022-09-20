@@ -926,10 +926,9 @@ void read_transition() {
     // Decode rate/delay
     if (float_val == -510) // marking-dependent rate
     { /*tabt[ntr].md_rate_val=get_md_rate(ntr);*/
-        if (int_val2 == 127) { // it is a general transition (black rectangle in the gui)
-            // has_general_fn = TRUE;
+        // if (int_val2 == 127) { // it is a general transition (black rectangle in the gui)
             tabt[ntr].mean_t = 0.0;
-        }
+        // }
     }
     else if (float_val < 0) { // it is a rate parameter
         rte = -float_val - 1;

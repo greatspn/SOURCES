@@ -880,8 +880,8 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
             // NOTE: this is used by the portable_mkstemp() function in platform_utils.c
             File tmpDir = new File(System.getProperty("java.io.tmpdir"));
             String tmpDirAbs = tmpDir.getAbsolutePath();
-            if (!tmpDirAbs.endsWith(File.separator))
-                tmpDirAbs += File.separator;
+//            if (!tmpDirAbs.endsWith(File.separator))
+//                tmpDirAbs += File.separator;
             nenv.put("GREATSPN_TEMP_DIR", tmpDirAbs);
 //            System.out.println("tmpDir.getAbsolutePath()=" + tmpDirAbs);
         }

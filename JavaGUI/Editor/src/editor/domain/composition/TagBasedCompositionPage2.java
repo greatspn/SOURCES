@@ -150,8 +150,8 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
             mergeTags(countTagsT, tagsT);
         }
 
-        // Get the set of common tags
-        int threshold = Math.min(2, netsDescr.size());
+        // Get the set of common tags that are selectable for composition/restriction
+        int threshold = 1;//Math.min(2, netsDescr.size());
         for (Map.Entry<String, Integer> tag : countTagsP.entrySet())
             if (tag.getValue() >= threshold)
                 commonTagsP.add(tag.getKey());
@@ -159,7 +159,7 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
             if (tag.getValue() >= threshold)
                 commonTagsT.add(tag.getKey());
         
-        // Remove from the selected sets the tags that are not in common
+        // Remove from the selected sets the tags that are not in the selectable sets
         Iterator<String> it = selTagsP.iterator();
         while (it.hasNext()) {
             String tag = it.next();
@@ -315,9 +315,11 @@ public class TagBasedCompositionPage2 extends MultiNetPage implements Serializab
 //        else throw new IllegalStateException();
         a.result.setSelectionFlag(false);
         
-        ViewProfile newProfile = nets[0].viewProfile;
+        ViewProfile newProfile = new ViewProfile();
+        newProfile.copyFrom(nets[0].viewProfile);
         for (int nn=1; nn<nets.length; nn++)
             newProfile = newProfile.combineWith(nets[nn].viewProfile);
+        a.result.viewProfile = newProfile;
 
         setCompositionSuccessfull(a.result, newProfile,
                 new String[]{a.result.getPageName()}, new NetPage[]{a.result});
