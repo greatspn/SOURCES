@@ -28,8 +28,6 @@ public class CppCommand {
             Main.fixedUiSize = Main.UiSize.NORMAL;
             DummyLatexProvider.initializeProvider();
             long totalStart = System.currentTimeMillis();
-            System.out.println("prova");
-
             toolMain(args);
                         
             System.out.println("TOTAL TIME: "+(System.currentTimeMillis() - totalStart)/1000.0);
