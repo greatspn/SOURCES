@@ -32,8 +32,15 @@ namespace CRS {
 				}
 			}
 			f.close();
-			auto itPos = files.begin() + file_index;
-			files.insert(itPos, constants);
+
+			//!updates the column_time structure; for the list is not important
+			files[file_index] = constants;
+			pair<int, int> ct_pair;
+			ct_pair.first = 1;
+			ct_pair.second = 0;
+
+			column_time[file_index] = ct_pair;
+
 		}
 		else
 		{
@@ -44,7 +51,7 @@ namespace CRS {
 /*!
   function that read a table from a file, without the column time
 */
-	int readFileTable(int file_index){
+	void readFileTable(int file_index){
 
 
 		ifstream file (name_file[file_index]);
@@ -84,14 +91,8 @@ namespace CRS {
 			}
 			file.close();
 
-			//!insert at the beginning the the vector the lenght of the rows.
-			auto itLM = files.begin() + file_index;
-			files.insert(itLM, linearizedMatrix);
-
-
-			//auto itLenght = additionalInformation.begin() + file_index;
-			//vector<int> lenght = {rowLenght};
-			//additionalInformation.insert(itLenght, lenght);
+			//!save the list in the files structure
+			files[file_index] = linearizedMatrix;
 
 		}
 		else
@@ -99,19 +100,23 @@ namespace CRS {
 			throw Exception("The file could not be opened");
 		}
 
-		return rowLenght;
+		//!update column_time with the right number of column; no time associated.
+		pair<int, int> ct_pair;
+		ct_pair.first = rowLenght;
+		ct_pair.second = 0;
 
-
+		column_time[file_index] = ct_pair;
 
 	}
 
 /*!read a table which first column is time
+ * molto simile a readTable; conviene unirli e differenziare con un flag?
 */
-/*	int readFileTimeTable(int file_index){
+	void readFileTimeTable(int file_index){
 
 		ifstream file (name_file[file_index]);
 		vector<double> linearizedMatrix;
-		vector<double> time_v;
+		vector<double> time_tmp;
 	//!memorize the lenght of the row for right value extraction
 		int rowLenght = 0;
 		bool init = false;
@@ -123,23 +128,22 @@ namespace CRS {
 			{
 			//!to  controll that each row is the same lenght
 				int rowControll = 0;
-			//!to read more elements separated by whitespace
+			//!to read more elements separated by whitespace or comma or semicolon
 				stringstream ss(line); 
 				string token;
-				while (getline(ss, token, ' ') || getline(ss, token, ',')  || getline(ss, token, ';') ) 
+				while (getline(ss, token, ' ') || getline(ss, token, ',')  || getline(ss, token, ';')) 
 			//!to read the single elements of the line
 				{   
 					try{
 						//!To save the time in a vector separated from other values
 						if(rowControll == 0){
-							time_v.push_back(stod(token));
+							time_tmp.push_back(stod(token));
 						}
 						else{
 							linearizedMatrix.push_back(stod(token));
 						}
 					}
 					catch(std::invalid_argument const& ex){
-					//controllare se posso generalizzare il separatore con , ; e spazio
 						cout << "There's an invalid argument" + name_file[file_index] + " (the separator should be the blankspace)\n";
 					}
 					if(!init){
@@ -154,61 +158,64 @@ namespace CRS {
 			}
 			file.close();
 
-			auto itPos = files.begin() + file_index;
-			files.insert(itPos, linearizedMatrix);
+			files[file_index] = linearizedMatrix;
 
+			//!update column_time; the effective table has one less column, because there's not the time. 
+			//! the time vector is inserted in time_v and the position saved in column time.
+			pair<int, int> ct_pair;
+			ct_pair.first = rowLenght - 1;
+			time_v.push_back(time_tmp);
+			ct_pair.second = time_v.size() - 1;
 
-			//auto itLenght = additionalInformation.begin() + file_index;
-			//additionalInformation.insert(itLenght, time_v);
+			column_time[file_index] = ct_pair;
+			
 		}
 		else
 		{
 			throw Exception("The file could not be opened");
 		}
 
-		return rowLenght;
-
 	}
 
 
 	double getConstantFromTimeTable(int file_index, double time, int index){
 
-		int row;
 		//!checks if the file has already been written
 		if(files[file_index].empty()){
 			readFileTimeTable(file_index);
 		}
 
+		int row = column_time[file_index].first;
+		int time_index = column_time[file_index].second;
+		int value_index;
 
-		//decltype(time_v)::iterator it_up = upper_bound(time_v.begin(), time_v.end(), time);
-	//cout<<"Upper bound of " << time << " is: ";
-	//cout << *it_up << "\n";
-		int upper_time_index = std::distance(time_v.begin(), it_up);
-	//cout << "indice " << upper_time_index << "\n";
+		//da capire se si vuole il valore precedente o il valore successivo al time che viene passato
+		auto it_up = upper_bound(time_v[time_index].begin(), time_v[time_index].end(), time);
+		int upper_time_index = std::distance(time_v[time_index].begin(), it_up);
+		//upper_time_index--;
 
+	  //!if time is lower of the minimun value
 		if(upper_time_index == 0)
 		{
-			inf_rate = Infection_rate[0][1];
+			value_index = index;
+			return files[file_index][value_index];
 		}
-		else if (upper_time_index == time_v.size())
+		//!if time si bigger of the maximum value
+		else if (upper_time_index == time_v[time_index].size())
 		{
-			inf_rate = Infection_rate[time_v.size()-1][1];
-		//cout << "time size " << time_v.size() << "\n";
+			value_index = (time_v[time_index].size()-1*row) + index;
+			cout << value_index << " mezzo\n";
+			return files[file_index][value_index];
 
 		}
+		//!middle cases
 		else
 		{
-		//qui ho solo due colonne... immagino che nel caso dovrò salvarmi anche a cosa faccio riferimento e quindi quale colonna
-			inf_rate = Infection_rate[upper_time_index-1][1];	
+			value_index = (upper_time_index*row) + index;
+			return files[file_index][value_index];
 		}
 
-		return 0.1;
-
-
-
-
-
-	}*/
+	}
 
 
 /*!
@@ -236,16 +243,16 @@ namespace CRS {
 
 	double getConstantFromTable(int file_index, int index1, int index2){
 
-		int row;
+		//int row;
 		//!checks if the file has already been written
 		if(files[file_index].empty()){
-			row = readFileTable(file_index);
+			readFileTable(file_index);
 		}
 
-		// row = additionalInformation[file_index][0];
+		int row = column_time[file_index].first; 
 
 		//!get the right index in the linearized table
-		int value_index = (index1*row) + index2 - 1;
+		int value_index = (index1*row) + index2 -1; // -1? non -1? dipende da che indice si contano le colonne
 
 		if (value_index <= (int)files[file_index].size()){
 			return files[file_index][value_index];

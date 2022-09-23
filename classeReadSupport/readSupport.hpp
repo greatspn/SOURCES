@@ -28,6 +28,7 @@ namespace CRS {
 
   double getConstantFromList(int file_index, int index);
   double getConstantFromTable(int file_index, int index1, int index2);
+  double getConstantFromTimeTable(int file_index, double time, int index);
 
   //using namespace SDE; //qui dentro sarà definito l'extern vector
 
