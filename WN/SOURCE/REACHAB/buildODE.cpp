@@ -1019,9 +1019,9 @@ for (pp = 0; pp < npl; pp++)
         }
     }
     // GESTIONE FITTIZIA DEL VETTORE FILES
-    hout << "extern vector<string> name_file;\n";
-    hout << "#define constantList_txt 0;\n";
+    hout << "#define constantList_txt 0\n";
     hout << "#define constantTable_txt 1\n";
+    hout << "#define constantTimeTable_txt 2\n";
     hout<<"};\n";
     hout.close();
         //for transition function rates

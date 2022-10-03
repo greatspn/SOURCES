@@ -1,17 +1,16 @@
 
-/*#ifndef READ_SUP
+#ifndef READ_SUP
 	#define READ_SUP
-	#include "//home/utente/tesiMagistrale/SOURCESC-/classeReadSupport/readSupport.hpp"
-#endif*/
+	#include "readSupport.hpp"
+#endif
 
-//#include "test.hpp"
+#include "test.hpp"
 
 //ovviamente gestire il path ma i define dei file dovranno essere qui
 //#include "/home/utente/tesiMagistrale/pnpro/EsempiExpMTDep.hpp"
 
-//namespace CRS {
+namespace CRS {
 
-  //using namespace SDE;
 
 /*!
   function that read a table from a file, without the column time
@@ -171,7 +170,7 @@
 			return files[file_index][value_index];
 		}
 		//!if time si bigger of the maximum value
-		else if (lower_time_index == (int)time_v[time_index].size())
+		else if (lower_time_index == time_v[time_index].size())
 		{
 			value_index = (time_v[time_index].size()-1*column) + index;
 			return files[file_index][value_index];
@@ -186,7 +185,19 @@
 
 	}
 
-	
+
+/*!
+  function that extracts the constant from the list written in the file
+*/
+	double getConstantFromList(int file_index, int index) {
+
+		return getConstantFromTable(file_index, index, 0);
+	}	
+
+/*!
+  function that extracts the constant from a table written in the file
+*/	
+
 	double getConstantFromTable(int file_index, int index1, int index2){
 
 		//int row;
@@ -215,21 +226,7 @@
 
 	}
 
-
-/*!
-  function that extracts the constant from the list written in the file
-*/
-	double getConstantFromList(int file_index, int index) {
-
-		return getConstantFromTable(file_index, index, 0);
-	}	
-
-/*!
-  function that extracts the constant from a table written in the file
-*/	
-
-
-//}
+}
 
 
 

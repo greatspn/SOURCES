@@ -22,6 +22,7 @@
 
 #include "class.hpp"
 
+
 double epsilon=1e-20;
 double epsilon1=0.00000000001;
 double ep=0.9;

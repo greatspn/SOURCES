@@ -22,9 +22,9 @@
 #endif*/
 
 
-//namespace CRS {
+namespace CRS {
 
-  //using namespace std;
+  using namespace std;
 
   /*!
   function that extracts the constant from a table written in the file
@@ -63,7 +63,7 @@
 
 
     //!Exception
-  /*struct Exception{
+  struct Exception{
     std::string mess;
   public:
         //! Empty constructors
@@ -75,6 +75,6 @@
         //!It returns message
     std::string what(void) {return mess;};
         //@}
-  };*/
+  };
 
-//}
+}

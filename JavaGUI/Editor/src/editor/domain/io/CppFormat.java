@@ -25,11 +25,12 @@ public class CppFormat {
         ArrayList<String> log = new ArrayList<>();
 
         PrintWriter out = new PrintWriter(new BufferedOutputStream(new FileOutputStream(file)));
+        
+        out.println("vector<string> name_file = {\"constantList.txt\", \"constantTable.txt\", \"constantTimeTable.txt\"};\n");
 
         for (Node node : gspn.nodes) {
             if (node instanceof Transition) {
                 Transition trn = (Transition) node;
-                //if (trn.isGeneral()) {
 
                 String cppDelayExpr = trn.convertDelayLang(context, null, ExpressionLanguage.CPP);
 
@@ -49,7 +50,6 @@ public class CppFormat {
                 out.println("   return rate;");
                 out.println("}\n");
 
-                //}
             }
         }
 
