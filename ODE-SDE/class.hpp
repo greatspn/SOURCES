@@ -148,6 +148,7 @@ namespace SDE
   const double MAXSTEP=4294967295.0;
 
   using namespace std;
+  using namespace CRS;
 //automaton
 #ifdef AUTOMATON
   using namespace AUTOMA;
@@ -159,6 +160,7 @@ namespace SDE
   extern vector<vector<double>> files;
   extern vector<vector<double>> time_v;
   extern vector<pair<int, int>> column_time;
+  extern vector<Table> class_files;
 
 
   //!Exception
