@@ -1369,7 +1369,9 @@ INSTALLEDSOURCES := 	ODE-SDE/class.hpp \
 			ODE-SDE/GLPKsolve.hpp \
 			ODE-SDE/GLPKsolve.cpp \
 			ODE-SDE/general.h \
-			ODE-SDE/general.cpp 
+			ODE-SDE/general.cpp \
+			ODE-SDE/readSupport.hpp \
+			ODE-SDE/readSupport.cpp
 			
 
 

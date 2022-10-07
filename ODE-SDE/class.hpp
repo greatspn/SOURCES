@@ -81,9 +81,7 @@
 #ifndef __TIM_H__
 #define __TIM_H__
 #include <time.h>
-
 #endif
-
 
 #ifndef __RND_H__
 #define __RND_H__
@@ -135,6 +133,14 @@
     #endif
 #endif
 
+
+
+#include <numeric>      // std::iota
+
+
+
+
+
 namespace SDE
 {
 
@@ -157,9 +163,6 @@ namespace SDE
 
 
   extern vector<string> name_file;
-  extern vector<vector<double>> files;
-  extern vector<vector<double>> time_v;
-  extern vector<pair<int, int>> column_time;
   extern vector<Table> class_files;
 
 

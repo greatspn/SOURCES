@@ -26,7 +26,9 @@ public class CppFormat {
 
         PrintWriter out = new PrintWriter(new BufferedOutputStream(new FileOutputStream(file)));
         
+        
         out.println("vector<string> name_file = {\"constantList.txt\", \"constantTable.txt\", \"constantTimeTable.txt\"};\n");
+        out.println("vector<Table> class_files;\n");
 
         for (Node node : gspn.nodes) {
             if (node instanceof Transition) {

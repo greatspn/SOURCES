@@ -1,69 +1,59 @@
-
-/*ifndef __IOS_H__
-  #define __IOS_H__
-  #include <iostream>
-#endif
-
-#ifndef __FSTREAM__
-  #define __FSTREAM__
-  #include <fstream>
-#endif
-
-#ifndef __STR__
-    #define __STR__
-    #include <string>
-    #include <sstream>
-#endif
-
-
-#ifndef __VEC__
-  #define __VEC__
+#include <utility>
+#include <cstdio>
+#include <algorithm>
 #include <vector>
-#endif*/
+#include <iostream>
+#include <fstream>
+
+namespace CRS {
+
+  using namespace std;
 
 
-//namespace CRS {
-
-  //using namespace std;
-
-  /*!
+/*!class that define and read from the table written on a file
+*/
+  class Table
+  {
+  private: 
+    int column ;
+    static int class_number;
+    int file_index;
+    vector<double> file;
+    vector<double> time;
+  public:
+    //! Empty Constructor
+    Table(){ file_index = class_number; };
+    //!empty copy Constructor
+    Table(const Table& t){ file_index = t.class_number; ++class_number; };
+    Table(int file_index);
+   /*!
   function that extracts the constant from a table written in the file
-*/  
-  double getConstantFromTable(int file_index, int index1, int index2);
+  */  
+    double getConstantFromTable(int row, int column);
   /*! get a constant from a table which first column is time; the row is the position
    * of the first value lower than the one passed as parameter
   */
-  double getConstantFromTimeTable(int file_index, double time, int index);
+    double getConstantFromTimeTable(int file_index, double time, int index);
   /*!
    * get a value from a list of constants in a file 
   */
-  double getConstantFromList(int file_index, int index);
+    double getConstantFromList(int index);
+    /*!
+  function that read a table from a file, without the column time
+*/
+    inline void readFileTable(int file_index);
+    /*!read a table which first column is time
+*/
+    inline void readFileTimeTable(int file_index);
+    /* set the number of column of the table file
+    */
+    inline void setColumn(int column);
 
-
-  class Table
-  {
-  public: 
-    int column;
-    string type;
-    vector<double> file;
-    vector<double> time;
-    //! Empty Constructor
-    Table(void){};
-    //! Constructor that takes column as parameter
-    Table(int column, vector<double> file);
-    //!returns the type of the table
-    string getTypeTable();
   };
 
-  class TimeTable:virtual public Table
-  {
-  public:
-    TimeTable(int column, vector<double> file, vector<double> time):Table(column, file){type = "time"; this -> time = time;};
-  };
-
-
-    //!Exception
-  /*struct Exception{
+    /*!Exception
+    */
+  struct Exception{
     std::string mess;
   public:
         //! Empty constructors
@@ -75,6 +65,6 @@
         //!It returns message
     std::string what(void) {return mess;};
         //@}
-  };*/
+  };
 
-//}
+}

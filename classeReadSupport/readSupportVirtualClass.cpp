@@ -1,33 +1,29 @@
-
-#ifndef READ_SUP
-	#define READ_SUP
-	#include "/home/utente/tesiMagistrale/pnpro/readSupport.hpp"
-#endif
+//#include "class.hpp" // already include readSupport.hpp
 
 #include "test.hpp"
 
-//ovviamente gestire il path ma i define dei file dovranno essere qui
-//#include "/home/utente/tesiMagistrale/pnpro/EsempiExpMTDep.hpp"
+
 
 namespace CRS {
+
+	int Table::class_number = 0;
 
 
 /*!
   function that read a table from a file, without the column time
 */
-	void readFileTable(int file_index){
+	inline void Table::readFileTable(int file_index){
 
 
-		ifstream file (name_file[file_index]);
-		vector<double> linearizedMatrix;
+		ifstream file_written (name_file[file_index]);
 	//!memorize the lenght of the row for right value extraction
 		int columnLenght = 0;
 		bool init = false;
-		if(file.is_open())
+		if(file_written.is_open())
 		{
 			string line;
 		//!to read the single line                   
-			while (getline(file, line))
+			while (getline(file_written, line))
 			{
 				//!to check that each rows is the same leght
 				int columnControll = 0;
@@ -38,7 +34,7 @@ namespace CRS {
 			//!to read the single elements of the line
 				{   
 					try{
-						linearizedMatrix.push_back(stod(token));
+						file.push_back(stod(token));
 					}
 					catch(std::invalid_argument const& ex){
 						cout << "There's an invalid argument" + name_file[file_index] + " (the separator should be the blankspace)\n";
@@ -56,35 +52,30 @@ namespace CRS {
 					throw Exception("The table must have one column at least.");
 				}
 			}
-			file.close();
+			file_written.close();
+
+			setColumn(columnLenght);
+
 		}
 		else
 		{
 			throw Exception("The file could not be opened");
 		}
-
-
-		Table tmp = Table(columnLenght, linearizedMatrix);
-		class_files[file_index] = tmp;
-
-
 	}
 
 /*!read a table which first column is time
 */
-	void readFileTimeTable(int file_index){
+	void Table::readFileTimeTable(int file_index){
 
-		ifstream file (name_file[file_index]);
-		vector<double> linearizedMatrix;
-		vector<double> time_tmp;
+		ifstream file_written (name_file[file_index]);
 	//!memorize the lenght of the row for right value extraction
 		int columnLenght = 0;
 		bool init = false;
-		if(file.is_open())
+		if(file_written.is_open())
 		{
 			string line;
 		//!to read the single line                   
-			while (getline(file, line))
+			while (getline(file_written, line))
 			{
 			//!to  controll that each row is the same lenght
 				int columnControll = 0;
@@ -97,10 +88,10 @@ namespace CRS {
 					try{
 						//!To save the time in a vector separated from other values
 						if(columnControll == 0){
-							time_tmp.push_back(stod(token));
+							time.push_back(stod(token));
 						}
 						else{
-							linearizedMatrix.push_back(stod(token));
+							file.push_back(stod(token));
 						}
 					}
 					catch(std::invalid_argument const& ex){
@@ -119,10 +110,9 @@ namespace CRS {
 					throw Exception("The table must have two columns at least.");
 				}
 			}
-			file.close();
+			file_written.close();
 
-			TimeTable tmp = TimeTable(columnLenght-1, linearizedMatrix, time_tmp);
-			class_files[file_index] = tmp;
+			setColumn(columnLenght-1);
 			
 		}
 		else
@@ -135,37 +125,39 @@ namespace CRS {
 	/*! get a constant from a table which first column is time; the row is the position
 	 * of the first value lower than the one passed as parameter
 	*/
-	double getConstantFromTimeTable(int file_index, double time, int index){
+	double Table::getConstantFromTimeTable(int file_index, double time_value, int column_index){
 
 		//!checks if the file has already been written
-		if(class_files[file_index].file.empty()){
+		if(file.empty()){
 			readFileTimeTable(file_index);
 		}
 
-		vector<double> tab_file = class_files[file_index].file;
-		int column = class_files[file_index].column;
-		vector<double> time_v = class_files[file_index].time;
-
-		auto it_up = lower_bound(time_v.begin(), time_v.end(), time);
-		int lower_time_index = std::distance(time_v.begin(), it_up);
+		auto it_up = lower_bound(time.begin(), time.end(), time_value);
+		int lower_time_index = std::distance(time.begin(), it_up);
 		lower_time_index--;
+		
+		cout << column << "numero colonne secondo lui.\n";
+		
+		if(column_index > column){
+			throw Exception("Index out of range.\n");
+		}
 
 	  //!if time is lower of the minimun value
 		if(lower_time_index == 0)
 		{
-			return tab_file[index];
+			return file[column_index];
 		}
 		//!if time si bigger of the maximum value
-		else if (lower_time_index == time_v.size())
+		else if (lower_time_index == (int)time.size())
 		{
-			int value_index = ((time_v.size()-1)*column) + index;
-			return tab_file[value_index];
+			int value_index = ((time.size()-1)*column) + column_index;
+			return file[value_index];
 		}
 		//!middle cases
 		else
 		{
-			int value_index = (lower_time_index*column) + index;
-			return tab_file[value_index];
+			int value_index = (lower_time_index*column) + column_index;
+			return file[value_index];
 		}
 	}
 
@@ -173,50 +165,49 @@ namespace CRS {
 /*!
   function that extracts the constant from the list written in the file
 */
-	double getConstantFromList(int file_index, int index) {
+	double Table::getConstantFromList(int column_index) {
 
-		return getConstantFromTable(file_index, index, 0);
+		return getConstantFromTable(column_index, 0);
 	}	
 
 /*!
   function that extracts the constant from a table written in the file
 */	
 
-	double getConstantFromTable(int file_index, int index1, int index2){
+	double Table::getConstantFromTable(int row_index, int column_index){
 
 		//!checks if the file has already been written
 
-		if(class_files[file_index].file.empty()){
+		if(file.empty()){
 			readFileTable(file_index);
 		}
 
-		vector<double> tab_file = class_files[file_index].file; 
-		int column = class_files[file_index].column;
-
-		if(column == 1 && index2 != 0){
+		if(column == 1 && column_index){
 			throw Exception("Number of column out of range");
 		}
 
 		//!get the right index in the linearized table
-		int value_index = (index1*column) + index2; // -1? non -1? dipende da che indice si contano le colonne
+		int value_index = (row_index*column) + column_index; 
 
-		if (value_index <= (int)tab_file.size()){
-			return tab_file[value_index];
+		if (value_index <= (int)file.size()){
+			return file[value_index];
 		}
 		else {
 			throw Exception("Index out of range");
 		}
 	}
 
-	Table::Table(int column, vector<double> new_file){
-
+	inline void Table::setColumn(int column){
 		this -> column = column;
-		this -> file = new_file;
-		type = "classic";
+	}
+
+	Table::Table(int file_index){
+		this -> file_index = file_index;
 	}
 
 
 }
+
 
 
 
