@@ -416,6 +416,13 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new BinaryFunct(false, ExprLangParser.MUL, " * ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.DIV, " / ", OperatorPos.FUNCTION),
                 
+        new BinaryFunct(true, ExprLangParser.MAX_FN, "Max[", ", ", "]", OperatorPos.FUNCTION),
+        new BinaryFunct(true, ExprLangParser.MIN_FN, "Min[", ", ", "]", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.MOD_FN, "Mod[", ", ", "]", OperatorPos.FUNCTION),
+        new BinaryFunct(true, ExprLangParser.BINOMIAL_FN, "Binom[ ", ", ", "]", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.POW_FN, "Pow[", ", ", "]", OperatorPos.FUNCTION_FIRST_SIMPLETERM),
+        new BinaryFunct(true, ExprLangParser.FRACT_FN, " / ", OperatorPos.FUNCTION),
+
         new BinaryFunct(false, ExprLangParser.AND, " & ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.OR, " | ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.IMPLY, " -> ", OperatorPos.FUNCTION),
