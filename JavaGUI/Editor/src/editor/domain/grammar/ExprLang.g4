@@ -136,6 +136,10 @@ realExpr : realExpr op=('*'|'/') realExpr                            # RealExprM
          | PDF_X_VAR /* x variable for PDF equations */              # RealExprPdfXVar /* only PDF */
          | {clockVarInExpr}? clockVar                                # RealExprClockVar
          | ID /* Generate a parse error */                           # RealExprUnknownId
+         | 'FromList' '[' fname=STRING_LITERAL ',' intExpr ']'       # RealExprFromList
+         | 'FromTable' '[' fname=STRING_LITERAL ',' intExpr ',' intExpr ']' # RealExprFromTable
+         | 'FromTimeTable' '[' fname=STRING_LITERAL ',' intExpr ',' intExpr ']' # RealExprFromTimeTable
+         | 'Call' '[' name=STRING_LITERAL intOrRealList ']'          # RealExprCall
          ;
 
 boolExpr : '!' boolExpr                                          # BoolExprNot
@@ -179,6 +183,11 @@ binaryRealFn : fn=(RECT_FN| UNIFORM_FN| TRIANGULAR_FN| ERLANG_FN| TRUNCATED_EXP_
 unaryRealFn : fn=(SIN_FN | COS_FN | TAN_FN | EXP_FN | SQRT_FN | ARCSIN_FN | ARCCOS_FN | ARCTAN_FN
                 // Functions for general events PDF
                 | DIRAC_DELTA_FN);
+
+intOrRealList:                             # IntOrRealListEmptyList
+             | ',' intExpr intOrRealList   # IntOrRealListInt
+             | ',' realExpr intOrRealList  # IntOrRealListReal
+             ;
 
 //--------------------------------------------------------------------------
 // Multiset expressions:
@@ -669,5 +678,18 @@ REAL : DIGIT+ '.' DIGIT+ ExponentPart?
      | '.' DIGIT+ ExponentPart?
      ;
 
+// String
+STRING_LITERAL : '"' SCharSequence? '"' ;
+
+fragment
+SCharSequence : SChar+ ;
+
+fragment
+SChar
+    :   ~["\\\r\n]
+//    |   EscapeSequence
+//    |   '\\\n'   // Added line
+//    |   '\\\r\n' // Added line
+    ;
 
 

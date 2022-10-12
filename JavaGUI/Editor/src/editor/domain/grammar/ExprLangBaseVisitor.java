@@ -118,6 +118,14 @@ public class ExprLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitRealExprFromTable(@NotNull ExprLangParser.RealExprFromTableContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitColorSetSubClass(@NotNull ExprLangParser.ColorSetSubClassContext ctx) { return visitChildren(ctx); }
 
 	/**
@@ -223,6 +231,14 @@ public class ExprLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitVarUpdateListEmpty(@NotNull ExprLangParser.VarUpdateListEmptyContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitRealExprCall(@NotNull ExprLangParser.RealExprCallContext ctx) { return visitChildren(ctx); }
 
 	/**
 	 * {@inheritDoc}
@@ -526,6 +542,14 @@ public class ExprLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitRealExprFromTimeTable(@NotNull ExprLangParser.RealExprFromTimeTableContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitRealExprUnaryFn(@NotNull ExprLangParser.RealExprUnaryFnContext ctx) { return visitChildren(ctx); }
 
 	/**
@@ -630,6 +654,14 @@ public class ExprLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitIntOrRealListEmptyList(@NotNull ExprLangParser.IntOrRealListEmptyListContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitMainIntExpr(@NotNull ExprLangParser.MainIntExprContext ctx) { return visitChildren(ctx); }
 
 	/**
@@ -711,6 +743,14 @@ public class ExprLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitTagRewriteListEmpty(@NotNull ExprLangParser.TagRewriteListEmptyContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitIntOrRealListReal(@NotNull ExprLangParser.IntOrRealListRealContext ctx) { return visitChildren(ctx); }
 
 	/**
 	 * {@inheritDoc}
@@ -958,6 +998,14 @@ public class ExprLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitIntOrRealListInt(@NotNull ExprLangParser.IntOrRealListIntContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitCsltaExprAnd(@NotNull ExprLangParser.CsltaExprAndContext ctx) { return visitChildren(ctx); }
 
 	/**
@@ -1007,6 +1055,14 @@ public class ExprLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitBoolExprCTLUntil(@NotNull ExprLangParser.BoolExprCTLUntilContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitRealExprFromList(@NotNull ExprLangParser.RealExprFromListContext ctx) { return visitChildren(ctx); }
 
 	/**
 	 * {@inheritDoc}

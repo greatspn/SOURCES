@@ -100,6 +100,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	T visitColorSetSubclassOf(@NotNull ExprLangParser.ColorSetSubclassOfContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#RealExprFromTable}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRealExprFromTable(@NotNull ExprLangParser.RealExprFromTableContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#ColorSetSubClass}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -196,6 +203,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitVarUpdateListEmpty(@NotNull ExprLangParser.VarUpdateListEmptyContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#RealExprCall}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRealExprCall(@NotNull ExprLangParser.RealExprCallContext ctx);
 
 	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#ColorSetSubClass2}.
@@ -457,6 +471,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	T visitBoolExprCTLStar(@NotNull ExprLangParser.BoolExprCTLStarContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#RealExprFromTimeTable}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRealExprFromTimeTable(@NotNull ExprLangParser.RealExprFromTimeTableContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#RealExprUnaryFn}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -548,6 +569,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	T visitBinaryRealFn(@NotNull ExprLangParser.BinaryRealFnContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#IntOrRealListEmptyList}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIntOrRealListEmptyList(@NotNull ExprLangParser.IntOrRealListEmptyListContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#mainIntExpr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -623,6 +651,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitTagRewriteListEmpty(@NotNull ExprLangParser.TagRewriteListEmptyContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#IntOrRealListReal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIntOrRealListReal(@NotNull ExprLangParser.IntOrRealListRealContext ctx);
 
 	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#MeasureX}.
@@ -835,6 +870,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	T visitIntMSetExprConst(@NotNull ExprLangParser.IntMSetExprConstContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#IntOrRealListInt}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIntOrRealListInt(@NotNull ExprLangParser.IntOrRealListIntContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#CsltaExprAnd}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -882,6 +924,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitBoolExprCTLUntil(@NotNull ExprLangParser.BoolExprCTLUntilContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#RealExprFromList}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRealExprFromList(@NotNull ExprLangParser.RealExprFromListContext ctx);
 
 	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#unaryIntFn}.
