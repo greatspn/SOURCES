@@ -22,7 +22,6 @@
 
 #include "class.hpp"
 
-
 double epsilon=1e-20;
 double epsilon1=0.00000000001;
 double ep=0.9;
@@ -246,6 +245,10 @@ bool SystEq::readParameter(const string& file){
 
 SystEqMin::~SystEqMin() {}
 
+/*qui calcolo la prossima transizione che scatta. Probabilmente qui dovrò aggiornare la future event list
+con tempi nuovi e nuove inserzioni e eventualmente rimozioni. Dovrò diversificare: se sto valutando le esponenziali
+fà quello che è già implementato e pace, mentre se sono generali dovrò aggiornare la future event list.*/
+
 inline void SystEqMin::getValTranFire()
 {
 	for(int t=0; t<nTrans; t++)
@@ -299,6 +302,11 @@ inline void SystEqMin::getValTranFire()
 /**************************************************************/
 
 SystEqMas::~SystEqMas() {}
+
+/*qui calcolo la prossima transizione che scatta. Probabilmente qui dovrò aggiornare la future event list
+con tempi nuovi e nuove inserzioni e eventualmente rimozioni. Dovrò diversificare: se sto valutando le esponenziali
+fà quello che è già implementato e pace, mentre se sono generali dovrò aggiornare la future event list.
+Quando si usa quale delle due?*/
 
 inline void SystEqMas::getValTranFire()
 {
@@ -3069,8 +3077,16 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 
 		while(time<=Max_Time){
             //time=nextTimePoint;
+            //qui dentro il codice per aggiornare la future event list
             getValTranFire(Value);
+            //questo è fatto solo sulle esponenziali
             int Tran=getComputeTau(SetTran,nextTimePoint,time);
+
+            /*probabilmente qui dovrò inserire il codice che verifica se la transizione
+            generale col minor rate trovata nella future event list è minore della transizione
+            selezionata da quelle esponeziali
+            */
+
 
             //cout<<Tran<<" "<<endl;
             if (Tran!=-1){

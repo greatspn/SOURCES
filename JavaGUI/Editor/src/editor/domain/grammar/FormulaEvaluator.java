@@ -274,7 +274,10 @@ public class FormulaEvaluator extends ExprLangBaseVisitor<EvaluatedFormula> {
     public EvaluatedFormula visitIntExprPlaceMarking(ExprLangParser.IntExprPlaceMarkingContext ctx) {
         Place place = (Place)context.getNodeByUniqueName(ctx.INT_PLACE_ID().getText());
         assert place.isDiscrete() && place.isInNeutralDomain();
-        return args.jointState.getMarkingOfPlace(place);
+        if (args.jointState != null)
+            return args.jointState.getMarkingOfPlace(place); // can be evaluated on the current marking
+        else
+            throw new EvaluationException("Place marking cannot be evaluated without a marking.");
     }
 
     @Override
@@ -516,6 +519,41 @@ public class FormulaEvaluator extends ExprLangBaseVisitor<EvaluatedFormula> {
     @Override
     public EvaluatedFormula visitRealExprUnknownId(ExprLangParser.RealExprUnknownIdContext ctx) {
         throw new IllegalStateException("Should not evaluate a formula with an unknown ID.");
+    }
+
+    @Override
+    public EvaluatedFormula visitRealExprFromList(ExprLangParser.RealExprFromListContext ctx) {
+        throw new EvaluationException("A FromList expression cannot be evaluated in the interactive editor.");
+    }
+
+    @Override
+    public EvaluatedFormula visitRealExprFromTable(ExprLangParser.RealExprFromTableContext ctx) {
+        throw new EvaluationException("A FromTable expression cannot be evaluated in the interactive editor.");
+    }
+
+    @Override
+    public EvaluatedFormula visitRealExprFromTimeTable(ExprLangParser.RealExprFromTimeTableContext ctx) {
+        throw new EvaluationException("A FromTimeTable expression cannot be evaluated in the interactive editor.");
+    }
+
+    @Override
+    public EvaluatedFormula visitRealExprCall(ExprLangParser.RealExprCallContext ctx) {
+        throw new EvaluationException("External Call expressions cannot be evaluated in the interactive editor.");
+    }
+
+    @Override
+    public EvaluatedFormula visitIntOrRealListEmptyList(ExprLangParser.IntOrRealListEmptyListContext ctx) {
+        throw new EvaluationException("Argument lists are not evaluatable.");
+    }
+
+    @Override
+    public EvaluatedFormula visitIntOrRealListInt(ExprLangParser.IntOrRealListIntContext ctx) {
+        throw new EvaluationException("Argument lists are not evaluatable.");
+    }
+
+    @Override
+    public EvaluatedFormula visitIntOrRealListReal(ExprLangParser.IntOrRealListRealContext ctx) {
+        throw new EvaluationException("Argument lists are not evaluatable.");
     }
     
     //==========================================================================

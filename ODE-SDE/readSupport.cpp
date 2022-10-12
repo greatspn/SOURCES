@@ -123,7 +123,7 @@ namespace CRS {
 	/*! get a constant from a table which first column is time; the row is the position
 	 * of the first value lower than the one passed as parameter
 	*/
-	double Table::getConstantFromTimeTable(int file_index, double time_value, int index){
+	double Table::getConstantFromTimeTable(double time_value, int column_index){
 
 		//!checks if the file has already been written
 		if(file.empty()){
@@ -141,25 +141,25 @@ namespace CRS {
 	  //!if time is lower of the minimun value
 		if(lower_time_index == 0)
 		{
-			return file[index];
+			return file[column_index];
 		}
 		//!if time si bigger of the maximum value
 		else if (lower_time_index == (int)time.size())
 		{
-			int value_index = ((time.size()-1)*column) + index;
+			int value_index = ((time.size()-1)*column) + column_index;
 			return file[value_index];
 		}
 		//!middle cases
 		else
 		{
-			int value_index = (lower_time_index*column) + index;
+			int value_index = (lower_time_index*column) + column_index;
 			return file[value_index];
 		}
 	}
 
 
 /*!
-  function that extracts the constant from the list written in the file
+  function that extracts the constant from a list written in the file
 */
 	double Table::getConstantFromList(int column_index) {
 
@@ -172,20 +172,19 @@ namespace CRS {
 
 	double Table::getConstantFromTable(int row_index, int column_index){
 
-		//!checks if the file has already been written
-
+		//!check if the file has already been written
 		if(file.empty()){
 			readFileTable(file_index);
 		}
 
-		if(column == 1 && column_index != 0){
-			throw Exception("Number of column out of range");
+		if(column_index > column){
+			throw Exception("Index out of range");
 		}
 
 		//!get the right index in the linearized table
-		int value_index = (row_index*column) + column_index; // -1? non -1? dipende da che indice si contano le colonne
+		int value_index = (row_index*column) + column_index;
 
-		if (value_index <= (int)file.size()){
+		if (value_index < (int)file.size()){
 			return file[value_index];
 		}
 		else {
@@ -197,9 +196,7 @@ namespace CRS {
 		this -> column = column;
 	}
 
-	Table::Table(int file_index){
-		this -> file_index = file_index;
-	}
+	Table::~Table() {};
 
 
 }

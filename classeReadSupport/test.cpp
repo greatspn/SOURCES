@@ -12,12 +12,12 @@ int main()
 	start = std::clock();*/
 
 	//for(int i = 0; i< 4; i++){
-	double consttt = class_files[constantList_txt].getConstantFromList(3);
+	double consttt = class_files[constantTable_txt].getConstantFromTable(3, 3);
 	cout << consttt <<"\n";
 	//}
 	
-	double constt = class_files[constantTimeTable_txt].getConstantFromTimeTable(constantTimeTable_txt, 3, 5);
-	cout << constt <<"\n";
+	//double constt = class_files[constantTimeTable_txt].getConstantFromTimeTable(constantTimeTable_txt, 3, 4);
+	//cout << constt <<"\n";
 
 
 

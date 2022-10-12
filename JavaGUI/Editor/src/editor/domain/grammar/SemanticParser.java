@@ -16,6 +16,7 @@ import editor.domain.elements.DtaSignature;
 import editor.domain.elements.Place;
 import editor.domain.elements.TemplateVariable;
 import editor.domain.elements.Transition;
+import editor.domain.grammar.ExprLangParser.RealExprContext;
 import static editor.domain.grammar.ExpressionLanguage.GRML;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -1299,6 +1300,69 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     @Override
     public FormattedFormula visitRealExprUnknownId(ExprLangParser.RealExprUnknownIdContext ctx) {
         return unknownId(ctx.ID());
+    }
+
+    @Override
+    public FormattedFormula visitRealExprFromList(ExprLangParser.RealExprFromListContext ctx) {
+        switch (lang) {
+            case LATEX:
+                return format(true, "\\mathbf{FromList}[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr()), "]");
+            case PNPRO:
+                return format(true, "FromList[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr()), "]");
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+
+    @Override
+    public FormattedFormula visitRealExprFromTable(ExprLangParser.RealExprFromTableContext ctx) {
+        switch (lang) {
+            case LATEX:
+                return format(true, "\\mathbf{FromTable}[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]");
+            case PNPRO:
+                return format(true, "FromTable[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]");
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+
+    @Override
+    public FormattedFormula visitRealExprFromTimeTable(ExprLangParser.RealExprFromTimeTableContext ctx) {
+        switch (lang) {
+            case LATEX:
+                return format(true, "\\mathbf{FromTimeTable}[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]");
+            case PNPRO:
+                return format(true, "FromTimeTable[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]");
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+
+    @Override
+    public FormattedFormula visitRealExprCall(ExprLangParser.RealExprCallContext ctx) {
+        switch (lang) {
+            case LATEX:
+                return format(true, "\\mathbf{Call}[", ctx.STRING_LITERAL(), visit(ctx.intOrRealList()), "]");
+            case PNPRO:
+                return format(true, "Call[", ctx.STRING_LITERAL(), visit(ctx.intOrRealList()), "]");
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+
+    @Override
+    public FormattedFormula visitIntOrRealListEmptyList(ExprLangParser.IntOrRealListEmptyListContext ctx) {
+        return format(true, "");
+    }
+
+    @Override
+    public FormattedFormula visitIntOrRealListInt(ExprLangParser.IntOrRealListIntContext ctx) {
+        return format(false, ", ", visit(ctx.intExpr()), visit(ctx.intOrRealList()));
+    }
+    
+    @Override
+    public FormattedFormula visitIntOrRealListReal(ExprLangParser.IntOrRealListRealContext ctx) {
+        return format(false, ", ", visit(ctx.realExpr()), visit(ctx.intOrRealList()));
     }
 
     //==========================================================================

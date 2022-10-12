@@ -1,5 +1,3 @@
-//#include "class.hpp" // already include readSupport.hpp
-
 #include "test.hpp"
 
 
@@ -136,8 +134,6 @@ namespace CRS {
 		int lower_time_index = std::distance(time.begin(), it_up);
 		lower_time_index--;
 		
-		cout << column << "numero colonne secondo lui.\n";
-		
 		if(column_index > column){
 			throw Exception("Index out of range.\n");
 		}
@@ -182,14 +178,18 @@ namespace CRS {
 			readFileTable(file_index);
 		}
 
-		if(column == 1 && column_index){
+		if(column_index > column){
 			throw Exception("Number of column out of range");
 		}
+		
+		cout << "lunghezza file " << file.size() << "\n";
 
 		//!get the right index in the linearized table
 		int value_index = (row_index*column) + column_index; 
+		
+		cout << "value index " << value_index << "\n";
 
-		if (value_index <= (int)file.size()){
+		if (value_index < (int)file.size()){
 			return file[value_index];
 		}
 		else {
@@ -200,11 +200,8 @@ namespace CRS {
 	inline void Table::setColumn(int column){
 		this -> column = column;
 	}
-
-	Table::Table(int file_index){
-		this -> file_index = file_index;
-	}
-
+	
+	Table::~Table() {};
 
 }
 

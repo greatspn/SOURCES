@@ -25,7 +25,7 @@ namespace CRS {
     Table(){ file_index = class_number; };
     //!empty copy Constructor
     Table(const Table& t){ file_index = t.class_number; ++class_number; };
-    Table(int file_index);
+    virtual ~Table();
    /*!
   function that extracts the constant from a table written in the file
   */  
