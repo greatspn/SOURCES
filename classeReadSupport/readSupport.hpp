@@ -5,9 +5,11 @@
 #include <iostream>
 #include <fstream>
 
+using namespace std;
+
 namespace CRS {
 
-  using namespace std;
+  double getConstantFrom(string name_file, int method, int row_index, int column_index);
 
 
 /*!class that define and read from the table written on a file
@@ -16,39 +18,37 @@ namespace CRS {
   {
   private: 
     int column ;
-    static int class_number;
-    int file_index;
+    string file_name;
     vector<double> file;
     vector<double> time;
   public:
     //! Empty Constructor
-    Table(){ file_index = class_number; };
+    Table(){};
+    //!constructor with file name
+    Table(string file_name);
     //!empty copy Constructor
-    Table(const Table& t){ file_index = t.class_number; ++class_number; };
-    virtual ~Table();
+    //Table(const Table& t){};
+    //virtual ~Table();
    /*!
   function that extracts the constant from a table written in the file
   */  
-    double getConstantFromTable(int row, int column);
+    double getConstantFromTable(int row_index, int column_index);
   /*! get a constant from a table which first column is time; the row is the position
    * of the first value lower than the one passed as parameter
   */
-    double getConstantFromTimeTable(int file_index, double time, int index);
+    double getConstantFromTimeTable(double time, int column_index);
   /*!
    * get a value from a list of constants in a file 
   */
-    double getConstantFromList(int index);
-    /*!
-  function that read a table from a file, without the column time
-*/
-    inline void readFileTable(int file_index);
-    /*!read a table which first column is time
-*/
-    inline void readFileTimeTable(int file_index);
+    double getConstantFromList(int row_index);
     /* set the number of column of the table file
     */
+    //!read a number table from the file
+    inline void readFileTable();
+    //!read a time table from the file
+    inline void readFileTimeTable();
+    //!set the column number
     inline void setColumn(int column);
-
   };
 
     /*!Exception

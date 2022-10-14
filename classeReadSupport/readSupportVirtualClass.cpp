@@ -1,19 +1,43 @@
 #include "test.hpp"
 
 
-
 namespace CRS {
 
-	int Table::class_number = 0;
+	double getConstantFrom(string name_file, int method, int row_index, int column_index){
 
+		Table tmp;
+		double value = 0;
+
+		auto search = file_class.find(name_file);
+		if (search == file_class.end()) {
+			tmp = Table("constantList.txt");
+			file_class.insert({ "constantList.txt", tmp });
+		}
+		else {
+			tmp = search -> second;
+		}
+		switch(method){
+			case 0:
+				value = tmp.getConstantFromList(row_index);
+				break;
+			case 1:
+				value = tmp.getConstantFromTable(row_index, column_index);
+				break;
+			case 2:
+				value = tmp.getConstantFromTimeTable(row_index, column_index);
+			break;
+		}
+
+		return value;
+	}
 
 /*!
   function that read a table from a file, without the column time
 */
-	inline void Table::readFileTable(int file_index){
+	inline void Table::readFileTable(){
 
 
-		ifstream file_written (name_file[file_index]);
+		ifstream file_written (file_name);
 	//!memorize the lenght of the row for right value extraction
 		int columnLenght = 0;
 		bool init = false;
@@ -35,7 +59,7 @@ namespace CRS {
 						file.push_back(stod(token));
 					}
 					catch(std::invalid_argument const& ex){
-						cout << "There's an invalid argument" + name_file[file_index] + " (the separator should be the blankspace)\n";
+						cout << "There's an invalid argument" + file_name + " (the separator should be the blankspace)\n";
 					}
 					if(!init){
 						columnLenght++;
@@ -63,9 +87,9 @@ namespace CRS {
 
 /*!read a table which first column is time
 */
-	void Table::readFileTimeTable(int file_index){
+	void Table::readFileTimeTable(){
 
-		ifstream file_written (name_file[file_index]);
+		ifstream file_written (file_name);
 	//!memorize the lenght of the row for right value extraction
 		int columnLenght = 0;
 		bool init = false;
@@ -93,7 +117,7 @@ namespace CRS {
 						}
 					}
 					catch(std::invalid_argument const& ex){
-						cout << "There's an invalid argument" + name_file[file_index] + " (the separator should be the blankspace)\n";
+						cout << "There's an invalid argument" + file_name + " (the separator should be the blankspace)\n";
 					}
 					if(!init){
 						columnLenght++;
@@ -123,11 +147,11 @@ namespace CRS {
 	/*! get a constant from a table which first column is time; the row is the position
 	 * of the first value lower than the one passed as parameter
 	*/
-	double Table::getConstantFromTimeTable(int file_index, double time_value, int column_index){
+	double Table::getConstantFromTimeTable(double time_value, int column_index){
 
 		//!checks if the file has already been written
 		if(file.empty()){
-			readFileTimeTable(file_index);
+			readFileTimeTable();
 		}
 
 		auto it_up = lower_bound(time.begin(), time.end(), time_value);
@@ -161,9 +185,9 @@ namespace CRS {
 /*!
   function that extracts the constant from the list written in the file
 */
-	double Table::getConstantFromList(int column_index) {
+	double Table::getConstantFromList(int row_index) {
 
-		return getConstantFromTable(column_index, 0);
+		return getConstantFromTable(row_index, 0);
 	}	
 
 /*!
@@ -173,9 +197,8 @@ namespace CRS {
 	double Table::getConstantFromTable(int row_index, int column_index){
 
 		//!checks if the file has already been written
-
 		if(file.empty()){
-			readFileTable(file_index);
+			readFileTable();
 		}
 
 		if(column_index > column){
@@ -200,9 +223,12 @@ namespace CRS {
 	inline void Table::setColumn(int column){
 		this -> column = column;
 	}
-	
-	Table::~Table() {};
 
+	Table::Table(string file_name){
+		cout << "ou???\n";
+		this -> file_name = file_name;
+	}
+	
 }
 
 

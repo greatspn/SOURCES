@@ -1,7 +1,15 @@
-#include "test.hpp"
+#include <utility>
+#include <cstdio>
+#include <algorithm>
+#include <vector>
+#include <iostream>
+#include <sstream>
+#include "readSupport.hpp"
 
-vector<string> name_file = {"constantList.txt", "constantTable.txt", "constantTimeTable.txt"};
-vector<Table> class_files(3, Table());
+using namespace std;
+using namespace CRS;
+
+unordered_map<string, Table> file_class;
 
 int main()
 {
@@ -12,12 +20,18 @@ int main()
 	start = std::clock();*/
 
 	//for(int i = 0; i< 4; i++){
-	double consttt = class_files[constantTable_txt].getConstantFromTable(3, 3);
-	cout << consttt <<"\n";
+	double aaa = getConstantFrom("constantList.txt", 0, 3, 0);
+
+
+	
+	cout << aaa <<"\n";
 	//}
 	
 	//double constt = class_files[constantTimeTable_txt].getConstantFromTimeTable(constantTimeTable_txt, 3, 4);
-	//cout << constt <<"\n";
+	//cout << constt <<"\n";*/
+
+
+
 
 
 
