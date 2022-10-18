@@ -162,6 +162,27 @@ namespace FBGLPK{
                 out<<" "<<Value[i];
             }
         };
+
+        void printObject(ofstream& out){
+            out<<" "<<getOBJ();
+        }
+
+        //! Print the Upper bound for each flux
+        void printUpper(ofstream& out){
+            for (unsigned int i=1;i<=sizeCol;++i){
+                out<<" "<<glp_get_col_ub(lp, i);
+            }
+
+        }
+        
+        //! Print the Upper bound for each flux
+        void printLover(ofstream& out){
+            for (unsigned int i=1;i<=sizeCol;++i){
+                out<<" "<<glp_get_col_lb(lp, i);
+            }
+
+        }
+
         //! Print the flux names
         void printFluxName(ofstream& out){
             for (auto it=ReactionsNamesOrd.begin();it!=ReactionsNamesOrd.end();++it){
