@@ -576,4 +576,26 @@ public class ParserContext implements NodeNamespace {
             throw new EvaluationException("Could not rewrite: "+formulaText);
         }
     }
+    
+    // Visit a formula tree using a custom ANTLR visitor
+    public <T> T visitTree(String formulaText, ParserEntryPoint entry, 
+                              int parseFlags, ExprLangBaseVisitor<T> visitor) 
+            throws EvaluationException
+    {
+        try {
+            ParseTree tree = generateParseTreeFor(formulaText, entry, parseFlags, getThrowingErrListener());
+            T obj = visitor.visit(tree);
+            return obj;
+        }
+        catch (EvaluationException e) {
+            throw e;
+        }
+        catch (ParseCancellationException e) {
+            throw new EvaluationException("Parse cancellation. Could not visit: "+formulaText);
+        }
+        catch (Exception e) {
+            Main.logException(e, true);
+            throw new EvaluationException("Could not visit: "+formulaText);
+        }
+    }
 }

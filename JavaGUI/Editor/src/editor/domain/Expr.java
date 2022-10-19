@@ -7,6 +7,7 @@ package editor.domain;
 import editor.domain.values.EvaluatedFormula;
 import editor.domain.grammar.EvaluationArguments;
 import editor.domain.grammar.EvaluationException;
+import editor.domain.grammar.ExprLangBaseVisitor;
 import editor.domain.grammar.ExprRewriter;
 import editor.domain.grammar.ExpressionLanguage;
 import editor.domain.grammar.FormattedFormula;
@@ -147,6 +148,12 @@ public abstract class Expr implements Serializable {
                 // Will not rewrite anything.
             }
         }
+    }
+    
+    public<T> T visitTree(ParserContext context, ExprLangBaseVisitor<T> visitor) 
+            throws EvaluationException
+    {
+        return context.visitTree(expr, getParseRule(expr), getParseFlags(), visitor);
     }
     
     public String dropSubterms(ParserContext context, Set<String> knownColorVars, ExpressionLanguage lang) {
