@@ -402,6 +402,7 @@ namespace SDE
 #ifdef CGLPK
     //!It is a vector of pointers to flux balance problems.
     vector<class FBGLPK::LPprob> vec_fluxb;
+    bool Variability {false};
 #endif
 //fluxb    
   public:

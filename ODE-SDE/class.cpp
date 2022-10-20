@@ -2403,23 +2403,40 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 
 
 	ofstream out;
-
+#ifdef CGLPK
+	vector <ofstream> outflux(vec_fluxb.size());	
+#endif
 	if (Info)
 	{
 		out.open(string(argv)+".trace",ofstream::out);
 		out.precision(12);
 		if(!out)
 		{
-			throw Exception("*****Error opening output file *****\n\n");
+			throw Exception("*****Error opening output file storing TRACE *****\n\n");
 
 		}
 		out<<"Time";
+
+#ifdef CGLPK
+		for (unsigned int i=0;i<vec_fluxb.size();++i){
+			outflux[i].open(string(argv)+i+".flux",ofstream::out);
+			outflux[i].precision(12);
+			if(!outflux[i]){
+				throw Exception("*****Error opening output file storing FLUXES*****\n\n");
+			}
+			outflux[i]<<"Time"<<" Obj_"<<i;
+		}	
+#endif
+
 		for (int i=0;i<nPlaces;i++)
 			out<<" "<<NamePlaces[i];
 #ifdef CGLPK
       	for (unsigned int i=0;i<vec_fluxb.size();++i){
-			vec_fluxb[i].printFluxName(out);
-		}	
+			vec_fluxb[i].printFluxName(outflux[i]);		
+			if (Variability){
+				vec_fluxb[i].printFluxNameMinMax(outflux[i]);	
+			}
+		}
 #endif
 
 		out<<endl<<itime<<" ";
@@ -2444,17 +2461,22 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 #ifdef CGLPK
 		getValTranFire(y+1);
       	for (unsigned int i=0;i<vec_fluxb.size();++i){
-			vec_fluxb[i].printValue(out);
+      		outflux[i]<<endl<<itime<<" ";
+      		vec_fluxb[i].printObject(outflux[i]);
+			vec_fluxb[i].printValue(outflux[i]);
+			if (Variability){
+				vec_fluxb[i].printLowerMax(outflux[i]);	
+			}
 		}	
 #endif
-		out<<endl;
+//		out<<endl;
 		}
 	while(tout<=Max_Time){
 		lsoda(*this,neq, y, &t, tout, itol, rtol, atol, itask, &istate, iopt, jt,
 				iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
 				rwork1, rwork5, rwork6, rwork7, 0);
 		if (Info){
-			out<<tout<<" ";
+			out<<endl<<tout<<" ";
 			}
 		cout<<"\t Time:"<<tout<<endl;
 		derived(y+1);
@@ -2465,11 +2487,16 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 			
         	
 #ifdef CGLPK
+            out<<endl<<tout<<" ";
         	for (unsigned int i=0;i<vec_fluxb.size();++i){
-				vec_fluxb[i].printValue(out);
+        		vec_fluxb[i].printObject(outflux[i]);
+				vec_fluxb[i].printValue(outflux[i]);
+				if (Variability){
+					vec_fluxb[i].printLowerMax(outflux[i]);	
+				}
 			}
 #endif	
-			out<<endl;
+//			out<<endl;
 		}		
 		tout+=Print_Step;
 
@@ -2988,7 +3015,9 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 	cout<<endl<<"Seed value: "<<seed<<endl<<endl;
 
 	ofstream out;
-
+#ifdef CGLPK
+	vector <ofstream> outflux(vec_fluxb.size());	
+#endif
 	if (Info)
 	{
 		out.open(string(argv)+".trace",ofstream::out);
@@ -2997,14 +3026,29 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 			throw Exception("*****Error opening output file***\n\n");
 		}
 		out<<"Time";
+
+#ifdef CGLPK
+		for (unsigned int i=0;i<vec_fluxb.size();++i){
+			outflux[i].open(string(argv)+i+".flux",ofstream::out);
+			outflux[i].precision(12);
+			if(!outflux[i]){
+				throw Exception("*****Error opening output file storing FLUXES*****\n\n");
+			}
+			outflux[i]<<"Time"<<" Obj_"<<i;
+		}	
+#endif
+
 		for(int i=0;i<nPlaces;i++)
 			out<<" "<<NamePlaces[i];
 #ifdef CGLPK
       	for (unsigned int i=0;i<vec_fluxb.size();++i){
-			vec_fluxb[i].printFluxName(out);
+			vec_fluxb[i].printFluxName(outflux[i]);		
+			if (Variability){
+				vec_fluxb[i].printFluxNameMinMax(outflux[i]);	
+			}
 		}	
 #endif
-		out<<endl;
+//		out<<endl;
 	}
 
 	cout.precision(16);
@@ -3040,7 +3084,7 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 	}
 		//Initialization for each run
 		if(Info){
-			out<<itime;
+			out<<endl<<itime;
 		}
 
 		for (int j=0;j<nPlaces;j++){
@@ -3051,12 +3095,17 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 		}
 		if(Info){
 #ifdef CGLPK
-		getValTranFire(Value);	
+		getValTranFire(y+1);
       	for (unsigned int i=0;i<vec_fluxb.size();++i){
-			vec_fluxb[i].printValue(out);
+      		outflux[i]<<endl<<itime<<" ";
+      		vec_fluxb[i].printObject(outflux[i]);
+			vec_fluxb[i].printValue(outflux[i]);
+			if (Variability){
+				vec_fluxb[i].printLowerMax(outflux[i]);	
+			}
 		}	
 #endif
-			out<<endl;
+//			out<<endl;
 		}
 
 		double nextTimePoint=tout=Print_Step+itime;
@@ -3089,9 +3138,14 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 						out<<" "<<Value[j];
 						}
 #ifdef CGLPK
-      				for (unsigned int i=0;i<vec_fluxb.size();++i){
-						vec_fluxb[i].printValue(out);
-					}	
+            	out<<endl<<tout<<" ";
+        		for (unsigned int i=0;i<vec_fluxb.size();++i){
+        		vec_fluxb[i].printObject(outflux[i]);
+				vec_fluxb[i].printValue(outflux[i]);
+				if (Variability){
+					vec_fluxb[i].printLowerMax(outflux[i]);	
+					}
+				}	
 #endif
 					out<<endl;
 					}
@@ -3141,7 +3195,9 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 	cout<<endl<<"Epsilon TAU-leaping: "<<epsTAU<<endl<<endl;
 
 	ofstream out;
-
+#ifdef CGLPK
+	vector <ofstream> outflux(vec_fluxb.size());	
+#endif
 	if (Info)
 	{
 		out.open(string(argv)+".trace",ofstream::out);
@@ -3150,14 +3206,27 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 			throw Exception("*****Error opening output file***\n\n");
 		}
 		out<<"Time";
-		for(int i=0;i<nPlaces;i++)
-			out<<" "<<NamePlaces[i];
 #ifdef CGLPK
-      	for (unsigned int i=0;i<vec_fluxb.size();++i){
-			vec_fluxb[i].printFluxName(out);
+		for (unsigned int i=0;i<vec_fluxb.size();++i){
+			outflux[i].open(string(argv)+i+".flux",ofstream::out);
+			outflux[i].precision(12);
+			if(!outflux[i]){
+				throw Exception("*****Error opening output file storing FLUXES*****\n\n");
+			}
+			outflux[i]<<"Time"<<" Obj_"<<i;
 		}	
 #endif		
-		out<<endl;
+		for(int i=0;i<nPlaces;i++)
+			out<<" "<<NamePlaces[i];	
+#ifdef CGLPK
+      	for (unsigned int i=0;i<vec_fluxb.size();++i){
+			vec_fluxb[i].printFluxName(outflux[i]);		
+			if (Variability){
+				vec_fluxb[i].printFluxNameMinMax(outflux[i]);	
+			}
+		}
+#endif		
+//		out<<endl;
 	}
 
 	cout.precision(16);
@@ -3193,7 +3262,7 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 	}
 		//Initialization for each run
 		if(Info){
-			out<<itime;
+			out<<endl<<itime;
 		}
 
 		for (int j=0;j<nPlaces;j++){
@@ -3204,12 +3273,17 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 		}
 		if(Info){
 #ifdef CGLPK
-			getValTranFire();
-      		for (unsigned int i=0;i<vec_fluxb.size();++i){
-				vec_fluxb[i].printValue(out);
-			}	
+		getValTranFire(y+1);
+      	for (unsigned int i=0;i<vec_fluxb.size();++i){
+      		outflux[i]<<endl<<itime<<" ";
+      		vec_fluxb[i].printObject(outflux[i]);
+			vec_fluxb[i].printValue(outflux[i]);
+			if (Variability){
+				vec_fluxb[i].printLowerMax(outflux[i]);	
+			}
+		}
 #endif			
-			out<<endl;;
+//			out<<endl;;
 		}
 
 		double nextTimePoint=itime,tout=Print_Step+itime;
@@ -3312,17 +3386,22 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 				if(tout==nextTimePoint){
 					if(Info){
 
-					out<<nextTimePoint;
+					out<<endl<<nextTimePoint;
 					for(int j=0; j<nPlaces;j++){
 
 						out<<" "<<Value[j];
 						}
 #ifdef CGLPK
-      				for (unsigned int i=0;i<vec_fluxb.size();++i){
-						vec_fluxb[i].printValue(out);
-					}	
+           			 out<<endl<<tout<<" ";
+        			for (unsigned int i=0;i<vec_fluxb.size();++i){
+        				vec_fluxb[i].printObject(outflux[i]);
+						vec_fluxb[i].printValue(outflux[i]);
+						if (Variability){
+							vec_fluxb[i].printLowerMax(outflux[i]);	
+						}
+					}
 #endif						
-					out<<endl;
+//					out<<endl;
 					}
 					tout+=Print_Step;
 				}

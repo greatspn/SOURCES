@@ -121,12 +121,12 @@ namespace FBGLPK{
             cout<<"-------------------------------------------------------\n"<<endl;
         };
         //! Return obj function value
-        double getOBJ(){
+        inline double getOBJ(){
             if (!solved) solve();
             return glp_get_obj_val(lp);
         };
         //! Return variable values
-         double* getVariables(){
+        inline double* getVariables(){
             if (!solved) solve();
             for (unsigned int i=1;i<=sizeCol;++i){
             Value[i]= glp_get_col_prim(lp, i);
@@ -134,12 +134,12 @@ namespace FBGLPK{
             return Value;
         };
         //! Return lower bound value
-        double getLwBounds(int indexR){
+        inline double getLwBounds(int indexR){
 	    double LB = glp_get_col_lb(lp, indexR);
             return LB;
         };
         //! Return uppper bound value
-        double getUpBounds(int indexR){
+        inline double getUpBounds(int indexR){
 	    double UB = glp_get_col_ub(lp, indexR);
             return UB;
         };
@@ -156,37 +156,52 @@ namespace FBGLPK{
         };
         
         //! Print the flux values
-        void printValue(ofstream& out){
+        inline void printValue(ofstream& out){
             getVariables();
             for (unsigned int i=1;i<=sizeCol;++i){
                 out<<" "<<Value[i];
             }
         };
 
-        void printObject(ofstream& out){
+        inline void printObject(ofstream& out){
             out<<" "<<getOBJ();
         }
 
         //! Print the Upper bound for each flux
-        void printUpper(ofstream& out){
+        inline void printUpper(ofstream& out){
             for (unsigned int i=1;i<=sizeCol;++i){
                 out<<" "<<glp_get_col_ub(lp, i);
             }
 
         }
         
-        //! Print the Upper bound for each flux
-        void printLover(ofstream& out){
+        //! Print the Lower bound for each flux
+        inline void printLower(ofstream& out){
             for (unsigned int i=1;i<=sizeCol;++i){
                 out<<" "<<glp_get_col_lb(lp, i);
             }
 
         }
 
+        //! Print the Lower and Upper bounds for each flux
+        inline void printLowerMax(ofstream& out){
+            for (unsigned int i=1;i<=sizeCol;++i){
+                out<<" "<<glp_get_col_lb(lp, i)<<" "<<glp_get_col_ub(lp, i);
+            }
+
+        }
+
         //! Print the flux names
-        void printFluxName(ofstream& out){
+        inline void printFluxName(ofstream& out){
             for (auto it=ReactionsNamesOrd.begin();it!=ReactionsNamesOrd.end();++it){
                 out<<" "<<*it;
+            }
+        };
+
+        //!Print for each flux name  two strings obtained by the flux name concatenated with the suffix "_Lb" and "_Ub"
+        inline void printFluxNameMinMax(ofstream& out){
+            for (auto it=ReactionsNamesOrd.begin();it!=ReactionsNamesOrd.end();++it){
+                out<<" "<<*it<<"_Lb"<<" "<<"_Ub";
             }
         };
 
