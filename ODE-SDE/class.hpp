@@ -455,7 +455,8 @@ namespace SDE
       FBGLPK::LPprob l;
       vec_fluxb.push_back(l);
       vec_fluxb[vec_fluxb.size()-1].updateLP(flux_name.c_str()); 
-      }
+      };
+      inline void setVariability(bool v){Variability=v;};
 #endif       
     //!It returns the brown noise value for the input transition.
     inline double getBNoiseTran(int Tran) {return Trans[Tran].BrownNoise;};
