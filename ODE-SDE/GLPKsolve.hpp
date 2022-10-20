@@ -201,7 +201,7 @@ namespace FBGLPK{
         //!Print for each flux name  two strings obtained by the flux name concatenated with the suffix "_Lb" and "_Ub"
         inline void printFluxNameMinMax(ofstream& out){
             for (auto it=ReactionsNamesOrd.begin();it!=ReactionsNamesOrd.end();++it){
-                out<<" "<<*it<<"_Lb"<<" "<<"_Ub";
+                out<<" "<<*it<<"_Lb"<<" "<<*it<<"_Ub";
             }
         };
 
