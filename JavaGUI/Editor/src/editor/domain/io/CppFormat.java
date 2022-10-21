@@ -26,6 +26,8 @@ public class CppFormat {
 
         PrintWriter out = new PrintWriter(new BufferedOutputStream(new FileOutputStream(file)));
         
+        out.println("vector<string> name_file = {\"constantList.txt\"};\n");
+        out.println("vector<Table> class_files(3, Table());\n");
         
         for (Node node : gspn.nodes) {
             if (node instanceof Transition) {
@@ -40,9 +42,6 @@ public class CppFormat {
                         + "                         const struct InfTr* Trans,\n"
                         + "                         const int T,\n"
                         + "                         const double& time) {\n");
-
-                //out.println("double const = read_constant(\"./" + trn.getUniqueName() + "\", a);\n");
-
 
 
                 out.println("   double rate = " + cppDelayExpr + ";");
@@ -67,7 +66,7 @@ public class CppFormat {
         if (log.isEmpty()) {
             return null; // Everything went ok
         } else {
-            String message = "Detected problems while exporting the NetLogo model.\n\n";
+            String message = "Detected problems while exporting the cpp file.\n\n";
             for (String s : log) {
                 message += s + "\n";
             }

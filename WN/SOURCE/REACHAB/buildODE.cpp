@@ -1018,10 +1018,6 @@ for (pp = 0; pp < npl; pp++)
                 hout<<"double "<<tabt[tt].trans_name<<"_general(double *Value,vector<class FBGLPK::LPprob>& vec_fluxb,  map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n"; 
         }
     }
-    // GESTIONE FITTIZIA DEL VETTORE FILES
-    hout << "#define constantList_txt 0\n";
-    hout << "#define constantTable_txt 1\n";
-    hout << "#define constantTimeTable_txt 2\n";
     hout<<"};\n";
     hout.close();
         //for transition function rates

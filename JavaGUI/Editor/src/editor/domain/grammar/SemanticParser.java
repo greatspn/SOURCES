@@ -1309,6 +1309,11 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 return format(true, "\\mathbf{FromList}[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr()), "]");
             case PNPRO:
                 return format(true, "FromList[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr()), "]");
+            case GREATSPN:
+                return format(true, "FromList[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr()), "]");
+            case CPP:
+                String define_name = ctx.STRING_LITERAL().toString().replace(".", "_");
+                return format(true, "class_files[", define_name, "].getConstantFromList(", visit(ctx.intExpr()), ")");
             default:
                 throw new UnsupportedOperationException();
         }
@@ -1321,6 +1326,10 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 return format(true, "\\mathbf{FromTable}[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]");
             case PNPRO:
                 return format(true, "FromTable[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]");
+            case GREATSPN:
+                return format(true, "FromTable[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]");
+            case CPP:
+                return format(true, "getConstantFrom(", ctx.STRING_LITERAL(), ", 1, ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), ")");
             default:
                 throw new UnsupportedOperationException();
         }
@@ -1333,6 +1342,10 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 return format(true, "\\mathbf{FromTimeTable}[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]");
             case PNPRO:
                 return format(true, "FromTimeTable[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]");
+            case GREATSPN:
+                return format(true, "FromTimeTable[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]"); 
+            case CPP:
+                return format(true, "getConstantFrom(", ctx.STRING_LITERAL(), ", 2, ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), ")");
             default:
                 throw new UnsupportedOperationException();
         }
@@ -1345,6 +1358,10 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 return format(true, "\\mathbf{Call}[", ctx.STRING_LITERAL(), visit(ctx.intOrRealList()), "]");
             case PNPRO:
                 return format(true, "Call[", ctx.STRING_LITERAL(), visit(ctx.intOrRealList()), "]");
+            case GREATSPN:
+                return format(true, "Call[", ctx.STRING_LITERAL(), visit(ctx.intOrRealList()), "]");
+            //case CPP:
+                //return format(true, )
             default:
                 throw new UnsupportedOperationException();
         }

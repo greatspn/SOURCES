@@ -308,6 +308,7 @@ con tempi nuovi e nuove inserzioni e eventualmente rimozioni. Dovrò diversifica
 fà quello che è già implementato e pace, mentre se sono generali dovrò aggiornare la future event list.
 Quando si usa quale delle due?*/
 
+//massaction, è questa che viene usata di default in realtà
 inline void SystEqMas::getValTranFire()
 {
 	for(int t=0; t<nTrans; t++)
@@ -2562,6 +2563,7 @@ if (SetTran[0]!=0)
  	if (tau>=nextTimePoint)
         return -1;
     nextTimePoint=tau;
+
     std::uniform_real_distribution<> UnfRealD(0.0,1.0);
     double val=UnfRealD(generator)*sumRate;
     //int trans=1;

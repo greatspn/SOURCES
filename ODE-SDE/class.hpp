@@ -153,7 +153,6 @@ namespace SDE
 #endif
 //automaton
 
-
   extern vector<string> name_file;
   extern vector<Table> class_files;
 

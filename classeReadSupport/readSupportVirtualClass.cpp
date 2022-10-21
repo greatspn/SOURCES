@@ -225,7 +225,6 @@ namespace CRS {
 	}
 
 	Table::Table(string file_name){
-		cout << "ou???\n";
 		this -> file_name = file_name;
 	}
 	
