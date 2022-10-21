@@ -26,6 +26,8 @@ import editor.domain.Selectable;
 import editor.domain.grammar.ColorVarsBinding;
 import editor.domain.values.EvaluatedFormula;
 import editor.domain.grammar.EvaluationArguments;
+import editor.domain.grammar.EvaluationException;
+import editor.domain.grammar.ExprLangBaseVisitor;
 import editor.domain.grammar.ExprRewriter;
 import editor.domain.grammar.ExpressionLanguage;
 import editor.domain.grammar.ParserContext;
@@ -539,6 +541,11 @@ public class Transition extends Node implements Serializable, Firable {
     public String convertGuardLang(ParserContext context, AbstractMarking marking, ExpressionLanguage lang) {
         assert hasGuard();
         return guardExpr.convertLang(context, new EvaluationArguments(marking), lang);
+    }
+    
+    
+    public<T> T visitDelayTree(ParserContext context, ExprLangBaseVisitor<T> visitor) throws EvaluationException {
+        return delayExpr.visitTree(context, visitor);
     }
     
     

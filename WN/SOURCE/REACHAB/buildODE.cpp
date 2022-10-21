@@ -1,4 +1,4 @@
-#include <stdio.h>
+include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <ctype.h>
@@ -425,21 +425,25 @@ for (int tt = 0; tt < ntr; tt++)
 
 
 
-out << "\nint main(int argc, char **argv) {\n\n";
-out << " time_t time_1,time_4;\n";
-out<<  " int who = RUSAGE_SELF;\n struct rusage usage;\n";
-out << " int SOLVE = 7, runs=1;\n";
-out << " long int seed = 0;\n";
-out << " bool OUTPUT=false;\n";
-out << " std::string fbound=\"\", finit=\"\", fparm=\"\";\n";
-out << " double hini = 1e-6, atolODE = 1e-6, rtolODE=1e-6, ftime=1.0, stime=0.0, itime=0.0, epsTAU=0.1;\n\n";
-out << " cout<<\"\\n\\n =========================================================\\n\";\n";
-out << " cout<<\"|                ODE/SDE Solver                       |\\n\";\n";
-out << " cout<<\" =========================================================\\n\";\n";
-out << " cout<<\"\\n If you find any bug, send an email to beccuti@di.unito.it\\n\";\n\n";
-
-
-
+    out << "\nint main(int argc, char **argv) {\n\n";
+    out << " time_t time_1,time_4;\n";
+    out<<  " int who = RUSAGE_SELF;\n struct rusage usage;\n";
+    out << " int SOLVE = 7, runs=1;\n";
+    out << " long int seed = 0;\n";
+    out << " bool OUTPUT=false;\n";
+   //variability 
+    if (FLUXB){
+    out << " bool VARIABILITY=false;\n";
+    }
+    //variability
+    out << " bool OUTPUT=false;\n";
+    out << " std::string fbound=\"\", finit=\"\", fparm=\"\";\n";
+    out << " double hini = 1e-6, atolODE = 1e-6, rtolODE=1e-6, ftime=1.0, stime=0.0, itime=0.0, epsTAU=0.1;\n\n";
+    out << " cout<<\"\\n\\n =========================================================\\n\";\n";
+    out << " cout<<\"|	              ODE/SDE Solver                       |\\n\";\n";
+    out << " cout<<\" =========================================================\\n\";\n";
+    out << " cout<<\"\\n If you find any bug, send an email to beccuti@di.unito.it\\n\";\n\n";
+    
     //automaton
 if (AUTOMATON)
 {
@@ -453,6 +457,7 @@ else
     out << " std::cerr<<\"\\n\\nUSE:" << net << "_solve <out_file> [OPTIONS]\";\n\t";
 }
     //automaton
+<<<<<<< HEAD
 out<<"std::cerr<<\"\\n\\n\\tOPTIONS\\n\";\n\t";
 out << " std::cerr<<\"\\n\\t -type <type>:\\t\\t ODE-E or ODE-RKF or ODE45 or LSODA or HLSODA or (H)SDE or HODE or SSA or TAUG or STEP. Default: LSODA \";\n\t";
 out << " std::cerr<<\"\\n\\t -hini <double>:\\t Initial step size. Default: 1e-6\";\n\t";
@@ -467,6 +472,28 @@ out << " std::cerr<<\"\\n\\t -b <bound_file>:\\t Soft bound are defined in the f
 out << " std::cerr<<\"\\n\\t -seed <double>:\\t Seed of random number generator\";\n\t";
 out << " std::cerr<<\"\\n\\t -init <init_file>:\\t The file <initial_file> contains the initial marking. Default:  initial marking in the orginal net\";\n\t";
 out << " std::cerr<<\"\\n\\t -parm <parm_file>:\\t The file <parm_file> contains a set of pairs with format <transition name> <value> or <place name> <value>.\\n\\t\\t\\t\\t For transition  the value is used to set a new rate value, while for place  it is used to set a new initial marking.\";\n\t";
+=======
+    out<<"std::cerr<<\"\\n\\n\\tOPTIONS\\n\";\n\t";
+    out << " std::cerr<<\"\\n\\t -type <type>:\\t\\t ODE-E or ODE-RKF or ODE45 or LSODA or HLSODA or (H)SDE or HODE or SSA or TAUG or STEP. Default: LSODA \";\n\t";
+    out << " std::cerr<<\"\\n\\t -hini <double>:\\t Initial step size. Default: 1e-6\";\n\t";
+    out << " std::cerr<<\"\\n\\t -atol <double>:\\t Absolute error tolerance. Dafault: 1e-6\";\n\t";
+    out << " std::cerr<<\"\\n\\t -rtol <double>:\\t Relative error tolerance. Dafault: 1e-6\";\n\t";
+    out << " std::cerr<<\"\\n\\t -taueps <double>:\\t Epsilon value for Tau-leaping algorithm. Dafault: 0.1\";\n\t";
+    out << " std::cerr<<\"\\n\\t -runs <int>:\\t\\t Integer number corresponding to runs (only used in SSA,TAUG, HODE,HLSODA). Default: 1\";\n\t";
+    out << " std::cerr<<\"\\n\\t -ftime <double>:\\t Double number used to set the upper bound of the evolution time. Dafault: 1\";\n\t";
+    out << " std::cerr<<\"\\n\\t -stime <double>:\\t Double number used to set the step in the output. Default: 0.0 (no output)\";\n\t";
+    out << " std::cerr<<\"\\n\\t -itime <double>:\\t Double number used to set the initial simulation time. Default: 0.0 \";\n\t";
+    out << " std::cerr<<\"\\n\\t -b <bound_file>:\\t Soft bound are defined in the file <bound_file>\";\n\t";
+    out << " std::cerr<<\"\\n\\t -seed <double>:\\t Seed of random number generator\";\n\t";
+    //variability 
+    if (FLUXB){
+        out << " std::cerr<<\"\\n\\t -var:\\t Enable output for variability analysis of fluxes\";\n\t";
+    }
+      //variability
+    out << " std::cerr<<\"\\n\\t -init <init_file>:\\t The file <initial_file> contains the initial marking. Default:  initial marking in the orginal net\";\n\t";
+    out << " std::cerr<<\"\\n\\t -parm <parm_file>:\\t The file <parm_file> contains a set of pairs with format <transition name> <value> or <place name> <value>.\\n\\t\\t\\t\\t For transition  the value is used to set a new rate value, while for place  it is used to set a new initial marking.\";\n\t";
+  
+>>>>>>> ce75593c4df8673901058dad35da8b7a8c452d21
     //automaton
 if (AUTOMATON)
     out << " std::cerr<<\"\\n\\t <automaton_file>:\\t automaton is defined in the file <automaton>\\n\";";
@@ -585,6 +612,15 @@ out<< "\t\t\t std::cerr<<\"\\nError:  -seed  <value>\\n\";\n\t\t\t exit(EXIT_FAI
 out<<"\t\t continue;\n";
 out<<"\t }\n";
 
+//variability
+//variability analysis
+        if (FLUXB){
+            out<<"\t if (strcmp(\"-var\", argv[ii])==0){\n";
+            out<<"\t\t VARIABILITY=true;\n";
+            out<<"\t\t continue;\n";
+            out<<"\t }\n";
+        }
+//variability
 
 //initial file code
 out<<"\t if (strcmp(\"-init\", argv[ii])==0){\n";
@@ -624,11 +660,24 @@ out << " cout<<\"\\tInitial  time: \"<<itime<<\"\\n\";\n";
 out << " cout<<\"\\tAbosolute tolerance: \"<<atolODE<<\"\\n\";\n";
 out << " cout<<\"\\tRelative tolerance: \"<<rtolODE<<\"\\n\";\n";
     //out << " if ((strcmp(argv[2],\"ODE\")!=0)&&(strcmp(argv[2],\"ode\")!=0)){\n";
+<<<<<<< HEAD
 out << " cout<<\"\\tEpsilon value for TAU-leaping: \"<<epsTAU<<\"\\n\";\n";
 out << " cout<<\"\\tSolution runs: \"<<runs<<\"\\n\";\n";
 out << " if (fbound!=\"\") cout<<\"\\tBound file: \"<<fbound<<\"\\n\";\n";
 out << " if (finit!=\"\") cout<<\"\\tInitial marking file: \"<<finit<<\"\\n\";\n";
 out << " if (fparm!=\"\") cout<<\"\\tInitial parameter file: \"<<fparm<<\"\\n\";\n";
+=======
+    out << " cout<<\"\\tEpsilon value for TAU-leaping: \"<<epsTAU<<\"\\n\";\n";
+    out << " cout<<\"\\tSolution runs: \"<<runs<<\"\\n\";\n";
+    out << " if (fbound!=\"\") cout<<\"\\tBound file: \"<<fbound<<\"\\n\";\n";
+    out << " if (finit!=\"\") cout<<\"\\tInitial marking file: \"<<finit<<\"\\n\";\n";
+    out << " if (fparm!=\"\") cout<<\"\\tInitial parameter file: \"<<fparm<<\"\\n\";\n";
+    //Variability
+    if (FLUXB){
+        out << " if (VARIABILITY) cout<<\"\\tEnable variability analysis.\\n\";\n";
+    }
+    //Variability
+>>>>>>> ce75593c4df8673901058dad35da8b7a8c452d21
     //automaton
 if (AUTOMATON)
     out << " cout<<\"\\tAutomaton input: \"<<argv[2]<<\"\\n\";\n";
@@ -889,6 +938,9 @@ for (pp = 0; pp < npl; pp++)
         for (unsigned int i=0; i<flux_names.size(); ++i){
             out << " se.initialize_fluxbalance(string(\""+flux_names[i]+"\"));\n";
         }
+    //variability    
+        out << " if (VARIABILITY) se.setVariability(VARIABILITY);\n";
+    //variability
         out << " cout<<\"\\n\\nDONE.\"<<endl;\n";
     }
     //flux balance
@@ -1075,6 +1127,11 @@ for (pp = 0; pp < npl; pp++)
     out << " int SOLVE = 7, runs=1;\n";
     out << " long int seed = 0;\n";
     out << " bool OUTPUT=false;\n";
+    //variability 
+    if (FLUXB){
+    out << " bool VARIABILITY=false;\n";
+    }
+    //variability
     out << " std::string fbound=\"\", finit=\"\", fparm=\"\";\n";
     out << " double hini = 1e-6, atolODE = 1e-6, rtolODE=1e-6, ftime=1.0, stime=0.0, itime=0.0, epsTAU=0.1;\n\n";
     out << " cout<<\"\\n\\n =========================================================\\n\";\n";
@@ -1107,6 +1164,11 @@ for (pp = 0; pp < npl; pp++)
     out << " std::cerr<<\"\\n\\t -itime <double>:\\t Double number used to set the initial simulation time. Default: 0.0 \";\n\t";
     out << " std::cerr<<\"\\n\\t -b <bound_file>:\\t Soft bound are defined in the file <bound_file>\";\n\t";
     out << " std::cerr<<\"\\n\\t -seed <double>:\\t Seed of random number generator\";\n\t";
+    //variability 
+    if (FLUXB){
+        out << " std::cerr<<\"\\n\\t -var:\\t Enable output for variability analysis of fluxes\";\n\t";
+    }
+    //variability
     out << " std::cerr<<\"\\n\\t -init <init_file>:\\t The file <initial_file> contains the initial marking. Default:  initial marking in the orginal net\";\n\t";
     out << " std::cerr<<\"\\n\\t -parm <parm_file>:\\t The file <parm_file> contains a set of pairs with format <transition name> <value> or <place name> <value>.\\n\\t\\t\\t\\t For transition  the value is used to set a new rate value, while for place  it is used to set a new initial marking.\";\n\t";
     //automaton
@@ -1227,6 +1289,15 @@ for (pp = 0; pp < npl; pp++)
     out<<"\t\t continue;\n";
     out<<"\t }\n";
 
+//variability
+//variability analysis
+        if (FLUXB){
+            out<<"\t if (strcmp(\"-var\", argv[ii])==0){\n";
+            out<<"\t\t VARIABILITY=true;\n";
+            out<<"\t\t continue;\n";
+            out<<"\t }\n";
+        }
+//variability
 
 //initial file code
     out<<"\t if (strcmp(\"-init\", argv[ii])==0){\n";
@@ -1271,6 +1342,11 @@ for (pp = 0; pp < npl; pp++)
     out << " if (fbound!=\"\") cout<<\"\\tBound file: \"<<fbound<<\"\\n\";\n";
     out << " if (finit!=\"\") cout<<\"\\tInitial marking file: \"<<finit<<\"\\n\";\n";
     out << " if (fparm!=\"\") cout<<\"\\tInitial parameter file: \"<<fparm<<\"\\n\";\n";
+    //Variability
+    if (FLUXB){
+        out << " if (VARIABILITY) cout<<\"\\tEnable variability analysis.\\n\";\n";
+    }
+    //Variability
     //automaton
     if (AUTOMATON)
         out << " cout<<\"\\tAutomaton input: \"<<argv[2]<<\"\\n\";\n";
@@ -1412,6 +1488,9 @@ for (pp = 0; pp < npl; pp++)
         for (unsigned int i=0; i<flux_names.size(); ++i){
             out << " se.initialize_fluxbalance(string(\""+flux_names[i]+"\"));\n";
         }
+    //variability    
+        out << " if (VARIABILITY) se.setVariability(VARIABILITY);\n";
+    //variability
         out << " cout<<\"\\n\\nDONE.\"<<endl;\n";
     }
     //flux balance
