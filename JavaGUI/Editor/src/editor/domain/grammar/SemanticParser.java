@@ -1312,7 +1312,8 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case GREATSPN:
                 return format(true, "FromList[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr()), "]");
             case CPP:
-                String define_name = ctx.STRING_LITERAL().toString().replace(".", "_");
+                String file_name = ctx.STRING_LITERAL().toString();
+                String define_name = file_name.substring( 1, file_name.length()- 1 ).replace(".", "_");
                 return format(true, "class_files[", define_name, "].getConstantFromList(", visit(ctx.intExpr()), ")");
             default:
                 throw new UnsupportedOperationException();
@@ -1329,7 +1330,9 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case GREATSPN:
                 return format(true, "FromTable[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]");
             case CPP:
-                return format(true, "getConstantFrom(", ctx.STRING_LITERAL(), ", 1, ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), ")");
+                String file_name = ctx.STRING_LITERAL().toString();
+                String define_name = file_name.substring( 1, file_name.length()- 1 ).replace(".", "_");
+                return format(true, "class_files[", define_name, "].getConstantFromTable(", visit(ctx.intExpr(0)), ",", visit(ctx.intExpr(1)), ")");
             default:
                 throw new UnsupportedOperationException();
         }
@@ -1345,7 +1348,9 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case GREATSPN:
                 return format(true, "FromTimeTable[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]"); 
             case CPP:
-                return format(true, "getConstantFrom(", ctx.STRING_LITERAL(), ", 2, ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), ")");
+                String file_name = ctx.STRING_LITERAL().toString();
+                String define_name = file_name.substring( 1, file_name.length()- 1 ).replace(".", "_");
+                return format(true, "class_files[", define_name, "].getConstantFromTimeTable(", visit(ctx.intExpr(0)), ",", visit(ctx.intExpr(1)), ")");
             default:
                 throw new UnsupportedOperationException();
         }

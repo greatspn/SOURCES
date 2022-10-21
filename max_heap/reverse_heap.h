@@ -93,7 +93,7 @@ public:
     }
 
     void push_heap(event* elem) {
-        // cout << "push_heap("<<elem<<", "<<w<<")"<<endl;
+        cout << "push_heap("<<elem -> getTime()<<")"<<endl;
         size_t i = heap.size();
         assert(elem-> getIndex() == -1);
         elem -> setIndex(i);

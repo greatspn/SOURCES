@@ -10,25 +10,37 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.StringJoiner;
 
 /**
  *
- * @author Irene 
- * Write che c++ file with the expressions of the
- * transitions
+ * @author Irene Write che c++ file with the expressions of the transitions
  */
 public class CppFormat {
 
-    public static String export(File file, GspnPage gspn, ParserContext context)
+    public static String export(File file, GspnPage gspn, ParserContext context, Set<String> filenames)
             throws Exception {
 
         ArrayList<String> log = new ArrayList<>();
 
         PrintWriter out = new PrintWriter(new BufferedOutputStream(new FileOutputStream(file)));
-        
-        out.println("vector<string> name_file = {\"constantList.txt\"};\n");
-        out.println("vector<Table> class_files(3, Table());\n");
-        
+
+        if (!filenames.isEmpty()) {
+            StringJoiner joiner = new StringJoiner(",");
+            int i = 0;
+            for (String name : filenames) {
+                out.print("#define ");
+                String defineString = name.substring( 1, name.length() - 1 ).replace('.','_');
+                out.println(defineString + " " + i);
+                joiner.add(name);
+                i++;
+            }
+            out.println("vector<string> name_file = {" + joiner + "};");
+            out.println("vector<Table> class_files(" + Integer.toString(filenames.size()) + ", Table());\n");
+
+        }
+
         for (Node node : gspn.nodes) {
             if (node instanceof Transition) {
                 Transition trn = (Transition) node;
@@ -42,7 +54,6 @@ public class CppFormat {
                         + "                         const struct InfTr* Trans,\n"
                         + "                         const int T,\n"
                         + "                         const double& time) {\n");
-
 
                 out.println("   double rate = " + cppDelayExpr + ";");
                 out.println("   return rate;");

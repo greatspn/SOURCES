@@ -1,4 +1,4 @@
-include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <ctype.h>
@@ -457,22 +457,6 @@ else
     out << " std::cerr<<\"\\n\\nUSE:" << net << "_solve <out_file> [OPTIONS]\";\n\t";
 }
     //automaton
-<<<<<<< HEAD
-out<<"std::cerr<<\"\\n\\n\\tOPTIONS\\n\";\n\t";
-out << " std::cerr<<\"\\n\\t -type <type>:\\t\\t ODE-E or ODE-RKF or ODE45 or LSODA or HLSODA or (H)SDE or HODE or SSA or TAUG or STEP. Default: LSODA \";\n\t";
-out << " std::cerr<<\"\\n\\t -hini <double>:\\t Initial step size. Default: 1e-6\";\n\t";
-out << " std::cerr<<\"\\n\\t -atol <double>:\\t Absolute error tolerance. Dafault: 1e-6\";\n\t";
-out << " std::cerr<<\"\\n\\t -rtol <double>:\\t Relative error tolerance. Dafault: 1e-6\";\n\t";
-out << " std::cerr<<\"\\n\\t -taueps <double>:\\t Epsilon value for Tau-leaping algorithm. Dafault: 0.1\";\n\t";
-out << " std::cerr<<\"\\n\\t -runs <int>:\\t\\t Integer number corresponding to runs (only used in SSA,TAUG, HODE,HLSODA). Default: 1\";\n\t";
-out << " std::cerr<<\"\\n\\t -ftime <double>:\\t Double number used to set the upper bound of the evolution time. Dafault: 1\";\n\t";
-out << " std::cerr<<\"\\n\\t -stime <double>:\\t Double number used to set the step in the output. Default: 0.0 (no output)\";\n\t";
-out << " std::cerr<<\"\\n\\t -itime <double>:\\t Double number used to set the initial simulation time. Default: 0.0 \";\n\t";
-out << " std::cerr<<\"\\n\\t -b <bound_file>:\\t Soft bound are defined in the file <bound_file>\";\n\t";
-out << " std::cerr<<\"\\n\\t -seed <double>:\\t Seed of random number generator\";\n\t";
-out << " std::cerr<<\"\\n\\t -init <init_file>:\\t The file <initial_file> contains the initial marking. Default:  initial marking in the orginal net\";\n\t";
-out << " std::cerr<<\"\\n\\t -parm <parm_file>:\\t The file <parm_file> contains a set of pairs with format <transition name> <value> or <place name> <value>.\\n\\t\\t\\t\\t For transition  the value is used to set a new rate value, while for place  it is used to set a new initial marking.\";\n\t";
-=======
     out<<"std::cerr<<\"\\n\\n\\tOPTIONS\\n\";\n\t";
     out << " std::cerr<<\"\\n\\t -type <type>:\\t\\t ODE-E or ODE-RKF or ODE45 or LSODA or HLSODA or (H)SDE or HODE or SSA or TAUG or STEP. Default: LSODA \";\n\t";
     out << " std::cerr<<\"\\n\\t -hini <double>:\\t Initial step size. Default: 1e-6\";\n\t";
@@ -493,7 +477,6 @@ out << " std::cerr<<\"\\n\\t -parm <parm_file>:\\t The file <parm_file> contains
     out << " std::cerr<<\"\\n\\t -init <init_file>:\\t The file <initial_file> contains the initial marking. Default:  initial marking in the orginal net\";\n\t";
     out << " std::cerr<<\"\\n\\t -parm <parm_file>:\\t The file <parm_file> contains a set of pairs with format <transition name> <value> or <place name> <value>.\\n\\t\\t\\t\\t For transition  the value is used to set a new rate value, while for place  it is used to set a new initial marking.\";\n\t";
   
->>>>>>> ce75593c4df8673901058dad35da8b7a8c452d21
     //automaton
 if (AUTOMATON)
     out << " std::cerr<<\"\\n\\t <automaton_file>:\\t automaton is defined in the file <automaton>\\n\";";
@@ -660,13 +643,6 @@ out << " cout<<\"\\tInitial  time: \"<<itime<<\"\\n\";\n";
 out << " cout<<\"\\tAbosolute tolerance: \"<<atolODE<<\"\\n\";\n";
 out << " cout<<\"\\tRelative tolerance: \"<<rtolODE<<\"\\n\";\n";
     //out << " if ((strcmp(argv[2],\"ODE\")!=0)&&(strcmp(argv[2],\"ode\")!=0)){\n";
-<<<<<<< HEAD
-out << " cout<<\"\\tEpsilon value for TAU-leaping: \"<<epsTAU<<\"\\n\";\n";
-out << " cout<<\"\\tSolution runs: \"<<runs<<\"\\n\";\n";
-out << " if (fbound!=\"\") cout<<\"\\tBound file: \"<<fbound<<\"\\n\";\n";
-out << " if (finit!=\"\") cout<<\"\\tInitial marking file: \"<<finit<<\"\\n\";\n";
-out << " if (fparm!=\"\") cout<<\"\\tInitial parameter file: \"<<fparm<<\"\\n\";\n";
-=======
     out << " cout<<\"\\tEpsilon value for TAU-leaping: \"<<epsTAU<<\"\\n\";\n";
     out << " cout<<\"\\tSolution runs: \"<<runs<<\"\\n\";\n";
     out << " if (fbound!=\"\") cout<<\"\\tBound file: \"<<fbound<<\"\\n\";\n";
@@ -677,7 +653,6 @@ out << " if (fparm!=\"\") cout<<\"\\tInitial parameter file: \"<<fparm<<\"\\n\";
         out << " if (VARIABILITY) cout<<\"\\tEnable variability analysis.\\n\";\n";
     }
     //Variability
->>>>>>> ce75593c4df8673901058dad35da8b7a8c452d21
     //automaton
 if (AUTOMATON)
     out << " cout<<\"\\tAutomaton input: \"<<argv[2]<<\"\\n\";\n";
