@@ -16,6 +16,8 @@ import editor.domain.grammar.ExprLangParser;
 import editor.domain.grammar.ParserContext;
 import java.io.File;
 import editor.domain.io.CppFormat;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
@@ -38,9 +40,8 @@ public class CppCommand {
 
             System.out.println("TOTAL TIME: " + (System.currentTimeMillis() - totalStart) / 1000.0);
             System.out.println("OK.");
-        } catch (Throwable e) {
+        } catch (Exception e) {
             System.out.println("EXCEPTION RAISED.");
-            e.printStackTrace();
             System.out.println("FAILED.");
             System.exit(1);
         }
@@ -56,8 +57,8 @@ public class CppCommand {
 
         // GREATSPN_BINDIR=~/tesiMagistrale/SOURCESC-/JavaGUI/Editor/dist
         // java -ea -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar editor.cli.CppCommand EsempiExpMTDep out.cpp
-        String inBaseName = args[0]; //immagino il nome del progetto greatspn
-        String outBaseName = args[1]; //immagino il nome con cui sarà salvato
+        String inBaseName = args[0]; 
+        String outBaseName = args[1]; 
 
         GspnPage gspn = loadPage(inBaseName);
         ArrayList<ProjectPage> pages = new ArrayList<>();
@@ -69,6 +70,8 @@ public class CppCommand {
         gspn.compileParsedInfo(context);
 
         File cppFile = new File(outBaseName);
+        ArrayList<String> log = new ArrayList<>();
+
 
         ExternalTermsVisitor etv = new ExternalTermsVisitor();
         for (Node n : gspn.nodes) {
@@ -79,9 +82,14 @@ public class CppCommand {
         }
 
         long saveStart = System.currentTimeMillis();
-        String log = CppFormat.export(cppFile, gspn, context, etv.filenames);
+        String result_file = CppFormat.export(cppFile, gspn, context, log, etv.filenames);
+        
+         BufferedReader br = new BufferedReader(new FileReader(cppFile));
+        if (br.readLine() == null) {
+            log.add("File is empty!");
+        }
 
-        if (log != null) {
+        if (!log.isEmpty() ) {
             System.out.println(log);
             cppFile.delete();
             return false;
@@ -91,7 +99,8 @@ public class CppCommand {
         }
 
     }
-
+    
+    //static class to visit and collect element from formulas
     static class ExternalTermsVisitor extends ExprLangBaseVisitor<Object> {
 
         final Set<String> filenames = new TreeSet<>();

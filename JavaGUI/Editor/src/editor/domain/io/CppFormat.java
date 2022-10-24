@@ -19,10 +19,8 @@ import java.util.StringJoiner;
  */
 public class CppFormat {
 
-    public static String export(File file, GspnPage gspn, ParserContext context, Set<String> filenames)
+    public static String export(File file, GspnPage gspn, ParserContext context, ArrayList<String> log, Set<String> filenames)
             throws Exception {
-
-        ArrayList<String> log = new ArrayList<>();
 
         PrintWriter out = new PrintWriter(new BufferedOutputStream(new FileOutputStream(file)));
 
@@ -31,7 +29,7 @@ public class CppFormat {
             int i = 0;
             for (String name : filenames) {
                 out.print("#define ");
-                String defineString = name.substring( 1, name.length() - 1 ).replace('.','_');
+                String defineString = name.substring(1, name.length() - 1).replace('.', '_');
                 out.println(defineString + " " + i);
                 joiner.add(name);
                 i++;
@@ -45,33 +43,33 @@ public class CppFormat {
             if (node instanceof Transition) {
                 Transition trn = (Transition) node;
 
+                ArrayList<String> double_constant_log = new ArrayList<>();
                 String cppDelayExpr = trn.convertDelayLang(context, null, ExpressionLanguage.CPP);
+                GreatSpnFormat.realOrRpar(cppDelayExpr, "", gspn, double_constant_log);
+                if (!double_constant_log.isEmpty()) {
 
-                out.println("double " + trn.getUniqueName() + "_general(double *Value,\n"
-                        + "                         map <string,int>& NumTrans,\n"
-                        + "                         map <string,int>& NumPlaces,\n"
-                        + "                         const vector<string> & NameTrans,\n"
-                        + "                         const struct InfTr* Trans,\n"
-                        + "                         const int T,\n"
-                        + "                         const double& time) {\n");
+                    out.println("double " + trn.getUniqueName() + "_general(double *Value,\n"
+                            + "                         map <string,int>& NumTrans,\n"
+                            + "                         map <string,int>& NumPlaces,\n"
+                            + "                         const vector<string> & NameTrans,\n"
+                            + "                         const struct InfTr* Trans,\n"
+                            + "                         const int T,\n"
+                            + "                         const double& time) {\n");
 
-                out.println("   double rate = " + cppDelayExpr + ";");
-                out.println("   return rate;");
-                out.println("}\n");
+                    out.println("   double rate = " + cppDelayExpr + ";");
+                    out.println("   return rate;");
+                    out.println("}\n");
+                }
 
             }
         }
 
-        out.println("\n");
 
-        //al log aggiungo messaggi se trovo degli errori durante la stampa.
-        //se sarà vuoto tutto bene, se conterrà delle frasi allora ci saranno
-        //stati errori e farò return con relativo errore
         return reportLog(log, out);
 
     }
 
-    //chiude lo stream e ritorna problemi o nulla
+    //close the streams and return eventual problems
     private static String reportLog(ArrayList<String> log, PrintWriter pw) {
         pw.close();
         if (log.isEmpty()) {

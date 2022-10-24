@@ -6,10 +6,15 @@
 #include <sstream>
 #include "readSupport.hpp"
 
+#define constantList_txt 0
+#define constantTable_txt 1
+#define constantTimeTable_txt 2
+
 using namespace std;
 using namespace CRS;
 
-unordered_map<string, Table> file_class;
+vector<string> name_file = {"constantList.txt","constantTable.txt","constantTimeTable.txt"};
+vector<Table> class_files(3, Table());;
 
 int main()
 {
@@ -20,7 +25,7 @@ int main()
 	start = std::clock();*/
 
 	//for(int i = 0; i< 4; i++){
-	double aaa = getConstantFrom("constantList.txt", 0, 3, 0);
+	double aaa = class_files[constantList_txt].getConstantFromList(3);
 
 
 	

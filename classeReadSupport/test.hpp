@@ -5,9 +5,12 @@
 #include <iostream>
 #include <sstream>
 #include <unordered_map>
+#include <iostream>
+#include <fstream>
 
 #include "readSupport.hpp"
 
 using namespace CRS;
 
-extern unordered_map<string, Table> file_class;
+extern vector<string> name_file;
+extern vector<Table> class_files;
