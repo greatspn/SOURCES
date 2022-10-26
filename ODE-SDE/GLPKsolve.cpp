@@ -244,7 +244,7 @@ void LPprob::updateLP( const char* fileProb,int variability, int typeOBJ,const c
 //for variability
 
         sizeVet= sizeCol*sizeRow;
-        
+        cout<<"sizeVet"<<sizeVet<<" "<<sizeRow<<" "<<sizeCol<<" "<<variability<<" "<<sizeVet+1+variability*sizeCol<<endl;
         if (!variability)
         typeOBJ=setTypeObj(parser.get(2));
 
@@ -345,19 +345,20 @@ void LPprob::updateLP( const char* fileProb,int variability, int typeOBJ,const c
         if (variability){
             //adding new row based on old obj
             parser.update(delimC,var_obj_eq);
-            if (parser.size()!=sizeCol){
+            if (parser.size()!=sizeCol)
               throw Exception("FLUX BALANCE: error wrong number of coefficients for varibility previous obj");
-            int i=sizeVet;
+
+            int i=sizeVet+1; 
             for (unsigned int j=0;j<parser.size();++j){
-                ia[i+1]=sizeRow+variability;
-                ja[i+1]=j+1;
-                ar[i+j]=atof(parser.get(i).c_str());
+                cout<<"val: "<<i<<" "<<sizeRow+variability<<" "<<j+1<<" "<<atof(parser.get(i).c_str())<<endl;
+                ia[i]=sizeRow+variability;
+                ja[i]=j+1;
+                ar[i]=atof(parser.get(i).c_str());
                 ++i;
-                } 
-            }
+                }
         }
         //adding new row based on old obj
-        glp_load_matrix(lp, sizeVet, ia, ja, ar); 
+        glp_load_matrix(lp, sizeVet+variability*sizeCol, ia, ja, ar); 
         filename=string(fileProb);     
     }
     catch (exception& e){

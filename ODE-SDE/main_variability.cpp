@@ -44,8 +44,6 @@ cout<<"| 	          Variability analysis based on GLPK     	          |\n";
 cout<<" =========================================================\n";
 cout<<"\n If you find any bug, send an email to marco.beccuti@unito.it\n";
 
-
-cout<<"DDD"<<argc<<endl;
 if (argc<5)
 	{
 	std::cerr<<"\n\nUSE: VARIABILITY <out_file> <Flux_Balance_Problem> <Solutions> <FLUX> <gamma>\n\n";
