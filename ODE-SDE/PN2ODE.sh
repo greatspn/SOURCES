@@ -12,7 +12,7 @@ echo
 
 if [ "$1" = "" ] || [ "$1" = "-h" ] || [ "$1" = "-help" ]
 then
-	echo "Use PN2ODE <path_net>/<net> [options] [format] -T <path_transitions>/<transitions> -F <path_obj_funct>/<obj_funct> -C <path_c_funct>/<c_funct>"
+	echo "Use PN2ODE.sh <path_net>/<net> [options] [format] -T <path_transitions>/<transitions> -F <path_obj_funct>/<obj_funct> -C <path_c_funct>/<c_funct>"
 	echo "       Options:"
     echo "       -M ->   Genelarized Mass Action policy"
     echo "       -I ->   Infinity servers policy (default)"

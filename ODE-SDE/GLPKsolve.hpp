@@ -100,10 +100,18 @@ namespace FBGLPK{
          unordered_map <string, unsigned int> ReactionsNamesId;
          //!It stores the flux names  ordered as stored in the file
          vector <string> ReactionsNamesOrd;
+         //!file pointer to the file storing the FB solutions considered as input for the variability
+         ifstream in_var;
+         //!file pointer to output file
+         ofstream out_var;
+         //!flux selected for variability
+         unsigned int flux_var;
+         //!gamma value for variability
+         double gamma {1.0};
         public:     
         //! Empty Constructor.
         LPprob(){};
-           //! Empty Constructor.
+        //! Copy Constructor.
         LPprob(const LPprob& t){
             if (t.filename!=""){
                 this->updateLP(t.filename.c_str());
@@ -111,8 +119,10 @@ namespace FBGLPK{
         };
         //! Constructor by file. It takes as input a file describing the LP problem
         LPprob( const char * FileProb);
+        //! Constructor by file. It takes as input a file describing the LP problem, the file storing for each time point (i)obj value (ii)flux values (iii)flux bounds, the obj type, and the flux name on which the variability is applied. 
+        LPprob( const char * FileProb, const char* FileInVar,const char* FileOutVar, int typeOBJ,const char* FluxName,const int gamma);
         //! Constructor by file. It takes as input a file describing the LP problem
-        void updateLP( const char * FileProb);
+        void updateLP( const char * FileProb,int variability=0,int typeOBJ=-1,const char* FluxName="");
         //! Solve the LP problem
         void solve(){
             cout<<"\n\n-------------------------------------------------------"<<endl;
@@ -120,6 +130,8 @@ namespace FBGLPK{
             solved=true;
             cout<<"-------------------------------------------------------\n"<<endl;
         };
+        //!It implement variability
+        void solveVariability();
         //! Return obj function value
         inline double getOBJ(){
             if (!solved) solve();
@@ -206,12 +218,22 @@ namespace FBGLPK{
         };
 
         //!Update the bound values of a specified flux
-        void update_bound(int indexR, string TypeBound, double Lb, double Ub){
+        inline void update_bound(int indexR, string TypeBound, double Lb, double Ub){
             glp_set_col_bnds(lp, indexR, setTypeBound(TypeBound) , Lb, Ub);
             cout<<"Bounds of "<< indexR <<" is updated as: ["<<Lb<<";"<<Ub<<"]"<<endl;
         };
+        //!Update the bound values of a specified flux
+        inline void update_bound(int indexR, int TypeBound, double Lb, double Ub){
+            glp_set_col_bnds(lp, indexR, TypeBound , Lb, Ub);          
+            //cout<<"Bounds of "<< indexR <<" is updated as: ["<<Lb<<";"<<Ub<<"]"<<endl;         
+        };
+
+        //!Returns the type of j-th column, i.e. the type of corresponding structural variable, as follows: GLP_FR — free (unbounded) variable; GLP_LO — variable with lower bound; GLP_UP — variable with upper bound; GLP_DB — double-bounded variable; GLP_FX — fixed variable.
+        inline int  get_bound_type(int indexR){
+            return glp_get_col_type(lp, indexR);
+        }
         //! Return the numeric id of a flux. If the name is not present return -1
-        int fromNametoid(const string& name){
+        inline int fromNametoid(const string& name){
             auto it=ReactionsNamesId.find(name);
             if (it!=ReactionsNamesId.end())
                 return it->second;
