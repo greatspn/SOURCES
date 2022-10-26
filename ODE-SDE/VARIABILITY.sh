@@ -38,8 +38,8 @@ echo
 echo "Running:"
 for i in "${FluxNameArray[@]}"
 do
-echo ${GREATSPN_BINDIR}/VARIABILITY ${Output} ${FBProblem} ${FBPSolution} $i ${GAMMA} "&"
-${GREATSPN_BINDIR}/VARIABILITY ${Output} ${FBProblem} ${FBPSolution} $i ${GAMMA} &
+echo ${GREATSPN_BINDIR}/VARIABILITY ${Output}$i ${FBProblem} ${FBPSolution} $i ${GAMMA} "&"
+${GREATSPN_BINDIR}/VARIABILITY ${Output}$i ${FBProblem} ${FBPSolution} $i ${GAMMA} &
 done
 wait
 echo "--------------------------------------------------------------------"
