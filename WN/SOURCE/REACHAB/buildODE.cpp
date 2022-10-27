@@ -444,7 +444,6 @@ void build_ODECompact(ofstream &out, std::string path, std::string net)
     out << " bool VARIABILITY=false;\n";
     }
     //variability
-    out << " bool OUTPUT=false;\n";
     out << " std::string fbound=\"\", finit=\"\", fparm=\"\";\n";
     out << " double hini = 1e-6, atolODE = 1e-6, rtolODE=1e-6, ftime=1.0, stime=0.0, itime=0.0, epsTAU=0.1;\n\n";
     out << " cout<<\"\\n\\n =========================================================\\n\";\n";
