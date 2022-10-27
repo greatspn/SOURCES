@@ -2419,7 +2419,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 
 #ifdef CGLPK
 		for (unsigned int i=0;i<vec_fluxb.size();++i){
-			outflux[i].open(string(argv)+to_string(i)+".flux",ofstream::out);
+			outflux[i].open(string(argv)+"-"+to_string(i)+".flux",ofstream::out);
 			outflux[i].precision(12);
 			if(!outflux[i]){
 				throw Exception("*****Error opening output file storing FLUXES*****\n\n");
