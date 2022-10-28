@@ -27,7 +27,7 @@
 namespace FBGLPK{
 
 
-LPprob::LPprob( const char* fileProb){
+LPprob::LPprob(const char* fileProb){
 
     try{
         ifstream in(fileProb, std::ifstream::in);
@@ -158,17 +158,53 @@ LPprob::LPprob( const char* fileProb){
         cout << "Exception: " << e.what() << endl;
         exit(EXIT_FAILURE);
     }
-
 }
 
-void LPprob::updateLP( const char* fileProb){
+
+LPprob::LPprob(const char* FileProb,const char* FileInVar, const char* FileOutVar,int typeOBJ,const char* FluxName,const int gamma){
+//creating LP problem
+updateLP(FileProb,1,typeOBJ,FluxName);
+//
+ try{
+    //opening input file
+    in_var.open(FileInVar, std::ifstream::in);
+    if (!in_var)
+        throw Exception(string("FLUX BALANCE: error opening input file:")+std::string(FileInVar));
+    if(in_var.eof())
+        throw Exception(string("FLUX BALANCE: error input file:")+std::string(FileInVar)+string("is empty"));
+    
+    this->gamma=gamma;
+
+    string buffer;
+    getline(in_var,buffer);
+    //reading flux names;
+    //cout<<buffer<<endl
+
+    //opening output file
+    out_var.open(FileOutVar, std::ofstream::out);
+    if (!in_var)
+        throw Exception(string("FLUX BALANCE: error opening input file:")+std::string(FileOutVar));
+    }
+ catch (exception& e){
+    cout << "\n Exception: " << e.what() << endl;
+    exit(EXIT_FAILURE);
+    }
+ catch (Exception& e){
+    cout << "\n Exception: " << e.what() << endl;
+    exit(EXIT_FAILURE);
+    }   
+ }
+
+
+void LPprob::updateLP( const char* fileProb,int variability, int typeOBJ,const char* FluxName){
 
     try{
+        string var_obj_eq="";
         ifstream in(fileProb, std::ifstream::in);
         if (!in){
             throw Exception(string("FLUX BALANCE: error opening input file:")+fileProb);
         }
-
+        
         lp = glp_create_prob();
         glp_set_prob_name(lp,fileProb);
 
@@ -191,45 +227,70 @@ void LPprob::updateLP( const char* fileProb){
         if (parser.size()!=3){
                 throw Exception("FLUX BALANCE: error first line: model dimension and type");
             }
-    
-        sizeRow=atoi(parser.get(0).c_str());
-        sizeCol=atoi(parser.get(1).c_str());        
-        sizeVet= sizeCol*sizeRow;
-        int typeOBJ=setTypeObj(parser.get(2));
+       
 
+        sizeRow=atoi(parser.get(0).c_str());
+        sizeCol=atoi(parser.get(1).c_str()); 
+
+//for variability
+        if  (variability){
+            std::unordered_map<std::string,unsigned int>::iterator it=ReactionsNamesId.find(string(FluxName));
+            if (it==ReactionsNamesId.end())
+                throw Exception(std::string(FluxName)+string(" is not a valid flux name"));
+            else
+                flux_var=it->second;
+ ///add
+        }  
+//for variability
+
+        sizeVet= sizeCol*sizeRow;
+        cout<<"sizeVet"<<sizeVet<<" "<<sizeRow<<" "<<sizeCol<<" "<<variability<<" "<<sizeVet+1+variability*sizeCol<<endl;
+        if (!variability)
+        typeOBJ=setTypeObj(parser.get(2));
+
+            
         if (ReactionsNamesId.size()!=sizeCol){
              throw Exception("FLUX BALANCE: error first line: the number of reaction names is different by the number of columns in Flux Balance problem");
         }
 
 
         // allocate memory for ia, ja, ar,
-        ia=(int*)malloc(sizeof(int)*(sizeVet+1));
-        ja=(int*)malloc(sizeof(int)*(sizeVet+1));
-        ar=(double*)malloc(sizeof(double)*(sizeVet+1));
-        Value=(double*)malloc(sizeof(double)*(sizeVet+1));
+        ia=(int*)malloc(sizeof(int)*(sizeVet+1+variability*sizeCol));
+        ja=(int*)malloc(sizeof(int)*(sizeVet+1+variability*sizeCol));
+        ar=(double*)malloc(sizeof(double)*(sizeVet+1+variability*sizeCol));
+        Value=(double*)malloc(sizeof(double)*(sizeVet+1+variability*sizeCol));
 
         //set optimization direction
         glp_set_obj_dir(lp,typeOBJ);
 
         //set number of rows
-        glp_add_rows(lp, sizeRow);
+        glp_add_rows(lp, sizeRow+variability);
         //set number of columns
         glp_add_cols(lp, sizeCol);
 
+  
+
+
         //set obj coefficients
-
-
         getline(in,buffer);
-        parser.update(delimC,buffer);
 
-        if (parser.size()!=sizeCol){
+        if (!variability){
+            parser.update(delimC,buffer);
+            if (parser.size()!=sizeCol){
               throw Exception("FLUX BALANCE: error wrong number of objective coefficients");
+            }
+            for (unsigned int i=0;i<parser.size();++i){
+                glp_set_obj_coef(lp, i+1, atof(parser.get(i).c_str()));
+            }
+        }else{
+        //variability
+        //resetting obj function coefficient
+            var_obj_eq=buffer;
+            for (unsigned int i=0;i<sizeCol;++i){
+                glp_set_obj_coef(lp, i+1, (i==flux_var)?1:0);
+            }
+        //variability
         }
-        //set obj coefficients
-        for (unsigned int i=0;i<parser.size();++i){
-            glp_set_obj_coef(lp, i+1, atof(parser.get(i).c_str()));
-        }
-
         // BOUNDS:
         // GLP_FR −∞ < x < +∞ Free (unbounded) variable -> the two parameters are ignored
         // GLP_LO lb ≤ x < +∞ Variable with lower bound -> the second parameter is ignored
@@ -281,7 +342,23 @@ void LPprob::updateLP( const char* fileProb){
         }
         if (i!=sizeVet)
             throw Exception("FLUX BALANCE: error wrong number of column bounds");
-        glp_load_matrix(lp, sizeVet, ia, ja, ar); 
+        if (variability){
+            //adding new row based on old obj
+            parser.update(delimC,var_obj_eq);
+            if (parser.size()!=sizeCol)
+              throw Exception("FLUX BALANCE: error wrong number of coefficients for varibility previous obj");
+
+            int i=sizeVet+1; 
+            for (unsigned int j=0;j<parser.size();++j){
+                cout<<"val: "<<i<<" "<<sizeRow+variability<<" "<<j+1<<" "<<atof(parser.get(i).c_str())<<endl;
+                ia[i]=sizeRow+variability;
+                ja[i]=j+1;
+                ar[i]=atof(parser.get(i).c_str());
+                ++i;
+                }
+        }
+        //adding new row based on old obj
+        glp_load_matrix(lp, sizeVet+variability*sizeCol, ia, ja, ar); 
         filename=string(fileProb);     
     }
     catch (exception& e){
@@ -294,6 +371,35 @@ void LPprob::updateLP( const char* fileProb){
     }
 }
 
+void LPprob::solveVariability(){
+    string buffer;
+    out_var<<"Time Obj"<<endl;
+    try{
+        while (!in_var.eof()){
+        getline(in_var,buffer); 
+        class general::Parser par(" ",buffer);
+        //cout<<"tot:"<<par.size()<<" sizeCol"<<sizeCol<<endl;
+        if (par.size()!=0){
+         for (unsigned int i=sizeCol+2,j=1; i<par.size();i=i+2,++j){ //+2 is due to time and obj
+            //updating bound
+            update_bound(j,get_bound_type(j),atof(par.get(i).c_str()),atof(par.get(i+1).c_str()));
+            }
+         //updating new equation based on old obj
+         glp_set_row_bnds(lp,sizeRow+1, GLP_UP, atof(par.get(0).c_str())*gamma, atof(par.get(0).c_str())*gamma);
+         solve();
+         out_var<<par.get(0)<<" "<< glp_get_obj_val(lp)<<endl;   
+        }
+        }
+     }
+ catch (exception& e){
+    cout << "\n Exception: " << e.what() << endl;
+    exit(EXIT_FAILURE);
+    }
+ catch (Exception& e){
+    cout << "\n Exception: " << e.what() << endl;
+    exit(EXIT_FAILURE);
+    }       
+}
 
 int LPprob::setTypeBound(string typeString){
     int type;

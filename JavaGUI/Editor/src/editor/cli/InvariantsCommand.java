@@ -9,12 +9,6 @@ import editor.Main;
 import editor.domain.elements.GspnPage;
 import latex.DummyLatexProvider;
 import static editor.cli.Common.*;
-import editor.domain.Node;
-import editor.domain.elements.Transition;
-import editor.domain.grammar.ExprLangBaseVisitor;
-import editor.domain.grammar.ExprLangParser;
-import editor.domain.grammar.FormattedFormula;
-import editor.domain.grammar.ParserContext;
 import editor.domain.grammar.TemplateBinding;
 import editor.domain.semiflows.FlowsGenerator;
 import editor.domain.semiflows.NetIndex;
@@ -121,15 +115,15 @@ public class InvariantsCommand {
         System.out.println("LOADING TIME: "+(System.currentTimeMillis() - loadStart)/1000.0);
         System.out.println("");
         
-        /*ParserContext ctx = new ParserContext(net);
-        ExternalTermsVisitor etv = new ExternalTermsVisitor();
-        for (Node n : net.nodes) {
-            if (n instanceof Transition) {
-                Transition trn = (Transition)n;
-                Object obj = trn.visitDelayTree(ctx, etv);
-            }
-        }
-        System.exit(0);*/
+//        ParserContext ctx = new ParserContext(net);
+//        ExternalTermsVisitor etv = new ExternalTermsVisitor();
+//        for (Node n : net.nodes) {
+//            if (n instanceof Transition) {
+//                Transition trn = (Transition)n;
+//                Object obj = trn.visitDelayTree(ctx, etv);
+//            }
+//        }
+//        System.exit(0);//*/
         
         // Initialize object maps
         NetIndex netIndex = new NetIndex(net);
@@ -150,13 +144,21 @@ public class InvariantsCommand {
     }
     
 //    static class ExternalTermsVisitor extends ExprLangBaseVisitor<Object> {
+//        final Set<String> filenames = new TreeSet<>();
+//        
+//        @Override
+//        public Object visitRealExprFromList(ExprLangParser.RealExprFromListContext ctx) {
+//            System.out.println("visitRealExprFromList: "+ctx.fname.getText());
+////            filenames.add(ctx.fname.getText());
+//            return super.visitRealExprFromList(ctx);
+//        }
 //
 //        @Override
-//        public FormattedFormula visitRealExprFromList(ExprLangParser.RealExprFromListContext ctx) {
-//            System.out.println("visitRealExprFromList: "+ctx.fname.getText());
-//            return null;
+//        public Object visitRealExprFromTable(ExprLangParser.RealExprFromTableContext ctx) {
+//            System.out.println("visitRealExprFromTable: "+ctx.fname.getText());
+////            filenames.add(ctx.fname.getText());
+//            return super.visitRealExprFromTable(ctx);
 //        }
-//        
 //    }
             
 }
