@@ -1036,7 +1036,6 @@ for (pp = 0; pp < npl; pp++)
     set<std::string> function_names;
     for (int tt = 0; tt < ntr; tt++)
     {
-        //quindi questo controllo rimane?
         if (tabt[tt].general_function != NULL)
         {
             if (!FLUXB)
