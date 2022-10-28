@@ -24,7 +24,7 @@ lex.yy.o:	readingAutomaton.ll
 y.tab.o:	 readingAutomaton.yy
 	$(YACC) -v -d readingAutomaton.yy
 
-normal:	$(name_file).cpp ./class.cpp  ./lsode.cpp ./readSupport.cpp
+normal:	$(name_file).cpp ./class.cpp  ./lsode.cpp
 	 $(C++) -I./  -o  $(name_file).solver  $(name_file).cpp  ./class.cpp  ./lsode.cpp ./readSupport.cpp  $(OPTION) $(OPTIONW)
 	 
 fluxb:	$(name_file).cpp ./class.cpp  ./lsode.cpp ./GLPKsolve.cpp ./general.cpp ./readSupport.cpp
