@@ -19,7 +19,7 @@ then
     echo "       -A ->   Automaton verification"
     echo "       -F ->   Specifies objective function file (only with -P)"
     echo "       -T ->   Specifies transition bounds file (only with -P)"
-    echo "       -C ->   Specifies C++ code for generic rate function"
+    echo "       -C ->   Specifies C++ code for external function call"
     echo "       -N ->   Disable the PINV computation"
     echo "       Format:"
     echo "       -R ->   Export in R format "
@@ -113,10 +113,10 @@ case "$1" in
     -C)
     if [ $# -gt 1 ]
     then
-	CFUN="$1"
-        CFUN_PATH=$(perl -e "use File::Spec; print(File::Spec->rel2abs(\"${2}\"),\"\n\")")
+	EXTFUN= true
+        EXTFUN_PATH=$(perl -e "use File::Spec; print(File::Spec->rel2abs(\"${2}\"),\"\n\")")
     else
-        printf "**ERROR** You must specify an existing function file path after -C. \n\n"
+        printf "**ERROR** You must specify an existing extern function file path after -C. \n\n"
         exit 1
     fi
     shift
@@ -134,6 +134,10 @@ shift
 done
 
 echo ${FLUXNAMEFILE[@]}
+
+echo "Compiling general transition file"
+java -ea -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar editor.cli.CppCommand EsempiExpMTDep gen_tran_out.cpp
+CFUN_PATH=$(perl -e "use File::Spec; print(File::Spec->rel2abs(\"./gen_tran_out.cpp\"),\"\n\")")
 
 echo "#Computing p-semiflows and place bounds: "
 if [ "$NOPINV" == "NO" ]
@@ -217,29 +221,44 @@ echo $name_file
   echo "#Copying file form ${GREATSPN_SCRIPTDIR}/../inst_src to ${MyTempDir}"
   echo
   cp ./class.* ${MyTempDir}
-  if  [ "$CFUN" == "-C" ]
-  then
+  #if  [ "$CFUN" == "-C" ]
+  #then
 
-	echo "  namespace SDE {"  >  ${MyTempDir}/tmpB
-	echo "}; "	>  ${MyTempDir}/tmpE
- 	echo "#cat ${MyTempDir}/tmpB  $CFUN_PATH  ${MyTempDir}/tmpE >> ${MyTempDir}/tmpA"
-	cat ${MyTempDir}/tmpB $CFUN_PATH  ${MyTempDir}/tmpE > ${MyTempDir}/tmpA
-	cat ${MyTempDir}/tmpA >>  ${MyTempDir}/class.cpp
-	echo	FuncT
-	echo "#cat ${MyTempDir}/tmpA >>  ${MyTempDir}/class.cpp"
-	echo
-  fi
+echo "  namespace SDE {"  >  ${MyTempDir}/tmpB
+echo "}; "	>  ${MyTempDir}/tmpE
+echo "#cat ${MyTempDir}/tmpB ${MyTempDir}/incl1  $CFUN_PATH  ${MyTempDir}/tmpE >> ${MyTempDir}/tmpA"
+echo "#include \"$name_file.hpp\"" >>  ${MyTempDir}/incl1
+cat ${MyTempDir}/tmpB  ${MyTempDir}/incl1 $CFUN_PATH ${MyTempDir}/incl1  ${MyTempDir}/tmpE > ${MyTempDir}/tmpA
+echo " " >> ${MyTempDir}/newline
+if $EXTFUN
+	then
+		echo "entri qui?"
+		cat ${MyTempDir}/tmpB  ${MyTempDir}/incl1 $EXTFUN_PATH ${MyTempDir}/newline $CFUN_PATH ${MyTempDir}/newline ${MyTempDir}/tmpE > ${MyTempDir}/tmpA
+		cat ${MyTempDir}/tmpA >>  ${MyTempDir}/class.cpp
+	else
+		echo "o qui?"
+		cat ${MyTempDir}/tmpB  ${MyTempDir}/incl1 $CFUN_PATH ${MyTempDir}/newline ${MyTempDir}/tmpE > ${MyTempDir}/tmpA
+		cat ${MyTempDir}/tmpA >>  ${MyTempDir}/class.cpp
+fi
+echo	FuncT
+echo "#cat ${MyTempDir}/tmpA >>  ${MyTempDir}/class.cpp"
+echo
+  #fi
   cp ./lsode.*  ${MyTempDir}
   cp ./makefile ${MyTempDir}
+  cp ./readSupport.* ${MyTempDir}
+  
   if [ "$AUT" == "-A" ]
   then
   	cp ./readingAutomaton.* ${MyTempDir}
   	cp ./automa.* ${MyTempDir}
+  	cp ./readSupport.* ${MyTempDir}
   fi	
   if [[ ${#FLUXNAMEFILE[@]} > 0 ]]
   then
   	cp ./general.* ${MyTempDir}
   	cp ./GLPKsolve.* ${MyTempDir}
+  	cp ./readSupport.* ${MyTempDir}
   fi	
   cd ${MyTempDir}
   echo "#cd ${MyTempDir}"
