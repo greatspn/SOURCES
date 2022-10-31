@@ -6,7 +6,7 @@ FROM fedora AS builder
 RUN dnf -y install git wget
 
 RUN sudo dnf -y install gcc gcc-c++ gmp-devel gmp-c++ gmp boost-devel flex-devel \
-    ant glib2-devel patch python glpk-devel autoconf automake ghostscript\
+    ant glib2-devel patch python glpk-devel autoconf automake ghostscript \
     libtool zip flex byacc time graphviz suitesparse-devel motif-devel make \
     libxml++-devel glibmm24-devel cmake diffutils java-latest-openjdk
 
@@ -61,7 +61,7 @@ RUN sudo dnf -y install gmp gmp-c++ gmp boost flex \
     glib2 patch glpk lpsolve  \
     time graphviz suitesparse motif make \
     libxml++ glibmm24 ghostscript \
-    java-latest-openjdk gcc gcc-c++ make
+    java-latest-openjdk gcc gcc-c++ make perl
 
 #================================================================================
 # Stage 3: Update the GreatSPN framework by pulling/remaking the latest changes
@@ -74,14 +74,14 @@ RUN cd ~/GreatSPN/SOURCES ;\
     make ${MAKE_ARGS} -k derived_objects ;\
     make ${MAKE_ARGS} ;\
     make ;\
-    sudo make install
+   sudo make install
 
 #================================================================================
 # Stage 4: Copy the compiled binaries into the deployment image
 #================================================================================
 FROM deploy_base
 
-# copy the compiled binaries
+ #copy the compiled binaries
 COPY --from=updater /usr/local/GreatSPN /usr/local/GreatSPN 
 COPY --from=updater /usr/local/lib /usr/local/lib
 RUN rm -rf /usr/local/lib/*.a /usr/local/lib/*.la

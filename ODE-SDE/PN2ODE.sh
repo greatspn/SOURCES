@@ -136,7 +136,7 @@ done
 echo ${FLUXNAMEFILE[@]}
 
 echo "Compiling general transition file"
-java -ea -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar editor.cli.CppCommand EsempiExpMTDep gen_tran_out.cpp
+java -ea -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar editor.cli.CppCommand $NET_PATH gen_tran_out.cpp
 CFUN_PATH=$(perl -e "use File::Spec; print(File::Spec->rel2abs(\"./gen_tran_out.cpp\"),\"\n\")")
 
 echo "#Computing p-semiflows and place bounds: "
@@ -221,8 +221,6 @@ echo $name_file
   echo "#Copying file form ${GREATSPN_SCRIPTDIR}/../inst_src to ${MyTempDir}"
   echo
   cp ./class.* ${MyTempDir}
-  #if  [ "$CFUN" == "-C" ]
-  #then
 
 echo "  namespace SDE {"  >  ${MyTempDir}/tmpB
 echo "}; "	>  ${MyTempDir}/tmpE
@@ -243,7 +241,7 @@ fi
 echo	FuncT
 echo "#cat ${MyTempDir}/tmpA >>  ${MyTempDir}/class.cpp"
 echo
-  #fi
+
   cp ./lsode.*  ${MyTempDir}
   cp ./makefile ${MyTempDir}
   cp ./readSupport.* ${MyTempDir}
