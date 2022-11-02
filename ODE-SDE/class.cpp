@@ -2487,8 +2487,10 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 			
         	
 #ifdef CGLPK
+
         	for (unsigned int i=0;i<vec_fluxb.size();++i){
         		outflux[i]<<endl<<tout<<" ";
+        		vec_fluxb[i].solve();
         		vec_fluxb[i].printObject(outflux[i]);
 				vec_fluxb[i].printValue(outflux[i]);
 				if (Variability){
