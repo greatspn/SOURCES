@@ -1,35 +1,3 @@
-
-Skip to content
-Pull requests
-Issues
-Marketplace
-Explore
-@IreneTerrone
-IreneTerrone /
-SOURCESC-readFromFile
-Public
-forked from greatspn/SOURCES
-
-Code
-Pull requests
-Actions
-Projects
-Wiki
-Security
-Insights
-
-    Settings
-
-SOURCESC-readFromFile/ODE-SDE/class.cpp
-@IreneTerrone
-IreneTerrone sync from master, variability and tree visitor
-Latest commit a7ea09d Oct 21, 2022
-History
-3 contributors
-@mbeccuti
-@IreneTerrone
-@amparore
-3994 lines (3338 sloc) 101 KB
 /***************************************************************************
  *   Copyright (C) 2013 by Marco Beccuti				   *
  *   beccuti@di.unito.it						   *
@@ -277,10 +245,6 @@ bool SystEq::readParameter(const string& file){
 
 SystEqMin::~SystEqMin() {}
 
-/*qui calcolo la prossima transizione che scatta. Probabilmente qui dovrò aggiornare la future event list
-con tempi nuovi e nuove inserzioni e eventualmente rimozioni. Dovrò diversificare: se sto valutando le esponenziali
-fà quello che è già implementato e pace, mentre se sono generali dovrò aggiornare la future event list.*/
-
 inline void SystEqMin::getValTranFire()
 {
 	for(int t=0; t<nTrans; t++)
@@ -347,6 +311,7 @@ inline void SystEqMas::getValTranFire()
 	{
 		EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
        // cout<<" T:"<<NameTrans[t]<<endl;
+		//se la transizione ha una funzione "complessa" associata uso quella per calcolare il rate
 		if (Trans[t].FuncT!=nullptr){
 #ifdef CGLPK
  //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
@@ -356,6 +321,7 @@ inline void SystEqMas::getValTranFire()
 #endif 		
 
 		}
+		//altrimenti uso la massaction
 		else {
 
 			if (Trans[t].InPlaces.size()>0)
@@ -2461,7 +2427,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 
 #ifdef CGLPK
 		for (unsigned int i=0;i<vec_fluxb.size();++i){
-			outflux[i].open(string(argv)+to_string(i)+".flux",ofstream::out);
+			outflux[i].open(string(argv)+"-"+to_string(i)+".flux",ofstream::out);
 			outflux[i].precision(12);
 			if(!outflux[i]){
 				throw Exception("*****Error opening output file storing FLUXES*****\n\n");
@@ -2566,6 +2532,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 	}
 	if (istate <= 0){
 		throw   Exception("*****Error during the integration step*****\n\n");
+
 	}
 */ 
 	cout<<"\nSolution at time "<<Max_Time<<":\n";
@@ -2595,12 +2562,15 @@ if (SetTran[0]!=0)
             /*It is not necessary since rate of generic transition is one by default!!!
             if (Trans[SetTran[i]].GenFun==""){
                 sumRate+=EnabledTransValueDis[SetTran[i]]*Trans[SetTran[i]].rate;
+
                 }
             else{
                 sumRate+=EnabledTransValueDis[SetTran[i]];
                // cout<<"trans "<<NameTrans[SetTran[i]]<<" "<<EnabledTransValueDis[SetTran[i]]<<endl;
                 }
+
            /// cout<<NameTrans[i]<<" "<<sumRate<<endl;
+
                    */
              sumRate+=EnabledTransValueDis[SetTran[i]]*Trans[SetTran[i]].rate;
             }
@@ -2722,19 +2692,25 @@ cout << " s1 = " << s1 << "; s2= " << s2 <<"\n";*/
 /*
 double SystEq::S(double *ValuePrv, map <string,int>& NumTrans, map <string,int>& NumPlaces,const vector<string> & NameTrans, const struct InfTr* Trans, const int T, const double& time, int hstep, int ider)
 {
+
 	double fh = f(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time,hstep,ider);
 	double f2h =f(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time,hstep+hstep,ider);
 	double fmh =f(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time,hstep,ider, true);
 	double fm2h =f(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time,hstep+hstep,ider, true);
+
 	return (- f2h + 8*fh - 8*fmh + fm2h) / 12*hstep ;
 }
+
 double SystEq::L(double *ValuePrv, map <string,int>& NumTrans, map <string,int>& NumPlaces,const vector<string> & NameTrans, const struct InfTr* Trans, const int T, const double& time, int hstep, int ider)
 {
 	return (16*S(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time,hstep,ider) - S(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time,hstep+hstep,ider) ) / 15 ;
 }
+
+
 double SystEq::DerivApproximation(double *ValuePrv, map <string,int>& NumTrans, map <string,int>& NumPlaces,const vector<string> & NameTrans, const struct InfTr* Trans, const int T, const double& time, int hstep, int ider)
 {
 	// I will write the while here;
+
 	return RichardsonExtrap(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,T,time,hstep,ider);
 }
 */
@@ -2759,6 +2735,7 @@ double SystEq::getComputeTauGillespie(int SetTran[],double t, double hstep){
             for(int h=1;h<=size;h++){
 
             /*It is not necessary since rate of generic transition is one by default!!!
+
             if (Trans[SetTran[h]].GenFun==""){
                     a_0+=EnabledTransValueDis[SetTran[h]]*Trans[SetTran[h]].rate;
                 }
@@ -4012,21 +3989,4 @@ inline void Elem::Print(vector <string>& NamePlaces, vector <string>& NameTrans,
 
 
 };
-
-Footer
-© 2022 GitHub, Inc.
-Footer navigation
-
-    Terms
-    Privacy
-    Security
-    Status
-    Docs
-    Contact GitHub
-    Pricing
-    API
-    Training
-    Blog
-    About
-
 
