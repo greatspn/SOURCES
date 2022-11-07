@@ -66,8 +66,8 @@ public class CppFormat {
                             out.println("   double rate = " + cppDelayExpr + ";");
                         }
                         
-                        out.println("cout << Value[Prey_place] << \"markingi di prey\" << endl;");
-                        out.println("cout << \"RATE CON CUI LAVORO\" << rate << endl;");
+                        out.println("cout << Value[Prey_place] << \" marking di prey\" << endl;");
+                        out.println("cout << \"RATE CON CUI LAVORO \" << rate << endl;");
 
 
                         out.println("   return rate;");
