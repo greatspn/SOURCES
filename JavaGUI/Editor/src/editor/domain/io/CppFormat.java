@@ -66,7 +66,9 @@ public class CppFormat {
                             out.println("   double rate = " + cppDelayExpr + ";");
                         }
                         
-                        out.println("cout << \"RATE CON CUI LAVORO\" << rate;");
+                        out.println("cout << class_files[BirthPredator].getConstantFromList(0) << \"la a \" << endl;");
+                        out.println("cout << class_files[BirthPredator].getConstantFromList(1) << \"la h \" << endl;");
+                        out.println("cout << \"RATE CON CUI LAVORO\" << rate << endl;");
 
 
                         out.println("   return rate;");
