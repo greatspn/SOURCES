@@ -104,9 +104,13 @@
 //automaton
 #ifdef AUTOMATON
   #include "automa.hpp"
-  #include <boost/math/distributions/binomial.hpp>
+ // #include <boost/math/distributions/binomial.hpp>
 #endif
 //automaton
+
+#ifdef __DISTRIBUTION__
+  #include <boost/math/distributions.hpp>
+#endif
 
 
 #ifndef __READ_SUP__
@@ -397,6 +401,7 @@ namespace SDE
   int max_attempt {500};
     //!It stores the used seed
   long int seed {0};
+  
 //automaton
 #ifdef AUTOMATON
   class automaton automaton;

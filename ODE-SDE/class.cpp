@@ -245,10 +245,6 @@ bool SystEq::readParameter(const string& file){
 
 SystEqMin::~SystEqMin() {}
 
-/*qui calcolo la prossima transizione che scatta. Probabilmente qui dovrò aggiornare la future event list
-con tempi nuovi e nuove inserzioni e eventualmente rimozioni. Dovrò diversificare: se sto valutando le esponenziali
-fà quello che è già implementato e pace, mentre se sono generali dovrò aggiornare la future event list.*/
-
 inline void SystEqMin::getValTranFire()
 {
 	for(int t=0; t<nTrans; t++)
@@ -315,6 +311,7 @@ inline void SystEqMas::getValTranFire()
 	{
 		EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
        // cout<<" T:"<<NameTrans[t]<<endl;
+		//se la transizione ha una funzione "complessa" associata uso quella per calcolare il rate
 		if (Trans[t].FuncT!=nullptr){
 #ifdef CGLPK
  //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
@@ -324,6 +321,7 @@ inline void SystEqMas::getValTranFire()
 #endif 		
 
 		}
+		//altrimenti uso la massaction
 		else {
 
 			if (Trans[t].InPlaces.size()>0)

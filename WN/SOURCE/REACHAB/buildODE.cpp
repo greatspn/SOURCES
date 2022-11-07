@@ -1037,6 +1037,9 @@ for (pp = 0; pp < npl; pp++)
     {
         if (tabt[tt].general_function != NULL)
         {
+            if(tabt[tt].timing == TIMING_DETERMINISTIC ){
+                hout << tabt[tt].trans_name << " sei dunque generale?" << endl; //Sono commossa.
+            }
             if (!FLUXB)
                 hout<<"double "<<tabt[tt].trans_name<<"_general(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n";
             else

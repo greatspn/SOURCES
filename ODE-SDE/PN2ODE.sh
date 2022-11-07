@@ -230,11 +230,9 @@ cat ${MyTempDir}/tmpB  ${MyTempDir}/incl1 $CFUN_PATH ${MyTempDir}/incl1  ${MyTem
 echo " " >> ${MyTempDir}/newline
 if $EXTFUN
 	then
-		echo "entri qui?"
 		cat ${MyTempDir}/tmpB  ${MyTempDir}/incl1 $EXTFUN_PATH ${MyTempDir}/newline $CFUN_PATH ${MyTempDir}/newline ${MyTempDir}/tmpE > ${MyTempDir}/tmpA
 		cat ${MyTempDir}/tmpA >>  ${MyTempDir}/class.cpp
 	else
-		echo "o qui?"
 		cat ${MyTempDir}/tmpB  ${MyTempDir}/incl1 $CFUN_PATH ${MyTempDir}/newline ${MyTempDir}/tmpE > ${MyTempDir}/tmpA
 		cat ${MyTempDir}/tmpA >>  ${MyTempDir}/class.cpp
 fi

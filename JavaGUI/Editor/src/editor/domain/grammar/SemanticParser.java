@@ -189,6 +189,14 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new UnaryFunct(false, ExprLangParser.POSTINCR, "!", OperatorPos.PREFIX_SIMPLETERM),
         new UnaryFunct(false, ExprLangParser.POSTDECR, "^", OperatorPos.PREFIX_SIMPLETERM),
         new UnaryFunct(true, ExprLangParser.MULTISET_CARD, "", ""),
+        new UnaryFunct(true, ExprLangParser.EXP_FN, "e^", OperatorPos.PREFIX_SIMPLETERM),
+        new UnaryFunct(false, ExprLangParser.NOT, "! ", OperatorPos.PREFIX_SIMPLETERM),
+        new UnaryFunct(false, ExprLangParser.LOG_FN, "log(", ")"),
+        new UnaryFunct(true, ExprLangParser.SQRT_FN, "sqrt(", ")"),
+        new UnaryFunct(true, ExprLangParser.ROUND_FN, "round(", ")"),
+        new UnaryFunct(true, ExprLangParser.CEIL_FN, "ceil(", " )"),
+        new UnaryFunct(true, ExprLangParser.FLOOR_FN, "floor(", ")"),
+        new UnaryFunct(true, ExprLangParser.ABS_FN, "abs(", " )"),
         // General event PDF operator
         new UnaryFunct(true, ExprLangParser.DIRAC_DELTA_FN, "DiracDelta[", "]"),};
     static final UnaryFunct pnproUnaryFunctions[] = {
@@ -591,13 +599,15 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new BinaryFunct(false, ExprLangParser.MAX_FN, "max(", ", ", ")", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.MIN_FN, "min(", ", ", ")", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.POW_FN, "pow(", ", ", ")", OperatorPos.FUNCTION),
-        //come gestire in cpp le?
-        new BinaryFunct(false, ExprLangParser.RECT_FN, "Rectangular(", ", ", ")", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.TRUNCATED_EXP_FN, "TruncatedExponential(", ", ", ")", OperatorPos.FUNCTION),
+        //come gestire in cpp le distribuzioni?
+        new BinaryFunct(false, ExprLangParser.RECT_FN, "uniform_real_distribution<double> unf_dis(", ", ", ");\n unf_dis(generator)", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.TRUNCATED_EXP_FN, "exponential_distribution<> exp_dis(", ", ", ")\n exp_dis(generator)", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.TRIANGULAR_FN, "Triangular(", ", ", ")", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.PARETO_FN, "Pareto(", ", ", ")", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.UNIFORM_FN, "Uniform(", ", ", ")", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.ERLANG_FN, "Erlang(", ", ", ")", OperatorPos.FUNCTION),};
+        new BinaryFunct(false, ExprLangParser.UNIFORM_FN, "uniform_real_distribution<double> unf_dis(", ", ", ");\n distribution(generator)", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.ERLANG_FN, "Erlang(", ", ", ")", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.BINOMIAL_FN, "binomial_distribution<> bin_dis(", ", ", ")\n bin_dis(generator)", OperatorPos.FUNCTION),
+};
 
     public FormattedFormula formatBinaryFn(int binaryIntFn, FormattedFormula expr0,
             FormattedFormula expr1) {
@@ -605,7 +615,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         switch (lang) {
             //case LATEX:     functs = latexBinaryFunctions;    break;
             case LATEX:
-                functs = cppBinaryFunctions;
+                functs = latexBinaryFunctions;
                 break;
             case PNPRO:
                 functs = pnproBinaryFunctions;

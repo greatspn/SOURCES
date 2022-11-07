@@ -23,7 +23,7 @@ public class CppFormat {
             throws Exception {
 
         try ( PrintWriter out = new PrintWriter(new BufferedOutputStream(new FileOutputStream(file)))) {
-
+            
             if (!filenames.isEmpty()) {
                 StringJoiner joiner = new StringJoiner(",");
                 int i = 0;
@@ -57,14 +57,27 @@ public class CppFormat {
                                 + "                         const int T,\n"
                                 + "                         const double& time) {\n");
 
-                        out.println("   double rate = " + cppDelayExpr + ";");
+                        if (trn.isGeneral()) {
+                            String[] splitted = cppDelayExpr.split("\n");
+                            out.println("   " + splitted[0]);
+                            out.println("   double rate = " + splitted[1] + ";");
+
+                        } else {
+                            out.println("   double rate = " + cppDelayExpr + ";");
+                        }
+                        
+                        out.println("cout << \"RATE CON CUI LAVORO\" << rate;");
+
+
                         out.println("   return rate;");
                         out.println("}\n");
                     }
 
                 }
             }
+
         }
+        
 
     }
 
