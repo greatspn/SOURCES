@@ -1356,6 +1356,8 @@ for (pp = 0; pp < npl; pp++)
         {
             cout<<tabt[tt].general_function<<endl;
             std::string tmp_st(tabt[tt].general_function);
+            char* stoken=strtok((char*)tmp_st.c_str(),delims);
+            cout << " stoken è " << stoken << endl;
             enable = "true";
             GenFun=std::string("")+tabt[tt].trans_name+"_general";
             FuncT=std::string("&")+tabt[tt].trans_name+"_general";
