@@ -318,6 +318,7 @@ inline void SystEqMas::getValTranFire()
 			 EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,vec_fluxb,NumTrans,NumPlaces,NameTrans,Trans,t,time);
 #else
    			EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+   			cout << " qui scrivi qualcosa?" << endl;
 #endif 		
 
 		}

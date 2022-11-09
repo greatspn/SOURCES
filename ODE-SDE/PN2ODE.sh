@@ -243,7 +243,6 @@ echo
   cp ./lsode.*  ${MyTempDir}
   cp ./makefile ${MyTempDir}
   cp ./readSupport.* ${MyTempDir}
-  
   if [ "$AUT" == "-A" ]
   then
   	cp ./readingAutomaton.* ${MyTempDir}
