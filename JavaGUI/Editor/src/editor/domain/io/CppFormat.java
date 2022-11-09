@@ -68,6 +68,7 @@ public class CppFormat {
                         
 
                         out.println("   return (rate);");
+                        out.println("cout << Value[P1_place] << endl;");
                         out.println("}\n");
                     }
 
