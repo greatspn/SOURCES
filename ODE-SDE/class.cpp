@@ -309,6 +309,7 @@ inline void SystEqMas::getValTranFire()
 {
 	for(int t=0; t<nTrans; t++)
 	{
+		cout << "E QUIIIII " << endl;
 		EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
        // cout<<" T:"<<NameTrans[t]<<endl;
 		//se la transizione ha una funzione "complessa" associata uso quella per calcolare il rate
