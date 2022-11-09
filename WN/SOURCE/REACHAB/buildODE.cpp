@@ -1356,9 +1356,8 @@ for (pp = 0; pp < npl; pp++)
         {
             cout<<tabt[tt].general_function<<endl;
             std::string tmp_st(tabt[tt].general_function);
-            //if (strcmp(stoken,"Discrete")==0 ||strcmp(stoken,"discrete")==0 || strcmp(stoken,"D")==0)
-            enable="true";
-            //else
+            if (strcmp(stoken,"Discrete")==0 ||strcmp(stoken,"discrete")==0 || strcmp(stoken,"D")==0)
+                enable="true";
             GenFun=std::string("")+tabt[tt].trans_name+"_general";
             FuncT=std::string("&")+tabt[tt].trans_name+"_general";
             rate="1.0";
