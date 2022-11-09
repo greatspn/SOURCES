@@ -66,7 +66,6 @@ public class CppFormat {
                             out.println("   double rate = " + cppDelayExpr + ";");
                         }
                         
-                        out.println("cout << Value[P1_place] << endl;");
                         out.println("   return (rate);");
                         out.println("}\n");
                     }

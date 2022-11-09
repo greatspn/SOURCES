@@ -1348,7 +1348,7 @@ for (pp = 0; pp < npl; pp++)
 
         out << "//Transition " << tabt[tt].trans_name << "\n t.InPlaces.clear();\n t.InhPlaces.clear();\n t.InOuPlaces.clear();\n t.Places.clear();\n";
 
-        std::string enable="true";
+        std::string enable="false";
         std::string GenFun="";
         std::string FuncT="nullptr";
         std::string rate=std::to_string(tabt[tt].mean_t);
@@ -1356,13 +1356,12 @@ for (pp = 0; pp < npl; pp++)
         {
             cout<<tabt[tt].general_function<<endl;
             std::string tmp_st(tabt[tt].general_function);
-            if (strcmp(stoken,"Discrete")==0 ||strcmp(stoken,"discrete")==0 || strcmp(stoken,"D")==0)
-                enable="true";
+            enable = "true";
             GenFun=std::string("")+tabt[tt].trans_name+"_general";
             FuncT=std::string("&")+tabt[tt].trans_name+"_general";
             rate="1.0";
         }
-        out<<" t.discrete= "<<enable<<";\n";
+        out<<" t.discrete = "<<enable<<";\n";
         out<<" t.GenFun= \""<<GenFun<<"\";\n";
         out<<" t.FuncT=  "<<FuncT<<";\n";
         out<<" t.rate = "<<rate << ";\n";
