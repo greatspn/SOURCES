@@ -3059,7 +3059,7 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 			}
 		}	
 #endif
-//		out<<endl;
+		out<<endl;
 	}
 
 	cout.precision(16);
