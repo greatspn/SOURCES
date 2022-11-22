@@ -3106,7 +3106,7 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 			}
 		}	
 #endif
-//			out<<endl;
+			out<<endl;
 		}
 
 		double nextTimePoint=tout=Print_Step+itime;
@@ -3285,7 +3285,7 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 			}
 		}
 #endif			
-//			out<<endl;;
+			out<<endl;;
 		}
 
 		double nextTimePoint=itime,tout=Print_Step+itime;
