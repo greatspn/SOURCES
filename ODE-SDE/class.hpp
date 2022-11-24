@@ -460,20 +460,12 @@ public:
 #endif
 //automaton
 #ifdef CGLPK
-<<<<<<< HEAD
-  void initialize_fluxbalance(std::string flux_name){
-    FBGLPK::LPprob l;
-    vec_fluxb.push_back(l);
-    vec_fluxb[vec_fluxb.size()-1].updateLP(flux_name.c_str()); 
-  }
-=======
       void initialize_fluxbalance(std::string flux_name){
       FBGLPK::LPprob l;
       vec_fluxb.push_back(l);
       vec_fluxb[vec_fluxb.size()-1].updateLP(flux_name.c_str()); 
       };
       inline void setVariability(bool v){Variability=v;};
->>>>>>> ce75593c4df8673901058dad35da8b7a8c452d21
 #endif       
     //!It returns the brown noise value for the input transition.
   inline double getBNoiseTran(int Tran) {return Trans[Tran].BrownNoise;};
