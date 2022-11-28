@@ -182,8 +182,9 @@ updateLP(FileProb,1,typeOBJ,FluxName);
 
     //opening output file
     out_var.open(FileOutVar, std::ofstream::out);
-    if (!in_var)
-        throw Exception(string("FLUX BALANCE: error opening input file:")+std::string(FileOutVar));
+    if (!out_var)
+        throw Exception(string("FLUX BALANCE: error opening  output file:")+std::string(FileOutVar));
+    out_var.precision(12);
     }
  catch (exception& e){
     cout << "\n Exception: " << e.what() << endl;
@@ -192,7 +193,8 @@ updateLP(FileProb,1,typeOBJ,FluxName);
  catch (Exception& e){
     cout << "\n Exception: " << e.what() << endl;
     exit(EXIT_FAILURE);
-    }   
+    }
+
  }
 
 
@@ -287,7 +289,7 @@ void LPprob::updateLP( const char* fileProb,int variability, int typeOBJ,const c
         //resetting obj function coefficient
             var_obj_eq=buffer;
             for (unsigned int i=0;i<sizeCol;++i){
-                glp_set_obj_coef(lp, i+1, (i==flux_var)?1:0);
+                glp_set_obj_coef(lp, i+1, (i+1==flux_var)?1:0);
             }
         //variability
         }
