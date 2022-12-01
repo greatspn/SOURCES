@@ -137,6 +137,18 @@
     #endif
 #endif
 
+
+#ifndef __REVERSE_HEAP_H__
+#define __REVERSE_HEAP_H__
+#include "reverse_heap.h"
+#endif 
+
+/*#ifndef __DISTRIBUTION_H__
+#define __DISTRIBUTION_H__
+#include "distribution.h"
+#endif */
+
+
 namespace SDE
 {
 
@@ -147,6 +159,7 @@ namespace SDE
   #define DEBUG 1
   #define ADAPTATIVE 1
   #define ALPHA 0.99
+  #define NON_EXP_GEN 127
   const double MAXSTEP=4294967295.0;
 
   using namespace std;
@@ -177,11 +190,25 @@ namespace SDE
     //@}
   };
 
+  //! enumeration used to prevent use of non-exponential general transition except in SSA
+  enum solve_type {
+    Solve_LSODE,
+    Solve_SSA,
+    Solve_HLSODE,
+    Solve_TAUG
+  };
+
+#ifndef __DISTRIBUTION_H__
+#define __DISTRIBUTION_H__
+#include "distribution.h"
+#endif 
+
   //! It uses for encoding the place information
   struct InfPlace
   {
     double Card;
     int Id;
+    int marking;
   };
 
   //! It uses for encoding the transition information (i.e. rate, inhibitor places, and its associated  negative exponential distribution)
@@ -199,7 +226,11 @@ namespace SDE
     std::exponential_distribution<double> dist[1];
     //!remember if this transition is enable in the diffusion process
     bool enable;
+    //!indicate if the transition is exponential or general
+    int timing;
     bool discrete {false};
+    //!list of the events connected to the transition if it's general non exponential
+    vector<Event*> events;
     //!encode the  brown noise value for the current time
     double BrownNoise;
     //!it stores for generic transition
@@ -401,7 +432,11 @@ namespace SDE
   int max_attempt {500};
     //!It stores the used seed
   long int seed {0};
-  
+  //!It indicates the solve type used in this execution
+  solve_type solve;
+    //!The heap that handles the future event list of general non exponential transition
+  min_heap future_event_list {min_heap()};
+
 //automaton
 #ifdef AUTOMATON
   class automaton automaton;
@@ -460,12 +495,20 @@ public:
 #endif
 //automaton
 #ifdef CGLPK
+<<<<<<< HEAD
+  void initialize_fluxbalance(std::string flux_name){
+    FBGLPK::LPprob l;
+    vec_fluxb.push_back(l);
+    vec_fluxb[vec_fluxb.size()-1].updateLP(flux_name.c_str()); 
+  }
+=======
       void initialize_fluxbalance(std::string flux_name){
       FBGLPK::LPprob l;
       vec_fluxb.push_back(l);
       vec_fluxb[vec_fluxb.size()-1].updateLP(flux_name.c_str()); 
       };
       inline void setVariability(bool v){Variability=v;};
+>>>>>>> ce75593c4df8673901058dad35da8b7a8c452d21
 #endif       
     //!It returns the brown noise value for the input transition.
   inline double getBNoiseTran(int Tran) {return Trans[Tran].BrownNoise;};

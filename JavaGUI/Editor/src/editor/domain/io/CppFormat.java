@@ -23,7 +23,7 @@ public class CppFormat {
             throws Exception {
 
         try ( PrintWriter out = new PrintWriter(new BufferedOutputStream(new FileOutputStream(file)))) {
-            
+
             if (!filenames.isEmpty()) {
                 StringJoiner joiner = new StringJoiner(",");
                 int i = 0;
@@ -43,11 +43,14 @@ public class CppFormat {
             for (Node node : gspn.nodes) {
                 if (node instanceof Transition) {
                     Transition trn = (Transition) node;
-
+                    //se la transizione è esponenziale, se l'utente mette un numero io non lo considero.
+                    //quindi. Non posso fare il controllo qui che sia negativo o no...
+                    //anche perché l'esecuzione va avanti da sola merd. Dovrebbe essere un controllo
+                    //fatto da interfaccia grafica
                     ArrayList<String> double_constant_log = new ArrayList<>();
                     String cppDelayExpr = trn.convertDelayLang(context, null, ExpressionLanguage.CPP);
                     GreatSpnFormat.realOrRpar(cppDelayExpr, "", gspn, double_constant_log);
-                    if (!double_constant_log.isEmpty()) {
+                    if ((!double_constant_log.isEmpty()) || (trn.isGeneral() && double_constant_log.isEmpty()) ) {
 
                         out.println("double " + trn.getUniqueName() + "_general(double *Value,\n"
                                 + "                         map <string,int>& NumTrans,\n"
@@ -57,14 +60,8 @@ public class CppFormat {
                                 + "                         const int T,\n"
                                 + "                         const double& time) {\n");
 
-                        if (trn.isGeneral()) {
-                            String[] splitted = cppDelayExpr.split("\n");
-                            out.println("   " + splitted[0]);
-                            out.println("   double rate = " + splitted[1] + ";");
-
-                        } else {
-                            out.println("   double rate = " + cppDelayExpr + ";");
-                        }
+                        
+                        out.println("   double rate = " + cppDelayExpr + ";");
                         out.println("   return (rate);");
                         out.println("}\n");
                     }
@@ -73,7 +70,6 @@ public class CppFormat {
             }
 
         }
-        
 
     }
 

@@ -196,7 +196,7 @@ namespace CRS {
 		this -> column = column;
 	}
 
-	Table::~Table() {};
+	//Table::~Table() {};
 
 
 }

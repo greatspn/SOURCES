@@ -310,8 +310,8 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new UnaryFunct(true, ExprLangParser.CEIL_FN, "ceil(", " )"),
         new UnaryFunct(true, ExprLangParser.FLOOR_FN, "floor(", ")"),
         new UnaryFunct(true, ExprLangParser.ABS_FN, "abs(", " )"),
-        // come gestire le dirac delta e le rectangular function in cpp?
-        new UnaryFunct(true, ExprLangParser.DIRAC_DELTA_FN, "Dirac_delta(", ")"),};
+        new UnaryFunct(true, ExprLangParser.DIRAC_DELTA_FN, "dirac_delta(", ")")
+    };
 
     public FormattedFormula formatUnaryFn(int unaryIntRealFn, FormattedFormula expr) {
         UnaryFunct[] functs;
@@ -600,13 +600,13 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new BinaryFunct(false, ExprLangParser.MIN_FN, "min(", ", ", ")", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.POW_FN, "pow(", ", ", ")", OperatorPos.FUNCTION),
         //come gestire in cpp le distribuzioni?
-        new BinaryFunct(false, ExprLangParser.RECT_FN, "uniform_real_distribution<double> unf_dis(", ", ", ");\n unf_dis(generator)", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.TRUNCATED_EXP_FN, "exponential_distribution<> exp_dis(", ", ", ")\n exp_dis(generator)", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.RECT_FN, "uniform(", ", ", ", generator)", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.TRUNCATED_EXP_FN, "exponential(", ", ", ", generator)", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.TRIANGULAR_FN, "Triangular(", ", ", ")", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.PARETO_FN, "Pareto(", ", ", ")", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.UNIFORM_FN, "uniform_real_distribution<double> unf_dis(", ", ", ");\n distribution(generator)", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.ERLANG_FN, "Erlang(", ", ", ")", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.BINOMIAL_FN, "binomial_distribution<> bin_dis(", ", ", ")\n bin_dis(generator)", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.UNIFORM_FN, "uniform(", ", ", ", generator)", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.ERLANG_FN, "gamma(", ", ", ", generator)", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.BINOMIAL_FN, "binomial(", ", ", ", generator)", OperatorPos.FUNCTION),
 };
 
     public FormattedFormula formatBinaryFn(int binaryIntFn, FormattedFormula expr0,

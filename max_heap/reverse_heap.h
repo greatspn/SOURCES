@@ -32,11 +32,11 @@ public:
 
 // Heap data structure with reverse index
 class reverse_heap {
-    //sarà da tenere e da ridefinire nel caso o farlo dinamico e basta?
-    const size_t N;
+
+    size_t N;
     std::vector<event*> heap;
 
-    void percolate_up(event* elem) {
+    void percolateUp(event* elem) {
         int i = elem -> getIndex();
         while (i > 0) {
             size_t parent = ((i + 1) / 2) - 1;
@@ -49,7 +49,8 @@ class reverse_heap {
         }
     }
 
-    void percolate_down(event* elem) {
+
+    void percolateDown(event* elem) {
         int i = elem -> getIndex();
         while (true) {
             int left = ((i + 1) * 2) - 1;
@@ -78,33 +79,41 @@ class reverse_heap {
         }
     }
 
-    void percolate_up_or_down(event* elem) {
+    void percolateUpOrDown(event* elem) {
         int i = elem -> getIndex();
         size_t parent = ((i + 1) / 2) - 1;
         if (i != 0 && heap[parent] -> getTime() < heap[i] -> getTime())
-            percolate_up(elem);
+            percolateUp(elem);
         else
-            percolate_down(elem);
+            percolateDown(elem);
     }
 
 public:
-    reverse_heap(size_t initN) : N(initN) {
+    reverse_heap() {};
+
+    reverse_heap(size_t initN) {
         heap.reserve(N);
     }
 
-    void push_heap(event* elem) {
-        cout << "push_heap("<<elem -> getTime()<<")"<<endl;
+    void setHeapSize(size_t sizeN){
+        this -> N = sizeN;
+        heap.reserve(sizeN);
+    }
+
+
+
+
+    void pushHeap(event* elem) {
         size_t i = heap.size();
         assert(elem-> getIndex() == -1);
         elem -> setIndex(i);
         heap.push_back(elem);
         // push up elem
-        percolate_up(elem);
+        percolateUp(elem);
     }
 
-    void remove_heap(event* elem) {
+    void removeHeap(event* elem) {
         int i = elem -> getIndex();
-        // cout << "remove_heap("<<elem<<"@"<<i<<"): ";
         assert(i >= 0 && i < heap.size());
         // move last element to position i
         if (i == heap.size() - 1) {
@@ -114,32 +123,33 @@ public:
             heap[i] = heap.back();
             heap.back() -> setIndex(i);
             heap.resize(heap.size() - 1);
-            percolate_up_or_down(elem);
+            percolateUpOrDown(elem);
         }
         // cout << endl;
     }
 
-    event pop_heap() {
+    event popHeap() {
         event* elem0 = heap[0];
-        remove_heap(elem0);
+        removeHeap(elem0);
         return *elem0;
     }
 
-    /*inline double get_weight(event *elem) {
-    	return elem -> time;
-    }*/
+    inline double getWeightOfElem(int index) {
+        event* elem = heap[index];
+        return elem -> getTime();
+    }
 
-    inline double top_weight() {
+    inline double topWeight() {
         return heap[0] -> getTime();
     }
 
     // change the weight of an element already in the heap
-    void update_weight(event* elem, double w) {
+    void updateWeight(event* elem, double w) {
         int i = elem -> getIndex();
         assert(i >= 0 && i < heap.size());
         //W[elem] = w;
         elem -> setTime(w);
-        percolate_up_or_down(elem);
+        percolateUpOrDown(elem);
     }
 };
 
