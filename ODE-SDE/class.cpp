@@ -299,19 +299,12 @@ inline void SystEqMin::getValTranFire()
 
 SystEqMas::~SystEqMas() {}
 
-/*qui calcolo la prossima transizione che scatta. Probabilmente qui dovrò aggiornare la future event list
-con tempi nuovi e nuove inserzioni e eventualmente rimozioni. Dovrò diversificare: se sto valutando le esponenziali
-fà quello che è già implementato e pace, mentre se sono generali dovrò aggiornare la future event list.
-Quando si usa quale delle due?*/
-
-//massaction, è questa che viene usata di default in realtà
 inline void SystEqMas::getValTranFire()
 {
 	for(int t=0; t<nTrans; t++)
 	{
 		EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
        // cout<<" T:"<<NameTrans[t]<<endl;
-		//se la transizione ha una funzione "complessa" associata uso quella per calcolare il rate
 		if (Trans[t].FuncT!=nullptr){
 #ifdef CGLPK
  //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
@@ -321,7 +314,6 @@ inline void SystEqMas::getValTranFire()
 #endif 		
 
 		}
-		//altrimenti uso la massaction
 		else {
 
 			if (Trans[t].InPlaces.size()>0)
@@ -3127,16 +3119,8 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 
 		while(time<=Max_Time){
             //time=nextTimePoint;
-            //qui dentro il codice per aggiornare la future event list
             getValTranFire(Value);
-            //questo è fatto solo sulle esponenziali
             int Tran=getComputeTau(SetTran,nextTimePoint,time);
-
-            /*probabilmente qui dovrò inserire il codice che verifica se la transizione
-            generale col minor rate trovata nella future event list è minore della transizione
-            selezionata da quelle esponeziali
-            */
-
 
             //cout<<Tran<<" "<<endl;
             if (Tran!=-1){
