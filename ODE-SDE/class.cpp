@@ -358,38 +358,20 @@ inline void SystEqMas::getValTranFire()
 inline void SystEqMas::getValTranFire(double* ValuePrv)
 {
 
+
 	for(int t=0; t<nTrans; t++)
 	{
 		EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
       //cout<<" T:"<<NameTrans[t]<<endl;
 		if (Trans[t].FuncT!=nullptr)
 		{   
-
 			//if the transition is non exponential general
-			if(Trans[t].timing == NON_EXP_GEN){
+			if(Trans[t].timing == NON_EXP_GEN && solve != Solve_SSA){
 
-				if(solve != Solve_SSA){
 					throw Exception("You can't use non exponential transition with other solver than SSA");
 				}
 
-				//update of the future event list
-				if (Trans[t].InPlaces.size()>0)
-				{
-					int input_marking = 0;
-					for (unsigned int k=0; k<Trans[t].InPlaces.size(); k++)//for all variables in the components
-					{
-						input_marking += (floor(Value[k]/Trans[t].InPlaces[k].Card));
-					}
-					int events_size = Trans[t].events.size();
-
-					//if the transiction has not marking in input is not enabled
-					if(input_marking == 0) 	{
-						Trans[t].events.clear();
-					}
-
-					//add events if there are new tokens
-					while(events_size < input_marking){
-
+/*
 #ifdef CGLPK
  //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
 						double time_event =Trans[t].FuncT(ValuePrv,vec_fluxb,NumTrans,NumPlaces,NameTrans,Trans,t,time);
@@ -402,7 +384,6 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 						future_event_list.pushHeap(event_distribution);
 						events_size++;
 						//cout << event_distribution -> getIndexTran() << "indice della transizione associato " << endl;
-					}
 
 					cout << "elementi future_event_list di lunghezza " << future_event_list.getLenght() << endl;
 					for(int i = 0; i<future_event_list.getLenght(); i++){
@@ -420,13 +401,7 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 							Trans[t].events.erase(Trans[t].events.begin() + index);
 							future_event_list.removeHeap(event_removed);
 							events_size--;
-						}
-						cout << "esco dal possibile ciclo di rimozione " << endl;
-
-				}
-			}
-
-			else {
+						}*/
 
 #ifdef CGLPK
  //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
@@ -436,7 +411,6 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 #endif 	
 			}
 
-		}
 		else
 		{
 
@@ -467,6 +441,18 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
                   }
                 }
               }
+
+
+              for(int t=0; t<nTrans; t++){
+              	cout << EnabledTransValueDis[t] << " valori dentro EnabledTransValueDis in mas" << endl;
+              
+              /*for (unsigned int k=0; k<Trans[t].InPlaces.size(); k++)//for all variables in the components
+                    {
+              	cout << ValuePrv[k] << " valori dentro ValuePrv" << endl;
+              }*/
+            }
+
+
             }
 
 

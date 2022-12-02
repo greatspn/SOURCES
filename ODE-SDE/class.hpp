@@ -382,6 +382,8 @@ namespace SDE
   double* EnabledTransValueCon {nullptr};
     //!it stores the current enabling degree for discrete transition fire
   double* EnabledTransValueDis {nullptr};
+  //!it stores the previous enabling degree values for discrete transition fire
+  double* PreviousEnabledTransValueDis {nullptr};
     //!it  store the final place value of each run
   double** FinalValueXRun {nullptr};
     //!It used for TauLeaping
@@ -436,6 +438,8 @@ namespace SDE
   solve_type solve;
     //!The heap that handles the future event list of general non exponential transition
   min_heap future_event_list {min_heap()};
+  vector<int> non_exp_trans_indexes;
+
 
 //automaton
 #ifdef AUTOMATON
