@@ -309,7 +309,6 @@ inline void SystEqMas::getValTranFire()
 {
 	for(int t=0; t<nTrans; t++)
 	{
-		cout << "E QUIIIII " << endl;
 		EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
        // cout<<" T:"<<NameTrans[t]<<endl;
 		//se la transizione ha una funzione "complessa" associata uso quella per calcolare il rate
@@ -319,7 +318,6 @@ inline void SystEqMas::getValTranFire()
 			 EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,vec_fluxb,NumTrans,NumPlaces,NameTrans,Trans,t,time);
 #else
    			EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
-   			cout << " qui scrivi qualcosa?" << endl;
 #endif 		
 
 		}
