@@ -28,14 +28,14 @@ namespace CRS {
 			//!to read more elements separated by whitespace
 				stringstream ss(line); 
 				string token;
-				while (getline(ss, token, ' ') || getline(ss, token, ',')  || getline(ss, token, ';') ) 
+				while (getline(ss, token, ',')) 
 			//!to read the single elements of the line
 				{   
 					try{
 						file.push_back(stod(token));
 					}
 					catch(std::invalid_argument const& ex){
-						cout << "There's an invalid argument" + name_file[file_index] + " (the separator should be the blankspace)\n";
+						cout << "There's an invalid argument" + name_file[file_index] + " (the separator should be comma)\n";
 					}
 					if(!init){
 						columnLenght++;
@@ -65,6 +65,7 @@ namespace CRS {
 */
 	void Table::readFileTimeTable(int file_index){
 
+
 		ifstream file_written (name_file[file_index]);
 	//!memorize the lenght of the row for right value extraction
 		int columnLenght = 0;
@@ -80,7 +81,7 @@ namespace CRS {
 			//!to read more elements separated by whitespace or comma or semicolon
 				stringstream ss(line); 
 				string token;
-				while (getline(ss, token, ' ') || getline(ss, token, ',')  || getline(ss, token, ';')) 
+				while (getline(ss, token, ',')) 
 			//!to read the single elements of the line
 				{   
 					try{
@@ -93,7 +94,7 @@ namespace CRS {
 						}
 					}
 					catch(std::invalid_argument const& ex){
-						cout << "There's an invalid argument" + name_file[file_index] + " (the separator should be the blankspace)\n";
+						cout << "There's an invalid argument" + name_file[file_index] + " (the separator should be the comma)\n";
 					}
 					if(!init){
 						columnLenght++;
@@ -109,8 +110,6 @@ namespace CRS {
 				}
 			}
 			file_written.close();
-
-			setColumn(columnLenght-1);
 			
 		}
 		else
@@ -130,6 +129,7 @@ namespace CRS {
 			readFileTimeTable(file_index);
 		}
 
+
 		auto it_up = lower_bound(time.begin(), time.end(), time_value);
 		int lower_time_index = std::distance(time.begin(), it_up);
 		lower_time_index--;
@@ -138,9 +138,10 @@ namespace CRS {
 			throw Exception("Index out of range.\n");
 		}
 
+
 	  //!if time is lower of the minimun value
 		if(lower_time_index == 0)
-		{
+		{	
 			return file[column_index];
 		}
 		//!if time si bigger of the maximum value
@@ -172,10 +173,12 @@ namespace CRS {
 
 	double Table::getConstantFromTable(int row_index, int column_index){
 
+
 		//!check if the file has already been written
 		if(file.empty()){
 			readFileTable(file_index);
 		}
+
 
 		if(column_index > column){
 			throw Exception("Index out of range");
