@@ -111,6 +111,7 @@ namespace CRS {
 			file_written.close();
 
 			setColumn(columnLenght-1);
+
 			
 		}
 		else
@@ -123,7 +124,7 @@ namespace CRS {
 	/*! get a constant from a table which first column is time; the row is the position
 	 * of the first value lower than the one passed as parameter
 	*/
- double Table::getConstantFromTimeTable(double time_value, int column_index){
+	double Table::getConstantFromTimeTable(double time_value, int column_index){
 
 		//!checks if the file has already been written
 		if(file.empty()){
@@ -161,7 +162,7 @@ namespace CRS {
 /*!
   function that extracts the constant from a list written in the file
 */
- double Table::getConstantFromList(int column_index) {
+	double Table::getConstantFromList(int column_index) {
 
 			return getConstantFromTable(column_index, 0);
 	}	
@@ -169,7 +170,7 @@ namespace CRS {
 /*!
   function that extracts the constant from a table written in the file
 */	
- double Table::getConstantFromTable(int row_index, int column_index){
+	double Table::getConstantFromTable(int row_index, int column_index){
 
 		//!check if the file has already been written
 		if(file.empty()){
