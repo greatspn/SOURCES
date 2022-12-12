@@ -111,7 +111,6 @@ namespace CRS {
 			file_written.close();
 
 			setColumn(columnLenght-1);
-
 			
 		}
 		else
