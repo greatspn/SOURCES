@@ -438,6 +438,7 @@ namespace SDE
   solve_type solve;
     //!The heap that handles the future event list of general non exponential transition
   min_heap future_event_list {min_heap()};
+  
   vector<int> non_exp_trans_indexes;
 
 

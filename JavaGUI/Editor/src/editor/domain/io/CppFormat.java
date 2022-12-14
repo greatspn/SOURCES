@@ -45,13 +45,13 @@ public class CppFormat {
                     Transition trn = (Transition) node;
                     //se la transizione è esponenziale, se l'utente mette un numero io non lo considero.
                     //quindi. Non posso fare il controllo qui che sia negativo o no...
-                    //anche perché l'esecuzione va avanti da sola merd. Dovrebbe essere un controllo
+                    //anche perché l'esecuzione va avanti da sola. Dovrebbe essere un controllo
                     //fatto da interfaccia grafica
                     ArrayList<String> double_constant_log = new ArrayList<>();
                     String cppDelayExpr = trn.convertDelayLang(context, null, ExpressionLanguage.CPP);
                     GreatSpnFormat.realOrRpar(cppDelayExpr, "", gspn, double_constant_log);
                     if ((!double_constant_log.isEmpty()) || (trn.isGeneral() && double_constant_log.isEmpty()) ) {
-
+                        
                         out.println("double " + trn.getUniqueName() + "_general(double *Value,\n"
                                 + "                         map <string,int>& NumTrans,\n"
                                 + "                         map <string,int>& NumPlaces,\n"

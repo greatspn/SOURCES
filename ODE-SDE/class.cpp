@@ -363,13 +363,9 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 	{
 		EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
       //cout<<" T:"<<NameTrans[t]<<endl;
-		if (Trans[t].FuncT!=nullptr)
+		//If the transition is exponential general
+		if (Trans[t].FuncT!=nullptr && Trans[t].timing != NON_EXP_GEN)
 		{   
-			//if the transition is non exponential general
-			if(Trans[t].timing == NON_EXP_GEN && solve != Solve_SSA){
-
-					throw Exception("You can't use non exponential transition with other solver than SSA");
-				}
 
 /*
 #ifdef CGLPK
@@ -414,8 +410,18 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 		else
 		{
 
+			//if the transition is non exponential general
+			if(Trans[t].timing == NON_EXP_GEN && solve != Solve_SSA){
+				throw Exception("You can't use non exponential transition with other solver than SSA");
+			}
+
 			if (Trans[t].InPlaces.size()>0)
 			{
+
+				for (unsigned int k=0; k<Trans[t].InPlaces.size(); k++)//for all variables in the components
+                    {
+              	cout << ValuePrv[k] << " valori dentro ValuePrv" << endl;
+              }
                     for (unsigned int k=0; k<Trans[t].InPlaces.size(); k++)//for all variables in the components
                     {
                     	double valD,valC;
@@ -443,14 +449,10 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
               }
 
 
-              for(int t=0; t<nTrans; t++){
-              	cout << EnabledTransValueDis[t] << " valori dentro EnabledTransValueDis in mas" << endl;
+              //for(int t=0; t<nTrans; t++){
+              //	cout << EnabledTransValueDis[t] << " valori dentro EnabledTransValueDis in mas" << endl;
               
-              /*for (unsigned int k=0; k<Trans[t].InPlaces.size(); k++)//for all variables in the components
-                    {
-              	cout << ValuePrv[k] << " valori dentro ValuePrv" << endl;
-              }*/
-            }
+            //}
 
 
             }
@@ -471,7 +473,7 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
             		unsigned int size=Trans[t].InPlaces.size();
             		EnabledTransValueCon[t]=0.0;
             		EnabledTransValueDis[t]=0.0;
-            		if (Trans[t].FuncT!=nullptr)
+            		if (Trans[t].FuncT!=nullptr && Trans[t].timing != NON_EXP_GEN)
             		{
 #ifdef CGLPK
  //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
@@ -482,6 +484,11 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
             		}
             		else
             		{
+
+            		//if the transition is non exponential general
+						if(Trans[t].timing == NON_EXP_GEN && solve != Solve_SSA){
+							throw Exception("You can't use non exponential transition with other solver than SSA");
+						}
             			if (size==0)
             				EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
             			else
@@ -3095,7 +3102,7 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 	solve = Solve_SSA;
 
 
-	//defining future_event_list lenght
+	//defining future_event_list lenght. Ma così funziona per infinite server a questo tempo, per massaction dovrei moltiplicare...
 	for(int t=0; t<nTrans; t++)
 	{
 		if(Trans[t].timing == NON_EXP_GEN) {
