@@ -354,10 +354,7 @@ void LPprob::updateLP( const char* fileProb,int variability, int typeOBJ,const c
 
             int i=sizeVet+1; 
             for (unsigned int j=0;j<parser.size();++j){
-<<<<<<< HEAD
                 //cout<<"val: "<<i<<" "<<sizeRow+variability<<" "<<j+1<<" "<<atof(parser.get(i).c_str())<<endl;
-=======
->>>>>>> 970770fad0fb0ce1c50fb3ba39a3a96a0324a1db
                 ia[i]=sizeRow+variability;
                 ja[i]=j+1;
                 ar[i]=atof(parser.get(i).c_str());
@@ -392,12 +389,8 @@ void LPprob::solveVariability(){
             update_bound(j,get_bound_type(j),atof(par.get(i).c_str()),atof(par.get(i+1).c_str()));
             }
          //updating new equation based on old obj
-<<<<<<< HEAD
-         glp_set_col_bnds(lp,sizeRow+1, GLP_LO, atof(par.get(0).c_str())*gamma, atof(par.get(0).c_str())*gamma);
-=======
          glp_set_row_bnds(lp,sizeRow+1, GLP_LO, atof(par.get(0).c_str())*gamma, atof(par.get(0).c_str())*gamma);
          //glp_set_col_bnds(lp,sizeRow+1, GLP_LO, atof(par.get(0).c_str())*gamma, atof(par.get(0).c_str())*gamma);
->>>>>>> 970770fad0fb0ce1c50fb3ba39a3a96a0324a1db
          solve();
          out_var<<par.get(0)<<" "<< glp_get_obj_val(lp)<<endl;   
         }
