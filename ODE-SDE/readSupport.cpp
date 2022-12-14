@@ -25,12 +25,12 @@ namespace CRS {
 			{
 				//!to check that each rows is the same leght
 				int columnControll = 0;
-			//!to read more elements separated by whitespace
+			//!to read more elements separated by comma
 				stringstream ss(line); 
 				string token;
-				while (getline(ss, token, ',') || getline(ss, token, ';') || getline(ss, token, ' ')) 
+				while (getline(ss, token, ',')) 
 			//!to read the single elements of the line
-				{   
+				{  
 					try{
 						file.push_back(stod(token));
 					}
@@ -77,10 +77,10 @@ namespace CRS {
 			{
 			//!to  controll that each row is the same lenght
 				int columnControll = 0;
-			//!to read more elements separated by whitespace or comma or semicolon
+			//!to read more elements separated by comma 
 				stringstream ss(line); 
 				string token;
-				while (getline(ss, token, ',') || getline(ss, token, ';') || getline(ss, token, ' ')) 
+				while (getline(ss, token, ',')) 
 			//!to read the single elements of the line
 				{   
 					try{
@@ -198,7 +198,7 @@ namespace CRS {
 		this -> column = column;
 	}
 
-	inline Table::~Table() {};
+	//inline Table::~Table() {};
 
 
 }
