@@ -2487,7 +2487,8 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 			
         	
 #ifdef CGLPK
-		getValTranFire(y+1);
+
+            getValTranFire(y+1);
         	for (unsigned int i=0;i<vec_fluxb.size();++i){
         		outflux[i]<<endl<<tout<<" ";
         		vec_fluxb[i].printObject(outflux[i]);
@@ -3286,7 +3287,7 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 			}
 		}
 #endif			
-//			out<<endl;;
+			out<<endl;;
 		}
 
 		double nextTimePoint=itime,tout=Print_Step+itime;

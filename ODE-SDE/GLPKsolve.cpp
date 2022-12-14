@@ -182,8 +182,9 @@ updateLP(FileProb,1,typeOBJ,FluxName);
 
     //opening output file
     out_var.open(FileOutVar, std::ofstream::out);
-    if (!in_var)
-        throw Exception(string("FLUX BALANCE: error opening input file:")+std::string(FileOutVar));
+    if (!out_var)
+        throw Exception(string("FLUX BALANCE: error opening  output file:")+std::string(FileOutVar));
+    out_var.precision(12);
     }
  catch (exception& e){
     cout << "\n Exception: " << e.what() << endl;
@@ -192,7 +193,8 @@ updateLP(FileProb,1,typeOBJ,FluxName);
  catch (Exception& e){
     cout << "\n Exception: " << e.what() << endl;
     exit(EXIT_FAILURE);
-    }   
+    }
+
  }
 
 
@@ -287,7 +289,7 @@ void LPprob::updateLP( const char* fileProb,int variability, int typeOBJ,const c
         //resetting obj function coefficient
             var_obj_eq=buffer;
             for (unsigned int i=0;i<sizeCol;++i){
-                glp_set_obj_coef(lp, i+1, (i==flux_var)?1:0);
+                glp_set_obj_coef(lp, i+1, (i+1==flux_var)?1:0);
             }
         //variability
         }
@@ -345,12 +347,17 @@ void LPprob::updateLP( const char* fileProb,int variability, int typeOBJ,const c
         if (variability){
             //adding new row based on old obj
             parser.update(delimC,var_obj_eq);
+
+
             if (parser.size()!=sizeCol)
               throw Exception("FLUX BALANCE: error wrong number of coefficients for varibility previous obj");
 
             int i=sizeVet+1; 
             for (unsigned int j=0;j<parser.size();++j){
+<<<<<<< HEAD
                 //cout<<"val: "<<i<<" "<<sizeRow+variability<<" "<<j+1<<" "<<atof(parser.get(i).c_str())<<endl;
+=======
+>>>>>>> 970770fad0fb0ce1c50fb3ba39a3a96a0324a1db
                 ia[i]=sizeRow+variability;
                 ja[i]=j+1;
                 ar[i]=atof(parser.get(i).c_str());
@@ -385,7 +392,12 @@ void LPprob::solveVariability(){
             update_bound(j,get_bound_type(j),atof(par.get(i).c_str()),atof(par.get(i+1).c_str()));
             }
          //updating new equation based on old obj
+<<<<<<< HEAD
          glp_set_col_bnds(lp,sizeRow+1, GLP_LO, atof(par.get(0).c_str())*gamma, atof(par.get(0).c_str())*gamma);
+=======
+         glp_set_row_bnds(lp,sizeRow+1, GLP_LO, atof(par.get(0).c_str())*gamma, atof(par.get(0).c_str())*gamma);
+         //glp_set_col_bnds(lp,sizeRow+1, GLP_LO, atof(par.get(0).c_str())*gamma, atof(par.get(0).c_str())*gamma);
+>>>>>>> 970770fad0fb0ce1c50fb3ba39a3a96a0324a1db
          solve();
          out_var<<par.get(0)<<" "<< glp_get_obj_val(lp)<<endl;   
         }
