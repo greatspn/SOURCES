@@ -15,7 +15,8 @@ import java.util.StringJoiner;
 
 /**
  *
- * @author Irene Write che c++ file with the expressions of the transitions
+ * @author Irene 
+ * Write che c++ file with the expressions of the transitions
  */
 public class CppFormat {
 
@@ -43,10 +44,7 @@ public class CppFormat {
             for (Node node : gspn.nodes) {
                 if (node instanceof Transition) {
                     Transition trn = (Transition) node;
-                    //se la transizione è esponenziale, se l'utente mette un numero io non lo considero.
-                    //quindi. Non posso fare il controllo qui che sia negativo o no...
-                    //anche perché l'esecuzione va avanti da sola. Dovrebbe essere un controllo
-                    //fatto da interfaccia grafica
+                    //il controllo se il numero inserito è negativo o meno va fatto da UI
                     ArrayList<String> double_constant_log = new ArrayList<>();
                     String cppDelayExpr = trn.convertDelayLang(context, null, ExpressionLanguage.CPP);
                     GreatSpnFormat.realOrRpar(cppDelayExpr, "", gspn, double_constant_log);

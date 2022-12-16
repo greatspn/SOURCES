@@ -24,6 +24,7 @@ import latex.DummyLatexProvider;
 /**
  *
  * @author Irene
+ * Main to call the function to write the c++ file for general transition (exp and non exp)
  */
 public class CppCommand {
 

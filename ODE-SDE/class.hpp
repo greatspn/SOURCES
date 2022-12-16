@@ -438,9 +438,6 @@ namespace SDE
   solve_type solve;
     //!The heap that handles the future event list of general non exponential transition
   min_heap future_event_list {min_heap()};
-  
-  vector<int> non_exp_trans_indexes;
-
 
 //automaton
 #ifdef AUTOMATON
@@ -477,7 +474,9 @@ public:
     //! It is a pure virtual function which must be implemented.
   virtual void getValTranFire()=0;
   virtual void getValTranFire(double*)=0;
-    //! It checks if there is an enable transition which will fire in the current time step.
+    //!It updates the future event list during the SSA with non exponential general transition using the value of Enabling
+  void updateFutureEventList(int trans, double* ValuePrv);
+  //! It checks if there is an enable transition which will fire in the current time step.
   int fireEnableTrans(  int SetTran[],double& h);
     //int fireEnableTrans(  set<int>&SetTran,double& h);
     //!It generates the brown noise value for all the transition involved  the diffusion process.
@@ -500,20 +499,12 @@ public:
 #endif
 //automaton
 #ifdef CGLPK
-<<<<<<< HEAD
-  void initialize_fluxbalance(std::string flux_name){
-    FBGLPK::LPprob l;
-    vec_fluxb.push_back(l);
-    vec_fluxb[vec_fluxb.size()-1].updateLP(flux_name.c_str()); 
-  }
-=======
       void initialize_fluxbalance(std::string flux_name){
       FBGLPK::LPprob l;
       vec_fluxb.push_back(l);
       vec_fluxb[vec_fluxb.size()-1].updateLP(flux_name.c_str()); 
       };
       inline void setVariability(bool v){Variability=v;};
->>>>>>> ce75593c4df8673901058dad35da8b7a8c452d21
 #endif       
     //!It returns the brown noise value for the input transition.
   inline double getBNoiseTran(int Tran) {return Trans[Tran].BrownNoise;};

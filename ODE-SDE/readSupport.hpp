@@ -18,7 +18,7 @@ namespace CRS {
     Table(){ file_index = class_number; };
     //!empty copy Constructor
     Table(const Table& t){ file_index = t.class_number; ++class_number; };
-    ~Table() {};;
+    ~Table() {};
    //!function that extracts the constant from a table written in the file
     double getConstantFromTable(int row, int column);
   /*! get a constant from a table which first column is time; the row is the position

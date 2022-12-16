@@ -61,7 +61,7 @@ public:
 class min_heap {
 
     size_t N;
-   // std::vector<Event*> heap;
+    std::vector<Event*> heap;
 
     void percolateUp(Event* elem) {
         int i = elem -> getIndexHeap();
@@ -115,7 +115,7 @@ class min_heap {
 
 public:
 
-    std::vector<Event*> heap;
+    //std::vector<Event*> heap;
 
 
         //!Empty constructor

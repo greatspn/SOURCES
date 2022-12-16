@@ -5,9 +5,9 @@
 		if(min<0 || max<=min){
 			throw Exception("The parameters of the Uniform distribution are wrong. They must be different and greater than 0.\n\n");
 		}
-
 		uniform_real_distribution<double> unf_dis(min, max);
 		double value = unf_dis(generator);
+		cout << "valore generato " << value << endl;
 		return value;
 	}
 
