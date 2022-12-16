@@ -305,7 +305,6 @@ inline void SystEqMas::getValTranFire()
 	{
 		EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
        // cout<<" T:"<<NameTrans[t]<<endl;
-		//se la transizione ha una funzione "complessa" associata uso quella per calcolare il rate
 		if (Trans[t].FuncT!=nullptr){
 #ifdef CGLPK
  //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
@@ -315,7 +314,6 @@ inline void SystEqMas::getValTranFire()
 #endif 		
 
 		}
-		//altrimenti uso la massaction; se non è massaction ma è distribuzione, salto tutto questo pezzo
 		else {
 
 			if (Trans[t].InPlaces.size()>0)
@@ -357,6 +355,7 @@ inline void SystEqMas::getValTranFire()
 
 inline void SystEqMas::getValTranFire(double* ValuePrv)
 {
+	cout << "almeno qui dovresti entare cribbio" << endl;
 
 	for(int t=0; t<nTrans; t++)
 	{
@@ -364,10 +363,10 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 
       //cout<<" T:"<<NameTrans[t]<<endl;
 		//If the transition is exponential general
- 		if (Trans[t].FuncT!=nullptr && Trans[t].timing != NON_EXP_GEN)
+ 		if (Trans[t].FuncT!=nullptr)
 		{   
 
-			//cout << "entri dentro il ramo di funct?" << endl;
+			cout << "entri dentro il ramo di funct?" << endl;
 
 #ifdef CGLPK
  //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
@@ -375,6 +374,10 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 #else
 			EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
 #endif 	
+
+			Event *event_distribution = new Event(1.6, 2);
+    		Trans[t].events.push_back(event_distribution);
+    		//future_event_list.pushHeap(event_distribution);
 		}
 
 		else
@@ -511,11 +514,9 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     		double time_event = Trans[trans].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,trans,time);
 #endif 	
 
-    		Event *event_distribution = new Event(time_event, trans);
-    		/*Trans[trans].events.push_back(event_distribution);
-    		future_event_list.pushHeap(event_distribution);
+    
     		//number_events++;
-    		events_size++;	
+    		/*events_size++;	
     	//}
 
 
@@ -3134,14 +3135,13 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 			}
 		}
 	}
-
-	future_event_list.setHeapSize(future_event_list_size);
+	//future_event_list.setHeapSize(500);
 
 	//double ValuePrev[nPlaces] {0.0};
 
 	double ValueInit[nPlaces];
 
-	cout<<endl<<"Seed value: "<<seed<<endl<<endl;
+	cout<<endl<<"Seed valueeeeeeeee: "<<seed<<endl<<endl;
 
 	ofstream out;
 #ifdef CGLPK
@@ -3208,9 +3208,10 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 	while (run<Max_Run){
 
 		if(run%100==0){
-			cout<<"\r\t START RUN..."<<run<<" ";
+			cout<<"\r\t START RUNNNN... "<<run<<" ";
 			cout.flush();
 		}
+		cout << "dopo start tun " << endl;
 
 		//Initialization for each run
 		if(Info){

@@ -135,7 +135,7 @@ namespace CRS {
 		int lower_time_index = std::distance(time.begin(), it_up);
 
 
-		if(column_index > column-1){
+		if(column_index < 0 || column_index > column-1){
 			throw Exception("Index out of range.\n");
 		}
 
@@ -178,7 +178,7 @@ namespace CRS {
 		}
 
 
-		if(column_index > column-1){
+		if(row_index < 0 || column_index < 0 || column_index > column-1){
 			throw Exception("Index out of range");
 		}
 

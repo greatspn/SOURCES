@@ -5,6 +5,7 @@
         <group>
             <file>file:/home/utente/tesiMagistrale/SOURCESC-readFromFile/JavaGUI/Editor/src/editor/domain/grammar/SemanticParser.java</file>
             <file>file:/home/utente/tesiMagistrale/SOURCESC-readFromFile/JavaGUI/Editor/src/editor/cli/CppCommand.java</file>
+            <file>file:/home/utente/tesiMagistrale/SOURCESC-readFromFile/JavaGUI/Editor/src/editor/domain/grammar/ExpressionLanguage.java</file>
             <file>file:/home/utente/tesiMagistrale/SOURCESC-readFromFile/JavaGUI/Editor/src/editor/domain/io/CppFormat.java</file>
         </group>
     </open-files>
