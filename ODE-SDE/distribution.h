@@ -7,7 +7,6 @@
 		}
 		uniform_real_distribution<double> unf_dis(min, max);
 		double value = unf_dis(generator);
-		cout << "valore generato " << value << endl;
 		return value;
 	}
 

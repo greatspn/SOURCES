@@ -355,7 +355,6 @@ inline void SystEqMas::getValTranFire()
 
 inline void SystEqMas::getValTranFire(double* ValuePrv)
 {
-	cout << "almeno qui dovresti entare cribbio" << endl;
 
 	for(int t=0; t<nTrans; t++)
 	{
@@ -363,10 +362,8 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 
       //cout<<" T:"<<NameTrans[t]<<endl;
 		//If the transition is exponential general
- 		if (Trans[t].FuncT!=nullptr)
+ 		if (Trans[t].FuncT!=nullptr && Trans[t].timing != NON_EXP_GEN)
 		{   
-
-			cout << "entri dentro il ramo di funct?" << endl;
 
 #ifdef CGLPK
  //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
@@ -375,9 +372,6 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 			EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
 #endif 	
 
-			Event *event_distribution = new Event(1.6, 2);
-    		Trans[t].events.push_back(event_distribution);
-    		//future_event_list.pushHeap(event_distribution);
 		}
 
 		else
@@ -417,10 +411,8 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 
                     //update of the future event list TO DO mettere in un metodo a parte
                     if(Trans[t].timing == NON_EXP_GEN)
-                    {
+                    {	
                     	updateFutureEventList(t, ValuePrv);
-                    	//cout << "arrivi quasi ad eseguire funct " << endl;
-						//double event_time=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
 
                     }
                 }
@@ -444,6 +436,7 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     		unsigned int size=Trans[t].InPlaces.size();
     		EnabledTransValueCon[t]=0.0;
     		EnabledTransValueDis[t]=0.0;
+    		//if the transition is exponential general
     		if (Trans[t].FuncT!=nullptr && Trans[t].timing != NON_EXP_GEN)
     		{
 #ifdef CGLPK
@@ -456,7 +449,6 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     		else
     		{
 
-            		//if the transition is non exponential general
     			if(Trans[t].timing == NON_EXP_GEN && solve != Solve_SSA){
     				throw Exception("You can't use non exponential transition with other solver than SSA");
     			}
@@ -478,8 +470,13 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
                     	{
                     		EnabledTransValueCon[t]=tmpC;
                     		EnabledTransValueDis[t]=tmpD;
-
                     	}
+                    }
+
+                    //update of the future event list
+                    if(Trans[t].timing == NON_EXP_GEN)
+                    {	
+                    	updateFutureEventList(t, ValuePrv);
 
                     }
 
@@ -499,14 +496,13 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 
     void SystEq::updateFutureEventList(int trans, double* ValuePrv){
 
-
     	int number_events = EnabledTransValueDis[trans] - PreviousEnabledTransValueDis[trans];
-    	int events_size = Trans[trans].events.size();
+    	cout << "lunghezza future_event_list all'inizio " << future_event_list.getLenght() << endl;
+    	cout << number_events << " numero eventi da manipolare " << endl;
+   
+    	while(number_events>0)
+    	{
 
-                    	
-        //I don't care about 0
-    	//while(number_events>0)
-    	//{
 #ifdef CGLPK
  //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
     		double time_event = Trans[trans].FuncT(ValuePrv,vec_fluxb,NumTrans,NumPlaces,NameTrans,Trans,trans,time);
@@ -514,26 +510,36 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     		double time_event = Trans[trans].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,trans,time);
 #endif 	
 
+			Event *event_distribution = new Event(time_event, trans);
+    		Trans[trans].events.push_back(event_distribution);
+    		future_event_list.pushHeap(event_distribution);
+    		number_events--;
+    	}
+
+    	int events_size = Trans[trans].events.size();
+    	//when a transition is chosen an event has been already popped from the list, so I must add 1 because one is already gone
+    	/*int elem_to_remove = number_events;
+    	if(number_events < 0)
+    		elem_to_remove += 1;*/
     
-    		//number_events++;
-    		/*events_size++;	
-    	//}
 
-
-		//remove events if there are less tokens
-    	while(number_events<0 && events_size > 0)
+		//remove events if there are less tokens; when a transition is chosen an event has been already popped from the list, 
+		//so I must stop before because one is already gone
+    	while(number_events < -1 && events_size > 0 && future_event_list.getLenght() > 0)
     	{
-			//cout << "entro nel possibile ciclo di rimozione" << endl;
+    		cout << " ciclo rimozione" << endl;
     		int index = uniform(0, events_size, generator);
     		Event* event_removed = Trans[trans].events[index];
     		Trans[trans].events.erase(Trans[trans].events.begin() + index);
     		future_event_list.removeHeap(event_removed);
-    		number_events--;
+    		number_events++;
     		events_size--;
-    	}*/
+    	}
+
+    	cout << future_event_list.getLenght() << " Lunghezza future event list" << endl;
 
         //update with new/old value for next loop
-    	//PreviousEnabledTransValueDis[trans] = EnabledTransValueDis[trans];
+    	PreviousEnabledTransValueDis[trans] = EnabledTransValueDis[trans];
 
 
     }
@@ -2669,20 +2675,12 @@ int SystEq::getComputeTau(int SetTran[], double& nextTimePoint,double t){
 		double general_tau = -1;
 
 		if(future_event_list.getLenght() > 0) {
-			//cout << "qui dovresti entrare perché la future_event_list esiste" << endl;
 			general_tau = future_event_list.topWeight();
-			//cout << general_tau << " peso del primo elemento della future event list " << endl;
-			//general_tau = t + fel_top;
-			//cout << "questo è general_nextTimePoint " << general_nextTimePoint << endl;
-
 			if(general_tau<tau){
-			//cout << general_tau << " general_tau" << endl;
-			//cout << nextTimePoint << " nextTimePoint" << endl;
 				if(general_tau >= nextTimePoint)
 					return -1;
 				Event* top_list = future_event_list.popHeap();
 				lo = top_list -> getIndexTran(); 
-			//cout << "indice della transizione restituita perché è top della future_event_list" << lo << endl;
 				nextTimePoint = general_tau;
 			}
 		}
@@ -2706,7 +2704,7 @@ int SystEq::getComputeTau(int SetTran[], double& nextTimePoint,double t){
 					hi = mid;
 			}
 		}
-  //  cout<<"trans "<<NameTrans[SetTran[lo+1]]<<" id"<<lo+1<<endl;
+  		cout<<"trans "<<NameTrans[SetTran[lo+1]]<<" id"<<lo+1<<endl;
 		return SetTran[lo+1];
 	}
 	return -1;
@@ -3135,13 +3133,14 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 			}
 		}
 	}
-	//future_event_list.setHeapSize(500);
+	future_event_list.setHeapSize(500);
 
 	//double ValuePrev[nPlaces] {0.0};
 
 	double ValueInit[nPlaces];
 
-	cout<<endl<<"Seed valueeeeeeeee: "<<seed<<endl<<endl;
+	cout<<endl<<"Seed value: "<<seed<<endl<<endl;
+
 
 	ofstream out;
 #ifdef CGLPK
@@ -3208,10 +3207,9 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 	while (run<Max_Run){
 
 		if(run%100==0){
-			cout<<"\r\t START RUNNNN... "<<run<<" ";
+			cout<<"\r\t START RUN... "<<run<<" ";
 			cout.flush();
 		}
-		cout << "dopo start tun " << endl;
 
 		//Initialization for each run
 		if(Info){

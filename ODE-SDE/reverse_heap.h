@@ -84,7 +84,6 @@ class min_heap {
             int right = left + 1;
             if (right < (int)heap.size() && heap[right]-> getTime() < heap[left]-> getTime() && heap[right]-> getTime() < heap[i]-> getTime())
             {
-                cout << "entro nel primo caso" << endl;
                 // Move right leaf up
                 heap[i]->setIndexHeap(right);
                 heap[right]-> setIndexHeap(i);
