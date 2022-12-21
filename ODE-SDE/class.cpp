@@ -778,7 +778,7 @@ void  SystEq::SolveHODEEuler(double h,double perc1,double perc2,double Max_Time,
 	}
 #endif
 
-cout.precision(12);
+cout.precision(16);
 cout<<endl<<"Seed value: "<<seed<<endl<<endl;
 bool SIM=false;
 if (h==MAXSTEP)
@@ -1024,7 +1024,7 @@ cout<<endl;
 
 	if ((Info)){
 		ofstream out(string(argv)+".trace",ofstream::out);
-		out.precision(12);
+		out.precision(16);
 		if(!out){
 			throw Exception("*****Error opening output file *****\n\n");
 		}
@@ -1053,7 +1053,7 @@ cout<<endl;
 
 
 
-	cout.precision(12);
+	cout.precision(16);
 	cout<<"\nMean at time "<<time<<":\n";
 	if(time){
 		for (int i=0;i<nPlaces;i++)//save initial state
@@ -1078,7 +1078,7 @@ cout<<endl;
 	if(!out){
 		throw Exception("*****Error opening output file *****\n\n");
 	}
-	out.precision(12);
+	out.precision(16);
 	out<<double(tot_accepted_traces)/double(Max_Run)<<"\t"<<l<<"\t"<<u<<"\t"<<seed<<endl;
 	out.close();
 	if (automaton.timers_num()>0){
@@ -1087,7 +1087,7 @@ cout<<endl;
 		if(!out){
 			throw Exception("*****Error opening output file *****\n\n");
 		}
-		out.precision(12);
+		out.precision(16);
 		auto num_timers=automaton.timers_num();
 		for (auto j=0;j<tot_accepted_traces;++j){
 			for (auto i=0;i<num_timers;++i){
@@ -1142,7 +1142,7 @@ for (int i=0;i<automaton.timers_num();i++)
 }
 #endif
 
-cout.precision(12);
+cout.precision(16);
 cout<<endl<<"Seed value: "<<seed<<endl<<endl;
 
 int sizeMT=Max_Time/Print_Step+2;
@@ -1437,7 +1437,7 @@ cout<<endl;
 
 	if ((Info)){
 		ofstream out(string(argv)+".trace",ofstream::out);
-		out.precision(12);
+		out.precision(16);
 		if(!out){
 			throw Exception("*****Error opening output file *****\n\n");
 		}
@@ -1494,7 +1494,7 @@ cout<<endl;
 	if(!out){
 		throw Exception("*****Error opening output file *****\n\n");
 	}
-	out.precision(12);
+	out.precision(16);
 	out<<double(tot_accepted_traces)/double(Max_Run)<<"\t"<<l<<"\t"<<u<<"\t"<<seed<<endl;
 	out.close();
 
@@ -1504,7 +1504,7 @@ cout<<endl;
 		if(!out){
 			throw Exception("*****Error opening output file *****\n\n");
 		}
-		out.precision(12);
+		out.precision(16);
 		auto num_timers=automaton.timers_num();
 		for (auto j=0;j<tot_accepted_traces;++j){
 			for (auto i=0;i<num_timers;++i){
@@ -1652,7 +1652,7 @@ void  SystEq::SolveODEEuler(double h,double perc1,double perc2,double Max_Time,b
 	if (Info)
 	{
 		out.open(string(argv)+".trace",ofstream::out);
-		out.precision(12);
+		out.precision(16);
 		if(!out)
 		{
 			throw Exception("*****Error opening output file *****\n\n");
@@ -1848,7 +1848,7 @@ void  SystEq::SolveODE45(double h, double perc1,double Max_Time,bool Info,double
 	if (Info)
 	{
 		out.open(string(argv)+".trace",ofstream::out);
-		out.precision(12);
+		out.precision(16);
 		if(!out)
 		{
 			throw Exception("*****Error opening output file *****\n\n");
@@ -2108,7 +2108,7 @@ void  SystEq::SolveODERKF(double h, double perc1,double Max_Time,bool Info,doubl
 	if (Info)
 	{
 		out.open(string(argv)+".trace",ofstream::out);
-		out.precision(12);
+		out.precision(16);
 		if(!out)
 		{
 			throw Exception("*****Error opening output file *****\n\n");
@@ -2409,7 +2409,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 	if (Info)
 	{
 		out.open(string(argv)+".trace",ofstream::out);
-		out.precision(12);
+		out.precision(16);
 		if(!out)
 		{
 			throw Exception("*****Error opening output file storing TRACE *****\n\n");
@@ -2420,7 +2420,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 #ifdef CGLPK
 		for (unsigned int i=0;i<vec_fluxb.size();++i){
 			outflux[i].open(string(argv)+"-"+to_string(i)+".flux",ofstream::out);
-			outflux[i].precision(12);
+			outflux[i].precision(16);
 			if(!outflux[i]){
 				throw Exception("*****Error opening output file storing FLUXES*****\n\n");
 			}
@@ -2827,7 +2827,7 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
     if (Info)
 	{
 		out.open(string(argv)+".trace",ofstream::out);
-		out.precision(12);
+		out.precision(16);
 		if(!out)
 		{
 			throw Exception("*****Error opening output file *****\n\n");
@@ -3022,7 +3022,7 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 	if (Info)
 	{
 		out.open(string(argv)+".trace",ofstream::out);
-		out.precision(12);
+		out.precision(16);
 		if(!out){
 			throw Exception("*****Error opening output file***\n\n");
 		}
@@ -3031,7 +3031,7 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 #ifdef CGLPK
 		for (unsigned int i=0;i<vec_fluxb.size();++i){
 			outflux[i].open(string(argv)+to_string(i)+".flux",ofstream::out);
-			outflux[i].precision(12);
+			outflux[i].precision(16);
 			if(!outflux[i]){
 				throw Exception("*****Error opening output file storing FLUXES*****\n\n");
 			}
@@ -3203,7 +3203,7 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 	if (Info)
 	{
 		out.open(string(argv)+".trace",ofstream::out);
-		out.precision(12);
+		out.precision(16);
 		if(!out){
 			throw Exception("*****Error opening output file***\n\n");
 		}
@@ -3211,7 +3211,7 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 #ifdef CGLPK
 		for (unsigned int i=0;i<vec_fluxb.size();++i){
 			outflux[i].open(string(argv)+to_string(i)+".flux",ofstream::out);
-			outflux[i].precision(12);
+			outflux[i].precision(16);
 			if(!outflux[i]){
 				throw Exception("*****Error opening output file storing FLUXES*****\n\n");
 			}
@@ -3458,7 +3458,7 @@ void  SystEq::HeuristicStep(double h,double perc1,double perc2,double Max_Time,b
 	if (Info)
 	{
 		out.open(string(argv)+".trace",ofstream::out);
-		out.precision(12);
+		out.precision(16);
 		if(!out)
 		{
 			throw Exception("*****Error opening output file *****\n\n");
@@ -3708,7 +3708,7 @@ void SystEq::PrintStatistic(char *argv){
 
 		map<int,int>::iterator it=Freq.begin();
 
-		cout.precision(12);
+		cout.precision(16);
 		cout<<"Place "<<NamePlaces[i]<<endl;
 		while(it!=Freq.end())
 		{
@@ -3720,7 +3720,7 @@ void SystEq::PrintStatistic(char *argv){
 #endif
 
 	ofstream out(string(argv)+".mtx",ofstream::out);
-	out.precision(12);
+	out.precision(16);
 	out<<NamePlaces[0];
 	for (int i=1;i<nPlaces;i++)
 		out<<" "<<NamePlaces[i];
