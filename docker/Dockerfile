@@ -36,17 +36,16 @@ RUN git clone https://github.com/ogdf/ogdf ;\
     sudo make install
 
 # Install lpsolve (latest)
-RUN git clone https://github.com/IreneTerrone/lpsolve_5.5.2.11.git lp_tmp ;\
-    cd lp_tmp ;\
+RUN wget https://datacloud.di.unito.it/index.php/s/JFsJwyHfJ9FNWZJ/download/lp_solve_5.5.2.11_source.tar.gz ;\
     wget https://raw.githubusercontent.com/greatspn/SOURCES/master/contrib/build_lpsolve.sh ;\
     tar xzf lp_solve_5.5.2.11_source.tar.gz ;\
-    sh ./build_lpsolve.sh
+    sh ./build_lpsolve.sh 
 
 
 # Install GreatSPN
 RUN mkdir ~/GreatSPN ;\
     cd ~/GreatSPN ;\
-    git clone https://github.com/IreneTerrone/SOURCESC-readFromFile.git SOURCES ;\
+    git clone https://github.com/greatspn/SOURCES.git SOURCES ;\
     cd ~/GreatSPN/SOURCES ;\
 	  git pull ;\
     make ${MAKE_ARGS} -k derived_objects ;\

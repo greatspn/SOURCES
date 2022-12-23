@@ -994,10 +994,8 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case LATEX:
             case GREATSPN:
             case PNPRO:
-                return format(true, intConstId);
             case CPP:
                 return format(true, intConstId);
-
             default:
                 throw new UnsupportedOperationException();
         }
@@ -1155,8 +1153,6 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case LATEX:
             case GREATSPN:
             case PNPRO:
-                return format(true, ctx.REAL().getText());
-            //sbaglio o bisogna portare tutto a reale?
             case CPP:
                 return format(true, ctx.REAL().getText());
             default:
@@ -1176,7 +1172,6 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case GREATSPN:
             case PNPRO:
             case NETLOGO:
-                return format(true, realConstId);
             case CPP:
                 return format(true, realConstId);
             default:
@@ -1195,7 +1190,6 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case LATEX:
             case GREATSPN:
             case PNPRO:
-                return format(true, realVarId);
             case CPP:
                 return format(true, realVarId);
             default:

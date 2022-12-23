@@ -310,7 +310,7 @@ inline void SystEqMas::getValTranFire()
  //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
 			EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,vec_fluxb,NumTrans,NumPlaces,NameTrans,Trans,t,time);
 #else
-			EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
+   			EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,t,time);
 #endif 		
 
 		}
@@ -868,12 +868,11 @@ return -1;
     	}
 #endif
 
-    	cout.precision(12);
-    	cout<<endl<<"Seed value: "<<seed<<endl<<endl;
-    	bool SIM=false;
-    	if (h==MAXSTEP)
-    		SIM=true;
-
+cout.precision(16);
+cout<<endl<<"Seed value: "<<seed<<endl<<endl;
+bool SIM=false;
+if (h==MAXSTEP)
+	SIM=true;
     	int sizeMT=Max_Time/Print_Step+2;
     	double** MeanTrace=nullptr;
 if (Info){ //to Initialize the matrix storing trace values
@@ -1112,19 +1111,13 @@ if ((accepted_trace)&&(automaton.is_current_node_final_node())){
 	run++;
 }
 
-if ((Info)){
-	ofstream out(string(argv)+".trace",ofstream::out);
-	out.precision(12);
-	if(!out){
-		throw Exception("*****Error opening output file *****\n\n");
-	}
-	out<<"Time";
-	for (int j=0;j<nPlaces;j++){
-		out<<" "<<NamePlaces[j];
-	}
-	out<<endl;
-	for (int i=0;i<sizeMT&&(Print_Step*i<=Max_Time);i++){
-		out<<Print_Step*i+itime;
+	if ((Info)){
+		ofstream out(string(argv)+".trace",ofstream::out);
+		out.precision(16);
+		if(!out){
+			throw Exception("*****Error opening output file *****\n\n");
+		}
+		out<<"Time";
 		for (int j=0;j<nPlaces;j++){
 #ifdef AUTOMATON
 			out<<" "<<MeanTrace[i][j]/tot_accepted_traces;
@@ -1142,10 +1135,9 @@ if ((Info)){
 }
 
 
-
-cout.precision(12);
-cout<<"\nMean at time "<<time<<":\n";
-if(time){
+	cout.precision(16);
+	cout<<"\nMean at time "<<time<<":\n";
+	if(time){
 		for (int i=0;i<nPlaces;i++)//save initial state
 		{
 #ifdef AUTOMATON
@@ -1168,7 +1160,7 @@ if(time){
 	if(!out){
 		throw Exception("*****Error opening output file *****\n\n");
 	}
-	out.precision(12);
+	out.precision(16);
 	out<<double(tot_accepted_traces)/double(Max_Run)<<"\t"<<l<<"\t"<<u<<"\t"<<seed<<endl;
 	out.close();
 	if (automaton.timers_num()>0){
@@ -1177,7 +1169,7 @@ if(time){
 		if(!out){
 			throw Exception("*****Error opening output file *****\n\n");
 		}
-		out.precision(12);
+		out.precision(16);
 		auto num_timers=automaton.timers_num();
 		for (auto j=0;j<tot_accepted_traces;++j){
 			for (auto i=0;i<num_timers;++i){
@@ -1232,8 +1224,8 @@ void  SystEq::SolveSDEEuler(double h,double perc1,double perc2,double Max_Time,i
 	}
 #endif
 
-	cout.precision(12);
-	cout<<endl<<"Seed value: "<<seed<<endl<<endl;
+cout.precision(16);
+cout<<endl<<"Seed value: "<<seed<<endl<<endl;
 
 	int sizeMT=Max_Time/Print_Step+2;
 	double** MeanTrace=nullptr;
@@ -1525,12 +1517,12 @@ if ((accepted_trace)&&(automaton.is_current_node_final_node())){
 	run++;
 }
 
-if ((Info)){
-	ofstream out(string(argv)+".trace",ofstream::out);
-	out.precision(12);
-	if(!out){
-		throw Exception("*****Error opening output file *****\n\n");
-	}
+	if ((Info)){
+		ofstream out(string(argv)+".trace",ofstream::out);
+		out.precision(16);
+		if(!out){
+			throw Exception("*****Error opening output file *****\n\n");
+		}
 
 		//Header file
 	out<<"Time";
@@ -1584,7 +1576,7 @@ if(time)
 	if(!out){
 		throw Exception("*****Error opening output file *****\n\n");
 	}
-	out.precision(12);
+	out.precision(16);
 	out<<double(tot_accepted_traces)/double(Max_Run)<<"\t"<<l<<"\t"<<u<<"\t"<<seed<<endl;
 	out.close();
 
@@ -1594,7 +1586,7 @@ if(time)
 		if(!out){
 			throw Exception("*****Error opening output file *****\n\n");
 		}
-		out.precision(12);
+		out.precision(16);
 		auto num_timers=automaton.timers_num();
 		for (auto j=0;j<tot_accepted_traces;++j){
 			for (auto i=0;i<num_timers;++i){
@@ -1742,7 +1734,7 @@ void  SystEq::SolveODEEuler(double h,double perc1,double perc2,double Max_Time,b
 	if (Info)
 	{
 		out.open(string(argv)+".trace",ofstream::out);
-		out.precision(12);
+		out.precision(16);
 		if(!out)
 		{
 			throw Exception("*****Error opening output file *****\n\n");
@@ -1938,7 +1930,7 @@ void  SystEq::SolveODE45(double h, double perc1,double Max_Time,bool Info,double
 	if (Info)
 	{
 		out.open(string(argv)+".trace",ofstream::out);
-		out.precision(12);
+		out.precision(16);
 		if(!out)
 		{
 			throw Exception("*****Error opening output file *****\n\n");
@@ -2198,7 +2190,7 @@ void  SystEq::SolveODERKF(double h, double perc1,double Max_Time,bool Info,doubl
 	if (Info)
 	{
 		out.open(string(argv)+".trace",ofstream::out);
-		out.precision(12);
+		out.precision(16);
 		if(!out)
 		{
 			throw Exception("*****Error opening output file *****\n\n");
@@ -2500,7 +2492,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 	if (Info)
 	{
 		out.open(string(argv)+".trace",ofstream::out);
-		out.precision(12);
+		out.precision(16);
 		if(!out)
 		{
 			throw Exception("*****Error opening output file storing TRACE *****\n\n");
@@ -2511,7 +2503,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 #ifdef CGLPK
 		for (unsigned int i=0;i<vec_fluxb.size();++i){
 			outflux[i].open(string(argv)+"-"+to_string(i)+".flux",ofstream::out);
-			outflux[i].precision(12);
+			outflux[i].precision(16);
 			if(!outflux[i]){
 				throw Exception("*****Error opening output file storing FLUXES*****\n\n");
 			}
@@ -2578,10 +2570,18 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 			
 
 #ifdef CGLPK
+<<<<<<< HEAD
 			getValTranFire(y+1);
 			for (unsigned int i=0;i<vec_fluxb.size();++i){
 				outflux[i]<<endl<<tout<<" ";
 				vec_fluxb[i].printObject(outflux[i]);
+=======
+
+            getValTranFire(y+1);
+        	for (unsigned int i=0;i<vec_fluxb.size();++i){
+        		outflux[i]<<endl<<tout<<" ";
+        		vec_fluxb[i].printObject(outflux[i]);
+>>>>>>> master
 				vec_fluxb[i].printValue(outflux[i]);
 				if (Variability){
 					vec_fluxb[i].printLowerMax(outflux[i]);	
@@ -2934,6 +2934,7 @@ double SystEq::getComputeTauGillespie(int SetTran[],double t, double hstep){
 
     	cout<<endl<<"Seed value: "<<seed<<endl<<endl;
 
+<<<<<<< HEAD
     	ofstream out;
     	if (Info)
     	{
@@ -2942,6 +2943,16 @@ double SystEq::getComputeTauGillespie(int SetTran[],double t, double hstep){
     		if(!out)
     		{
     			throw Exception("*****Error opening output file *****\n\n");
+=======
+    ofstream out;
+    if (Info)
+	{
+		out.open(string(argv)+".trace",ofstream::out);
+		out.precision(16);
+		if(!out)
+		{
+			throw Exception("*****Error opening output file *****\n\n");
+>>>>>>> master
 
     		}
     		out<<"Time";
@@ -3149,7 +3160,7 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 	if (Info)
 	{
 		out.open(string(argv)+".trace",ofstream::out);
-		out.precision(12);
+		out.precision(16);
 		if(!out){
 			throw Exception("*****Error opening output file***\n\n");
 		}
@@ -3158,7 +3169,7 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 #ifdef CGLPK
 		for (unsigned int i=0;i<vec_fluxb.size();++i){
 			outflux[i].open(string(argv)+to_string(i)+".flux",ofstream::out);
-			outflux[i].precision(12);
+			outflux[i].precision(16);
 			if(!outflux[i]){
 				throw Exception("*****Error opening output file storing FLUXES*****\n\n");
 			}
@@ -3246,6 +3257,7 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 
 		while(time<=Max_Time){
             //time=nextTimePoint;
+<<<<<<< HEAD
       //here the future event list is updated
 			getValTranFire(Value);
       //this returns the correct transition to fire
@@ -3263,6 +3275,22 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 			time=nextTimePoint;
 			if(tout==nextTimePoint){
 				if(Info){
+=======
+            getValTranFire(Value);
+            int Tran=getComputeTau(SetTran,nextTimePoint,time);
+
+            //cout<<Tran<<" "<<endl;
+            if (Tran!=-1){
+                int size=(Trans[Tran].Places).size();
+                for (int i=0;i<size;++i){
+                    Value[(Trans[Tran].Places[i]).Id]+=(Trans[Tran].Places[i]).Card;
+                }
+            }
+
+            time=nextTimePoint;
+            if(tout==nextTimePoint){
+					if(Info){
+>>>>>>> master
 
 					out<<nextTimePoint;
 					for(int j=0; j<nPlaces;j++){
@@ -3337,7 +3365,7 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 	if (Info)
 	{
 		out.open(string(argv)+".trace",ofstream::out);
-		out.precision(12);
+		out.precision(16);
 		if(!out){
 			throw Exception("*****Error opening output file***\n\n");
 		}
@@ -3345,7 +3373,7 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 #ifdef CGLPK
 		for (unsigned int i=0;i<vec_fluxb.size();++i){
 			outflux[i].open(string(argv)+to_string(i)+".flux",ofstream::out);
-			outflux[i].precision(12);
+			outflux[i].precision(16);
 			if(!outflux[i]){
 				throw Exception("*****Error opening output file storing FLUXES*****\n\n");
 			}
@@ -3592,7 +3620,7 @@ void  SystEq::HeuristicStep(double h,double perc1,double perc2,double Max_Time,b
 	if (Info)
 	{
 		out.open(string(argv)+".trace",ofstream::out);
-		out.precision(12);
+		out.precision(16);
 		if(!out)
 		{
 			throw Exception("*****Error opening output file *****\n\n");
@@ -3844,7 +3872,7 @@ void SystEq::PrintStatistic(char *argv){
 
 		map<int,int>::iterator it=Freq.begin();
 
-		cout.precision(12);
+		cout.precision(16);
 		cout<<"Place "<<NamePlaces[i]<<endl;
 		while(it!=Freq.end())
 		{
@@ -3856,7 +3884,7 @@ void SystEq::PrintStatistic(char *argv){
 #endif
 
 	ofstream out(string(argv)+".mtx",ofstream::out);
-	out.precision(12);
+	out.precision(16);
 	out<<NamePlaces[0];
 	for (int i=1;i<nPlaces;i++)
 		out<<" "<<NamePlaces[i];
