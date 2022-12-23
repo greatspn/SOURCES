@@ -184,7 +184,7 @@ updateLP(FileProb,1,typeOBJ,FluxName);
     out_var.open(FileOutVar, std::ofstream::out);
     if (!out_var)
         throw Exception(string("FLUX BALANCE: error opening  output file:")+std::string(FileOutVar));
-    out_var.precision(12);
+    out_var.precision(16);
     }
  catch (exception& e){
     cout << "\n Exception: " << e.what() << endl;
