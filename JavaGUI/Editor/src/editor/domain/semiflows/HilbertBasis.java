@@ -4,6 +4,8 @@
  */
 package editor.domain.semiflows;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  *
@@ -223,6 +225,8 @@ public class HilbertBasis {
     
     public static void main(String[] args) {
         int[][] matA1 = {{-2}, {3}};
+        int[][] solA1 = { {3, 2} };
+        
         int[][] mat33 = {
             { 1,  1,  0,  1,  1,  0,  1},
             { 1,  1,  1,  0,  1,  1,  1},
@@ -234,6 +238,14 @@ public class HilbertBasis {
             { 0, -1,  0, -1,  0,  0,  0},
             { 0, -1,  0,  0, -1, -1,  0},
         };
+        int[][] sol33 = {
+            {0, 2, 1, 2, 1, 0, 1, 0, 2},
+            {1, 0, 2, 2, 1, 0, 0, 2, 1},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 2, 0, 0, 1, 2, 2, 0, 1},
+            {2, 0, 1, 0, 1, 2, 1, 2, 0},            
+        };
+        
         int[][] mat44 = {
             { 1,  1,  1,  0,  1,  1,  1,  0,  1},
             { 1,  1,  1,  1,  0,  1,  1,  1,  1},
@@ -252,6 +264,29 @@ public class HilbertBasis {
             { 0,  0, -1,  0,  0, -1,  0,  0,  0},
             { 0,  0, -1,  0,  0,  0, -1, -1,  0},
         };
+        int[][] sol44 = {
+            {0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0},
+            {0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0},
+            {0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0},
+            {0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1},
+            {0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0},
+            {0, 0, 1, 1, 0, 1, 1, 0, 2, 0, 0, 0, 0, 1, 0, 1},
+            {0, 0, 2, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1},
+            {0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0},
+            {0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1},
+            {0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0},
+            {0, 1, 0, 1, 2, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1},
+            {0, 2, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0},
+            {1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0},
+            {1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 2, 0, 0},
+            {1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 2, 0},
+            {1, 0, 1, 0, 0, 0, 0, 2, 0, 1, 1, 0, 1, 1, 0, 0},
+            {1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1},
+            {1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 2, 1, 0, 1, 0},
+            {1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1},
+        };
+        
         int[][] mat55 = { // very hard, takes too much time
             { 1,  1,  1,  1,  0,  1,  1,  1,  1,  0,  1 },
             { 1,  1,  1,  1,  1,  0,  1,  1,  1,  1,  1 },
@@ -279,11 +314,38 @@ public class HilbertBasis {
             { 0,  0,  0, -1,  0,  0,  0, -1,  0,  0,  0 },
             { 0,  0,  0, -1,  0,  0,  0,  0, -1, -1,  0 },
         };
-        HilbertBasis H = new HilbertBasis(mat44);
+                        
+        testHilbert(matA1, solA1);
+        testHilbert(mat33, sol33);
+        testHilbert(mat44, sol44);
+    }
+    
+    private static void testHilbert(int[][] matIn, int[][] matRes) {
+        HilbertBasis H = new HilbertBasis(matIn);  
 //        H.verbose = true;
         System.out.println(H);
 //        H.setKeepRpRm();
         H.HilbertFM();
         System.out.println(H);
+        
+        sortArrays(matRes);
+        int[][] sol = new int[H.numRows()][];
+        for (int i=0; i<sol.length; i++)
+            sol[i] = H.getBasisVec(i);
+        sortArrays(sol);
+        
+        boolean equal = true;
+        for (int i=0; i<sol.length; i++)
+            equal = equal && Arrays.compare(sol[i], matRes[i])==0;
+        System.out.println("Check solution: "+equal);
+    }
+    
+    private static void sortArrays(int[][] mat) {
+        Comparator<int[]> comp = new Comparator<int[]>() {
+            @Override public int compare(int[] o1, int[] o2) {
+                return Arrays.compare(o1, o2);
+            }
+        };
+        Arrays.sort(mat, comp);
     }
 }
