@@ -2487,6 +2487,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 			
         	
 #ifdef CGLPK
+
             getValTranFire(y+1);
         	for (unsigned int i=0;i<vec_fluxb.size();++i){
         		outflux[i]<<endl<<tout<<" ";
@@ -2581,6 +2582,7 @@ if (SetTran[0]!=0)
  	if (tau>=nextTimePoint)
         return -1;
     nextTimePoint=tau;
+
     std::uniform_real_distribution<> UnfRealD(0.0,1.0);
     double val=UnfRealD(generator)*sumRate;
     //int trans=1;
@@ -2999,8 +3001,6 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 /* DESCRIPTION : It solves the ODE system using  SSA method*/
 /**************************************************************/
 void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max_Run,bool Info,double Print_Step,char *argv){
-
-
 
 
 	this-> Max_Run=Max_Run;

@@ -20,7 +20,7 @@ AR := ar rcs
 
 ### The following variables can be overridden 
 ### by defining them as environment variables.
-# CFLAGS ?= -g -DGLIBCXX_DEBUG
+CFLAGS ?= -g -DGLIBCXX_DEBUG
 CFLAGS ?= -O2
 CPPFLAGS ?= $(CFLAGS)
 LDFLAGS ?= -O2
@@ -1369,7 +1369,9 @@ INSTALLEDSOURCES := 	ODE-SDE/class.hpp \
 			ODE-SDE/GLPKsolve.hpp \
 			ODE-SDE/GLPKsolve.cpp \
 			ODE-SDE/general.h \
-			ODE-SDE/general.cpp 
+			ODE-SDE/general.cpp \
+			ODE-SDE/readSupport.hpp \
+			ODE-SDE/readSupport.cpp
 			
 
 
@@ -2249,9 +2251,11 @@ alphaFactory_LD := $(LDPP)
 
 
 # ifeq ($(INCLUDE_ELVIO_CPP_SOLVER),1)
+
 ifdef HAS_LP_SOLVE_LIB
 TARGETS += DSPN-Tool alphaFactory
 endif
+
 ifndef HAS_VBOX_MARK
 # TARGETS += DSPN-Tool-Debug
 endif

@@ -27,26 +27,27 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-/** The semantic parser of the editor.
- * This semantic parser is used to check the correctness of the expressions
- * during the editing phase. Expressions are checked for type correctness,
- * and in some case they could provide back some parsing informations to the 
- * caller (the payload). In addition, the LaTeX form of the expression is 
- * prepared, that is used by the editor to show the formula.
+/**
+ * The semantic parser of the editor. This semantic parser is used to check the
+ * correctness of the expressions during the editing phase. Expressions are
+ * checked for type correctness, and in some case they could provide back some
+ * parsing informations to the caller (the payload). In addition, the LaTeX form
+ * of the expression is prepared, that is used by the editor to show the
+ * formula.
  *
  * @author elvio
  */
 public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
-    
+
     // The context in which formulas are checked and parsed.
     private ParserContext context;
-    
+
     // The parse flags
     private final int parseFlags;
 
     // The language in which the resulting FormattedFormula will be produced
     protected ExpressionLanguage lang = ExpressionLanguage.LATEX;
-    
+
     // Global flag that enables strict evaluation of color term expressions.
     // These are disabled just for the Model checking context, where some 
     // PNML file has loose color expressions.
@@ -55,17 +56,16 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     //   - next/prev color using ++/-- on enumerative color classess.
     public static boolean strictColorExpressionChecks = true;
 
-
     public SemanticParser(ParserContext context, int parseFlags) {
         this.context = context;
         this.parseFlags = parseFlags;
     }
-    
+
     // Concatenate two or more FormattedFormula's into a new one
     private FormattedFormula format(boolean isSimpleTerm, Object... args) {
         return formatPayload(isSimpleTerm, null, args);
     }
-    
+
     private FormattedFormula formatPayload(boolean isSimpleTerm, FormulaPayload payload, Object... args) {
         StringBuilder sb = new StringBuilder();
         for (Object arg : args) {
@@ -73,62 +73,71 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         }
         return new FormattedFormula(lang, isSimpleTerm, sb.toString(), payload);
     }
-    
+
     private String getObjectFormula(Object obj) {
-        if (obj instanceof FormattedFormula)
-            return ((FormattedFormula)obj).getFormula();
+        if (obj instanceof FormattedFormula) {
+            return ((FormattedFormula) obj).getFormula();
+        }
         if (obj instanceof Node) {
             switch (lang) {
                 case LATEX:
-                    return ((Node)obj).getVisualizedUniqueName();
+                    return ((Node) obj).getVisualizedUniqueName();
                 case PNPRO:
                 case GREATSPN:
                 case APNN:
-                    return ((Node)obj).getUniqueName();
+                    return ((Node) obj).getUniqueName();
                 case GRML:
-                    if (obj instanceof ColorVar)
-                        return "<attribute name=\"name\">"+((ColorVar) obj).getUniqueName()+"</attribute>";
+                    if (obj instanceof ColorVar) {
+                        return "<attribute name=\"name\">" + ((ColorVar) obj).getUniqueName() + "</attribute>";
+                    }
                     throw new UnsupportedOperationException("Cannot convert entity in GRML format.");
                 case PNML:
-                    if (obj instanceof ColorVar)
-                        return "<variable refvariable=\""+((ColorVar) obj).getUniqueName()+"\"/>";
+                    if (obj instanceof ColorVar) {
+                        return "<variable refvariable=\"" + ((ColorVar) obj).getUniqueName() + "\"/>";
+                    }
                     throw new UnsupportedOperationException("Cannot convert entity in PNML format.");
                 case NETLOGO:
-                    if (obj instanceof ColorVar)
-                        return "($"+((ColorVar) obj).getUniqueName()+"$)";
-                    return ((Node)obj).getUniqueName();
-//                    throw new UnsupportedOperationException("Cannot convert entity in PNML format.");                    
+                    if (obj instanceof ColorVar) {
+                        return "($" + ((ColorVar) obj).getUniqueName() + "$)";
+                    }
+                    return ((Node) obj).getUniqueName();
+//                    throw new UnsupportedOperationException("Cannot convert entity in PNML format."); 
+                case CPP:
+                    return ((Node) obj).getUniqueName();
                 default:
                     throw new UnsupportedOperationException("getObjectFormula");
             }
         }
-        if (obj instanceof ParserRuleContext)
-            return visit((ParserRuleContext)obj).getFormula();
-        if (obj == null)
+        if (obj instanceof ParserRuleContext) {
+            return visit((ParserRuleContext) obj).getFormula();
+        }
+        if (obj == null) {
             return "(null)";
+        }
         return obj.toString();
     }
 
     private void requireLatexLanguage() {
-        if (lang != ExpressionLanguage.LATEX)
+        if (lang != ExpressionLanguage.LATEX) {
             throw new UnsupportedOperationException("Parse rule is supported only in LaTeX mode.");
+        }
     }
 
     //==========================================================================
     //  Unary and binary functions:
     //==========================================================================
-    
     static enum OperatorPos {
-        PREFIX,                         //  OP  <term>
-        PREFIX_SIMPLETERM,              //  OP  <simpleterm>  
-        POSTFIX,                        //  <term>  OP
-        POSTFIX_SIMPLETERM,             //  <simpleterm>  OP
-        FUNCTION,                       //  OP  <term>  CLOSE   or   START <term> BETWEEN <term> END
+        PREFIX, //  OP  <term>
+        PREFIX_SIMPLETERM, //  OP  <simpleterm>  
+        POSTFIX, //  <term>  OP
+        POSTFIX_SIMPLETERM, //  <simpleterm>  OP
+        FUNCTION, //  OP  <term>  CLOSE   or   START <term> BETWEEN <term> END
         // binary operator only
         FUNCTION_FIRST_SIMPLETERM       //  START <simpleterm> BETWEEN <term> END
     }
-    
+
     static class UnaryFunct {
+
         public UnaryFunct(boolean isSimpleTerm, int opCode, String opName, OperatorPos pos) {
             this.isSimpleTerm = isSimpleTerm;
             this.opCode = opCode;
@@ -144,10 +153,10 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             this.opClose = opClose;
             this.pos = OperatorPos.FUNCTION;
         }
-        
+
         boolean isSimpleTerm;
         int opCode;
-        String  opName, opClose;
+        String opName, opClose;
         OperatorPos pos;
     };
     static final UnaryFunct latexUnaryFunctions[] = {
@@ -173,17 +182,23 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new UnaryFunct(true, ExprLangParser.MULTISET_SUBCLASS, "\\mathrm{Subclass}[", " ]"),
         new UnaryFunct(true, ExprLangParser.COLOR_ORDINAL, "\\mathrm{CN}[", "]"),
         // General event PDF operator
-        new UnaryFunct(true, ExprLangParser.DIRAC_DELTA_FN, "\\mathrm{\\mathbf{I}}[", "]"),
-    };
+        new UnaryFunct(true, ExprLangParser.DIRAC_DELTA_FN, "\\mathrm{\\mathbf{I}}[", "]"),};
     static final UnaryFunct greatspnUnaryFunctions[] = {
         new UnaryFunct(true, ExprLangParser.OP_PAREN, "(", ")"),
         new UnaryFunct(false, ExprLangParser.SUB, "-", OperatorPos.PREFIX_SIMPLETERM),
         new UnaryFunct(false, ExprLangParser.POSTINCR, "!", OperatorPos.PREFIX_SIMPLETERM),
         new UnaryFunct(false, ExprLangParser.POSTDECR, "^", OperatorPos.PREFIX_SIMPLETERM),
         new UnaryFunct(true, ExprLangParser.MULTISET_CARD, "", ""),
+        new UnaryFunct(true, ExprLangParser.EXP_FN, "e^", OperatorPos.PREFIX_SIMPLETERM),
+        new UnaryFunct(false, ExprLangParser.NOT, "! ", OperatorPos.PREFIX_SIMPLETERM),
+        new UnaryFunct(false, ExprLangParser.LOG_FN, "log(", ")"),
+        new UnaryFunct(true, ExprLangParser.SQRT_FN, "sqrt(", ")"),
+        new UnaryFunct(true, ExprLangParser.ROUND_FN, "round(", ")"),
+        new UnaryFunct(true, ExprLangParser.CEIL_FN, "ceil(", " )"),
+        new UnaryFunct(true, ExprLangParser.FLOOR_FN, "floor(", ")"),
+        new UnaryFunct(true, ExprLangParser.ABS_FN, "abs(", " )"),
         // General event PDF operator
-        new UnaryFunct(true, ExprLangParser.DIRAC_DELTA_FN, "DiracDelta[", "]"),
-    };
+        new UnaryFunct(true, ExprLangParser.DIRAC_DELTA_FN, "DiracDelta[", "]"),};
     static final UnaryFunct pnproUnaryFunctions[] = {
         new UnaryFunct(true, ExprLangParser.OP_PAREN, "(", ")"),
         new UnaryFunct(false, ExprLangParser.SUB, "-", OperatorPos.PREFIX_SIMPLETERM),
@@ -207,13 +222,12 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new UnaryFunct(true, ExprLangParser.MULTISET_SUBCLASS, "Subclass[", "]"),
         new UnaryFunct(true, ExprLangParser.COLOR_ORDINAL, "CN[", "]"),
         // General event PDF operator
-        new UnaryFunct(true, ExprLangParser.DIRAC_DELTA_FN, "I[", "]"),
-    };
+        new UnaryFunct(true, ExprLangParser.DIRAC_DELTA_FN, "I[", "]"),};
     static final UnaryFunct apnnUnaryFunctions[] = {
         new UnaryFunct(true, ExprLangParser.OP_PAREN, "(", ")"),
         new UnaryFunct(false, ExprLangParser.SUB, " - ", OperatorPos.PREFIX_SIMPLETERM),
-//        new UnaryFunct(false, ExprLangParser.POSTINCR, "!", OperatorPos.PREFIX_SIMPLETERM),
-//        new UnaryFunct(false, ExprLangParser.POSTDECR, "^", OperatorPos.PREFIX_SIMPLETERM),
+        //        new UnaryFunct(false, ExprLangParser.POSTINCR, "!", OperatorPos.PREFIX_SIMPLETERM),
+        //        new UnaryFunct(false, ExprLangParser.POSTDECR, "^", OperatorPos.PREFIX_SIMPLETERM),
         new UnaryFunct(true, ExprLangParser.CEIL_FN, "Math.ceil(", ")"),
         new UnaryFunct(true, ExprLangParser.FLOOR_FN, "Math.floor(", ")"),
         new UnaryFunct(true, ExprLangParser.ROUND_FN, "Math.round(", ")"),
@@ -228,16 +242,15 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new UnaryFunct(false, ExprLangParser.ARCCOS_FN, "Math.acos(", ")"),
         new UnaryFunct(false, ExprLangParser.ARCTAN_FN, "Math.atan(", ")"),
         new UnaryFunct(false, ExprLangParser.NOT, "!", OperatorPos.PREFIX_SIMPLETERM),
-//        new UnaryFunct(true, ExprLangParser.MULTISET_CARD, "Card[", "]"),
-//        new UnaryFunct(true, ExprLangParser.MULTISET_SUBCLASS, "d(", ")"),
-        new UnaryFunct(true, ExprLangParser.DIRAC_DELTA_FN, "\\dist{const}{", "}"),
-    };
-    
+        //        new UnaryFunct(true, ExprLangParser.MULTISET_CARD, "Card[", "]"),
+        //        new UnaryFunct(true, ExprLangParser.MULTISET_SUBCLASS, "d(", ")"),
+        new UnaryFunct(true, ExprLangParser.DIRAC_DELTA_FN, "\\dist{const}{", "}"),};
+
     static final UnaryFunct grmlUnaryFunctions[] = {
         new UnaryFunct(true, ExprLangParser.OP_PAREN, "<attribute name=\"expr\">", "</attribute>"),
         new UnaryFunct(false, ExprLangParser.SUB, "<attribute name=\"-\"><attribute name=\"numValue\">0</attribute>", "</attribute>"),
-//        new UnaryFunct(false, ExprLangParser.POSTINCR, "!", OperatorPos.PREFIX_SIMPLETERM),
-//        new UnaryFunct(false, ExprLangParser.POSTDECR, "^", OperatorPos.PREFIX_SIMPLETERM),
+        //        new UnaryFunct(false, ExprLangParser.POSTINCR, "!", OperatorPos.PREFIX_SIMPLETERM),
+        //        new UnaryFunct(false, ExprLangParser.POSTDECR, "^", OperatorPos.PREFIX_SIMPLETERM),
         new UnaryFunct(true, ExprLangParser.CEIL_FN, "<attribute name=\"ceil\">", "</attribute>"),
         new UnaryFunct(true, ExprLangParser.FLOOR_FN, "<attribute name=\"floor\">", "</attribute>"),
         new UnaryFunct(true, ExprLangParser.ROUND_FN, "Math.round(", ")"),
@@ -248,56 +261,86 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new UnaryFunct(false, ExprLangParser.NOT, "<attribute name=\"not\">", "</attribute>"),
         new UnaryFunct(true, ExprLangParser.POSTINCR, "<attribute name=\"function\"><attribute name=\"++\">", "</attribute></attribute>"),
         new UnaryFunct(true, ExprLangParser.POSTDECR, "<attribute name=\"function\"><attribute name=\"--\">", "</attribute></attribute>"),
-//        new UnaryFunct(true, ExprLangParser.MULTISET_CARD, "Card[", "]"),
-//        new UnaryFunct(true, ExprLangParser.MULTISET_SUBCLASS, "d(", ")"),
-        new UnaryFunct(true, ExprLangParser.DIRAC_DELTA_FN, 
-                "\t\t<attribute name=\"type\">DETERMINISTIC</attribute>\n" +
-                "\t\t<attribute name=\"param\"><attribute name=\"expr\">" , "</attribute></attribute>"),
-    };
-    
+        //        new UnaryFunct(true, ExprLangParser.MULTISET_CARD, "Card[", "]"),
+        //        new UnaryFunct(true, ExprLangParser.MULTISET_SUBCLASS, "d(", ")"),
+        new UnaryFunct(true, ExprLangParser.DIRAC_DELTA_FN,
+        "\t\t<attribute name=\"type\">DETERMINISTIC</attribute>\n"
+        + "\t\t<attribute name=\"param\"><attribute name=\"expr\">", "</attribute></attribute>"),};
+
     static final UnaryFunct pnmlUnaryFunctions[] = {
         new UnaryFunct(true, ExprLangParser.OP_PAREN, "", ""),
         new UnaryFunct(true, ExprLangParser.SUB, "-", ""),
         new UnaryFunct(true, ExprLangParser.POSTINCR, "<successor><subterm>", "</subterm></successor>"),
         new UnaryFunct(true, ExprLangParser.POSTDECR, "<predecessor><subterm>", "</subterm></predecessor>"),
-        new UnaryFunct(true, ExprLangParser.NOT, "<not><subterm>", "</subterm></not>"),
-    };
-    
+        new UnaryFunct(true, ExprLangParser.NOT, "<not><subterm>", "</subterm></not>"),};
+
     static final UnaryFunct netlogoUnaryFunctions[] = {
         new UnaryFunct(true, ExprLangParser.OP_PAREN, "( ", " )"),
         new UnaryFunct(false, ExprLangParser.SUB, " - ", OperatorPos.PREFIX_SIMPLETERM),
         new UnaryFunct(false, ExprLangParser.POSTINCR, " + 1", OperatorPos.POSTFIX_SIMPLETERM),
         new UnaryFunct(false, ExprLangParser.POSTDECR, " - 1", OperatorPos.POSTFIX_SIMPLETERM),
-//        new UnaryFunct(true, ExprLangParser.CEIL_FN, "\\left\\lceil ", " \\right\\rceil"),
-//        new UnaryFunct(true, ExprLangParser.FLOOR_FN, "\\left\\lfloor ", " \\right\\rfloor"),
-//        new UnaryFunct(true, ExprLangParser.ROUND_FN, "\\mathrm{Round}\\left[ ", " \\right]"),
-//        new UnaryFunct(true, ExprLangParser.ABS_FN, "\\left\\vert ", " \\right\\vert"),
-//        new UnaryFunct(false, ExprLangParser.FACTORIAL_FN, "!", OperatorPos.POSTFIX_SIMPLETERM),
-//        new UnaryFunct(false, ExprLangParser.EXP_FN, "\\mathrm{e}^{", "}"),
-//        new UnaryFunct(true, ExprLangParser.SQRT_FN, "\\sqrt{", " }"),
-//        new UnaryFunct(false, ExprLangParser.SIN_FN, "\\sin{", " }"),
-//        new UnaryFunct(false, ExprLangParser.COS_FN, "\\cos{", " }"),
-//        new UnaryFunct(false, ExprLangParser.TAN_FN, "\\tan{", " }"),
-//        new UnaryFunct(false, ExprLangParser.ARCSIN_FN, "\\asin{", " }"),
-//        new UnaryFunct(false, ExprLangParser.ARCCOS_FN, "\\acos{", " }"),
-//        new UnaryFunct(false, ExprLangParser.ARCTAN_FN, "\\atan{", " }"),
-        new UnaryFunct(false, ExprLangParser.NOT, "NOT ", OperatorPos.PREFIX_SIMPLETERM),
-//        new UnaryFunct(true, ExprLangParser.MULTISET_CARD, "\\mathrm{Card}[", " ]"),
-//        new UnaryFunct(true, ExprLangParser.MULTISET_SUBCLASS, "\\mathrm{Subclass}[", " ]"),
-//        new UnaryFunct(true, ExprLangParser.COLOR_ORDINAL, "\\mathrm{CN}[", "]"),
+        //        new UnaryFunct(true, ExprLangParser.CEIL_FN, "\\left\\lceil ", " \\right\\rceil"),
+        //        new UnaryFunct(true, ExprLangParser.FLOOR_FN, "\\left\\lfloor ", " \\right\\rfloor"),
+        //        new UnaryFunct(true, ExprLangParser.ROUND_FN, "\\mathrm{Round}\\left[ ", " \\right]"),
+        //        new UnaryFunct(true, ExprLangParser.ABS_FN, "\\left\\vert ", " \\right\\vert"),
+        //        new UnaryFunct(false, ExprLangParser.FACTORIAL_FN, "!", OperatorPos.POSTFIX_SIMPLETERM),
+        //        new UnaryFunct(false, ExprLangParser.EXP_FN, "\\mathrm{e}^{", "}"),
+        //        new UnaryFunct(true, ExprLangParser.SQRT_FN, "\\sqrt{", " }"),
+        //        new UnaryFunct(false, ExprLangParser.SIN_FN, "\\sin{", " }"),
+        //        new UnaryFunct(false, ExprLangParser.COS_FN, "\\cos{", " }"),
+        //        new UnaryFunct(false, ExprLangParser.TAN_FN, "\\tan{", " }"),
+        //        new UnaryFunct(false, ExprLangParser.ARCSIN_FN, "\\asin{", " }"),
+        //        new UnaryFunct(false, ExprLangParser.ARCCOS_FN, "\\acos{", " }"),
+        //        new UnaryFunct(false, ExprLangParser.ARCTAN_FN, "\\atan{", " }"),
+        new UnaryFunct(false, ExprLangParser.NOT, "NOT ", OperatorPos.PREFIX_SIMPLETERM), //        new UnaryFunct(true, ExprLangParser.MULTISET_CARD, "\\mathrm{Card}[", " ]"),
+    //        new UnaryFunct(true, ExprLangParser.MULTISET_SUBCLASS, "\\mathrm{Subclass}[", " ]"),
+    //        new UnaryFunct(true, ExprLangParser.COLOR_ORDINAL, "\\mathrm{CN}[", "]"),
     };
-    
-    
+
+    static final UnaryFunct cppUnaryFunctions[] = {
+        new UnaryFunct(true, ExprLangParser.OP_PAREN, "(", ")"),
+        new UnaryFunct(false, ExprLangParser.SUB, "-", OperatorPos.PREFIX_SIMPLETERM),
+        new UnaryFunct(false, ExprLangParser.NOT, "! ", OperatorPos.PREFIX_SIMPLETERM),
+        new UnaryFunct(false, ExprLangParser.POSTINCR, "++", OperatorPos.POSTFIX_SIMPLETERM),
+        new UnaryFunct(false, ExprLangParser.POSTDECR, "--", OperatorPos.POSTFIX_SIMPLETERM),
+        new UnaryFunct(false, ExprLangParser.EXP_FN, "exp(", ")"),
+        new UnaryFunct(false, ExprLangParser.LOG_FN, "log(", ")"),
+        new UnaryFunct(true, ExprLangParser.SQRT_FN, "sqrt(", ")"),
+        new UnaryFunct(true, ExprLangParser.ROUND_FN, "round(", ")"),
+        new UnaryFunct(true, ExprLangParser.CEIL_FN, "ceil(", " )"),
+        new UnaryFunct(true, ExprLangParser.FLOOR_FN, "floor(", ")"),
+        new UnaryFunct(true, ExprLangParser.ABS_FN, "abs(", " )"),
+        // come gestire le dirac delta e le rectangular function in cpp?
+        new UnaryFunct(true, ExprLangParser.DIRAC_DELTA_FN, "Dirac_delta(", ")"),};
+
     public FormattedFormula formatUnaryFn(int unaryIntRealFn, FormattedFormula expr) {
         UnaryFunct[] functs;
         switch (lang) {
-            case LATEX:     functs = latexUnaryFunctions;       break;
-            case PNPRO:     functs = pnproUnaryFunctions;       break;
-            case GREATSPN:  functs = greatspnUnaryFunctions;    break;
-            case APNN:      functs = apnnUnaryFunctions;        break;
-            case GRML:      functs = grmlUnaryFunctions;        break;
-            case PNML:      functs = pnmlUnaryFunctions;        break;
-            case NETLOGO:   functs = netlogoUnaryFunctions;     break;
+            //case LATEX:     functs = latexUnaryFunctions;       break;
+            case LATEX:
+                functs = cppUnaryFunctions;
+                break;
+            case PNPRO:
+                functs = pnproUnaryFunctions;
+                break;
+            case GREATSPN:
+                functs = greatspnUnaryFunctions;
+                break;
+            case APNN:
+                functs = apnnUnaryFunctions;
+                break;
+            case GRML:
+                functs = grmlUnaryFunctions;
+                break;
+            case PNML:
+                functs = pnmlUnaryFunctions;
+                break;
+            case NETLOGO:
+                functs = netlogoUnaryFunctions;
+                break;
+            case CPP:
+                functs = cppUnaryFunctions;
+                break;
             default:
                 throw new UnsupportedOperationException("formatUnaryFn: Unsupported language");
         }
@@ -306,18 +349,18 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 switch (uf.pos) {
                     case PREFIX_SIMPLETERM:
                         return format(uf.isSimpleTerm, uf.opName, expr.getAsSimpleTerm());
-                        
+
                     case FUNCTION:
                         return format(uf.isSimpleTerm, uf.opName, expr, uf.opClose);
-                        
+
                     case POSTFIX_SIMPLETERM:
                         return format(uf.isSimpleTerm, expr.getAsSimpleTerm(), uf.opName);
                 }
             }
         }
-        throw new UnsupportedOperationException("formatUnaryFn = "+unaryIntRealFn);
+        throw new UnsupportedOperationException("formatUnaryFn = " + unaryIntRealFn);
     }
-    
+
     static class BinaryFunct {
 
         public BinaryFunct(boolean isSimpleTerm, int opCode, String between, OperatorPos pos) {
@@ -329,8 +372,8 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             this.pos = pos;
         }
 
-        public BinaryFunct(boolean isSimpleTerm, int opCode, String start, 
-                           String between, String end, OperatorPos pos) {
+        public BinaryFunct(boolean isSimpleTerm, int opCode, String start,
+                String between, String end, OperatorPos pos) {
             this.isSimpleTerm = isSimpleTerm;
             this.opCode = opCode;
             this.start = start;
@@ -340,23 +383,21 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         }
         boolean isSimpleTerm;
         int opCode;
-        String  start, between, end;
+        String start, between, end;
         OperatorPos pos;
     };
-    
+
     static final BinaryFunct latexBinaryFunctions[] = {
         new BinaryFunct(false, ExprLangParser.ADD, " + ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.SUB, " - ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.MUL, " \\cdot ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.DIV, " / ", OperatorPos.FUNCTION),
-        
         new BinaryFunct(true, ExprLangParser.MAX_FN, "\\max\\left( ", ", ", "\\right)", OperatorPos.FUNCTION),
         new BinaryFunct(true, ExprLangParser.MIN_FN, "\\min\\left( ", ", ", "\\right)", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.MOD_FN, " \\hspace{3pt}\\mathrm{mod}\\hspace{3pt} ", OperatorPos.FUNCTION),
         new BinaryFunct(true, ExprLangParser.BINOMIAL_FN, "\\binom{ ", "}{", "}", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.POW_FN, "{", "}^{", "}", OperatorPos.FUNCTION_FIRST_SIMPLETERM),
         new BinaryFunct(true, ExprLangParser.FRACT_FN, "\\frac{ ", "}{", "}", OperatorPos.FUNCTION),
-        
         new BinaryFunct(false, ExprLangParser.AND, " \\wedge ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.OR, " \\vee ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.IMPLY, " \\rightarrow ", OperatorPos.FUNCTION),
@@ -375,21 +416,18 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new BinaryFunct(true, ExprLangParser.TRIANGULAR_FN, " \\mathrm{Triangular}\\left[", ", ", "\\right]", OperatorPos.FUNCTION),
         new BinaryFunct(true, ExprLangParser.ERLANG_FN, " \\mathrm{Erlang}\\left[", ", ", "\\right]", OperatorPos.FUNCTION),
         new BinaryFunct(true, ExprLangParser.TRUNCATED_EXP_FN, " \\mathrm{TruncatedExp}\\left[", ", ", "\\right]", OperatorPos.FUNCTION),
-        new BinaryFunct(true, ExprLangParser.PARETO_FN, " \\mathrm{Pareto}\\left[", ", ", "\\right]", OperatorPos.FUNCTION),
-    };
+        new BinaryFunct(true, ExprLangParser.PARETO_FN, " \\mathrm{Pareto}\\left[", ", ", "\\right]", OperatorPos.FUNCTION),};
     static final BinaryFunct pnproBinaryFunctions[] = {
         new BinaryFunct(false, ExprLangParser.ADD, " + ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.SUB, " - ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.MUL, " * ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.DIV, " / ", OperatorPos.FUNCTION),
-        
         new BinaryFunct(true, ExprLangParser.MAX_FN, "Max[", ", ", "]", OperatorPos.FUNCTION),
         new BinaryFunct(true, ExprLangParser.MIN_FN, "Min[", ", ", "]", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.MOD_FN, "Mod[", ", ", "]", OperatorPos.FUNCTION),
         new BinaryFunct(true, ExprLangParser.BINOMIAL_FN, "Binom[ ", ", ", "]", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.POW_FN, "Pow[", ", ", "]", OperatorPos.FUNCTION_FIRST_SIMPLETERM),
         new BinaryFunct(true, ExprLangParser.FRACT_FN, " / ", OperatorPos.FUNCTION),
-        
         new BinaryFunct(false, ExprLangParser.AND, " && ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.OR, " || ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.IMPLY, " -> ", OperatorPos.FUNCTION),
@@ -408,21 +446,18 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new BinaryFunct(true, ExprLangParser.TRIANGULAR_FN, "Triangular[", ", ", "]", OperatorPos.FUNCTION),
         new BinaryFunct(true, ExprLangParser.ERLANG_FN, "Erlang[", ", ", "]", OperatorPos.FUNCTION),
         new BinaryFunct(true, ExprLangParser.TRUNCATED_EXP_FN, "TruncatedExp[", ", ", "]", OperatorPos.FUNCTION),
-        new BinaryFunct(true, ExprLangParser.PARETO_FN, "Pareto[", ", ", "]", OperatorPos.FUNCTION),
-    };
+        new BinaryFunct(true, ExprLangParser.PARETO_FN, "Pareto[", ", ", "]", OperatorPos.FUNCTION),};
     static final BinaryFunct greatspnBinaryFunctions[] = {
         new BinaryFunct(false, ExprLangParser.ADD, " + ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.SUB, " - ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.MUL, " * ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.DIV, " / ", OperatorPos.FUNCTION),
-                
         new BinaryFunct(true, ExprLangParser.MAX_FN, "Max[", ", ", "]", OperatorPos.FUNCTION),
         new BinaryFunct(true, ExprLangParser.MIN_FN, "Min[", ", ", "]", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.MOD_FN, "Mod[", ", ", "]", OperatorPos.FUNCTION),
         new BinaryFunct(true, ExprLangParser.BINOMIAL_FN, "Binom[ ", ", ", "]", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.POW_FN, "Pow[", ", ", "]", OperatorPos.FUNCTION_FIRST_SIMPLETERM),
         new BinaryFunct(true, ExprLangParser.FRACT_FN, " / ", OperatorPos.FUNCTION),
-
         new BinaryFunct(false, ExprLangParser.AND, " & ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.OR, " | ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.IMPLY, " -> ", OperatorPos.FUNCTION),
@@ -439,21 +474,18 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new BinaryFunct(true, ExprLangParser.TRIANGULAR_FN, "Triangular[", ", ", "]", OperatorPos.FUNCTION),
         new BinaryFunct(true, ExprLangParser.ERLANG_FN, "Erlang[", ", ", "]", OperatorPos.FUNCTION),
         new BinaryFunct(true, ExprLangParser.TRUNCATED_EXP_FN, "TruncatedExp[", ", ", "]", OperatorPos.FUNCTION),
-        new BinaryFunct(true, ExprLangParser.PARETO_FN, "Pareto[", ", ", "]", OperatorPos.FUNCTION),
-    };
+        new BinaryFunct(true, ExprLangParser.PARETO_FN, "Pareto[", ", ", "]", OperatorPos.FUNCTION),};
     static final BinaryFunct apnnBinaryFunctions[] = {
         new BinaryFunct(false, ExprLangParser.ADD, " + ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.SUB, " - ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.MUL, " * ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.DIV, " / ", OperatorPos.FUNCTION),
-        
         new BinaryFunct(true, ExprLangParser.MAX_FN, "Math.max(", ", ", ")", OperatorPos.FUNCTION),
         new BinaryFunct(true, ExprLangParser.MIN_FN, "Math.min(", ", ", ")", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.MOD_FN, " % ", OperatorPos.FUNCTION),
         new BinaryFunct(true, ExprLangParser.BINOMIAL_FN, "Math.binom( ", ", ", ")", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.POW_FN, "Math.pow(", ", ", ")", OperatorPos.FUNCTION_FIRST_SIMPLETERM),
         new BinaryFunct(true, ExprLangParser.FRACT_FN, " / ", OperatorPos.FUNCTION),
-        
         new BinaryFunct(false, ExprLangParser.AND, " andalso ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.OR, " orelse ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.EQUAL, " = ", OperatorPos.FUNCTION),
@@ -468,151 +500,187 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new BinaryFunct(true, ExprLangParser.TRIANGULAR_FN, "\\dist{trian}{", " ", "}", OperatorPos.FUNCTION),
         new BinaryFunct(true, ExprLangParser.ERLANG_FN, "\\dist{erlang}{", " ", "}", OperatorPos.FUNCTION),
         new BinaryFunct(true, ExprLangParser.TRUNCATED_EXP_FN, "\\dist{truncexp}{", " ", "}", OperatorPos.FUNCTION),
-        new BinaryFunct(true, ExprLangParser.PARETO_FN, "\\dist{pareto}{", " ", "}", OperatorPos.FUNCTION),
-    };
-    
+        new BinaryFunct(true, ExprLangParser.PARETO_FN, "\\dist{pareto}{", " ", "}", OperatorPos.FUNCTION),};
+
     static final BinaryFunct grmlBinaryFunctions[] = {
-        new BinaryFunct(false, ExprLangParser.ADD, "<attribute name=\"+\">"," ","</attribute>", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.SUB, "<attribute name=\"-\">"," ","</attribute>", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.MUL, "<attribute name=\"*\">"," ","</attribute>", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.DIV, "<attribute name=\"/\">"," ","</attribute>", OperatorPos.FUNCTION),
-        
-        new BinaryFunct(true, ExprLangParser.MAX_FN, "<attribute name=\"max\">"," ","</attribute>", OperatorPos.FUNCTION),
-        new BinaryFunct(true, ExprLangParser.MIN_FN, "<attribute name=\"min\">"," ","</attribute>", OperatorPos.FUNCTION),
-//        new BinaryFunct(false, ExprLangParser.MOD_FN, "Mod[", ", ", "]", OperatorPos.FUNCTION),
-//        new BinaryFunct(true, ExprLangParser.BINOMIAL_FN, "Binom[ ", ", ", "]", OperatorPos.FUNCTION),
-//        new BinaryFunct(false, ExprLangParser.POW_FN, "Pow[", ", ", "]", OperatorPos.FUNCTION_FIRST_SIMPLETERM),
-        new BinaryFunct(true, ExprLangParser.FRACT_FN, "<attribute name=\"/\">"," ","</attribute>", OperatorPos.FUNCTION),
-        
-        new BinaryFunct(false, ExprLangParser.AND, "<attribute name=\"and\">"," ","</attribute>", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.OR, "<attribute name=\"or\">"," ","</attribute>", OperatorPos.FUNCTION),
-//        new BinaryFunct(false, ExprLangParser.IMPLY, " -> ", OperatorPos.FUNCTION),
-//        new BinaryFunct(false, ExprLangParser.BIIMPLY, " <-> ", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.EQUAL, "<attribute name=\"equal\">"," ","</attribute>", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.NOT_EQUAL, "<attribute name=\"notEqual\">"," ","</attribute>", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.ADD, "<attribute name=\"+\">", " ", "</attribute>", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.SUB, "<attribute name=\"-\">", " ", "</attribute>", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.MUL, "<attribute name=\"*\">", " ", "</attribute>", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.DIV, "<attribute name=\"/\">", " ", "</attribute>", OperatorPos.FUNCTION),
+        new BinaryFunct(true, ExprLangParser.MAX_FN, "<attribute name=\"max\">", " ", "</attribute>", OperatorPos.FUNCTION),
+        new BinaryFunct(true, ExprLangParser.MIN_FN, "<attribute name=\"min\">", " ", "</attribute>", OperatorPos.FUNCTION),
+        //        new BinaryFunct(false, ExprLangParser.MOD_FN, "Mod[", ", ", "]", OperatorPos.FUNCTION),
+        //        new BinaryFunct(true, ExprLangParser.BINOMIAL_FN, "Binom[ ", ", ", "]", OperatorPos.FUNCTION),
+        //        new BinaryFunct(false, ExprLangParser.POW_FN, "Pow[", ", ", "]", OperatorPos.FUNCTION_FIRST_SIMPLETERM),
+        new BinaryFunct(true, ExprLangParser.FRACT_FN, "<attribute name=\"/\">", " ", "</attribute>", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.AND, "<attribute name=\"and\">", " ", "</attribute>", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.OR, "<attribute name=\"or\">", " ", "</attribute>", OperatorPos.FUNCTION),
+        //        new BinaryFunct(false, ExprLangParser.IMPLY, " -> ", OperatorPos.FUNCTION),
+        //        new BinaryFunct(false, ExprLangParser.BIIMPLY, " <-> ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.EQUAL, "<attribute name=\"equal\">", " ", "</attribute>", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.NOT_EQUAL, "<attribute name=\"notEqual\">", " ", "</attribute>", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.LESS, " < ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.LESS_EQ, " <= ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.GREATER, " > ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.GREATER_EQ, " >= ", OperatorPos.FUNCTION),
         // General event PDF functions
-//        new BinaryFunct(true, ExprLangParser.RECT_FN, "R[", ", ", "]", OperatorPos.FUNCTION),
-        new BinaryFunct(true, ExprLangParser.UNIFORM_FN, 
-                "\t\t<attribute name=\"type\">UNIFORM</attribute>\n" +
-                "\t\t<attribute name=\"param\"><attribute name=\"expr\">" ,"</attribute></attribute>\n"+
-                "\t\t<attribute name=\"param\"><attribute name=\"expr\">" , "</attribute></attribute>", OperatorPos.FUNCTION),
-        new BinaryFunct(true, ExprLangParser.TRIANGULAR_FN, 
-                "\t\t<attribute name=\"type\">TRIANGULAR</attribute>\n" +
-                "\t\t<attribute name=\"param\"><attribute name=\"expr\">" ,"</attribute></attribute>\n"+
-                "\t\t<attribute name=\"param\"><attribute name=\"expr\">" , "</attribute></attribute>", OperatorPos.FUNCTION),
-        new BinaryFunct(true, ExprLangParser.ERLANG_FN, 
-                "\t\t<attribute name=\"type\">ERLANG</attribute>\n" +
-                "\t\t<attribute name=\"param\"><attribute name=\"expr\">" ,"</attribute></attribute>\n"+
-                "\t\t<attribute name=\"param\"><attribute name=\"expr\">" , "</attribute></attribute>", OperatorPos.FUNCTION),
-    };
-    
+        //        new BinaryFunct(true, ExprLangParser.RECT_FN, "R[", ", ", "]", OperatorPos.FUNCTION),
+        new BinaryFunct(true, ExprLangParser.UNIFORM_FN,
+        "\t\t<attribute name=\"type\">UNIFORM</attribute>\n"
+        + "\t\t<attribute name=\"param\"><attribute name=\"expr\">", "</attribute></attribute>\n"
+        + "\t\t<attribute name=\"param\"><attribute name=\"expr\">", "</attribute></attribute>", OperatorPos.FUNCTION),
+        new BinaryFunct(true, ExprLangParser.TRIANGULAR_FN,
+        "\t\t<attribute name=\"type\">TRIANGULAR</attribute>\n"
+        + "\t\t<attribute name=\"param\"><attribute name=\"expr\">", "</attribute></attribute>\n"
+        + "\t\t<attribute name=\"param\"><attribute name=\"expr\">", "</attribute></attribute>", OperatorPos.FUNCTION),
+        new BinaryFunct(true, ExprLangParser.ERLANG_FN,
+        "\t\t<attribute name=\"type\">ERLANG</attribute>\n"
+        + "\t\t<attribute name=\"param\"><attribute name=\"expr\">", "</attribute></attribute>\n"
+        + "\t\t<attribute name=\"param\"><attribute name=\"expr\">", "</attribute></attribute>", OperatorPos.FUNCTION),};
+
     static final BinaryFunct pnmlBinaryFunctions[] = {
-        new BinaryFunct(false, ExprLangParser.ADD, "<add><subterm>","</subterm><subterm>","</subterm></add>", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.SUB, "<subtract><subterm>","</subterm><subterm>","</subterm></subtract>", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.AND, "<and><subterm>","</subterm><subterm>","</subterm></and>", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.OR, "<or><subterm>","</subterm><subterm>","</subterm></or>", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.IMPLY, "<imply><subterm>","</subterm><subterm>","</subterm></imply>", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.EQUAL, "<equality><subterm>","</subterm><subterm>","</subterm></equality>", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.NOT_EQUAL, "<inequality><subterm>","</subterm><subterm>","</subterm></inequality>", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.LESS, "<lessthan><subterm>","</subterm><subterm>","</subterm></lessthan>", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.LESS_EQ, "<lessthanorequal><subterm>","</subterm><subterm>","</subterm></lessthanorequal>", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.GREATER, "<greaterthan><subterm>","</subterm><subterm>","</subterm></greaterthan>", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.GREATER_EQ, "<greaterthanorequal><subterm>","</subterm><subterm>","</subterm></greaterthanorequal>", OperatorPos.FUNCTION),
-    };
+        new BinaryFunct(false, ExprLangParser.ADD, "<add><subterm>", "</subterm><subterm>", "</subterm></add>", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.SUB, "<subtract><subterm>", "</subterm><subterm>", "</subterm></subtract>", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.AND, "<and><subterm>", "</subterm><subterm>", "</subterm></and>", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.OR, "<or><subterm>", "</subterm><subterm>", "</subterm></or>", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.IMPLY, "<imply><subterm>", "</subterm><subterm>", "</subterm></imply>", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.EQUAL, "<equality><subterm>", "</subterm><subterm>", "</subterm></equality>", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.NOT_EQUAL, "<inequality><subterm>", "</subterm><subterm>", "</subterm></inequality>", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.LESS, "<lessthan><subterm>", "</subterm><subterm>", "</subterm></lessthan>", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.LESS_EQ, "<lessthanorequal><subterm>", "</subterm><subterm>", "</subterm></lessthanorequal>", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.GREATER, "<greaterthan><subterm>", "</subterm><subterm>", "</subterm></greaterthan>", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.GREATER_EQ, "<greaterthanorequal><subterm>", "</subterm><subterm>", "</subterm></greaterthanorequal>", OperatorPos.FUNCTION),};
     static final BinaryFunct netlogoBinaryFunctions[] = {
         new BinaryFunct(false, ExprLangParser.ADD, " + ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.SUB, " - ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.MUL, " * ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.DIV, " / ", OperatorPos.FUNCTION),
-        
-//        new BinaryFunct(true, ExprLangParser.MAX_FN, "Max[", ", ", "]", OperatorPos.FUNCTION),
-//        new BinaryFunct(true, ExprLangParser.MIN_FN, "Min[", ", ", "]", OperatorPos.FUNCTION),
-//        new BinaryFunct(false, ExprLangParser.MOD_FN, "Mod[", ", ", "]", OperatorPos.FUNCTION),
-//        new BinaryFunct(true, ExprLangParser.BINOMIAL_FN, "Binom[ ", ", ", "]", OperatorPos.FUNCTION),
-//        new BinaryFunct(false, ExprLangParser.POW_FN, "Pow[", ", ", "]", OperatorPos.FUNCTION_FIRST_SIMPLETERM),
-//        new BinaryFunct(true, ExprLangParser.FRACT_FN, " / ", OperatorPos.FUNCTION),
-        
+        //        new BinaryFunct(true, ExprLangParser.MAX_FN, "Max[", ", ", "]", OperatorPos.FUNCTION),
+        //        new BinaryFunct(true, ExprLangParser.MIN_FN, "Min[", ", ", "]", OperatorPos.FUNCTION),
+        //        new BinaryFunct(false, ExprLangParser.MOD_FN, "Mod[", ", ", "]", OperatorPos.FUNCTION),
+        //        new BinaryFunct(true, ExprLangParser.BINOMIAL_FN, "Binom[ ", ", ", "]", OperatorPos.FUNCTION),
+        //        new BinaryFunct(false, ExprLangParser.POW_FN, "Pow[", ", ", "]", OperatorPos.FUNCTION_FIRST_SIMPLETERM),
+        //        new BinaryFunct(true, ExprLangParser.FRACT_FN, " / ", OperatorPos.FUNCTION),
+
         new BinaryFunct(false, ExprLangParser.AND, " AND ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.OR, " OR ", OperatorPos.FUNCTION),
-//        new BinaryFunct(false, ExprLangParser.IMPLY, " -> ", OperatorPos.FUNCTION),
-//        new BinaryFunct(false, ExprLangParser.BIIMPLY, " <-> ", OperatorPos.FUNCTION),
+        //        new BinaryFunct(false, ExprLangParser.IMPLY, " -> ", OperatorPos.FUNCTION),
+        //        new BinaryFunct(false, ExprLangParser.BIIMPLY, " <-> ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.EQUAL, " = ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.NOT_EQUAL, " != ", OperatorPos.FUNCTION),
-//        new BinaryFunct(false, ExprLangParser.LESS, " < ", OperatorPos.FUNCTION),
-//        new BinaryFunct(false, ExprLangParser.LESS_EQ, " <= ", OperatorPos.FUNCTION),
-//        new BinaryFunct(false, ExprLangParser.GREATER, " > ", OperatorPos.FUNCTION),
-//        new BinaryFunct(false, ExprLangParser.GREATER_EQ, " >= ", OperatorPos.FUNCTION),
+        //        new BinaryFunct(false, ExprLangParser.LESS, " < ", OperatorPos.FUNCTION),
+        //        new BinaryFunct(false, ExprLangParser.LESS_EQ, " <= ", OperatorPos.FUNCTION),
+        //        new BinaryFunct(false, ExprLangParser.GREATER, " > ", OperatorPos.FUNCTION),
+        //        new BinaryFunct(false, ExprLangParser.GREATER_EQ, " >= ", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.CONTAINS, " ( member? ", " ", " )", OperatorPos.FUNCTION_FIRST_SIMPLETERM),
-        new BinaryFunct(false, ExprLangParser.DONT_CONTAINS, " ( NOT member? ", " ", " )", OperatorPos.FUNCTION_FIRST_SIMPLETERM),
-        // General event PDF functions
-//        new BinaryFunct(true, ExprLangParser.RECT_FN, "R[", ", ", "]", OperatorPos.FUNCTION),
-//        new BinaryFunct(true, ExprLangParser.UNIFORM_FN, "Uniform[", ", ", "]", OperatorPos.FUNCTION),
-//        new BinaryFunct(true, ExprLangParser.TRIANGULAR_FN, "Triangular[", ", ", "]", OperatorPos.FUNCTION),
-//        new BinaryFunct(true, ExprLangParser.ERLANG_FN, "Erlang[", ", ", "]", OperatorPos.FUNCTION),
-//        new BinaryFunct(true, ExprLangParser.TRUNCATED_EXP_FN, "TruncatedExp[", ", ", "]", OperatorPos.FUNCTION),
-//        new BinaryFunct(true, ExprLangParser.PARETO_FN, "Pareto[", ", ", "]", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.DONT_CONTAINS, " ( NOT member? ", " ", " )", OperatorPos.FUNCTION_FIRST_SIMPLETERM), // General event PDF functions
+    //        new BinaryFunct(true, ExprLangParser.RECT_FN, "R[", ", ", "]", OperatorPos.FUNCTION),
+    //        new BinaryFunct(true, ExprLangParser.UNIFORM_FN, "Uniform[", ", ", "]", OperatorPos.FUNCTION),
+    //        new BinaryFunct(true, ExprLangParser.TRIANGULAR_FN, "Triangular[", ", ", "]", OperatorPos.FUNCTION),
+    //        new BinaryFunct(true, ExprLangParser.ERLANG_FN, "Erlang[", ", ", "]", OperatorPos.FUNCTION),
+    //        new BinaryFunct(true, ExprLangParser.TRUNCATED_EXP_FN, "TruncatedExp[", ", ", "]", OperatorPos.FUNCTION),
+    //        new BinaryFunct(true, ExprLangParser.PARETO_FN, "Pareto[", ", ", "]", OperatorPos.FUNCTION),
     };
-        
-    public FormattedFormula formatBinaryFn(int binaryIntFn, FormattedFormula expr0, 
-                                           FormattedFormula expr1) 
-    {
+
+    static final BinaryFunct cppBinaryFunctions[] = {
+        new BinaryFunct(false, ExprLangParser.ADD, " + ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.SUB, " - ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.MUL, " * ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.DIV, " / ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.FRACT_FN, " / ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.AND, " && ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.OR, " || ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.EQUAL, " == ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.NOT_EQUAL, " != ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.LESS, " < ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.LESS_EQ, " <= ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.GREATER, " > ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.GREATER_EQ, " >= ", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.MAX_FN, "max(", ", ", ")", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.MIN_FN, "min(", ", ", ")", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.POW_FN, "pow(", ", ", ")", OperatorPos.FUNCTION),
+        //come gestire in cpp le distribuzioni?
+        new BinaryFunct(false, ExprLangParser.RECT_FN, "uniform_real_distribution<double> unf_dis(", ", ", ");\n unf_dis(generator)", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.TRUNCATED_EXP_FN, "exponential_distribution<> exp_dis(", ", ", ")\n exp_dis(generator)", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.TRIANGULAR_FN, "Triangular(", ", ", ")", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.PARETO_FN, "Pareto(", ", ", ")", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.UNIFORM_FN, "uniform_real_distribution<double> unf_dis(", ", ", ");\n distribution(generator)", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.ERLANG_FN, "Erlang(", ", ", ")", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.BINOMIAL_FN, "binomial_distribution<> bin_dis(", ", ", ")\n bin_dis(generator)", OperatorPos.FUNCTION),
+};
+
+    public FormattedFormula formatBinaryFn(int binaryIntFn, FormattedFormula expr0,
+            FormattedFormula expr1) {
         BinaryFunct[] functs;
         switch (lang) {
-            case LATEX:     functs = latexBinaryFunctions;    break;
-            case PNPRO:     functs = pnproBinaryFunctions;    break;
-            case GREATSPN:  functs = greatspnBinaryFunctions; break;
-            case APNN:      functs = apnnBinaryFunctions;     break;
-            case GRML:      functs = grmlBinaryFunctions;     break;
-            case PNML:      functs = pnmlBinaryFunctions;     break;
-            case NETLOGO:   functs = netlogoBinaryFunctions;     break;
+            //case LATEX:     functs = latexBinaryFunctions;    break;
+            case LATEX:
+                functs = latexBinaryFunctions;
+                break;
+            case PNPRO:
+                functs = pnproBinaryFunctions;
+                break;
+            case GREATSPN:
+                functs = greatspnBinaryFunctions;
+                break;
+            case APNN:
+                functs = apnnBinaryFunctions;
+                break;
+            case GRML:
+                functs = grmlBinaryFunctions;
+                break;
+            case PNML:
+                functs = pnmlBinaryFunctions;
+                break;
+            case NETLOGO:
+                functs = netlogoBinaryFunctions;
+                break;
+            case CPP:
+                functs = cppBinaryFunctions;
+                break;
             default:
                 throw new UnsupportedOperationException("formatBinaryFn: Unsupported language");
         }
         for (BinaryFunct bf : functs) {
             if (bf.opCode == binaryIntFn) {
-               switch (bf.pos) {
-                   case FUNCTION:
-                       return format(bf.isSimpleTerm, bf.start, expr0, bf.between, expr1, bf.end);
-                   case FUNCTION_FIRST_SIMPLETERM:
-                       return format(bf.isSimpleTerm, bf.start, expr0.getAsSimpleTerm(), 
-                                     bf.between, expr1, bf.end);
-               }
+                switch (bf.pos) {
+                    case FUNCTION:
+                        return format(bf.isSimpleTerm, bf.start, expr0, bf.between, expr1, bf.end);
+                    case FUNCTION_FIRST_SIMPLETERM:
+                        return format(bf.isSimpleTerm, bf.start, expr0.getAsSimpleTerm(),
+                                bf.between, expr1, bf.end);
+                }
             }
         }
-        throw new UnsupportedOperationException("formatBinaryFn = "+binaryIntFn);   
+        throw new UnsupportedOperationException("formatBinaryFn = " + binaryIntFn);
     }
-    
+
     public FormattedFormula formatIfThenElse(boolean preferIfFormat,
-                                             FormattedFormula cond,
-                                             FormattedFormula e1,
-                                             FormattedFormula e2) 
-    {
+            FormattedFormula cond,
+            FormattedFormula e1,
+            FormattedFormula e2) {
         switch (lang) {
             case LATEX:
-                if (preferIfFormat)
-                    return format(true, "\\mathrm{If}\\left[", cond, ", ",  
-                                  e1, ", ", e2, "\\right]");
-                else
-                    return format(true, "\\textrm{when } ", cond, " :\\textrm{ }",  
-                                  e1, "; \\textrm{ ever } ", e2, ";");
+                if (preferIfFormat) {
+                    return format(true, "\\mathrm{If}\\left[", cond, ", ",
+                            e1, ", ", e2, "\\right]");
+                } else {
+                    return format(true, "\\textrm{when } ", cond, " :\\textrm{ }",
+                            e1, "; \\textrm{ ever } ", e2, ";");
+                }
             case GREATSPN:
                 return format(true, "when ", cond, ": ", e1, "; ever ", e2, ";");
-                
+
             case PNPRO:
                 return format(true, "If[", cond, ", ", e1, ", ", e2, "]");
-                
+
             case APNN:
                 return format(true, "if ", cond, " then ", e1, " else ", e2);
-                
+
             default:
                 throw new UnsupportedOperationException("formatIfThenElse: unsupported lang");
         }
     }
-    
 
 //    public static FormattedFormula formatUnaryIntRealFn(int unaryIntRealFn, FormattedFormula expr) {
 //        switch (unaryIntRealFn) {
@@ -626,7 +694,6 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 //                throw new UnsupportedOperationException();
 //        }
 //    }
-
 //    public static FormattedFormula formatBinaryIntFn(int binaryIntFn, FormattedFormula expr0, FormattedFormula expr1) {
 //        switch (binaryIntFn) {
 //            case ExprLangParser.MAX_FN:
@@ -645,7 +712,6 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 //                throw new UnsupportedOperationException();
 //        }      
 //    }
-    
 //    public static FormattedFormula formatUnaryIntFn(int unaryFn, FormattedFormula expr) {
 //        switch (unaryFn) {
 //            case ExprLangParser.ABS_FN:
@@ -656,7 +722,6 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 //                throw new UnsupportedOperationException();
 //        }
 //    }   
-
 //    public static FormattedFormula formatUnaryRealFn(int unaryRealFn, FormattedFormula expr) {
 //        switch (unaryRealFn) {
 //            case ExprLangParser.EXP_FN:
@@ -679,7 +744,6 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 //                throw new UnsupportedOperationException();
 //        }
 //    }
-    
 //    public static String getLatexCmpOp(int op) {
 //        switch (op) {
 //            case ExprLangLexer.EQUAL:       return " = ";
@@ -692,30 +756,29 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 //                throw new UnsupportedOperationException();
 //        }
 //    }    
-    
     // Format an unknown id in red and add a new parse error.
     private FormattedFormula unknownId(TerminalNode ID) {
         requireLatexLanguage();
-        context.addNewError("Unknown ID '"+ID.getText()+"' at "+ID.getSymbol().getLine()+
-                            ":"+(ID.getSymbol().getCharPositionInLine()+1)+".");
-        return new FormattedFormula(lang, true, "\\mathrm{\\textcolor{FF0000}{"+ID.getText()+"}}");
+        context.addNewError("Unknown ID '" + ID.getText() + "' at " + ID.getSymbol().getLine()
+                + ":" + (ID.getSymbol().getCharPositionInLine() + 1) + ".");
+        return new FormattedFormula(lang, true, "\\mathrm{\\textcolor{FF0000}{" + ID.getText() + "}}");
     }
-    
+
     private void ruleNotAvailableForConstExpr(String whatIs) {
         if ((parseFlags & ParserContext.PF_CONST_EXPR) != 0) {
-            context.addNewError("Could not specify a "+whatIs+" in a constant expression.");
+            context.addNewError("Could not specify a " + whatIs + " in a constant expression.");
         }
     }
-    
+
     private void ensureSameDomain(FormattedFormula f0, FormattedFormula f1) {
         if (f0.getPayload() != null && f1.getPayload() != null) {
             assert f0.getPayload() instanceof ColorClass;
             assert f1.getPayload() instanceof ColorClass;
             if (f0.getPayload() != f1.getPayload()) {
-                context.addNewError("Incompatible types: expression "+f0.getFormula()+" with type "+
-                                    ((ColorClass)f0.getPayload()).getUniqueName()+
-                                    " is different from expression"+f1.getFormula()+" with type "+
-                                    ((ColorClass)f1.getPayload()).getUniqueName());
+                context.addNewError("Incompatible types: expression " + f0.getFormula() + " with type "
+                        + ((ColorClass) f0.getPayload()).getUniqueName()
+                        + " is different from expression" + f1.getFormula() + " with type "
+                        + ((ColorClass) f1.getPayload()).getUniqueName());
             }
         }
     }
@@ -726,19 +789,18 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 //                            ":"+(node.getSymbol().getCharPositionInLine()+1)+".");
 //        return new FormattedFormula(true, "\\mathrm{\\textcolor{FF0000}{"+node.getText()+"}}");
 //    }
-
     //==========================================================================
     //  Entry points:
     //==========================================================================
-    
     private void throwIfIncomplete(TerminalNode EOF, Token stop) {
-        if (EOF != null)
+        if (EOF != null) {
             return;
+        }
         throw new ExprLangParserException("Syntax error or incomplete expression"
-                                          + " after line "+stop.getLine()+
-                                          ":"+stop.getCharPositionInLine()+".");        
+                + " after line " + stop.getLine()
+                + ":" + stop.getCharPositionInLine() + ".");
     }
-    
+
     @Override
     public FormattedFormula visitMainRealExpr(ExprLangParser.MainRealExprContext ctx) {
         throwIfIncomplete(ctx.EOF(), ctx.getStop());
@@ -750,13 +812,14 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         throwIfIncomplete(ctx.EOF(), ctx.getStop());
         FormattedFormula ff = visit(ctx.realExpr(0));
         Iterator<ExprLangParser.RealExprContext> it = ctx.realExpr().iterator();
-        if (it.hasNext())
+        if (it.hasNext()) {
             it.next();
+        }
         while (it.hasNext()) {
             ff = format(false, ff, ", ", visit(it.next()));
         }
         return ff;
-}
+    }
 
     @Override
     public FormattedFormula visitMainBoolExpr(ExprLangParser.MainBoolExprContext ctx) {
@@ -775,8 +838,9 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         throwIfIncomplete(ctx.EOF(), ctx.getStop());
         FormattedFormula ff = visit(ctx.intExpr(0));
         Iterator<ExprLangParser.IntExprContext> it = ctx.intExpr().iterator();
-        if (it.hasNext())
+        if (it.hasNext()) {
             it.next();
+        }
         while (it.hasNext()) {
             ff = format(false, ff, ", ", visit(it.next()));
         }
@@ -836,10 +900,12 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     public FormattedFormula visitMainClockConstr(ExprLangParser.MainClockConstrContext ctx) {
         throwIfIncomplete(ctx.EOF(), ctx.getStop());
         if (ctx.varUpdateList() == null) // No update set
+        {
             return visit(ctx.clockConstr());
+        }
         switch (lang) {
             case LATEX:
-                return format(true, "\\begin{array}{c} \\raisebox{-5pt}{", 
+                return format(true, "\\begin{array}{c} \\raisebox{-5pt}{",
                         visit(ctx.clockConstr()), "} \\\\ \\{",
                         visit(ctx.varUpdateList()), "\\}\\end{array}");
             default:
@@ -894,26 +960,25 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         throwIfIncomplete(ctx.EOF(), ctx.getStop());
         return visit(ctx.tagRewriteList());
     }
-    
-    
-    
+
     //==========================================================================
     //  Integer expressions:
     //==========================================================================
-
     @Override
     public FormattedFormula visitIntConstLiteral(ExprLangParser.IntConstLiteralContext ctx) {
         switch (lang) {
             case GRML:
-                return format(true, "<attribute name=\"intValue\">"+ctx.INT().getText()+"</attribute>");
+                return format(true, "<attribute name=\"intValue\">" + ctx.INT().getText() + "</attribute>");
             case APNN:
             case LATEX:
             case GREATSPN:
             case PNPRO:
-                    return format(true, ctx.INT().getText());
+                return format(true, ctx.INT().getText());
             case PNML:
-                return format(true, "<numberconstant value=\""+ctx.INT().getText()+"\">"
+                return format(true, "<numberconstant value=\"" + ctx.INT().getText() + "\">"
                         + "<positive/></numberconstant>");
+            case CPP:
+                return format(true, ctx.INT().getText());
             default:
                 throw new UnsupportedOperationException();
         }
@@ -921,15 +986,16 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 
     @Override
     public FormattedFormula visitIntConstId(ExprLangParser.IntConstIdContext ctx) {
-        ConstantID intConstId = (ConstantID)context.getNodeByUniqueName(ctx.INT_CONST_ID().getText());
+        ConstantID intConstId = (ConstantID) context.getNodeByUniqueName(ctx.INT_CONST_ID().getText());
         switch (lang) {
             case GRML:
-                return format(true, "<attribute name=\"name\">"+intConstId.getUniqueName()+"</attribute>");
+                return format(true, "<attribute name=\"name\">" + intConstId.getUniqueName() + "</attribute>");
             case APNN:
             case LATEX:
             case GREATSPN:
             case PNPRO:
-                    return format(true, intConstId);
+            case CPP:
+                return format(true, intConstId);
             default:
                 throw new UnsupportedOperationException();
         }
@@ -937,37 +1003,36 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 
     @Override
     public FormattedFormula visitIntTemplateId(ExprLangParser.IntTemplateIdContext ctx) {
-        TemplateVariable intVarId = (TemplateVariable)context.getNodeByUniqueName(ctx.INT_TEMPLATE_ID().getText());
+        TemplateVariable intVarId = (TemplateVariable) context.getNodeByUniqueName(ctx.INT_TEMPLATE_ID().getText());
         switch (lang) {
             case GRML:
-                return format(true, "<attribute name=\"name\">"+intVarId.getUniqueName()+"</attribute>");
+                return format(true, "<attribute name=\"name\">" + intVarId.getUniqueName() + "</attribute>");
             case APNN:
             case LATEX:
             case GREATSPN:
             case PNPRO:
-                    return format(true, intVarId);
+                return format(true, intVarId);
             default:
                 throw new UnsupportedOperationException();
         }
     }
-    
+
     @Override
     public FormattedFormula visitIntExprPlaceMarking(ExprLangParser.IntExprPlaceMarkingContext ctx) {
         ruleNotAvailableForConstExpr("place marking");
-        Place place = (Place)context.getNodeByUniqueName(ctx.INT_PLACE_ID().getText());
+        Place place = (Place) context.getNodeByUniqueName(ctx.INT_PLACE_ID().getText());
         switch (lang) { // same for visitRealExprPlaceMarking
             case LATEX:
                 return format(true, "\\#", place.getUniqueNameDecor().getVisualizedValue());
-                
             case GREATSPN:
             case PNPRO:
                 return format(true, "#" + ctx.INT_PLACE_ID().getText());
-                
             case APNN:
                 return format(true, ctx.INT_PLACE_ID().getText());
             case GRML:
-                return format(true, "<attribute name=\"name\">" + place.getUniqueName() +"</attribute>");
-
+                return format(true, "<attribute name=\"name\">" + place.getUniqueName() + "</attribute>");
+            case CPP:
+                return format(true, "Value[" + ctx.INT_PLACE_ID().getText() + "_place]");
             default:
                 throw new UnsupportedOperationException("visitIntExprPlaceMarking");
         }
@@ -987,7 +1052,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     public FormattedFormula visitIntExprConst(ExprLangParser.IntExprConstContext ctx) {
         return visit(ctx.intConst());
     }
-    
+
     @Override
     public FormattedFormula visitIntExprUnaryRealFn(ExprLangParser.IntExprUnaryRealFnContext ctx) {
         return formatUnaryFn(ctx.unaryIntRealFn().fn.getType(), visit(ctx.realExpr()));
@@ -997,7 +1062,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     public FormattedFormula visitIntExprCond(ExprLangParser.IntExprCondContext ctx) {
         return formatIfThenElse(true, visit(ctx.boolExpr()), visit(ctx.intExpr(0)), visit(ctx.intExpr(1)));
     }
-    
+
     @Override
     public FormattedFormula visitIntExprCond2(ExprLangParser.IntExprCond2Context ctx) {
         return formatIfThenElse(false, visit(ctx.boolExpr()), visit(ctx.intExpr(0)), visit(ctx.intExpr(1)));
@@ -1029,8 +1094,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         try {
             context.colorDomainOfExpr = null;
             return formatUnaryFn(ExprLangParser.MULTISET_CARD, visit(ctx.intMSetExpr()));
-        }
-        finally {
+        } finally {
             context.colorDomainOfExpr = fixedDomain;
         }
     }
@@ -1041,8 +1105,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         try {
             context.colorDomainOfExpr = null;
             return formatUnaryFn(ExprLangParser.COLOR_ORDINAL, visit(ctx.colorTerm()));
-        }
-        finally {
+        } finally {
             context.colorDomainOfExpr = fixedDomain;
         }
     }
@@ -1051,8 +1114,9 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     public FormattedFormula visitIntExprCTLBound(ExprLangParser.IntExprCTLBoundContext ctx) {
         StringBuilder placeList = new StringBuilder();
         for (TerminalNode place : ctx.INT_PLACE_ID()) {
-            if (placeList.length() > 0)
+            if (placeList.length() > 0) {
                 placeList.append(", ");
+            }
             placeList.append(visit(place).getFormula());
         }
         switch (lang) {
@@ -1076,20 +1140,20 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         requireLatexLanguage();
         return format(true, "\\#", unknownId(ctx.ID()));
     }
-    
+
     //==========================================================================
     //  Real expressions:
     //==========================================================================
-    
     @Override
     public FormattedFormula visitRealConstLiteral(ExprLangParser.RealConstLiteralContext ctx) {
         switch (lang) {
             case GRML:
-                return format(true, "<attribute name=\"numValue\">"+ctx.REAL().getText()+"</attribute>");
+                return format(true, "<attribute name=\"numValue\">" + ctx.REAL().getText() + "</attribute>");
             case APNN:
             case LATEX:
             case GREATSPN:
             case PNPRO:
+            case CPP:
                 return format(true, ctx.REAL().getText());
             default:
                 throw new UnsupportedOperationException();
@@ -1099,59 +1163,61 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 
     @Override
     public FormattedFormula visitRealConstId(ExprLangParser.RealConstIdContext ctx) {
-        ConstantID realConstId = (ConstantID)context.getNodeByUniqueName(ctx.REAL_CONST_ID().getText());
+        ConstantID realConstId = (ConstantID) context.getNodeByUniqueName(ctx.REAL_CONST_ID().getText());
         switch (lang) {
             case GRML:
-                return format(true, "<attribute name=\"name\">"+realConstId.getUniqueName()+"</attribute>");
+                return format(true, "<attribute name=\"name\">" + realConstId.getUniqueName() + "</attribute>");
             case APNN:
             case LATEX:
             case GREATSPN:
             case PNPRO:
             case NETLOGO:
-                        return format(true, realConstId);
+            case CPP:
+                return format(true, realConstId);
             default:
                 throw new UnsupportedOperationException();
         }
-        
+
     }
 
     @Override
     public FormattedFormula visitRealTemplateId(ExprLangParser.RealTemplateIdContext ctx) {
-        TemplateVariable realVarId = (TemplateVariable)context.getNodeByUniqueName(ctx.REAL_TEMPLATE_ID().getText());
+        TemplateVariable realVarId = (TemplateVariable) context.getNodeByUniqueName(ctx.REAL_TEMPLATE_ID().getText());
         switch (lang) {
             case GRML:
-                return format(true, "<attribute name=\"name\">"+realVarId.getUniqueName()+"</attribute>");
+                return format(true, "<attribute name=\"name\">" + realVarId.getUniqueName() + "</attribute>");
             case APNN:
             case LATEX:
             case GREATSPN:
             case PNPRO:
-                        return format(true, realVarId);
+            case CPP:
+                return format(true, realVarId);
             default:
                 throw new UnsupportedOperationException();
         }
-        
+
     }
-    
+
     @Override
     public FormattedFormula visitRealExprPlaceMarking(ExprLangParser.RealExprPlaceMarkingContext ctx) {
         ruleNotAvailableForConstExpr("place marking");
-        Place place = (Place)context.getNodeByUniqueName(ctx.REAL_PLACE_ID().getText());
+        Place place = (Place) context.getNodeByUniqueName(ctx.REAL_PLACE_ID().getText());
         switch (lang) { // same for visitIntExprPlaceMarking
             case LATEX:
                 return format(true, "\\#", place.getUniqueNameDecor().getVisualizedValue());
             case GREATSPN:
             case PNPRO:
                 return format(true, "#" + ctx.REAL_PLACE_ID().getText());
-                
             case APNN:
                 return format(true, ctx.REAL_PLACE_ID().getText());
             case GRML:
-                return format(true, "<attribute name=\"name\">" + place.getUniqueName() +"</attribute>");
+                return format(true, "<attribute name=\"name\">" + place.getUniqueName() + "</attribute>");
+            case CPP:
+                return format(true, "Value[" + ctx.REAL_PLACE_ID().getText() + "_place]");
             default:
                 throw new UnsupportedOperationException("visitRealExprPlaceMarking");
         }
     }
-    
 
     @Override
     public FormattedFormula visitRealExprNegate(ExprLangParser.RealExprNegateContext ctx) {
@@ -1161,12 +1227,14 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     @Override
     public FormattedFormula visitRealExprBinaryFn(ExprLangParser.RealExprBinaryFnContext ctx) {
         int fn;
-        if (ctx.binaryIntFn()!= null)
+        if (ctx.binaryIntFn() != null) {
             fn = ctx.binaryIntFn().fn.getType();
-        else if (ctx.binaryRealFn()!= null)
+        } else if (ctx.binaryRealFn() != null) {
             fn = ctx.binaryRealFn().fn.getType();
-        else throw new UnsupportedOperationException();
-        
+        } else {
+            throw new UnsupportedOperationException();
+        }
+
         return formatBinaryFn(fn, visit(ctx.realExpr(0)), visit(ctx.realExpr(1)));
     }
 
@@ -1183,11 +1251,13 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     @Override
     public FormattedFormula visitRealExprUnaryFn(ExprLangParser.RealExprUnaryFnContext ctx) {
         int fn;
-        if (ctx.unaryIntFn() != null)
+        if (ctx.unaryIntFn() != null) {
             fn = ctx.unaryIntFn().fn.getType();
-        else if (ctx.unaryRealFn() != null)
+        } else if (ctx.unaryRealFn() != null) {
             fn = ctx.unaryRealFn().fn.getType();
-        else throw new UnsupportedOperationException();
+        } else {
+            throw new UnsupportedOperationException();
+        }
         return formatUnaryFn(fn, visit(ctx.realExpr()));
     }
 
@@ -1215,7 +1285,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     public FormattedFormula visitRealExprCond(ExprLangParser.RealExprCondContext ctx) {
         return formatIfThenElse(true, visit(ctx.boolExpr()), visit(ctx.realExpr(0)), visit(ctx.realExpr(1)));
     }
-    
+
     @Override
     public FormattedFormula visitRealExprCond2(ExprLangParser.RealExprCond2Context ctx) {
         return formatIfThenElse(false, visit(ctx.boolExpr()), visit(ctx.realExpr(0)), visit(ctx.realExpr(1)));
@@ -1243,6 +1313,12 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 return format(true, "\\mathbf{FromList}[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr()), "]");
             case PNPRO:
                 return format(true, "FromList[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr()), "]");
+            case GREATSPN:
+                return format(true, "FromList[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr()), "]");
+            case CPP:
+                String file_name = ctx.STRING_LITERAL().toString();
+                String define_name = file_name.substring(1, file_name.length() - 1).replace(".", "_");
+                return format(true, "class_files[", define_name, "].getConstantFromList(", visit(ctx.intExpr()), ")");
             default:
                 throw new UnsupportedOperationException();
         }
@@ -1255,6 +1331,12 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 return format(true, "\\mathbf{FromTable}[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]");
             case PNPRO:
                 return format(true, "FromTable[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]");
+            case GREATSPN:
+                return format(true, "FromTable[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]");
+            case CPP:
+                String file_name = ctx.STRING_LITERAL().toString();
+                String define_name = file_name.substring(1, file_name.length() - 1).replace(".", "_");
+                return format(true, "class_files[", define_name, "].getConstantFromTable(", visit(ctx.intExpr(0)), ",", visit(ctx.intExpr(1)), ")");
             default:
                 throw new UnsupportedOperationException();
         }
@@ -1267,6 +1349,12 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 return format(true, "\\mathbf{FromTimeTable}[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]");
             case PNPRO:
                 return format(true, "FromTimeTable[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]");
+            case GREATSPN:
+                return format(true, "FromTimeTable[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]");
+            case CPP:
+                String file_name = ctx.STRING_LITERAL().toString();
+                String define_name = file_name.substring(1, file_name.length() - 1).replace(".", "_");
+                return format(true, "class_files[", define_name, "].getConstantFromTimeTable(", visit(ctx.intExpr(0)), ",", visit(ctx.intExpr(1)), ")");
             default:
                 throw new UnsupportedOperationException();
         }
@@ -1279,6 +1367,13 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 return format(true, "\\mathbf{Call}[", ctx.STRING_LITERAL(), visit(ctx.intOrRealList()), "]");
             case PNPRO:
                 return format(true, "Call[", ctx.STRING_LITERAL(), visit(ctx.intOrRealList()), "]");
+            case GREATSPN:
+                return format(true, "Call[", ctx.STRING_LITERAL(), visit(ctx.intOrRealList()), "]");
+            case CPP:
+                String call_name = ctx.STRING_LITERAL().toString();
+                String function_name = call_name.substring(1, call_name.length() - 1);
+                String arguments = visit(ctx.intOrRealList()).getFormula().substring(2);
+                return format(true, function_name, "(", arguments, ")");
             default:
                 throw new UnsupportedOperationException();
         }
@@ -1293,7 +1388,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     public FormattedFormula visitIntOrRealListInt(ExprLangParser.IntOrRealListIntContext ctx) {
         return format(false, ", ", visit(ctx.intExpr()), visit(ctx.intOrRealList()));
     }
-    
+
     @Override
     public FormattedFormula visitIntOrRealListReal(ExprLangParser.IntOrRealListRealContext ctx) {
         return format(false, ", ", visit(ctx.realExpr()), visit(ctx.intOrRealList()));
@@ -1302,42 +1397,43 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     //==========================================================================
     //  Boolean expressions:
     //==========================================================================    
-
     @Override
     public FormattedFormula visitBoolConst(ExprLangParser.BoolConstContext ctx) {
         boolean value;
-        
-        if (ctx.TRUE() != null)
+
+        if (ctx.TRUE() != null) {
             value = true;
-        else if (ctx.FALSE() != null)
+        } else if (ctx.FALSE() != null) {
             value = false;
-        else throw new UnsupportedOperationException();
+        } else {
+            throw new UnsupportedOperationException();
+        }
         switch (lang) {
             case LATEX:
-                return format(true, value ? "\\mathrm{true}" : "\\mathrm{false}"); 
+                return format(true, value ? "\\mathrm{true}" : "\\mathrm{false}");
             case GREATSPN:
-                return format(true, value ? "true" : "false"); 
+                return format(true, value ? "true" : "false");
             case PNPRO:
-                return format(true, value ? "True" : "False"); 
+                return format(true, value ? "True" : "False");
             case APNN:
-                return format(true, value ? "true" : "false"); 
+                return format(true, value ? "true" : "false");
             case GRML:
-                return format(true, "<attribute name=\"boolValue\">"+ (value ? "true" : "false") +"</attribute>");
+                return format(true, "<attribute name=\"boolValue\">" + (value ? "true" : "false") + "</attribute>");
             case PNML:
-                return format(true, "<numberconstant value=\""+(value ? "true" : "false")+"\">");
+                return format(true, "<numberconstant value=\"" + (value ? "true" : "false") + "\">");
             case NETLOGO:
-                return format(true, value ? "TRUE" : "FALSE"); 
-           default:
+                return format(true, value ? "TRUE" : "FALSE");
+            default:
                 throw new UnsupportedOperationException("visitBoolConst");
         }
     }
 
     @Override
     public FormattedFormula visitBoolExprStatePropId(ExprLangParser.BoolExprStatePropIdContext ctx) {
-        TemplateVariable stateProp = (TemplateVariable)context.getNodeByUniqueName(ctx.STATEPROP_ID().getText());
+        TemplateVariable stateProp = (TemplateVariable) context.getNodeByUniqueName(ctx.STATEPROP_ID().getText());
         return format(true, stateProp);
     }
-    
+
     @Override
     public FormattedFormula visitBoolExprAnd(ExprLangParser.BoolExprAndContext ctx) {
         return formatBinaryFn(ExprLangParser.AND, visit(ctx.boolExpr(0)), visit(ctx.boolExpr(1)));
@@ -1357,7 +1453,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     public FormattedFormula visitBoolExprBiimply(ExprLangParser.BoolExprBiimplyContext ctx) {
         return formatBinaryFn(ExprLangParser.BIIMPLY, visit(ctx.boolExpr(0)), visit(ctx.boolExpr(1)));
     }
-    
+
     @Override
     public FormattedFormula visitBoolExprNot(ExprLangParser.BoolExprNotContext ctx) {
         return formatUnaryFn(ExprLangParser.NOT, visit(ctx.boolExpr()));
@@ -1380,7 +1476,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 
     @Override
     public FormattedFormula visitBoolExprConst(ExprLangParser.BoolExprConstContext ctx) {
-        return visit(ctx.boolConst()); 
+        return visit(ctx.boolConst());
     }
 
     @Override
@@ -1392,22 +1488,22 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     public FormattedFormula visitBoolExprColorTermComp(ExprLangParser.BoolExprColorTermCompContext ctx) {
         FormattedFormula f0 = visit(ctx.colorTerm(0));
         FormattedFormula f1 = visit(ctx.colorTerm(1));
-        MultiSetElemType m0 = (MultiSetElemType)f0.getPayload();
-        MultiSetElemType m1 = (MultiSetElemType)f1.getPayload();
+        MultiSetElemType m0 = (MultiSetElemType) f0.getPayload();
+        MultiSetElemType m1 = (MultiSetElemType) f1.getPayload();
         if (m0.colorClass != null && m1.colorClass != null) { // avoid syntactic errors
             boolean sameColorClass = m0.colorClass.equals(m1.colorClass);
             if (!sameColorClass) {
-                context.addNewError("Could not compare expression "+ctx.colorTerm(0).getText()+
-                                    " of color "+m0.colorClass.getUniqueName()+" with expression "+
-                                    ctx.colorTerm(1).getText()+" of color "+m1.colorClass.getUniqueName()+".");
+                context.addNewError("Could not compare expression " + ctx.colorTerm(0).getText()
+                        + " of color " + m0.colorClass.getUniqueName() + " with expression "
+                        + ctx.colorTerm(1).getText() + " of color " + m1.colorClass.getUniqueName() + ".");
             }
             if (sameColorClass) {
-                boolean opIsEq = (ctx.op.getType() == ExprLangParser.EQUAL) ||
-                                 (ctx.op.getType() == ExprLangParser.NOT_EQUAL);
+                boolean opIsEq = (ctx.op.getType() == ExprLangParser.EQUAL)
+                        || (ctx.op.getType() == ExprLangParser.NOT_EQUAL);
                 // comparison operators <, <=, >, >= can only be used on enumerative classes
                 if (m0.colorClass.isCircular() && !opIsEq && strictColorExpressionChecks) {
-                    context.addNewError("Ordered color comparison '"+ctx.getText()+
-                            "' cannot be done on terms of a circular class.");
+                    context.addNewError("Ordered color comparison '" + ctx.getText()
+                            + "' cannot be done on terms of a circular class.");
                 }
             }
         }
@@ -1418,39 +1514,41 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     public FormattedFormula visitBoolExprColorTermIn(ExprLangParser.BoolExprColorTermInContext ctx) {
         FormattedFormula term = visit(ctx.colorTerm());
         FormattedFormula set = visit(ctx.colorSet());
-        MultiSetElemType mTerm = (MultiSetElemType)term.getPayload();
-        MultiSetElemType mSet = (MultiSetElemType)set.getPayload();
+        MultiSetElemType mTerm = (MultiSetElemType) term.getPayload();
+        MultiSetElemType mSet = (MultiSetElemType) set.getPayload();
         if (mTerm.colorClass != null && mSet.colorClass != null) { // avoid syntactic errors
             if (!mTerm.colorClass.equals(mSet.colorClass)) {
-                context.addNewError("Could not compare expression "+ctx.colorTerm().getText()+
-                                    " of color "+mTerm.colorClass.getUniqueName()+" with expression "+
-                                    ctx.colorSet().getText()+" of color "+mSet.colorClass.getUniqueName()+".");
+                context.addNewError("Could not compare expression " + ctx.colorTerm().getText()
+                        + " of color " + mTerm.colorClass.getUniqueName() + " with expression "
+                        + ctx.colorSet().getText() + " of color " + mSet.colorClass.getUniqueName() + ".");
             }
         }
         boolean contains;
-        if (ctx.CONTAINS() != null)
+        if (ctx.CONTAINS() != null) {
             contains = true;
-        else if (ctx.DONT_CONTAINS() != null)
+        } else if (ctx.DONT_CONTAINS() != null) {
             contains = false;
-        else throw new UnsupportedOperationException();
+        } else {
+            throw new UnsupportedOperationException();
+        }
         return formatBinaryFn(contains ? ExprLangParser.CONTAINS : ExprLangParser.DONT_CONTAINS, term, set);
     }
-    
+
     // Boolean CTL formulas
     @Override
     public FormattedFormula visitBoolExprCTL(ExprLangParser.BoolExprCTLContext ctx) {
         return format(false, visit(ctx.temporal_op()), " ", visit(ctx.boolExpr()));
     }
-    
+
     private FormattedFormula formatCTLUntil(boolean isE, FormattedFormula f1, FormattedFormula f2) {
         switch (lang) {
             case LATEX:
                 return format(true, (isE ? "\\exists" : "\\forall"),
-                      "(", f1, "~\\mathrm{U}~", f2, ")");
+                        "(", f1, "~\\mathrm{U}~", f2, ")");
             case GREATSPN:
             case PNPRO:
                 return format(true, (isE ? "E" : "A"),
-                      "[", f1, " U ", f2, "]");
+                        "[", f1, " U ", f2, "]");
             default:
                 throw new UnsupportedOperationException();
         }
@@ -1458,12 +1556,12 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 
     @Override
     public FormattedFormula visitBoolExprCTLUntil(ExprLangParser.BoolExprCTLUntilContext ctx) {
-        return formatCTLUntil(ctx.EXISTS()!=null, visit(ctx.boolExpr(0)), visit(ctx.boolExpr(1)));
+        return formatCTLUntil(ctx.EXISTS() != null, visit(ctx.boolExpr(0)), visit(ctx.boolExpr(1)));
     }
 
     @Override
     public FormattedFormula visitBoolExprCTLUntil2(ExprLangParser.BoolExprCTLUntil2Context ctx) {
-        return formatCTLUntil(ctx.EXISTS()!=null, visit(ctx.boolExpr(0)), visit(ctx.boolExpr(1)));
+        return formatCTLUntil(ctx.EXISTS() != null, visit(ctx.boolExpr(0)), visit(ctx.boolExpr(1)));
     }
 
     @Override
@@ -1481,7 +1579,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 
     @Override
     public FormattedFormula visitBoolExprCTLpin(ExprLangParser.BoolExprCTLpinContext ctx) {
-       switch (lang) {
+        switch (lang) {
             case LATEX:
                 return format(false, "\\mathrm{", ctx.pin.getText(), "} ", visit(ctx.boolExpr()).getAsSimpleTerm());
             case GREATSPN:
@@ -1517,59 +1615,66 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 throw new UnsupportedOperationException();
         }
     }
-    
-    
-    
+
     //==========================================================================
     //  CTLSTAR terms:
     //==========================================================================
-    
-    @Override 
-    public FormattedFormula visitBoolExprCTLStarQuantif(ExprLangParser.BoolExprCTLStarQuantifContext ctx) { 
+    @Override
+    public FormattedFormula visitBoolExprCTLStarQuantif(ExprLangParser.BoolExprCTLStarQuantifContext ctx) {
         return format(true, ctx.q.getText(), " ", visit(ctx.boolExpr()));
     }
-    @Override 
-    public FormattedFormula visitBoolExprCTLStarUntil2(ExprLangParser.BoolExprCTLStarUntil2Context ctx) { 
+
+    @Override
+    public FormattedFormula visitBoolExprCTLStarUntil2(ExprLangParser.BoolExprCTLStarUntil2Context ctx) {
         switch (lang) {
-            case LATEX:     return format(true, "(", visit(ctx.boolExpr(0)), "~\\mathrm{U}~", visit(ctx.boolExpr(1)), ")");
+            case LATEX:
+                return format(true, "(", visit(ctx.boolExpr(0)), "~\\mathrm{U}~", visit(ctx.boolExpr(1)), ")");
             case GREATSPN:
-            case PNPRO:     return format(true, "[", visit(ctx.boolExpr(0)), " U ", visit(ctx.boolExpr(1)), "]");
-            default:        throw new UnsupportedOperationException();
+            case PNPRO:
+                return format(true, "[", visit(ctx.boolExpr(0)), " U ", visit(ctx.boolExpr(1)), "]");
+            default:
+                throw new UnsupportedOperationException();
         }
     }
-    @Override 
-    public FormattedFormula visitBoolExprCTLStarUntil(ExprLangParser.BoolExprCTLStarUntilContext ctx) { 
+
+    @Override
+    public FormattedFormula visitBoolExprCTLStarUntil(ExprLangParser.BoolExprCTLStarUntilContext ctx) {
         switch (lang) {
-            case LATEX:     return format(true, "(", visit(ctx.boolExpr(0)), "~\\mathrm{U}~", visit(ctx.boolExpr(1)), ")");
+            case LATEX:
+                return format(true, "(", visit(ctx.boolExpr(0)), "~\\mathrm{U}~", visit(ctx.boolExpr(1)), ")");
             case GREATSPN:
-            case PNPRO:     return format(true, "[", visit(ctx.boolExpr(0)), " U ", visit(ctx.boolExpr(1)), "]");
-            default:        throw new UnsupportedOperationException();
+            case PNPRO:
+                return format(true, "[", visit(ctx.boolExpr(0)), " U ", visit(ctx.boolExpr(1)), "]");
+            default:
+                throw new UnsupportedOperationException();
         }
     }
-    @Override 
-    public FormattedFormula visitBoolExprCTLStar(ExprLangParser.BoolExprCTLStarContext ctx) { 
+
+    @Override
+    public FormattedFormula visitBoolExprCTLStar(ExprLangParser.BoolExprCTLStarContext ctx) {
         return format(true, ctx.op.getText(), " ", visit(ctx.boolExpr()));
     }
-    @Override 
-    public FormattedFormula visitBoolExprCTLStar2(ExprLangParser.BoolExprCTLStar2Context ctx) { 
+
+    @Override
+    public FormattedFormula visitBoolExprCTLStar2(ExprLangParser.BoolExprCTLStar2Context ctx) {
         return format(true, visit(ctx.composite_temporal_op_ctlstar()), " ", visit(ctx.boolExpr()));
     }
 
-    
     //==========================================================================
     //  Multiset terms:
     //==========================================================================
-    
     @Override
     public FormattedFormula visitColorVarIdentifier(ExprLangParser.ColorVarIdentifierContext ctx) {
         ruleNotAvailableForConstExpr("color variable"); // color vars cannot appear in constant multiset expr.
-        ColorVar var = (ColorVar)context.getNodeByUniqueName(ctx.COLORVAR_ID().getText());
+        ColorVar var = (ColorVar) context.getNodeByUniqueName(ctx.COLORVAR_ID().getText());
         // Color variables are recognized only if there is the colorVarsInUse[] set in the context.
-        if (var == null/* || context.colorVarsInUse == null*/)
+        if (var == null/* || context.colorVarsInUse == null*/) {
             return unknownId(ctx.COLORVAR_ID());
-        if (context.colorVarsInUse != null)
+        }
+        if (context.colorVarsInUse != null) {
             context.colorVarsInUse.add(var);
-        
+        }
+
         return formatPayload(true, new MultiSetElemType(var, context), var);
     }
 
@@ -1586,13 +1691,13 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 switch (lang) {
                     case LATEX:
                         altId = AlternateNameFunction.NUMBERS_AS_SUBSCRIPTS
-                                    .prepareLatexText(id, null, NetObject.STYLE_ROMAN);
+                                .prepareLatexText(id, null, NetObject.STYLE_ROMAN);
                         break;
                     case PNML:
                         throw new UnsupportedOperationException("Static subclasses are not supporeted in PNML.");
                     case NETLOGO:
                         altId = id;
-                        break;                        
+                        break;
                     default:
                         throw new UnsupportedOperationException();
                 }
@@ -1601,7 +1706,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         }
         return unknownId(ctx.COLORSUBCLASS_ID()); // unknown static subclass id
     }
-    
+
 //    @Override
 //    public FormattedFormula visitMSetTermColorVar(ExprLangParser.MSetTermColorVarContext ctx) {
 //        return visit(ctx.colorVar());
@@ -1618,18 +1723,15 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 //        FormattedFormula var = visit(ctx.colorVar());
 //        return formatUnaryFn(ExprLangParser.POSTDECR, var).addPayload(var.getPayload());
 //    }
-
 //    @Override
 //    public FormattedFormula visitMSetTermColorClass(ExprLangParser.MSetTermColorClassContext ctx) {
 //        ColorClass cc = (ColorClass)context.getNodeByUniqueName(ctx.SIMPLECOLORCLASS_ID().getText());
 //        return formatPayload(true, new MultiSetElemType(cc)/*payload*/, cc);
 //    }
-
 //    @Override
 //    public FormattedFormula visitMSetTermSubclass(ExprLangParser.MSetTermSubclassContext ctx) {
 //        return visit(ctx.colorSubclass());
 //    }
-
 //    @Override
 //    public FormattedFormula visitMSetTermColorName(ExprLangParser.MSetTermColorNameContext ctx) {
 //        String id = ctx.COLOR_ID().getText();
@@ -1647,7 +1749,6 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 //        }
 //        return unknownId(ctx.COLOR_ID()); // unknown color name - could this happen?
 //    }
-
 //    @Override
 //    public FormattedFormula visitMSetTermSubclass(ExprLangParser.MSetTermSubclassContext ctx) {
 ////        for (Node node : context.page.nodes) {
@@ -1669,24 +1770,20 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 //        String altText = AlternateNameFunction.NUMBERS_AS_SUBSCRIPTS.prepareLatexText(text, null, NetObject.STYLE_ROMAN);
 //        return new FormattedFormula(true, text, altText);
 //    }
-
-    
 //    @Override
 //    public FormattedFormula visitMSetTermAll(ExprLangParser.MSetTermAllContext ctx) {
 //        return new FormattedFormula(true, "All", "\\text{All}", ALL_ELEM_TYPE);
 //    }
-
 //    @Override
 //    public FormattedFormula visitMSetElemTerm(ExprLangParser.MSetElemTermContext ctx) {
 //        return visit(ctx.multiSetTerm());
 //    }
-
     @Override
     public FormattedFormula visitMSetElemAddSub(ExprLangParser.MSetElemAddSubContext ctx) {
         FormattedFormula e0 = visit(ctx.multiSetElem(0));
         FormattedFormula e1 = visit(ctx.multiSetElem(1));
-        MultiSetElemType payload0 = (MultiSetElemType)e0.getPayload();
-        MultiSetElemType payload1 = (MultiSetElemType)e1.getPayload();
+        MultiSetElemType payload0 = (MultiSetElemType) e0.getPayload();
+        MultiSetElemType payload1 = (MultiSetElemType) e1.getPayload();
         MultiSetElemType outPayload = payload0.join(payload1, context);
         if (lang == GRML) {
             if (ctx.op.getType() == ExprLangParser.SUB) {
@@ -1701,11 +1798,10 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     public FormattedFormula visitMSetElemColorTerm(ExprLangParser.MSetElemColorTermContext ctx) {
         return visit(ctx.colorSet());
     }
-    
+
     //==========================================================================
     //  Color Sets:
     //==========================================================================
-    
     @Override
     public FormattedFormula visitColorSetTerm(ExprLangParser.ColorSetTermContext ctx) {
         return visit(ctx.colorTerm());
@@ -1715,7 +1811,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     public FormattedFormula visitColorSetAll(ExprLangParser.ColorSetAllContext ctx) {
         switch (lang) {
             case LATEX:
-                return formatPayload(true, ALL_ELEM_TYPE, "\\text{All}");                
+                return formatPayload(true, ALL_ELEM_TYPE, "\\text{All}");
             case PNML:
             case GRML:
                 return formatPayload(true, ALL_ELEM_TYPE, "ALL_TERM"/* will be changed in visitMultiSetDef */);
@@ -1749,18 +1845,18 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 
     @Override
     public FormattedFormula visitColorSetClass(ExprLangParser.ColorSetClassContext ctx) {
-        ColorClass cc = (ColorClass)context.getNodeByUniqueName(ctx.SIMPLECOLORCLASS_ID().getText());
+        ColorClass cc = (ColorClass) context.getNodeByUniqueName(ctx.SIMPLECOLORCLASS_ID().getText());
         switch (lang) {
             case GREATSPN:
             case LATEX:
                 return formatPayload(true, new MultiSetElemType(cc)/*payload*/, cc);
             case PNML:
                 return formatPayload(true, new MultiSetElemType(cc)/*payload*/,
-                        "<all><usersort declaration=\""+cc.getUniqueName()+"\"/></all>");
+                        "<all><usersort declaration=\"" + cc.getUniqueName() + "\"/></all>");
             case GRML:
                 return formatPayload(true, new MultiSetElemType(cc)/*payload*/,
-                        "<attribute name=\"function\"><attribute name=\"all\"><attribute name=\"type\">"+
-                                cc.getUniqueName()+"</attribute></attribute></attribute>");
+                        "<attribute name=\"function\"><attribute name=\"all\"><attribute name=\"type\">"
+                        + cc.getUniqueName() + "</attribute></attribute></attribute>");
             default:
                 throw new UnsupportedOperationException();
         }
@@ -1768,47 +1864,46 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 
     @Override
     public FormattedFormula visitColorSetClass2(ExprLangParser.ColorSetClass2Context ctx) {
-        ColorClass cc = (ColorClass)context.getNodeByUniqueName(ctx.SIMPLECOLORCLASS_ID().getText());
+        ColorClass cc = (ColorClass) context.getNodeByUniqueName(ctx.SIMPLECOLORCLASS_ID().getText());
         return formatPayload(true, new MultiSetElemType(cc)/*payload*/, "\\text{S} ", cc);
     }
 
     //==========================================================================
     //  Color Terms:
     //==========================================================================
-
     @Override
     public FormattedFormula visitColorTermColor(ExprLangParser.ColorTermColorContext ctx) {
         String id = ctx.COLOR_ID().getText();
         Iterator<ColorClass> ccIt = context.colorClassIterator();
         while (ccIt.hasNext()) {
             ColorClass cc = ccIt.next();
-            if (!cc.isSimpleClass())
+            if (!cc.isSimpleClass()) {
                 continue;
+            }
             if (cc.testHasColorNamed(context, id)) {
                 String clrId;
                 switch (lang) {
                     case LATEX:
                         clrId = AlternateNameFunction.NUMBERS_AS_SUBSCRIPTS
-                                        .prepareLatexText(id, null, NetObject.STYLE_ITALIC);
+                                .prepareLatexText(id, null, NetObject.STYLE_ITALIC);
                         break;
                     case PNML:
-                        if (cc.isSimpleFiniteIntRange()) { 
+                        if (cc.isSimpleFiniteIntRange()) {
                             // convert the color name into an index
                             ParsedColorSubclass pcs = cc.getSubclass(0);
                             id = id.substring(pcs.getIntervalPrefix().length());
-                            clrId = " <finiteintrangeconstant value=\""+id+"\">"
-                            + "<finiteintrange start=\""+pcs.getStartRangeExpr()+"\" "
-                                    + "end=\""+pcs.getEndRangeExpr()+"\"/>"
-                            + "</finiteintrangeconstant>";
-                        }
-                        else {
-                            clrId = "<useroperator declaration=\""+id+"\"/>";
+                            clrId = " <finiteintrangeconstant value=\"" + id + "\">"
+                                    + "<finiteintrange start=\"" + pcs.getStartRangeExpr() + "\" "
+                                    + "end=\"" + pcs.getEndRangeExpr() + "\"/>"
+                                    + "</finiteintrangeconstant>";
+                        } else {
+                            clrId = "<useroperator declaration=\"" + id + "\"/>";
                         }
                         break;
                     case GRML:
-                        clrId = "<attribute name=\"expr\"><attribute name=\"enumConst\"><attribute name=\"type\">"+
-                                cc.getUniqueName()+"</attribute><attribute name=\"enumValue\">"+id+
-                                "</attribute></attribute></attribute>";
+                        clrId = "<attribute name=\"expr\"><attribute name=\"enumConst\"><attribute name=\"type\">"
+                                + cc.getUniqueName() + "</attribute><attribute name=\"enumValue\">" + id
+                                + "</attribute></attribute></attribute>";
                         break;
                     case NETLOGO:
                         clrId = id;
@@ -1824,7 +1919,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 
     @Override
     public FormattedFormula visitColorTermVar(ExprLangParser.ColorTermVarContext ctx) {
-         return visit(ctx.colorVar());
+        return visit(ctx.colorVar());
     }
 
     @Override
@@ -1838,18 +1933,17 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 //                                                          : ExprLangParser.POSTDECR;
 //        return colorTermNextPrev(visit(ctx.colorTerm()), ctx.colorTerm().getText(), op);
 //    }
-    
     private FormattedFormula colorTermNextPrev(FormattedFormula term, String termText, int op) {
         if (term.getPayload() != null && term.getPayload() instanceof MultiSetElemType) {
             // Check that the class of this term is circular
-            MultiSetElemType mset = (MultiSetElemType)term.getPayload();
+            MultiSetElemType mset = (MultiSetElemType) term.getPayload();
             if (!mset.colorClass.isCircular() && strictColorExpressionChecks) {
-                context.addNewError("Cannot ask next/previous color of term "+
-                        termText+" of unordered color class "+
-                        mset.colorClass.getUniqueName()+". Use a circular color class.");
+                context.addNewError("Cannot ask next/previous color of term "
+                        + termText + " of unordered color class "
+                        + mset.colorClass.getUniqueName() + ". Use a circular color class.");
             }
         }
-        return formatUnaryFn(op, term).addPayload(term.getPayload());        
+        return formatUnaryFn(op, term).addPayload(term.getPayload());
     }
 
     @Override
@@ -1858,11 +1952,11 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case PNPRO:
             case LATEX:
             case GREATSPN: {
-                int index = (ctx.INT()!= null ? Integer.parseInt(ctx.INT().getText()) : 0);
-                String className = (ctx.SIMPLECOLORCLASS_ID()!=null ? ctx.SIMPLECOLORCLASS_ID().getText() : null);
+                int index = (ctx.INT() != null ? Integer.parseInt(ctx.INT().getText()) : 0);
+                String className = (ctx.SIMPLECOLORCLASS_ID() != null ? ctx.SIMPLECOLORCLASS_ID().getText() : null);
                 MultiSetElemType ty = null;
-                
-                if (className!=null && ctx.INT()==null) {
+
+                if (className != null && ctx.INT() == null) {
                     // if only the color class is provided and not an index, the color name
                     // should appear only once in the color domain
                     int colorCount = 0;
@@ -1870,22 +1964,23 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                         if (className.equals(context.colorDomainOfExpr.getColorClassName(cc))) {
                             ++colorCount;
                             if (colorCount > 1) {
-                                context.addNewError("Color domain "+context.colorDomainOfExpr.getUniqueName()+
-                                                    " have multiple instances of "+className+": an index must be specified.");
+                                context.addNewError("Color domain " + context.colorDomainOfExpr.getUniqueName()
+                                        + " have multiple instances of " + className + ": an index must be specified.");
                                 break;
                             }
                         }
                     }
                 }
-                if (className==null && ctx.INT()==null) {
+                if (className == null && ctx.INT() == null) {
                     context.addNewError("'@': either a class name or an index in the color domain tuple (or both) must be specified");
                 }
-                
+
                 // find the element index in the color tuple
                 int found = -1;
                 for (int cc = 0, index2 = index; cc < context.colorDomainOfExpr.getNumClassesInDomain(); cc++) {
-                    if (className!=null && !className.equals(context.colorDomainOfExpr.getColorClassName(cc)))
+                    if (className != null && !className.equals(context.colorDomainOfExpr.getColorClassName(cc))) {
                         continue; // not the same class
+                    }
                     if (index2 > 0) {
                         --index2;
                         continue; // not the i-th instance
@@ -1895,18 +1990,18 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 }
                 if (found == -1) {
                     if (className != null) {
-                        context.addNewError("Color domain "+context.colorDomainOfExpr.getUniqueName()+
-                                            " does not have "+index+" of color class "+className);
+                        context.addNewError("Color domain " + context.colorDomainOfExpr.getUniqueName()
+                                + " does not have " + index + " of color class " + className);
                     } else {
-                        context.addNewError("Color domain "+context.colorDomainOfExpr.getUniqueName()+
-                                            " does not have "+index+" color classes.");                        
+                        context.addNewError("Color domain " + context.colorDomainOfExpr.getUniqueName()
+                                + " does not have " + index + " color classes.");
                     }
 //                    context.addNewError("Domain index "+index+" must be in range [0, "
 //                                        +context.colorDomainOfExpr.getNumClassesInDomain()+").");
                     ty = new MultiSetElemType(ALL_COLORS);
-                }
-                else
+                } else {
                     ty = new MultiSetElemType(context.colorDomainOfExpr.getColorClass(found));
+                }
 //                if (index < 0 || index >= context.colorDomainOfExpr.getNumClassesInDomain()) {
 //                    context.addNewError("Domain index "+index+" must be in range [0, "
 //                                        +context.colorDomainOfExpr.getNumClassesInDomain()+").");
@@ -1915,12 +2010,14 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 //                else {
 //                    ty = new MultiSetElemType(context.colorDomainOfExpr.getColorClass(index));
 //                }
-                
+
                 FormattedFormula f = format(true, '@');
-                if (ctx.SIMPLECOLORCLASS_ID()!=null)
+                if (ctx.SIMPLECOLORCLASS_ID() != null) {
                     f = format(true, f, className);
-                if (ctx.INT()!= null)
+                }
+                if (ctx.INT() != null) {
                     f = format(true, f, "[", index, "]");
+                }
                 return f.addPayload(ty);
             }
             default:
@@ -1931,43 +2028,48 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     //==========================================================================
     //  Payloads of multiset expressions:
     //==========================================================================
-    
-    private static class AllColorsObj { }
+    private static class AllColorsObj {
+    }
     private static final AllColorsObj ALL_COLORS = new AllColorsObj();
-    
+
     static class MultiSetElemType implements FormulaPayload {
+
         public final ColorClass colorClass;
 
-        public MultiSetElemType(AllColorsObj a) { 
+        public MultiSetElemType(AllColorsObj a) {
             this.colorClass = null;
         }
+
         public MultiSetElemType(ColorClass colorClass) {
             this.colorClass = colorClass;
         }
+
         public MultiSetElemType(ColorVar colorVar, NodeNamespace nspace) {
             this.colorClass = colorVar.findColorClass(nspace);
         }
+
         public MultiSetElemType join(MultiSetElemType elemType, ParserContext context) {
-            if (this == ALL_ELEM_TYPE)
+            if (this == ALL_ELEM_TYPE) {
                 return elemType;
-            if (elemType == ALL_ELEM_TYPE)
+            }
+            if (elemType == ALL_ELEM_TYPE) {
                 return this;
-            
+            }
+
             if (colorClass != elemType.colorClass) {
-                context.addNewError("Color class mismatch: could not add/subtract "+
-                        "colors of two separate color classes "+colorClass.getUniqueName()+
-                        " and "+elemType.colorClass.getUniqueName());
+                context.addNewError("Color class mismatch: could not add/subtract "
+                        + "colors of two separate color classes " + colorClass.getUniqueName()
+                        + " and " + elemType.colorClass.getUniqueName());
                 return this;
             }
             return new MultiSetElemType(colorClass);
         }
     }
     private static final MultiSetElemType ALL_ELEM_TYPE = new MultiSetElemType(ALL_COLORS);
-    
+
     //==========================================================================
     //  Multiset boolean predicates:
     //==========================================================================
-
     @Override
     public FormattedFormula visitMSetBoolPredicate(ExprLangParser.MSetBoolPredicateContext ctx) {
         switch (lang) {
@@ -1975,7 +2077,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case LATEX:
             case GREATSPN:
                 return format(true, "[", visit(ctx.boolExpr()), "]");
-                
+
             default:
                 throw new UnsupportedOperationException("MultiSet predicates are not supported.");
         }
@@ -1988,25 +2090,21 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case LATEX:
             case GREATSPN:
                 return format(true, "\\bigl[", visit(ctx.boolExpr()), "\\bigr]");
-                
+
             default:
                 throw new UnsupportedOperationException("MultiSet filter predicates are not supported.");
         }
     }
-    
-  
+
     //==========================================================================
     //  Integer multiset expression:
     //==========================================================================
-    
-    
-    public FormattedFormula visitMultiSetDef(ParseTree mult, ParseTree pred, 
-                                             List<ExprLangParser.MultiSetElemContext> msetElemList,
-                                             ParseTree filterPred) 
-    {
+    public FormattedFormula visitMultiSetDef(ParseTree mult, ParseTree pred,
+            List<ExprLangParser.MultiSetElemContext> msetElemList,
+            ParseTree filterPred) {
         final ColorClass fixedDomain = context.colorDomainOfExpr;
         StringBuilder buffer = new StringBuilder();
-        
+
         // Multiplicity & beginning of tuple
         switch (lang) {
             case LATEX:
@@ -2034,15 +2132,17 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case GRML:
                 buffer.append("<attribute name=\"token\">");
                 buffer.append("<attribute name=\"occurs\">");
-                if (mult != null) 
+                if (mult != null) {
                     buffer.append(visit(mult).getFormula());
-                else
+                } else {
                     buffer.append("<attribute name=\"intValue\">1</attribute>");
+                }
                 buffer.append("</attribute><attribute name=\"tokenProfile\">");
                 break;
             case NETLOGO:
-                if (mult != null)
+                if (mult != null) {
                     throw new UnsupportedOperationException("Tuple multiplicity is not supported!");
+                }
                 buffer.append("<");
                 break;
             default:
@@ -2052,36 +2152,36 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         MultiSetElemType[] elemTypes = new MultiSetElemType[msetElemList.size()];
         for (ParserRuleContext node : msetElemList) {
             FormattedFormula msetElem = visit(node);
-            MultiSetElemType elemType = (MultiSetElemType)msetElem.getPayload();
+            MultiSetElemType elemType = (MultiSetElemType) msetElem.getPayload();
             elemTypes[count] = elemType;
-            
+
             ColorClass expectedClass = null;
             if (fixedDomain != null) {
                 // Verify that we are respecting the fixed domain
                 if (count >= fixedDomain.getNumClassesInDomain()) {
-                    context.addNewError("Unexpected entry "+msetElem.getFormula()+", domain "+
-                                        fixedDomain.getUniqueName()+
-                                        " has "+fixedDomain.getNumClassesInDomain()+" color classes.");
-                }
-                else {
-                    if (elemType != null) { /*could be null in case of unknown id */ 
+                    context.addNewError("Unexpected entry " + msetElem.getFormula() + ", domain "
+                            + fixedDomain.getUniqueName()
+                            + " has " + fixedDomain.getNumClassesInDomain() + " color classes.");
+                } else {
+                    if (elemType != null) {
+                        /*could be null in case of unknown id */
                         if (fixedDomain.isParseDataOk()) {
-                            if (fixedDomain.isSimpleClass())
+                            if (fixedDomain.isSimpleClass()) {
                                 expectedClass = fixedDomain;
-                            else if (fixedDomain.getColorClassName(count) != null) {
+                            } else if (fixedDomain.getColorClassName(count) != null) {
                                 Node ccNode = context.getNodeByUniqueName(fixedDomain.getColorClassName(count));
-                                if (ccNode != null && ccNode instanceof ColorClass)
-                                    expectedClass = (ColorClass)ccNode;
+                                if (ccNode != null && ccNode instanceof ColorClass) {
+                                    expectedClass = (ColorClass) ccNode;
+                                }
                             }
                         }
-                        if (elemType != ALL_ELEM_TYPE && /* ALL term does not declare its type */
-                            elemType.colorClass != null && /* Could be a color var with a wrong color domain */
-                            expectedClass != null && /* wrong domain definition */
-                            elemType.colorClass != expectedClass) 
-                        {
-                            context.addNewError("Entry "+msetElem.getFormula()+" should be of color "+
-                                    fixedDomain.getColorClassName(count)+
-                                    " instead of "+elemType.colorClass.getUniqueName());
+                        if (elemType != ALL_ELEM_TYPE
+                                && /* ALL term does not declare its type */ elemType.colorClass != null
+                                && /* Could be a color var with a wrong color domain */ expectedClass != null
+                                && /* wrong domain definition */ elemType.colorClass != expectedClass) {
+                            context.addNewError("Entry " + msetElem.getFormula() + " should be of color "
+                                    + fixedDomain.getColorClassName(count)
+                                    + " instead of " + elemType.colorClass.getUniqueName());
                         }
                     }
                 }
@@ -2089,14 +2189,15 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             switch (lang) {
                 case LATEX:
                 case NETLOGO:
-                    if (count > 0)
+                    if (count > 0) {
                         buffer.append(", ");
+                    }
                     buffer.append(msetElem.getFormula());
                     break;
                 case PNML: {
                     String subterm = msetElem.getFormula();
-                    subterm = subterm.replaceAll("ALL_TERM", "<all><usersort declaration=\""+
-                            expectedClass.getUniqueName()+"\"/></all>");
+                    subterm = subterm.replaceAll("ALL_TERM", "<all><usersort declaration=\""
+                            + expectedClass.getUniqueName() + "\"/></all>");
                     buffer.append("<subterm>").append(subterm).append("</subterm>");
 //                        if (elemType == ALL_ELEM_TYPE) {
 //                            if (expectedClass == null)
@@ -2108,16 +2209,16 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 //                        else {
 //                            buffer.append("<subterm>").append(msetElem.getFormula()).append("</subterm>");
 //                        }
-                    }
-                    break;
+                }
+                break;
                 case GRML: {
                     String subterm = msetElem.getFormula();
-                    subterm = subterm.replaceAll("ALL_TERM", 
-                                "<attribute name=\"function\"><attribute name=\"all\"><attribute name=\"type\">"+
-                                expectedClass.getUniqueName()+"</attribute></attribute></attribute>");
+                    subterm = subterm.replaceAll("ALL_TERM",
+                            "<attribute name=\"function\"><attribute name=\"all\"><attribute name=\"type\">"
+                            + expectedClass.getUniqueName() + "</attribute></attribute></attribute>");
                     buffer.append("<attribute name=\"expr\">").append(subterm).append("</attribute>");
-                    }
-                    break;
+                }
+                break;
                 default:
                     throw new UnsupportedOperationException();
             }
@@ -2134,8 +2235,9 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 break;
             case PNML:
                 buffer.append("</tuple>");
-                if (mult != null)
+                if (mult != null) {
                     buffer.append("</subterm></numberof>");
+                }
                 if (filterPred != null) {
                     context.addNewError("Multiset filter predicates are not supported in PNML.");
                 }
@@ -2151,25 +2253,25 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         }
 
         ColorClass resultDomain = null;
-        if (fixedDomain != null) { 
+        if (fixedDomain != null) {
             if (count != fixedDomain.getNumClassesInDomain()) {
-                context.addNewError("Multiset element of domain "+fixedDomain.getUniqueName()+
-                                    " should have "+fixedDomain.getNumClassesInDomain()+" entry(s), found "+count);
+                context.addNewError("Multiset element of domain " + fixedDomain.getUniqueName()
+                        + " should have " + fixedDomain.getNumClassesInDomain() + " entry(s), found " + count);
             }
             resultDomain = fixedDomain;
-        }
-        else {
+        } else {
             // Search for a valid color domain.
             Iterator<ColorClass> ccIt = context.colorClassIterator();
             while (ccIt.hasNext()) {
                 ColorClass cc = ccIt.next();
                 if (cc.isParseDataOk() && cc.getNumClassesInDomain() == elemTypes.length) {
                     boolean matches = true;
-                    for (int i=0; i<elemTypes.length; i++) 
+                    for (int i = 0; i < elemTypes.length; i++) {
                         if (elemTypes[i].colorClass != cc.getColorClass(i)) {
                             matches = false;
                             break;
                         }
+                    }
                     if (matches) {
                         resultDomain = cc;
                         break;
@@ -2177,7 +2279,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 }
             }
             if (resultDomain == null) {
-                context.addNewError("Multiset expression "+buffer.toString()+" is not in a defined color domain.");
+                context.addNewError("Multiset expression " + buffer.toString() + " is not in a defined color domain.");
             }
         }
         return formatPayload(false, resultDomain, buffer.toString());
@@ -2187,7 +2289,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     public FormattedFormula visitIntMSetExprParen(ExprLangParser.IntMSetExprParenContext ctx) {
         return formatUnaryFn(ExprLangParser.OP_PAREN, visit(ctx.intMSetExpr()));
     }
-    
+
     @Override
     public FormattedFormula visitIntMSetExprAddSub(ExprLangParser.IntMSetExprAddSubContext ctx) {
         FormattedFormula e0 = visit(ctx.intMSetExpr(0)), e1 = visit(ctx.intMSetExpr(1));
@@ -2200,7 +2302,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         }
         return formatBinaryFn(ctx.op.getType(), e0, e1);
     }
-    
+
     @Override
     public FormattedFormula visitIntMSetExprElemProduct(ExprLangParser.IntMSetExprElemProductContext ctx) {
         return visitMultiSetDef(ctx.intExpr(), ctx.mSetPredicate(), ctx.multiSetElem(), ctx.mSetElemPredicate());
@@ -2210,23 +2312,22 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     public FormattedFormula visitIntMsetExprPlaceMarking(ExprLangParser.IntMsetExprPlaceMarkingContext ctx) {
         ruleNotAvailableForConstExpr("place marking");
         final ColorClass fixedDomain = context.colorDomainOfExpr;
-        Place place = (Place)context.getNodeByUniqueName(ctx.INT_MSET_PLACE_ID().getText());
+        Place place = (Place) context.getNodeByUniqueName(ctx.INT_MSET_PLACE_ID().getText());
         if (fixedDomain != null && !place.getColorDomainName().equals(fixedDomain.getUniqueName())) {
-            context.addNewError("Place "+place.getUniqueName()+" is in domain "+
-                                place.getColorDomainName()+
-                                ", expected expression in domain "+fixedDomain.getUniqueName());
+            context.addNewError("Place " + place.getUniqueName() + " is in domain "
+                    + place.getColorDomainName()
+                    + ", expected expression in domain " + fixedDomain.getUniqueName());
         }
         switch (lang) { // same for visitRealMsetExprPlaceMarking
             case LATEX:
                 return format(true, "\\#", place.getUniqueNameDecor().getVisualizedValue());
-                
+
             case GREATSPN:
             case PNPRO:
                 return format(true, "#" + ctx.INT_MSET_PLACE_ID().getText());
-                
+
 //            case APNN:
 //                return format(true, ctx.INT_MSET_PLACE_ID().getText());
-
             default:
                 throw new UnsupportedOperationException("visitIntMsetExprPlaceMarking");
         }
@@ -2235,24 +2336,23 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     @Override
     public FormattedFormula visitIntMSetExprConst(ExprLangParser.IntMSetExprConstContext ctx) {
         final ColorClass fixedDomain = context.colorDomainOfExpr;
-        ConstantID intConstId = (ConstantID)context.getNodeByUniqueName(ctx.INT_MSET_CONST_ID().getText());
+        ConstantID intConstId = (ConstantID) context.getNodeByUniqueName(ctx.INT_MSET_CONST_ID().getText());
         if (fixedDomain != null && !intConstId.getColorDomainName().equals(fixedDomain.getUniqueName())) {
-            context.addNewError("Constant "+intConstId.getUniqueName()+" is in domain "+
-                                intConstId.getColorDomainName()+
-                                ", expected expression in domain "+fixedDomain.getUniqueName());
+            context.addNewError("Constant " + intConstId.getUniqueName() + " is in domain "
+                    + intConstId.getColorDomainName()
+                    + ", expected expression in domain " + fixedDomain.getUniqueName());
         }
         return format(true, intConstId);
     }
-    
+
     //==========================================================================
     //  Real multiset expression:
     //==========================================================================
-    
     @Override
     public FormattedFormula visitRealMSetExprParen(ExprLangParser.RealMSetExprParenContext ctx) {
         return formatUnaryFn(ExprLangParser.OP_PAREN, visit(ctx.realMSetExpr()));
     }
-    
+
     @Override
     public FormattedFormula visitRealMSetExprAddSub(ExprLangParser.RealMSetExprAddSubContext ctx) {
         FormattedFormula e0 = visit(ctx.realMSetExpr(0)), e1 = visit(ctx.realMSetExpr(1));
@@ -2264,29 +2364,28 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     public FormattedFormula visitRealMSetExprElemProduct(ExprLangParser.RealMSetExprElemProductContext ctx) {
         return visitMultiSetDef(ctx.realExpr(), ctx.mSetPredicate(), ctx.multiSetElem(), ctx.mSetElemPredicate());
     }
-    
+
     @Override
     public FormattedFormula visitRealMsetExprPlaceMarking(ExprLangParser.RealMsetExprPlaceMarkingContext ctx) {
         ruleNotAvailableForConstExpr("place marking");
         requireLatexLanguage();
         final ColorClass fixedDomain = context.colorDomainOfExpr;
-        Place place = (Place)context.getNodeByUniqueName(ctx.REAL_MSET_PLACE_ID().getText());
+        Place place = (Place) context.getNodeByUniqueName(ctx.REAL_MSET_PLACE_ID().getText());
         if (fixedDomain != null && !place.getColorDomainName().equals(fixedDomain.getUniqueName())) {
-            context.addNewError("Place "+place.getUniqueName()+" is in domain "+
-                                place.getColorDomainName()+
-                                ", expected expression in domain "+fixedDomain.getUniqueName());
+            context.addNewError("Place " + place.getUniqueName() + " is in domain "
+                    + place.getColorDomainName()
+                    + ", expected expression in domain " + fixedDomain.getUniqueName());
         }
         switch (lang) { // same for visitRealMsetExprPlaceMarking
             case LATEX:
                 return format(true, "\\#", place.getUniqueNameDecor().getVisualizedValue());
-                
+
             case GREATSPN:
             case PNPRO:
                 return format(true, "#" + ctx.REAL_MSET_PLACE_ID().getText());
-                
+
 //            case APNN:
 //                return format(true, ctx.REAL_MSET_PLACE_ID().getText());
-
             default:
                 throw new UnsupportedOperationException("visitRealMsetExprPlaceMarking");
         }
@@ -2295,41 +2394,41 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     @Override
     public FormattedFormula visitRealMsetExprConst(ExprLangParser.RealMsetExprConstContext ctx) {
         final ColorClass fixedDomain = context.colorDomainOfExpr;
-        ConstantID intConstId = (ConstantID)context.getNodeByUniqueName(ctx.REAL_MSET_CONST_ID().getText());
+        ConstantID intConstId = (ConstantID) context.getNodeByUniqueName(ctx.REAL_MSET_CONST_ID().getText());
         if (fixedDomain != null && !intConstId.getColorDomainName().equals(fixedDomain.getUniqueName())) {
-            context.addNewError("Constant "+intConstId.getUniqueName()+" is in domain "+
-                                intConstId.getColorDomainName()+
-                                ", expected expression in domain "+fixedDomain.getUniqueName());
+            context.addNewError("Constant " + intConstId.getUniqueName() + " is in domain "
+                    + intConstId.getColorDomainName()
+                    + ", expected expression in domain " + fixedDomain.getUniqueName());
         }
         return format(true, intConstId);
     }
-    
+
     //==========================================================================
     //  Color Class definitions:
     //==========================================================================
-    
     private static class SubclassName implements FormulaPayload {
+
         public SubclassName(String name) {
             this.name = name;
         }
         public String name;
     }
-    
+
     @Override
     public FormattedFormula visitColorSubclassNameDef(ExprLangParser.ColorSubclassNameDefContext ctx) {
         requireLatexLanguage();
         String text = ctx.ID().getText();
         String altText = AlternateNameFunction.NUMBERS_AS_SUBSCRIPTS.prepareLatexText(text, null, NetObject.STYLE_ROMAN);
-        return formatPayload(false, new SubclassName(ctx.ID().getText()), 
-                             "\\text{\\bf is }", altText);
+        return formatPayload(false, new SubclassName(ctx.ID().getText()),
+                "\\text{\\bf is }", altText);
     }
-    
+
     @Override
     public FormattedFormula visitColorListIDs(ExprLangParser.ColorListIDsContext ctx) {
         requireLatexLanguage();
         StringBuilder buffer = new StringBuilder("\\{");
         List<String> colorList = new LinkedList<>();
-        
+
         List<TerminalNode> idList = ctx.ID();
         int count = 0;
         for (TerminalNode node : idList) {
@@ -2344,7 +2443,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         String name = null;
         if (ctx.colorSubclassName() != null) {
             FormattedFormula ffName = visit(ctx.colorSubclassName());
-            name = ((SubclassName)ffName.getPayload()).name;
+            name = ((SubclassName) ffName.getPayload()).name;
             buffer.append(ffName.getFormula());
         }
         return formatPayload(true, new ParsedColorSubclass(name, colorList), buffer.toString());
@@ -2353,36 +2452,35 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     @Override
     public FormattedFormula visitColorListInterval(ExprLangParser.ColorListIntervalContext ctx) {
         requireLatexLanguage();
-        FormattedFormula prefix = (ctx.anyID()!= null ? visit(ctx.anyID()) : FormattedFormula.EMPTY_LATEX);
+        FormattedFormula prefix = (ctx.anyID() != null ? visit(ctx.anyID()) : FormattedFormula.EMPTY_LATEX);
         FormattedFormula i0 = visit(ctx.intConst(0)), i1 = visit(ctx.intConst(1));
         String start = ctx.intConst(0).getText(), end = ctx.intConst(1).getText();
         String name = null;
         FormattedFormula ffName = FormattedFormula.EMPTY_LATEX;
         if (ctx.colorSubclassName() != null) {
             ffName = visit(ctx.colorSubclassName());
-            name = ((SubclassName)ffName.getPayload()).name;
+            name = ((SubclassName) ffName.getPayload()).name;
         }
-        return formatPayload(false, new ParsedColorSubclass(name, prefix.getFormula(), start, end), 
-                             prefix, "\\{",i0," .. ",i1,"\\}", ffName);
+        return formatPayload(false, new ParsedColorSubclass(name, prefix.getFormula(), start, end),
+                prefix, "\\{", i0, " .. ", i1, "\\}", ffName);
     }
 
 //    @Override
 //    public FormattedFormula visitColorClassDefSet(ExprLangParser.ColorClassDefSetContext ctx) {
 //        return visit(ctx.colorList());
 //    }
-
     @Override
     public FormattedFormula visitColorClassDefNamedSet(ExprLangParser.ColorClassDefNamedSetContext ctx) {
         requireLatexLanguage();
         StringBuilder buffer = new StringBuilder();
-        
+
         if (ctx.colorClassOrd() != null) {
             for (ExprLangParser.ColorClassOrdContext keyword : ctx.colorClassOrd()) {
-                buffer.append("\\mathbf{").append(keyword.getText()).append("}\\hspace{0.4em}");            
+                buffer.append("\\mathbf{").append(keyword.getText()).append("}\\hspace{0.4em}");
             }
         }
         List<ParsedColorSubclass> subClassList = new LinkedList<>();
-        
+
         List<ExprLangParser.ColorListContext> classNodesList = ctx.colorList();
         int count = 0;
         for (ExprLangParser.ColorListContext node : classNodesList) {
@@ -2390,7 +2488,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 buffer.append(" + ");
             }
             FormattedFormula subClass = visit(node);
-            subClassList.add((ParsedColorSubclass)subClass.getPayload());
+            subClassList.add((ParsedColorSubclass) subClass.getPayload());
             buffer.append(subClass.getFormula());
             count++;
         }
@@ -2403,11 +2501,11 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         requireLatexLanguage();
         StringBuilder buffer = new StringBuilder();
         List<ColorClass> domainList = new LinkedList<>();
-        
+
         List<TerminalNode> domainNodesList = ctx.SIMPLECOLORCLASS_ID();
         int count = 0;
         for (TerminalNode node : domainNodesList) {
-            ColorClass cc = (ColorClass)context.getNodeByUniqueName(node.getText());
+            ColorClass cc = (ColorClass) context.getNodeByUniqueName(node.getText());
             if (count > 0) {
                 buffer.append(" \\times ");
             }
@@ -2421,25 +2519,28 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 
     @Override
     public FormattedFormula visitColorVarDef(ExprLangParser.ColorVarDefContext ctx) {
-        ColorClass cc = (ColorClass)context.getNodeByUniqueName(ctx.SIMPLECOLORCLASS_ID().getText());
-        if (cc == null)
+        ColorClass cc = (ColorClass) context.getNodeByUniqueName(ctx.SIMPLECOLORCLASS_ID().getText());
+        if (cc == null) {
             return unknownId(ctx.SIMPLECOLORCLASS_ID());
+        }
         return formatPayload(true, cc/*payload*/, cc);
     }
 
     @Override
     public FormattedFormula visitPlaceDomainColorClass(ExprLangParser.PlaceDomainColorClassContext ctx) {
-        ColorClass cc = (ColorClass)context.getNodeByUniqueName(ctx.SIMPLECOLORCLASS_ID().getText());
-        if (cc == null)
+        ColorClass cc = (ColorClass) context.getNodeByUniqueName(ctx.SIMPLECOLORCLASS_ID().getText());
+        if (cc == null) {
             return unknownId(ctx.SIMPLECOLORCLASS_ID());
+        }
         return formatPayload(true, cc/*payload*/, cc);
     }
 
     @Override
     public FormattedFormula visitPlaceDomainColorDomain(ExprLangParser.PlaceDomainColorDomainContext ctx) {
-        ColorClass cc = (ColorClass)context.getNodeByUniqueName(ctx.COLORDOMAIN_ID().getText());
-        if (cc == null)
+        ColorClass cc = (ColorClass) context.getNodeByUniqueName(ctx.COLORDOMAIN_ID().getText());
+        if (cc == null) {
             return unknownId(ctx.COLORDOMAIN_ID());
+        }
         return formatPayload(true, cc/*payload*/, cc);
     }
 //    @Override
@@ -2451,7 +2552,6 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     //==========================================================================
     //  Action lists and sets:
     //==========================================================================
-
     @Override
     public FormattedFormula visitActListEmpty(ExprLangParser.ActListEmptyContext ctx) {
         requireLatexLanguage();
@@ -2462,14 +2562,14 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     public FormattedFormula visitActListList(ExprLangParser.ActListListContext ctx) {
         requireLatexLanguage();
         StringBuilder buffer = new StringBuilder("\\{");
-        
+
         List<TerminalNode> actList = ctx.ACTION_ID();
         int count = 0;
         for (TerminalNode node : actList) {
             if (count > 0) {
                 buffer.append(", ");
             }
-            TemplateVariable actName = (TemplateVariable)context.getNodeByUniqueName(node.getText());
+            TemplateVariable actName = (TemplateVariable) context.getNodeByUniqueName(node.getText());
             buffer.append(actName.getVisualizedUniqueName());
             count++;
         }
@@ -2496,7 +2596,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 
     @Override
     public FormattedFormula visitActBindingTransition(ExprLangParser.ActBindingTransitionContext ctx) {
-        Transition trn = (Transition)context.getNodeByUniqueName(ctx.getText());
+        Transition trn = (Transition) context.getNodeByUniqueName(ctx.getText());
         return format(true, trn);
     }
 
@@ -2504,14 +2604,12 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 //    public FormattedFormula visitActSetBoundary(ExprLangParser.ActSetBoundaryContext ctx) {
 //        return new FormattedFormula(true, "\\sharp");
 //    }
-
     //==========================================================================
     //  Language of clock constraints for DTA edges:
     //==========================================================================
-    
     @Override
     public FormattedFormula visitClockVarId(ExprLangParser.ClockVarIdContext ctx) {
-        ClockVar clockVar = (ClockVar)context.getNodeByUniqueName(ctx.CLOCK_ID().getText());
+        ClockVar clockVar = (ClockVar) context.getNodeByUniqueName(ctx.CLOCK_ID().getText());
         return format(true, clockVar);
     }
 
@@ -2539,11 +2637,10 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     public FormattedFormula visitClockConstrAnd(ExprLangParser.ClockConstrAndContext ctx) {
         return formatBinaryFn(ExprLangParser.AND, visit(ctx.clockConstr(0)), visit(ctx.clockConstr(1)));
     }
-    
+
     //==========================================================================
     //  LHA edge reset expression:
     //==========================================================================
-    
     @Override
     public FormattedFormula visitVarUpdateValue(ExprLangParser.VarUpdateValueContext ctx) {
         requireLatexLanguage();
@@ -2554,7 +2651,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     public FormattedFormula visitVarUpdateListList(ExprLangParser.VarUpdateListListContext ctx) {
         requireLatexLanguage();
         FormattedFormula ff = new FormattedFormula(lang, true, "");
-        for (int i=0; i<ctx.varUpdate().size(); i++) {
+        for (int i = 0; i < ctx.varUpdate().size(); i++) {
             ff = format(true, ff, (i > 0 ? ", " : ""), visit(ctx.varUpdate(i)));
         }
         return ff;
@@ -2565,11 +2662,10 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         requireLatexLanguage();
         return format(true, "");
     }
-    
+
     //==========================================================================
     //  Flow indicators for LHA:
     //==========================================================================
-    
     @Override
     public FormattedFormula visitVarFlowListEmpty(ExprLangParser.VarFlowListEmptyContext ctx) {
         requireLatexLanguage();
@@ -2586,50 +2682,53 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     public FormattedFormula visitVarFlowListList(ExprLangParser.VarFlowListListContext ctx) {
         requireLatexLanguage();
         int numVars = ctx.varFlow().size();
-        if (numVars == 1)
+        if (numVars == 1) {
             return visit(ctx.varFlow(0));
+        }
         FormattedFormula ff = new FormattedFormula(ExpressionLanguage.LATEX, true, "\\begin{array}{c}");
-        for (int i=0; i<numVars; i++)
-            ff = format(true, ff, visit(ctx.varFlow(i)), (i==numVars-1 ? "\\end{array}" : "\\\\"));
+        for (int i = 0; i < numVars; i++) {
+            ff = format(true, ff, visit(ctx.varFlow(i)), (i == numVars - 1 ? "\\end{array}" : "\\\\"));
+        }
         return ff;
     }
-    
-    
+
     //==========================================================================
     //  Performance measures:
     //==========================================================================
-    
-    private FormattedFormula formatMeasure(char PEX, Object f1, ParserRuleContext cond, 
-            ParserRuleContext mult) 
-    {
+    private FormattedFormula formatMeasure(char PEX, Object f1, ParserRuleContext cond,
+            ParserRuleContext mult) {
         FormattedFormula ff;
         switch (lang) {
             case LATEX:
-                if (cond == null)
-                    ff = format(true, "\\mathrm{"+PEX+"}\\left\\{", f1, "\\right\\}");
-                else
-                    ff = format(true, "\\mathrm{"+PEX+"}\\left\\{", f1, "/", cond, "\\right\\}");
-                
-                if (mult != null)
+                if (cond == null) {
+                    ff = format(true, "\\mathrm{" + PEX + "}\\left\\{", f1, "\\right\\}");
+                } else {
+                    ff = format(true, "\\mathrm{" + PEX + "}\\left\\{", f1, "/", cond, "\\right\\}");
+                }
+
+                if (mult != null) {
                     ff = format(false, mult, " \\cdot ", ff);
+                }
                 return ff;
-                
+
             case GREATSPN:
             case PNPRO:
-                if (cond == null)
-                    ff = format(true, PEX+"{ ", f1, " }");
-                else
-                    ff = format(true, PEX+"{ ", f1, " / ", cond, " }");
-                
-                if (mult != null)
+                if (cond == null) {
+                    ff = format(true, PEX + "{ ", f1, " }");
+                } else {
+                    ff = format(true, PEX + "{ ", f1, " / ", cond, " }");
+                }
+
+                if (mult != null) {
                     ff = format(true/* still simple term */, mult, " ", ff);
+                }
                 return ff;
-                
+
             default:
                 throw new UnsupportedOperationException();
         }
     }
-    
+
     @Override
     public FormattedFormula visitMeasureP(ExprLangParser.MeasurePContext ctx) {
         return formatMeasure('P', ctx.boolExpr(), null, ctx.realConst());
@@ -2642,21 +2741,20 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 
     @Override
     public FormattedFormula visitMeasureX(ExprLangParser.MeasureXContext ctx) {
-        return formatMeasure('X', format(true, ctx.TRANSITION_ID().getText()), 
-                             ctx.boolExpr(), ctx.realConst());
+        return formatMeasure('X', format(true, ctx.TRANSITION_ID().getText()),
+                ctx.boolExpr(), ctx.realConst());
     }
 
     @Override
     public FormattedFormula visitMeasureAddSub(ExprLangParser.MeasureAddSubContext ctx) {
         return format(false, visit(ctx.measure(0)),
-                      (ctx.op.getType() == ExprLangLexer.ADD ? " + " : " - "),
-                      visit(ctx.measure(1)));
+                (ctx.op.getType() == ExprLangLexer.ADD ? " + " : " - "),
+                visit(ctx.measure(1)));
     }
 
     //==========================================================================
     //  CSL^TA state formula language:
     //==========================================================================
-    
     @Override
     public FormattedFormula visitCsltaExprNot(ExprLangParser.CsltaExprNotContext ctx) {
         return format(false, "\\neg ", visit(ctx.csltaExpr()));
@@ -2679,7 +2777,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 
     @Override
     public FormattedFormula visitCsltaExprPlace(ExprLangParser.CsltaExprPlaceContext ctx) {
-        Place place = (Place)context.getNodeByUniqueName(ctx.INT_PLACE_ID().getText());
+        Place place = (Place) context.getNodeByUniqueName(ctx.INT_PLACE_ID().getText());
         return format(true, place);
     }
 
@@ -2690,9 +2788,9 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 
     @Override
     public FormattedFormula visitCsltaExprProbTA(ExprLangParser.CsltaExprProbTAContext ctx) {
-        FormattedFormula ff = format(false, "\\mathcal{P}_{", ctx.op, visit(ctx.q),"}\\text{",ctx.dtaName,"}");
+        FormattedFormula ff = format(false, "\\mathcal{P}_{", ctx.op, visit(ctx.q), "}\\text{", ctx.dtaName, "}");
         ff = format(false, ff, "(");
-        
+
         DtaSignature sig = null;
         if (context.knownDtas != null) {
             for (DtaSignature ds : context.knownDtas) {
@@ -2703,14 +2801,16 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 }
             }
         }
-        if (sig == null)
-            context.addNewError("Unknown DTA with name \""+ctx.dtaName.getText()+"\".");
-        
+        if (sig == null) {
+            context.addNewError("Unknown DTA with name \"" + ctx.dtaName.getText() + "\".");
+        }
+
         // Push the signature onto the stack (push even if it is null)
-        if (context.dtaSigStack == null)
+        if (context.dtaSigStack == null) {
             context.dtaSigStack = new Stack<>();
+        }
         context.dtaSigStack.push(sig);
-        
+
         try {
             int numClkExpr = 0, numActs = 0, numSubExpr = 0;
             for (ExprLangParser.Real_assignContext clockAssign : ctx.real_assign()) {
@@ -2724,8 +2824,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             for (ExprLangParser.Sp_assignContext spAssign : ctx.sp_assign()) {
                 ff = format(false, ff, (numSubExpr++ > 0 ? "," : ""), visit(spAssign));
             }
-        }
-        finally {
+        } finally {
             context.dtaSigStack.pop();
         }
         return format(false, ff, ")");
@@ -2734,97 +2833,121 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     @Override
     public FormattedFormula visitSp_assign(ExprLangParser.Sp_assignContext ctx) {
         DtaSignature sig = context.dtaSigStack.lastElement();
-        
+
         String id = ctx.label.getText();
         FormattedFormula ff = visit(ctx.csltaExpr());
-        
-        if (sig != null && !sig.stateProps.contains(id))
-            context.addNewError("DTA \""+sig.dta.getPageName()+"\". has no state proposition named \""+id+"\".");
-        
+
+        if (sig != null && !sig.stateProps.contains(id)) {
+            context.addNewError("DTA \"" + sig.dta.getPageName() + "\". has no state proposition named \"" + id + "\".");
+        }
+
         return format(false, id, "=", ff);
     }
 
     @Override
     public FormattedFormula visitReal_assign(ExprLangParser.Real_assignContext ctx) {
         DtaSignature sig = context.dtaSigStack.lastElement();
-        
+
         String id = ctx.label.getText();
         FormattedFormula ff = visit(ctx.realConst());
-        
-        if (sig != null && !sig.clockVals.contains(id))
-            context.addNewError("DTA \""+sig.dta.getPageName()+"\". has no clock value named \""+id+"\".");
-        
+
+        if (sig != null && !sig.clockVals.contains(id)) {
+            context.addNewError("DTA \"" + sig.dta.getPageName() + "\". has no clock value named \"" + id + "\".");
+        }
+
         return format(false, id, "=", ff);
     }
 
     @Override
     public FormattedFormula visitAct_assign(ExprLangParser.Act_assignContext ctx) {
         DtaSignature sig = context.dtaSigStack.lastElement();
-        
+
         String id = ctx.label.getText();
         String trn = ctx.trn.getText();
-        
-        if (sig != null && !sig.actNames.contains(id))
-            context.addNewError("DTA \""+sig.dta.getPageName()+"\". has no action named \""+id+"\".");
-        
+
+        if (sig != null && !sig.actNames.contains(id)) {
+            context.addNewError("DTA \"" + sig.dta.getPageName() + "\". has no action named \"" + id + "\".");
+        }
+
         return format(false, id, "=", trn);
     }
-    
+
     //==========================================================================
     //  CTL formulas
     //==========================================================================
-    
     private FormattedFormula temporalOpCTL(char quant, char path) {
         switch (lang) {
             case LATEX:
                 return format(true, (quant == 'E' ? "\\exists" : "\\forall"),
-                        " \\mathrm{"+path+"}");
+                        " \\mathrm{" + path + "}");
             case GREATSPN:
                 return format(true, quant, " ", path);
             case PNPRO:
                 return format(true, quant, path);
-                
+
             default:
                 throw new UnsupportedOperationException("CTL temporal operator.");
         }
     }
-    
+
     @Override
     public FormattedFormula visitTemporalOp2T(ExprLangParser.TemporalOp2TContext ctx) {
         if (ctx.EXISTS() != null) {
-            if (ctx.NEXT() != null)      return temporalOpCTL('E', 'X');
-            if (ctx.FUTURE()!= null)     return temporalOpCTL('E', 'F');
-            if (ctx.GLOBALLY()!= null)   return temporalOpCTL('E', 'G');
-        }
-        else {
+            if (ctx.NEXT() != null) {
+                return temporalOpCTL('E', 'X');
+            }
+            if (ctx.FUTURE() != null) {
+                return temporalOpCTL('E', 'F');
+            }
+            if (ctx.GLOBALLY() != null) {
+                return temporalOpCTL('E', 'G');
+            }
+        } else {
             assert ctx.FORALL() != null;
-            if (ctx.NEXT() != null)      return temporalOpCTL('A', 'X');
-            if (ctx.FUTURE()!= null)     return temporalOpCTL('A', 'F');
-            if (ctx.GLOBALLY()!= null)   return temporalOpCTL('A', 'G');
+            if (ctx.NEXT() != null) {
+                return temporalOpCTL('A', 'X');
+            }
+            if (ctx.FUTURE() != null) {
+                return temporalOpCTL('A', 'F');
+            }
+            if (ctx.GLOBALLY() != null) {
+                return temporalOpCTL('A', 'G');
+            }
         }
         throw new IllegalStateException();
     }
 
     @Override
     public FormattedFormula visitTemporalOpExistX(ExprLangParser.TemporalOpExistXContext ctx) {
-        if (ctx.EXISTS_NEXT() != null)     return temporalOpCTL('E', 'X');
-        if (ctx.EXISTS_FUTURE() != null)   return temporalOpCTL('E', 'F');
-        if (ctx.EXISTS_GLOBALLY() != null) return temporalOpCTL('E', 'G');
+        if (ctx.EXISTS_NEXT() != null) {
+            return temporalOpCTL('E', 'X');
+        }
+        if (ctx.EXISTS_FUTURE() != null) {
+            return temporalOpCTL('E', 'F');
+        }
+        if (ctx.EXISTS_GLOBALLY() != null) {
+            return temporalOpCTL('E', 'G');
+        }
         throw new IllegalStateException();
     }
 
     @Override
     public FormattedFormula visitTemporalOpForallX(ExprLangParser.TemporalOpForallXContext ctx) {
-        if (ctx.FORALL_NEXT() != null)     return temporalOpCTL('A', 'X');
-        if (ctx.FORALL_FUTURE() != null)   return temporalOpCTL('A', 'F');
-        if (ctx.FORALL_GLOBALLY() != null) return temporalOpCTL('A', 'G');
+        if (ctx.FORALL_NEXT() != null) {
+            return temporalOpCTL('A', 'X');
+        }
+        if (ctx.FORALL_FUTURE() != null) {
+            return temporalOpCTL('A', 'F');
+        }
+        if (ctx.FORALL_GLOBALLY() != null) {
+            return temporalOpCTL('A', 'G');
+        }
         throw new IllegalStateException();
     }
-    
+
     //==========================================================================
     //  Tag rewriting rules:
     //==========================================================================
-
     @Override
     public FormattedFormula visitTagDefinition(ExprLangParser.TagDefinitionContext ctx) {
         return new FormattedFormula(lang, true, ctx.getText());
@@ -2832,7 +2955,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 
     @Override
     public FormattedFormula visitTagComplDefinition(ExprLangParser.TagComplDefinitionContext ctx) {
-        return new FormattedFormula(lang, true, ctx.getText()+"?");
+        return new FormattedFormula(lang, true, ctx.getText() + "?");
     }
 
     @Override
@@ -2850,7 +2973,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     public FormattedFormula visitTagRewriteListList(ExprLangParser.TagRewriteListListContext ctx) {
         requireLatexLanguage();
         FormattedFormula ff = new FormattedFormula(lang, true, "");
-        for (int i=0; i<ctx.tagRewrite().size(); i++) {
+        for (int i = 0; i < ctx.tagRewrite().size(); i++) {
             ff = format(true, ff, (i > 0 ? ", " : ""), visit(ctx.tagRewrite(i)));
         }
         return ff;
@@ -2859,7 +2982,6 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     //==========================================================================
     //  Miscellaneous:
     //==========================================================================
-    
     @Override
     public FormattedFormula visitAnyIdentifier(ExprLangParser.AnyIdentifierContext ctx) {
         return format(true, ctx.getText());

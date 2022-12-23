@@ -63,6 +63,8 @@ public class FormattedFormula implements Serializable {
             case APNN:
             case PNPRO:
                 return new FormattedFormula(lang, true, "("+getFormula()+")", payload);
+            case CPP:
+                return new FormattedFormula(lang, true, "("+getFormula()+")", payload);
             default:
                 throw new UnsupportedOperationException();
         }

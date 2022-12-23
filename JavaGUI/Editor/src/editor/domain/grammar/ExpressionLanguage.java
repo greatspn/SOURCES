@@ -11,5 +11,5 @@ package editor.domain.grammar;
  * @author elvio
  */
 public enum ExpressionLanguage {
-    PNPRO, GREATSPN, LATEX, APNN, GRML, PNML, NETLOGO
+    PNPRO, GREATSPN, LATEX, APNN, GRML, PNML, NETLOGO, CPP
 }

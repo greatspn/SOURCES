@@ -354,6 +354,7 @@ void LPprob::updateLP( const char* fileProb,int variability, int typeOBJ,const c
 
             int i=sizeVet+1; 
             for (unsigned int j=0;j<parser.size();++j){
+                //cout<<"val: "<<i<<" "<<sizeRow+variability<<" "<<j+1<<" "<<atof(parser.get(i).c_str())<<endl;
                 ia[i]=sizeRow+variability;
                 ja[i]=j+1;
                 ar[i]=atof(parser.get(i).c_str());

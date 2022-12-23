@@ -1,7 +1,7 @@
 #================================================================================
 # Stage 1: build all the GreatSPN modules and their dependencies
 #================================================================================
-FROM fedora AS builder
+FROM fedora:34 AS builder
 
 RUN dnf -y install git wget
 
@@ -36,17 +36,18 @@ RUN git clone https://github.com/ogdf/ogdf ;\
     sudo make install
 
 # Install lpsolve (latest)
-RUN wget https://datacloud.di.unito.it/index.php/s/FciGkSnywTNxm4Z/download/lp_solve_5.5.2.11_source.tar.gz ;\
-	wget https://raw.githubusercontent.com/greatspn/SOURCES/master/contrib/build_lpsolve.sh ;\
-	tar xzf lp_solve_5.5.2.11_source.tar.gz ;\
-	sh ./build_lpsolve.sh
+RUN wget https://datacloud.di.unito.it/index.php/s/JFsJwyHfJ9FNWZJ/download/lp_solve_5.5.2.11_source.tar.gz ;\
+    wget https://raw.githubusercontent.com/greatspn/SOURCES/master/contrib/build_lpsolve.sh ;\
+    tar xzf lp_solve_5.5.2.11_source.tar.gz ;\
+    sh ./build_lpsolve.sh 
+
 
 # Install GreatSPN
 RUN mkdir ~/GreatSPN ;\
     cd ~/GreatSPN ;\
     git clone https://github.com/greatspn/SOURCES.git SOURCES ;\
     cd ~/GreatSPN/SOURCES ;\
-	git pull ;\
+	  git pull ;\
     make ${MAKE_ARGS} -k derived_objects ;\
     make ${MAKE_ARGS} ;\
     make ;\
@@ -55,13 +56,13 @@ RUN mkdir ~/GreatSPN ;\
 #================================================================================
 # Stage 2: prepare the deployment image with the non-devel packages
 #================================================================================
-FROM fedora AS deploy_base
+FROM fedora:34 AS deploy_base
 
 RUN sudo dnf -y install gmp gmp-c++ gmp boost flex \
     glib2 patch glpk lpsolve  \
     time graphviz suitesparse motif make \
-    libxml++ glibmm24 ghostscript \
-    java-latest-openjdk gcc gcc-c++ make
+    libxml++ glibmm24 ghostscript java-latest-openjdk \
+    gcc gcc-c++ make perl
 
 #================================================================================
 # Stage 3: Update the GreatSPN framework by pulling/remaking the latest changes
@@ -82,15 +83,14 @@ RUN cd ~/GreatSPN/SOURCES ;\
 FROM deploy_base
 
 # copy the compiled binaries
-COPY --from=updater /usr/local/GreatSPN /usr/local/GreatSPN 
+COPY --from=updater /usr/local/GreatSPN /usr/local/GreatSPN
 COPY --from=updater /usr/local/lib /usr/local/lib
 RUN rm -rf /usr/local/lib/*.a /usr/local/lib/*.la
+RUN sudo dnf -y install glpk-devel
 
 # add library & binary paths
 RUN echo '/usr/local/lib' > /etc/ld.so.conf.d/greatspn.conf ; ldconfig
-RUN echo 'export PATH=$PATH:/usr/local/GreatSPN/scripts' > /etc/bashrc
-
-
+ENV PATH="$PATH:/usr/local/GreatSPN/scripts"
 
 
 

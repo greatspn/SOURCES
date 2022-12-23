@@ -32,7 +32,7 @@ public class AlgebraCommand {
             long totalStart = System.currentTimeMillis();
 
             toolMain(args);
-
+            
             System.out.println("TOTAL TIME: "+(System.currentTimeMillis() - totalStart)/1000.0);
             System.out.println("OK.");
         }
