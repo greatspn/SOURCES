@@ -3003,8 +3003,6 @@ void SystEq::SolveHLSODE(double h,double perc1,double perc2,double Max_Time,int 
 void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max_Run,bool Info,double Print_Step,char *argv){
 
 
-
-
 	this-> Max_Run=Max_Run;
 	FinalValueXRun = new double*[nPlaces];
 	double Mean[nPlaces];
