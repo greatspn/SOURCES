@@ -141,17 +141,10 @@ cp JavaGUI/AdditionalV3/splash@200pct.png ${APPDIR}/
 case "$OSTYPE" in
 #----------------------------------------------------------
 darwin*)
-if [[ `uname -m` == 'arm64' ]] ; then
-	cp  ../meddly/src/.libs/libmeddly.0.dylib \
-	    ../spot-2.9.6/spot/.libs/libspot.0.dylib \
-	    ../spot-2.9.6/buddy/src/.libs/libbddx.0.dylib \
-	    ${APPDIR}/portable_greatspn/lib/
-else
-	cp  ../meddly/src/.libs/libmeddly.0.dylib \
-	    ../spot-2.9.6/spot/.libs/libspot.dylib \
-	    ../spot-2.9.6/buddy/src/.libs/libbddx.dylib \
-	    ${APPDIR}/portable_greatspn/lib/
-fi
+cp  ../meddly/src/.libs/libmeddly.0.dylib \
+    ../spot-2.9.6/spot/.libs/libspot.0.dylib \
+    ../spot-2.9.6/buddy/src/.libs/libbddx.0.dylib \
+    ${APPDIR}/portable_greatspn/lib/
 # echo "COPY THE splash@2x.png file!"
 ;;
 
