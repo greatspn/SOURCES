@@ -6,7 +6,7 @@ if [ ! -e bin/WNRG ]; then
 fi
 
 GREATSPN_APP_VERSION_MAJOR=3
-GREATSPN_APP_VERSION_MINOR=1
+GREATSPN_APP_VERSION_MINOR=2
 GREATSPN_APP_VERSION=v${GREATSPN_APP_VERSION_MAJOR}r${GREATSPN_APP_VERSION_MINOR}
 GREATSPN_APP_VERSION_NUMDOT=${GREATSPN_APP_VERSION_MAJOR}.${GREATSPN_APP_VERSION_MINOR}
 GREATSPN_APP_VERSION_FULLNUMBER=`expr ${GREATSPN_APP_VERSION_MAJOR}00 + ${GREATSPN_APP_VERSION_MINOR}`
@@ -141,11 +141,17 @@ cp JavaGUI/AdditionalV3/splash@200pct.png ${APPDIR}/
 case "$OSTYPE" in
 #----------------------------------------------------------
 darwin*)
-cp  ../meddly/src/.libs/libmeddly.0.dylib \
-    ../spot-2.9.6/spot/.libs/libspot.dylib \
-    ../spot-2.9.6/buddy/src/.libs/libbddx.dylib \
-    ${APPDIR}/portable_greatspn/lib/
-
+if [[ `uname -m` == 'arm64' ]] ; then
+	cp  ../meddly/src/.libs/libmeddly.0.dylib \
+	    ../spot-2.9.6/spot/.libs/libspot.0.dylib \
+	    ../spot-2.9.6/buddy/src/.libs/libbddx.0.dylib \
+	    ${APPDIR}/portable_greatspn/lib/
+else
+	cp  ../meddly/src/.libs/libmeddly.0.dylib \
+	    ../spot-2.9.6/spot/.libs/libspot.dylib \
+	    ../spot-2.9.6/buddy/src/.libs/libbddx.dylib \
+	    ${APPDIR}/portable_greatspn/lib/
+fi
 # echo "COPY THE splash@2x.png file!"
 ;;
 
