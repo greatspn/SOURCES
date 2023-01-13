@@ -2492,11 +2492,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 			
         	
 #ifdef CGLPK
-<<<<<<< HEAD
-
-=======
             time=tout;
->>>>>>> 68a85b0 (fixing bug with stop integration)
             getValTranFire(y+1);
         	for (unsigned int i=0;i<vec_fluxb.size();++i){
         		outflux[i]<<endl<<tout<<" ";
