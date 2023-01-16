@@ -82,7 +82,6 @@ public class CppCommand {
         gspn.compileParsedInfo(context);
 
         File cppFile = new File(outBaseName);
-        ArrayList<String> log = new ArrayList<>();
 
         ExternalTermsVisitor etv = new ExternalTermsVisitor();
         for (Node n : gspn.nodes) {
@@ -93,7 +92,7 @@ public class CppCommand {
         }
 
         long saveStart = System.currentTimeMillis();
-        CppFormat.export(cppFile, gspn, context, etv.filenames);
+        CppFormat.export(cppFile, gspn, fluxBalanceFlag, context, etv.filenames);
 
         System.out.println("SAVING TIME: " + (System.currentTimeMillis() - saveStart) / 1000.0);
         return true;
