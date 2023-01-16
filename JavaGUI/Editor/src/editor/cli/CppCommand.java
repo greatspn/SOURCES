@@ -16,8 +16,6 @@ import editor.domain.grammar.ExprLangParser;
 import editor.domain.grammar.ParserContext;
 import java.io.File;
 import editor.domain.io.CppFormat;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
@@ -35,7 +33,7 @@ public class CppCommand {
             Main.useGuiLogWindowForExceptions = false;
             Main.fixedUiSize = Main.UiSize.NORMAL;
             DummyLatexProvider.initializeProvider();
-            long totalStart = System.currentTimeMillis();
+//            long totalStart = System.currentTimeMillis();
             toolMain(args);
 
             //System.out.println("TOTAL TIME: " + (System.currentTimeMillis() - totalStart) / 1000.0);
@@ -50,7 +48,7 @@ public class CppCommand {
     public static boolean toolMain(String[] args) throws Exception {
 
         // Read command line arguments
-        if (args.length < 1) {
+        if (args.length < 2) {
             System.out.println("Not enough arguments.");
             System.exit(1);
         }
@@ -59,6 +57,20 @@ public class CppCommand {
         // java -ea -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar editor.cli.CppCommand EsempiExpMTDep out.cpp
         String inBaseName = args[0];
         String outBaseName = args[1];
+        
+        // Parse the remaining arguments
+        boolean fluxBalanceFlag = false;
+        for (int i=2; i<args.length; i++) {
+            if (args[i].equals("-flux")) {
+                // DO something
+                fluxBalanceFlag = true;
+                System.out.println("Enabling flux balance.");
+            }
+            else {
+                System.err.println("Unknown argument: "+args[i]);
+                System.exit(1);
+            }
+        }
 
         GspnPage gspn = loadPage(inBaseName);
         ArrayList<ProjectPage> pages = new ArrayList<>();
