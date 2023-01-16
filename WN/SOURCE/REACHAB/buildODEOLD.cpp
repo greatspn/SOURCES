@@ -351,7 +351,6 @@ void build_ODE(ofstream &out, std::string path, std::string net)
     cout << "\n\n------------------------------------------------" << endl;
     cout << "               Start  encoding" << endl;
     cout << "------------------------------------------------\n" << endl;
-    cout << "------------------------prova";
 
 
     out << "\n#include <iostream>\n#include \"class.hpp\"\n\n";

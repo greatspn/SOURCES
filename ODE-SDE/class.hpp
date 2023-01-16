@@ -438,6 +438,8 @@ namespace SDE
   solve_type solve;
     //!The heap that handles the future event list of general non exponential transition
   min_heap future_event_list {min_heap()};
+  //stream TEMPORANEO
+  ofstream outfel{"outfel.txt"};
 
 //automaton
 #ifdef AUTOMATON
@@ -468,14 +470,17 @@ public:
   bool NotEnable(int Tran);
 
     //!It computes the Tau taking as input the list of descrete transitions and the next time point. It returns a possible transition firing otherwise  -1. It requires that  getValTranFire() must be called before.
-  int getComputeTau(int SetTran[], double& nextTimePoint,double t);
+    //! In SSA it's necessary to pass also the set of non exponetial general transition
+  int getComputeTau(int SetTranExp[], int SetTranNotExp[], double& nextTimePoint,double t);
     //!It computes the Tau according to Gillespie algorithm. It takes as input the list of descrete transitions and the next time point. It returns a possible transition firing otherwise  -1. It requires that  getValTranFire() must be called before.
   double getComputeTauGillespie(int SetTran[],double t, double hstep);
     //! It is a pure virtual function which must be implemented.
   virtual void getValTranFire()=0;
   virtual void getValTranFire(double*)=0;
+  virtual void setSizeFutureEventList(int nTrans, int &size_expTran, int &size_notExpTran)=0;
     //!It updates the future event list during the SSA with non exponential general transition using the value of Enabling
-  void updateFutureEventList(int trans, double* ValuePrv);
+  //void updateFutureEventList(int trans);
+  void updateFutureEventList(int tran);
   //! It checks if there is an enable transition which will fire in the current time step.
   int fireEnableTrans(  int SetTran[],double& h);
     //int fireEnableTrans(  set<int>&SetTran,double& h);
@@ -562,6 +567,8 @@ public:
   virtual void getValTranFire() override;
      //! For each transition it returns  the min of the values of its input places considering its input vector ValuePrv as marking
   virtual void getValTranFire(double* ValuePrv) override;
+  virtual void setSizeFutureEventList(int nTrans, int &size_expTran, int &size_notExpTran) override;
+
 };
 
 class SystEqMas:public SystEq
@@ -573,6 +580,8 @@ public:
   virtual void getValTranFire() override;
     //! For each transition it returns  the min of the values of its input places considering its input vector ValuePrv as marking
   virtual void getValTranFire(double* ValuePrv) override;
+  virtual void setSizeFutureEventList(int nTrans, int &size_expTran, int &size_notExpTran) override;
+
 };
 
 //  double Fg(double *Value, vector <string>& NameTrans, vector <string>& NamePlaces);
