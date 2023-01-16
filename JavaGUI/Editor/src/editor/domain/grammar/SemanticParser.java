@@ -1372,8 +1372,15 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case CPP:
                 String call_name = ctx.STRING_LITERAL().toString();
                 String function_name = call_name.substring(1, call_name.length() - 1);
-                String arguments = visit(ctx.intOrRealList()).getFormula().substring(2);
-                return format(true, function_name, "(", arguments, ")");
+                String arguments = visit(ctx.intOrRealList()).getFormula();
+                String arguments_defined;
+                if(arguments.isEmpty()) {
+                    arguments_defined = "Value, NumTrans, NumPlaces, NameTrans, Trans, T, time";
+                }
+                else {
+                    arguments_defined = arguments.substring(2);
+                }
+                return format(true, function_name, "(", arguments_defined, ")");
             default:
                 throw new UnsupportedOperationException();
         }

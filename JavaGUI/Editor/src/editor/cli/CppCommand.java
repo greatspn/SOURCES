@@ -55,7 +55,7 @@ public class CppCommand {
             System.exit(1);
         }
 
-        // GREATSPN_BINDIR=~/tesiMagistrale/SOURCESC-/JavaGUI/Editor/dist
+        // GREATSPN_BINDIR=~/tesiMagistrale/SOURCESC-readFromFile/JavaGUI/Editor/dist/
         // java -ea -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar editor.cli.CppCommand EsempiExpMTDep out.cpp
         String inBaseName = args[0];
         String outBaseName = args[1];
