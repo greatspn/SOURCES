@@ -16,7 +16,6 @@ import editor.domain.elements.DtaSignature;
 import editor.domain.elements.Place;
 import editor.domain.elements.TemplateVariable;
 import editor.domain.elements.Transition;
-import editor.domain.grammar.ExprLangParser.RealExprContext;
 import static editor.domain.grammar.ExpressionLanguage.GRML;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -1370,6 +1369,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case GREATSPN:
                 return format(true, "Call[", ctx.STRING_LITERAL(), visit(ctx.intOrRealList()), "]");
             case CPP:
+                if (context.cppForFluxBalance) { }
                 String call_name = ctx.STRING_LITERAL().toString();
                 String function_name = call_name.substring(1, call_name.length() - 1);
                 String arguments = visit(ctx.intOrRealList()).getFormula().substring(2);
