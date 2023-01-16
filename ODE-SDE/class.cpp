@@ -2756,7 +2756,9 @@ int SystEq::getComputeTau(int SetTranExp[], int SetTranNotExp[], double& nextTim
 
     	//int trans=1;
    		// cout<<"\nval "<<val<<endl;
-		int hi = size - 1;
+   		int size_nonExpTran = SetTranNonExp[0];
+		//int hi = size - 1;
+
 		while (lo < hi) {
 			int mid = lo + (hi - lo)/2;
 			if (TransRate[mid] < val)
@@ -2766,8 +2768,8 @@ int SystEq::getComputeTau(int SetTranExp[], int SetTranNotExp[], double& nextTim
 		}
 		//}
 
-		outfel << "trans "<<NameTrans[SetTranExp[lo+1]]<<" id"<<lo+1<<"\n\n";
-		return SetTranExp[lo+1];
+		outfel << "trans "<<NameTrans[SetTranNotExp[lo+1]]<<" id"<<lo+1<<"\n\n";
+		return SetTranNotExp[lo+1];
 	}
 	return -1;
 }
