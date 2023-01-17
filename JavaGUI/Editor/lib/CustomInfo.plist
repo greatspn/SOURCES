@@ -1,0 +1,81 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeIconFile</key>
+			<string>pnpro-doc.icns</string>
+			<key>UTTypeDescription</key>
+			<string>Petri Net Project XML File (PNPRO)</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.xml</string>
+			</array>
+			<key>UTTypeIdentifier</key>
+			<string>org.unito.it.petrinetproject</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<string>pnpro</string>
+			</dict>
+		</dict>
+	</array>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeIconFile</key>
+			<string>pnpro-doc.icns</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>pnpro</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Petri Net Project XML File (PNPRO)</string>
+		</dict>
+	</array>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>JavaAppLauncher</string>
+	<key>CFBundleIconFile</key>
+	<string>Icon.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>org.unito.it.greatspneditor</string>
+	<key>CFBundleDisplayName</key>
+	<string>GreatSPN Editor</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>GreatSPN Editor</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.1</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>University of Torino, Italy</string>
+	<key>JVMMainClassName</key>
+	<string>editor.Main</string>
+	<key>JVMOptions</key>
+	<array>
+		<string>-Djava.library.path=$APP_ROOT/Contents/Java/</string>
+		<string>-Dapple.laf.useScreenMenuBar=true</string>
+		<string>-Dcom.apple.macos.useScreenMenuBar=true</string>
+		<string>-enableassertions</string>
+		<string>-splash:$APP_ROOT/Contents/Java/splash.png</string>
+	</array>
+	<key>JVMArguments</key>
+	<array>
+	</array>
+</dict>
+</plist>
+
