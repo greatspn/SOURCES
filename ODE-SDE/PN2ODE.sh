@@ -79,7 +79,7 @@ case "$1" in
     -H)
     if [ $# -gt 1 ]
     then
-    	FLUXFLAG= true
+    	FLUXFLAG=true
         FLUXNAMEFILE+=("-H $2")
     else
         printf "**ERROR** You must specify a legal FLUX Balance file path after -H. \n\n"
@@ -114,7 +114,7 @@ case "$1" in
     -C)
     if [ $# -gt 1 ]
     then
-	EXTFUN= true
+	EXTFUN=true
         EXTFUN_PATH=$(perl -e "use File::Spec; print(File::Spec->rel2abs(\"${2}\"),\"\n\")")
     else
         printf "**ERROR** You must specify an existing extern function file path after -C. \n\n"
@@ -137,13 +137,14 @@ done
 echo ${FLUXNAMEFILE[@]}
 
 echo "Compiling general transition file"
-if $FLUXFLAG
+if [ "$FLUXFLAG" == "true" ]
 then
-	java -ea -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar editor.cli.CppCommand $NET_PATH gen_tran_out.cpp -flux
-	CFUN_PATH=$(perl -e "use File::Spec; print(File::Spec->rel2abs(\"./gen_tran_out.cpp\"),\"\n\")")
-else
-	java -ea -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar editor.cli.CppCommand $NET_PATH gen_tran_out.cpp
-	CFUN_PATH=$(perl -e "use File::Spec; print(File::Spec->rel2abs(\"./gen_tran_out.cpp\"),\"\n\")")		
+
+		java -ea -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar editor.cli.CppCommand $NET_PATH gen_tran_out.cpp -flux
+		CFUN_PATH=$(perl -e "use File::Spec; print(File::Spec->rel2abs(\"./gen_tran_out.cpp\"),\"\n\")")
+	else
+		java -ea -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar editor.cli.CppCommand $NET_PATH gen_tran_out.cpp
+		CFUN_PATH=$(perl -e "use File::Spec; print(File::Spec->rel2abs(\"./gen_tran_out.cpp\"),\"\n\")")		
 fi
 
 
@@ -236,7 +237,7 @@ echo "#cat ${MyTempDir}/tmpB ${MyTempDir}/incl1  $CFUN_PATH  ${MyTempDir}/tmpE >
 echo "#include \"$name_file.hpp\"" >>  ${MyTempDir}/incl1
 cat ${MyTempDir}/tmpB  ${MyTempDir}/incl1 $CFUN_PATH ${MyTempDir}/incl1  ${MyTempDir}/tmpE > ${MyTempDir}/tmpA
 echo " " >> ${MyTempDir}/newline
-if $EXTFUN
+if [ "$EXTFUN" == "true" ]
 	then
 		cat ${MyTempDir}/tmpB  ${MyTempDir}/incl1 $EXTFUN_PATH ${MyTempDir}/newline $CFUN_PATH ${MyTempDir}/newline ${MyTempDir}/tmpE > ${MyTempDir}/tmpA
 		cat ${MyTempDir}/tmpA >>  ${MyTempDir}/class.cpp
