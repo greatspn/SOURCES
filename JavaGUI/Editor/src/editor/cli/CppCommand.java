@@ -79,10 +79,12 @@ public class CppCommand {
         gspn.preparePageCheck();
         gspn.checkPage(proj, null, gspn, null);
         ParserContext context = new ParserContext(gspn);
+        context.cppForFluxBalance = fluxBalanceFlag;
         gspn.compileParsedInfo(context);
 
         File cppFile = new File(outBaseName);
 
+        // Enumerate the filenames mentioned in every transition delay expressions
         ExternalTermsVisitor etv = new ExternalTermsVisitor();
         for (Node n : gspn.nodes) {
             if (n instanceof Transition) {
@@ -92,6 +94,7 @@ public class CppCommand {
         }
 
         long saveStart = System.currentTimeMillis();
+         // Convert in C++
         CppFormat.export(cppFile, gspn, fluxBalanceFlag, context, etv.filenames);
 
         System.out.println("SAVING TIME: " + (System.currentTimeMillis() - saveStart) / 1000.0);

@@ -82,6 +82,9 @@ public class ParserContext implements NodeNamespace {
     // Special mode to draw samples from statistical distributions of the general transitions
     public boolean drawStatisticalDistribSamples = false;
     
+    // Only used by the C++ code generator: is the delay being translated for the flux balance?
+    public boolean cppForFluxBalance = false;
+    
     // ======= Fields used only by the FormulaEvaluator parser ======
     
     // Evaluation stack - avoids infinite evaluation depth
