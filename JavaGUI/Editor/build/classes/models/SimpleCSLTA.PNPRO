@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="Tool Presentation QEST" version="121">
+  <gspn name="WorkNet">
+    <nodes>
+      <place label-x="2.5" label-y="0.0" marking="n" name="Work" x="9.0" y="3.0"/>
+      <place label-x="4.0" label-y="0.0" name="Intermediate" x="9.0" y="11.0"/>
+      <place name="Finished" x="13.0" y="19.0"/>
+      <transition delay="2.3" delay-x="0.75" delay-y="0.75" label-x="-0.5" label-y="-1.0" name="w2i" rotation="4.71238898038469" type="EXP" x="5.55" y="7.0"/>
+      <transition label-x="1.6875" label-y="-1.1875" name="complete" rotation="4.71238898038469" type="EXP" x="13.55" y="15.0"/>
+      <transition delay="1.7" label-x="0.4375" label-y="-1.0625" name="i2w" rotation="4.71238898038469" type="EXP" x="13.55" y="7.0"/>
+      <transition label-x="-0.75" label-y="-1.25" name="break" rotation="4.71238898038469" type="EXP" x="5.55" y="15.0"/>
+      <place name="Broken" x="5.0" y="19.0"/>
+      <template last-binding="3" name="n" type="INTEGER" x="3.0" y="3.0"/>
+    </nodes>
+    <edges>
+      <arc head="w2i" kind="INPUT" tail="Work"/>
+      <arc head="Intermediate" kind="OUTPUT" tail="w2i"/>
+      <arc head="complete" kind="INPUT" tail="Intermediate"/>
+      <arc head="Finished" kind="OUTPUT" tail="complete"/>
+      <arc head="i2w" kind="INPUT" tail="Intermediate"/>
+      <arc head="Work" kind="OUTPUT" tail="i2w"/>
+      <arc head="Broken" kind="OUTPUT" tail="break"/>
+      <arc head="break" kind="INPUT" tail="Intermediate"/>
+    </edges>
+  </gspn>
+  <dta name="WorkNetDTA">
+    <nodes>
+      <clock name="x" x="12.5" y="6.25"/>
+      <location init-arrow-x="4.0" init-arrow-y="10.0" initial="true" name="l0" state-proposition="Phi1" state-proposition-x="1.0" x="5.5" y="9.0"/>
+      <location init-arrow-x="8.5" init-arrow-y="15.0" magnets="THREE_PER_SIDE" name="l1" state-proposition="Phi1 &amp;&amp; !Phi2" x="10.5" y="14.0"/>
+      <location alt-name-fn="LATEX_TEXT" final="ACCEPTING" init-arrow-x="14.5" init-arrow-y="10.0" name="lok" shown-as="\mathit{l}_{ok}" state-proposition="Phi2" state-proposition-x="1.0" x="16.5" y="9.0"/>
+      <template last-binding="3" name="alpha" type="REAL" x="12.375" y="5.0625"/>
+      <template last-binding="4" name="beta" type="REAL" x="13.875" y="5.0625"/>
+      <template last-binding="#Broken==0" name="Phi1" type="STATEPROP" x="15.5" y="5.0625"/>
+      <template last-binding="#Finished&gt;0" name="Phi2" type="STATEPROP" x="17.5" y="5.0625"/>
+    </nodes>
+    <edges>
+      <edge actset="Act" actset-clock-k="1.00009765625" actset-x="-1.9627650258691176E-4" actset-y="-1.1875000070811108" clock-guard="x &lt; alpha" clock-guard-x="-1.9627650258691176E-4" clock-guard-y="-0.5000000070811108" head="l0" kind="INNER" tail="l0">
+        <point x="7.0" y="7.5"/>
+      </edge>
+      <edge actset="Act" actset-clock-k="1.00009765625" actset-x="-1.962765025851354E-4" actset-y="-1.1875000070811108" clock-guard="alpha &lt; x &lt; beta" clock-guard-x="-1.962765025851354E-4" clock-guard-y="-0.5000000070811108" head="l1" kind="INNER" tail="l1">
+        <point x="12.0" y="12.5"/>
+      </edge>
+      <edge actset="Act" actset-clock-k="0.7024414062500001" actset-x="1.4648437500142109E-4" actset-y="-0.515385742187501" clock-guard="alpha &lt; x &lt; beta" clock-guard-x="-0.10307617187500284" clock-guard-y="0.48316650390624893" head="lok" kind="INNER" tail="l1">
+        <point x="18.0" y="15.0"/>
+      </edge>
+      <edge actset-clock-k="0.68173828125" actset-x="-0.1875" actset-y="-0.8125" clock-guard="x = alpha" clock-guard-x="-0.125" clock-guard-y="0.4375" head="lok" kind="BOUNDARY" tail="l0"/>
+      <edge actset-clock-k="1.37294921875" actset-y="-0.75" clock-guard="x = alpha" head="l1" kind="BOUNDARY" tail="l0">
+        <point x="7.0" y="15.0"/>
+      </edge>
+    </edges>
+  </dta>
+  <measures gspn-name="WorkNet" name="CSLTA Measure">
+    <assignments>
+      <assignment bind-model="MULTIPLE_VALUES" multiple-vals="1,2,3,4" type="INTEGER" varname="n"/>
+    </assignments>
+    <mc4cslta mc-sol-type="BACKWARD"/>
+    <formulas>
+      <formula expr="PROB_TA &gt; 0 WorkNetDTA ( alpha=1, beta=2| | Phi1=#Broken==0, Phi2=#Finished&gt;0 )" language="CSLTA"/>
+    </formulas>
+  </measures>
+</project>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="Cycle of Four Seasons" version="121">
+  <gspn name="Seasons" show-color-cmd="false" show-fluid-cmd="false" show-timed-cmd="false" view-rates="false">
+    <nodes>
+      <place label-y="-1.5" marking="1" name="Spring" x="9.0" y="5.0"/>
+      <place name="Summer" x="9.0" y="19.0"/>
+      <transition label-x="-2.5" label-y="-1.0" name="JuneSolstice" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="6.55" y="12.0"/>
+      <place name="Fall" x="23.0" y="19.0"/>
+      <place label-y="-1.5" name="Winter" x="23.0" y="5.0"/>
+      <transition label-x="2.0" label-y="-1.0" name="DecSolstice" nservers-x="0.5" rotation="1.5707963267948966" type="EXP" x="26.55" y="12.0"/>
+      <transition name="MarchEquinox" nservers-x="0.5" type="EXP" x="16.55" y="3.0"/>
+      <transition label-y="1.5" name="SeptEquinox" nservers-x="0.5" type="EXP" x="16.55" y="22.0"/>
+      <place marking="1" name="Cold" x="16.0" y="8.0"/>
+      <place name="Warm" x="16.0" y="16.0"/>
+      <place label-x="1.75" label-y="1.25" marking="1" name="Bright" x="12.0" y="12.0"/>
+      <place label-x="-1.4375" label-y="1.25" name="Dark" x="20.0" y="12.0"/>
+    </nodes>
+    <edges>
+      <arc head="JuneSolstice" kind="INPUT" mult-k="1.24365234375" tail="Spring">
+        <point x="8.0" y="9.5"/>
+      </arc>
+      <arc head="Summer" kind="OUTPUT" mult-k="1.2850585937499996" tail="JuneSolstice">
+        <point x="8.0" y="16.5"/>
+      </arc>
+      <arc head="SeptEquinox" kind="INPUT" mult-k="1.22900390625" tail="Summer">
+        <point x="13.5" y="22.0"/>
+      </arc>
+      <arc head="Fall" kind="OUTPUT" mult-k="1.29990234375" tail="SeptEquinox">
+        <point x="20.5" y="22.0"/>
+      </arc>
+      <arc head="DecSolstice" kind="INPUT" mult-k="1.15146484375" tail="Fall">
+        <point x="26.0" y="16.5"/>
+      </arc>
+      <arc head="Winter" kind="OUTPUT" mult-k="1.28916015625" tail="DecSolstice">
+        <point x="26.0" y="9.5"/>
+      </arc>
+      <arc head="MarchEquinox" kind="INPUT" mult-k="1.1569335937499998" tail="Winter">
+        <point x="20.5" y="4.5"/>
+      </arc>
+      <arc head="Spring" kind="OUTPUT" mult-k="1.29638671875" tail="MarchEquinox">
+        <point x="13.5" y="4.5"/>
+      </arc>
+      <arc head="JuneSolstice" kind="INPUT" mult-k="1.34423828125" tail="Cold">
+        <point x="13.0" y="9.5"/>
+      </arc>
+      <arc head="Warm" kind="OUTPUT" mult-k="1.03173828125" tail="JuneSolstice">
+        <point x="12.5" y="16.5"/>
+      </arc>
+      <arc head="DecSolstice" kind="INPUT" mult-k="1.3547851562499997" tail="Warm">
+        <point x="21.5" y="16.5"/>
+      </arc>
+      <arc head="Cold" kind="OUTPUT" mult-k="0.9565429687499999" tail="DecSolstice">
+        <point x="21.5" y="9.5"/>
+      </arc>
+      <arc head="Bright" kind="OUTPUT" mult-k="1.21669921875" tail="MarchEquinox">
+        <point x="14.0" y="8.5"/>
+      </arc>
+      <arc head="SeptEquinox" kind="INPUT" mult-k="1.2918945312499996" tail="Bright">
+        <point x="14.0" y="17.5"/>
+      </arc>
+      <arc head="Dark" kind="OUTPUT" mult-k="1.1272460937500002" tail="SeptEquinox">
+        <point x="20.5" y="17.5"/>
+      </arc>
+      <arc head="MarchEquinox" kind="INPUT" mult-k="1.24423828125" tail="Dark">
+        <point x="20.0" y="8.5"/>
+      </arc>
+    </edges>
+  </gspn>
+  <measures gspn-name="Seasons" log-uuid="bb4823dc-b6be-4901-a6c0-1aad80679a6b" name="Measures">
+    <assignments/>
+    <mc4cslta/>
+    <formulas>
+      <formula language="STAT">
+        <result-table>
+          <stat-result name="STAT">
+            <bindings/>
+            <stat key="build_time" value="0 seconds"/>
+            <stat key="home_state" value="True"/>
+            <stat key="num_dead_markings" value="0"/>
+            <stat key="num_tangible_markings" value="4"/>
+            <stat key="num_vanishing_markings" value="0"/>
+          </stat-result>
+        </result-table>
+      </formula>
+      <formula language="RG">
+        <result-table>
+          <pdf-result filename="/var/folders/g9/jyprqbl10hg2bx_y_j2t8c5c0000gn/T/temporary4866308553767927338-Measures.solution/Seasons-RG-0.pdf" name="RG">
+            <bindings/>
+          </pdf-result>
+        </result-table>
+      </formula>
+    </formulas>
+  </measures>
+  <resource-list>
+    <document-log uuid="bb4823dc-b6be-4901-a6c0-1aad80679a6b">rO0ABXNyABRqYXZhLnV0aWwuTGlua2VkTGlzdAwpU11KYIgiAwAAeHB3BAAAADh0AW4bWzBtRVhFQzogL1VzZXJzL2VsdmlvL0Rlc2t0b3AvTVktU1ZOL0dyZWF0U1BOL1NPVVJDRVMvYmluL0RTUE4tVG9vbCAtbG9hZCAiL3Zhci9mb2xkZXJzL2c5L2p5cHJxYmwxMGhnMmJ4X3lfajJ0OGM1YzAwMDBnbi9UL3RlbXBvcmFyeTQ4NjYzMDg1NTM3Njc5MjczMzgtTWVhc3VyZXMuc29sdXRpb24vU2Vhc29ucyIgLWVwc2lsb24gMS4wRS03IC1vbi10aGUtZmx5IC1pIC1nbXJlcyAtbWF4LWRvdC1tYXJraW5ncyA4MCAtbmV3LXJnIC1kb3QtRiAiL3Zhci9mb2xkZXJzL2c5L2p5cHJxYmwxMGhnMmJ4X3lfajJ0OGM1YzAwMDBnbi9UL3RlbXBvcmFyeTQ4NjYzMDg1NTM3Njc5MjczMzgtTWVhc3VyZXMuc29sdXRpb24vU2Vhc29ucy1SRy0wIgp0AQobWzFtG1s0bUxPQURJTkcgUEVUUkkgTkVUIEZJTEVTIC92YXIvZm9sZGVycy9nOS9qeXBycWJsMTBoZzJieF95X2oydDhjNWMwMDAwZ24vVC90ZW1wb3Jhcnk0ODY2MzA4NTUzNzY3OTI3MzM4LU1lYXN1cmVzLnNvbHV0aW9uL1NlYXNvbnMubmV0IEFORCAvdmFyL2ZvbGRlcnMvZzkvanlwcnFibDEwaGcyYnhfeV9qMnQ4YzVjMDAwMGduL1QvdGVtcG9yYXJ5NDg2NjMwODU1Mzc2NzkyNzMzOC1NZWFzdXJlcy5zb2x1dGlvbi9TZWFzb25zLmRlZiAuLi4bWzIybRtbMjRtCnQAD01BUktJTkcgUEFSOiAwCnQAD1BMQUNFUzogICAgICA4CnQAD1JBVEUgUEFSOiAgICAwCnQAD1RSQU5TSVRJT05TOiA0CnQAD01FQVNVUkVTOiAgICAwCnQAKExPQURJTkcgVElNRTogW1VzZXIgMC4wMDBzLCBTeXMgMC4wMDBzXQp0AAEKdAABCnQAOU1BWC4gUkVTSURVQUwgRVJST1IgU0VUIFRPIDFlLTA3IEZPUiBOVU1FUklDQUwgQU5BTFlTSVMuCnQARFVTSU5HIE9OLVRIRS1GTFkgU1RBVEUgU1BBQ0UgQ09OU1RSVUNUSU9OIE9GIENTTF5UQSBNT0RFTCBDSEVDS0lORy4KdAAxVVNJTkcgSU1QTElDSVQgU1RFQURZIFNUQVRFIE1SUCBTT0xVVElPTiBNRVRIT0QuCnQANVVTSU5HIEdNUkVTIE1FVEhPRCBGT1IgSU1QTElDSVQgU1RBVElPTkFSWSBBTkFMWVNJUy4KdABLVEFOR0lCTEU6IDIgICAgICAgVkFOSVNISU5HOiAwICAgICAgIElNTUVESUFURTogMCAgICAgICBUSU1FRDogMSAgICAgICAgICAKdABTG1sxQSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAp0AAUbWzFBCnQAAQp0ACdUQU5HSUJMRSBTVEFURVM6ICAgICAgICAgICAgICAgICAgICAgNAp0ACdWQU5JU0hJTkcgU1RBVEVTOiAgICAgICAgICAgICAgICAgICAgMAp0AEZOVU1CRVIgT0YgVElNRUQgRURHRVM6ICAgICAgICAgICAgICAgNCAgKDQgVC0+VCwgMCBULT5WLCAwIFQtPlYqLT5UKS4KdAA6TlVNQkVSIE9GIElNTUVESUFURSBFREdFUzogICAgICAgICAgIDAgICgwIFYtPlQsIDAgVi0+VikuCnQAJ1RPVEFMIE5VTUJFUiBPRiBFREdFUzogICAgICAgICAgICAgICA0CnQAJ0lNTUVESUFURSBUUk5TLiBGSVJJTkdTOiAgICAgICAgICAgICAwCnQAJ1RJTUVEIFRSTlMuIEZJUklOR1M6ICAgICAgICAgICAgICAgICA0CnQAJ1ZJU0lURUQgVkFOSVNISU5HIFNUQVRFUzogICAgICAgICAgICAwCnQAJ0dFTkVSQUwgVFJBTlNJVElPTlM6ICAgICAgICAgICAgICAgICAwCnQAJ05PTi1QUkVFTVBUSVZFIEVYUC4gVFJOUy46ICAgICAgICAgICA0CnQAJ1BSRUVNUFRJVkUgRVhQLiBUUkFOU0lUSU9OUzogICAgICAgICAwCnQADk1FTU9SWSBVU0FHRToKdAAnVFJBTlNJVElPTi1TRVQgRU5UUklFUzogICAgICAgICAgICAgIDAKdAAnVkFOSVNILVBBVEggRU5UUklFUzogICAgICAgICAgICAgICAgIDAKdAAnVkFOSVNILVBBVEgtU0VUIEVOVFJJRVM6ICAgICAgICAgICAgIDAKdAAtUEFDS0VEIE1BUktJTkdTOiAgICAgICAgICAgICAgICAgICAgMTIgQllURVMKdAAtU1RBVEUgU0VUIERBVEE6ICAgICAgICAgICAgICAgICAgICAgIDMgQllURVMKdAAtRURHRVMgREFUQTogICAgICAgICAgICAgICAgICAgICAgICAgNDUgQllURVMKdAABCnQAIFBBQ0tFRCBUQU5HSUJMRSBNQVJLSU5HUyBUQUJMRToKdAAiU1RPUkVEIFNFUVVFTkNFUzogNCwgRlJBR01FTlRTOiA2CnQAJiAgU0VRVUVOQ0VTIE1FTU9SWTogICAgICAgICAgNyBCWVRFUy4KdAAmICBGUkFHTUVOVFMgTUVNT1JZOiAgICAgICAgICA1IEJZVEVTLgp0ACYgICAgICBUT1RBTCBNRU1PUlk6ICAgICAgICAgMTIgQllURVMuCnQAJk1FQU4gTUVNT1JZIFBFUiBTRVFVRU5DRSBJUzogMyBCWVRFUy4KdAAmICBVU0VEIEZPUiBTRVFVRU5DRSBEQVRBOiAxLjc1IEJZVEVTLgp0ACMgICAgICAgIFVTRUQgRk9SIEhBU0hJTkc6IDAgQllURVMuCnQAJiAgICAgIFVTRUQgRk9SIEZSQUdNRU5UUzogMS4yNSBCWVRFUy4KdAAmQlVJTEQgVElNRTogW1VzZXIgMC4wMDBzLCBTeXMgMC4wMDBzXQp0AAEKdAABCnQAOlRIRSBSRyBJUyBBIBtbNG0bWzMzbUNPTlRJTlVPUyBUSU1FIE1BUktPViBDSEFJThtbMjRtG1swbQp0AAEKdAASVVNJTkcgRE9UIFRPT0wuLi4KdAEAZG90IC1UcGRmICIvdmFyL2ZvbGRlcnMvZzkvanlwcnFibDEwaGcyYnhfeV9qMnQ4YzVjMDAwMGduL1QvdGVtcG9yYXJ5NDg2NjMwODU1Mzc2NzkyNzMzOC1NZWFzdXJlcy5zb2x1dGlvbi9TZWFzb25zLVJHLTAuZG90IiAtbyAiL3Zhci9mb2xkZXJzL2c5L2p5cHJxYmwxMGhnMmJ4X3lfajJ0OGM1YzAwMDBnbi9UL3RlbXBvcmFyeTQ4NjYzMDg1NTM3Njc5MjczMzgtTWVhc3VyZXMuc29sdXRpb24vU2Vhc29ucy1SRy0wLnBkZiIgMj4gL2Rldi9udWxsCnQA+URPVCBGSUxFcyBTQVZFRCBBUyAvdmFyL2ZvbGRlcnMvZzkvanlwcnFibDEwaGcyYnhfeV9qMnQ4YzVjMDAwMGduL1QvdGVtcG9yYXJ5NDg2NjMwODU1Mzc2NzkyNzMzOC1NZWFzdXJlcy5zb2x1dGlvbi9TZWFzb25zLVJHLTAuZG90IEFORCAvdmFyL2ZvbGRlcnMvZzkvanlwcnFibDEwaGcyYnhfeV9qMnQ4YzVjMDAwMGduL1QvdGVtcG9yYXJ5NDg2NjMwODU1Mzc2NzkyNzMzOC1NZWFzdXJlcy5zb2x1dGlvbi9TZWFzb25zLVJHLTAucGRmCnQAAQp0ACcbWzBYG1szMm0gUFJPQ0VTUyBFWElURUQgTk9STUFMTFkuG1swbQp4c3EAfgAAdwQAAAA4c3IAEWphdmEubGFuZy5Cb29sZWFuzSBygNWc+u4CAAFaAAV2YWx1ZXhwAXEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8cQB+ADxxAH4APHEAfgA8eA==</document-log>
+  </resource-list>
+</project>
