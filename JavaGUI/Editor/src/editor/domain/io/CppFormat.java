@@ -52,7 +52,7 @@ public class CppFormat {
                         if (fluxBalance) {
                             
                             out.println("double " + trn.getUniqueName() + "_general(double *Value,\n"
-                                    + "                   vector<class FBGLPK::LPprob>& vec_fluxb\n"
+                                    + "                   vector<class FBGLPK::LPprob>& vec_fluxb,\n"
                                     + "                         map <string,int>& NumTrans,\n"
                                     + "                         map <string,int>& NumPlaces,\n"
                                     + "                         const vector<string> & NameTrans,\n"
