@@ -471,7 +471,7 @@ public:
 
     //!It computes the Tau taking as input the list of descrete transitions and the next time point. It returns a possible transition firing otherwise  -1. It requires that  getValTranFire() must be called before.
     //! In SSA it's necessary to pass also the set of non exponetial general transition
-  int getComputeTau(int SetTranExp[], int SetTranNotExp[], double& nextTimePoint,double t);
+  int getComputeTau(int SetTranExp[], double& nextTimePoint,double t);
     //!It computes the Tau according to Gillespie algorithm. It takes as input the list of descrete transitions and the next time point. It returns a possible transition firing otherwise  -1. It requires that  getValTranFire() must be called before.
   double getComputeTauGillespie(int SetTran[],double t, double hstep);
     //! It is a pure virtual function which must be implemented.
