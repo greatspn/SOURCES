@@ -16,7 +16,6 @@ import editor.domain.elements.DtaSignature;
 import editor.domain.elements.Place;
 import editor.domain.elements.TemplateVariable;
 import editor.domain.elements.Transition;
-import editor.domain.grammar.ExprLangParser.RealExprContext;
 import static editor.domain.grammar.ExpressionLanguage.GRML;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -604,10 +603,9 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new BinaryFunct(false, ExprLangParser.TRUNCATED_EXP_FN, "exponential(", ", ", ", generator)", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.TRIANGULAR_FN, "Triangular(", ", ", ")", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.PARETO_FN, "Pareto(", ", ", ")", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.UNIFORM_FN, "uniform(", ", ", ", generator)", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.ERLANG_FN, "gamma(", ", ", ", generator)", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.BINOMIAL_FN, "binomial(", ", ", ", generator)", OperatorPos.FUNCTION),
-};
+        new BinaryFunct(false, ExprLangParser.UNIFORM_FN, "uniform_real_distribution<double> unf_dis(", ", ", ");\n distribution(generator)", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.ERLANG_FN, "Erlang(", ", ", ")", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.BINOMIAL_FN, "binomial_distribution<> bin_dis(", ", ", ")\n bin_dis(generator)", OperatorPos.FUNCTION),};
 
     public FormattedFormula formatBinaryFn(int binaryIntFn, FormattedFormula expr0,
             FormattedFormula expr1) {
@@ -1372,8 +1370,19 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             case CPP:
                 String call_name = ctx.STRING_LITERAL().toString();
                 String function_name = call_name.substring(1, call_name.length() - 1);
-                String arguments = visit(ctx.intOrRealList()).getFormula().substring(2);
-                return format(true, function_name, "(", arguments, ")");
+                String arguments = visit(ctx.intOrRealList()).getFormula();
+                String arguments_defined;
+                if (arguments.isEmpty()) {
+                    if (context.cppForFluxBalance) {
+                        arguments_defined = "Value, vec_fluxb, NumTrans, NumPlaces, NameTrans, Trans, T, time";
+
+                    } else {
+                        arguments_defined = "Value, NumTrans, NumPlaces, NameTrans, Trans, T, time";
+                    }
+                } else {
+                    arguments_defined = arguments.substring(2);
+                }
+                return format(true, function_name, "(", arguments_defined, ")");
             default:
                 throw new UnsupportedOperationException();
         }

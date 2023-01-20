@@ -1,6 +1,5 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * Implementation of the Hilbert basis computation
  */
 package editor.domain.semiflows;
 import java.util.ArrayList;
@@ -34,9 +33,7 @@ public class HilbertBasis {
     public HilbertBasis(int[][] mat) {
         this(mat.length, mat[0].length);
         for (int i=0; i<mat.length; i++) {
-            for (int j=0; j<mat[i].length; j++) {
-                rows.get(i).c[j] = mat[i][j];
-            }
+            System.arraycopy(mat[i], 0, rows.get(i).c, 0, mat[i].length);
         }
     }
 
@@ -287,7 +284,7 @@ public class HilbertBasis {
             {1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1},
         };
         
-        int[][] mat55 = { // very hard, takes too much time
+        /*int[][] mat55 = { // very hard, takes too much time
             { 1,  1,  1,  1,  0,  1,  1,  1,  1,  0,  1 },
             { 1,  1,  1,  1,  1,  0,  1,  1,  1,  1,  1 },
             { 1,  1,  1,  1,  1,  1,  0,  1,  1,  1,  1 },
@@ -313,7 +310,7 @@ public class HilbertBasis {
             { 0,  0,  0, -1,  0,  0, -1,  0,  0,  0,  0 },
             { 0,  0,  0, -1,  0,  0,  0, -1,  0,  0,  0 },
             { 0,  0,  0, -1,  0,  0,  0,  0, -1, -1,  0 },
-        };
+        };*/
                         
         testHilbert(matA1, solA1);
         testHilbert(mat33, sol33);
@@ -341,11 +338,7 @@ public class HilbertBasis {
     }
     
     private static void sortArrays(int[][] mat) {
-        Comparator<int[]> comp = new Comparator<int[]>() {
-            @Override public int compare(int[] o1, int[] o2) {
-                return Arrays.compare(o1, o2);
-            }
-        };
+        Comparator<int[]> comp = (int[] o1, int[] o2) -> Arrays.compare(o1, o2);
         Arrays.sort(mat, comp);
     }
 }

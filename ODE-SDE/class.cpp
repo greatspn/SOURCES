@@ -247,6 +247,7 @@ SystEqMin::~SystEqMin() {}
 
 inline void SystEqMin::getValTranFire()
 {
+
 	for(int t=0; t<nTrans; t++)
 	{
 		unsigned int size=Trans[t].InPlaces.size();
@@ -2617,12 +2618,16 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 	}
 	while(tout<=Max_Time){
 		lsoda(*this,neq, y, &t, tout, itol, rtol, atol, itask, &istate, iopt, jt,
-			iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
-			rwork1, rwork5, rwork6, rwork7, 0);
+				iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
+				rwork1, rwork5, rwork6, rwork7, 0);
+//***********************************************************************************
+//Observe istate=1 reset the integration. It assures that the next step starts really from tout however it slows the process.
+//It is necessary only when you want to stop integration and we want to be sure that it will start exactly from that previous endpoint. 
+		istate=1;
+//***********************************************************************************		
 		if (Info){
 			out<<endl<<tout<<" ";
-		}
-		cout<<"\t Time:"<<tout<<endl;
+			}
 		derived(y+1);
 		if (Info){
 			for (int j=1;j<=nPlaces;j++){
@@ -2631,11 +2636,19 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 			
 
 #ifdef CGLPK
+<<<<<<< HEAD
 
 			getValTranFire(y+1);
 			for (unsigned int i=0;i<vec_fluxb.size();++i){
 				outflux[i]<<endl<<tout<<" ";
 				vec_fluxb[i].printObject(outflux[i]);
+=======
+            time=tout;
+            getValTranFire(y+1);
+        	for (unsigned int i=0;i<vec_fluxb.size();++i){
+        		outflux[i]<<endl<<tout<<" ";
+        		vec_fluxb[i].printObject(outflux[i]);
+>>>>>>> 81dccf679b13aba220f380ecfab9415ebbfc6f45
 				vec_fluxb[i].printValue(outflux[i]);
 				if (Variability){
 					vec_fluxb[i].printLowerMax(outflux[i]);	

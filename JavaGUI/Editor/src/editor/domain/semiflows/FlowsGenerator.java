@@ -4,7 +4,6 @@
  */
 package editor.domain.semiflows;
 
-import common.Tuple;
 import common.Util;
 import editor.domain.Edge;
 import editor.domain.Node;
@@ -16,8 +15,6 @@ import editor.domain.grammar.TemplateBinding;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 /** Farkas algorithm for the computation
  *  of the minimal set of P(T)-(semi)flows in a Petri net.
@@ -293,266 +290,266 @@ public class FlowsGenerator extends StructuralAlgorithm {
         }        
     }
     
-    //-----------------------------------------------------------------------
-    // Compute all canonical semiflows, even if they are not minimal
-    public void computeAllCanonicalSemiflows(boolean log, ProgressObserver obs)//, int[][] annulers) 
-            throws InterruptedException 
-    {
-        assert type==PTFlows.Type.PLACE_SEMIFLOWS;
-        if (log)
-            System.out.println(this);
-        Set<Tuple<Integer, Integer>> dropped = new HashSet<>();
-        int initFlows = numFlows();
-//        if (log && annulers!=null) {
-//            for (int[] a : annulers)
-//                System.out.println("ANNULER: "+rowToString(a, null));
-//        }
-        
-        // Matrix A starts with the flow matrix, D is the identity.
-        // for every transition i=[0,M), repeat:
-        for (int i = 0; i < M; i++) {
-            if (log)
-                System.out.println("\nStep "+i+"/"+(M-1)+"\n"+this);
-            // Append to the matrix [D|A] every rows resulting as a non-negative
-            // linear combination of row pairs from [D|A] whose sum zeroes
-            // the i-th column of A.
-//            int nRows = numFlows();
-//            int combined_with_i = 0;
-            for (int r1 = 0; r1 < numFlows(); r1++) {
-                assert numFlows() < 1000;
-                if (mA.get(r1)[i] == 0) {
-                    continue;
-                }
-                obs.advance(i, M+1, r1, numFlows());
-                for (int r2 = r1 + 1; r2 < numFlows(); r2++) {
-                    checkInterrupted();
-                    // Find two rows r1 and r2 such that r1[i] and r2[i] have opposite signs.
-                    if (mA.get(r2)[i] == 0)
-                        continue;
-                    
-                    if (dropped.contains(new Tuple<>(r1, r2)))
-                        continue;
-                    
-//                    int mult1, mult2;
-//                    if (type.isSemiflow()) { // (non-negative) semiflows
-                    if (sign(mA.get(r1)[i]) == sign(mA.get(r2)[i]))
-                        continue;
-//                    mult1 = Math.abs(mA.get(r1)[i]);
-//                    mult2 = Math.abs(mA.get(r2)[i]);
-//                    mult1 = mult2 = 1; // Do all 1-steps
-//                    }
-//                    else { // integer flows
-//                        mult1 = Math.abs(mA.get(r1)[i]);
-//                        mult2 = Math.abs(mA.get(r2)[i]);
-//                        int gcd12 = gcd(mult1, mult2);
-//                        mult1 /= gcd12;
-//                        mult2 /= gcd12;
-//                        if (sign(mA.get(r1)[i]) == sign(mA.get(r2)[i]))
-//                            mult1 *= -1;
-//                    }
-
-                    // Create a new row nr' such that:
-                    //   nr = |r2[i]| * r1 + |ri[i]| * r2
-                    //   nr' = nr / gcd(nr)
-                    int[] nrA = new int[M];
-                    int[] nrD = new int[N];
-                    int gcdAD = -1;
-                    for (int k = 0; k < M; k++) {
-                        // Compute (with arithmetic overflow check):
-//                        nrA[k] = Math.addExact(Math.multiplyExact(mult2, mA.get(r1)[k]),
-//                                               Math.multiplyExact(mult1, mA.get(r2)[k]));
-                        nrA[k] = Math.addExact(mA.get(r1)[k], mA.get(r2)[k]);
-                        gcdAD = (k == 0) ? Math.abs(nrA[k]) : gcd(gcdAD, Math.abs(nrA[k]));
-                    }
-//                    assert nrA[i] == 0;
-                    for (int k = 0; k < N; k++) {
-                        // Compute (with arithmetic overflow check):
-//                        nrD[k] = Math.addExact(Math.multiplyExact(mult2, mD.get(r1)[k]),
-//                                               Math.multiplyExact(mult1, mD.get(r2)[k]));
-                        nrD[k] = Math.addExact(mD.get(r1)[k], mD.get(r2)[k]);
-                        gcdAD = gcd(gcdAD, Math.abs(nrD[k]));
-                    }
-                    // Make canonic
-                    if (gcdAD != 1) {
-//                        System.out.println("  gcdAD = " + gcdAD);
-                        for (int k = 0; k < M; k++)
-                            nrA[k] /= gcdAD;
-                        for (int k = 0; k < N; k++)
-                            nrD[k] /= gcdAD;
-                    }
-                    int nnzD = 0;
-                    for (int k = 0; k < N; k++) 
-                        if (nrD[k] != 0)
-                            nnzD++;
-                    if (nnzD == 0)
-                        continue; // drop empty row
-                    
-                    boolean dropVec = false;
-                    // check if an identical row already exists in D
-                    for (int hh=0; hh<numFlows() && !dropVec; hh++) {
-                        if (Arrays.equals(mD.get(hh), nrD)) {
-                            dropVec = true; // duplicated row
-                        }
-                    }
-                    // check if there is an identical support semiflow that is smaller
-                    if (!dropVec) {
-                        for (int k=initFlows; k<mD.size(); k++) {
-                            if (mA.get(k)[i] == 0) {
-                                if (checkParetoDominance(nrD, mD.get(k))) {
-                                    dropVec = true;
-                                    System.out.println("BOUND: "+rowToString(nrD, nrA)+
-                                                       " < "+rowToString(mD.get(k), mA.get(k)));
-                                    break;                                
-                                }
-                            }
-                        }
-                    }
-                    if (dropVec) {
-                        dropped.add(new Tuple<>(r1, r2));
-                        if (log) {
-                            System.out.println("DROP row:"+r1+" + row:" + r2 + 
-                                               "  nnz(D)=" + nnzD + "  gcdAD="+gcdAD);
-//                            System.out.println(String.format("--: %s", rowToString(nrD, nrA)));
-                        }
-                        continue;
-                    }
-
-                    if (log) {
-                        System.out.println("ADD  row:"+r1+" + row:" + r2 + 
-                                           "  nnz(D)=" + nnzD + "  gcdAD="+gcdAD);
-                        System.out.println(String.format("%2d: %s", mA.size(), rowToString(nrD, nrA)));
-                    }
-                    mA.add(nrA);
-                    mD.add(nrD);
-//                    ++combined_with_i;
-                }
-                    
-//                if (type.isBasis() && combined_with_i>0)
-//                    break;
-            }
-            checkInterrupted();
-            
-            // Eliminate from [D|A] the rows that are >= of the semiflows.
-            int rr = numFlows();
-            while (rr > 0) {
-                rr--;
-                boolean drop = false;
-                for (int jj=0; jj<numFlows() && !drop; jj++) { // loop htrough all semiflows
-                    if (jj != rr && mA.get(jj)[i] == 0) {
-                        if (checkParetoDominance(mD.get(rr), mD.get(jj))) {
-                            drop = true;
-                            System.out.println("DROPX row:"+rr+" >= row:" + jj);
-                            System.out.println(rowToString(mD.get(rr), mA.get(rr))+" >= "+
-                                               rowToString(mD.get(jj), mA.get(jj)));
-                        }
-                    }
-                }
-                if (drop) {
-                    mA.remove(rr);
-                    mD.remove(rr);
-                }
-            }
-
-            // Eliminate from [D|A] the rows in which the i-th column of A is not zero.
-            /*int rr = numFlows();
-            while (rr > 0) {
-                rr--;
-                obs.advance(i, M+1, rr, numFlows());
-                if (mA.get(rr)[i] == 0) {
-                    continue;
-                }
-                if (log)
-                    System.out.println(i + ": DEL row " + rr);
-                mA.remove(rr);
-                mD.remove(rr);
-            }*/
-            
-//            // Eliminate frm [D|A] the rows that are not minimal, doing an exhaustive search.
-//            if (!type.isBasis())
-//                removeNonMinimalFlows(log, obs);
-        }
-        
-        if (log)
-            System.out.println("\nRESULT:\n"+this);
-
-        // Remove all the initial flows
-        mA = new ArrayList<>(mA.subList(initFlows, mA.size()));
-        mD = new ArrayList<>(mD.subList(initFlows, mD.size()));
-//        if (log)
-//            System.out.println("\nREMOVING "+initFlows+" initial flows.");
-        
-//        if (type.isTrapsOrSiphons())
-//            dropSupplementaryVariablesAndReduce(log, obs);
-
-        obs.advance(M+1, M+1, 1, 1);
-        
-//        if (type.isBound()) {
-//            computeBoundsFromInvariants();
-////            scAlgo.compute(log, obs);
-//        }
-        
-        setComputed();
-    }
 //    //-----------------------------------------------------------------------
-    private boolean checkSameSupport(int[] vec1, int[] vec2) {
-        for (int i=0; i<vec1.length; i++)
-            if ((vec1[i]==0) != (vec2[i]==0))
-                return false; // different supports
-        return true;
-    }
-    //-----------------------------------------------------------------------
-    // check if vec1 Pareto-dominates vec2, i.e. iff vec1 >= vec2
-    private boolean checkParetoDominance(int[] vec1, int[] vec2) {
-        if (!checkSameSupport(vec1, vec2))
-            return false; // compare only if they have the same support
-        
-        for (int i=0; i<vec1.length; i++) {
-            if (vec1[i] < vec2[i])
-                return false;
-        }
-        return true;
-        
-       /* int eq = 0, greater = 0;
-//        boolean eq = true, greater = true;//, less = true;
-        for (int i=0; i<vec1.length; i++) {
-            if (vec1[i] == vec2[i])  eq++;
-            if (vec1[i] > vec2[i])   greater++;
-//            if (vec1[i] < vec2[i]) {
-//                eq = false;
-//                greater = false;
+//    // Compute all canonical semiflows, even if they are not minimal
+//    public void computeAllCanonicalSemiflows(boolean log, ProgressObserver obs)//, int[][] annulers) 
+//            throws InterruptedException 
+//    {
+//        assert type==PTFlows.Type.PLACE_SEMIFLOWS;
+//        if (log)
+//            System.out.println(this);
+//        Set<Tuple<Integer, Integer>> dropped = new HashSet<>();
+//        int initFlows = numFlows();
+////        if (log && annulers!=null) {
+////            for (int[] a : annulers)
+////                System.out.println("ANNULER: "+rowToString(a, null));
+////        }
+//        
+//        // Matrix A starts with the flow matrix, D is the identity.
+//        // for every transition i=[0,M), repeat:
+//        for (int i = 0; i < M; i++) {
+//            if (log)
+//                System.out.println("\nStep "+i+"/"+(M-1)+"\n"+this);
+//            // Append to the matrix [D|A] every rows resulting as a non-negative
+//            // linear combination of row pairs from [D|A] whose sum zeroes
+//            // the i-th column of A.
+////            int nRows = numFlows();
+////            int combined_with_i = 0;
+//            for (int r1 = 0; r1 < numFlows(); r1++) {
+//                assert numFlows() < 1000;
+//                if (mA.get(r1)[i] == 0) {
+//                    continue;
+//                }
+//                obs.advance(i, M+1, r1, numFlows());
+//                for (int r2 = r1 + 1; r2 < numFlows(); r2++) {
+//                    checkInterrupted();
+//                    // Find two rows r1 and r2 such that r1[i] and r2[i] have opposite signs.
+//                    if (mA.get(r2)[i] == 0)
+//                        continue;
+//                    
+//                    if (dropped.contains(new Tuple<>(r1, r2)))
+//                        continue;
+//                    
+////                    int mult1, mult2;
+////                    if (type.isSemiflow()) { // (non-negative) semiflows
+//                    if (sign(mA.get(r1)[i]) == sign(mA.get(r2)[i]))
+//                        continue;
+////                    mult1 = Math.abs(mA.get(r1)[i]);
+////                    mult2 = Math.abs(mA.get(r2)[i]);
+////                    mult1 = mult2 = 1; // Do all 1-steps
+////                    }
+////                    else { // integer flows
+////                        mult1 = Math.abs(mA.get(r1)[i]);
+////                        mult2 = Math.abs(mA.get(r2)[i]);
+////                        int gcd12 = gcd(mult1, mult2);
+////                        mult1 /= gcd12;
+////                        mult2 /= gcd12;
+////                        if (sign(mA.get(r1)[i]) == sign(mA.get(r2)[i]))
+////                            mult1 *= -1;
+////                    }
+//
+//                    // Create a new row nr' such that:
+//                    //   nr = |r2[i]| * r1 + |ri[i]| * r2
+//                    //   nr' = nr / gcd(nr)
+//                    int[] nrA = new int[M];
+//                    int[] nrD = new int[N];
+//                    int gcdAD = -1;
+//                    for (int k = 0; k < M; k++) {
+//                        // Compute (with arithmetic overflow check):
+////                        nrA[k] = Math.addExact(Math.multiplyExact(mult2, mA.get(r1)[k]),
+////                                               Math.multiplyExact(mult1, mA.get(r2)[k]));
+//                        nrA[k] = Math.addExact(mA.get(r1)[k], mA.get(r2)[k]);
+//                        gcdAD = (k == 0) ? Math.abs(nrA[k]) : gcd(gcdAD, Math.abs(nrA[k]));
+//                    }
+////                    assert nrA[i] == 0;
+//                    for (int k = 0; k < N; k++) {
+//                        // Compute (with arithmetic overflow check):
+////                        nrD[k] = Math.addExact(Math.multiplyExact(mult2, mD.get(r1)[k]),
+////                                               Math.multiplyExact(mult1, mD.get(r2)[k]));
+//                        nrD[k] = Math.addExact(mD.get(r1)[k], mD.get(r2)[k]);
+//                        gcdAD = gcd(gcdAD, Math.abs(nrD[k]));
+//                    }
+//                    // Make canonic
+//                    if (gcdAD != 1) {
+////                        System.out.println("  gcdAD = " + gcdAD);
+//                        for (int k = 0; k < M; k++)
+//                            nrA[k] /= gcdAD;
+//                        for (int k = 0; k < N; k++)
+//                            nrD[k] /= gcdAD;
+//                    }
+//                    int nnzD = 0;
+//                    for (int k = 0; k < N; k++) 
+//                        if (nrD[k] != 0)
+//                            nnzD++;
+//                    if (nnzD == 0)
+//                        continue; // drop empty row
+//                    
+//                    boolean dropVec = false;
+//                    // check if an identical row already exists in D
+//                    for (int hh=0; hh<numFlows() && !dropVec; hh++) {
+//                        if (Arrays.equals(mD.get(hh), nrD)) {
+//                            dropVec = true; // duplicated row
+//                        }
+//                    }
+//                    // check if there is an identical support semiflow that is smaller
+//                    if (!dropVec) {
+//                        for (int k=initFlows; k<mD.size(); k++) {
+//                            if (mA.get(k)[i] == 0) {
+//                                if (checkParetoDominance(nrD, mD.get(k))) {
+//                                    dropVec = true;
+//                                    System.out.println("BOUND: "+rowToString(nrD, nrA)+
+//                                                       " < "+rowToString(mD.get(k), mA.get(k)));
+//                                    break;                                
+//                                }
+//                            }
+//                        }
+//                    }
+//                    if (dropVec) {
+//                        dropped.add(new Tuple<>(r1, r2));
+//                        if (log) {
+//                            System.out.println("DROP row:"+r1+" + row:" + r2 + 
+//                                               "  nnz(D)=" + nnzD + "  gcdAD="+gcdAD);
+////                            System.out.println(String.format("--: %s", rowToString(nrD, nrA)));
+//                        }
+//                        continue;
+//                    }
+//
+//                    if (log) {
+//                        System.out.println("ADD  row:"+r1+" + row:" + r2 + 
+//                                           "  nnz(D)=" + nnzD + "  gcdAD="+gcdAD);
+//                        System.out.println(String.format("%2d: %s", mA.size(), rowToString(nrD, nrA)));
+//                    }
+//                    mA.add(nrA);
+//                    mD.add(nrD);
+////                    ++combined_with_i;
+//                }
+//                    
+////                if (type.isBasis() && combined_with_i>0)
+////                    break;
 //            }
-//            else if (vec1[i] > vec2[i]) {
-//                eq = false;
-//                // less = false;
+//            checkInterrupted();
+//            
+//            // Eliminate from [D|A] the rows that are >= of the semiflows.
+//            int rr = numFlows();
+//            while (rr > 0) {
+//                rr--;
+//                boolean drop = false;
+//                for (int jj=0; jj<numFlows() && !drop; jj++) { // loop htrough all semiflows
+//                    if (jj != rr && mA.get(jj)[i] == 0) {
+//                        if (checkParetoDominance(mD.get(rr), mD.get(jj))) {
+//                            drop = true;
+//                            System.out.println("DROPX row:"+rr+" >= row:" + jj);
+//                            System.out.println(rowToString(mD.get(rr), mA.get(rr))+" >= "+
+//                                               rowToString(mD.get(jj), mA.get(jj)));
+//                        }
+//                    }
+//                }
+//                if (drop) {
+//                    mA.remove(rr);
+//                    mD.remove(rr);
+//                }
 //            }
-        }
-//        if (less)
-//            System.out.println("### "+rowToString(vec1, null)+" < "+rowToString(vec2, null));
-//        if (greater)
-//            System.out.println("### "+rowToString(vec1, null)+" > "+rowToString(vec2, null));
-        boolean is_eq = (eq == vec1.length);
-        boolean is_greater_eq = (greater > 0) && (greater + eq == vec1.length);
-        
-        return is_eq || is_greater_eq;// || less;       */ 
-        
-//        boolean eq = true;
+//
+//            // Eliminate from [D|A] the rows in which the i-th column of A is not zero.
+//            /*int rr = numFlows();
+//            while (rr > 0) {
+//                rr--;
+//                obs.advance(i, M+1, rr, numFlows());
+//                if (mA.get(rr)[i] == 0) {
+//                    continue;
+//                }
+//                if (log)
+//                    System.out.println(i + ": DEL row " + rr);
+//                mA.remove(rr);
+//                mD.remove(rr);
+//            }*/
+//            
+////            // Eliminate frm [D|A] the rows that are not minimal, doing an exhaustive search.
+////            if (!type.isBasis())
+////                removeNonMinimalFlows(log, obs);
+//        }
+//        
+//        if (log)
+//            System.out.println("\nRESULT:\n"+this);
+//
+//        // Remove all the initial flows
+//        mA = new ArrayList<>(mA.subList(initFlows, mA.size()));
+//        mD = new ArrayList<>(mD.subList(initFlows, mD.size()));
+////        if (log)
+////            System.out.println("\nREMOVING "+initFlows+" initial flows.");
+//        
+////        if (type.isTrapsOrSiphons())
+////            dropSupplementaryVariablesAndReduce(log, obs);
+//
+//        obs.advance(M+1, M+1, 1, 1);
+//        
+////        if (type.isBound()) {
+////            computeBoundsFromInvariants();
+//////            scAlgo.compute(log, obs);
+////        }
+//        
+//        setComputed();
+//    }
+////    //-----------------------------------------------------------------------
+//    private boolean checkSameSupport(int[] vec1, int[] vec2) {
+//        for (int i=0; i<vec1.length; i++)
+//            if ((vec1[i]==0) != (vec2[i]==0))
+//                return false; // different supports
+//        return true;
+//    }
+//    //-----------------------------------------------------------------------
+//    // check if vec1 Pareto-dominates vec2, i.e. iff vec1 >= vec2
+//    private boolean checkParetoDominance(int[] vec1, int[] vec2) {
+//        if (!checkSameSupport(vec1, vec2))
+//            return false; // compare only if they have the same support
+//        
 //        for (int i=0; i<vec1.length; i++) {
 //            if (vec1[i] < vec2[i])
-//                eq = false;
-//            else if (vec1[i] > vec2[i])
-//                return true;
+//                return false;
 //        }
-//        return !eq;
-        
-//        for (int i=0; i<semiflow.length; i++)
-//            if ((semiflow[i]==0) != (vec[i]==0))
-//                return false; // support is different
-//        // check that vec is not greater than @semiflow
-//        for (int i=0; i<semiflow.length; i++)
-//            if (vec[i] > semiflow[i])
-//                return true; // drop
-//        return false; 
-    }
+//        return true;
+//        
+//       /* int eq = 0, greater = 0;
+////        boolean eq = true, greater = true;//, less = true;
+//        for (int i=0; i<vec1.length; i++) {
+//            if (vec1[i] == vec2[i])  eq++;
+//            if (vec1[i] > vec2[i])   greater++;
+////            if (vec1[i] < vec2[i]) {
+////                eq = false;
+////                greater = false;
+////            }
+////            else if (vec1[i] > vec2[i]) {
+////                eq = false;
+////                // less = false;
+////            }
+//        }
+////        if (less)
+////            System.out.println("### "+rowToString(vec1, null)+" < "+rowToString(vec2, null));
+////        if (greater)
+////            System.out.println("### "+rowToString(vec1, null)+" > "+rowToString(vec2, null));
+//        boolean is_eq = (eq == vec1.length);
+//        boolean is_greater_eq = (greater > 0) && (greater + eq == vec1.length);
+//        
+//        return is_eq || is_greater_eq;// || less;       */ 
+//        
+////        boolean eq = true;
+////        for (int i=0; i<vec1.length; i++) {
+////            if (vec1[i] < vec2[i])
+////                eq = false;
+////            else if (vec1[i] > vec2[i])
+////                return true;
+////        }
+////        return !eq;
+//        
+////        for (int i=0; i<semiflow.length; i++)
+////            if ((semiflow[i]==0) != (vec[i]==0))
+////                return false; // support is different
+////        // check that vec is not greater than @semiflow
+////        for (int i=0; i<semiflow.length; i++)
+////            if (vec[i] > semiflow[i])
+////                return true; // drop
+////        return false; 
+//    }
     
     //-----------------------------------------------------------------------
     
@@ -1111,27 +1108,10 @@ public class FlowsGenerator extends StructuralAlgorithm {
         return fg;
     }
     
-    private static FlowsGenerator initPareto2357() {
-        int M=1, N=4;
-        FlowsGenerator fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
-        final int a=0;
-        // t0 = 2a
-        fg.addIncidence(0, a, 2);
-        // t1 = -3a
-        fg.addIncidence(1, a, -3);
-        // t2 = 5a
-        fg.addIncidence(2, a, 5);
-        // t3 = -7a
-        fg.addIncidence(3, a, -7);
-        return fg;
-    }
-    
 
     public static void main(String[] args) throws InterruptedException {
         ProgressObserver obs = (int step, int total, int s, int t) -> { };
-//        FlowsGenerator fg = initAnisimov(); //init1();
-//        fg.compute(true, obs);
-        FlowsGenerator fg = initPareto2357();
-        fg.computeAllCanonicalSemiflows(true, obs);
+        FlowsGenerator fg = initAnisimov(); //init1();
+        fg.compute(true, obs);
     }
 }

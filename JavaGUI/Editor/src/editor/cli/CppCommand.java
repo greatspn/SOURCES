@@ -34,7 +34,7 @@ public class CppCommand {
             Main.useGuiLogWindowForExceptions = false;
             Main.fixedUiSize = Main.UiSize.NORMAL;
             DummyLatexProvider.initializeProvider();
-            long totalStart = System.currentTimeMillis();
+//            long totalStart = System.currentTimeMillis();
             toolMain(args);
 
             //System.out.println("TOTAL TIME: " + (System.currentTimeMillis() - totalStart) / 1000.0);
@@ -49,15 +49,29 @@ public class CppCommand {
     public static boolean toolMain(String[] args) throws Exception {
 
         // Read command line arguments
-        if (args.length < 1) {
+        if (args.length < 2) {
             System.out.println("Not enough arguments.");
             System.exit(1);
         }
 
-        // GREATSPN_BINDIR=~/tesiMagistrale/SOURCESC-/JavaGUI/Editor/dist
+        // GREATSPN_BINDIR=~/tesiMagistrale/SOURCESC-readFromFile/JavaGUI/Editor/dist/
         // java -ea -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar editor.cli.CppCommand EsempiExpMTDep out.cpp
         String inBaseName = args[0];
         String outBaseName = args[1];
+        
+        // Parse the remaining arguments
+        boolean fluxBalanceFlag = false;
+        for (int i=2; i<args.length; i++) {
+            if (args[i].equals("-flux")) {
+                // DO something
+                fluxBalanceFlag = true;
+                System.out.println("Enabling flux balance.");
+            }
+            else {
+                System.err.println("Unknown argument: "+args[i]);
+                System.exit(1);
+            }
+        }
 
         GspnPage gspn = loadPage(inBaseName);
         ArrayList<ProjectPage> pages = new ArrayList<>();
@@ -66,11 +80,12 @@ public class CppCommand {
         gspn.preparePageCheck();
         gspn.checkPage(proj, null, gspn, null);
         ParserContext context = new ParserContext(gspn);
+        context.cppForFluxBalance = fluxBalanceFlag;
         gspn.compileParsedInfo(context);
 
         File cppFile = new File(outBaseName);
-        ArrayList<String> log = new ArrayList<>();
 
+        // Enumerate the filenames mentioned in every transition delay expressions
         ExternalTermsVisitor etv = new ExternalTermsVisitor();
         for (Node n : gspn.nodes) {
             if (n instanceof Transition) {
@@ -80,7 +95,8 @@ public class CppCommand {
         }
 
         long saveStart = System.currentTimeMillis();
-        CppFormat.export(cppFile, gspn, context, etv.filenames);
+         // Convert in C++
+        CppFormat.export(cppFile, gspn, fluxBalanceFlag, context, etv.filenames);
 
         System.out.println("SAVING TIME: " + (System.currentTimeMillis() - saveStart) / 1000.0);
         return true;

@@ -20,10 +20,11 @@ import java.util.StringJoiner;
  */
 public class CppFormat {
 
-    public static void export(File file, GspnPage gspn, ParserContext context, Set<String> filenames)
+    public static void export(File file, GspnPage gspn, boolean fluxBalance, ParserContext context, Set<String> filenames)
             throws Exception {
 
-        try ( PrintWriter out = new PrintWriter(new BufferedOutputStream(new FileOutputStream(file)))) {
+
+        try (PrintWriter out = new PrintWriter(new BufferedOutputStream(new FileOutputStream(file)))) {
 
             if (!filenames.isEmpty()) {
                 StringJoiner joiner = new StringJoiner(",");
@@ -48,16 +49,29 @@ public class CppFormat {
                     ArrayList<String> double_constant_log = new ArrayList<>();
                     String cppDelayExpr = trn.convertDelayLang(context, null, ExpressionLanguage.CPP);
                     GreatSpnFormat.realOrRpar(cppDelayExpr, "", gspn, double_constant_log);
-                    if ((!double_constant_log.isEmpty()) || (trn.isGeneral() && double_constant_log.isEmpty()) ) {
-                        
-                        out.println("double " + trn.getUniqueName() + "_general(double *Value,\n"
-                                + "                         map <string,int>& NumTrans,\n"
-                                + "                         map <string,int>& NumPlaces,\n"
-                                + "                         const vector<string> & NameTrans,\n"
-                                + "                         const struct InfTr* Trans,\n"
-                                + "                         const int T,\n"
-                                + "                         const double& time) {\n");
+                    if (!double_constant_log.isEmpty()) {
 
+                        if (fluxBalance) {
+                            
+                            out.println("double " + trn.getUniqueName() + "_general(double *Value,\n"
+                                    + "                   vector<class FBGLPK::LPprob>& vec_fluxb,\n"
+                                    + "                         map <string,int>& NumTrans,\n"
+                                    + "                         map <string,int>& NumPlaces,\n"
+                                    + "                         const vector<string> & NameTrans,\n"
+                                    + "                         const struct InfTr* Trans,\n"
+                                    + "                         const int T,\n"
+                                    + "                         const double& time) {\n");
+
+                        } else {
+
+                            out.println("double " + trn.getUniqueName() + "_general(double *Value,\n"
+                                    + "                         map <string,int>& NumTrans,\n"
+                                    + "                         map <string,int>& NumPlaces,\n"
+                                    + "                         const vector<string> & NameTrans,\n"
+                                    + "                         const struct InfTr* Trans,\n"
+                                    + "                         const int T,\n"
+                                    + "                         const double& time) {\n");
+                        }
                         
                         out.println("   double rate = " + cppDelayExpr + ";");
                         out.println("   return (rate);");
