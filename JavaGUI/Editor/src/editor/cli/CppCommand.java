@@ -53,7 +53,7 @@ public class CppCommand {
             System.exit(1);
         }
 
-        // GREATSPN_BINDIR=~/tesiMagistrale/SOURCESC-/JavaGUI/Editor/dist
+        // GREATSPN_BINDIR=~/tesiMagistrale/SOURCESC-readFromFile/JavaGUI/Editor/dist/
         // java -ea -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar editor.cli.CppCommand EsempiExpMTDep out.cpp
         String inBaseName = args[0];
         String outBaseName = args[1];
@@ -83,7 +83,6 @@ public class CppCommand {
         gspn.compileParsedInfo(context);
 
         File cppFile = new File(outBaseName);
-        ArrayList<String> log = new ArrayList<>();
 
         // Enumerate the filenames mentioned in every transition delay expressions
         ExternalTermsVisitor etv = new ExternalTermsVisitor();
@@ -95,8 +94,8 @@ public class CppCommand {
         }
 
         long saveStart = System.currentTimeMillis();
-        // Convert in C++
-        CppFormat.export(cppFile, gspn, context, etv.filenames);
+         // Convert in C++
+        CppFormat.export(cppFile, gspn, fluxBalanceFlag, context, etv.filenames);
 
         System.out.println("SAVING TIME: " + (System.currentTimeMillis() - saveStart) / 1000.0);
         return true;
