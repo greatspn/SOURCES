@@ -2636,19 +2636,11 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 			
 
 #ifdef CGLPK
-<<<<<<< HEAD
-
-			getValTranFire(y+1);
-			for (unsigned int i=0;i<vec_fluxb.size();++i){
-				outflux[i]<<endl<<tout<<" ";
-				vec_fluxb[i].printObject(outflux[i]);
-=======
             time=tout;
             getValTranFire(y+1);
         	for (unsigned int i=0;i<vec_fluxb.size();++i){
         		outflux[i]<<endl<<tout<<" ";
         		vec_fluxb[i].printObject(outflux[i]);
->>>>>>> 81dccf679b13aba220f380ecfab9415ebbfc6f45
 				vec_fluxb[i].printValue(outflux[i]);
 				if (Variability){
 					vec_fluxb[i].printLowerMax(outflux[i]);	
