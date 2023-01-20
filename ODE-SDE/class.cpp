@@ -2479,7 +2479,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 //***********************************************************************************
 //Observe istate=1 reset the integration. It assures that the next step starts really from tout however it slows the process.
 //It is necessary only when you want to stop integration and we want to be sure that it will start exactly from that previous endpoint. 
-		istate=1;
+		//istate=1;
 //***********************************************************************************		
 		if (Info){
 			out<<endl<<tout<<" ";
