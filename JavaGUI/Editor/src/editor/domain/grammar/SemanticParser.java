@@ -598,14 +598,14 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new BinaryFunct(false, ExprLangParser.MAX_FN, "max(", ", ", ")", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.MIN_FN, "min(", ", ", ")", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.POW_FN, "pow(", ", ", ")", OperatorPos.FUNCTION),
-        //come gestire in cpp le distribuzioni?
         new BinaryFunct(false, ExprLangParser.RECT_FN, "uniform(", ", ", ", generator)", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.TRUNCATED_EXP_FN, "exponential(", ", ", ", generator)", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.TRIANGULAR_FN, "Triangular(", ", ", ")", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.PARETO_FN, "Pareto(", ", ", ")", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.UNIFORM_FN, "uniform_real_distribution<double> unf_dis(", ", ", ");\n distribution(generator)", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.ERLANG_FN, "Erlang(", ", ", ")", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.BINOMIAL_FN, "binomial_distribution<> bin_dis(", ", ", ")\n bin_dis(generator)", OperatorPos.FUNCTION),};
+        new BinaryFunct(false, ExprLangParser.UNIFORM_FN, "uniform(", ", ", ", generator)", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.ERLANG_FN, "gamma(", ", ", ", generator)", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.BINOMIAL_FN, "binomial(", ", ", ", generator)", OperatorPos.FUNCTION),
+};
 
     public FormattedFormula formatBinaryFn(int binaryIntFn, FormattedFormula expr0,
             FormattedFormula expr1) {

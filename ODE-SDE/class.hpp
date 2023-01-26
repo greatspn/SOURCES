@@ -230,7 +230,13 @@ namespace SDE
     int timing;
     bool discrete {false};
     //!list of the events connected to the transition if it's general non exponential
-    vector<Event*> events;
+    //vector<Event*> events;
+    //!size of the events associated to the transition
+    int events_size {0};
+    //!Pointer to the first event of the transition
+    Event* first_event {NULL};
+    //!Pointer to the last event of the transition, used to add
+    Event* last_event {NULL};
     //!encode the  brown noise value for the current time
     double BrownNoise;
     //!it stores for generic transition
@@ -438,6 +444,10 @@ namespace SDE
   solve_type solve;
     //!The heap that handles the future event list of general non exponential transition
   min_heap future_event_list {min_heap()};
+  //!It removes the i-th event in the event list updating the pointers 
+  Event* deleteEventInPosition(int event_index, int tran);
+  //!It removes the i-th event in the event list updating the pointers 
+  void deleteEvent(Event* event, int tran);
   //stream TEMPORANEO
   ofstream outfel{"outfel.txt"};
 

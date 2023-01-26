@@ -2,6 +2,7 @@
 
 using namespace std;
 
+
     //!Event
       /*!
    *     Class made to model Event in future Event list
@@ -10,15 +11,22 @@ using namespace std;
 class Event {
     double time;
     //!Index in the min_heap
-    int index_heap = -1;
+    int index_heap;
     //!index of the transition
-    int index_trans = -1;
+    int index_trans;
+    //!pointer to the next element
+    Event* next;
+    //!Pointer to the previous element
+    Event* previous;
 
 public:
     //!Constructor
     Event(double time, int trans){
         this -> time = time;
         this -> index_trans = trans;
+        this -> next = NULL;
+        this -> previous = NULL;
+        this -> index_heap = -1;
     }
 
     //!Copy Constructor
@@ -38,6 +46,19 @@ public:
         return this -> index_heap;
     }
 
+    inline int getIndexTran(){
+        return this -> index_trans;
+    }
+
+    inline Event* getNext(){
+        return this -> next;
+    }
+
+    inline Event* getPrevious(){
+        return this -> previous;
+    }
+
+
     inline void setIndexHeap(int index_h){
         this -> index_heap = index_h;
     }
@@ -46,8 +67,13 @@ public:
         this -> time = time;
     }
 
-    inline int getIndexTran(){
-        return this -> index_trans;
+
+    inline void setNext(Event* event){
+        this -> next = event;
+    }
+
+    inline void setPrevious(Event* event){
+        this -> previous = event;
     }
 
 };
@@ -114,8 +140,6 @@ class min_heap {
 
 public:
 
-    //std::vector<Event*> heap;
-
 
         //!Empty constructor
     min_heap(){};
@@ -142,6 +166,7 @@ public:
     void removeHeap(Event* elem) {
         int i = elem -> getIndexHeap();
         assert(i >= 0 && i < (int)heap.size());
+
         // move last element to position i
         if (i == (int)heap.size() - 1) {
             heap.resize(heap.size() - 1);
@@ -152,11 +177,12 @@ public:
             heap.resize(heap.size() - 1);
             percolateUpOrDown(elem);
         }
+
     }
 
     Event* popHeap() {
         Event* elem0 = heap[0];
-        removeHeap(elem0);
+        //removeHeap(elem0);        
         return elem0;
     }
 
@@ -168,6 +194,8 @@ public:
     inline size_t getLenght(){
         return this -> heap.size();
     }
+
+    inline 
 
     // change the weight of an element already in the heap
     void updateWeight(Event* elem, double w) {

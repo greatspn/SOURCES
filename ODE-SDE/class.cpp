@@ -36,8 +36,6 @@ double MININC=0;
 namespace SDE {
 
 
-
-
 //long int seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 
 std::mt19937_64 generator;//(seed);
@@ -492,7 +490,7 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     	//outfel << "enabled di questo giro " << EnabledTransValueDis[tran] << endl;
     	//outfel << "PreviousEnabledTransValueDis " << PreviousEnabledTransValueDis[tran] << endl;
 
-    	outfel << "events size prima dell'aggiunta " << Trans[tran].events.size() << endl;
+    	outfel << "events size prima dell'aggiunta " << Trans[tran].events_size << endl;
     	while(number_events>0)
     	{
 
@@ -504,35 +502,138 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 #endif 	
     		outfel <<"ciclo aggiunta " << endl;
     		Event *event_distribution = new Event(time_event, tran);
-    		Trans[tran].events.push_back(event_distribution);
+    		if(Trans[tran].events_size == 0 ) {
+    			Trans[tran].first_event = event_distribution;
+    			Trans[tran].first_event->setPrevious(NULL);
+    			Trans[tran].last_event = event_distribution;
+    			Trans[tran].last_event -> setPrevious(Trans[tran].first_event);
+    		}
+    		else {
+    			event_distribution->setPrevious(Trans[tran].last_event);
+    			Trans[tran].last_event -> setNext(event_distribution);
+    			Trans[tran].last_event = event_distribution;
+    		}
     		future_event_list.pushHeap(event_distribution);
+    		Trans[tran].events_size++;
     		number_events--;
     	}
 
-    	int events_size = Trans[tran].events.size();
-    	outfel << "events size dopo l'aggiunta " << events_size << endl;
+    	Event *tmp = Trans[tran].first_event;
+    	while(tmp->getNext() != NULL){
+    		outfel << tmp->getIndexHeap() << endl;
+    		tmp = tmp->getNext();
+    	}
+
+    	//int events_size = Trans[tran].events.size();
+    	outfel << "events size dopo l'aggiunta " << Trans[tran].events_size << endl;
 
 		//remove events if there are less tokens; the chosen transition is not updated here
 		// so I can do the loop normally
-    	while(number_events < 0 && events_size > 0 && future_event_list.getLenght() > 0)
+    	while(number_events < 0 && Trans[tran].events_size > 0 && future_event_list.getLenght() > 0)
     	{
     		outfel << "ciclo rimozione " << endl;
-    		int index = uniform(0, events_size, generator);
-    		Event* event_removed = Trans[tran].events[index];
-    		Trans[tran].events.erase(Trans[tran].events.begin() + index);
+    		int index = uniform(0, Trans[tran].events_size, generator);
+    		outfel << "numero elemento da rimuovere " << index << endl;
+    		outfel << "size degli elementi " << Trans[tran].events_size << endl;
+    		Event *event_removed = deleteEventInPosition(index, tran);
+    		outfel << "uscita da delete position?" << endl;
     		future_event_list.removeHeap(event_removed);
     		number_events++;
-    		events_size--;
+    		Trans[tran].events_size--;
     	}
 
-    	outfel << "events_size alla fine " << Trans[tran].events.size() << endl;
+    	outfel << "events_size alla fine " << Trans[tran].events_size << endl;
     	outfel << future_event_list.getLenght() << " Lunghezza future event list alla fine\n\n";
 
         //update with new/old value for next loop
     	PreviousEnabledTransValueDis[tran] = EnabledTransValueDis[tran];
 
-
     }
+
+
+    
+
+/**************************************************************/
+/* NAME :  Class deleteEventInPosition*/
+/* DESCRIPTION : delete the i-th event in the event list updating the pointers */
+/**************************************************************/
+
+    Event* SystEq::deleteEventInPosition(int event_index, int tran){
+
+     Event *temp1 = Trans[tran].first_event, *temp2 = NULL;
+     outfel << "entrerò pure qui" << endl;
+  
+    // Deleting the head.
+    if (event_index == 0) {
+
+    	outfel << "sarà questo il caso? " << endl;
+        // Update head
+        Trans[tran].first_event = temp1->getNext();
+        Trans[tran].first_event ->setPrevious(NULL);
+        return temp1;
+    }
+    outfel << "secondo caso?" << endl;
+
+ 
+    // Traverse the list to
+    // find the node to be deleted.
+    while (event_index-- > 0) {
+ 
+        // Update temp2
+        temp2 = temp1;
+ 
+        // Update temp1
+        temp1 = temp1->getNext();
+    }
+
+    Event *next = temp1->getNext();
+
+
+ 
+    // Change the next pointer
+    // of the previous node.
+
+    outfel << "arrivi prima di settare?" << endl;
+    temp2->setNext(next);
+
+    if(next != NULL)
+    	(next)->setPrevious(temp2);
+
+    return temp1;
+ 
+    }
+
+/**************************************************************/
+/* NAME :  Class deleteEventInPosition*/
+/* DESCRIPTION : delete the i-th event in the event list updating the pointers */
+/**************************************************************/
+
+    void SystEq::deleteEvent(Event* event, int tran){
+
+     Event *prev = event->getPrevious();
+  
+    // Deleting the head.
+    if (prev == NULL) {
+
+        // Update head
+        Trans[tran].first_event = Trans[tran].first_event->getNext();
+        Trans[tran].first_event ->setPrevious(NULL);
+        return;
+    }
+
+    Event *next = event->getNext();
+
+ 	outfel << "problemi in paradiso?" << endl;
+    // Change the next pointer
+    // of the previous node.
+    prev->setNext(next);
+    if(next !=NULL)
+    	(next)->setPrevious(prev); 
+
+}
+
+
+
 
 
 /**************************************************************/
@@ -2740,10 +2841,12 @@ int SystEq::getComputeTau(int SetTranExp[], double& nextTimePoint,double t){
 				if(general_tau >= nextTimePoint)
 					return -1;
 				Event* top_list = future_event_list.popHeap();
+				outfel << "il pop dovresti farlo" << endl;
 				lo = top_list -> getIndexTran(); 
-				outfel << " lunghezza eventi associati alla transizione " << Trans[lo].events.size() << endl;
-				Trans[lo].events.erase(remove(Trans[lo].events.begin(), Trans[lo].events.end(), top_list));
-				outfel << "lunghezza eventi associati alla transizione dopo la rimozione in teoria" << Trans[lo].events.size() << endl;
+				deleteEvent(top_list, lo);
+				future_event_list.removeHeap(top_list);
+				outfel << " lunghezza eventi associati alla transizione " << Trans[lo].events_size << endl;
+				Trans[lo].events_size--;
 				nextTimePoint = general_tau;
 				outfel << "vince general_tau" << endl;
 				outfel << "trans "<<NameTrans[lo]<<" id"<<lo+1<<"\n\n";
@@ -3268,7 +3371,6 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 
 	//to update future event list
 	size_notExpTran++;
-	outfel << size_expTran << "size usata per aggiornare fel " << endl;
 
 	int run=0;
 
@@ -3835,7 +3937,6 @@ void SystEq::InsertTran(int num, struct InfTr T){
 	Trans[num].discrete=T.discrete;
 	Trans[num].GenFun=T.GenFun;
 	Trans[num].FuncT=T.FuncT;
-	//immagino che qui bisognerà mettere la distribuzione opportuna...?
 	Trans[num].dist[0] = std::exponential_distribution<double> (T.rate);
 	Trans[num].timing = T.timing;
 	vector<InfPlace>::iterator it=T.InhPlaces.begin();
