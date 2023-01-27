@@ -178,6 +178,8 @@ public:
             percolateUpOrDown(elem);
         }
 
+        delete elem;
+
     }
 
     Event* popHeap() {

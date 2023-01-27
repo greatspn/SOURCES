@@ -1,4 +1,3 @@
-
 OPTION = -O3 -std=c++11 -lm
 OPTIONW = -Wall
 OPTIONGLPK=  -lglpk

@@ -485,12 +485,12 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     	int number_events = EnabledTransValueDis[tran] - PreviousEnabledTransValueDis[tran];
 
     	outfel << "Sono in updateFutureEventList con la transizione " << NameTrans[tran]<< endl;
-		outfel << "lunghezza future_event_list all'inizio " << future_event_list.getLenght() << endl;
+    	outfel << "lunghezza future_event_list all'inizio " << future_event_list.getLenght() << endl;
     	outfel << number_events << " numero eventi da manipolare " << endl;
-    	//outfel << "enabled di questo giro " << EnabledTransValueDis[tran] << endl;
-    	//outfel << "PreviousEnabledTransValueDis " << PreviousEnabledTransValueDis[tran] << endl;
 
     	outfel << "events size prima dell'aggiunta " << Trans[tran].events_size << endl;
+
+
     	while(number_events>0)
     	{
 
@@ -502,30 +502,27 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 #endif 	
     		outfel <<"ciclo aggiunta " << endl;
     		Event *event_distribution = new Event(time_event, tran);
+    		future_event_list.pushHeap(event_distribution);
+    		//set head
     		if(Trans[tran].events_size == 0 ) {
     			Trans[tran].first_event = event_distribution;
-    			Trans[tran].first_event->setPrevious(NULL);
+    		}
+    		//set tail
+    		else if(Trans[tran].events_size == 1){
+    			Trans[tran].first_event->setNext(event_distribution);
+    			event_distribution->setPrevious(Trans[tran].first_event);
     			Trans[tran].last_event = event_distribution;
-    			Trans[tran].last_event -> setPrevious(Trans[tran].first_event);
     		}
     		else {
     			event_distribution->setPrevious(Trans[tran].last_event);
     			Trans[tran].last_event -> setNext(event_distribution);
     			Trans[tran].last_event = event_distribution;
     		}
-    		future_event_list.pushHeap(event_distribution);
     		Trans[tran].events_size++;
     		number_events--;
     	}
 
-    	Event *tmp = Trans[tran].first_event;
-    	while(tmp->getNext() != NULL){
-    		outfel << tmp->getIndexHeap() << endl;
-    		tmp = tmp->getNext();
-    	}
-
     	//int events_size = Trans[tran].events.size();
-    	outfel << "events size dopo l'aggiunta " << Trans[tran].events_size << endl;
 
 		//remove events if there are less tokens; the chosen transition is not updated here
 		// so I can do the loop normally
@@ -534,9 +531,7 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     		outfel << "ciclo rimozione " << endl;
     		int index = uniform(0, Trans[tran].events_size, generator);
     		outfel << "numero elemento da rimuovere " << index << endl;
-    		outfel << "size degli elementi " << Trans[tran].events_size << endl;
     		Event *event_removed = deleteEventInPosition(index, tran);
-    		outfel << "uscita da delete position?" << endl;
     		future_event_list.removeHeap(event_removed);
     		number_events++;
     		Trans[tran].events_size--;
@@ -560,47 +555,56 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 
     Event* SystEq::deleteEventInPosition(int event_index, int tran){
 
-     Event *temp1 = Trans[tran].first_event, *temp2 = NULL;
-     outfel << "entrerò pure qui" << endl;
-  
+    	Event *temp1 = Trans[tran].first_event, *temp2 = NULL;
+
     // Deleting the head.
-    if (event_index == 0) {
+    	if (event_index == 0) {
 
-    	outfel << "sarà questo il caso? " << endl;
-        // Update head
-        Trans[tran].first_event = temp1->getNext();
-        Trans[tran].first_event ->setPrevious(NULL);
-        return temp1;
-    }
-    outfel << "secondo caso?" << endl;
 
- 
+    		if(Trans[tran].first_event != NULL) {
+     	  		// Update head
+    			Trans[tran].first_event = temp1->getNext();
+    			//if it's not the last element of the list
+    			if(temp1->getNext() != NULL )
+    				Trans[tran].first_event ->setPrevious(NULL);
+    			return temp1;
+    		}
+    		else if(Trans[tran].last_event != NULL){
+    			Trans[tran].last_event = NULL;
+    			return Trans[tran].last_event;
+    		}
+
+    	}
+
+
     // Traverse the list to
     // find the node to be deleted.
-    while (event_index-- > 0) {
- 
+    	while (event_index > 0) {
+
         // Update temp2
-        temp2 = temp1;
- 
+    		temp2 = temp1;
+
         // Update temp1
-        temp1 = temp1->getNext();
-    }
+    		temp1 = temp1->getNext();
 
-    Event *next = temp1->getNext();
+    		event_index--;
+    	}
+
+    	Event *next = temp1->getNext();
 
 
- 
+
     // Change the next pointer
     // of the previous node.
 
-    outfel << "arrivi prima di settare?" << endl;
-    temp2->setNext(next);
+    	outfel << "arrivi prima di settare?" << endl;
+    	temp2->setNext(next);
 
-    if(next != NULL)
-    	(next)->setPrevious(temp2);
+    	if(next != NULL)
+    		(next)->setPrevious(temp2);
 
-    return temp1;
- 
+    	return temp1;
+
     }
 
 /**************************************************************/
@@ -610,27 +614,31 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 
     void SystEq::deleteEvent(Event* event, int tran){
 
-     Event *prev = event->getPrevious();
-  
+    	Event *prev = event->getPrevious();
+
     // Deleting the head.
-    if (prev == NULL) {
+    	if (event == Trans[tran].first_event) {
 
         // Update head
-        Trans[tran].first_event = Trans[tran].first_event->getNext();
-        Trans[tran].first_event ->setPrevious(NULL);
-        return;
-    }
+    		Trans[tran].first_event = Trans[tran].first_event->getNext();
+    		//it it's not the last element of the list
+    		if(Trans[tran].first_event != NULL)
+    			Trans[tran].first_event ->setPrevious(NULL);
+    		return;
+    	}
+    	else if (event == Trans[tran].last_event){
+    		Trans[tran].last_event = prev;
+    	}
 
-    Event *next = event->getNext();
+    	Event *next = event->getNext();
 
- 	outfel << "problemi in paradiso?" << endl;
     // Change the next pointer
     // of the previous node.
-    prev->setNext(next);
-    if(next !=NULL)
-    	(next)->setPrevious(prev); 
+    	prev->setNext(next);
+    	if(next !=NULL)
+    		(next)->setPrevious(prev); 
 
-}
+    }
 
 
 
@@ -651,15 +659,15 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     		PreviousEnabledTransValueDis[t] = 0;
     		if(Trans[t].timing == NON_EXP_GEN) {
 
-    		size_notExpTran++;
+    			size_notExpTran++;
     		//SetTranExp[++SetTranExp[0]]=i; 
 			for (unsigned int k=0; k<Trans[t].InPlaces.size(); k++)//for all variables in the components
-				{
-					future_event_list_size += (floor(Value[k]/Trans[t].InPlaces[k].Card));
-				}
+			{
+				future_event_list_size += (floor(Value[k]/Trans[t].InPlaces[k].Card));
 			}
-			else
-				size_expTran++;
+		}
+		else
+			size_expTran++;
 
 			//SetTranNotExp[++SetTranNotExp[0]]=i; 
 
@@ -772,6 +780,7 @@ SystEq::~SystEq(){
 	free(EnabledTransValueCon);
 	free(EnabledTransValueDis);
 	free(TransRate);
+	free(PreviousEnabledTransValueDis);
 	if (FinalValueXRun!=nullptr)
 	{
 		for(int i=0;i<nPlaces;i++)
@@ -2719,8 +2728,8 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 	}
 	while(tout<=Max_Time){
 		lsoda(*this,neq, y, &t, tout, itol, rtol, atol, itask, &istate, iopt, jt,
-				iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
-				rwork1, rwork5, rwork6, rwork7, 0);
+			iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
+			rwork1, rwork5, rwork6, rwork7, 0);
 //***********************************************************************************
 //Observe istate=1 reset the integration. It assures that the next step starts really from tout however it slows the process.
 //It is necessary only when you want to stop integration and we want to be sure that it will start exactly from that previous endpoint. 
@@ -2728,7 +2737,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 //***********************************************************************************		
 		if (Info){
 			out<<endl<<tout<<" ";
-			}
+		}
 		derived(y+1);
 		if (Info){
 			for (int j=1;j<=nPlaces;j++){
@@ -2737,11 +2746,11 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 			
 
 #ifdef CGLPK
-            time=tout;
-            getValTranFire(y+1);
-        	for (unsigned int i=0;i<vec_fluxb.size();++i){
-        		outflux[i]<<endl<<tout<<" ";
-        		vec_fluxb[i].printObject(outflux[i]);
+			time=tout;
+			getValTranFire(y+1);
+			for (unsigned int i=0;i<vec_fluxb.size();++i){
+				outflux[i]<<endl<<tout<<" ";
+				vec_fluxb[i].printObject(outflux[i]);
 				vec_fluxb[i].printValue(outflux[i]);
 				if (Variability){
 					vec_fluxb[i].printLowerMax(outflux[i]);	
@@ -2841,12 +2850,12 @@ int SystEq::getComputeTau(int SetTranExp[], double& nextTimePoint,double t){
 				if(general_tau >= nextTimePoint)
 					return -1;
 				Event* top_list = future_event_list.popHeap();
-				outfel << "il pop dovresti farlo" << endl;
+				Trans[lo].first_event = top_list->getNext();
 				lo = top_list -> getIndexTran(); 
 				deleteEvent(top_list, lo);
 				future_event_list.removeHeap(top_list);
-				outfel << " lunghezza eventi associati alla transizione " << Trans[lo].events_size << endl;
 				Trans[lo].events_size--;
+				outfel << " lunghezza eventi associati alla transizione " << Trans[lo].events_size << endl;
 				nextTimePoint = general_tau;
 				outfel << "vince general_tau" << endl;
 				outfel << "trans "<<NameTrans[lo]<<" id"<<lo+1<<"\n\n";
@@ -3360,12 +3369,12 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 	for(int i=0;i<nTrans;i++)
 	{
 	//All transitions
-	if (Trans[i].timing == NON_EXP_GEN){
-		SetTranNotExp[++SetTranNotExp[0]]=i; 
+		if (Trans[i].timing == NON_EXP_GEN){
+			SetTranNotExp[++SetTranNotExp[0]]=i; 
 		//SetTran[++SetTran[0]]=i;
 		//Trans[i].enable=false;
 		}
-	else 
+		else 
 		SetTranExp[++SetTranExp[0]]=i;
 	}
 
@@ -3475,6 +3484,7 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 	}
 
 	cout<<"\n\nSolution at time "<<Max_Time<<":\n";
+	outfel.close();
 }
 
 
