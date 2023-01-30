@@ -10,22 +10,23 @@ package editor.domain.semiflows;
  */
 public class Row {
     public Row(int N, int M) {
-        d = new int[N];
-        c = new int[M];
+        e = new int[N];
+        l = new int[M];
     }
         
-    int[] d, c;
+    int[] e; // elements
+    int[] l; // labels
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        for (int j = 0; j < d.length; j++) {
-            sb.append(d[j] < 0 ? "" : " ").append(d[j]).append(" ");
+        for (int j = 0; j < e.length; j++) {
+            sb.append(e[j] < 0 ? "" : " ").append(e[j]).append(" ");
         }
-        if (c != null) {
+        if (l != null) {
             sb.append("| ");
-            for (int j = 0; j < c.length; j++) {
-                sb.append(c[j] < 0 ? "" : " ").append(c[j]).append(" ");
+            for (int j = 0; j < l.length; j++) {
+                sb.append(l[j] < 0 ? "" : " ").append(l[j]).append(" ");
             }
         }
         sb.append("]");
@@ -33,42 +34,56 @@ public class Row {
     }
 
     public void add(Row r) {
-        assert d.length==r.d.length && c.length==r.c.length;
-        for (int j=0; j<d.length; j++)
-            d[j] += r.d[j];
-        for (int j=0; j<c.length; j++)
-            c[j] += r.c[j];
+        assert e.length==r.e.length && l.length==r.l.length;
+        for (int j=0; j<e.length; j++)
+            e[j] += r.e[j];
+        for (int j=0; j<l.length; j++)
+            l[j] += r.l[j];
     }
 
     public void addMult(Row r, int mult) {
-        assert d.length==r.d.length && c.length==r.c.length;
-        for (int j=0; j<d.length; j++)
-            d[j] += mult * r.d[j];
-        for (int j=0; j<c.length; j++)
-            c[j] += mult * r.c[j];            
+        assert e.length==r.e.length && l.length==r.l.length;
+        for (int j=0; j<e.length; j++)
+            e[j] += mult * r.e[j];
+        for (int j=0; j<l.length; j++)
+            l[j] += mult * r.l[j];            
     }
 
     public boolean equal(Row r) {
-        assert d.length==r.d.length && c.length==r.c.length;
-        for (int j=0; j<d.length; j++)
-            if (d[j] != r.d[j])
+        assert e.length==r.e.length && l.length==r.l.length;
+        for (int j=0; j<e.length; j++)
+            if (e[j] != r.e[j])
                 return false;
-        for (int j=0; j<c.length; j++)
-            if (c[j] != r.c[j])
-                return false;
-        return true;
-    }
-    
-    public boolean is_d_zero() {
-        for (int j=0; j<d.length; j++)
-            if (d[j] != 0)
+        for (int j=0; j<l.length; j++)
+            if (l[j] != r.l[j])
                 return false;
         return true;
     }
     
-    public boolean is_c_zero() {
-        for (int j=0; j<c.length; j++)
-            if (c[j] != 0)
+    public boolean less_equal_e(Row r) {
+        for (int j=0; j<e.length; j++)
+            if (e[j] > r.e[j])
+                return false;
+        return true;
+    }
+    
+    public int degree() {
+        int deg = 0;
+        for (int val : e)
+            deg += val;
+        return deg;
+    }
+    
+    public boolean is_e_zero() {
+        for (int j=0; j<e.length; j++)
+            if (e[j] != 0)
+                return false;
+        return true;
+    }
+    
+    public boolean is_l_zero() {
+        for (int j=0; j<l.length; j++)
+            if (l[j] != 0)
                 return false;
         return true;
     }

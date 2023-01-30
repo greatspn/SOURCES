@@ -470,7 +470,7 @@ public class Algebra2 {
                             if (tagIds.containsKey(node.getTag(t))) {
                                 int tagId = tagIds.get(node.getTag(t));
                                 int card = node.getTagCard(t);
-                                H.addToC(nodeId, tagId, card);
+                                H.addToL(nodeId, tagId, card);
                             }
                         }
                     }

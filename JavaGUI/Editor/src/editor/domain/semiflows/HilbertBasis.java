@@ -14,7 +14,7 @@ public class HilbertBasis {
     private ArrayList<Row> rows;
     private final int N, M;
     private boolean verbose = false;
-    private boolean keepRpRm = false;
+    private boolean keepCpCm = false;
     
     //-----------------------------------------------------------------------
     // Empty constructor: Initialize [identity(N*N) | zero(N*M)]
@@ -24,7 +24,7 @@ public class HilbertBasis {
         rows = new ArrayList<>();
         for (int n=0; n<N; n++) {
             Row row = new Row(N, M);
-            row.d[n] = 1;
+            row.e[n] = 1;
             rows.add(row);
         }
     }
@@ -33,26 +33,57 @@ public class HilbertBasis {
     public HilbertBasis(int[][] mat) {
         this(mat.length, mat[0].length);
         for (int i=0; i<mat.length; i++) {
-            System.arraycopy(mat[i], 0, rows.get(i).c, 0, mat[i].length);
+            System.arraycopy(mat[i], 0, rows.get(i).l, 0, mat[i].length);
         }
     }
 
     //-----------------------------------------------------------------------
-    public void setKeepRpRm() {
-        keepRpRm = true;
+    public void setKeepCpCm() {
+        keepCpCm = true;
     }
-    public void addToC(int i, int j, int val) {
-        rows.get(i).c[j] += val;
+    public void addToL(int i, int j, int val) {
+        rows.get(i).l[j] += val;
     }
     public int numRows() { 
         return rows.size(); 
     }
     public int[] getBasisVec(int i) {
-        return rows.get(i).d;
+        return rows.get(i).e;
     }
     public boolean isRealBasisVec(int i) {
-        return rows.get(i).is_c_zero();
+        return rows.get(i).is_l_zero();
     }
+    
+    //-----------------------------------------------------------------------
+
+    private boolean partialOrderCmp(Row row1, Row row2, int j) {
+        return (row1.l[j] * row2.l[j] >= 0 && 
+                Math.abs(row1.l[j]) <= Math.abs(row2.l[j]) &&
+                row1.less_equal_e(row2));
+    }
+    
+    //-----------------------------------------------------------------------
+    
+    private static class DegLexComparator implements Comparator<Row> {
+        @Override
+        public int compare(Row row1, Row row2) {
+            int deg1 = row1.degree();
+            int deg2 = row2.degree();
+            if (deg1 < deg2)
+                return -1;
+            if (deg1 > deg2)
+                return +1;
+
+            for (int j=0; j<row1.e.length; j++) {
+                if (row1.e[j] < row2.e[j])
+                    return -1;
+                if (row1.e[j] > row2.e[j])
+                    return +1;
+            }
+            return 0;
+        }
+    }
+    private static DegLexComparator s_degLexCmp = new DegLexComparator();
     
     //-----------------------------------------------------------------------
     // Generate all sums of R+ rows with R- rows into C
@@ -68,25 +99,19 @@ public class HilbertBasis {
     }
     
     //-----------------------------------------------------------------------
-    // Normal form
-    private boolean normalForm(Row row) {
-        for (Row reducer : rows) {
-            // remove the (max multiple of the) reducer.d from dc.d
-            int alpha = Integer.MAX_VALUE;
-            for (int j=0; j<N && alpha>0; j++) {
-                if (reducer.d[j] != 0) {
-                    alpha = Math.min(alpha, row.d[j] / reducer.d[j]);
-                }
-            }
-            assert alpha != Integer.MAX_VALUE;
-            if (alpha > 0) {
-                row.addMult(reducer, -alpha);
-                
-                // If d has been zeroed, return false;
-                if (row.is_d_zero())
-                    return false;
-            }
-        }
+    
+    private boolean isIrreducible(Row r, int j, ArrayList<Row> C0,
+                                  ArrayList<Row> Cp, ArrayList<Row> Cm) 
+    {
+        for (Row r2 : C0)
+            if (partialOrderCmp(r2, r, j))
+                return false;
+        for (Row r2 : Cp)
+            if (partialOrderCmp(r2, r, j))
+                return false;
+        for (Row r2 : Cm)
+            if (partialOrderCmp(r2, r, j))
+                return false;
         return true;
     }
     
@@ -102,89 +127,74 @@ public class HilbertBasis {
 
     //-----------------------------------------------------------------------
     private void HilbertFMcol(int j) {
-        ArrayList<Row> Rp = new ArrayList<>(); // R+ = rows with c[j] > 0
-        ArrayList<Row> Rm = new ArrayList<>(); // R- = rows with c[j] < 0
-        {
-            ArrayList<Row> R0 = new ArrayList<>(); // R0 = rows with c[j] == 0
-            for (Row dc : rows) {
-                if (dc.c[j] > 0)
-                    Rp.add(dc);
-                else if (dc.c[j] < 0)
-                    Rm.add(dc);
-                else
-                    R0.add(dc);
-            }
-            rows = R0;
-            if (verbose)
-                System.out.println("|R+|:"+Rp.size()+" |R-|:"+Rm.size()+" |G|:"+rows.size());
-        }
-        
-        // Pottier algorithm
-        ArrayList<Row> C = new ArrayList<>();
+        ArrayList<Row> C0 = new ArrayList<>(); // C0 = rows with c[j] == 0
+        ArrayList<Row> Cp = new ArrayList<>(); // C+ = rows with c[j] > 0
+        ArrayList<Row> Cm = new ArrayList<>(); // C- = rows with c[j] < 0
+
+        ArrayList<Row> G = new ArrayList<>(rows);
         ArrayList<Row> supp = new ArrayList<>();
-        S_vectors(Rp, Rm, C); // generate first candidates
-        // normalize and recombine all candidates in C
-        while (!C.isEmpty()) {
-            Row dc = C.get(0);
-            C.remove(0);
-            if (normalForm(dc)) {
-                if (dc.c[j] > 0) {
-                    if (appendUnique(dc, Rp)) {
-                        supp.add(dc);
-                        S_vectors(supp, Rm, C);
-                        supp.clear();
-                        if (verbose)
-                            System.out.println("R+ <- R+ U "+dc);
-                    }
+        // Pottier algorithm
+        while (!G.isEmpty()) {
+            G.sort(s_degLexCmp);
+            Row el = G.get(0);
+            G.remove(0);
+            if (isIrreducible(el, j, C0, Cp, Cm)) {
+                if (el.l[j] == 0) {
+                    appendUnique(el, C0);
+                    if (verbose)
+                        System.out.println("C0 <- C0 U "+el);
                 }
-                else if (dc.c[j] < 0) {
-                    if (appendUnique(dc, Rm)) {
-                        supp.add(dc);
-                        S_vectors(Rp, supp, C);
-                        supp.clear();
-                        if (verbose)
-                            System.out.println("R- <- R- U "+dc);
-                    }
+                else if (el.l[j] > 0) {
+                    appendUnique(el, Cp);
+                    supp.add(el);
+                    S_vectors(supp, Cm, G);
+                    supp.clear();
+                    if (verbose)
+                        System.out.println("C+ <- C+ U "+el);
                 }
-                else {
-                    if (appendUnique(dc, rows)) {
-                        if (verbose)
-                            System.out.println("G  <- G  U "+dc);
-                    }
+                else if (el.l[j] < 0) {
+                    appendUnique(el, Cm);
+                    supp.add(el);
+                    S_vectors(Cp, supp, G);
+                    supp.clear();
+                    if (verbose)
+                        System.out.println("C- <- C- U "+el);
                 }
             }
             else {
                 if (verbose)
-                    System.out.println("DROP");
+                    System.out.println("DROP "+el);
             }
         }
-        if (keepRpRm) {
-            rows.addAll(Rp);
-            rows.addAll(Rm);
+        rows.clear();
+        rows.addAll(C0);
+        if (keepCpCm) {
+            rows.addAll(Cp);
+            rows.addAll(Cm);
         }
     }
     
     //-----------------------------------------------------------------------
-    // Heuristic thah chooses the next pivot of C from D|C
+    // Heuristic that chooses the next pivot of L from [E|L]
     private int nextPivot(boolean[] colReduced) {
-        int[] Cp = new int[M];
-        int[] Cm = new int[M];
-        for (Row dc : rows) {
+        int[] Lp = new int[M];
+        int[] Lm = new int[M];
+        for (Row el : rows) {
             for (int j=0; j<M; j++) {
-                if (dc.c[j] > 0)
-                    Cp[j] += dc.c[j];
+                if (el.l[j] > 0)
+                    Lp[j] += el.l[j];
                 else
-                    Cm[j] += -dc.c[j];
+                    Lm[j] += -el.l[j];
             }
         }
         int pivot = -1, smallestValue = Integer.MAX_VALUE;
         for (int j=0; j<M; j++) {
             if (colReduced[j])
                 continue;
-            if (Cp[j]==0 && Cm[j]==0)
+            if (Lp[j]==0 && Lm[j]==0)
                 continue;
             
-            int value = Cp[j] * Cm[j];
+            int value = Lp[j] * Lm[j];
             if (value < smallestValue) {
                 smallestValue = value;
                 pivot = j;
@@ -315,6 +325,7 @@ public class HilbertBasis {
         testHilbert(matA1, solA1);
         testHilbert(mat33, sol33);
         testHilbert(mat44, sol44);
+        //testHilbert(mat55, sol44);
     }
     
     private static void testHilbert(int[][] matIn, int[][] matRes) {
