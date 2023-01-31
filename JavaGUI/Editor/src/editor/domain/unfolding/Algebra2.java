@@ -474,7 +474,9 @@ public class Algebra2 {
                             }
                         }
                     }
+                    H.setVerbose();
                     H.HilbertFM();
+                    H.removeInitialRows();
 
                     // Generate the synchronization nodes
                     for (int phase=0; phase<2; phase++) {

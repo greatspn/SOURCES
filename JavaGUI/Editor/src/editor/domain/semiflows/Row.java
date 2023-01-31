@@ -3,19 +3,23 @@
  */
 package editor.domain.semiflows;
 
+import java.util.Comparator;
+
 /** Row of a horizontally stacked matrix [ D | C ], made
  * by two vectors d and c.
  *
  * @author elvio
  */
 public class Row {
-    public Row(int N, int M) {
+    public Row(int N, int M, boolean initial) {
         e = new int[N];
         l = new int[M];
+        this.initial = initial;
     }
         
     int[] e; // elements
     int[] l; // labels
+    boolean initial; // part of the initial setup
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -30,6 +34,8 @@ public class Row {
             }
         }
         sb.append("]");
+        if (initial)
+            sb.append(" *");
         return sb.toString();
     }
 
@@ -87,4 +93,32 @@ public class Row {
                 return false;
         return true;
     }
+    //-----------------------------------------------------------------------
+    
+    private static class DegLexComparator implements Comparator<Row> {
+        @Override
+        public int compare(Row row1, Row row2) {
+//            int c = compare2(row1, row2);
+//            System.out.println(row1+ " vs "+row2+" = "+c);
+//            return c;
+//        }
+//        public int compare2(Row row1, Row row2){
+            int deg1 = row1.degree();
+            int deg2 = row2.degree();
+            if (deg1 < deg2)
+                return -1;
+            if (deg1 > deg2)
+                return +1;
+
+            for (int j=0; j<row1.e.length; j++) {
+//            for (int j=row1.e.length-1; j>=0; j--) {
+                if (row1.e[j] < row2.e[j])
+                    return -1;
+                if (row1.e[j] > row2.e[j])
+                    return +1;
+            }
+            return 0;
+        }
+    }
+    public static final DegLexComparator DEGLEX_COMPARATOR = new DegLexComparator();
 }

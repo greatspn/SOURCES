@@ -23,7 +23,7 @@ public class HilbertBasis {
         this.M = M;
         rows = new ArrayList<>();
         for (int n=0; n<N; n++) {
-            Row row = new Row(N, M);
+            Row row = new Row(N, M, true);
             row.e[n] = 1;
             rows.add(row);
         }
@@ -41,6 +41,9 @@ public class HilbertBasis {
     public void setKeepCpCm() {
         keepCpCm = true;
     }
+    public void setVerbose() {
+        verbose = true;
+    }
     public void addToL(int i, int j, int val) {
         rows.get(i).l[j] += val;
     }
@@ -53,6 +56,9 @@ public class HilbertBasis {
     public boolean isRealBasisVec(int i) {
         return rows.get(i).is_l_zero();
     }
+    public void removeInitialRows() {
+        rows.removeIf(row -> row.initial);
+    }
     
     //-----------------------------------------------------------------------
 
@@ -61,39 +67,16 @@ public class HilbertBasis {
                 Math.abs(row1.l[j]) <= Math.abs(row2.l[j]) &&
                 row1.less_equal_e(row2));
     }
-    
-    //-----------------------------------------------------------------------
-    
-    private static class DegLexComparator implements Comparator<Row> {
-        @Override
-        public int compare(Row row1, Row row2) {
-            int deg1 = row1.degree();
-            int deg2 = row2.degree();
-            if (deg1 < deg2)
-                return -1;
-            if (deg1 > deg2)
-                return +1;
-
-            for (int j=0; j<row1.e.length; j++) {
-                if (row1.e[j] < row2.e[j])
-                    return -1;
-                if (row1.e[j] > row2.e[j])
-                    return +1;
-            }
-            return 0;
-        }
-    }
-    private static DegLexComparator s_degLexCmp = new DegLexComparator();
-    
+        
     //-----------------------------------------------------------------------
     // Generate all sums of R+ rows with R- rows into C
     private void S_vectors(ArrayList<Row> Rp, ArrayList<Row> Rm, ArrayList<Row> C) {
         for (Row rowp : Rp) {
             for (Row rowm : Rm) {
-                Row rowSum = new Row(N, M);
+                Row rowSum = new Row(N, M, false);
                 rowSum.add(rowp);
                 rowSum.add(rowm);
-                C.add(rowSum);
+                appendUnique(rowSum, C);
             }
         }
     }
@@ -124,6 +107,12 @@ public class HilbertBasis {
         rows.add(row);
         return true;
     }
+    
+    //-----------------------------------------------------------------------
+    private static void appendAllUnique(ArrayList<Row> toAppend, ArrayList<Row> rows) {
+        for (Row r : toAppend)
+            appendUnique(r, rows);
+    }
 
     //-----------------------------------------------------------------------
     private void HilbertFMcol(int j) {
@@ -135,7 +124,7 @@ public class HilbertBasis {
         ArrayList<Row> supp = new ArrayList<>();
         // Pottier algorithm
         while (!G.isEmpty()) {
-            G.sort(s_degLexCmp);
+            G.sort(Row.DEGLEX_COMPARATOR);
             Row el = G.get(0);
             G.remove(0);
             if (isIrreducible(el, j, C0, Cp, Cm)) {
@@ -166,11 +155,18 @@ public class HilbertBasis {
                     System.out.println("DROP "+el);
             }
         }
-        rows.clear();
-        rows.addAll(C0);
         if (keepCpCm) {
-            rows.addAll(Cp);
-            rows.addAll(Cm);
+            appendAllUnique(C0, rows);
+            appendAllUnique(Cp, rows);
+            appendAllUnique(Cm, rows);
+//            rows.addAll(Cp);
+//            rows.addAll(Cm);
+//            rows.addAll(C0);            
+        }
+        else {
+            appendAllUnique(C0, rows);
+//            rows.clear();
+//            rows.addAll(C0);            
         }
     }
     
@@ -191,14 +187,15 @@ public class HilbertBasis {
         for (int j=0; j<M; j++) {
             if (colReduced[j])
                 continue;
-            if (Lp[j]==0 && Lm[j]==0)
-                continue;
-            
-            int value = Lp[j] * Lm[j];
-            if (value < smallestValue) {
-                smallestValue = value;
-                pivot = j;
-            }
+            return j;
+//            if (Lp[j]==0 && Lm[j]==0)
+//                continue;
+//            
+//            int value = Lp[j] * Lm[j];
+//            if (value < smallestValue) {
+//                smallestValue = value;
+//                pivot = j;
+//            }
         }
         return pivot;
     }
@@ -322,30 +319,38 @@ public class HilbertBasis {
             { 0,  0,  0, -1,  0,  0,  0,  0, -1, -1,  0 },
         };*/
                         
-        testHilbert(matA1, solA1);
-        testHilbert(mat33, sol33);
-        testHilbert(mat44, sol44);
-        //testHilbert(mat55, sol44);
+//        testHilbert(matA1, solA1, false);
+//        testHilbert(mat33, sol33, false);
+//        testHilbert(mat44, sol44, false);
+        //testHilbert(mat55, sol44, false);
+        
+        int[][] mat = {
+            {-1,0}, {-1,1}, {0,-1}, {2,0}
+        };
+        testHilbert(mat, null, true);
     }
     
-    private static void testHilbert(int[][] matIn, int[][] matRes) {
+    private static void testHilbert(int[][] matIn, int[][] matRes, boolean keepCpCm) {
         HilbertBasis H = new HilbertBasis(matIn);  
-//        H.verbose = true;
+        H.setVerbose();
         System.out.println(H);
-//        H.setKeepRpRm();
+        if (keepCpCm)
+            H.setKeepCpCm();
         H.HilbertFM();
         System.out.println(H);
         
-        sortArrays(matRes);
-        int[][] sol = new int[H.numRows()][];
-        for (int i=0; i<sol.length; i++)
-            sol[i] = H.getBasisVec(i);
-        sortArrays(sol);
+        if (matRes != null) {
+            int[][] sol = new int[H.numRows()][];
+            for (int i=0; i<sol.length; i++)
+                sol[i] = H.getBasisVec(i);
+            sortArrays(sol);
         
-        boolean equal = true;
-        for (int i=0; i<sol.length; i++)
-            equal = equal && Arrays.compare(sol[i], matRes[i])==0;
-        System.out.println("Check solution: "+equal);
+            sortArrays(matRes);
+            boolean equal = true;
+            for (int i=0; equal && i<sol.length; i++)
+                equal = equal && Arrays.compare(sol[i], matRes[i])==0;
+            System.out.println("Check solution: "+equal);
+        }
     }
     
     private static void sortArrays(int[][] mat) {
