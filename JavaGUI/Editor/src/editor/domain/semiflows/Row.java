@@ -11,10 +11,19 @@ import java.util.Comparator;
  * @author elvio
  */
 public class Row {
+    // new empty row
     public Row(int N, int M, boolean initial) {
         e = new int[N];
         l = new int[M];
         this.initial = initial;
+    }
+    
+    // sum of two rows
+    public Row(Row r1, Row r2) {
+        this(r1.e.length, r1.l.length, false);
+        assert r1.e.length == r2.e.length && r1.l.length == r2.l.length;
+        add(r1);
+        add(r2);
     }
         
     int[] e; // elements
@@ -34,8 +43,10 @@ public class Row {
             }
         }
         sb.append("]");
-        if (initial)
+        if (is_l_zero())
             sb.append(" *");
+        if (initial)
+            sb.append(" init");
         return sb.toString();
     }
 

@@ -5,6 +5,7 @@ package editor.domain.semiflows;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Random;
 
 /**
  *
@@ -14,7 +15,7 @@ public class HilbertBasis {
     private ArrayList<Row> rows;
     private final int N, M;
     private boolean verbose = false;
-    private boolean keepCpCm = false;
+    private boolean keepCpCm = false; // Keep the C+ and C- monoid bases
     
     //-----------------------------------------------------------------------
     // Empty constructor: Initialize [identity(N*N) | zero(N*M)]
@@ -63,22 +64,29 @@ public class HilbertBasis {
     //-----------------------------------------------------------------------
 
     private boolean partialOrderCmp(Row row1, Row row2, int j) {
-        return (row1.l[j] * row2.l[j] >= 0 && 
-                Math.abs(row1.l[j]) <= Math.abs(row2.l[j]) &&
-                row1.less_equal_e(row2));
+        for (int jj=0; jj<=j; jj++) {
+            if (!(row1.l[jj] * row2.l[jj] >= 0 && 
+                  Math.abs(row1.l[jj]) <= Math.abs(row2.l[jj])))
+                return false;
+        }
+        return row1.less_equal_e(row2);
+        
+//        return (row1.l[j] * row2.l[j] >= 0 && 
+//                Math.abs(row1.l[j]) <= Math.abs(row2.l[j]) &&
+//                row1.less_equal_e(row2));
     }
         
     //-----------------------------------------------------------------------
-    // Generate all sums of R+ rows with R- rows into C
-    private void S_vectors(ArrayList<Row> Rp, ArrayList<Row> Rm, ArrayList<Row> C) {
-        for (Row rowp : Rp) {
-            for (Row rowm : Rm) {
-                Row rowSum = new Row(N, M, false);
-                rowSum.add(rowp);
-                rowSum.add(rowm);
-                appendUnique(rowSum, C);
-            }
-        }
+//    // Generate all sums of R+ rows with R- rows into C
+//    private void S_vectors(ArrayList<Row> Rp, ArrayList<Row> Rm, ArrayList<Row> C) {
+//        for (Row rowp : Rp) 
+//            for (Row rowm : Rm) 
+//                appendUnique(new Row(rowp, rowm), C);
+//    }
+    // Generate all sums of R+/R- rows with a single row1 into C
+    private void S_vectors(ArrayList<Row> R, Row row1, ArrayList<Row> C) {
+        for (Row row2 : R) 
+            appendUnique(new Row(row1, row2), C);
     }
     
     //-----------------------------------------------------------------------
@@ -121,8 +129,7 @@ public class HilbertBasis {
         ArrayList<Row> Cm = new ArrayList<>(); // C- = rows with c[j] < 0
 
         ArrayList<Row> G = new ArrayList<>(rows);
-        ArrayList<Row> supp = new ArrayList<>();
-        // Pottier algorithm
+        // modified Pottier algorithm
         while (!G.isEmpty()) {
             G.sort(Row.DEGLEX_COMPARATOR);
             Row el = G.get(0);
@@ -135,39 +142,31 @@ public class HilbertBasis {
                 }
                 else if (el.l[j] > 0) {
                     appendUnique(el, Cp);
-                    supp.add(el);
-                    S_vectors(supp, Cm, G);
-                    supp.clear();
+                    S_vectors(Cm, el, G); // G U (C- * [e|l])
                     if (verbose)
                         System.out.println("C+ <- C+ U "+el);
                 }
                 else if (el.l[j] < 0) {
                     appendUnique(el, Cm);
-                    supp.add(el);
-                    S_vectors(Cp, supp, G);
-                    supp.clear();
+                    S_vectors(Cp, el, G); // G U (C+ * [e|l])
                     if (verbose)
                         System.out.println("C- <- C- U "+el);
                 }
             }
             else {
                 if (verbose)
-                    System.out.println("DROP "+el);
+                    System.out.println("DROP       "+el);
             }
         }
+        ArrayList<Row> D = new ArrayList<>();
+        D.addAll(C0);
         if (keepCpCm) {
-            appendAllUnique(C0, rows);
-            appendAllUnique(Cp, rows);
-            appendAllUnique(Cm, rows);
-//            rows.addAll(Cp);
-//            rows.addAll(Cm);
-//            rows.addAll(C0);            
+            D.addAll(Cp);
+            D.addAll(Cm);
         }
-        else {
-            appendAllUnique(C0, rows);
-//            rows.clear();
-//            rows.addAll(C0);            
-        }
+        appendAllUnique(rows, D); // keep all rows that started the iteration
+        
+        rows = D;
     }
     
     //-----------------------------------------------------------------------
@@ -208,10 +207,10 @@ public class HilbertBasis {
         while ((j = nextPivot(colReduced)) >= 0) {
             colReduced[j] = true;
             if (verbose)
-                System.out.println("next pivot: "+j);
+                System.out.println("\nnext pivot: "+j);
             HilbertFMcol(j);
             if (verbose)
-                System.out.println(this);
+                System.out.print(this);
         }
     }
     
@@ -228,127 +227,103 @@ public class HilbertBasis {
     
     
     public static void main(String[] args) {
+        Random rand = new Random(1);
         int[][] matA1 = {{-2}, {3}};
         int[][] solA1 = { {3, 2} };
+        int[][] matK1 = {
+            { 3 ,  1 ,  -5,   1},
+            { -2,  1 ,  -4,  -3},
+            { 5 ,  -2,   3,  -2},
+            { -7,  -3,   2,   1}
+        };
+        int[][] matSinch = {{1,0}, {0,1}, {-1,-1}};
         
-        int[][] mat33 = {
-            { 1,  1,  0,  1,  1,  0,  1},
-            { 1,  1,  1,  0,  1,  1,  1},
-            { 1,  1,  1,  1,  0,  1,  0},
-            {-1,  0, -1,  0,  0,  0,  0},
-            {-1,  0,  0, -1,  0, -1, -1},
-            {-1,  0,  0,  0, -1,  0,  0},
-            { 0, -1, -1,  0,  0,  0, -1},
-            { 0, -1,  0, -1,  0,  0,  0},
-            { 0, -1,  0,  0, -1, -1,  0},
-        };
-        int[][] sol33 = {
-            {0, 2, 1, 2, 1, 0, 1, 0, 2},
-            {1, 0, 2, 2, 1, 0, 0, 2, 1},
-            {1, 1, 1, 1, 1, 1, 1, 1, 1},
-            {1, 2, 0, 0, 1, 2, 2, 0, 1},
-            {2, 0, 1, 0, 1, 2, 1, 2, 0},            
-        };
-        
-        int[][] mat44 = {
-            { 1,  1,  1,  0,  1,  1,  1,  0,  1},
-            { 1,  1,  1,  1,  0,  1,  1,  1,  1},
-            { 1,  1,  1,  1,  1,  0,  1,  1,  1},
-            { 1,  1,  1,  1,  1,  1,  0,  1,  0},
-            {-1,  0,  0, -1,  0,  0,  0,  0,  0},
-            {-1,  0,  0,  0, -1,  0,  0, -1,  0},
-            {-1,  0,  0,  0,  0, -1,  0,  0, -1},
-            {-1,  0,  0,  0,  0,  0, -1,  0,  0},
-            { 0, -1,  0, -1,  0,  0,  0,  0,  0},
-            { 0, -1,  0,  0, -1,  0,  0,  0, -1},
-            { 0, -1,  0,  0,  0, -1,  0, -1,  0},
-            { 0, -1,  0,  0,  0,  0, -1,  0,  0},
-            { 0,  0, -1, -1,  0,  0,  0,  0, -1},
-            { 0,  0, -1,  0, -1,  0,  0,  0,  0},
-            { 0,  0, -1,  0,  0, -1,  0,  0,  0},
-            { 0,  0, -1,  0,  0,  0, -1, -1,  0},
-        };
-        int[][] sol44 = {
-            {0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0},
-            {0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0},
-            {0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0},
-            {0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1},
-            {0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0},
-            {0, 0, 1, 1, 0, 1, 1, 0, 2, 0, 0, 0, 0, 1, 0, 1},
-            {0, 0, 2, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1},
-            {0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0},
-            {0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1},
-            {0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0},
-            {0, 1, 0, 1, 2, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1},
-            {0, 2, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0},
-            {1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0},
-            {1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 2, 0, 0},
-            {1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 2, 0},
-            {1, 0, 1, 0, 0, 0, 0, 2, 0, 1, 1, 0, 1, 1, 0, 0},
-            {1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1},
-            {1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 2, 1, 0, 1, 0},
-            {1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1},
-        };
-        
-        /*int[][] mat55 = { // very hard, takes too much time
-            { 1,  1,  1,  1,  0,  1,  1,  1,  1,  0,  1 },
-            { 1,  1,  1,  1,  1,  0,  1,  1,  1,  1,  1 },
-            { 1,  1,  1,  1,  1,  1,  0,  1,  1,  1,  1 },
-            { 1,  1,  1,  1,  1,  1,  1,  0,  1,  1,  1 },
-            { 1,  1,  1,  1,  1,  1,  1,  1,  0,  1,  0 },
-            {-1,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0 },
-            {-1,  0,  0,  0,  0, -1,  0,  0,  0, -1,  0 },
-            {-1,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0 },
-            {-1,  0,  0,  0,  0,  0,  0, -1,  0,  0, -1 },
-            {-1,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0 },
-            { 0, -1,  0,  0, -1,  0,  0,  0,  0,  0,  0 },
-            { 0, -1,  0,  0,  0, -1,  0,  0,  0,  0,  0 },
-            { 0, -1,  0,  0,  0,  0, -1,  0,  0, -1, -1 },
-            { 0, -1,  0,  0,  0,  0,  0, -1,  0,  0,  0 },
-            { 0, -1,  0,  0,  0,  0,  0,  0, -1,  0,  0 },
-            { 0,  0, -1,  0, -1,  0,  0,  0,  0,  0,  0 },
-            { 0,  0, -1,  0,  0, -1,  0,  0,  0,  0, -1 },
-            { 0,  0, -1,  0,  0,  0, -1,  0,  0,  0,  0 },
-            { 0,  0, -1,  0,  0,  0,  0, -1,  0, -1,  0 },
-            { 0,  0, -1,  0,  0,  0,  0,  0, -1,  0,  0 },
-            { 0,  0,  0, -1, -1,  0,  0,  0,  0,  0, -1 },
-            { 0,  0,  0, -1,  0, -1,  0,  0,  0,  0,  0 },
-            { 0,  0,  0, -1,  0,  0, -1,  0,  0,  0,  0 },
-            { 0,  0,  0, -1,  0,  0,  0, -1,  0,  0,  0 },
-            { 0,  0,  0, -1,  0,  0,  0,  0, -1, -1,  0 },
-        };*/
                         
-//        testHilbert(matA1, solA1, false);
-//        testHilbert(mat33, sol33, false);
-//        testHilbert(mat44, sol44, false);
-        //testHilbert(mat55, sol44, false);
+//        testHilbert(matA1, solA1, true);
+//        testHilbert(HilbertTestData.mat33, HilbertTestData.sol33, true); //OK
+//        testHilbert(HilbertTestData.mat33v2, HilbertTestData.sol33v2, true); //OK 2310 slow
+//        testHilbert(HilbertTestData.matA1, HilbertTestData.solA1, true); // ?? very slow
+//        testHilbert(HilbertTestData.matA3, HilbertTestData.solA3, true); //OK
+//        testHilbert(HilbertTestDaa.matA4, HilbertTestData.solA4, true); //OK
+//        testHilbert(HilbertTestData.matm33, HilbertTestData.solm33, true);
+//        testHilbert(HilbertTestData.matmagic33, HilbertTestData.solmagic33, true); //OK
+//        testHilbert(HilbertTestData.matmagic3x3, HilbertTestData.solmagic3x3, true); //OK
+//        testHilbert(HilbertTestData.mat44, HilbertTestData.sol44, true);
+        //testHilbert(HilbertTestData.mat55, null, false);
+//        testHilbert(matK1, null, true); // slow
+        testHilbert(matSinch, null, true); 
         
-        int[][] mat = {
-            {-1,0}, {-1,1}, {0,-1}, {2,0}
-        };
-        testHilbert(mat, null, true);
+//        int[][] mat = {
+////            {-1,0}, {-1,1}, {0,-1}, {2,0}
+//            {1,0}, {-1,-1}, {0,1}
+//        };
+//        testHilbert(mat, null, true);
+
+//        for (int h=0; h<10; h++)
+//            testCommutativity(HilbertTestData.mat33,rand);
+    }
+    
+    private static void testCommutativity(int[][] matIn, Random rand) {
+        int[] index = new int[matIn[0].length];
+        for (int i=0; i<index.length; i++)
+            index[i] = i;
+        for (int i=0; i<index.length; i++) {
+            int j = rand.nextInt(index.length - 1);
+            int temp = index[i];
+            index[i] = index[j];
+            index[j] = temp;
+        }
+        int[][] mat = new int[matIn.length][index.length];
+        for (int i=0; i<matIn.length; i++)
+            for (int j=0; j<index.length; j++)
+                mat[i][j] = matIn[i][index[j]];
+//        int[][] sol = new int[matRes.length][index.length];
+//        for (int i=0; i<matRes.length; i++)
+//            for (int j=0; j<index.length; j++)
+//                sol[i][j] = matRes[i][index[j]];
+            
+        HilbertBasis H = new HilbertBasis(matIn);  
+//        H.setVerbose();
+//        System.out.println(H);
+        H.setKeepCpCm();
+        H.HilbertFM();
+//        System.out.println("\nResult:\n"+H);
+        
+        int hilbertB0sz = 0;
+        for (int i=0; i<H.numRows(); i++)
+            if (H.isRealBasisVec(i))
+                hilbertB0sz++;
+        
+        for (int i=0; i<index.length; i++)
+            System.out.print(index[i] + " ");
+        System.out.println(":  "+H.numRows()+" "+hilbertB0sz);
     }
     
     private static void testHilbert(int[][] matIn, int[][] matRes, boolean keepCpCm) {
+        System.out.println("\n\n---------------------");
         HilbertBasis H = new HilbertBasis(matIn);  
         H.setVerbose();
         System.out.println(H);
         if (keepCpCm)
             H.setKeepCpCm();
         H.HilbertFM();
-        System.out.println(H);
+        System.out.println("\nResult:\n"+H);
         
+        // Separate the Hilbert basis B0
+        ArrayList<int[]> avB0 = new ArrayList<>();
+        for (int i=0; i<H.numRows(); i++)
+            if (H.isRealBasisVec(i))
+                avB0.add(H.getBasisVec(i));
+        int[][] B0 = avB0.toArray(new int[avB0.size()][]);
+        sortArrays(B0);
+        System.out.println("Computed Hilbert basis has "+B0.length+" entries.");
+
         if (matRes != null) {
-            int[][] sol = new int[H.numRows()][];
-            for (int i=0; i<sol.length; i++)
-                sol[i] = H.getBasisVec(i);
-            sortArrays(sol);
-        
             sortArrays(matRes);
             boolean equal = true;
-            for (int i=0; equal && i<sol.length; i++)
-                equal = equal && Arrays.compare(sol[i], matRes[i])==0;
+            for (int i=0; equal && i<B0.length; i++) {
+                equal = equal && Arrays.compare(B0[i], matRes[i])==0;
+            }
             System.out.println("Check solution: "+equal);
         }
     }

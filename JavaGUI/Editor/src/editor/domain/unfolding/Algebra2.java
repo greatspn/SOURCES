@@ -475,6 +475,8 @@ public class Algebra2 {
                         }
                     }
                     H.setVerbose();
+                    if (policy == Policy.UNARY_CONJUGATED_ALL)
+                        H.setKeepCpCm();
                     H.HilbertFM();
                     H.removeInitialRows();
 
