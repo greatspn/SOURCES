@@ -224,4 +224,12 @@ public class HilbertTestData {
             { 0,  0,  0, -1,  0,  0,  0, -1,  0,  0,  0 },
             { 0,  0,  0, -1,  0,  0,  0,  0, -1, -1,  0 },
         };*/
+    
+    // basic 3-way synchronization problem
+    public static final int[][] matSinch = {{1,0}, {0,1}, {-1,-1}};
+    public static final int[][] solSinch = {{1,1,1}};
+    
+    // Anisimov example
+    public static final int[][] matAnisim = {{2,0},{0,-1},{-1,1},{-1,0}};
+    public static final int[][] solAnisim = {{1,0,0,2},{1,1,1,1},{1,2,2,0}};
 }

@@ -21,6 +21,8 @@
 typedef std::vector<ssize_t> place_ilp_bounds_t;
 
 // Compute bounds using the Silva-Colom88 algorithm.
+// Paper: "Linear Algebraic and Linear Programming Techniques 
+//         for the Analysis of Place/Transition Net Systems"
 // If opt_bnds!=nullptr, the already known bounds are skipped
 void ComputeILPBounds(const PN& pn, const place_bounds_t* opt_bnds,
 				      place_ilp_bounds_t& bounds, VerboseLevel verboseLvl);
