@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
@@ -261,34 +261,54 @@ public class HilbertBasis {
     
     //-----------------------------------------------------------------------
     // Generate all sums of C rows with a single row1, and append the new rows into G
-    private void S_vectors_B(ArrayList<Row> C, Row row1, int j, Set<Row> G) {
+    private void S_vectors_B(ArrayList<Row> C, Row row1, int j, Set<Row> G, FastPreceqTable fpt) {
         for (Row row2 : C) {
-            Row newRow = new Row(row1, row2);
-            if (!partialOrderCmp(row1, newRow, j) &&
-                !partialOrderCmp(row2, newRow, j))
-            {
-//                appendUnique(newRow, G);
-                G.add(newRow);
+            // Can we compose row1 with row2?
+            boolean compose = false;
+            for (int k=j; k<=j; k++) {
+//            for (int k=0; k<row1.l.length; k++) {
+                if (!(row1.l[k] * row2.l[k] >= 0 && 
+                      Math.abs(row1.l[k]) <= Math.abs(row2.l[k])))
+                {
+                    compose = true;
+                    break;
+                }
+            }
+                
+            if (compose) {
+                Row newRow = new Row(row1, row2);
+                if (null==findReducer(newRow, j, fpt)) {
+                    G.add(newRow);
+                }
             }
         }
     }
     
     //-----------------------------------------------------------------------
     
-    private Row isIrreducible(Row r, int j, ArrayList<Row> C) 
-    {
-        // C may reduce every row
-        for (Row r2 : C)
-            if (partialOrderCmp(r2, r, j))
-                return r2;
-        // row r is irreducible w.r.t. C
-        return null;
+    private static boolean checkUnique(Row row, ArrayList<Row> rows) {
+        for (Row row2 : rows) {
+            if (row2.equal(row))
+                return false; // Already exists
+        }
+        return true; // is unique
     }
+//    private Row isIrreducible(Row r, int j, ArrayList<Row> C) 
+//    {
+//        // C may reduce every row
+//        for (Row r2 : C)
+//            if (partialOrderCmp(r2, r, j))
+//                return r2;
+//        // row r is irreducible w.r.t. C
+//        return null;
+//    }
     
-    private Row isIrreducible(Row r, int j, LabelEncoder le) 
+    private Row findReducer(Row r, int j, FastPreceqTable le) 
     {
         Row preceq = le.preceq(r);
         if (preceq != null) {
+//            System.out.println("r =      "+r);
+//            System.out.println("preceq = "+preceq);
             assert partialOrderCmp(preceq, r, j);
         }
         return preceq;
@@ -296,36 +316,34 @@ public class HilbertBasis {
     
     //-----------------------------------------------------------------------
     public void Buchberger(int j) {
-        LabelEncoder le = new LabelEncoder(M);
+        FastPreceqTable fpt = new FastPreceqTable(M);
         ArrayList<Row> C = new ArrayList<>(); 
-        Set<Row> G = new TreeSet<Row>(DEGLEX_COMPARATOR);
+        SortedSet<Row> G = new TreeSet<Row>(DEGLEX_COMPARATOR);
         G.addAll(rows);
-//        ArrayList<Row> G = new ArrayList<>(rows);
         int step = 0;
 
         while (!G.isEmpty()) {
-//            G.sort(Row.DEGLEX_COMPARATOR);
             Iterator<Row> it = G.iterator();
             Row el = it.next();
             it.remove();
-//            G.remove(0);
-            Row redux = isIrreducible(el, j, C);
-            if (redux == null) {
+            Row redux = findReducer(el, j, fpt);
+            if (redux == null) { // [e|l] is irreducible
                 if (verbose)
                     System.out.println("C <- C U "+el);
-                S_vectors_B(C, el, j, G); // G U ([e|l] * C)
-                if (appendUnique(el, C)) 
-                    le.insertRow(el);
+                S_vectors_B(C, el, j, G, fpt); // G U ([e|l] * C)
+                assert checkUnique(el, C);
+                C.add(el);
+                fpt.insertRow(el);
             }
-            else {
+            else { // [e|l] is reducible by redux
                 if (verbose)
                     System.out.println("DROP     "+el+" by "+redux);
             }
             
-            if (step % 100 == 0) {
-                System.out.println("step: "+step+"  |G|="+G.size()+"  |C|="+C.size());
-            }
             step++;
+//            if (step % 1000 == 0 || G.isEmpty()) {
+//                System.out.println("step: "+step+"  |G|="+G.size()+"  |C|="+C.size());
+//            }
         }
         rows = C;
     }
@@ -362,10 +380,13 @@ public class HilbertBasis {
 //        testHilbert(matK1, null, true); // slow 1533
 
 //        testBuchberger(HilbertTestData.mat33, HilbertTestData.sol33); // OK (361), fast
+//        testBuchberger(HilbertTestData.matA3, HilbertTestData.solA3); // OK (12), fast
+//        testBuchberger(HilbertTestData.matA4, HilbertTestData.solA4); // OK (34), fast
 //        testBuchberger(HilbertTestData.mat33v2, HilbertTestData.sol33v2); // OK, 2311 fast
-//        testBuchberger(HilbertTestData.matA1, HilbertTestData.solA1); // OK, slow
+//        testBuchberger(HilbertTestData.matA1, HilbertTestData.solA1); // very slow
 //        testBuchberger(matK1, null); // OK, 1533
-        testBuchberger(HilbertTestData.mat44, HilbertTestData.sol44); // OK (12887), slow
+//        testBuchberger(HilbertTestData.mat44, HilbertTestData.sol44); // OK (12887), slow
+//        testBuchberger(HilbertTestData.mat55, null); // out-of-memory
 
         /*int[][] matBreaks = {
             { 1,  1,  0,  1,  1,  0,  1 },
@@ -387,8 +408,10 @@ public class HilbertBasis {
 //        };
 //        testHilbert(mat, null, true);
 
-//        for (int h=0; h<10; h++)
+        for (int h=0; h<10; h++) {
+            testCommutativity(HilbertTestData.mat33v2,rand);
 //            testCommutativity(HilbertTestData.mat33,rand);
+        }
 
 
 //        int[][] matA5 = {{1,1,1}, {-1,0,0}, {0,-1,0}};
@@ -433,7 +456,9 @@ public class HilbertBasis {
 //        H.setVerbose();
 //        System.out.println(H);
         H.setKeepCpCm();
-        H.HilbertFM();
+//        H.HilbertFM();
+        for (int j=0; j<mat[0].length; j++)
+            H.Buchberger(j);
 //        System.out.println("\nResult:\n"+H);
         
         int hilbertB0sz = 0;
@@ -482,8 +507,14 @@ public class HilbertBasis {
         HilbertBasis H = new HilbertBasis(matIn);  
 //        H.setVerbose();
         System.out.println(H);
-        H.Buchberger(matIn[0].length - 1);
+        long start = System.currentTimeMillis();
+        for (int j=0; j<matIn[0].length; j++)
+            H.Buchberger(j);
+//        H.Buchberger(matIn[0].length - 1);
         System.out.println("\nResult:\n"+H);
+        System.out.println("\nRows: "+H.numRows());
+        long totalTime = System.currentTimeMillis() - start;
+        System.out.println("Total time: "+(totalTime/1000.0));
         
         // Separate the Hilbert basis B0
         ArrayList<int[]> avB0 = new ArrayList<>();

@@ -2,15 +2,15 @@ package editor.domain.semiflows;
 
 import java.util.ArrayList;
 
-/**
+/** Fast table to perform preceq_A comparisons used in the Buchberger algorithm
  *
  * @author elvio
  */
-public class LabelEncoder {
+public class FastPreceqTable {
     final int M; // label vector length
-    final Node root;
+    final Node root; // root node
 
-    public LabelEncoder(int M) {
+    public FastPreceqTable(int M) {
         this.M = M;
         this.root = new LabelNode(0);
     }
@@ -132,7 +132,11 @@ public class LabelEncoder {
 
         @Override
         public Row preceq(Row r) {
-            return rows.get(0);
+            for (Row precRow : rows)
+                if (precRow.less_equal_e(r))
+                    return precRow;
+            return null;
+//            return rows.get(0);
         }
     }
 
@@ -154,7 +158,7 @@ public class LabelEncoder {
     //-----------------------------------------------------------------------
     
     public static void main(String[] args) {
-        LabelEncoder le = new LabelEncoder(3);
+        FastPreceqTable le = new FastPreceqTable(3);
         
         int[][] labels = {
             {0,1,-2},
