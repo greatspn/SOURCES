@@ -539,10 +539,6 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 
     	outfel << "events_size alla fine " << Trans[tran].events_size << endl;
     	outfel << future_event_list.getLenght() << " Lunghezza future event list alla fine\n\n";
-
-        //update with new/old value for next loop
-    	PreviousEnabledTransValueDis[tran] = EnabledTransValueDis[tran];
-
     }
 
 
@@ -560,20 +556,18 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     // Deleting the head.
     	if (event_index == 0) {
 
-
     		if(Trans[tran].first_event != NULL) {
      	  		// Update head
     			Trans[tran].first_event = temp1->getNext();
     			//if it's not the last element of the list
-    			if(temp1->getNext() != NULL )
+    			if(Trans[tran].first_event != NULL )
     				Trans[tran].first_event ->setPrevious(NULL);
-    			return temp1;
+    			return Trans[tran].first_event;
     		}
     		else if(Trans[tran].last_event != NULL){
     			Trans[tran].last_event = NULL;
     			return Trans[tran].last_event;
     		}
-
     	}
 
 
@@ -592,12 +586,7 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 
     	Event *next = temp1->getNext();
 
-
-
-    // Change the next pointer
-    // of the previous node.
-
-    	outfel << "arrivi prima di settare?" << endl;
+    // Change the next pointer of the previous node.
     	temp2->setNext(next);
 
     	if(next != NULL)
@@ -632,15 +621,11 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 
     	Event *next = event->getNext();
 
-    // Change the next pointer
-    // of the previous node.
+    // Change the next pointer of the previous node.
     	prev->setNext(next);
     	if(next !=NULL)
     		(next)->setPrevious(prev); 
-
     }
-
-
 
 
 
@@ -660,20 +645,17 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     		if(Trans[t].timing == NON_EXP_GEN) {
 
     			size_notExpTran++;
-    		//SetTranExp[++SetTranExp[0]]=i; 
-			for (unsigned int k=0; k<Trans[t].InPlaces.size(); k++)//for all variables in the components
-			{
-				future_event_list_size += (floor(Value[k]/Trans[t].InPlaces[k].Card));
+				for (unsigned int k=0; k<Trans[t].InPlaces.size(); k++)//for all variables in the components
+				{
+					future_event_list_size += (floor(Value[k]/Trans[t].InPlaces[k].Card));
+				}
 			}
+			else
+				size_expTran++;
 		}
-		else
-			size_expTran++;
 
-			//SetTranNotExp[++SetTranNotExp[0]]=i; 
-
+		future_event_list.setHeapSize(future_event_list_size);
 	}
-	future_event_list.setHeapSize(future_event_list_size);
-}
 
 
 
@@ -700,7 +682,6 @@ inline void SystEqMas::setSizeFutureEventList(int nTrans, int &size_expTran, int
 		}
 		else
 			size_expTran++;
-
 	}
 	future_event_list.setHeapSize(future_event_list_size);
 }
@@ -3385,6 +3366,9 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 
 	while (run<Max_Run){
 
+		outfel<<"inizio nuovo run" << endl;
+
+
 		if(run%100==0){
 			cout<<"\r\t START RUN... "<<run<<" ";
 			cout.flush();
@@ -3420,8 +3404,10 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 		double nextTimePoint=tout=Print_Step+itime;
 		//istate=1;
 		time=itime;
+		outfel << "max_time: " << Max_Time << endl;
 
 		while(time<=Max_Time){
+
             //time=nextTimePoint;
 			getValTranFire(Value);
       		//this returns the correct transition to fire
@@ -3471,8 +3457,13 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 				{	
 					updateFutureEventList(SetTranNotExp[t]);
 				}
+				
+				//update with new/old value for next loop
+    			PreviousEnabledTransValueDis[t] = EnabledTransValueDis[t];
 			}
 		}
+
+		outfel << "ma aumenti mai il numero di run?" << endl;
 
 		for (int i=0;i<nPlaces;i++)
 		{
