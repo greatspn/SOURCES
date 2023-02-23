@@ -362,7 +362,7 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
       //cout<<" T:"<<NameTrans[t]<<endl;
 		//If the transition is exponential general
 		if (Trans[t].FuncT!=nullptr && Trans[t].timing != NON_EXP_GEN)
-		{   
+		{ 
 
 #ifdef CGLPK
  //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
@@ -430,6 +430,7 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     		//if the transition is exponential general
     		if (Trans[t].FuncT!=nullptr && Trans[t].timing != NON_EXP_GEN)
     		{
+
 #ifdef CGLPK
  //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
     			EnabledTransValueDis[t]=EnabledTransValueCon[t]=Trans[t].FuncT(ValuePrv,vec_fluxb,NumTrans,NumPlaces,NameTrans,Trans,t,time);
@@ -443,8 +444,11 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     			if(Trans[t].timing == NON_EXP_GEN && solve != Solve_SSA){
     				throw Exception("You can't use non exponential transition with other solver than SSA");
     			}
-    			if (size==0)
+
+    			//this code is in common between non exp gen e standard exp transition
+    			if (size==0){
     				EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
+    			}
     			else
     			{
     				double tmpC;
@@ -522,8 +526,6 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     		number_events--;
     	}
 
-    	//int events_size = Trans[tran].events.size();
-
 		//remove events if there are less tokens; the chosen transition is not updated here
 		// so I can do the loop normally
     	while(number_events < 0 && Trans[tran].events_size > 0 && future_event_list.getLenght() > 0)
@@ -560,9 +562,9 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
      	  		// Update head
     			Trans[tran].first_event = temp1->getNext();
     			//if it's not the last element of the list
-    			if(Trans[tran].first_event != NULL )
+    			if(temp1->getNext() != NULL )
     				Trans[tran].first_event ->setPrevious(NULL);
-    			return Trans[tran].first_event;
+    			return temp1;
     		}
     		else if(Trans[tran].last_event != NULL){
     			Trans[tran].last_event = NULL;
@@ -628,6 +630,28 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     }
 
 
+/**************************************************************/
+/* NAME :  Class deleteElementsInList*/
+/* DESCRIPTION : delete all element in future event list at the beginning of a new cycle */
+/**************************************************************/
+/*void deleteElementsInList(Event* first)
+{
+
+	Event *temp1 = first;
+    Event *next = NULL;
+ 
+    while (temp1 != NULL)
+    {
+        next = temp1->next;
+ 
+        //cout << "Deleting " << prev->data << endl;
+        delete(temp1);
+        temp1 = next;
+    }
+
+
+}*/
+
 
 /**************************************************************/
 /* NAME :  Class setSizeFutureEventList*/
@@ -665,16 +689,16 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 				when the mass action is used */
 /**************************************************************/
 
-inline void SystEqMas::setSizeFutureEventList(int nTrans, int &size_expTran, int &size_notExpTran){
+	inline void SystEqMas::setSizeFutureEventList(int nTrans, int &size_expTran, int &size_notExpTran){
 
-	int future_event_list_size = 0;
+		int future_event_list_size = 0;
 
-	for(int t=0; t<nTrans; t++)
-	{
-		PreviousEnabledTransValueDis[t] = 0;
-		if(Trans[t].timing == NON_EXP_GEN) {
+		for(int t=0; t<nTrans; t++)
+		{
+			PreviousEnabledTransValueDis[t] = 0;
+			if(Trans[t].timing == NON_EXP_GEN) {
 
-			size_notExpTran++;
+				size_notExpTran++;
 			for (unsigned int k=0; k<Trans[t].InPlaces.size(); k++)//for all variables in the components
 			{
 				future_event_list_size *= Value[k];
@@ -2818,6 +2842,7 @@ int SystEq::getComputeTau(int SetTranExp[], double& nextTimePoint,double t){
 
 		if (sumRate==0.0 && future_event_list.getLenght() == 0)
 			return -1;
+		outfel << "t per calcolare tau " << t << endl;
 		std::exponential_distribution<> ExpD(sumRate);
 		tau=(ExpD(generator)+t);
     //cout<<"\nReaction:"<<tau<<" "<<tau-t<<endl;
@@ -2866,6 +2891,7 @@ int SystEq::getComputeTau(int SetTranExp[], double& nextTimePoint,double t){
 		//}
 
 		outfel << "trans "<<NameTrans[SetTranExp[lo+1]]<<" id"<<lo+1<<"\n\n";
+		outfel << "nextTimePoint " << nextTimePoint << endl;
 		return SetTranExp[lo+1];
 	}
 	return -1;
@@ -3283,6 +3309,7 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 	solve = Solve_SSA;
 	int size_expTran = 0;
 	int size_notExpTran = 0;
+	int Tran_previous = -1;
 
 	setSizeFutureEventList(nTrans, size_expTran, size_notExpTran);
 
@@ -3366,116 +3393,132 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 
 	while (run<Max_Run){
 
-		outfel<<"inizio nuovo run" << endl;
-
 
 		if(run%100==0){
 			cout<<"\r\t START RUN... "<<run<<" ";
 			cout.flush();
 		}
 
+
 		//Initialization for each run
 		if(Info){
 			out<<endl<<itime;
 		}
 
-		for (int j=0;j<nPlaces;j++){
-			Value[j]=ValuePrv[j]=ValueInit[j];
-			if(Info){
-				out<<" "<<ValuePrv[j];
+		//initialization for future event list
+		if(future_event_list.getLenght() > 0){
+
+			future_event_list.deleteHeap();
+
+			for(int t=0; t<size_expTran; t++){
+				Trans[SetTranNotExp[t]].first_event = NULL;
+				Trans[SetTranNotExp[t]].last_event = NULL;
 			}
+
 		}
 
+
+	for (int j=0;j<nPlaces;j++){
+		Value[j]=ValuePrv[j]=ValueInit[j];
 		if(Info){
+			out<<" "<<ValuePrv[j];
+		}
+	}
+
+	if(Info){
 #ifdef CGLPK
-			getValTranFire(Value);
-			for (unsigned int i=0;i<vec_fluxb.size();++i){
-				outflux[i]<<endl<<itime<<" ";
-				vec_fluxb[i].printObject(outflux[i]);
-				vec_fluxb[i].printValue(outflux[i]);
-				if (Variability){
-					vec_fluxb[i].printLowerMax(outflux[i]);	
-				}
-			}	
+		getValTranFire(Value);
+		for (unsigned int i=0;i<vec_fluxb.size();++i){
+			outflux[i]<<endl<<itime<<" ";
+			vec_fluxb[i].printObject(outflux[i]);
+			vec_fluxb[i].printValue(outflux[i]);
+			if (Variability){
+				vec_fluxb[i].printLowerMax(outflux[i]);	
+			}
+		}	
 #endif
-			out<<endl;
+		out<<endl;
+	}
+
+	double nextTimePoint=tout=Print_Step+itime;
+		//istate=1;
+	time=itime;
+
+
+
+	while(time<=Max_Time){
+
+			//outfel << "time: " << time << endl;
+            //time=nextTimePoint;
+		getValTranFire(Value);
+
+		//update of future event list
+		for(int t=1;t<size_notExpTran;t++)
+		{
+			if(SetTranNotExp[t]!=Tran_previous)
+			{	
+				updateFutureEventList(SetTranNotExp[t]);
+			}
+
+				//update with new/old value for next loop
+			PreviousEnabledTransValueDis[t] = EnabledTransValueDis[t];
 		}
 
-		double nextTimePoint=tout=Print_Step+itime;
-		//istate=1;
-		time=itime;
-		outfel << "max_time: " << Max_Time << endl;
 
-		while(time<=Max_Time){
-
-            //time=nextTimePoint;
-			getValTranFire(Value);
       		//this returns the correct transition to fire
-			int Tran=getComputeTau(SetTranExp, nextTimePoint,time);
+		int Tran=getComputeTau(SetTranExp, nextTimePoint,time);
+		Tran_previous = Tran;
 
 
       //cout<<Tran<<" "<<endl;
-			if (Tran!=-1){
-				int size=(Trans[Tran].Places).size();
-				for (int i=0;i<size;++i){
-					Value[(Trans[Tran].Places[i]).Id]+=(Trans[Tran].Places[i]).Card;
+		if (Tran!=-1){
+			int size=(Trans[Tran].Places).size();
+			for (int i=0;i<size;++i){
+				Value[(Trans[Tran].Places[i]).Id]+=(Trans[Tran].Places[i]).Card;
 					//outfel << Value[(Trans[Tran].Places[i]).Id] << " valore del posto " << endl;
-				}
 			}
+		}
 
-			time=nextTimePoint;
-			if(tout==nextTimePoint){
-				if(Info){
+		time=nextTimePoint;
+		if(tout==nextTimePoint){
+			if(Info){
 
-					out<<nextTimePoint;
-					for(int j=0; j<nPlaces;j++){
+				out<<nextTimePoint;
+				for(int j=0; j<nPlaces;j++){
 
-						out<<" "<<Value[j];
-					}
+					out<<" "<<Value[j];
+				}
 #ifdef CGLPK
 
-					for (unsigned int i=0;i<vec_fluxb.size();++i){
-						outflux[i]<<endl<<tout<<" ";
-						vec_fluxb[i].printObject(outflux[i]);
-						vec_fluxb[i].printValue(outflux[i]);
-						if (Variability){
-							vec_fluxb[i].printLowerMax(outflux[i]);	
-						}
-					}	
+				for (unsigned int i=0;i<vec_fluxb.size();++i){
+					outflux[i]<<endl<<tout<<" ";
+					vec_fluxb[i].printObject(outflux[i]);
+					vec_fluxb[i].printValue(outflux[i]);
+					if (Variability){
+						vec_fluxb[i].printLowerMax(outflux[i]);	
+					}
+				}	
 #endif
-					out<<endl;
-				}
-				nextTimePoint=(tout+=Print_Step);
+				out<<endl;
 			}
-			else
-				nextTimePoint=tout;
-
-			//update of future event list
-			for(int t=1;t<size_notExpTran;t++)
-			{
-				if(SetTranNotExp[t]!=Tran)
-				{	
-					updateFutureEventList(SetTranNotExp[t]);
-				}
-				
-				//update with new/old value for next loop
-    			PreviousEnabledTransValueDis[t] = EnabledTransValueDis[t];
-			}
+			nextTimePoint=(tout+=Print_Step);
 		}
-
-		outfel << "ma aumenti mai il numero di run?" << endl;
-
-		for (int i=0;i<nPlaces;i++)
-		{
-			Mean[i]+=FinalValueXRun[i][run]=Value[i];
-		}
-
-		++run;
+		else
+			nextTimePoint=tout;
 
 	}
 
-	cout<<"\n\nSolution at time "<<Max_Time<<":\n";
-	outfel.close();
+	for (int i=0;i<nPlaces;i++)
+	{
+		Mean[i]+=FinalValueXRun[i][run]=Value[i];
+	}
+
+	++run;
+
+}
+
+cout<<"\n\nSolution at time "<<Max_Time<<":\n";
+outfel.close();
 }
 
 

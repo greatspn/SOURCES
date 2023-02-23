@@ -141,10 +141,10 @@ class min_heap {
 public:
 
 
-        //!Empty constructor
+    //!Empty constructor
     min_heap(){};
 
-        //!Constructor with size
+    //!Constructor with size
     min_heap(size_t initN) {
         heap.reserve(N);
     }
@@ -197,16 +197,24 @@ public:
         return this -> heap.size();
     }
 
-    inline 
-
     // change the weight of an element already in the heap
-    void updateWeight(Event* elem, double w) {
+    inline void updateWeight(Event* elem, double w) {
         int i = elem -> getIndexHeap();
         assert(i >= 0 && i < (int)heap.size());
-        //W[elem] = w;
         elem -> setTime(w);
         percolateUpOrDown(elem);
     }
+
+
+    //delete and clear all heap deallocating objects
+    inline void deleteHeap(){
+        for(int i=0;i<(int)N;i++){
+            Event *delete_event = heap[i];
+            delete(delete_event);
+            heap[i] = NULL;
+        }
+    }
+    
 };
 
 
