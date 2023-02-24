@@ -318,7 +318,7 @@ public class HilbertBasis {
     public void Buchberger(int j) {
         FastPreceqTable fpt = new FastPreceqTable(M);
         ArrayList<Row> C = new ArrayList<>(); 
-        SortedSet<Row> G = new TreeSet<Row>(DEGLEX_COMPARATOR);
+        SortedSet<Row> G = new TreeSet<>(DEGLEX_COMPARATOR);
         G.addAll(rows);
         int step = 0;
 

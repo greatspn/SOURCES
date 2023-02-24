@@ -1,12 +1,12 @@
 /*
- * Matrix row with [d|c] vectors
+ * Matrix row with [e|l] vectors
  */
 package editor.domain.semiflows;
 
 import java.util.Comparator;
 
-/** Row of a horizontally stacked matrix [ D | C ], made
- * by two vectors d and c.
+/** Row of a horizontally stacked matrix [ E | L ], made
+ * by two vectors e and l.
  *
  * @author elvio
  */

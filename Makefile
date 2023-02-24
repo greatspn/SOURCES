@@ -234,10 +234,13 @@ ifeq ("$(wildcard $(PATH_TO_LP_SOLVE_LIB)libcolamd.a)","")
 endif
 endif
 
-$(call search_library,GMP_LIB,/libgmpxx.*,"GMP library",-lgmpxx -lgmp)
+$(call search_library,GMP_LIB,/libgmpxx.*,"GMP library", )
 ifdef HAS_GMP_LIB
 	INCLUDE_GMP_LIB := -DHAS_GMP_LIB=1
+	LINK_GMP_LIB := $(PATH_TO_GMP_LIB)libgmpxx.a $(PATH_TO_GMP_LIB)libgmp.a
 endif
+
+$(warning $(PATH_TO_GMP_LIB)libgmpxx.a)
 
 
 $(call search_file,JAVA_DEVELOPMENT_KIT,$(shell which javac))
