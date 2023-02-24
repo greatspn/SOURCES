@@ -141,18 +141,34 @@ cp JavaGUI/AdditionalV3/splash@200pct.png ${APPDIR}/
 case "$OSTYPE" in
 #----------------------------------------------------------
 darwin*)
+if [[ -f /opt/homebrew/opt/gmp/lib/libgmp.10.dylib && -f /opt/homebrew/opt/gmp/lib/libgmpxx.4.dylib ]]; then
+	LIBGMP=/opt/homebrew/opt/gmp/lib/libgmp.10.dylib
+	LIBGMPXX=/opt/homebrew/opt/gmp/lib/libgmpxx.4.dylib
+else
+	echo 'Error: missing LIBGMP'
+	exit 1
+fi
 cp  ../meddly/src/.libs/libmeddly.0.dylib \
     ../spot-2.9.6/spot/.libs/libspot.0.dylib \
     ../spot-2.9.6/buddy/src/.libs/libbddx.0.dylib \
+    ${LIBGMP} ${LIBGMPXX} \
     ${APPDIR}/portable_greatspn/lib/
 # echo "COPY THE splash@2x.png file!"
 ;;
 
 #----------------------------------------------------------
 linux*)   
+if [[ -f /usr/local/lib/libgmp.10.lib && -f /usr/local/lib/libgmpxx.4.lib ]]; then
+	LIBGMP=/usr/local/lib/libgmp.10.lib
+	LIBGMPXX=/usr/local/lib/libgmpxx.4.lib
+else
+	echo 'Error: missing LIBGMP'
+	exit 1
+fi
 cp  ../meddly/src/.libs/libmeddly.so.0 \
     ../spot-2.9.6/spot/.libs/libspot.so.0 \
     ../spot-2.9.6/buddy/src/.libs/libbddx.so.0 \
+    ${LIBGMP} ${LIBGMPXX} \
     ${APPDIR}/portable_greatspn/lib/
 ;;
 
