@@ -158,9 +158,9 @@ cp  ../meddly/src/.libs/libmeddly.0.dylib \
 
 #----------------------------------------------------------
 linux*)   
-if [[ -f /usr/local/lib/libgmp.10.lib && -f /usr/local/lib/libgmpxx.4.lib ]]; then
-	LIBGMP=/usr/local/lib/libgmp.10.lib
-	LIBGMPXX=/usr/local/lib/libgmpxx.4.lib
+if [[ -f /lib/x86_64-linux-gnu/libgmp.so.10 && -f /lib/x86_64-linux-gnu/libgmpxx.so.4 ]]; then
+	LIBGMP=/lib/x86_64-linux-gnu/libgmp.so.10
+	LIBGMPXX=/lib/x86_64-linux-gnu/libgmpxx.so.4
 else
 	echo 'Error: missing LIBGMP'
 	exit 1

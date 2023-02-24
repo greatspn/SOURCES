@@ -27,7 +27,7 @@ import java.awt.geom.Point2D;
  */
 public class NetToolBase implements MouseListener, MouseMotionListener, KeyListener {
 
-    protected boolean isDragging = false;
+    protected int dragCounter = 0; // 0 = not dragging. Counter due to multiple mouse button drags.
     protected int startDragX = 0, startDragY = 0;
     protected int currDragX = 0, currDragY = 0;
     protected final NetEditorPanel.Tool activeTool;
@@ -47,12 +47,14 @@ public class NetToolBase implements MouseListener, MouseMotionListener, KeyListe
         seenPressed |= (1 << e.getButton());
         lastSeenModifiers = e.getModifiersEx();
         
-        assert !isDragging;
-        startDragX = e.getX();
-        startDragY = e.getY();
-        currDragX = startDragX;
-        currDragY = startDragY;
-        isDragging = true;
+        if (dragCounter == 0) {
+//        assert !isDragging;
+            startDragX = e.getX();
+            startDragY = e.getY();
+            currDragX = startDragX;
+            currDragY = startDragY;
+        }
+        dragCounter++;
         mousePressed(e);
     }
     
@@ -63,7 +65,7 @@ public class NetToolBase implements MouseListener, MouseMotionListener, KeyListe
             return;
 //        if (0 == (seenPressed & (1 << e.getButton())))
 //            return; // Spurious mouse event
-        assert isDragging;
+        assert dragCounter > 0;
         currDragX = e.getX();
         currDragY = e.getY();
         mouseDragged(e);
@@ -73,8 +75,8 @@ public class NetToolBase implements MouseListener, MouseMotionListener, KeyListe
         lastSeenModifiers = e.getModifiersEx();
         if (0 == (seenPressed & (1 << e.getButton())))
             return; // Spurious mouse event
-        assert isDragging;
-        isDragging = false;
+        assert dragCounter > 0;
+        dragCounter--;
         mouseReleased(e);
     }
     
