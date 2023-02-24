@@ -408,6 +408,8 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
                     }
                 }
             }
+
+            outfel << "enabling delle transizioni " << EnabledTransValueDis[t] << endl;
         }
     }
 
@@ -482,15 +484,20 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 				transition using the value of Enabling */
 /**************************************************************/
 
-    void SystEq::updateFutureEventList(int tran){
-
+    void SystEq::updateFutureEventList(int tran, bool fired){
 
 
     	int number_events = EnabledTransValueDis[tran] - PreviousEnabledTransValueDis[tran];
 
+
     	outfel << "Sono in updateFutureEventList con la transizione " << NameTrans[tran]<< endl;
     	outfel << "lunghezza future_event_list all'inizio " << future_event_list.getLenght() << endl;
     	outfel << number_events << " numero eventi da manipolare " << endl;
+
+    	if(fired){
+    		number_events++;
+    		outfel << "ma se la transizione è scattata allora sono " << number_events << endl;
+    	}
 
     	outfel << "events size prima dell'aggiunta " << Trans[tran].events_size << endl;
 
@@ -541,6 +548,10 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 
     	outfel << "events_size alla fine " << Trans[tran].events_size << endl;
     	outfel << future_event_list.getLenght() << " Lunghezza future event list alla fine\n\n";
+
+    	//update with new/old value for next loop
+		PreviousEnabledTransValueDis[tran] = EnabledTransValueDis[tran];
+
     }
 
 
@@ -2842,7 +2853,6 @@ int SystEq::getComputeTau(int SetTranExp[], double& nextTimePoint,double t){
 
 		if (sumRate==0.0 && future_event_list.getLenght() == 0)
 			return -1;
-		outfel << "t per calcolare tau " << t << endl;
 		std::exponential_distribution<> ExpD(sumRate);
 		tau=(ExpD(generator)+t);
     //cout<<"\nReaction:"<<tau<<" "<<tau-t<<endl;
@@ -2891,7 +2901,6 @@ int SystEq::getComputeTau(int SetTranExp[], double& nextTimePoint,double t){
 		//}
 
 		outfel << "trans "<<NameTrans[SetTranExp[lo+1]]<<" id"<<lo+1<<"\n\n";
-		outfel << "nextTimePoint " << nextTimePoint << endl;
 		return SetTranExp[lo+1];
 	}
 	return -1;
@@ -3399,7 +3408,6 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 			cout.flush();
 		}
 
-
 		//Initialization for each run
 		if(Info){
 			out<<endl<<itime;
@@ -3455,13 +3463,14 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 		//update of future event list
 		for(int t=1;t<size_notExpTran;t++)
 		{
-			if(SetTranNotExp[t]!=Tran_previous)
+			//if the transition is fired one event has already been removed
+			if(SetTranNotExp[t]==Tran_previous)
 			{	
-				updateFutureEventList(SetTranNotExp[t]);
+				updateFutureEventList(SetTranNotExp[t], true);
 			}
-
-				//update with new/old value for next loop
-			PreviousEnabledTransValueDis[t] = EnabledTransValueDis[t];
+			else {
+				updateFutureEventList(SetTranNotExp[t], false);
+			}
 		}
 
 
