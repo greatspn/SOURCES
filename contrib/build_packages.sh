@@ -144,6 +144,9 @@ darwin*)
 if [[ -f /opt/homebrew/opt/gmp/lib/libgmp.10.dylib && -f /opt/homebrew/opt/gmp/lib/libgmpxx.4.dylib ]]; then
 	LIBGMP=/opt/homebrew/opt/gmp/lib/libgmp.10.dylib
 	LIBGMPXX=/opt/homebrew/opt/gmp/lib/libgmpxx.4.dylib
+elif [[ -f /usr/local/opt/gmp/lib/libgmp.10.dylib && -f /usr/local/opt/gmp/lib/libgmpxx.4.dylib ]]; then
+	LIBGMP=/usr/local/opt/gmp/lib/libgmp.10.dylib
+	LIBGMPXX=/usr/local/opt/gmp/lib/libgmpxx.4.dylib
 else
 	echo 'Error: missing LIBGMP'
 	exit 1
