@@ -501,6 +501,8 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 
     	outfel << "events size prima dell'aggiunta " << Trans[tran].events_size << endl;
 
+    	outfel << Trans[tran].first_event << " indirizzo testa update per la transizione all'inizio" << tran << endl;
+
 
     	while(number_events>0)
     	{
@@ -533,6 +535,8 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     		number_events--;
     	}
 
+    	outfel << Trans[tran].first_event << " indirizzo testa update per la transizione  in mezzo" << tran << endl;
+
 		//remove events if there are less tokens; the chosen transition is not updated here
 		// so I can do the loop normally
     	while(number_events < 0 && Trans[tran].events_size > 0 && future_event_list.getLenght() > 0)
@@ -547,10 +551,14 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     	}
 
     	outfel << "events_size alla fine " << Trans[tran].events_size << endl;
-    	outfel << future_event_list.getLenght() << " Lunghezza future event list alla fine\n\n";
 
     	//update with new/old value for next loop
 		PreviousEnabledTransValueDis[tran] = EnabledTransValueDis[tran];
+
+		outfel << Trans[tran].first_event << " indirizzo testa update per la transizione alla fine" << tran << endl;
+		outfel << future_event_list.getLenght() << " Lunghezza future event list alla fine\n\n";
+
+
 
     }
 
@@ -566,6 +574,8 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 
     	Event *temp1 = Trans[tran].first_event, *temp2 = NULL;
 
+    	outfel << Trans[tran].first_event << " indirizzo testa position per la transizione all'inizio" << tran << endl;
+
     // Deleting the head.
     	if (event_index == 0) {
 
@@ -575,6 +585,7 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     			//if it's not the last element of the list
     			if(temp1->getNext() != NULL )
     				Trans[tran].first_event ->setPrevious(NULL);
+    			outfel << Trans[tran].first_event << " indirizzo testa position sono nel change" << tran << endl;
     			return temp1;
     		}
     		else if(Trans[tran].last_event != NULL){
@@ -605,6 +616,8 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     	if(next != NULL)
     		(next)->setPrevious(temp2);
 
+    	outfel << Trans[tran].first_event << " indirizzo testa position per la transizione alla fine" << tran << endl;
+
     	return temp1;
 
     }
@@ -614,9 +627,14 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 /* DESCRIPTION : delete the i-th event in the event list updating the pointers */
 /**************************************************************/
 
-    void SystEq::deleteEvent(Event* event, int tran){
+    void SystEq::deleteEvent(Event* event){
 
     	Event *prev = event->getPrevious();
+    	int tran = event ->getIndexTran();
+
+
+    	outfel << Trans[tran].first_event << " indirizzo testa deleteevent per la transizione all'inizio " << tran << endl;
+
 
     // Deleting the head.
     	if (event == Trans[tran].first_event) {
@@ -626,6 +644,7 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     		//it it's not the last element of the list
     		if(Trans[tran].first_event != NULL)
     			Trans[tran].first_event ->setPrevious(NULL);
+    		    outfel << Trans[tran].first_event << " indirizzo testa deleteevent per la transizione sono nella testa " << tran << endl;
     		return;
     	}
     	else if (event == Trans[tran].last_event){
@@ -638,6 +657,9 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     	prev->setNext(next);
     	if(next !=NULL)
     		(next)->setPrevious(prev); 
+
+    	outfel << Trans[tran].first_event << " indirizzo testa deleteevent per la transizione  alla fine " << tran << endl;
+
     }
 
 
@@ -2866,9 +2888,8 @@ int SystEq::getComputeTau(int SetTranExp[], double& nextTimePoint,double t){
 				if(general_tau >= nextTimePoint)
 					return -1;
 				Event* top_list = future_event_list.popHeap();
-				Trans[lo].first_event = top_list->getNext();
 				lo = top_list -> getIndexTran(); 
-				deleteEvent(top_list, lo);
+				deleteEvent(top_list);
 				future_event_list.removeHeap(top_list);
 				Trans[lo].events_size--;
 				outfel << " lunghezza eventi associati alla transizione " << Trans[lo].events_size << endl;
@@ -3466,9 +3487,11 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 			//if the transition is fired one event has already been removed
 			if(SetTranNotExp[t]==Tran_previous)
 			{	
+				outfel << "non è che qui entro più di quanto devo" << endl;
 				updateFutureEventList(SetTranNotExp[t], true);
 			}
 			else {
+				outfel << "o qui insomma" << endl;
 				updateFutureEventList(SetTranNotExp[t], false);
 			}
 		}

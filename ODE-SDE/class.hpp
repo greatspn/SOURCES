@@ -447,7 +447,7 @@ namespace SDE
   //!It removes the i-th event in the event list updating the pointers 
   Event* deleteEventInPosition(int event_index, int tran);
   //!It removes the i-th event in the event list updating the pointers 
-  void deleteEvent(Event* event, int tran);
+  void deleteEvent(Event* event);
   //stream TEMPORANEO
   ofstream outfel{"outfel.txt"};
 
