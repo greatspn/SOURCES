@@ -14,7 +14,7 @@ public abstract class StructuralAlgorithm {
     // For P-semiflows: N=|P|, M=|T| (for T-semiflows: N=|T|, M=|P|)
     // when there are supplementary variables, N0 is the original N.
     public int N;
-    public final int N0, M;
+    public int N0, M;
     
     // Has already been computed?
     private boolean computed = false;

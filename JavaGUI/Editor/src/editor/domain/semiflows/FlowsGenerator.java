@@ -15,6 +15,7 @@ import editor.domain.grammar.TemplateBinding;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 
 /** Farkas algorithm for the computation
  *  of the minimal set of P(T)-(semi)flows in a Petri net.
@@ -55,6 +56,15 @@ public class FlowsGenerator extends StructuralAlgorithm {
             mD.get(i)[i] = 1;
         }
 //        scAlgo = new SilvaColom88Algorithm(N, M);
+    }
+    
+    // Initialize from an N*M matrix
+    public FlowsGenerator(int[][] mat, PTFlows.Type type) {
+        this(mat.length, mat.length, mat[0].length, type);
+        for (int i=0; i<mat.length; i++) {
+            for (int j=0; j<mat[i].length; j++)
+                setIncidence(i, j, mat[i][j]);
+        }
     }
 
     // Add an element to the incidence matrix from i to j with the specified cardinality
@@ -133,6 +143,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
 
     @Override
     public void compute(boolean log, ProgressObserver obs) throws InterruptedException {
+//        printMat(mA);
         if (log)
             System.out.println(this);
         // Matrix A starts with the flow matrix, D is the identity.
@@ -1016,102 +1027,42 @@ public class FlowsGenerator extends StructuralAlgorithm {
 //        msa.compute(true);
 //    }
     
-    private static FlowsGenerator init1() {
-        int M=10, N=14;
-        FlowsGenerator fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
-        fg.addIncidence(0, 0, 1);
-        fg.addIncidence(0, 4, -1);
-        fg.addIncidence(1, 4, 1);
-        fg.addIncidence(1, 3, -1);
-        fg.addIncidence(12, 3, -1);
-        fg.addIncidence(3, 3, 1);
-        fg.addIncidence(3, 0, -1);
-        fg.addIncidence(2, 0, 1);
-        fg.addIncidence(4, 0, -1);
-        fg.addIncidence(2, 5, -1);
-        fg.addIncidence(13, 5, 1);
-        fg.addIncidence(13, 1, -1);
-        fg.addIncidence(5, 1, 1);
-        fg.addIncidence(5, 6, -1);
-        fg.addIncidence(4, 6, 1);
-        fg.addIncidence(6, 1, -1);
-        fg.addIncidence(7, 1, 1);
-        fg.addIncidence(7, 7, -1);
-        fg.addIncidence(8, 7, 1);
-        fg.addIncidence(8, 2, -1);
-        fg.addIncidence(9, 2, 1);
-        fg.addIncidence(10, 2, 1);
-        fg.addIncidence(10, 9, -1);
-        fg.addIncidence(11, 9, 1);
-        fg.addIncidence(12, 9, 1);
-        fg.addIncidence(11, 8, -1);
-        fg.addIncidence(9, 8, -1);
-        fg.addIncidence(6, 8, 1);
-        return fg;
-    }
+
     
-    private static FlowsGenerator initComp() {
-        int M=3, N=5;
-        FlowsGenerator fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
-        final int a=0, b=1, c=2;
-        // p1 = a + b + c
-        fg.addIncidence(0, a, 1);
-        fg.addIncidence(0, b, 1);
-        fg.addIncidence(0, c, 1);
-        // p2 = -a + c
-        fg.addIncidence(1, a, -1);
-        fg.addIncidence(1, c, 1);
-        // p3 = -b
-        fg.addIncidence(2, b, -1);
-        // p4 = -2c
-        fg.addIncidence(3, c, -2);
-        // p5 = -b -c
-        fg.addIncidence(4, b, -1);
-        fg.addIncidence(4, c, -1);
-        return fg;
-    }
-    
-    private static FlowsGenerator initCSP() {
-        int M=3, N=5;
-        FlowsGenerator fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_FLOWS);
-        final int a=0, b=1, c=2;
-        // p1 = a + b + c
-        fg.addIncidence(0, a, 1);
-        fg.addIncidence(0, b, 1);
-        fg.addIncidence(0, c, 1);
-        // p2 = a + c
-        fg.addIncidence(1, a, 1);
-        fg.addIncidence(1, c, 1);
-        // p3 = b
-        fg.addIncidence(2, b, 1);
-        // p4 = 2c
-        fg.addIncidence(3, c, 2);
-        // p5 = b c
-        fg.addIncidence(4, b, 1);
-        fg.addIncidence(4, c, 1);
-        return fg;
-    }
-    
-    private static FlowsGenerator initAnisimov() {
-        int M=2, N=4;
-        FlowsGenerator fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
-        final int a=0, b=1;
-        // t1 = 2a
-        fg.addIncidence(0, a, 2);
-        // t2 = -b
-        fg.addIncidence(1, b, -1);
-        // t3 = -a + b
-        fg.addIncidence(2, a, -1);
-        fg.addIncidence(2, b, 1);
-        // t4 = -a
-        fg.addIncidence(3, a, -1);
-        return fg;
+    private static void printMat(ArrayList<int[]> mat) {
+        for (int[] row : mat) {
+            for (int j=0; j<row.length; j++) {
+                System.out.print((j==0 ? "{" : ", ")+row[j]);
+            }
+            System.out.println("},");
+        }
     }
     
 
     public static void main(String[] args) throws InterruptedException {
         ProgressObserver obs = (int step, int total, int s, int t) -> { };
-        FlowsGenerator fg = initAnisimov(); //init1();
+        FlowsGeneratorTestData.FlowProblem problem = FlowsGeneratorTestData.probSiphonBasis;
+        FlowsGenerator fg = new FlowsGenerator(problem.input, problem.probType);
+        if (problem.probType.isTrapsOrSiphons())
+            fg.N0 -= problem.input[0].length;
+        printMat(fg.mA);
         fg.compute(true, obs);
+        printMat(fg.mD);
+        
+        // Compare the result matrix with the known results for that problem
+        if (problem.solution != null) {
+            int[][] mResult = fg.getAnnulers();
+            Comparator<int[]> comp = (int[] o1, int[] o2) -> Arrays.compare(o1, o2);
+            Arrays.sort(mResult, comp);
+            Arrays.sort(problem.solution, comp);
+
+            boolean equal = (mResult.length == problem.solution.length);
+            if (equal) {
+                for (int i=0; equal && i<mResult.length; i++) {
+                    equal = Arrays.equals(mResult[i], problem.solution[i]);
+                }
+            }
+            System.out.println("Check solution: "+equal);
+        }
     }
 }
