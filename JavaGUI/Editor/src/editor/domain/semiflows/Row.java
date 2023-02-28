@@ -25,11 +25,20 @@ public class Row {
         add(r1);
         add(r2);
     }
-        
+
+    // sum of two multiplied rows
+    public Row(int mult1, Row r1, int mult2, Row r2) {
+        this(r1.e.length, r1.l.length, false);
+        assert r1.e.length == r2.e.length && r1.l.length == r2.l.length;
+        addMult(r1, mult1);
+        addMult(r2, mult2);
+    }
+
     int[] e; // elements
     int[] l; // labels
     boolean initial; // part of the initial setup
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
@@ -50,20 +59,24 @@ public class Row {
         return sb.toString();
     }
 
-    public void add(Row r) {
+    public final void add(Row r) {
         assert e.length==r.e.length && l.length==r.l.length;
         for (int j=0; j<e.length; j++)
-            e[j] += r.e[j];
+            e[j] = Math.addExact(e[j], r.e[j]);
+//            e[j] += r.e[j];
         for (int j=0; j<l.length; j++)
-            l[j] += r.l[j];
+            l[j] = Math.addExact(l[j], r.l[j]);
+//            l[j] += r.l[j];
     }
 
-    public void addMult(Row r, int mult) {
+    public final void addMult(Row r, int mult) {
         assert e.length==r.e.length && l.length==r.l.length;
         for (int j=0; j<e.length; j++)
-            e[j] += mult * r.e[j];
+            e[j] = Math.addExact(e[j], Math.multiplyExact(mult, r.e[j]));
+//            e[j] += mult * r.e[j];
         for (int j=0; j<l.length; j++)
-            l[j] += mult * r.l[j];            
+            l[j] = Math.addExact(l[j], Math.multiplyExact(mult, r.l[j]));
+//            l[j] += mult * r.l[j];            
     }
 
     public boolean equal(Row r) {
@@ -104,6 +117,49 @@ public class Row {
                 return false;
         return true;
     }
+    
+    public static int scalarGCD(int a, int b) {
+        assert a >= 0 && b >= 0;
+        if (a == 0)
+            return b;
+
+        while (b != 0) {
+            if (a > b)
+                a = a - b;
+            else
+                b = b - a;
+        }
+        return a;
+    }
+    
+    public int vectorGCD() {
+        int gcdVal = Math.abs(e[0]);
+        for (int i=1; i<e.length; i++)
+            gcdVal = scalarGCD(gcdVal, Math.abs(e[i]));
+        for (int i=0; i<l.length; i++)
+            gcdVal = scalarGCD(gcdVal, Math.abs(l[i]));
+        return gcdVal;
+    }
+    
+    // divide by the common [e|l] gcd
+    public void canonicalize() {
+        int div = vectorGCD();
+        if (div != 1) {
+            for (int i=0; i<e.length; i++)
+                e[i] /= div;
+            for (int i=0; i<l.length; i++)
+                l[i] /= div;
+        }
+    }
+    
+    // truncate the e[] vector up to a new size
+    public void truncate_e(int newSz) {
+        assert newSz < e.length;
+        int[] ne = new int[newSz];
+        System.arraycopy(e, 0, ne, 0, newSz);
+        e = ne;
+    }
+    
     //-----------------------------------------------------------------------
     
     private static class DegLexComparator implements Comparator<Row> {
