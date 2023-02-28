@@ -237,6 +237,23 @@ public class FlowsGenerator extends StructuralAlgorithm {
     private void removeNonMinimalFlows(boolean log, ProgressObserver obs) 
             throws InterruptedException 
     {
+//        FastSupportTestTable fstt = new FastSupportTestTable(N);
+//        for (Row row : rows) {
+//            if (null == fstt.smallerSupport(row))
+//                fstt.insertRow(row);
+//        }        
+//        int rr = numFlows();
+//        while (rr > 0) {
+//            rr--;
+//            Row row = rows.get(rr);
+//            Row smallerRow = fstt.smallerSupport(row);
+//            if (smallerRow != null) {
+//                if (log)
+//                    System.out.println("   DEL " + row + " by " + smallerRow);
+//                rows.remove(rr);
+//            }
+//        }
+        
         int rr = numFlows();
         while (rr > 0) {
             rr--;
@@ -247,6 +264,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
                 if (i == rr)
                     continue;
                 Row row = rows.get(i);
+                
                 // Check if support(D[i]) subseteq support(D[rr])
                 boolean support_included = true;
                 for (int k=0; k<N && support_included; k++) {
@@ -257,7 +275,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
                 if (support_included) {
                     // rr was a linear combination of other flows. Remove it
                     if (log)
-                        System.out.println("DEL row " + rr);
+                        System.out.println("   DEL " + checked);
                     rows.remove(rr);
                     break;
                 }

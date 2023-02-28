@@ -634,4 +634,1110 @@
       </arc>
     </edges>
   </gspn>
+  <gspn name="Unfolding of Domino">
+    <nodes>
+      <place marking="1" name="board_n1_L1" x="3.0" y="22.0"/>
+      <place name="board_n1_L2" x="6.0" y="22.0"/>
+      <place name="board_n1_L3" x="9.0" y="22.0"/>
+      <place name="board_n1_L4" x="12.0" y="22.0"/>
+      <place name="board_n1_L5" x="15.0" y="22.0"/>
+      <place name="board_n1_L6" x="18.0" y="22.0"/>
+      <place name="board_n1_L7" x="21.0" y="22.0"/>
+      <place name="board_n1_L8" x="24.0" y="22.0"/>
+      <place name="board_n1_L9" x="27.0" y="22.0"/>
+      <place name="board_n2_L1" x="3.0" y="25.0"/>
+      <place name="board_n2_L2" x="6.0" y="25.0"/>
+      <place name="board_n2_L3" x="9.0" y="25.0"/>
+      <place name="board_n2_L4" x="12.0" y="25.0"/>
+      <place name="board_n2_L5" x="15.0" y="25.0"/>
+      <place name="board_n2_L6" x="18.0" y="25.0"/>
+      <place name="board_n2_L7" x="21.0" y="25.0"/>
+      <place name="board_n2_L8" x="24.0" y="25.0"/>
+      <place name="board_n2_L9" x="27.0" y="25.0"/>
+      <place name="board_n3_L1" x="3.0" y="28.0"/>
+      <place name="board_n3_L2" x="6.0" y="28.0"/>
+      <place name="board_n3_L3" x="9.0" y="28.0"/>
+      <place name="board_n3_L4" x="12.0" y="28.0"/>
+      <place name="board_n3_L5" x="15.0" y="28.0"/>
+      <place name="board_n3_L6" x="18.0" y="28.0"/>
+      <place name="board_n3_L7" x="21.0" y="28.0"/>
+      <place name="board_n3_L8" x="24.0" y="28.0"/>
+      <place name="board_n3_L9" x="27.0" y="28.0"/>
+      <place marking="1" name="pieces_n1_n1" x="3.0" y="8.0"/>
+      <place marking="1" name="pieces_n1_n2" x="6.0" y="8.0"/>
+      <place marking="1" name="pieces_n1_n3" x="9.0" y="8.0"/>
+      <place marking="1" name="pieces_n2_n1" x="3.0" y="11.0"/>
+      <place marking="1" name="pieces_n2_n2" x="6.0" y="11.0"/>
+      <place marking="1" name="pieces_n2_n3" x="9.0" y="11.0"/>
+      <place marking="1" name="pieces_n3_n1" x="3.0" y="14.0"/>
+      <place marking="1" name="pieces_n3_n2" x="6.0" y="14.0"/>
+      <place marking="1" name="pieces_n3_n3" x="9.0" y="14.0"/>
+      <place marking="1" name="Last_L1" x="17.0" y="8.0"/>
+      <place name="Last_L2" x="17.0" y="11.0"/>
+      <place name="Last_L3" x="17.0" y="14.0"/>
+      <place name="Last_L4" x="17.0" y="17.0"/>
+      <place name="Last_L5" x="17.0" y="20.0"/>
+      <place name="Last_L6" x="17.0" y="23.0"/>
+      <place name="Last_L7" x="17.0" y="26.0"/>
+      <place name="Last_L8" x="17.0" y="29.0"/>
+      <place name="Last_L9" x="17.0" y="32.0"/>
+      <transition name="T0_l_L1_x_n1_y_n1" nservers-x="0.5" type="EXP" x="11.55" y="15.0"/>
+      <transition name="T0_l_L1_x_n1_y_n2" nservers-x="0.5" type="EXP" x="11.55" y="18.0"/>
+      <transition name="T0_l_L1_x_n1_y_n3" nservers-x="0.5" type="EXP" x="11.55" y="21.0"/>
+      <transition name="T0_l_L1_x_n2_y_n1" nservers-x="0.5" type="EXP" x="14.55" y="15.0"/>
+      <transition name="T0_l_L1_x_n2_y_n2" nservers-x="0.5" type="EXP" x="14.55" y="18.0"/>
+      <transition name="T0_l_L1_x_n2_y_n3" nservers-x="0.5" type="EXP" x="14.55" y="21.0"/>
+      <transition name="T0_l_L1_x_n3_y_n1" nservers-x="0.5" type="EXP" x="17.55" y="15.0"/>
+      <transition name="T0_l_L1_x_n3_y_n2" nservers-x="0.5" type="EXP" x="17.55" y="18.0"/>
+      <transition name="T0_l_L1_x_n3_y_n3" nservers-x="0.5" type="EXP" x="17.55" y="21.0"/>
+      <transition name="T0_l_L2_x_n1_y_n1" nservers-x="0.5" type="EXP" x="11.55" y="18.0"/>
+      <transition name="T0_l_L2_x_n1_y_n2" nservers-x="0.5" type="EXP" x="11.55" y="21.0"/>
+      <transition name="T0_l_L2_x_n1_y_n3" nservers-x="0.5" type="EXP" x="11.55" y="24.0"/>
+      <transition name="T0_l_L2_x_n2_y_n1" nservers-x="0.5" type="EXP" x="14.55" y="18.0"/>
+      <transition name="T0_l_L2_x_n2_y_n2" nservers-x="0.5" type="EXP" x="14.55" y="21.0"/>
+      <transition name="T0_l_L2_x_n2_y_n3" nservers-x="0.5" type="EXP" x="14.55" y="24.0"/>
+      <transition name="T0_l_L2_x_n3_y_n1" nservers-x="0.5" type="EXP" x="17.55" y="18.0"/>
+      <transition name="T0_l_L2_x_n3_y_n2" nservers-x="0.5" type="EXP" x="17.55" y="21.0"/>
+      <transition name="T0_l_L2_x_n3_y_n3" nservers-x="0.5" type="EXP" x="17.55" y="24.0"/>
+      <transition name="T0_l_L3_x_n1_y_n1" nservers-x="0.5" type="EXP" x="11.55" y="21.0"/>
+      <transition name="T0_l_L3_x_n1_y_n2" nservers-x="0.5" type="EXP" x="11.55" y="24.0"/>
+      <transition name="T0_l_L3_x_n1_y_n3" nservers-x="0.5" type="EXP" x="11.55" y="27.0"/>
+      <transition name="T0_l_L3_x_n2_y_n1" nservers-x="0.5" type="EXP" x="14.55" y="21.0"/>
+      <transition name="T0_l_L3_x_n2_y_n2" nservers-x="0.5" type="EXP" x="14.55" y="24.0"/>
+      <transition name="T0_l_L3_x_n2_y_n3" nservers-x="0.5" type="EXP" x="14.55" y="27.0"/>
+      <transition name="T0_l_L3_x_n3_y_n1" nservers-x="0.5" type="EXP" x="17.55" y="21.0"/>
+      <transition name="T0_l_L3_x_n3_y_n2" nservers-x="0.5" type="EXP" x="17.55" y="24.0"/>
+      <transition name="T0_l_L3_x_n3_y_n3" nservers-x="0.5" type="EXP" x="17.55" y="27.0"/>
+      <transition name="T0_l_L4_x_n1_y_n1" nservers-x="0.5" type="EXP" x="11.55" y="24.0"/>
+      <transition name="T0_l_L4_x_n1_y_n2" nservers-x="0.5" type="EXP" x="11.55" y="27.0"/>
+      <transition name="T0_l_L4_x_n1_y_n3" nservers-x="0.5" type="EXP" x="11.55" y="30.0"/>
+      <transition name="T0_l_L4_x_n2_y_n1" nservers-x="0.5" type="EXP" x="14.55" y="24.0"/>
+      <transition name="T0_l_L4_x_n2_y_n2" nservers-x="0.5" type="EXP" x="14.55" y="27.0"/>
+      <transition name="T0_l_L4_x_n2_y_n3" nservers-x="0.5" type="EXP" x="14.55" y="30.0"/>
+      <transition name="T0_l_L4_x_n3_y_n1" nservers-x="0.5" type="EXP" x="17.55" y="24.0"/>
+      <transition name="T0_l_L4_x_n3_y_n2" nservers-x="0.5" type="EXP" x="17.55" y="27.0"/>
+      <transition name="T0_l_L4_x_n3_y_n3" nservers-x="0.5" type="EXP" x="17.55" y="30.0"/>
+      <transition name="T0_l_L5_x_n1_y_n1" nservers-x="0.5" type="EXP" x="11.55" y="27.0"/>
+      <transition name="T0_l_L5_x_n1_y_n2" nservers-x="0.5" type="EXP" x="11.55" y="30.0"/>
+      <transition name="T0_l_L5_x_n1_y_n3" nservers-x="0.5" type="EXP" x="11.55" y="33.0"/>
+      <transition name="T0_l_L5_x_n2_y_n1" nservers-x="0.5" type="EXP" x="14.55" y="27.0"/>
+      <transition name="T0_l_L5_x_n2_y_n2" nservers-x="0.5" type="EXP" x="14.55" y="30.0"/>
+      <transition name="T0_l_L5_x_n2_y_n3" nservers-x="0.5" type="EXP" x="14.55" y="33.0"/>
+      <transition name="T0_l_L5_x_n3_y_n1" nservers-x="0.5" type="EXP" x="17.55" y="27.0"/>
+      <transition name="T0_l_L5_x_n3_y_n2" nservers-x="0.5" type="EXP" x="17.55" y="30.0"/>
+      <transition name="T0_l_L5_x_n3_y_n3" nservers-x="0.5" type="EXP" x="17.55" y="33.0"/>
+      <transition name="T0_l_L6_x_n1_y_n1" nservers-x="0.5" type="EXP" x="11.55" y="30.0"/>
+      <transition name="T0_l_L6_x_n1_y_n2" nservers-x="0.5" type="EXP" x="11.55" y="33.0"/>
+      <transition name="T0_l_L6_x_n1_y_n3" nservers-x="0.5" type="EXP" x="11.55" y="36.0"/>
+      <transition name="T0_l_L6_x_n2_y_n1" nservers-x="0.5" type="EXP" x="14.55" y="30.0"/>
+      <transition name="T0_l_L6_x_n2_y_n2" nservers-x="0.5" type="EXP" x="14.55" y="33.0"/>
+      <transition name="T0_l_L6_x_n2_y_n3" nservers-x="0.5" type="EXP" x="14.55" y="36.0"/>
+      <transition name="T0_l_L6_x_n3_y_n1" nservers-x="0.5" type="EXP" x="17.55" y="30.0"/>
+      <transition name="T0_l_L6_x_n3_y_n2" nservers-x="0.5" type="EXP" x="17.55" y="33.0"/>
+      <transition name="T0_l_L6_x_n3_y_n3" nservers-x="0.5" type="EXP" x="17.55" y="36.0"/>
+      <transition name="T0_l_L7_x_n1_y_n1" nservers-x="0.5" type="EXP" x="11.55" y="33.0"/>
+      <transition name="T0_l_L7_x_n1_y_n2" nservers-x="0.5" type="EXP" x="11.55" y="36.0"/>
+      <transition name="T0_l_L7_x_n1_y_n3" nservers-x="0.5" type="EXP" x="11.55" y="39.0"/>
+      <transition name="T0_l_L7_x_n2_y_n1" nservers-x="0.5" type="EXP" x="14.55" y="33.0"/>
+      <transition name="T0_l_L7_x_n2_y_n2" nservers-x="0.5" type="EXP" x="14.55" y="36.0"/>
+      <transition name="T0_l_L7_x_n2_y_n3" nservers-x="0.5" type="EXP" x="14.55" y="39.0"/>
+      <transition name="T0_l_L7_x_n3_y_n1" nservers-x="0.5" type="EXP" x="17.55" y="33.0"/>
+      <transition name="T0_l_L7_x_n3_y_n2" nservers-x="0.5" type="EXP" x="17.55" y="36.0"/>
+      <transition name="T0_l_L7_x_n3_y_n3" nservers-x="0.5" type="EXP" x="17.55" y="39.0"/>
+      <transition name="T0_l_L8_x_n1_y_n1" nservers-x="0.5" type="EXP" x="11.55" y="36.0"/>
+      <transition name="T0_l_L8_x_n1_y_n2" nservers-x="0.5" type="EXP" x="11.55" y="39.0"/>
+      <transition name="T0_l_L8_x_n1_y_n3" nservers-x="0.5" type="EXP" x="11.55" y="42.0"/>
+      <transition name="T0_l_L8_x_n2_y_n1" nservers-x="0.5" type="EXP" x="14.55" y="36.0"/>
+      <transition name="T0_l_L8_x_n2_y_n2" nservers-x="0.5" type="EXP" x="14.55" y="39.0"/>
+      <transition name="T0_l_L8_x_n2_y_n3" nservers-x="0.5" type="EXP" x="14.55" y="42.0"/>
+      <transition name="T0_l_L8_x_n3_y_n1" nservers-x="0.5" type="EXP" x="17.55" y="36.0"/>
+      <transition name="T0_l_L8_x_n3_y_n2" nservers-x="0.5" type="EXP" x="17.55" y="39.0"/>
+      <transition name="T0_l_L8_x_n3_y_n3" nservers-x="0.5" type="EXP" x="17.55" y="42.0"/>
+      <transition name="T0_l_L9_x_n1_y_n1" nservers-x="0.5" type="EXP" x="11.55" y="39.0"/>
+      <transition name="T0_l_L9_x_n1_y_n2" nservers-x="0.5" type="EXP" x="11.55" y="42.0"/>
+      <transition name="T0_l_L9_x_n1_y_n3" nservers-x="0.5" type="EXP" x="11.55" y="45.0"/>
+      <transition name="T0_l_L9_x_n2_y_n1" nservers-x="0.5" type="EXP" x="14.55" y="39.0"/>
+      <transition name="T0_l_L9_x_n2_y_n2" nservers-x="0.5" type="EXP" x="14.55" y="42.0"/>
+      <transition name="T0_l_L9_x_n2_y_n3" nservers-x="0.5" type="EXP" x="14.55" y="45.0"/>
+      <transition name="T0_l_L9_x_n3_y_n1" nservers-x="0.5" type="EXP" x="17.55" y="39.0"/>
+      <transition name="T0_l_L9_x_n3_y_n2" nservers-x="0.5" type="EXP" x="17.55" y="42.0"/>
+      <transition name="T0_l_L9_x_n3_y_n3" nservers-x="0.5" type="EXP" x="17.55" y="45.0"/>
+      <constant consttype="INTEGER" name="N" value="3" x="2.0625" y="2.0"/>
+      <constant consttype="INTEGER" name="T" value="9" x="2.0625" y="3.0"/>
+    </nodes>
+    <edges>
+      <arc head="T0_l_L1_x_n1_y_n1" kind="INPUT" tail="Last_L1"/>
+      <arc head="T0_l_L1_x_n1_y_n1" kind="INPUT" tail="pieces_n1_n1"/>
+      <arc head="T0_l_L1_x_n1_y_n1" kind="INPUT" tail="board_n1_L1"/>
+      <arc head="board_n1_L1" kind="OUTPUT" tail="T0_l_L1_x_n1_y_n1">
+        <point x="6.0" y="17.5"/>
+      </arc>
+      <arc head="board_n1_L2" kind="OUTPUT" tail="T0_l_L1_x_n1_y_n1">
+        <point x="6.0" y="17.5"/>
+      </arc>
+      <arc head="Last_L2" kind="OUTPUT" tail="T0_l_L1_x_n1_y_n1">
+        <point x="12.5" y="8.5"/>
+      </arc>
+      <arc head="T0_l_L1_x_n1_y_n2" kind="INPUT" tail="Last_L1"/>
+      <arc head="T0_l_L1_x_n1_y_n2" kind="INPUT" tail="pieces_n1_n2"/>
+      <arc head="T0_l_L1_x_n1_y_n2" kind="INPUT" tail="board_n1_L1"/>
+      <arc head="board_n1_L1" kind="OUTPUT" tail="T0_l_L1_x_n1_y_n2">
+        <point x="6.0" y="20.5"/>
+      </arc>
+      <arc head="board_n2_L2" kind="OUTPUT" tail="T0_l_L1_x_n1_y_n2">
+        <point x="6.0" y="20.5"/>
+      </arc>
+      <arc head="Last_L2" kind="OUTPUT" tail="T0_l_L1_x_n1_y_n2">
+        <point x="12.5" y="11.5"/>
+      </arc>
+      <arc head="T0_l_L1_x_n1_y_n3" kind="INPUT" tail="Last_L1"/>
+      <arc head="T0_l_L1_x_n1_y_n3" kind="INPUT" tail="pieces_n1_n3"/>
+      <arc head="T0_l_L1_x_n1_y_n3" kind="INPUT" tail="board_n1_L1"/>
+      <arc head="board_n1_L1" kind="OUTPUT" tail="T0_l_L1_x_n1_y_n3">
+        <point x="6.0" y="23.5"/>
+      </arc>
+      <arc head="board_n3_L2" kind="OUTPUT" tail="T0_l_L1_x_n1_y_n3">
+        <point x="6.0" y="23.5"/>
+      </arc>
+      <arc head="Last_L2" kind="OUTPUT" tail="T0_l_L1_x_n1_y_n3">
+        <point x="12.5" y="14.5"/>
+      </arc>
+      <arc head="T0_l_L1_x_n2_y_n1" kind="INPUT" tail="Last_L1"/>
+      <arc head="T0_l_L1_x_n2_y_n1" kind="INPUT" tail="pieces_n2_n1"/>
+      <arc head="T0_l_L1_x_n2_y_n1" kind="INPUT" tail="board_n2_L1"/>
+      <arc head="board_n1_L2" kind="OUTPUT" tail="T0_l_L1_x_n2_y_n1">
+        <point x="9.0" y="17.5"/>
+      </arc>
+      <arc head="board_n2_L1" kind="OUTPUT" tail="T0_l_L1_x_n2_y_n1">
+        <point x="9.0" y="17.5"/>
+      </arc>
+      <arc head="Last_L2" kind="OUTPUT" tail="T0_l_L1_x_n2_y_n1">
+        <point x="15.5" y="8.5"/>
+      </arc>
+      <arc head="T0_l_L1_x_n2_y_n2" kind="INPUT" tail="Last_L1"/>
+      <arc head="T0_l_L1_x_n2_y_n2" kind="INPUT" tail="pieces_n2_n2"/>
+      <arc head="T0_l_L1_x_n2_y_n2" kind="INPUT" tail="board_n2_L1"/>
+      <arc head="board_n2_L1" kind="OUTPUT" tail="T0_l_L1_x_n2_y_n2">
+        <point x="9.0" y="20.5"/>
+      </arc>
+      <arc head="board_n2_L2" kind="OUTPUT" tail="T0_l_L1_x_n2_y_n2">
+        <point x="9.0" y="20.5"/>
+      </arc>
+      <arc head="Last_L2" kind="OUTPUT" tail="T0_l_L1_x_n2_y_n2">
+        <point x="15.5" y="11.5"/>
+      </arc>
+      <arc head="T0_l_L1_x_n2_y_n3" kind="INPUT" tail="Last_L1"/>
+      <arc head="T0_l_L1_x_n2_y_n3" kind="INPUT" tail="pieces_n2_n3"/>
+      <arc head="T0_l_L1_x_n2_y_n3" kind="INPUT" tail="board_n2_L1"/>
+      <arc head="board_n2_L1" kind="OUTPUT" tail="T0_l_L1_x_n2_y_n3">
+        <point x="9.0" y="23.5"/>
+      </arc>
+      <arc head="board_n3_L2" kind="OUTPUT" tail="T0_l_L1_x_n2_y_n3">
+        <point x="9.0" y="23.5"/>
+      </arc>
+      <arc head="Last_L2" kind="OUTPUT" tail="T0_l_L1_x_n2_y_n3">
+        <point x="15.5" y="14.5"/>
+      </arc>
+      <arc head="T0_l_L1_x_n3_y_n1" kind="INPUT" tail="Last_L1"/>
+      <arc head="T0_l_L1_x_n3_y_n1" kind="INPUT" tail="pieces_n3_n1"/>
+      <arc head="T0_l_L1_x_n3_y_n1" kind="INPUT" tail="board_n3_L1"/>
+      <arc head="board_n1_L2" kind="OUTPUT" tail="T0_l_L1_x_n3_y_n1">
+        <point x="12.0" y="17.5"/>
+      </arc>
+      <arc head="board_n3_L1" kind="OUTPUT" tail="T0_l_L1_x_n3_y_n1">
+        <point x="12.0" y="17.5"/>
+      </arc>
+      <arc head="Last_L2" kind="OUTPUT" tail="T0_l_L1_x_n3_y_n1">
+        <point x="18.5" y="8.5"/>
+      </arc>
+      <arc head="T0_l_L1_x_n3_y_n2" kind="INPUT" tail="Last_L1"/>
+      <arc head="T0_l_L1_x_n3_y_n2" kind="INPUT" tail="pieces_n3_n2"/>
+      <arc head="T0_l_L1_x_n3_y_n2" kind="INPUT" tail="board_n3_L1"/>
+      <arc head="board_n2_L2" kind="OUTPUT" tail="T0_l_L1_x_n3_y_n2">
+        <point x="12.0" y="20.5"/>
+      </arc>
+      <arc head="board_n3_L1" kind="OUTPUT" tail="T0_l_L1_x_n3_y_n2">
+        <point x="12.0" y="20.5"/>
+      </arc>
+      <arc head="Last_L2" kind="OUTPUT" tail="T0_l_L1_x_n3_y_n2">
+        <point x="18.5" y="11.5"/>
+      </arc>
+      <arc head="T0_l_L1_x_n3_y_n3" kind="INPUT" tail="Last_L1"/>
+      <arc head="T0_l_L1_x_n3_y_n3" kind="INPUT" tail="pieces_n3_n3"/>
+      <arc head="T0_l_L1_x_n3_y_n3" kind="INPUT" tail="board_n3_L1"/>
+      <arc head="board_n3_L1" kind="OUTPUT" tail="T0_l_L1_x_n3_y_n3">
+        <point x="12.0" y="23.5"/>
+      </arc>
+      <arc head="board_n3_L2" kind="OUTPUT" tail="T0_l_L1_x_n3_y_n3">
+        <point x="12.0" y="23.5"/>
+      </arc>
+      <arc head="Last_L2" kind="OUTPUT" tail="T0_l_L1_x_n3_y_n3">
+        <point x="18.5" y="14.5"/>
+      </arc>
+      <arc head="T0_l_L2_x_n1_y_n1" kind="INPUT" tail="Last_L2"/>
+      <arc head="T0_l_L2_x_n1_y_n1" kind="INPUT" tail="pieces_n1_n1"/>
+      <arc head="T0_l_L2_x_n1_y_n1" kind="INPUT" tail="board_n1_L2"/>
+      <arc head="board_n1_L2" kind="OUTPUT" tail="T0_l_L2_x_n1_y_n1">
+        <point x="6.0" y="20.5"/>
+      </arc>
+      <arc head="board_n1_L3" kind="OUTPUT" tail="T0_l_L2_x_n1_y_n1">
+        <point x="6.0" y="20.5"/>
+      </arc>
+      <arc head="Last_L3" kind="OUTPUT" tail="T0_l_L2_x_n1_y_n1">
+        <point x="12.5" y="11.5"/>
+      </arc>
+      <arc head="T0_l_L2_x_n1_y_n2" kind="INPUT" tail="Last_L2"/>
+      <arc head="T0_l_L2_x_n1_y_n2" kind="INPUT" tail="pieces_n1_n2"/>
+      <arc head="T0_l_L2_x_n1_y_n2" kind="INPUT" tail="board_n1_L2"/>
+      <arc head="board_n1_L2" kind="OUTPUT" tail="T0_l_L2_x_n1_y_n2">
+        <point x="6.0" y="23.5"/>
+      </arc>
+      <arc head="board_n2_L3" kind="OUTPUT" tail="T0_l_L2_x_n1_y_n2">
+        <point x="6.0" y="23.5"/>
+      </arc>
+      <arc head="Last_L3" kind="OUTPUT" tail="T0_l_L2_x_n1_y_n2">
+        <point x="12.5" y="14.5"/>
+      </arc>
+      <arc head="T0_l_L2_x_n1_y_n3" kind="INPUT" tail="Last_L2"/>
+      <arc head="T0_l_L2_x_n1_y_n3" kind="INPUT" tail="pieces_n1_n3"/>
+      <arc head="T0_l_L2_x_n1_y_n3" kind="INPUT" tail="board_n1_L2"/>
+      <arc head="board_n1_L2" kind="OUTPUT" tail="T0_l_L2_x_n1_y_n3">
+        <point x="6.0" y="26.5"/>
+      </arc>
+      <arc head="board_n3_L3" kind="OUTPUT" tail="T0_l_L2_x_n1_y_n3">
+        <point x="6.0" y="26.5"/>
+      </arc>
+      <arc head="Last_L3" kind="OUTPUT" tail="T0_l_L2_x_n1_y_n3">
+        <point x="12.5" y="17.5"/>
+      </arc>
+      <arc head="T0_l_L2_x_n2_y_n1" kind="INPUT" tail="Last_L2"/>
+      <arc head="T0_l_L2_x_n2_y_n1" kind="INPUT" tail="pieces_n2_n1"/>
+      <arc head="T0_l_L2_x_n2_y_n1" kind="INPUT" tail="board_n2_L2"/>
+      <arc head="board_n1_L3" kind="OUTPUT" tail="T0_l_L2_x_n2_y_n1">
+        <point x="9.0" y="20.5"/>
+      </arc>
+      <arc head="board_n2_L2" kind="OUTPUT" tail="T0_l_L2_x_n2_y_n1">
+        <point x="9.0" y="20.5"/>
+      </arc>
+      <arc head="Last_L3" kind="OUTPUT" tail="T0_l_L2_x_n2_y_n1">
+        <point x="15.5" y="11.5"/>
+      </arc>
+      <arc head="T0_l_L2_x_n2_y_n2" kind="INPUT" tail="Last_L2"/>
+      <arc head="T0_l_L2_x_n2_y_n2" kind="INPUT" tail="pieces_n2_n2"/>
+      <arc head="T0_l_L2_x_n2_y_n2" kind="INPUT" tail="board_n2_L2"/>
+      <arc head="board_n2_L2" kind="OUTPUT" tail="T0_l_L2_x_n2_y_n2">
+        <point x="9.0" y="23.5"/>
+      </arc>
+      <arc head="board_n2_L3" kind="OUTPUT" tail="T0_l_L2_x_n2_y_n2">
+        <point x="9.0" y="23.5"/>
+      </arc>
+      <arc head="Last_L3" kind="OUTPUT" tail="T0_l_L2_x_n2_y_n2">
+        <point x="15.5" y="14.5"/>
+      </arc>
+      <arc head="T0_l_L2_x_n2_y_n3" kind="INPUT" tail="Last_L2"/>
+      <arc head="T0_l_L2_x_n2_y_n3" kind="INPUT" tail="pieces_n2_n3"/>
+      <arc head="T0_l_L2_x_n2_y_n3" kind="INPUT" tail="board_n2_L2"/>
+      <arc head="board_n2_L2" kind="OUTPUT" tail="T0_l_L2_x_n2_y_n3">
+        <point x="9.0" y="26.5"/>
+      </arc>
+      <arc head="board_n3_L3" kind="OUTPUT" tail="T0_l_L2_x_n2_y_n3">
+        <point x="9.0" y="26.5"/>
+      </arc>
+      <arc head="Last_L3" kind="OUTPUT" tail="T0_l_L2_x_n2_y_n3">
+        <point x="15.5" y="17.5"/>
+      </arc>
+      <arc head="T0_l_L2_x_n3_y_n1" kind="INPUT" tail="Last_L2"/>
+      <arc head="T0_l_L2_x_n3_y_n1" kind="INPUT" tail="pieces_n3_n1"/>
+      <arc head="T0_l_L2_x_n3_y_n1" kind="INPUT" tail="board_n3_L2"/>
+      <arc head="board_n1_L3" kind="OUTPUT" tail="T0_l_L2_x_n3_y_n1">
+        <point x="12.0" y="20.5"/>
+      </arc>
+      <arc head="board_n3_L2" kind="OUTPUT" tail="T0_l_L2_x_n3_y_n1">
+        <point x="12.0" y="20.5"/>
+      </arc>
+      <arc head="Last_L3" kind="OUTPUT" tail="T0_l_L2_x_n3_y_n1">
+        <point x="18.5" y="11.5"/>
+      </arc>
+      <arc head="T0_l_L2_x_n3_y_n2" kind="INPUT" tail="Last_L2"/>
+      <arc head="T0_l_L2_x_n3_y_n2" kind="INPUT" tail="pieces_n3_n2"/>
+      <arc head="T0_l_L2_x_n3_y_n2" kind="INPUT" tail="board_n3_L2"/>
+      <arc head="board_n2_L3" kind="OUTPUT" tail="T0_l_L2_x_n3_y_n2">
+        <point x="12.0" y="23.5"/>
+      </arc>
+      <arc head="board_n3_L2" kind="OUTPUT" tail="T0_l_L2_x_n3_y_n2">
+        <point x="12.0" y="23.5"/>
+      </arc>
+      <arc head="Last_L3" kind="OUTPUT" tail="T0_l_L2_x_n3_y_n2">
+        <point x="18.5" y="14.5"/>
+      </arc>
+      <arc head="T0_l_L2_x_n3_y_n3" kind="INPUT" tail="Last_L2"/>
+      <arc head="T0_l_L2_x_n3_y_n3" kind="INPUT" tail="pieces_n3_n3"/>
+      <arc head="T0_l_L2_x_n3_y_n3" kind="INPUT" tail="board_n3_L2"/>
+      <arc head="board_n3_L2" kind="OUTPUT" tail="T0_l_L2_x_n3_y_n3">
+        <point x="12.0" y="26.5"/>
+      </arc>
+      <arc head="board_n3_L3" kind="OUTPUT" tail="T0_l_L2_x_n3_y_n3">
+        <point x="12.0" y="26.5"/>
+      </arc>
+      <arc head="Last_L3" kind="OUTPUT" tail="T0_l_L2_x_n3_y_n3">
+        <point x="18.5" y="17.5"/>
+      </arc>
+      <arc head="T0_l_L3_x_n1_y_n1" kind="INPUT" tail="Last_L3"/>
+      <arc head="T0_l_L3_x_n1_y_n1" kind="INPUT" tail="pieces_n1_n1"/>
+      <arc head="T0_l_L3_x_n1_y_n1" kind="INPUT" tail="board_n1_L3"/>
+      <arc head="board_n1_L3" kind="OUTPUT" tail="T0_l_L3_x_n1_y_n1">
+        <point x="6.0" y="23.5"/>
+      </arc>
+      <arc head="board_n1_L4" kind="OUTPUT" tail="T0_l_L3_x_n1_y_n1">
+        <point x="6.0" y="23.5"/>
+      </arc>
+      <arc head="Last_L4" kind="OUTPUT" tail="T0_l_L3_x_n1_y_n1">
+        <point x="12.5" y="14.5"/>
+      </arc>
+      <arc head="T0_l_L3_x_n1_y_n2" kind="INPUT" tail="Last_L3"/>
+      <arc head="T0_l_L3_x_n1_y_n2" kind="INPUT" tail="pieces_n1_n2"/>
+      <arc head="T0_l_L3_x_n1_y_n2" kind="INPUT" tail="board_n1_L3"/>
+      <arc head="board_n1_L3" kind="OUTPUT" tail="T0_l_L3_x_n1_y_n2">
+        <point x="6.0" y="26.5"/>
+      </arc>
+      <arc head="board_n2_L4" kind="OUTPUT" tail="T0_l_L3_x_n1_y_n2">
+        <point x="6.0" y="26.5"/>
+      </arc>
+      <arc head="Last_L4" kind="OUTPUT" tail="T0_l_L3_x_n1_y_n2">
+        <point x="12.5" y="17.5"/>
+      </arc>
+      <arc head="T0_l_L3_x_n1_y_n3" kind="INPUT" tail="Last_L3"/>
+      <arc head="T0_l_L3_x_n1_y_n3" kind="INPUT" tail="pieces_n1_n3"/>
+      <arc head="T0_l_L3_x_n1_y_n3" kind="INPUT" tail="board_n1_L3"/>
+      <arc head="board_n1_L3" kind="OUTPUT" tail="T0_l_L3_x_n1_y_n3">
+        <point x="6.0" y="29.5"/>
+      </arc>
+      <arc head="board_n3_L4" kind="OUTPUT" tail="T0_l_L3_x_n1_y_n3">
+        <point x="6.0" y="29.5"/>
+      </arc>
+      <arc head="Last_L4" kind="OUTPUT" tail="T0_l_L3_x_n1_y_n3">
+        <point x="12.5" y="20.5"/>
+      </arc>
+      <arc head="T0_l_L3_x_n2_y_n1" kind="INPUT" tail="Last_L3"/>
+      <arc head="T0_l_L3_x_n2_y_n1" kind="INPUT" tail="pieces_n2_n1"/>
+      <arc head="T0_l_L3_x_n2_y_n1" kind="INPUT" tail="board_n2_L3"/>
+      <arc head="board_n1_L4" kind="OUTPUT" tail="T0_l_L3_x_n2_y_n1">
+        <point x="9.0" y="23.5"/>
+      </arc>
+      <arc head="board_n2_L3" kind="OUTPUT" tail="T0_l_L3_x_n2_y_n1">
+        <point x="9.0" y="23.5"/>
+      </arc>
+      <arc head="Last_L4" kind="OUTPUT" tail="T0_l_L3_x_n2_y_n1">
+        <point x="15.5" y="14.5"/>
+      </arc>
+      <arc head="T0_l_L3_x_n2_y_n2" kind="INPUT" tail="Last_L3"/>
+      <arc head="T0_l_L3_x_n2_y_n2" kind="INPUT" tail="pieces_n2_n2"/>
+      <arc head="T0_l_L3_x_n2_y_n2" kind="INPUT" tail="board_n2_L3"/>
+      <arc head="board_n2_L3" kind="OUTPUT" tail="T0_l_L3_x_n2_y_n2">
+        <point x="9.0" y="26.5"/>
+      </arc>
+      <arc head="board_n2_L4" kind="OUTPUT" tail="T0_l_L3_x_n2_y_n2">
+        <point x="9.0" y="26.5"/>
+      </arc>
+      <arc head="Last_L4" kind="OUTPUT" tail="T0_l_L3_x_n2_y_n2">
+        <point x="15.5" y="17.5"/>
+      </arc>
+      <arc head="T0_l_L3_x_n2_y_n3" kind="INPUT" tail="Last_L3"/>
+      <arc head="T0_l_L3_x_n2_y_n3" kind="INPUT" tail="pieces_n2_n3"/>
+      <arc head="T0_l_L3_x_n2_y_n3" kind="INPUT" tail="board_n2_L3"/>
+      <arc head="board_n2_L3" kind="OUTPUT" tail="T0_l_L3_x_n2_y_n3">
+        <point x="9.0" y="29.5"/>
+      </arc>
+      <arc head="board_n3_L4" kind="OUTPUT" tail="T0_l_L3_x_n2_y_n3">
+        <point x="9.0" y="29.5"/>
+      </arc>
+      <arc head="Last_L4" kind="OUTPUT" tail="T0_l_L3_x_n2_y_n3">
+        <point x="15.5" y="20.5"/>
+      </arc>
+      <arc head="T0_l_L3_x_n3_y_n1" kind="INPUT" tail="Last_L3"/>
+      <arc head="T0_l_L3_x_n3_y_n1" kind="INPUT" tail="pieces_n3_n1"/>
+      <arc head="T0_l_L3_x_n3_y_n1" kind="INPUT" tail="board_n3_L3"/>
+      <arc head="board_n1_L4" kind="OUTPUT" tail="T0_l_L3_x_n3_y_n1">
+        <point x="12.0" y="23.5"/>
+      </arc>
+      <arc head="board_n3_L3" kind="OUTPUT" tail="T0_l_L3_x_n3_y_n1">
+        <point x="12.0" y="23.5"/>
+      </arc>
+      <arc head="Last_L4" kind="OUTPUT" tail="T0_l_L3_x_n3_y_n1">
+        <point x="18.5" y="14.5"/>
+      </arc>
+      <arc head="T0_l_L3_x_n3_y_n2" kind="INPUT" tail="Last_L3"/>
+      <arc head="T0_l_L3_x_n3_y_n2" kind="INPUT" tail="pieces_n3_n2"/>
+      <arc head="T0_l_L3_x_n3_y_n2" kind="INPUT" tail="board_n3_L3"/>
+      <arc head="board_n2_L4" kind="OUTPUT" tail="T0_l_L3_x_n3_y_n2">
+        <point x="12.0" y="26.5"/>
+      </arc>
+      <arc head="board_n3_L3" kind="OUTPUT" tail="T0_l_L3_x_n3_y_n2">
+        <point x="12.0" y="26.5"/>
+      </arc>
+      <arc head="Last_L4" kind="OUTPUT" tail="T0_l_L3_x_n3_y_n2">
+        <point x="18.5" y="17.5"/>
+      </arc>
+      <arc head="T0_l_L3_x_n3_y_n3" kind="INPUT" tail="Last_L3"/>
+      <arc head="T0_l_L3_x_n3_y_n3" kind="INPUT" tail="pieces_n3_n3"/>
+      <arc head="T0_l_L3_x_n3_y_n3" kind="INPUT" tail="board_n3_L3"/>
+      <arc head="board_n3_L3" kind="OUTPUT" tail="T0_l_L3_x_n3_y_n3">
+        <point x="12.0" y="29.5"/>
+      </arc>
+      <arc head="board_n3_L4" kind="OUTPUT" tail="T0_l_L3_x_n3_y_n3">
+        <point x="12.0" y="29.5"/>
+      </arc>
+      <arc head="Last_L4" kind="OUTPUT" tail="T0_l_L3_x_n3_y_n3">
+        <point x="18.5" y="20.5"/>
+      </arc>
+      <arc head="T0_l_L4_x_n1_y_n1" kind="INPUT" tail="Last_L4"/>
+      <arc head="T0_l_L4_x_n1_y_n1" kind="INPUT" tail="pieces_n1_n1"/>
+      <arc head="T0_l_L4_x_n1_y_n1" kind="INPUT" tail="board_n1_L4"/>
+      <arc head="board_n1_L4" kind="OUTPUT" tail="T0_l_L4_x_n1_y_n1">
+        <point x="6.0" y="26.5"/>
+      </arc>
+      <arc head="board_n1_L5" kind="OUTPUT" tail="T0_l_L4_x_n1_y_n1">
+        <point x="6.0" y="26.5"/>
+      </arc>
+      <arc head="Last_L5" kind="OUTPUT" tail="T0_l_L4_x_n1_y_n1">
+        <point x="12.5" y="17.5"/>
+      </arc>
+      <arc head="T0_l_L4_x_n1_y_n2" kind="INPUT" tail="Last_L4"/>
+      <arc head="T0_l_L4_x_n1_y_n2" kind="INPUT" tail="pieces_n1_n2"/>
+      <arc head="T0_l_L4_x_n1_y_n2" kind="INPUT" tail="board_n1_L4"/>
+      <arc head="board_n1_L4" kind="OUTPUT" tail="T0_l_L4_x_n1_y_n2">
+        <point x="6.0" y="29.5"/>
+      </arc>
+      <arc head="board_n2_L5" kind="OUTPUT" tail="T0_l_L4_x_n1_y_n2">
+        <point x="6.0" y="29.5"/>
+      </arc>
+      <arc head="Last_L5" kind="OUTPUT" tail="T0_l_L4_x_n1_y_n2">
+        <point x="12.5" y="20.5"/>
+      </arc>
+      <arc head="T0_l_L4_x_n1_y_n3" kind="INPUT" tail="Last_L4"/>
+      <arc head="T0_l_L4_x_n1_y_n3" kind="INPUT" tail="pieces_n1_n3"/>
+      <arc head="T0_l_L4_x_n1_y_n3" kind="INPUT" tail="board_n1_L4"/>
+      <arc head="board_n1_L4" kind="OUTPUT" tail="T0_l_L4_x_n1_y_n3">
+        <point x="6.0" y="32.5"/>
+      </arc>
+      <arc head="board_n3_L5" kind="OUTPUT" tail="T0_l_L4_x_n1_y_n3">
+        <point x="6.0" y="32.5"/>
+      </arc>
+      <arc head="Last_L5" kind="OUTPUT" tail="T0_l_L4_x_n1_y_n3">
+        <point x="12.5" y="23.5"/>
+      </arc>
+      <arc head="T0_l_L4_x_n2_y_n1" kind="INPUT" tail="Last_L4"/>
+      <arc head="T0_l_L4_x_n2_y_n1" kind="INPUT" tail="pieces_n2_n1"/>
+      <arc head="T0_l_L4_x_n2_y_n1" kind="INPUT" tail="board_n2_L4"/>
+      <arc head="board_n1_L5" kind="OUTPUT" tail="T0_l_L4_x_n2_y_n1">
+        <point x="9.0" y="26.5"/>
+      </arc>
+      <arc head="board_n2_L4" kind="OUTPUT" tail="T0_l_L4_x_n2_y_n1">
+        <point x="9.0" y="26.5"/>
+      </arc>
+      <arc head="Last_L5" kind="OUTPUT" tail="T0_l_L4_x_n2_y_n1">
+        <point x="15.5" y="17.5"/>
+      </arc>
+      <arc head="T0_l_L4_x_n2_y_n2" kind="INPUT" tail="Last_L4"/>
+      <arc head="T0_l_L4_x_n2_y_n2" kind="INPUT" tail="pieces_n2_n2"/>
+      <arc head="T0_l_L4_x_n2_y_n2" kind="INPUT" tail="board_n2_L4"/>
+      <arc head="board_n2_L4" kind="OUTPUT" tail="T0_l_L4_x_n2_y_n2">
+        <point x="9.0" y="29.5"/>
+      </arc>
+      <arc head="board_n2_L5" kind="OUTPUT" tail="T0_l_L4_x_n2_y_n2">
+        <point x="9.0" y="29.5"/>
+      </arc>
+      <arc head="Last_L5" kind="OUTPUT" tail="T0_l_L4_x_n2_y_n2">
+        <point x="15.5" y="20.5"/>
+      </arc>
+      <arc head="T0_l_L4_x_n2_y_n3" kind="INPUT" tail="Last_L4"/>
+      <arc head="T0_l_L4_x_n2_y_n3" kind="INPUT" tail="pieces_n2_n3"/>
+      <arc head="T0_l_L4_x_n2_y_n3" kind="INPUT" tail="board_n2_L4"/>
+      <arc head="board_n2_L4" kind="OUTPUT" tail="T0_l_L4_x_n2_y_n3">
+        <point x="9.0" y="32.5"/>
+      </arc>
+      <arc head="board_n3_L5" kind="OUTPUT" tail="T0_l_L4_x_n2_y_n3">
+        <point x="9.0" y="32.5"/>
+      </arc>
+      <arc head="Last_L5" kind="OUTPUT" tail="T0_l_L4_x_n2_y_n3">
+        <point x="15.5" y="23.5"/>
+      </arc>
+      <arc head="T0_l_L4_x_n3_y_n1" kind="INPUT" tail="Last_L4"/>
+      <arc head="T0_l_L4_x_n3_y_n1" kind="INPUT" tail="pieces_n3_n1"/>
+      <arc head="T0_l_L4_x_n3_y_n1" kind="INPUT" tail="board_n3_L4"/>
+      <arc head="board_n1_L5" kind="OUTPUT" tail="T0_l_L4_x_n3_y_n1">
+        <point x="12.0" y="26.5"/>
+      </arc>
+      <arc head="board_n3_L4" kind="OUTPUT" tail="T0_l_L4_x_n3_y_n1">
+        <point x="12.0" y="26.5"/>
+      </arc>
+      <arc head="Last_L5" kind="OUTPUT" tail="T0_l_L4_x_n3_y_n1">
+        <point x="18.5" y="17.5"/>
+      </arc>
+      <arc head="T0_l_L4_x_n3_y_n2" kind="INPUT" tail="Last_L4"/>
+      <arc head="T0_l_L4_x_n3_y_n2" kind="INPUT" tail="pieces_n3_n2"/>
+      <arc head="T0_l_L4_x_n3_y_n2" kind="INPUT" tail="board_n3_L4"/>
+      <arc head="board_n2_L5" kind="OUTPUT" tail="T0_l_L4_x_n3_y_n2">
+        <point x="12.0" y="29.5"/>
+      </arc>
+      <arc head="board_n3_L4" kind="OUTPUT" tail="T0_l_L4_x_n3_y_n2">
+        <point x="12.0" y="29.5"/>
+      </arc>
+      <arc head="Last_L5" kind="OUTPUT" tail="T0_l_L4_x_n3_y_n2">
+        <point x="18.5" y="20.5"/>
+      </arc>
+      <arc head="T0_l_L4_x_n3_y_n3" kind="INPUT" tail="Last_L4"/>
+      <arc head="T0_l_L4_x_n3_y_n3" kind="INPUT" tail="pieces_n3_n3"/>
+      <arc head="T0_l_L4_x_n3_y_n3" kind="INPUT" tail="board_n3_L4"/>
+      <arc head="board_n3_L4" kind="OUTPUT" tail="T0_l_L4_x_n3_y_n3">
+        <point x="12.0" y="32.5"/>
+      </arc>
+      <arc head="board_n3_L5" kind="OUTPUT" tail="T0_l_L4_x_n3_y_n3">
+        <point x="12.0" y="32.5"/>
+      </arc>
+      <arc head="Last_L5" kind="OUTPUT" tail="T0_l_L4_x_n3_y_n3">
+        <point x="18.5" y="23.5"/>
+      </arc>
+      <arc head="T0_l_L5_x_n1_y_n1" kind="INPUT" tail="Last_L5"/>
+      <arc head="T0_l_L5_x_n1_y_n1" kind="INPUT" tail="pieces_n1_n1"/>
+      <arc head="T0_l_L5_x_n1_y_n1" kind="INPUT" tail="board_n1_L5"/>
+      <arc head="board_n1_L5" kind="OUTPUT" tail="T0_l_L5_x_n1_y_n1">
+        <point x="6.0" y="29.5"/>
+      </arc>
+      <arc head="board_n1_L6" kind="OUTPUT" tail="T0_l_L5_x_n1_y_n1">
+        <point x="6.0" y="29.5"/>
+      </arc>
+      <arc head="Last_L6" kind="OUTPUT" tail="T0_l_L5_x_n1_y_n1">
+        <point x="12.5" y="20.5"/>
+      </arc>
+      <arc head="T0_l_L5_x_n1_y_n2" kind="INPUT" tail="Last_L5"/>
+      <arc head="T0_l_L5_x_n1_y_n2" kind="INPUT" tail="pieces_n1_n2"/>
+      <arc head="T0_l_L5_x_n1_y_n2" kind="INPUT" tail="board_n1_L5"/>
+      <arc head="board_n1_L5" kind="OUTPUT" tail="T0_l_L5_x_n1_y_n2">
+        <point x="6.0" y="32.5"/>
+      </arc>
+      <arc head="board_n2_L6" kind="OUTPUT" tail="T0_l_L5_x_n1_y_n2">
+        <point x="6.0" y="32.5"/>
+      </arc>
+      <arc head="Last_L6" kind="OUTPUT" tail="T0_l_L5_x_n1_y_n2">
+        <point x="12.5" y="23.5"/>
+      </arc>
+      <arc head="T0_l_L5_x_n1_y_n3" kind="INPUT" tail="Last_L5"/>
+      <arc head="T0_l_L5_x_n1_y_n3" kind="INPUT" tail="pieces_n1_n3"/>
+      <arc head="T0_l_L5_x_n1_y_n3" kind="INPUT" tail="board_n1_L5"/>
+      <arc head="board_n1_L5" kind="OUTPUT" tail="T0_l_L5_x_n1_y_n3">
+        <point x="6.0" y="35.5"/>
+      </arc>
+      <arc head="board_n3_L6" kind="OUTPUT" tail="T0_l_L5_x_n1_y_n3">
+        <point x="6.0" y="35.5"/>
+      </arc>
+      <arc head="Last_L6" kind="OUTPUT" tail="T0_l_L5_x_n1_y_n3">
+        <point x="12.5" y="26.5"/>
+      </arc>
+      <arc head="T0_l_L5_x_n2_y_n1" kind="INPUT" tail="Last_L5"/>
+      <arc head="T0_l_L5_x_n2_y_n1" kind="INPUT" tail="pieces_n2_n1"/>
+      <arc head="T0_l_L5_x_n2_y_n1" kind="INPUT" tail="board_n2_L5"/>
+      <arc head="board_n1_L6" kind="OUTPUT" tail="T0_l_L5_x_n2_y_n1">
+        <point x="9.0" y="29.5"/>
+      </arc>
+      <arc head="board_n2_L5" kind="OUTPUT" tail="T0_l_L5_x_n2_y_n1">
+        <point x="9.0" y="29.5"/>
+      </arc>
+      <arc head="Last_L6" kind="OUTPUT" tail="T0_l_L5_x_n2_y_n1">
+        <point x="15.5" y="20.5"/>
+      </arc>
+      <arc head="T0_l_L5_x_n2_y_n2" kind="INPUT" tail="Last_L5"/>
+      <arc head="T0_l_L5_x_n2_y_n2" kind="INPUT" tail="pieces_n2_n2"/>
+      <arc head="T0_l_L5_x_n2_y_n2" kind="INPUT" tail="board_n2_L5"/>
+      <arc head="board_n2_L5" kind="OUTPUT" tail="T0_l_L5_x_n2_y_n2">
+        <point x="9.0" y="32.5"/>
+      </arc>
+      <arc head="board_n2_L6" kind="OUTPUT" tail="T0_l_L5_x_n2_y_n2">
+        <point x="9.0" y="32.5"/>
+      </arc>
+      <arc head="Last_L6" kind="OUTPUT" tail="T0_l_L5_x_n2_y_n2">
+        <point x="15.5" y="23.5"/>
+      </arc>
+      <arc head="T0_l_L5_x_n2_y_n3" kind="INPUT" tail="Last_L5"/>
+      <arc head="T0_l_L5_x_n2_y_n3" kind="INPUT" tail="pieces_n2_n3"/>
+      <arc head="T0_l_L5_x_n2_y_n3" kind="INPUT" tail="board_n2_L5"/>
+      <arc head="board_n2_L5" kind="OUTPUT" tail="T0_l_L5_x_n2_y_n3">
+        <point x="9.0" y="35.5"/>
+      </arc>
+      <arc head="board_n3_L6" kind="OUTPUT" tail="T0_l_L5_x_n2_y_n3">
+        <point x="9.0" y="35.5"/>
+      </arc>
+      <arc head="Last_L6" kind="OUTPUT" tail="T0_l_L5_x_n2_y_n3">
+        <point x="15.5" y="26.5"/>
+      </arc>
+      <arc head="T0_l_L5_x_n3_y_n1" kind="INPUT" tail="Last_L5"/>
+      <arc head="T0_l_L5_x_n3_y_n1" kind="INPUT" tail="pieces_n3_n1"/>
+      <arc head="T0_l_L5_x_n3_y_n1" kind="INPUT" tail="board_n3_L5"/>
+      <arc head="board_n1_L6" kind="OUTPUT" tail="T0_l_L5_x_n3_y_n1">
+        <point x="12.0" y="29.5"/>
+      </arc>
+      <arc head="board_n3_L5" kind="OUTPUT" tail="T0_l_L5_x_n3_y_n1">
+        <point x="12.0" y="29.5"/>
+      </arc>
+      <arc head="Last_L6" kind="OUTPUT" tail="T0_l_L5_x_n3_y_n1">
+        <point x="18.5" y="20.5"/>
+      </arc>
+      <arc head="T0_l_L5_x_n3_y_n2" kind="INPUT" tail="Last_L5"/>
+      <arc head="T0_l_L5_x_n3_y_n2" kind="INPUT" tail="pieces_n3_n2"/>
+      <arc head="T0_l_L5_x_n3_y_n2" kind="INPUT" tail="board_n3_L5"/>
+      <arc head="board_n2_L6" kind="OUTPUT" tail="T0_l_L5_x_n3_y_n2">
+        <point x="12.0" y="32.5"/>
+      </arc>
+      <arc head="board_n3_L5" kind="OUTPUT" tail="T0_l_L5_x_n3_y_n2">
+        <point x="12.0" y="32.5"/>
+      </arc>
+      <arc head="Last_L6" kind="OUTPUT" tail="T0_l_L5_x_n3_y_n2">
+        <point x="18.5" y="23.5"/>
+      </arc>
+      <arc head="T0_l_L5_x_n3_y_n3" kind="INPUT" tail="Last_L5"/>
+      <arc head="T0_l_L5_x_n3_y_n3" kind="INPUT" tail="pieces_n3_n3"/>
+      <arc head="T0_l_L5_x_n3_y_n3" kind="INPUT" tail="board_n3_L5"/>
+      <arc head="board_n3_L5" kind="OUTPUT" tail="T0_l_L5_x_n3_y_n3">
+        <point x="12.0" y="35.5"/>
+      </arc>
+      <arc head="board_n3_L6" kind="OUTPUT" tail="T0_l_L5_x_n3_y_n3">
+        <point x="12.0" y="35.5"/>
+      </arc>
+      <arc head="Last_L6" kind="OUTPUT" tail="T0_l_L5_x_n3_y_n3">
+        <point x="18.5" y="26.5"/>
+      </arc>
+      <arc head="T0_l_L6_x_n1_y_n1" kind="INPUT" tail="Last_L6"/>
+      <arc head="T0_l_L6_x_n1_y_n1" kind="INPUT" tail="pieces_n1_n1"/>
+      <arc head="T0_l_L6_x_n1_y_n1" kind="INPUT" tail="board_n1_L6"/>
+      <arc head="board_n1_L6" kind="OUTPUT" tail="T0_l_L6_x_n1_y_n1">
+        <point x="6.0" y="32.5"/>
+      </arc>
+      <arc head="board_n1_L7" kind="OUTPUT" tail="T0_l_L6_x_n1_y_n1">
+        <point x="6.0" y="32.5"/>
+      </arc>
+      <arc head="Last_L7" kind="OUTPUT" tail="T0_l_L6_x_n1_y_n1">
+        <point x="12.5" y="23.5"/>
+      </arc>
+      <arc head="T0_l_L6_x_n1_y_n2" kind="INPUT" tail="Last_L6"/>
+      <arc head="T0_l_L6_x_n1_y_n2" kind="INPUT" tail="pieces_n1_n2"/>
+      <arc head="T0_l_L6_x_n1_y_n2" kind="INPUT" tail="board_n1_L6"/>
+      <arc head="board_n1_L6" kind="OUTPUT" tail="T0_l_L6_x_n1_y_n2">
+        <point x="6.0" y="35.5"/>
+      </arc>
+      <arc head="board_n2_L7" kind="OUTPUT" tail="T0_l_L6_x_n1_y_n2">
+        <point x="6.0" y="35.5"/>
+      </arc>
+      <arc head="Last_L7" kind="OUTPUT" tail="T0_l_L6_x_n1_y_n2">
+        <point x="12.5" y="26.5"/>
+      </arc>
+      <arc head="T0_l_L6_x_n1_y_n3" kind="INPUT" tail="Last_L6"/>
+      <arc head="T0_l_L6_x_n1_y_n3" kind="INPUT" tail="pieces_n1_n3"/>
+      <arc head="T0_l_L6_x_n1_y_n3" kind="INPUT" tail="board_n1_L6"/>
+      <arc head="board_n1_L6" kind="OUTPUT" tail="T0_l_L6_x_n1_y_n3">
+        <point x="6.0" y="38.5"/>
+      </arc>
+      <arc head="board_n3_L7" kind="OUTPUT" tail="T0_l_L6_x_n1_y_n3">
+        <point x="6.0" y="38.5"/>
+      </arc>
+      <arc head="Last_L7" kind="OUTPUT" tail="T0_l_L6_x_n1_y_n3">
+        <point x="12.5" y="29.5"/>
+      </arc>
+      <arc head="T0_l_L6_x_n2_y_n1" kind="INPUT" tail="Last_L6"/>
+      <arc head="T0_l_L6_x_n2_y_n1" kind="INPUT" tail="pieces_n2_n1"/>
+      <arc head="T0_l_L6_x_n2_y_n1" kind="INPUT" tail="board_n2_L6"/>
+      <arc head="board_n1_L7" kind="OUTPUT" tail="T0_l_L6_x_n2_y_n1">
+        <point x="9.0" y="32.5"/>
+      </arc>
+      <arc head="board_n2_L6" kind="OUTPUT" tail="T0_l_L6_x_n2_y_n1">
+        <point x="9.0" y="32.5"/>
+      </arc>
+      <arc head="Last_L7" kind="OUTPUT" tail="T0_l_L6_x_n2_y_n1">
+        <point x="15.5" y="23.5"/>
+      </arc>
+      <arc head="T0_l_L6_x_n2_y_n2" kind="INPUT" tail="Last_L6"/>
+      <arc head="T0_l_L6_x_n2_y_n2" kind="INPUT" tail="pieces_n2_n2"/>
+      <arc head="T0_l_L6_x_n2_y_n2" kind="INPUT" tail="board_n2_L6"/>
+      <arc head="board_n2_L6" kind="OUTPUT" tail="T0_l_L6_x_n2_y_n2">
+        <point x="9.0" y="35.5"/>
+      </arc>
+      <arc head="board_n2_L7" kind="OUTPUT" tail="T0_l_L6_x_n2_y_n2">
+        <point x="9.0" y="35.5"/>
+      </arc>
+      <arc head="Last_L7" kind="OUTPUT" tail="T0_l_L6_x_n2_y_n2">
+        <point x="15.5" y="26.5"/>
+      </arc>
+      <arc head="T0_l_L6_x_n2_y_n3" kind="INPUT" tail="Last_L6"/>
+      <arc head="T0_l_L6_x_n2_y_n3" kind="INPUT" tail="pieces_n2_n3"/>
+      <arc head="T0_l_L6_x_n2_y_n3" kind="INPUT" tail="board_n2_L6"/>
+      <arc head="board_n2_L6" kind="OUTPUT" tail="T0_l_L6_x_n2_y_n3">
+        <point x="9.0" y="38.5"/>
+      </arc>
+      <arc head="board_n3_L7" kind="OUTPUT" tail="T0_l_L6_x_n2_y_n3">
+        <point x="9.0" y="38.5"/>
+      </arc>
+      <arc head="Last_L7" kind="OUTPUT" tail="T0_l_L6_x_n2_y_n3">
+        <point x="15.5" y="29.5"/>
+      </arc>
+      <arc head="T0_l_L6_x_n3_y_n1" kind="INPUT" tail="Last_L6"/>
+      <arc head="T0_l_L6_x_n3_y_n1" kind="INPUT" tail="pieces_n3_n1"/>
+      <arc head="T0_l_L6_x_n3_y_n1" kind="INPUT" tail="board_n3_L6"/>
+      <arc head="board_n1_L7" kind="OUTPUT" tail="T0_l_L6_x_n3_y_n1">
+        <point x="12.0" y="32.5"/>
+      </arc>
+      <arc head="board_n3_L6" kind="OUTPUT" tail="T0_l_L6_x_n3_y_n1">
+        <point x="12.0" y="32.5"/>
+      </arc>
+      <arc head="Last_L7" kind="OUTPUT" tail="T0_l_L6_x_n3_y_n1">
+        <point x="18.5" y="23.5"/>
+      </arc>
+      <arc head="T0_l_L6_x_n3_y_n2" kind="INPUT" tail="Last_L6"/>
+      <arc head="T0_l_L6_x_n3_y_n2" kind="INPUT" tail="pieces_n3_n2"/>
+      <arc head="T0_l_L6_x_n3_y_n2" kind="INPUT" tail="board_n3_L6"/>
+      <arc head="board_n2_L7" kind="OUTPUT" tail="T0_l_L6_x_n3_y_n2">
+        <point x="12.0" y="35.5"/>
+      </arc>
+      <arc head="board_n3_L6" kind="OUTPUT" tail="T0_l_L6_x_n3_y_n2">
+        <point x="12.0" y="35.5"/>
+      </arc>
+      <arc head="Last_L7" kind="OUTPUT" tail="T0_l_L6_x_n3_y_n2">
+        <point x="18.5" y="26.5"/>
+      </arc>
+      <arc head="T0_l_L6_x_n3_y_n3" kind="INPUT" tail="Last_L6"/>
+      <arc head="T0_l_L6_x_n3_y_n3" kind="INPUT" tail="pieces_n3_n3"/>
+      <arc head="T0_l_L6_x_n3_y_n3" kind="INPUT" tail="board_n3_L6"/>
+      <arc head="board_n3_L6" kind="OUTPUT" tail="T0_l_L6_x_n3_y_n3">
+        <point x="12.0" y="38.5"/>
+      </arc>
+      <arc head="board_n3_L7" kind="OUTPUT" tail="T0_l_L6_x_n3_y_n3">
+        <point x="12.0" y="38.5"/>
+      </arc>
+      <arc head="Last_L7" kind="OUTPUT" tail="T0_l_L6_x_n3_y_n3">
+        <point x="18.5" y="29.5"/>
+      </arc>
+      <arc head="T0_l_L7_x_n1_y_n1" kind="INPUT" tail="Last_L7"/>
+      <arc head="T0_l_L7_x_n1_y_n1" kind="INPUT" tail="pieces_n1_n1"/>
+      <arc head="T0_l_L7_x_n1_y_n1" kind="INPUT" tail="board_n1_L7"/>
+      <arc head="board_n1_L7" kind="OUTPUT" tail="T0_l_L7_x_n1_y_n1">
+        <point x="6.0" y="35.5"/>
+      </arc>
+      <arc head="board_n1_L8" kind="OUTPUT" tail="T0_l_L7_x_n1_y_n1">
+        <point x="6.0" y="35.5"/>
+      </arc>
+      <arc head="Last_L8" kind="OUTPUT" tail="T0_l_L7_x_n1_y_n1">
+        <point x="12.5" y="26.5"/>
+      </arc>
+      <arc head="T0_l_L7_x_n1_y_n2" kind="INPUT" tail="Last_L7"/>
+      <arc head="T0_l_L7_x_n1_y_n2" kind="INPUT" tail="pieces_n1_n2"/>
+      <arc head="T0_l_L7_x_n1_y_n2" kind="INPUT" tail="board_n1_L7"/>
+      <arc head="board_n1_L7" kind="OUTPUT" tail="T0_l_L7_x_n1_y_n2">
+        <point x="6.0" y="38.5"/>
+      </arc>
+      <arc head="board_n2_L8" kind="OUTPUT" tail="T0_l_L7_x_n1_y_n2">
+        <point x="6.0" y="38.5"/>
+      </arc>
+      <arc head="Last_L8" kind="OUTPUT" tail="T0_l_L7_x_n1_y_n2">
+        <point x="12.5" y="29.5"/>
+      </arc>
+      <arc head="T0_l_L7_x_n1_y_n3" kind="INPUT" tail="Last_L7"/>
+      <arc head="T0_l_L7_x_n1_y_n3" kind="INPUT" tail="pieces_n1_n3"/>
+      <arc head="T0_l_L7_x_n1_y_n3" kind="INPUT" tail="board_n1_L7"/>
+      <arc head="board_n1_L7" kind="OUTPUT" tail="T0_l_L7_x_n1_y_n3">
+        <point x="6.0" y="41.5"/>
+      </arc>
+      <arc head="board_n3_L8" kind="OUTPUT" tail="T0_l_L7_x_n1_y_n3">
+        <point x="6.0" y="41.5"/>
+      </arc>
+      <arc head="Last_L8" kind="OUTPUT" tail="T0_l_L7_x_n1_y_n3">
+        <point x="12.5" y="32.5"/>
+      </arc>
+      <arc head="T0_l_L7_x_n2_y_n1" kind="INPUT" tail="Last_L7"/>
+      <arc head="T0_l_L7_x_n2_y_n1" kind="INPUT" tail="pieces_n2_n1"/>
+      <arc head="T0_l_L7_x_n2_y_n1" kind="INPUT" tail="board_n2_L7"/>
+      <arc head="board_n1_L8" kind="OUTPUT" tail="T0_l_L7_x_n2_y_n1">
+        <point x="9.0" y="35.5"/>
+      </arc>
+      <arc head="board_n2_L7" kind="OUTPUT" tail="T0_l_L7_x_n2_y_n1">
+        <point x="9.0" y="35.5"/>
+      </arc>
+      <arc head="Last_L8" kind="OUTPUT" tail="T0_l_L7_x_n2_y_n1">
+        <point x="15.5" y="26.5"/>
+      </arc>
+      <arc head="T0_l_L7_x_n2_y_n2" kind="INPUT" tail="Last_L7"/>
+      <arc head="T0_l_L7_x_n2_y_n2" kind="INPUT" tail="pieces_n2_n2"/>
+      <arc head="T0_l_L7_x_n2_y_n2" kind="INPUT" tail="board_n2_L7"/>
+      <arc head="board_n2_L7" kind="OUTPUT" tail="T0_l_L7_x_n2_y_n2">
+        <point x="9.0" y="38.5"/>
+      </arc>
+      <arc head="board_n2_L8" kind="OUTPUT" tail="T0_l_L7_x_n2_y_n2">
+        <point x="9.0" y="38.5"/>
+      </arc>
+      <arc head="Last_L8" kind="OUTPUT" tail="T0_l_L7_x_n2_y_n2">
+        <point x="15.5" y="29.5"/>
+      </arc>
+      <arc head="T0_l_L7_x_n2_y_n3" kind="INPUT" tail="Last_L7"/>
+      <arc head="T0_l_L7_x_n2_y_n3" kind="INPUT" tail="pieces_n2_n3"/>
+      <arc head="T0_l_L7_x_n2_y_n3" kind="INPUT" tail="board_n2_L7"/>
+      <arc head="board_n2_L7" kind="OUTPUT" tail="T0_l_L7_x_n2_y_n3">
+        <point x="9.0" y="41.5"/>
+      </arc>
+      <arc head="board_n3_L8" kind="OUTPUT" tail="T0_l_L7_x_n2_y_n3">
+        <point x="9.0" y="41.5"/>
+      </arc>
+      <arc head="Last_L8" kind="OUTPUT" tail="T0_l_L7_x_n2_y_n3">
+        <point x="15.5" y="32.5"/>
+      </arc>
+      <arc head="T0_l_L7_x_n3_y_n1" kind="INPUT" tail="Last_L7"/>
+      <arc head="T0_l_L7_x_n3_y_n1" kind="INPUT" tail="pieces_n3_n1"/>
+      <arc head="T0_l_L7_x_n3_y_n1" kind="INPUT" tail="board_n3_L7"/>
+      <arc head="board_n1_L8" kind="OUTPUT" tail="T0_l_L7_x_n3_y_n1">
+        <point x="12.0" y="35.5"/>
+      </arc>
+      <arc head="board_n3_L7" kind="OUTPUT" tail="T0_l_L7_x_n3_y_n1">
+        <point x="12.0" y="35.5"/>
+      </arc>
+      <arc head="Last_L8" kind="OUTPUT" tail="T0_l_L7_x_n3_y_n1">
+        <point x="18.5" y="26.5"/>
+      </arc>
+      <arc head="T0_l_L7_x_n3_y_n2" kind="INPUT" tail="Last_L7"/>
+      <arc head="T0_l_L7_x_n3_y_n2" kind="INPUT" tail="pieces_n3_n2"/>
+      <arc head="T0_l_L7_x_n3_y_n2" kind="INPUT" tail="board_n3_L7"/>
+      <arc head="board_n2_L8" kind="OUTPUT" tail="T0_l_L7_x_n3_y_n2">
+        <point x="12.0" y="38.5"/>
+      </arc>
+      <arc head="board_n3_L7" kind="OUTPUT" tail="T0_l_L7_x_n3_y_n2">
+        <point x="12.0" y="38.5"/>
+      </arc>
+      <arc head="Last_L8" kind="OUTPUT" tail="T0_l_L7_x_n3_y_n2">
+        <point x="18.5" y="29.5"/>
+      </arc>
+      <arc head="T0_l_L7_x_n3_y_n3" kind="INPUT" tail="Last_L7"/>
+      <arc head="T0_l_L7_x_n3_y_n3" kind="INPUT" tail="pieces_n3_n3"/>
+      <arc head="T0_l_L7_x_n3_y_n3" kind="INPUT" tail="board_n3_L7"/>
+      <arc head="board_n3_L7" kind="OUTPUT" tail="T0_l_L7_x_n3_y_n3">
+        <point x="12.0" y="41.5"/>
+      </arc>
+      <arc head="board_n3_L8" kind="OUTPUT" tail="T0_l_L7_x_n3_y_n3">
+        <point x="12.0" y="41.5"/>
+      </arc>
+      <arc head="Last_L8" kind="OUTPUT" tail="T0_l_L7_x_n3_y_n3">
+        <point x="18.5" y="32.5"/>
+      </arc>
+      <arc head="T0_l_L8_x_n1_y_n1" kind="INPUT" tail="Last_L8"/>
+      <arc head="T0_l_L8_x_n1_y_n1" kind="INPUT" tail="pieces_n1_n1"/>
+      <arc head="T0_l_L8_x_n1_y_n1" kind="INPUT" tail="board_n1_L8"/>
+      <arc head="board_n1_L8" kind="OUTPUT" tail="T0_l_L8_x_n1_y_n1">
+        <point x="6.0" y="38.5"/>
+      </arc>
+      <arc head="board_n1_L9" kind="OUTPUT" tail="T0_l_L8_x_n1_y_n1">
+        <point x="6.0" y="38.5"/>
+      </arc>
+      <arc head="Last_L9" kind="OUTPUT" tail="T0_l_L8_x_n1_y_n1">
+        <point x="12.5" y="29.5"/>
+      </arc>
+      <arc head="T0_l_L8_x_n1_y_n2" kind="INPUT" tail="Last_L8"/>
+      <arc head="T0_l_L8_x_n1_y_n2" kind="INPUT" tail="pieces_n1_n2"/>
+      <arc head="T0_l_L8_x_n1_y_n2" kind="INPUT" tail="board_n1_L8"/>
+      <arc head="board_n1_L8" kind="OUTPUT" tail="T0_l_L8_x_n1_y_n2">
+        <point x="6.0" y="41.5"/>
+      </arc>
+      <arc head="board_n2_L9" kind="OUTPUT" tail="T0_l_L8_x_n1_y_n2">
+        <point x="6.0" y="41.5"/>
+      </arc>
+      <arc head="Last_L9" kind="OUTPUT" tail="T0_l_L8_x_n1_y_n2">
+        <point x="12.5" y="32.5"/>
+      </arc>
+      <arc head="T0_l_L8_x_n1_y_n3" kind="INPUT" tail="Last_L8"/>
+      <arc head="T0_l_L8_x_n1_y_n3" kind="INPUT" tail="pieces_n1_n3"/>
+      <arc head="T0_l_L8_x_n1_y_n3" kind="INPUT" tail="board_n1_L8"/>
+      <arc head="board_n1_L8" kind="OUTPUT" tail="T0_l_L8_x_n1_y_n3">
+        <point x="6.0" y="44.5"/>
+      </arc>
+      <arc head="board_n3_L9" kind="OUTPUT" tail="T0_l_L8_x_n1_y_n3">
+        <point x="6.0" y="44.5"/>
+      </arc>
+      <arc head="Last_L9" kind="OUTPUT" tail="T0_l_L8_x_n1_y_n3">
+        <point x="12.5" y="35.5"/>
+      </arc>
+      <arc head="T0_l_L8_x_n2_y_n1" kind="INPUT" tail="Last_L8"/>
+      <arc head="T0_l_L8_x_n2_y_n1" kind="INPUT" tail="pieces_n2_n1"/>
+      <arc head="T0_l_L8_x_n2_y_n1" kind="INPUT" tail="board_n2_L8"/>
+      <arc head="board_n1_L9" kind="OUTPUT" tail="T0_l_L8_x_n2_y_n1">
+        <point x="9.0" y="38.5"/>
+      </arc>
+      <arc head="board_n2_L8" kind="OUTPUT" tail="T0_l_L8_x_n2_y_n1">
+        <point x="9.0" y="38.5"/>
+      </arc>
+      <arc head="Last_L9" kind="OUTPUT" tail="T0_l_L8_x_n2_y_n1">
+        <point x="15.5" y="29.5"/>
+      </arc>
+      <arc head="T0_l_L8_x_n2_y_n2" kind="INPUT" tail="Last_L8"/>
+      <arc head="T0_l_L8_x_n2_y_n2" kind="INPUT" tail="pieces_n2_n2"/>
+      <arc head="T0_l_L8_x_n2_y_n2" kind="INPUT" tail="board_n2_L8"/>
+      <arc head="board_n2_L8" kind="OUTPUT" tail="T0_l_L8_x_n2_y_n2">
+        <point x="9.0" y="41.5"/>
+      </arc>
+      <arc head="board_n2_L9" kind="OUTPUT" tail="T0_l_L8_x_n2_y_n2">
+        <point x="9.0" y="41.5"/>
+      </arc>
+      <arc head="Last_L9" kind="OUTPUT" tail="T0_l_L8_x_n2_y_n2">
+        <point x="15.5" y="32.5"/>
+      </arc>
+      <arc head="T0_l_L8_x_n2_y_n3" kind="INPUT" tail="Last_L8"/>
+      <arc head="T0_l_L8_x_n2_y_n3" kind="INPUT" tail="pieces_n2_n3"/>
+      <arc head="T0_l_L8_x_n2_y_n3" kind="INPUT" tail="board_n2_L8"/>
+      <arc head="board_n2_L8" kind="OUTPUT" tail="T0_l_L8_x_n2_y_n3">
+        <point x="9.0" y="44.5"/>
+      </arc>
+      <arc head="board_n3_L9" kind="OUTPUT" tail="T0_l_L8_x_n2_y_n3">
+        <point x="9.0" y="44.5"/>
+      </arc>
+      <arc head="Last_L9" kind="OUTPUT" tail="T0_l_L8_x_n2_y_n3">
+        <point x="15.5" y="35.5"/>
+      </arc>
+      <arc head="T0_l_L8_x_n3_y_n1" kind="INPUT" tail="Last_L8"/>
+      <arc head="T0_l_L8_x_n3_y_n1" kind="INPUT" tail="pieces_n3_n1"/>
+      <arc head="T0_l_L8_x_n3_y_n1" kind="INPUT" tail="board_n3_L8"/>
+      <arc head="board_n1_L9" kind="OUTPUT" tail="T0_l_L8_x_n3_y_n1">
+        <point x="12.0" y="38.5"/>
+      </arc>
+      <arc head="board_n3_L8" kind="OUTPUT" tail="T0_l_L8_x_n3_y_n1">
+        <point x="12.0" y="38.5"/>
+      </arc>
+      <arc head="Last_L9" kind="OUTPUT" tail="T0_l_L8_x_n3_y_n1">
+        <point x="18.5" y="29.5"/>
+      </arc>
+      <arc head="T0_l_L8_x_n3_y_n2" kind="INPUT" tail="Last_L8"/>
+      <arc head="T0_l_L8_x_n3_y_n2" kind="INPUT" tail="pieces_n3_n2"/>
+      <arc head="T0_l_L8_x_n3_y_n2" kind="INPUT" tail="board_n3_L8"/>
+      <arc head="board_n2_L9" kind="OUTPUT" tail="T0_l_L8_x_n3_y_n2">
+        <point x="12.0" y="41.5"/>
+      </arc>
+      <arc head="board_n3_L8" kind="OUTPUT" tail="T0_l_L8_x_n3_y_n2">
+        <point x="12.0" y="41.5"/>
+      </arc>
+      <arc head="Last_L9" kind="OUTPUT" tail="T0_l_L8_x_n3_y_n2">
+        <point x="18.5" y="32.5"/>
+      </arc>
+      <arc head="T0_l_L8_x_n3_y_n3" kind="INPUT" tail="Last_L8"/>
+      <arc head="T0_l_L8_x_n3_y_n3" kind="INPUT" tail="pieces_n3_n3"/>
+      <arc head="T0_l_L8_x_n3_y_n3" kind="INPUT" tail="board_n3_L8"/>
+      <arc head="board_n3_L8" kind="OUTPUT" tail="T0_l_L8_x_n3_y_n3">
+        <point x="12.0" y="44.5"/>
+      </arc>
+      <arc head="board_n3_L9" kind="OUTPUT" tail="T0_l_L8_x_n3_y_n3">
+        <point x="12.0" y="44.5"/>
+      </arc>
+      <arc head="Last_L9" kind="OUTPUT" tail="T0_l_L8_x_n3_y_n3">
+        <point x="18.5" y="35.5"/>
+      </arc>
+      <arc head="T0_l_L9_x_n1_y_n1" kind="INPUT" tail="Last_L9"/>
+      <arc head="T0_l_L9_x_n1_y_n1" kind="INPUT" tail="pieces_n1_n1"/>
+      <arc head="T0_l_L9_x_n1_y_n1" kind="INPUT" tail="board_n1_L9"/>
+      <arc head="board_n1_L1" kind="OUTPUT" tail="T0_l_L9_x_n1_y_n1">
+        <point x="6.0" y="41.5"/>
+      </arc>
+      <arc head="board_n1_L9" kind="OUTPUT" tail="T0_l_L9_x_n1_y_n1">
+        <point x="6.0" y="41.5"/>
+      </arc>
+      <arc head="Last_L1" kind="OUTPUT" tail="T0_l_L9_x_n1_y_n1">
+        <point x="12.5" y="32.5"/>
+      </arc>
+      <arc head="T0_l_L9_x_n1_y_n2" kind="INPUT" tail="Last_L9"/>
+      <arc head="T0_l_L9_x_n1_y_n2" kind="INPUT" tail="pieces_n1_n2"/>
+      <arc head="T0_l_L9_x_n1_y_n2" kind="INPUT" tail="board_n1_L9"/>
+      <arc head="board_n1_L9" kind="OUTPUT" tail="T0_l_L9_x_n1_y_n2">
+        <point x="6.0" y="44.5"/>
+      </arc>
+      <arc head="board_n2_L1" kind="OUTPUT" tail="T0_l_L9_x_n1_y_n2">
+        <point x="6.0" y="44.5"/>
+      </arc>
+      <arc head="Last_L1" kind="OUTPUT" tail="T0_l_L9_x_n1_y_n2">
+        <point x="12.5" y="35.5"/>
+      </arc>
+      <arc head="T0_l_L9_x_n1_y_n3" kind="INPUT" tail="Last_L9"/>
+      <arc head="T0_l_L9_x_n1_y_n3" kind="INPUT" tail="pieces_n1_n3"/>
+      <arc head="T0_l_L9_x_n1_y_n3" kind="INPUT" tail="board_n1_L9"/>
+      <arc head="board_n1_L9" kind="OUTPUT" tail="T0_l_L9_x_n1_y_n3">
+        <point x="6.0" y="47.5"/>
+      </arc>
+      <arc head="board_n3_L1" kind="OUTPUT" tail="T0_l_L9_x_n1_y_n3">
+        <point x="6.0" y="47.5"/>
+      </arc>
+      <arc head="Last_L1" kind="OUTPUT" tail="T0_l_L9_x_n1_y_n3">
+        <point x="12.5" y="38.5"/>
+      </arc>
+      <arc head="T0_l_L9_x_n2_y_n1" kind="INPUT" tail="Last_L9"/>
+      <arc head="T0_l_L9_x_n2_y_n1" kind="INPUT" tail="pieces_n2_n1"/>
+      <arc head="T0_l_L9_x_n2_y_n1" kind="INPUT" tail="board_n2_L9"/>
+      <arc head="board_n1_L1" kind="OUTPUT" tail="T0_l_L9_x_n2_y_n1">
+        <point x="9.0" y="41.5"/>
+      </arc>
+      <arc head="board_n2_L9" kind="OUTPUT" tail="T0_l_L9_x_n2_y_n1">
+        <point x="9.0" y="41.5"/>
+      </arc>
+      <arc head="Last_L1" kind="OUTPUT" tail="T0_l_L9_x_n2_y_n1">
+        <point x="15.5" y="32.5"/>
+      </arc>
+      <arc head="T0_l_L9_x_n2_y_n2" kind="INPUT" tail="Last_L9"/>
+      <arc head="T0_l_L9_x_n2_y_n2" kind="INPUT" tail="pieces_n2_n2"/>
+      <arc head="T0_l_L9_x_n2_y_n2" kind="INPUT" tail="board_n2_L9"/>
+      <arc head="board_n2_L1" kind="OUTPUT" tail="T0_l_L9_x_n2_y_n2">
+        <point x="9.0" y="44.5"/>
+      </arc>
+      <arc head="board_n2_L9" kind="OUTPUT" tail="T0_l_L9_x_n2_y_n2">
+        <point x="9.0" y="44.5"/>
+      </arc>
+      <arc head="Last_L1" kind="OUTPUT" tail="T0_l_L9_x_n2_y_n2">
+        <point x="15.5" y="35.5"/>
+      </arc>
+      <arc head="T0_l_L9_x_n2_y_n3" kind="INPUT" tail="Last_L9"/>
+      <arc head="T0_l_L9_x_n2_y_n3" kind="INPUT" tail="pieces_n2_n3"/>
+      <arc head="T0_l_L9_x_n2_y_n3" kind="INPUT" tail="board_n2_L9"/>
+      <arc head="board_n2_L9" kind="OUTPUT" tail="T0_l_L9_x_n2_y_n3">
+        <point x="9.0" y="47.5"/>
+      </arc>
+      <arc head="board_n3_L1" kind="OUTPUT" tail="T0_l_L9_x_n2_y_n3">
+        <point x="9.0" y="47.5"/>
+      </arc>
+      <arc head="Last_L1" kind="OUTPUT" tail="T0_l_L9_x_n2_y_n3">
+        <point x="15.5" y="38.5"/>
+      </arc>
+      <arc head="T0_l_L9_x_n3_y_n1" kind="INPUT" tail="Last_L9"/>
+      <arc head="T0_l_L9_x_n3_y_n1" kind="INPUT" tail="pieces_n3_n1"/>
+      <arc head="T0_l_L9_x_n3_y_n1" kind="INPUT" tail="board_n3_L9"/>
+      <arc head="board_n1_L1" kind="OUTPUT" tail="T0_l_L9_x_n3_y_n1">
+        <point x="12.0" y="41.5"/>
+      </arc>
+      <arc head="board_n3_L9" kind="OUTPUT" tail="T0_l_L9_x_n3_y_n1">
+        <point x="12.0" y="41.5"/>
+      </arc>
+      <arc head="Last_L1" kind="OUTPUT" tail="T0_l_L9_x_n3_y_n1">
+        <point x="18.5" y="32.5"/>
+      </arc>
+      <arc head="T0_l_L9_x_n3_y_n2" kind="INPUT" tail="Last_L9"/>
+      <arc head="T0_l_L9_x_n3_y_n2" kind="INPUT" tail="pieces_n3_n2"/>
+      <arc head="T0_l_L9_x_n3_y_n2" kind="INPUT" tail="board_n3_L9"/>
+      <arc head="board_n2_L1" kind="OUTPUT" tail="T0_l_L9_x_n3_y_n2">
+        <point x="12.0" y="44.5"/>
+      </arc>
+      <arc head="board_n3_L9" kind="OUTPUT" tail="T0_l_L9_x_n3_y_n2">
+        <point x="12.0" y="44.5"/>
+      </arc>
+      <arc head="Last_L1" kind="OUTPUT" tail="T0_l_L9_x_n3_y_n2">
+        <point x="18.5" y="35.5"/>
+      </arc>
+      <arc head="T0_l_L9_x_n3_y_n3" kind="INPUT" tail="Last_L9"/>
+      <arc head="T0_l_L9_x_n3_y_n3" kind="INPUT" tail="pieces_n3_n3"/>
+      <arc head="T0_l_L9_x_n3_y_n3" kind="INPUT" tail="board_n3_L9"/>
+      <arc head="board_n3_L1" kind="OUTPUT" tail="T0_l_L9_x_n3_y_n3">
+        <point x="12.0" y="47.5"/>
+      </arc>
+      <arc head="board_n3_L9" kind="OUTPUT" tail="T0_l_L9_x_n3_y_n3">
+        <point x="12.0" y="47.5"/>
+      </arc>
+      <arc head="Last_L1" kind="OUTPUT" tail="T0_l_L9_x_n3_y_n3">
+        <point x="18.5" y="38.5"/>
+      </arc>
+    </edges>
+  </gspn>
 </project>

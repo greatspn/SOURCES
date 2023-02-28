@@ -33,7 +33,7 @@ public class FastSupportTestTable {
         
         @Override
         public void insertRow(Row r) {
-            int val = r.l[level];
+            int val = r.e[level];
             if (val==0) {
                 if (zeroes==null)
                     zeroes = allocNode();
@@ -54,7 +54,7 @@ public class FastSupportTestTable {
                 hasPrecEq = zeroes.smallerSupport(r);
             
             // check non-zeroes if r[level] is non-zero, too
-            if (hasPrecEq==null && r.l[level] != 0) {
+            if (hasPrecEq==null && r.e[level] != 0) {
                 if (nonzeroes!=null)
                     hasPrecEq = nonzeroes.smallerSupport(r);
             }
@@ -106,7 +106,11 @@ public class FastSupportTestTable {
 
         @Override
         public Row smallerSupport(Row r) {
-            return rows.get(0);
+            // return a row that is not r
+            for (Row r2 : rows)
+                if (r2 != r) // not the same object
+                    return r2;
+            return null;
         }
     }
 
