@@ -16,6 +16,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
 
 /** Farkas algorithm for the computation
  *  of the minimal set of P(T)-(semi)flows in a Petri net.
@@ -109,21 +110,6 @@ public class FlowsGenerator extends StructuralAlgorithm {
                 annulers[i++] = getFlowVector(f);
         return annulers;
     }
-
-//    public static int gcd(int a, int b) {
-//        assert a >= 0 && b >= 0;
-//        if (a == 0)
-//            return b;
-//
-//        while (b != 0) {
-//            if (a > b)
-//                a = a - b;
-//            else
-//                b = b - a;
-//        }
-//
-//        return a;
-//    }
     
     private static int sign(int num) {
         if (num > 0)
@@ -140,7 +126,9 @@ public class FlowsGenerator extends StructuralAlgorithm {
             System.out.println(this);
         // Matrix A starts with the flow matrix, D is the identity.
         // for every transition i=[0,M), repeat:
-        for (int i = 0; i < M; i++) {
+//        for (int i = 0; i < M; i++) {
+        for (int i=nextPivot(); i>=0; i=nextPivot()) {
+//            System.out.println("pivot: "+i+"/"+M);
             if (log)
                 System.out.println("\nStep "+i+"/"+(M-1)+"\n"+this);
             // Append to the matrix [D|A] every rows resulting as a non-negative
@@ -237,50 +225,77 @@ public class FlowsGenerator extends StructuralAlgorithm {
     private void removeNonMinimalFlows(boolean log, ProgressObserver obs) 
             throws InterruptedException 
     {
-//        FastSupportTestTable fstt = new FastSupportTestTable(N);
-//        for (Row row : rows) {
-//            if (null == fstt.smallerSupport(row))
-//                fstt.insertRow(row);
-//        }        
-//        int rr = numFlows();
-//        while (rr > 0) {
-//            rr--;
-//            Row row = rows.get(rr);
-//            Row smallerRow = fstt.smallerSupport(row);
-//            if (smallerRow != null) {
-//                if (log)
-//                    System.out.println("   DEL " + row + " by " + smallerRow);
-//                rows.remove(rr);
-//            }
-//        }
-        
+        FastSupportTestTable fstt = new FastSupportTestTable(N);
+        for (Row row : rows) {
+            if (null == fstt.smallerSupport(row))
+                fstt.insertRow(row);
+        }
         int rr = numFlows();
         while (rr > 0) {
             rr--;
-            Row checked = rows.get(rr);
-            obs.advance(M, M+1, numFlows()-rr, numFlows());
-            for (int i=0; i<numFlows(); i++) {
-                checkInterrupted();
-                if (i == rr)
-                    continue;
-                Row row = rows.get(i);
-                
-                // Check if support(D[i]) subseteq support(D[rr])
-                boolean support_included = true;
-                for (int k=0; k<N && support_included; k++) {
-                    if (row.e[k] != 0 && checked.e[k] == 0)
-                        support_included = false;
-                }
+            Row row = rows.get(rr);
+            Row smallerRow = fstt.smallerSupport(row);
+            if (smallerRow != null) {
+                if (log)
+                    System.out.println("   DEL " + row + " by " + smallerRow);
+                rows.remove(rr);
+            }
+        }
+        
+//        int rr = numFlows();
+//        while (rr > 0) {
+//            rr--;
+//            Row checked = rows.get(rr);
+//            obs.advance(M, M+1, numFlows()-rr, numFlows());
+//            for (int i=0; i<numFlows(); i++) {
+//                checkInterrupted();
+//                if (i == rr)
+//                    continue;
+//                Row row = rows.get(i);
+//                
+//                // Check if support(D[i]) subseteq support(D[rr])
+//                boolean support_included = true;
+//                for (int k=0; k<N && support_included; k++) {
+//                    if (row.e[k] != 0 && checked.e[k] == 0)
+//                        support_included = false;
+//                }
+//
+//                if (support_included) {
+//                    // rr was a linear combination of other flows. Remove it
+//                    if (log)
+//                        System.out.println("   DEL " + checked);
+//                    rows.remove(rr);
+//                    break;
+//                }
+//            }
+//        }        
+    }
+    
+    //-----------------------------------------------------------------------
 
-                if (support_included) {
-                    // rr was a linear combination of other flows. Remove it
-                    if (log)
-                        System.out.println("   DEL " + checked);
-                    rows.remove(rr);
-                    break;
+    private int nextPivot() {
+        int[] pos = new int[M], neg = new int[M];
+        for (Row row : rows) {
+            for (int j=0; j<M; j++) {
+                if (row.l[j]>0)
+                    pos[j]++;
+                else if  (row.l[j]<0)
+                    neg[j]++;
+            }
+        }
+        int nextCol = -1;
+        int nextOps = -1;
+        for (int j=0; j<M; j++) {
+//            System.out.println("   j="+j+"  pos="+pos[j]+" neg="+neg[j]);
+            if (pos[j]>0 || neg[j]>0) { // still something to do on col j
+                int ops = pos[j] * neg[j];
+                if (nextCol==-1 || ops < nextOps) {
+                    nextOps = ops;
+                    nextCol = j;
                 }
             }
-        }        
+        }
+        return nextCol;
     }
     
     //-----------------------------------------------------------------------
@@ -710,6 +725,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
     
 
     public static void main(String[] args) throws InterruptedException {
+        long start = System.nanoTime();
         testProblem(FlowsGeneratorTestData.prob1);
         testProblem(FlowsGeneratorTestData.probAnisimov);
         testProblem(FlowsGeneratorTestData.probCSP);
@@ -717,15 +733,19 @@ public class FlowsGenerator extends StructuralAlgorithm {
         testProblem(FlowsGeneratorTestData.probSiphonBasis);
         testProblem(FlowsGeneratorTestData.probM33N);
         testProblem(FlowsGeneratorTestData.probM33I);
+        testProblem(FlowsGeneratorTestData.probM44N);
+        testProblem(FlowsGeneratorTestData.probM44I);
+        System.out.println("Total Time: " + (System.nanoTime() - start)/1e9);
     }
     
     private static void testProblem(FlowsGeneratorTestData.FlowProblem problem) throws InterruptedException {
+        boolean verbose = false;
         ProgressObserver obs = (int step, int total, int s, int t) -> { };
         FlowsGenerator fg = new FlowsGenerator(problem.input, problem.probType);
         if (problem.probType.isTrapsOrSiphons())
             fg.N0 -= problem.input[0].length;
 //        printMat(fg.mA);
-        fg.compute(true, obs);
+        fg.compute(verbose, obs);
 //        printMat(fg.mD);
         
         // Compare the result matrix with the known results for that problem
@@ -735,18 +755,20 @@ public class FlowsGenerator extends StructuralAlgorithm {
             Arrays.sort(mResult, comp);
             Arrays.sort(problem.solution, comp);
             
-            System.out.println("mResult");
-            printMat(mResult);
-            System.out.println("problem.solution");
-            printMat(problem.solution);
-            Thread.sleep(100);
-
             boolean equal = (mResult.length == problem.solution.length);
             if (equal) {
                 for (int i=0; equal && i<mResult.length; i++) {
                     equal = Arrays.equals(mResult[i], problem.solution[i]);
                 }
             }
+            if (verbose || !equal)  {
+                System.out.println("mResult");
+                printMat(mResult);
+                System.out.println("problem.solution");
+                printMat(problem.solution);
+                Thread.sleep(100);
+            }
+
             System.out.println("Check solution: "+equal);
             if (!equal)
                 throw new IllegalStateException();

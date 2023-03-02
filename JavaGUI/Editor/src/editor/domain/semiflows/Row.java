@@ -144,6 +144,8 @@ public class Row {
     // divide by the common [e|l] gcd
     public void canonicalize() {
         int div = vectorGCD();
+        if (e[0] / div < 0)
+            div = -div;
         if (div != 1) {
             for (int i=0; i<e.length; i++)
                 e[i] /= div;
