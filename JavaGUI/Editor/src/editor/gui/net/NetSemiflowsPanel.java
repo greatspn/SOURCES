@@ -431,7 +431,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         // Make the list of errors
         ArrayList<PageErrorWarning> errsWarns = new ArrayList<>();
         if (!algo.isComputed()) {
-            errsWarns.add(PageErrorWarning.newWarning(algo.getFailureReason(), 
+            errsWarns.add(PageErrorWarning.newError(algo.getFailureReason(), 
                           new Selectable.DummySelectable()));
         }
         else {
