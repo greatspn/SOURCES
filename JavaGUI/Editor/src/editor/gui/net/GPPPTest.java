@@ -8,6 +8,7 @@ package editor.gui.net;
 import editor.domain.semiflows.FlowsGenerator;
 import editor.domain.semiflows.PTFlows;
 import editor.domain.semiflows.StructuralAlgorithm.ProgressObserver;
+import editor.domain.semiflows.TooManyRowsException;
 
 /**
  *
@@ -103,7 +104,7 @@ public class GPPPTest {
         return fg;
     }
     
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, TooManyRowsException {
         FlowsGenerator fg = init();
         ProgressObserver obs = new ProgressObserver() {
             @Override

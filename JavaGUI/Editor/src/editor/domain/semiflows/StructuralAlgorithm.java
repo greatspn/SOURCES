@@ -19,6 +19,7 @@ public abstract class StructuralAlgorithm {
     // Has already been computed?
     private boolean computed = false;
     private String failureReason = "";
+    protected int maxRows = -1;
 
     public StructuralAlgorithm(int N, int N0, int M) {
         assert N0 <= N;
@@ -47,6 +48,14 @@ public abstract class StructuralAlgorithm {
     public String getFailureReason() {
         return failureReason;
     }
+
+    public void setMaxRows(int maxRows) {
+        this.maxRows = maxRows;
+    }
+
+    public int getMaxRows() {
+        return maxRows;
+    }
     
     protected void reduceN(int N) {
         assert N >= this.N0;
@@ -66,5 +75,5 @@ public abstract class StructuralAlgorithm {
             throw new InterruptedException("Computation thread interrupted by the user.");
     }
 
-    public abstract void compute(boolean log, ProgressObserver obs) throws InterruptedException;
+    public abstract void compute(boolean log, ProgressObserver obs) throws InterruptedException, TooManyRowsException;
 }

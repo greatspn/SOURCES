@@ -144,8 +144,14 @@ public class Row {
     // divide by the common [e|l] gcd
     public void canonicalize() {
         int div = vectorGCD();
-        if (e[0] / div < 0)
-            div = -div;
+        // ensure that the first non-zero in e is positive
+        for (int i=0; i<e.length; i++) {
+            if (e[i] != 0) {
+                if (e[i] * div < 0)
+                    div = -div;
+                break;
+            }
+        }
         if (div != 1) {
             for (int i=0; i<e.length; i++)
                 e[i] /= div;
@@ -162,6 +168,23 @@ public class Row {
         e = ne;
     }
     
+    //-----------------------------------------------------------------------
+
+    // lexicographically compare the e vector
+    private static class LexComparator implements Comparator<Row> {
+        @Override
+        public int compare(Row row1, Row row2) {
+            for (int j=0; j<row1.e.length; j++) {
+                if (row1.e[j] < row2.e[j])
+                    return -1;
+                if (row1.e[j] > row2.e[j])
+                    return +1;
+            }
+            return 0;
+        }
+    }
+    public static final Comparator<Row> LEX_COMPARATOR = new LexComparator();
+
     //-----------------------------------------------------------------------
     
     private static class DegLexComparator implements Comparator<Row> {
@@ -189,5 +212,5 @@ public class Row {
             return 0;
         }
     }
-    public static final DegLexComparator DEGLEX_COMPARATOR = new DegLexComparator();
+    public static final Comparator<Row> DEGLEX_COMPARATOR = new DegLexComparator();
 }

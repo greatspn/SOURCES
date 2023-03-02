@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
 /** Farkas algorithm for the computation
  *  of the minimal set of P(T)-(semi)flows in a Petri net.
@@ -27,7 +29,9 @@ public class FlowsGenerator extends StructuralAlgorithm {
     
     // Iteration matrix [ D(i) | A(i) ], where D(0)=I and A(0) = Flow matrix
     // At the beginning, K=N. After the computation, K is the number of flows.
-    public ArrayList<Row> rows; // [D|A] = [E|L]
+    private ArrayList<Row> initMat; // [D|A] = [E|L]
+    Set<Row> rows;
+    private ArrayList<Row> flowsMat; // Results
     
     // This extra informations keep the initial place marking, when
     // the method is used for P-invariants. It allows to derive the place bounds
@@ -46,11 +50,11 @@ public class FlowsGenerator extends StructuralAlgorithm {
         super(N, N0, M);
         this.type = type;
 //        System.out.println("M="+M+", N="+N);
-        rows = new ArrayList<>();
+        initMat = new ArrayList<>();
         for (int i = 0; i < N; i++) {
             Row row = new Row(N, M, false);
             row.e[i] = 1;
-            rows.add(row);
+            initMat.add(row);
         }
     }
     
@@ -65,11 +69,11 @@ public class FlowsGenerator extends StructuralAlgorithm {
 
     // Add an element to the incidence matrix from i to j with the specified cardinality
     public void addIncidence(int i, int j, int value) {
-        rows.get(i).l[j] += value;
+        initMat.get(i).l[j] += value;
     }
     // Set an element to the incidence matrix from i to j with the specified cardinality
     public void setIncidence(int i, int j, int value) {
-        rows.get(i).l[j] = value;
+        initMat.get(i).l[j] = value;
     }
     
     // Add the initial token of a place (only for P-invariant computation)
@@ -86,16 +90,16 @@ public class FlowsGenerator extends StructuralAlgorithm {
     }
     
     public int numFlows() {
-        return rows.size(); 
+        return flowsMat.size(); 
     }
 
     public int[] getFlowVector(int i) {
-        return rows.get(i).e;
+        return flowsMat.get(i).e;
     }
     
     // only for generation of all non-minimal flows
     public boolean isFlow(int i) {
-        return rows.get(i).is_l_zero();
+        return flowsMat.get(i).is_l_zero();
     }
     
     // get a compact matrix of all real flows
@@ -120,32 +124,45 @@ public class FlowsGenerator extends StructuralAlgorithm {
     }
 
     @Override
-    public void compute(boolean log, ProgressObserver obs) throws InterruptedException {
+    public void compute(boolean log, ProgressObserver obs) throws InterruptedException, TooManyRowsException {
+        rows = new TreeSet<>(Row.LEX_COMPARATOR);
+        rows.addAll(initMat);
+        initMat.clear();
+        initMat = null;
+        
 //        printMat(mA);
         if (log)
             System.out.println(this);
         // Matrix A starts with the flow matrix, D is the identity.
         // for every transition i=[0,M), repeat:
 //        for (int i = 0; i < M; i++) {
+        int columnCounter = 0;
         for (int i=nextPivot(); i>=0; i=nextPivot()) {
+            Set<Row> newRows = new TreeSet<>(Row.LEX_COMPARATOR);
+            obs.advance(columnCounter++, M+1, 0, 0);
+//            System.out.println("Step: "+columnCounter+"/"+(M)+"  rows="+rows.size());
 //            System.out.println("pivot: "+i+"/"+M);
             if (log)
                 System.out.println("\nStep "+i+"/"+(M-1)+"\n"+this);
             // Append to the matrix [D|A] every rows resulting as a non-negative
             // linear combination of row pairs from [D|A] whose sum zeroes
             // the i-th column of A.
-            int nRows = numFlows();
+//            int nRows = rows.size();
             int combined_with_i = 0;
-            for (int r1 = 0; r1 < nRows; r1++) {
-                Row row1 = rows.get(r1);
+            int rowCounter = 0;
+            for (Row row1 : rows) {
+//            for (int r1 = 0; r1 < nRows; r1++) {
+//                Row row1 = rows.get(r1);
                 if (row1.l[i] == 0) {
                     continue;
                 }
-                obs.advance(i, M+1, r1, nRows);
-                for (int r2 = r1 + 1; r2 < nRows; r2++) {
+                for (Row row2 : rows) {
+//                for (int r2 = r1 + 1; r2 < nRows; r2++) {
                     checkInterrupted();
+                    if (row1 == row2)
+                        break; // reached the half-visit
                     // Find two rows r1 and r2 such that r1[i] and r2[i] have opposite signs.
-                    Row row2 = rows.get(r2);
+//                    Row row2 = rows.get(r2);
                     if (row2.l[i] == 0)
                         continue;
                     
@@ -174,7 +191,9 @@ public class FlowsGenerator extends StructuralAlgorithm {
                     if (log)
                         System.out.println(i + ": " + mult2 + "*" + row1 + " + " + mult1 + "*" + row2 + " = " + newRow);
 
-                    rows.add(newRow);
+                    newRows.add(newRow);
+                    if (maxRows>0 && rows.size() + newRows.size() > maxRows)
+                        throw new TooManyRowsException();
                     ++combined_with_i;
                 }
                     
@@ -184,18 +203,33 @@ public class FlowsGenerator extends StructuralAlgorithm {
             checkInterrupted();
 
             // Eliminate from [D|A] the rows in which the i-th column of A is not zero.
-            int rr = nRows;
-            while (rr > 0) {
-                rr--;
-                Row checked = rows.get(rr);
-                obs.advance(i, M+1, rr, nRows);
+//            int rr = nRows;
+//            while (rr > 0) {
+//                rr--;
+//                Row checked = rows.get(rr);
+//                obs.advance(i, M+1, rr, nRows);
+//                if (checked.l[i] == 0) {
+//                    continue;
+//                }
+//                if (log)
+//                    System.out.println(i + ": DEL " + checked);
+//                rows.remove(rr);
+//            }
+            Iterator<Row> iter = rows.iterator();
+            while (iter.hasNext()) {
+                Row checked = iter.next();
+//                obs.advance(i, M+1, rr, nRows);
                 if (checked.l[i] == 0) {
                     continue;
                 }
-                if (log)
-                    System.out.println(i + ": DEL " + checked);
-                rows.remove(rr);
+                else {
+                    if (log)
+                        System.out.println(i + ": DEL " + checked);
+                    iter.remove();
+                }
             }
+            
+            rows.addAll(newRows);
             
             // Eliminate frm [D|A] the rows that are not minimal, doing an exhaustive search.
             if (!type.isBasis())
@@ -215,6 +249,10 @@ public class FlowsGenerator extends StructuralAlgorithm {
 //            scAlgo.compute(log, obs);
         }
         
+        flowsMat = new ArrayList<>(rows);
+        rows.clear();
+        rows = null;
+        
         setComputed();
     }
     
@@ -230,15 +268,26 @@ public class FlowsGenerator extends StructuralAlgorithm {
             if (null == fstt.smallerSupport(row))
                 fstt.insertRow(row);
         }
-        int rr = numFlows();
-        while (rr > 0) {
-            rr--;
-            Row row = rows.get(rr);
+//        int rr = numFlows();
+//        while (rr > 0) {
+//            rr--;
+//            Row row = rows.get(rr);
+//            Row smallerRow = fstt.smallerSupport(row);
+//            if (smallerRow != null) {
+//                if (log)
+//                    System.out.println("   DEL " + row + " by " + smallerRow);
+//                rows.remove(rr);
+//            }
+//        }
+        
+        Iterator<Row> iter = rows.iterator();
+        while (iter.hasNext()) {
+            Row row = iter.next();
             Row smallerRow = fstt.smallerSupport(row);
             if (smallerRow != null) {
                 if (log)
                     System.out.println("   DEL " + row + " by " + smallerRow);
-                rows.remove(rr);
+                iter.remove();
             }
         }
         
@@ -308,10 +357,18 @@ public class FlowsGenerator extends StructuralAlgorithm {
             throws InterruptedException 
     {
         // truncate and remove all supplementary variables in D
-        for (int rr=numFlows()-1; rr>=0; rr--) {
-            rows.get(rr).truncate_e(N0);
-            if (rows.get(rr).is_e_zero()) {
-                rows.remove(rr);
+//        for (int rr=numFlows()-1; rr>=0; rr--) {
+//            rows.get(rr).truncate_e(N0);
+//            if (rows.get(rr).is_e_zero()) {
+//                rows.remove(rr);
+//            }
+//        }
+        Iterator<Row> iter = rows.iterator();
+        while (iter.hasNext()) {
+            Row row = iter.next();
+            row.truncate_e(N0);
+            if (row.is_e_zero()) {
+                iter.remove();
             }
         }
         reduceN(N0);
@@ -322,10 +379,25 @@ public class FlowsGenerator extends StructuralAlgorithm {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < numFlows(); i++) {
-            sb.append(String.format("%2d: ", i));
-            sb.append(rows.get(i));
-            sb.append("\n");
+        if (initMat != null) {
+            for (int i = 0; i < initMat.size(); i++) {
+                sb.append(String.format("%2d: ", i));
+                sb.append(initMat.get(i));
+                sb.append("\n");
+            }
+        }
+        if (rows != null) {
+            for (Row row : rows) {
+                sb.append(row);
+                sb.append("\n");
+            }
+        }
+        if (flowsMat != null) {
+            for (int i = 0; i < numFlows(); i++) {
+                sb.append(String.format("%2d: ", i));
+                sb.append(flowsMat.get(i));
+                sb.append("\n");
+            }
         }
         return sb.toString();
     }
@@ -586,7 +658,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
                         int jj = trIndexStart[tt] + trSecondaryIndex[tt];
                         assert jj < trIndexEnd[tt];
 //                        if (mA.get(p)[jj] == 0)
-                        if (rows.get(p).l[jj] == 0)
+                        if (initMat.get(p).l[jj] == 0)
                             setIncidence(p, jj, 1);
                         ++trSecondaryIndex[tt]; // increment replica counter
                     }
@@ -724,7 +796,7 @@ public class FlowsGenerator extends StructuralAlgorithm {
     }
     
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, TooManyRowsException {
         long start = System.nanoTime();
         testProblem(FlowsGeneratorTestData.prob1);
         testProblem(FlowsGeneratorTestData.probAnisimov);
@@ -735,10 +807,12 @@ public class FlowsGenerator extends StructuralAlgorithm {
         testProblem(FlowsGeneratorTestData.probM33I);
         testProblem(FlowsGeneratorTestData.probM44N);
         testProblem(FlowsGeneratorTestData.probM44I);
+//        FlowsGeneratorTestData.FlowProblem fp = new FlowsGeneratorTestData.FlowProblem(myMat, null, PTFlows.Type.PLACE_FLOWS);
+//        testProblem(fp);
         System.out.println("Total Time: " + (System.nanoTime() - start)/1e9);
     }
     
-    private static void testProblem(FlowsGeneratorTestData.FlowProblem problem) throws InterruptedException {
+    private static void testProblem(FlowsGeneratorTestData.FlowProblem problem) throws InterruptedException, TooManyRowsException {
         boolean verbose = false;
         ProgressObserver obs = (int step, int total, int s, int t) -> { };
         FlowsGenerator fg = new FlowsGenerator(problem.input, problem.probType);
@@ -774,4 +848,53 @@ public class FlowsGenerator extends StructuralAlgorithm {
                 throw new IllegalStateException();
         }
     }
+    
+//    private static int[][] myMat = {
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0 },
+//{  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0 },
+//{  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1 },
+//{  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{ -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1 },
+//{ -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1 },
+//{  1,  1,  1,  1,  1,  1,  1,  1,  1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+//
+//    };
 }
