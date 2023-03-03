@@ -648,29 +648,6 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 
 
 /**************************************************************/
-/* NAME :  Class deleteElementsInList*/
-/* DESCRIPTION : delete all element in future event list at the beginning of a new cycle */
-/**************************************************************/
-/*void deleteElementsInList(Event* first)
-{
-
-	Event *temp1 = first;
-    Event *next = NULL;
- 
-    while (temp1 != NULL)
-    {
-        next = temp1->next;
- 
-        //cout << "Deleting " << prev->data << endl;
-        delete(temp1);
-        temp1 = next;
-    }
-
-
-}*/
-
-
-/**************************************************************/
 /* NAME :  Class setSizeFutureEventList*/
 /* DESCRIPTION : set the initial size of the future event list to limitate the reallocation
 				when the infinite server is used */
@@ -3456,8 +3433,6 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 		double nextTimePoint=tout=Print_Step+itime;
 		//istate=1;
 		time=itime;
-
-
 
 		while(time<=Max_Time){
 
