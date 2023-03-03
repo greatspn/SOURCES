@@ -21,7 +21,7 @@
 
 	}
 
-	inline double binomial(double min, double max, mt19937_64& generator){
+	inline double binomial(double max, double min, mt19937_64& generator){
 
 		if(min<0 || max<=min){
 			throw Exception("The parameters of the Binomial distribution are wrong. They must be different and greater than 0.\n\n");
