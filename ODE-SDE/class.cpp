@@ -2910,8 +2910,6 @@ int SystEq::getComputeTau(int SetTranExp[], double& nextTimePoint,double t){
 	outfel << "trans "<<NameTrans[SetTranExp[lo+1]]<<" id"<<lo+1<<"\n\n";
 	return SetTranExp[lo+1];
 }
-//	return -1;
-//}
 
 /**************************************************************/
 /* NAME :  Class SystEq*/
