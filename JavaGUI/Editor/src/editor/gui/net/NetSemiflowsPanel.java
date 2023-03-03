@@ -389,6 +389,8 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
 //            algo = new FlowsGenerator(netIndex.numTransition(), netIndex.numPlaces());
 //        algo.onlySemiflows = sfType.isSemiflow();
         algo.initialize(type, viewerPanel.getGspnBinding(), netIndex);
+        final int MAX_ROWS = 100000;
+        algo.setMaxRows(MAX_ROWS);
         
         // Compute (semi)flows (in a separate thread)
         SemiflowComputationDialog dlg = new SemiflowComputationDialog(mainInterface.getWindowFrame(), algo);
@@ -429,7 +431,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
         // Make the list of errors
         ArrayList<PageErrorWarning> errsWarns = new ArrayList<>();
         if (!algo.isComputed()) {
-            errsWarns.add(PageErrorWarning.newWarning(algo.getFailureReason(), 
+            errsWarns.add(PageErrorWarning.newError(algo.getFailureReason(), 
                           new Selectable.DummySelectable()));
         }
         else {

@@ -67,7 +67,7 @@ public class Test_BridgeAndVehicles_V04_P05_N02_unf {
         return fg;
     }
     
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, TooManyRowsException {
         FlowsGenerator fg = initBridgeAndVehicles_V04_P05_N02_unf();
         StructuralAlgorithm.ProgressObserver obs = new StructuralAlgorithm.ProgressObserver() {
             @Override

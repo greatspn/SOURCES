@@ -7,6 +7,7 @@
 package editor.gui.net;
 
 import editor.domain.semiflows.FlowsGenerator;
+import editor.domain.semiflows.TooManyRowsException;
 import java.awt.Frame;
 import javax.swing.SwingUtilities;
 
@@ -95,6 +96,9 @@ public class SemiflowComputationDialog extends javax.swing.JDialog implements Fl
             }
             catch (InterruptedException ie) {
                 algo.setFailed("Computation interrupted.");
+            }
+            catch (TooManyRowsException e) {
+                algo.setFailed("Computation failed: Too many rows ("+algo.getMaxRows()+").");
             }
             finally {
                 SwingUtilities.invokeLater(new Runnable() {

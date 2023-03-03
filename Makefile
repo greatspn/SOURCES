@@ -234,9 +234,11 @@ ifeq ("$(wildcard $(PATH_TO_LP_SOLVE_LIB)libcolamd.a)","")
 endif
 endif
 
-$(call search_library,GMP_LIB,/libgmpxx.*,"GMP library",-lgmpxx -lgmp)
+# make GMP a static library to avoid the dependency in the portable GreatSPN distrib.
+$(call search_library,GMP_LIB,/libgmpxx.*,"GMP library",-lgmp -lgmpxx)
 ifdef HAS_GMP_LIB
 	INCLUDE_GMP_LIB := -DHAS_GMP_LIB=1
+# 	LINK_GMP_LIB := $(PATH_TO_GMP_LIB)libgmpxx.a $(PATH_TO_GMP_LIB)libgmp.a
 endif
 
 

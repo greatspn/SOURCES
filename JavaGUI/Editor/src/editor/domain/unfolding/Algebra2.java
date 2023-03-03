@@ -470,18 +470,22 @@ public class Algebra2 {
                             if (tagIds.containsKey(node.getTag(t))) {
                                 int tagId = tagIds.get(node.getTag(t));
                                 int card = node.getTagCard(t);
-                                H.addToC(nodeId, tagId, card);
+                                H.addToL(nodeId, tagId, card);
                             }
                         }
                     }
+                    H.setVerbose();
+                    if (policy == Policy.UNARY_CONJUGATED_ALL)
+                        H.setKeepCpCm();
                     H.HilbertFM();
+                    H.removeInitialRows();
 
                     // Generate the synchronization nodes
                     for (int phase=0; phase<2; phase++) {
                         for (int ff=0; ff < H.numRows(); ff++) {
                             // phase 0 -> insert real flows
                             // phase 1 -> insert incomplete syncrhonizations
-                            if (H.isRealBasisVec(ff) == (phase==0)) {
+                            if (H.isHilbertBasisVec(ff) == (phase==0)) {
                                 int[] syncVec = H.getBasisVec(ff);
                                 assert syncVec.length == nodeIds.size();
                                 SynchMultiset sm = new SynchMultiset();

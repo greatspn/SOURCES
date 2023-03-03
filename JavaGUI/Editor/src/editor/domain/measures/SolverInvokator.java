@@ -778,6 +778,8 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         ArrayList<String> cmd;
         cmd = startOfCommand();
         if (Util.isWindows() && !Util.useWSL()) { // DOS command
+            cmd.add("cmd.exe");
+            cmd.add("/c");
             cmd.add("COPY");
             cmd.add("NUL");
             cmd.add(filename);            
@@ -794,6 +796,8 @@ public abstract class SolverInvokator  implements SolverDialog.InterruptibleSolv
         ArrayList<String> cmd;
         cmd = startOfCommand();
         if (Util.isWindows() && !Util.useWSL()) { // DOS command
+            cmd.add("cmd.exe");
+            cmd.add("/c");
             cmd.add("COPY");
             cmd.add(src);
             cmd.add(dst);            

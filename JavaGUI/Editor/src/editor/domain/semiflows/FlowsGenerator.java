@@ -15,6 +15,10 @@ import editor.domain.grammar.TemplateBinding;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
 /** Farkas algorithm for the computation
  *  of the minimal set of P(T)-(semi)flows in a Petri net.
@@ -25,8 +29,9 @@ public class FlowsGenerator extends StructuralAlgorithm {
     
     // Iteration matrix [ D(i) | A(i) ], where D(0)=I and A(0) = Flow matrix
     // At the beginning, K=N. After the computation, K is the number of flows.
-    public ArrayList<int[]> mD;     // KxN matrix
-    public ArrayList<int[]> mA;     // KxM matrix
+    private ArrayList<Row> initMat; // [D|A] = [E|L]
+    Set<Row> rows;
+    private ArrayList<Row> flowsMat; // Results
     
     // This extra informations keep the initial place marking, when
     // the method is used for P-invariants. It allows to derive the place bounds
@@ -37,8 +42,6 @@ public class FlowsGenerator extends StructuralAlgorithm {
     // Will compute semiflows or integer flows
     public final PTFlows.Type type;
     
-//    SilvaColom88Algorithm scAlgo;
-    
 
     // For P-flows: N=|P|, M=|T| (for T-flows: N=|T|, M=|P|)
     // If supplementary variables are added, N0 keeps the value of N(|P| or |T|) 
@@ -47,23 +50,30 @@ public class FlowsGenerator extends StructuralAlgorithm {
         super(N, N0, M);
         this.type = type;
 //        System.out.println("M="+M+", N="+N);
-        mD = new ArrayList<>();
-        mA = new ArrayList<>();
+        initMat = new ArrayList<>();
         for (int i = 0; i < N; i++) {
-            mD.add(new int[N]);
-            mA.add(new int[M]);
-            mD.get(i)[i] = 1;
+            Row row = new Row(N, M, false);
+            row.e[i] = 1;
+            initMat.add(row);
         }
-//        scAlgo = new SilvaColom88Algorithm(N, M);
+    }
+    
+    // Initialize from an N*M matrix
+    public FlowsGenerator(int[][] mat, PTFlows.Type type) {
+        this(mat.length, mat.length, mat[0].length, type);
+        for (int i=0; i<mat.length; i++) {
+            for (int j=0; j<mat[i].length; j++)
+                setIncidence(i, j, mat[i][j]);
+        }
     }
 
     // Add an element to the incidence matrix from i to j with the specified cardinality
-    public void addIncidence(int i, int j, int card) {
-        mA.get(i)[j] += card;
+    public void addIncidence(int i, int j, int value) {
+        initMat.get(i).l[j] += value;
     }
     // Set an element to the incidence matrix from i to j with the specified cardinality
     public void setIncidence(int i, int j, int value) {
-        mA.get(i)[j] = value;
+        initMat.get(i).l[j] = value;
     }
     
     // Add the initial token of a place (only for P-invariant computation)
@@ -80,19 +90,16 @@ public class FlowsGenerator extends StructuralAlgorithm {
     }
     
     public int numFlows() {
-        return mD.size();
+        return flowsMat.size(); 
     }
 
     public int[] getFlowVector(int i) {
-        return mD.get(i);
+        return flowsMat.get(i).e;
     }
     
     // only for generation of all non-minimal flows
     public boolean isFlow(int i) {
-        for (int v : mA.get(i))
-            if (v != 0)
-                return false;
-        return true; // all zeros
+        return flowsMat.get(i).is_l_zero();
     }
     
     // get a compact matrix of all real flows
@@ -107,21 +114,6 @@ public class FlowsGenerator extends StructuralAlgorithm {
                 annulers[i++] = getFlowVector(f);
         return annulers;
     }
-
-    public static int gcd(int a, int b) {
-        assert a >= 0 && b >= 0;
-        if (a == 0)
-            return b;
-
-        while (b != 0) {
-            if (a > b)
-                a = a - b;
-            else
-                b = b - a;
-        }
-
-        return a;
-    }
     
     private static int sign(int num) {
         if (num > 0)
@@ -132,85 +124,76 @@ public class FlowsGenerator extends StructuralAlgorithm {
     }
 
     @Override
-    public void compute(boolean log, ProgressObserver obs) throws InterruptedException {
+    public void compute(boolean log, ProgressObserver obs) throws InterruptedException, TooManyRowsException {
+        rows = new TreeSet<>(Row.LEX_COMPARATOR);
+        rows.addAll(initMat);
+        initMat.clear();
+        initMat = null;
+        
+//        printMat(mA);
         if (log)
             System.out.println(this);
         // Matrix A starts with the flow matrix, D is the identity.
         // for every transition i=[0,M), repeat:
-        for (int i = 0; i < M; i++) {
+//        for (int i = 0; i < M; i++) {
+        int columnCounter = 0;
+        for (int i=nextPivot(); i>=0; i=nextPivot()) {
+            Set<Row> newRows = new TreeSet<>(Row.LEX_COMPARATOR);
+            obs.advance(columnCounter++, M+1, 0, 0);
+//            System.out.println("Step: "+columnCounter+"/"+(M)+"  rows="+rows.size());
+//            System.out.println("pivot: "+i+"/"+M);
             if (log)
                 System.out.println("\nStep "+i+"/"+(M-1)+"\n"+this);
             // Append to the matrix [D|A] every rows resulting as a non-negative
             // linear combination of row pairs from [D|A] whose sum zeroes
             // the i-th column of A.
-            int nRows = numFlows();
+//            int nRows = rows.size();
             int combined_with_i = 0;
-            for (int r1 = 0; r1 < nRows; r1++) {
-                if (mA.get(r1)[i] == 0) {
+            int rowCounter = 0;
+            for (Row row1 : rows) {
+//            for (int r1 = 0; r1 < nRows; r1++) {
+//                Row row1 = rows.get(r1);
+                if (row1.l[i] == 0) {
                     continue;
                 }
-                obs.advance(i, M+1, r1, nRows);
-                for (int r2 = r1 + 1; r2 < nRows; r2++) {
+                for (Row row2 : rows) {
+//                for (int r2 = r1 + 1; r2 < nRows; r2++) {
                     checkInterrupted();
+                    if (row1 == row2)
+                        break; // reached the half-visit
                     // Find two rows r1 and r2 such that r1[i] and r2[i] have opposite signs.
-                    if (mA.get(r2)[i] == 0)
+//                    Row row2 = rows.get(r2);
+                    if (row2.l[i] == 0)
                         continue;
                     
-                    int mult1, mult2;
                     if (type.isSemiflow()) { // (non-negative) semiflows
-                        if (sign(mA.get(r1)[i]) == sign(mA.get(r2)[i]))
+                        if (sign(row1.l[i]) == sign(row2.l[i]))
                             continue;
-                        mult1 = Math.abs(mA.get(r1)[i]);
-                        mult2 = Math.abs(mA.get(r2)[i]);
                     }
-                    else { // integer flows
-                        mult1 = Math.abs(mA.get(r1)[i]);
-                        mult2 = Math.abs(mA.get(r2)[i]);
-                        int gcd12 = gcd(mult1, mult2);
-                        mult1 /= gcd12;
-                        mult2 /= gcd12;
-                        if (sign(mA.get(r1)[i]) == sign(mA.get(r2)[i]))
+                    int mult1 = Math.abs(row1.l[i]);
+                    int mult2 = Math.abs(row2.l[i]);
+                    int gcd12 = Row.scalarGCD(mult1, mult2);
+                    mult1 /= gcd12;
+                    mult2 /= gcd12;
+                    if (type.isFlow()) {
+                        if (sign(row1.l[i]) == sign(row2.l[i]))
                             mult1 *= -1;
                     }
 
                     // Create a new row nr' such that:
                     //   nr = |r2[i]| * r1 + |ri[i]| * r2
                     //   nr' = nr / gcd(nr)
-                    int[] nrA = new int[M];
-                    int[] nrD = new int[N];
-                    int gcdAD = -1;
-                    for (int k = 0; k < M; k++) {
-                        // Compute (with arithmetic overflow check):
-                        nrA[k] = Math.addExact(Math.multiplyExact(mult2, mA.get(r1)[k]),
-                                               Math.multiplyExact(mult1, mA.get(r2)[k]));
-                        gcdAD = (k == 0) ? Math.abs(nrA[k]) : gcd(gcdAD, Math.abs(nrA[k]));
-                    }
-                    assert nrA[i] == 0;
-                    for (int k = 0; k < N; k++) {
-                        // Compute (with arithmetic overflow check):
-                        nrD[k] = Math.addExact(Math.multiplyExact(mult2, mD.get(r1)[k]),
-                                               Math.multiplyExact(mult1, mD.get(r2)[k]));
-                        gcdAD = gcd(gcdAD, Math.abs(nrD[k]));
-                    }
-                    if (gcdAD != 1) {
-//                        System.out.println("  gcdAD = " + gcdAD);
-                        for (int k = 0; k < M; k++)
-                            nrA[k] /= gcdAD;
-                        for (int k = 0; k < N; k++)
-                            nrD[k] /= gcdAD;
-                    }
-                    int nnzD = 0;
-                    for (int k = 0; k < N; k++) 
-                        if (nrD[k] != 0)
-                            nnzD++;                  
-                    if (nnzD == 0)
-                        continue; // drop empty row
+                    Row newRow = new Row(mult2, row1, mult1, row2);
+                    newRow.canonicalize();
+                    if (newRow.is_e_zero())
+                        continue; // can this really happen??
 
                     if (log)
-                        System.out.println(i + ": ADD row " + r1 + " + row " + r2 + "  nnz(D)=" + nnzD);
+                        System.out.println(i + ": " + mult2 + "*" + row1 + " + " + mult1 + "*" + row2 + " = " + newRow);
 
-                    mA.add(nrA);
-                    mD.add(nrD);
+                    newRows.add(newRow);
+                    if (maxRows>0 && rows.size() + newRows.size() > maxRows)
+                        throw new TooManyRowsException();
                     ++combined_with_i;
                 }
                     
@@ -220,18 +203,33 @@ public class FlowsGenerator extends StructuralAlgorithm {
             checkInterrupted();
 
             // Eliminate from [D|A] the rows in which the i-th column of A is not zero.
-            int rr = nRows;
-            while (rr > 0) {
-                rr--;
-                obs.advance(i, M+1, rr, nRows);
-                if (mA.get(rr)[i] == 0) {
+//            int rr = nRows;
+//            while (rr > 0) {
+//                rr--;
+//                Row checked = rows.get(rr);
+//                obs.advance(i, M+1, rr, nRows);
+//                if (checked.l[i] == 0) {
+//                    continue;
+//                }
+//                if (log)
+//                    System.out.println(i + ": DEL " + checked);
+//                rows.remove(rr);
+//            }
+            Iterator<Row> iter = rows.iterator();
+            while (iter.hasNext()) {
+                Row checked = iter.next();
+//                obs.advance(i, M+1, rr, nRows);
+                if (checked.l[i] == 0) {
                     continue;
                 }
-                if (log)
-                    System.out.println(i + ": DEL row " + rr);
-                mA.remove(rr);
-                mD.remove(rr);
+                else {
+                    if (log)
+                        System.out.println(i + ": DEL " + checked);
+                    iter.remove();
+                }
             }
+            
+            rows.addAll(newRows);
             
             // Eliminate frm [D|A] the rows that are not minimal, doing an exhaustive search.
             if (!type.isBasis())
@@ -251,6 +249,10 @@ public class FlowsGenerator extends StructuralAlgorithm {
 //            scAlgo.compute(log, obs);
         }
         
+        flowsMat = new ArrayList<>(rows);
+        rows.clear();
+        rows = null;
+        
         setComputed();
     }
     
@@ -261,295 +263,89 @@ public class FlowsGenerator extends StructuralAlgorithm {
     private void removeNonMinimalFlows(boolean log, ProgressObserver obs) 
             throws InterruptedException 
     {
-        int rr = numFlows();
-        while (rr > 0) {
-            rr--;
-            obs.advance(M, M+1, numFlows()-rr, numFlows());
-            for (int i=0; i<numFlows(); i++) {
-                checkInterrupted();
-                if (i == rr)
-                    continue;
-                // Check if support(D[i]) subseteq support(D[rr])
-                boolean support_included = true;
-                for (int k=0; k<N && support_included; k++) {
-                    if (mD.get(i)[k] != 0) {
-                        if (mD.get(rr)[k] == 0)
-                            support_included = false;
-                    } 
-                }
-
-                if (support_included) {
-                    // rr was a linear combination of other flows. Remove it
-                    if (log)
-                        System.out.println("DEL row " + rr);
-                    mA.remove(rr);
-                    mD.remove(rr);
-                    break;
-                }
+        FastSupportTestTable fstt = new FastSupportTestTable(N);
+        for (Row row : rows) {
+            if (null == fstt.smallerSupport(row))
+                fstt.insertRow(row);
+        }
+//        int rr = numFlows();
+//        while (rr > 0) {
+//            rr--;
+//            Row row = rows.get(rr);
+//            Row smallerRow = fstt.smallerSupport(row);
+//            if (smallerRow != null) {
+//                if (log)
+//                    System.out.println("   DEL " + row + " by " + smallerRow);
+//                rows.remove(rr);
+//            }
+//        }
+        
+        Iterator<Row> iter = rows.iterator();
+        while (iter.hasNext()) {
+            Row row = iter.next();
+            Row smallerRow = fstt.smallerSupport(row);
+            if (smallerRow != null) {
+                if (log)
+                    System.out.println("   DEL " + row + " by " + smallerRow);
+                iter.remove();
             }
-        }        
+        }
+        
+//        int rr = numFlows();
+//        while (rr > 0) {
+//            rr--;
+//            Row checked = rows.get(rr);
+//            obs.advance(M, M+1, numFlows()-rr, numFlows());
+//            for (int i=0; i<numFlows(); i++) {
+//                checkInterrupted();
+//                if (i == rr)
+//                    continue;
+//                Row row = rows.get(i);
+//                
+//                // Check if support(D[i]) subseteq support(D[rr])
+//                boolean support_included = true;
+//                for (int k=0; k<N && support_included; k++) {
+//                    if (row.e[k] != 0 && checked.e[k] == 0)
+//                        support_included = false;
+//                }
+//
+//                if (support_included) {
+//                    // rr was a linear combination of other flows. Remove it
+//                    if (log)
+//                        System.out.println("   DEL " + checked);
+//                    rows.remove(rr);
+//                    break;
+//                }
+//            }
+//        }        
     }
     
-//    //-----------------------------------------------------------------------
-//    // Compute all canonical semiflows, even if they are not minimal
-//    public void computeAllCanonicalSemiflows(boolean log, ProgressObserver obs)//, int[][] annulers) 
-//            throws InterruptedException 
-//    {
-//        assert type==PTFlows.Type.PLACE_SEMIFLOWS;
-//        if (log)
-//            System.out.println(this);
-//        Set<Tuple<Integer, Integer>> dropped = new HashSet<>();
-//        int initFlows = numFlows();
-////        if (log && annulers!=null) {
-////            for (int[] a : annulers)
-////                System.out.println("ANNULER: "+rowToString(a, null));
-////        }
-//        
-//        // Matrix A starts with the flow matrix, D is the identity.
-//        // for every transition i=[0,M), repeat:
-//        for (int i = 0; i < M; i++) {
-//            if (log)
-//                System.out.println("\nStep "+i+"/"+(M-1)+"\n"+this);
-//            // Append to the matrix [D|A] every rows resulting as a non-negative
-//            // linear combination of row pairs from [D|A] whose sum zeroes
-//            // the i-th column of A.
-////            int nRows = numFlows();
-////            int combined_with_i = 0;
-//            for (int r1 = 0; r1 < numFlows(); r1++) {
-//                assert numFlows() < 1000;
-//                if (mA.get(r1)[i] == 0) {
-//                    continue;
-//                }
-//                obs.advance(i, M+1, r1, numFlows());
-//                for (int r2 = r1 + 1; r2 < numFlows(); r2++) {
-//                    checkInterrupted();
-//                    // Find two rows r1 and r2 such that r1[i] and r2[i] have opposite signs.
-//                    if (mA.get(r2)[i] == 0)
-//                        continue;
-//                    
-//                    if (dropped.contains(new Tuple<>(r1, r2)))
-//                        continue;
-//                    
-////                    int mult1, mult2;
-////                    if (type.isSemiflow()) { // (non-negative) semiflows
-//                    if (sign(mA.get(r1)[i]) == sign(mA.get(r2)[i]))
-//                        continue;
-////                    mult1 = Math.abs(mA.get(r1)[i]);
-////                    mult2 = Math.abs(mA.get(r2)[i]);
-////                    mult1 = mult2 = 1; // Do all 1-steps
-////                    }
-////                    else { // integer flows
-////                        mult1 = Math.abs(mA.get(r1)[i]);
-////                        mult2 = Math.abs(mA.get(r2)[i]);
-////                        int gcd12 = gcd(mult1, mult2);
-////                        mult1 /= gcd12;
-////                        mult2 /= gcd12;
-////                        if (sign(mA.get(r1)[i]) == sign(mA.get(r2)[i]))
-////                            mult1 *= -1;
-////                    }
-//
-//                    // Create a new row nr' such that:
-//                    //   nr = |r2[i]| * r1 + |ri[i]| * r2
-//                    //   nr' = nr / gcd(nr)
-//                    int[] nrA = new int[M];
-//                    int[] nrD = new int[N];
-//                    int gcdAD = -1;
-//                    for (int k = 0; k < M; k++) {
-//                        // Compute (with arithmetic overflow check):
-////                        nrA[k] = Math.addExact(Math.multiplyExact(mult2, mA.get(r1)[k]),
-////                                               Math.multiplyExact(mult1, mA.get(r2)[k]));
-//                        nrA[k] = Math.addExact(mA.get(r1)[k], mA.get(r2)[k]);
-//                        gcdAD = (k == 0) ? Math.abs(nrA[k]) : gcd(gcdAD, Math.abs(nrA[k]));
-//                    }
-////                    assert nrA[i] == 0;
-//                    for (int k = 0; k < N; k++) {
-//                        // Compute (with arithmetic overflow check):
-////                        nrD[k] = Math.addExact(Math.multiplyExact(mult2, mD.get(r1)[k]),
-////                                               Math.multiplyExact(mult1, mD.get(r2)[k]));
-//                        nrD[k] = Math.addExact(mD.get(r1)[k], mD.get(r2)[k]);
-//                        gcdAD = gcd(gcdAD, Math.abs(nrD[k]));
-//                    }
-//                    // Make canonic
-//                    if (gcdAD != 1) {
-////                        System.out.println("  gcdAD = " + gcdAD);
-//                        for (int k = 0; k < M; k++)
-//                            nrA[k] /= gcdAD;
-//                        for (int k = 0; k < N; k++)
-//                            nrD[k] /= gcdAD;
-//                    }
-//                    int nnzD = 0;
-//                    for (int k = 0; k < N; k++) 
-//                        if (nrD[k] != 0)
-//                            nnzD++;
-//                    if (nnzD == 0)
-//                        continue; // drop empty row
-//                    
-//                    boolean dropVec = false;
-//                    // check if an identical row already exists in D
-//                    for (int hh=0; hh<numFlows() && !dropVec; hh++) {
-//                        if (Arrays.equals(mD.get(hh), nrD)) {
-//                            dropVec = true; // duplicated row
-//                        }
-//                    }
-//                    // check if there is an identical support semiflow that is smaller
-//                    if (!dropVec) {
-//                        for (int k=initFlows; k<mD.size(); k++) {
-//                            if (mA.get(k)[i] == 0) {
-//                                if (checkParetoDominance(nrD, mD.get(k))) {
-//                                    dropVec = true;
-//                                    System.out.println("BOUND: "+rowToString(nrD, nrA)+
-//                                                       " < "+rowToString(mD.get(k), mA.get(k)));
-//                                    break;                                
-//                                }
-//                            }
-//                        }
-//                    }
-//                    if (dropVec) {
-//                        dropped.add(new Tuple<>(r1, r2));
-//                        if (log) {
-//                            System.out.println("DROP row:"+r1+" + row:" + r2 + 
-//                                               "  nnz(D)=" + nnzD + "  gcdAD="+gcdAD);
-////                            System.out.println(String.format("--: %s", rowToString(nrD, nrA)));
-//                        }
-//                        continue;
-//                    }
-//
-//                    if (log) {
-//                        System.out.println("ADD  row:"+r1+" + row:" + r2 + 
-//                                           "  nnz(D)=" + nnzD + "  gcdAD="+gcdAD);
-//                        System.out.println(String.format("%2d: %s", mA.size(), rowToString(nrD, nrA)));
-//                    }
-//                    mA.add(nrA);
-//                    mD.add(nrD);
-////                    ++combined_with_i;
-//                }
-//                    
-////                if (type.isBasis() && combined_with_i>0)
-////                    break;
-//            }
-//            checkInterrupted();
-//            
-//            // Eliminate from [D|A] the rows that are >= of the semiflows.
-//            int rr = numFlows();
-//            while (rr > 0) {
-//                rr--;
-//                boolean drop = false;
-//                for (int jj=0; jj<numFlows() && !drop; jj++) { // loop htrough all semiflows
-//                    if (jj != rr && mA.get(jj)[i] == 0) {
-//                        if (checkParetoDominance(mD.get(rr), mD.get(jj))) {
-//                            drop = true;
-//                            System.out.println("DROPX row:"+rr+" >= row:" + jj);
-//                            System.out.println(rowToString(mD.get(rr), mA.get(rr))+" >= "+
-//                                               rowToString(mD.get(jj), mA.get(jj)));
-//                        }
-//                    }
-//                }
-//                if (drop) {
-//                    mA.remove(rr);
-//                    mD.remove(rr);
-//                }
-//            }
-//
-//            // Eliminate from [D|A] the rows in which the i-th column of A is not zero.
-//            /*int rr = numFlows();
-//            while (rr > 0) {
-//                rr--;
-//                obs.advance(i, M+1, rr, numFlows());
-//                if (mA.get(rr)[i] == 0) {
-//                    continue;
-//                }
-//                if (log)
-//                    System.out.println(i + ": DEL row " + rr);
-//                mA.remove(rr);
-//                mD.remove(rr);
-//            }*/
-//            
-////            // Eliminate frm [D|A] the rows that are not minimal, doing an exhaustive search.
-////            if (!type.isBasis())
-////                removeNonMinimalFlows(log, obs);
-//        }
-//        
-//        if (log)
-//            System.out.println("\nRESULT:\n"+this);
-//
-//        // Remove all the initial flows
-//        mA = new ArrayList<>(mA.subList(initFlows, mA.size()));
-//        mD = new ArrayList<>(mD.subList(initFlows, mD.size()));
-////        if (log)
-////            System.out.println("\nREMOVING "+initFlows+" initial flows.");
-//        
-////        if (type.isTrapsOrSiphons())
-////            dropSupplementaryVariablesAndReduce(log, obs);
-//
-//        obs.advance(M+1, M+1, 1, 1);
-//        
-////        if (type.isBound()) {
-////            computeBoundsFromInvariants();
-//////            scAlgo.compute(log, obs);
-////        }
-//        
-//        setComputed();
-//    }
-////    //-----------------------------------------------------------------------
-//    private boolean checkSameSupport(int[] vec1, int[] vec2) {
-//        for (int i=0; i<vec1.length; i++)
-//            if ((vec1[i]==0) != (vec2[i]==0))
-//                return false; // different supports
-//        return true;
-//    }
-//    //-----------------------------------------------------------------------
-//    // check if vec1 Pareto-dominates vec2, i.e. iff vec1 >= vec2
-//    private boolean checkParetoDominance(int[] vec1, int[] vec2) {
-//        if (!checkSameSupport(vec1, vec2))
-//            return false; // compare only if they have the same support
-//        
-//        for (int i=0; i<vec1.length; i++) {
-//            if (vec1[i] < vec2[i])
-//                return false;
-//        }
-//        return true;
-//        
-//       /* int eq = 0, greater = 0;
-////        boolean eq = true, greater = true;//, less = true;
-//        for (int i=0; i<vec1.length; i++) {
-//            if (vec1[i] == vec2[i])  eq++;
-//            if (vec1[i] > vec2[i])   greater++;
-////            if (vec1[i] < vec2[i]) {
-////                eq = false;
-////                greater = false;
-////            }
-////            else if (vec1[i] > vec2[i]) {
-////                eq = false;
-////                // less = false;
-////            }
-//        }
-////        if (less)
-////            System.out.println("### "+rowToString(vec1, null)+" < "+rowToString(vec2, null));
-////        if (greater)
-////            System.out.println("### "+rowToString(vec1, null)+" > "+rowToString(vec2, null));
-//        boolean is_eq = (eq == vec1.length);
-//        boolean is_greater_eq = (greater > 0) && (greater + eq == vec1.length);
-//        
-//        return is_eq || is_greater_eq;// || less;       */ 
-//        
-////        boolean eq = true;
-////        for (int i=0; i<vec1.length; i++) {
-////            if (vec1[i] < vec2[i])
-////                eq = false;
-////            else if (vec1[i] > vec2[i])
-////                return true;
-////        }
-////        return !eq;
-//        
-////        for (int i=0; i<semiflow.length; i++)
-////            if ((semiflow[i]==0) != (vec[i]==0))
-////                return false; // support is different
-////        // check that vec is not greater than @semiflow
-////        for (int i=0; i<semiflow.length; i++)
-////            if (vec[i] > semiflow[i])
-////                return true; // drop
-////        return false; 
-//    }
+    //-----------------------------------------------------------------------
+
+    private int nextPivot() {
+        int[] pos = new int[M], neg = new int[M];
+        for (Row row : rows) {
+            for (int j=0; j<M; j++) {
+                if (row.l[j]>0)
+                    pos[j]++;
+                else if  (row.l[j]<0)
+                    neg[j]++;
+            }
+        }
+        int nextCol = -1;
+        int nextOps = -1;
+        for (int j=0; j<M; j++) {
+//            System.out.println("   j="+j+"  pos="+pos[j]+" neg="+neg[j]);
+            if (pos[j]>0 || neg[j]>0) { // still something to do on col j
+                int ops = pos[j] * neg[j];
+                if (nextCol==-1 || ops < nextOps) {
+                    nextOps = ops;
+                    nextCol = j;
+                }
+            }
+        }
+        return nextCol;
+    }
     
     //-----------------------------------------------------------------------
     
@@ -561,22 +357,18 @@ public class FlowsGenerator extends StructuralAlgorithm {
             throws InterruptedException 
     {
         // truncate and remove all supplementary variables in D
-        for (int rr=numFlows()-1; rr>=0; rr--) {
-            int[] newDi = new int[N0];
-            System.arraycopy(mD.get(rr), 0, newDi, 0, N0);
-            
-            int nnz = 0;
-            for (int k = 0; k < N0; k++)
-                nnz += (newDi[k] != 0 ? 1 : 0);
-            
-            if (nnz > 0) {
-                mD.set(rr, newDi);
-            }
-            else {
-                if (log)
-                    System.out.println("DEL row " + rr);
-                mA.remove(rr);
-                mD.remove(rr);
+//        for (int rr=numFlows()-1; rr>=0; rr--) {
+//            rows.get(rr).truncate_e(N0);
+//            if (rows.get(rr).is_e_zero()) {
+//                rows.remove(rr);
+//            }
+//        }
+        Iterator<Row> iter = rows.iterator();
+        while (iter.hasNext()) {
+            Row row = iter.next();
+            row.truncate_e(N0);
+            if (row.is_e_zero()) {
+                iter.remove();
             }
         }
         reduceN(N0);
@@ -584,27 +376,28 @@ public class FlowsGenerator extends StructuralAlgorithm {
         removeNonMinimalFlows(log, obs);
     }
     
-    private String rowToString(int[] rowD, int[] rowA) {
-        StringBuilder sb = new StringBuilder();
-        for (int j = 0; j < N; j++) {
-            sb.append(rowD[j] < 0 ? "" : " ").append(rowD[j]).append(" ");
-        }
-        if (rowA != null) {
-            sb.append("| ");
-            for (int j = 0; j < M; j++) {
-                sb.append(rowA[j] < 0 ? "" : " ").append(rowA[j]).append(" ");
-            }
-        }
-        return sb.toString();
-    }
-    
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < numFlows(); i++) {
-            sb.append(String.format("%2d: ", i));
-            sb.append(rowToString(mD.get(i), mA.get(i)));
-            sb.append("\n");
+        if (initMat != null) {
+            for (int i = 0; i < initMat.size(); i++) {
+                sb.append(String.format("%2d: ", i));
+                sb.append(initMat.get(i));
+                sb.append("\n");
+            }
+        }
+        if (rows != null) {
+            for (Row row : rows) {
+                sb.append(row);
+                sb.append("\n");
+            }
+        }
+        if (flowsMat != null) {
+            for (int i = 0; i < numFlows(); i++) {
+                sb.append(String.format("%2d: ", i));
+                sb.append(flowsMat.get(i));
+                sb.append("\n");
+            }
         }
         return sb.toString();
     }
@@ -864,7 +657,8 @@ public class FlowsGenerator extends StructuralAlgorithm {
                         // put a +1 on the jj-th transition column replica
                         int jj = trIndexStart[tt] + trSecondaryIndex[tt];
                         assert jj < trIndexEnd[tt];
-                        if (mA.get(p)[jj] == 0)
+//                        if (mA.get(p)[jj] == 0)
+                        if (initMat.get(p).l[jj] == 0)
                             setIncidence(p, jj, 1);
                         ++trSecondaryIndex[tt]; // increment replica counter
                     }
@@ -989,129 +783,118 @@ public class FlowsGenerator extends StructuralAlgorithm {
         return repr.toString();
     }
 
-//    public static void main(String[] args) {
-//        int NP = 14, MT = 10;
-//        FlowsGenerator msa = new FlowsGenerator(NP, MT);
-//        int[][] flow = {
-//            {5, 4}, {1, 3}, // t1
-//            {14, 7}, {6, 8}, // t2
-//            {9}, {10, 11}, // t3
-//            {2, 13}, {4}, // t4
-//            {1}, {2}, // t5
-//            {3}, {14}, // t6
-//            {6}, {5}, // t7
-//            {8}, {9}, // t8
-//            {10, 12}, {7}, // t9
-//            {11}, {12, 13} // t10
-//        };
-//        for (int t = 0; t < MT; t++) {
-//            int[] in = flow[2 * t], out = flow[2 * t + 1];
-//            for (int p = 0; p < in.length; p++) {
-//                msa.addFlow(in[p] - 1, t, -1);
-//            }
-//            for (int p = 0; p < out.length; p++) {
-//                msa.addFlow(out[p] - 1, t, +1);
-//            }
-//        }
-//        msa.compute(true);
-//    }
     
-    private static FlowsGenerator init1() {
-        int M=10, N=14;
-        FlowsGenerator fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
-        fg.addIncidence(0, 0, 1);
-        fg.addIncidence(0, 4, -1);
-        fg.addIncidence(1, 4, 1);
-        fg.addIncidence(1, 3, -1);
-        fg.addIncidence(12, 3, -1);
-        fg.addIncidence(3, 3, 1);
-        fg.addIncidence(3, 0, -1);
-        fg.addIncidence(2, 0, 1);
-        fg.addIncidence(4, 0, -1);
-        fg.addIncidence(2, 5, -1);
-        fg.addIncidence(13, 5, 1);
-        fg.addIncidence(13, 1, -1);
-        fg.addIncidence(5, 1, 1);
-        fg.addIncidence(5, 6, -1);
-        fg.addIncidence(4, 6, 1);
-        fg.addIncidence(6, 1, -1);
-        fg.addIncidence(7, 1, 1);
-        fg.addIncidence(7, 7, -1);
-        fg.addIncidence(8, 7, 1);
-        fg.addIncidence(8, 2, -1);
-        fg.addIncidence(9, 2, 1);
-        fg.addIncidence(10, 2, 1);
-        fg.addIncidence(10, 9, -1);
-        fg.addIncidence(11, 9, 1);
-        fg.addIncidence(12, 9, 1);
-        fg.addIncidence(11, 8, -1);
-        fg.addIncidence(9, 8, -1);
-        fg.addIncidence(6, 8, 1);
-        return fg;
-    }
+
     
-    private static FlowsGenerator initComp() {
-        int M=3, N=5;
-        FlowsGenerator fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
-        final int a=0, b=1, c=2;
-        // p1 = a + b + c
-        fg.addIncidence(0, a, 1);
-        fg.addIncidence(0, b, 1);
-        fg.addIncidence(0, c, 1);
-        // p2 = -a + c
-        fg.addIncidence(1, a, -1);
-        fg.addIncidence(1, c, 1);
-        // p3 = -b
-        fg.addIncidence(2, b, -1);
-        // p4 = -2c
-        fg.addIncidence(3, c, -2);
-        // p5 = -b -c
-        fg.addIncidence(4, b, -1);
-        fg.addIncidence(4, c, -1);
-        return fg;
-    }
-    
-    private static FlowsGenerator initCSP() {
-        int M=3, N=5;
-        FlowsGenerator fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_FLOWS);
-        final int a=0, b=1, c=2;
-        // p1 = a + b + c
-        fg.addIncidence(0, a, 1);
-        fg.addIncidence(0, b, 1);
-        fg.addIncidence(0, c, 1);
-        // p2 = a + c
-        fg.addIncidence(1, a, 1);
-        fg.addIncidence(1, c, 1);
-        // p3 = b
-        fg.addIncidence(2, b, 1);
-        // p4 = 2c
-        fg.addIncidence(3, c, 2);
-        // p5 = b c
-        fg.addIncidence(4, b, 1);
-        fg.addIncidence(4, c, 1);
-        return fg;
-    }
-    
-    private static FlowsGenerator initAnisimov() {
-        int M=2, N=4;
-        FlowsGenerator fg = new FlowsGenerator(N, N, M, PTFlows.Type.PLACE_SEMIFLOWS);
-        final int a=0, b=1;
-        // t1 = 2a
-        fg.addIncidence(0, a, 2);
-        // t2 = -b
-        fg.addIncidence(1, b, -1);
-        // t3 = -a + b
-        fg.addIncidence(2, a, -1);
-        fg.addIncidence(2, b, 1);
-        // t4 = -a
-        fg.addIncidence(3, a, -1);
-        return fg;
+    private static void printMat(int[][] mat) {
+        for (int[] row : mat) {
+            for (int j=0; j<row.length; j++) {
+                System.out.print((j==0 ? "{" : ", ")+row[j]);
+            }
+            System.out.println("},");
+        }
     }
     
 
-    public static void main(String[] args) throws InterruptedException {
-        ProgressObserver obs = (int step, int total, int s, int t) -> { };
-        FlowsGenerator fg = initAnisimov(); //init1();
-        fg.compute(true, obs);
+    public static void main(String[] args) throws InterruptedException, TooManyRowsException {
+        long start = System.nanoTime();
+        testProblem(FlowsGeneratorTestData.prob1);
+        testProblem(FlowsGeneratorTestData.probAnisimov);
+        testProblem(FlowsGeneratorTestData.probCSP);
+        testProblem(FlowsGeneratorTestData.probComp);
+        testProblem(FlowsGeneratorTestData.probSiphonBasis);
+        testProblem(FlowsGeneratorTestData.probM33N);
+        testProblem(FlowsGeneratorTestData.probM33I);
+        testProblem(FlowsGeneratorTestData.probM44N);
+        testProblem(FlowsGeneratorTestData.probM44I);
+//        FlowsGeneratorTestData.FlowProblem fp = new FlowsGeneratorTestData.FlowProblem(myMat, null, PTFlows.Type.PLACE_FLOWS);
+//        testProblem(fp);
+        System.out.println("Total Time: " + (System.nanoTime() - start)/1e9);
     }
+    
+    private static void testProblem(FlowsGeneratorTestData.FlowProblem problem) throws InterruptedException, TooManyRowsException {
+        boolean verbose = false;
+        ProgressObserver obs = (int step, int total, int s, int t) -> { };
+        FlowsGenerator fg = new FlowsGenerator(problem.input, problem.probType);
+        if (problem.probType.isTrapsOrSiphons())
+            fg.N0 -= problem.input[0].length;
+//        printMat(fg.mA);
+        fg.compute(verbose, obs);
+//        printMat(fg.mD);
+        
+        // Compare the result matrix with the known results for that problem
+        if (problem.solution != null) {
+            int[][] mResult = fg.getAnnulers();
+            Comparator<int[]> comp = (int[] o1, int[] o2) -> Arrays.compare(o1, o2);
+            Arrays.sort(mResult, comp);
+            Arrays.sort(problem.solution, comp);
+            
+            boolean equal = (mResult.length == problem.solution.length);
+            if (equal) {
+                for (int i=0; equal && i<mResult.length; i++) {
+                    equal = Arrays.equals(mResult[i], problem.solution[i]);
+                }
+            }
+            if (verbose || !equal)  {
+                System.out.println("mResult");
+                printMat(mResult);
+                System.out.println("problem.solution");
+                printMat(problem.solution);
+                Thread.sleep(100);
+            }
+
+            System.out.println("Check solution: "+equal);
+            if (!equal)
+                throw new IllegalStateException();
+        }
+    }
+    
+//    private static int[][] myMat = {
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0 },
+//{  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0 },
+//{  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1 },
+//{  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{ -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0, -1 },
+//{ -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1 },
+//{  1,  1,  1,  1,  1,  1,  1,  1,  1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+//{  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+//
+//    };
 }

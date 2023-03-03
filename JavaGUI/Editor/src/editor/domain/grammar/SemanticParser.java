@@ -317,7 +317,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         switch (lang) {
             //case LATEX:     functs = latexUnaryFunctions;       break;
             case LATEX:
-                functs = cppUnaryFunctions;
+                functs = latexUnaryFunctions;
                 break;
             case PNPRO:
                 functs = pnproUnaryFunctions;
@@ -357,7 +357,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 }
             }
         }
-        throw new UnsupportedOperationException("formatUnaryFn = " + unaryIntRealFn);
+        throw new UnsupportedOperationException("formatUnaryFn = " + unaryIntRealFn + " for " + lang);
     }
 
     static class BinaryFunct {
