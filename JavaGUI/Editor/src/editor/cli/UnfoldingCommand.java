@@ -66,6 +66,7 @@ public class UnfoldingCommand {
         boolean useLongNames = false;
         boolean doUnfolding = true;
         boolean useEvaluationCache = false;
+        boolean outSuffix = true;
         SemanticParser.strictColorExpressionChecks = false;
         
         // Read command line arguments
@@ -112,6 +113,10 @@ public class UnfoldingCommand {
                 case "-no-unfolding":
                     doUnfolding = false;
                     break;
+                    
+                case "-no-suffix":
+                    outSuffix = false;
+                    break;
 
                 case "-eval-cache":
                     System.out.println("Evaluation cache is bugged and does not work reliably!");
@@ -137,7 +142,6 @@ public class UnfoldingCommand {
         File inputPnml = new File(baseName+".pnml");
         File inputNet = new File(baseName+".net");
         File inputDef = new File(baseName+".def");
-        boolean outSuffix = false;
         if (inputPnpro.exists()) {
             ProjectFile pf = PnProFormat.readXML(inputPnpro);
             ProjectPage page0 = pf.getCurrent().getPageAt(0);

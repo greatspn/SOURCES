@@ -14,6 +14,7 @@ if [[ $# == 0 ]] ; then
 	echo "             -short-names   Unfold using short names, like 'move_1_2'. [default]"
 	echo "             -no-unfolding  Do not unfold, just load and save."
 	echo "             -eval-cache    Use expr. evaluation cache (speeds up unfolding)."
+	echo "             -no-suffix     Do not add the '_unf' suffix to the unfolded net name."
 	
 	exit
 fi
