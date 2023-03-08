@@ -150,9 +150,17 @@ echo
 if [ "$FLUXFLAG" == "true" ]
 then
 	java -ea -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar editor.cli.CppCommand $NET_PATH gen_tran_out.cpp -flux
+	if [ "$?" -ne 0 ]
+    	then
+        	exit 1
+    	fi
 	CFUN_PATH=$(perl -e "use File::Spec; print(File::Spec->rel2abs(\"./gen_tran_out.cpp\"),\"\n\")")
 else
 	java -ea -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar editor.cli.CppCommand $NET_PATH gen_tran_out.cpp
+	if [ "$?" -ne 0 ]
+    	then
+    	    exit 1
+   	fi
 	CFUN_PATH=$(perl -e "use File::Spec; print(File::Spec->rel2abs(\"./gen_tran_out.cpp\"),\"\n\")")		
 fi
 
