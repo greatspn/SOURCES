@@ -19,6 +19,7 @@ import java.awt.geom.Dimension2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -308,8 +309,7 @@ public class NetObject implements Serializable {
                 if (isAlphanumericIdentifier(kw))
                     keywords.add(kw);
             }
-            for (String kw: extraKeyWords)
-                keywords.add(kw);
+            keywords.addAll(Arrays.asList(extraKeyWords));
         }
         if (keywords.contains(id))
             return true;
@@ -328,7 +328,7 @@ public class NetObject implements Serializable {
         "CN", "If", "when", "ever", "Card", "All", "Subclass",
         "en", "bounds", "deadlock", "ndeadlock", "initial", "possibly", "impossibly",
         "invariantly", "I", "Uniform", "Triangular", "Erlang", "TruncatedExp", "Pareto", 
-//        "S", /* SWN for <All> */
+        "S", /* SWN for <All> */
     };
     
 //    // check if the identifier is a well-formed superposition tag (no pipe accepted)
