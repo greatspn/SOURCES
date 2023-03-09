@@ -137,17 +137,34 @@ done
 echo ${FLUXNAMEFILE[@]}
 
 echo "Compiling general transition file"
+
+#if [[ -f ${NET_PATH}_unf.net ]]
+#then
+#	CPP_INPUT_PATH=${NET_PATH}_unf
+#else
+#	CPP_INPUT_PATH=${NET_PATH}
+#fi
+
+
+echo
 if [ "$FLUXFLAG" == "true" ]
 then
-
-		java -ea -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar editor.cli.CppCommand $NET_PATH gen_tran_out.cpp -flux
-		CFUN_PATH=$(perl -e "use File::Spec; print(File::Spec->rel2abs(\"./gen_tran_out.cpp\"),\"\n\")")
-	else
-		java -ea -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar editor.cli.CppCommand $NET_PATH gen_tran_out.cpp
-		CFUN_PATH=$(perl -e "use File::Spec; print(File::Spec->rel2abs(\"./gen_tran_out.cpp\"),\"\n\")")		
+	java -ea -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar editor.cli.CppCommand $NET_PATH gen_tran_out.cpp -flux
+	if [ "$?" -ne 0 ]
+    	then
+        	exit 1
+    	fi
+	CFUN_PATH=$(perl -e "use File::Spec; print(File::Spec->rel2abs(\"./gen_tran_out.cpp\"),\"\n\")")
+else
+	java -ea -cp ${GREATSPN_BINDIR}/Editor.jar:${GREATSPN_BINDIR}/lib/antlr-runtime-4.2.1.jar editor.cli.CppCommand $NET_PATH gen_tran_out.cpp
+	if [ "$?" -ne 0 ]
+    	then
+    	    exit 1
+   	fi
+	CFUN_PATH=$(perl -e "use File::Spec; print(File::Spec->rel2abs(\"./gen_tran_out.cpp\"),\"\n\")")		
 fi
 
-
+echo
 echo "#Computing p-semiflows and place bounds: "
 if [ "$NOPINV" == "NO" ]
 then
@@ -157,6 +174,7 @@ then
         exit 1
     fi
 fi
+
 
 if [ "$EXPORT_FORMAT" == "-P" ]
 then
