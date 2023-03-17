@@ -71,7 +71,7 @@ WORKDIR /home/docker
 
 RUN sudo apt-get install -y gcc g++ libgmp10 libgmpxx4ldbl \
      flexc++ python3 libglpk40 \
-     flex time graphviz bison \
+     flex time graphviz bison libglpk-dev \
      make openjdk-17-jre git ghostscript
 
 #================================================================================
@@ -95,8 +95,7 @@ FROM deploy_base
 # copy the compiled binaries
 COPY --from=updater /usr/local/GreatSPN /usr/local/GreatSPN
 COPY --from=updater /usr/local/lib /usr/local/lib
-RUN rm -rf /usr/local/lib/*.a /usr/local/lib/*.la
-RUN sudo dnf -y install glpk-devel
+RUN sudo rm -rf /usr/local/lib/*.a /usr/local/lib/*.la
 
 # add library & binary paths
 RUN echo '/usr/local/lib' > /etc/ld.so.conf.d/greatspn.conf ; ldconfig
