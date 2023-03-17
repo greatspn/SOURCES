@@ -41,6 +41,8 @@ RUN git clone https://github.com/ogdf/ogdf ;\
     mkdir build && cd build && cmake .. && make ${MAKE_ARGS} ;\
     sudo make install
 
+RUN sudo apt-get install -y tar
+
 # Install lpsolve (latest)
 RUN wget https://datacloud.di.unito.it/index.php/s/JFsJwyHfJ9FNWZJ/download/lp_solve_5.5.2.11_source.tar.gz ;\
     wget https://raw.githubusercontent.com/greatspn/SOURCES/master/contrib/build_lpsolve.sh ;\
