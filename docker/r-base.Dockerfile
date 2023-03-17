@@ -71,11 +71,10 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER docker
 WORKDIR /home/docker
 
-RUN sudo apt-get install -y gcc g++ libgmp libgmpxx4ldbl libboost-all \
-     flexc++ ant libglib2.0 patch python3 libglpk liblpsolve55 \
-     flex time graphviz libsuitesparse byson \
-     libmotif make libxml++2.6 libglibmm-2.4 \
-     openjdk-17-jre git ghostscript
+RUN sudo apt-get install -y gcc g++ libgmp10 libgmpxx4ldbl \
+     flexc++ ant libglib2.0 patch python3 libglpk40 \
+     flex time graphviz bison \
+     make openjdk-17-jre git ghostscript
 
 # RUN sudo dnf -y install gmp gmp-c++ gmp boost flex \
 #     glib2 patch glpk lpsolve  \
