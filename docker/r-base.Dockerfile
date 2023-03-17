@@ -98,7 +98,7 @@ COPY --from=updater /usr/local/lib /usr/local/lib
 RUN sudo rm -rf /usr/local/lib/*.a /usr/local/lib/*.la
 
 # add library & binary paths
-RUN echo '/usr/local/lib' > /etc/ld.so.conf.d/greatspn.conf ; ldconfig
+RUN sudo echo '/usr/local/lib' > /etc/ld.so.conf.d/greatspn.conf ; sudo ldconfig
 ENV PATH="$PATH:/usr/local/GreatSPN/scripts"
 
 
