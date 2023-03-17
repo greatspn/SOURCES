@@ -4,7 +4,7 @@
 FROM r-base AS builder
 
 RUN apt-get update ; apt-get install -y sudo adduser
-RUN /usr/sbin/adduser --disabled-password --gecos '' docker
+# RUN /usr/sbin/adduser --disabled-password --gecos '' docker
 RUN /usr/sbin/adduser docker sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER docker
@@ -65,7 +65,7 @@ RUN mkdir ~/GreatSPN ;\
 FROM r-base AS deploy_base
 
 RUN apt-get update ; apt-get install -y sudo adduser
-RUN /usr/sbin/adduser --disabled-password --gecos '' docker
+# RUN /usr/sbin/adduser --disabled-password --gecos '' docker
 RUN /usr/sbin/adduser docker sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER docker
