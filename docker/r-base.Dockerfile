@@ -47,7 +47,7 @@ RUN wget https://datacloud.di.unito.it/index.php/s/JFsJwyHfJ9FNWZJ/download/lp_s
     tar xzf lp_solve_5.5.2.11_source.tar.gz ;\
     /bin/bash ./build_lpsolve.sh 
 
-RUN sudo apt install libfl-dev
+RUN sudo apt-get install -y libfl-dev
 
 # Install GreatSPN
 RUN mkdir ~/GreatSPN ;\
