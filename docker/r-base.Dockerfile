@@ -3,12 +3,12 @@
 #================================================================================
 FROM r-base AS builder
 
-RUN apt-get update ; apt-get install -y sudo adduser
+RUN apt-get update ; apt-get install -y sudo adduser apt-utils
 # RUN /usr/sbin/adduser --disabled-password --gecos '' docker
 RUN /usr/sbin/adduser docker sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER docker
-
+WORKDIR /home/docker
 
 RUN sudo apt-get install -y gcc g++ libgmp-dev libgmpxx4ldbl libboost-all-dev \
      flexc++ ant libglib2.0-dev patch python3 libglpk-dev liblpsolve55-dev \
@@ -64,11 +64,12 @@ RUN mkdir ~/GreatSPN ;\
 #================================================================================
 FROM r-base AS deploy_base
 
-RUN apt-get update ; apt-get install -y sudo adduser
+RUN apt-get update ; apt-get install -y sudo adduser apt-utils
 # RUN /usr/sbin/adduser --disabled-password --gecos '' docker
 RUN /usr/sbin/adduser docker sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER docker
+WORKDIR /home/docker
 
 RUN sudo apt-get install -y gcc g++ libgmp libgmpxx4ldbl libboost-all \
      flexc++ ant libglib2.0 patch python3 libglpk liblpsolve55 \
