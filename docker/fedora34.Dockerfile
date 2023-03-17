@@ -3,12 +3,10 @@
 #================================================================================
 FROM fedora:34 AS builder
 
-RUN dnf -y install git wget
-
 RUN sudo dnf -y install gcc gcc-c++ gmp-devel gmp-c++ gmp boost-devel flex-devel \
     ant glib2-devel patch python glpk-devel autoconf automake ghostscript\
     libtool zip flex byacc time graphviz suitesparse-devel motif-devel make \
-    libxml++-devel glibmm24-devel cmake diffutils java-latest-openjdk
+    libxml++-devel glibmm24-devel cmake diffutils java-latest-openjdk git wget
 
 ENV MAKE_ARGS=-j4
 
