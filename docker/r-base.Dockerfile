@@ -14,7 +14,7 @@ RUN sudo apt-get install -y gcc g++ libgmp-dev libgmpxx4ldbl libboost-all-dev \
      flexc++ ant libglib2.0-dev patch python3 libglpk-dev liblpsolve55-dev \
      autoconf automake libtool zip flex byacc time graphviz libsuitesparse-dev \
      libmotif-dev make libxml++2.6-dev libglibmm-2.4-dev texlive-font-utils \
-     openjdk-17-jdk cmake git ghostscript
+     openjdk-17-jdk cmake git ghostscript libfl-dev
 
 ENV MAKE_ARGS=-j4
 
@@ -47,8 +47,6 @@ RUN wget https://datacloud.di.unito.it/index.php/s/JFsJwyHfJ9FNWZJ/download/lp_s
     tar xzf lp_solve_5.5.2.11_source.tar.gz ;\
     /bin/bash ./build_lpsolve.sh 
 
-RUN sudo apt-get install -y libfl-dev
-
 # Install GreatSPN
 RUN mkdir ~/GreatSPN ;\
     cd ~/GreatSPN ;\
@@ -72,15 +70,9 @@ USER docker
 WORKDIR /home/docker
 
 RUN sudo apt-get install -y gcc g++ libgmp10 libgmpxx4ldbl \
-     flexc++ ant libglib2.0 patch python3 libglpk40 \
+     flexc++ python3 libglpk40 \
      flex time graphviz bison \
      make openjdk-17-jre git ghostscript
-
-# RUN sudo dnf -y install gmp gmp-c++ gmp boost flex \
-#     glib2 patch glpk lpsolve  \
-#     time graphviz suitesparse motif make \
-#     libxml++ glibmm24 ghostscript java-latest-openjdk \
-#     gcc gcc-c++ make perl
 
 #================================================================================
 # Stage 3: Update the GreatSPN framework by pulling/remaking the latest changes
