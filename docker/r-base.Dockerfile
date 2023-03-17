@@ -47,13 +47,13 @@ RUN wget https://datacloud.di.unito.it/index.php/s/JFsJwyHfJ9FNWZJ/download/lp_s
     tar xzf lp_solve_5.5.2.11_source.tar.gz ;\
     /bin/bash ./build_lpsolve.sh 
 
+RUN sudo apt install libfl-dev
 
 # Install GreatSPN
 RUN mkdir ~/GreatSPN ;\
     cd ~/GreatSPN ;\
     git clone https://github.com/greatspn/SOURCES.git SOURCES ;\
     cd ~/GreatSPN/SOURCES ;\
-	  git pull ;\
     make ${MAKE_ARGS} -k derived_objects ;\
     make ${MAKE_ARGS} ;\
     make ;\
