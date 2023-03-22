@@ -73,6 +73,7 @@ public class CppFormat {
                                     + "                         const double& time) {\n");
                         }
                         
+                        out.println("cout << \"Qui ci entri?\" << endl;");
                         out.println("   double rate = " + cppDelayExpr + ";");
                         out.println("   return (rate);");
                         out.println("}\n");

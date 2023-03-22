@@ -289,7 +289,7 @@ public class UnfoldingCommand {
             File outNet = new File(baseName+".net");
             File outDef = new File(baseName+".def");
             start = System.currentTimeMillis();
-            System.out.println("SAVING AS "+baseName+".(net/def) ...");
+            System.out.println("SAVING AS"+baseName+".(net/def) ...");
             String ret = GreatSpnFormat.exportGspn(gspn, outNet, outDef, true, true);
             System.out.println("SAVING TIME: "+(System.currentTimeMillis() - start)/1000.0);
             if (ret != null) {

@@ -370,7 +370,7 @@ for (int i = 0; i < npl; i++)
 set<std::string> function_names;
 for (int tt = 0; tt < ntr; tt++)
 {
-    if (tabt[tt].general_function!=NULL){
+    if (tabt[tt].general_function!=NULL  || (tabt[tt].timing == TIMING_DETERMINISTIC && tabt[tt].general_function == NULL /*dirac*/)){
        if (!FLUXB)
         hout<<"double "<<tabt[tt].trans_name<<"_general(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n";
     else
@@ -1031,10 +1031,11 @@ for (pp = 0; pp < npl; pp++)
     set<std::string> function_names;
     for (int tt = 0; tt < ntr; tt++)
     {
-        if (tabt[tt].general_function != NULL)
+
+        if (tabt[tt].general_function != NULL || (tabt[tt].timing == TIMING_DETERMINISTIC && tabt[tt].general_function == NULL /*dirac*/))
         {
             //if(tabt[tt].timing == TIMING_DETERMINISTIC ){
-             //   hout << TIMING_DETERMINISTIC << " sei dunque generale?" << endl; //Sono commossa.
+              //  hout << TIMING_DETERMINISTIC << " sei dunque generale?" << endl; //Sono commossa.
            // }
             if (!FLUXB)
                 hout<<"double "<<tabt[tt].trans_name<<"_general(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n";
