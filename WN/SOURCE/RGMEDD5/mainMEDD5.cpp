@@ -1988,7 +1988,7 @@ int initialize(int  argc,  char  *argv[]) {
             // The Java GUI wants the statistics printed in its format.
             set_print_stat_for_gui();
         }
-        else if (0 == strcmp(argv[ii], "-S")) {
+        else if (0 == strcmp(argv[ii], "--smart")) {
             SMART = true;
             if (ii + 5 < argc) {
                 ii++;
