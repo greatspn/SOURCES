@@ -8,6 +8,7 @@
 		uniform_real_distribution<double> unf_dis(min, max);
 		double value = unf_dis(generator);
 		return value;
+		//return min;
 	}
 
 	//da pensare se tenere o meno. Risolverebbe il problema del controllo nel file class.cpp

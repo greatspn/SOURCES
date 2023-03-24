@@ -3438,6 +3438,7 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 
             //time=nextTimePoint;
 			getValTranFire(Value);
+			outfel << time << " tempo a cui sono" << endl;
 
 		//update of future event list
 			for(int t=1;t<size_notExpTran;t++)

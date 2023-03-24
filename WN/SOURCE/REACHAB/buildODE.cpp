@@ -1350,12 +1350,9 @@ for (pp = 0; pp < npl; pp++)
         std::string FuncT="nullptr";
         std::string rate=std::to_string(tabt[tt].mean_t);
         std::string timing= std::to_string(tabt[tt].timing);
-        if (tabt[tt].general_function != NULL)
+        //if (tabt[tt].general_function != NULL)
+        if (tabt[tt].general_function != NULL || (tabt[tt].timing == TIMING_DETERMINISTIC && tabt[tt].general_function == NULL /*dirac*/))
         {
-            cout<<tabt[tt].general_function<<endl;
-            std::string tmp_st(tabt[tt].general_function);
-            char* stoken=strtok((char*)tmp_st.c_str(),delims);
-            //enable = "true";
             GenFun=std::string("")+tabt[tt].trans_name+"_general";
             FuncT=std::string("&")+tabt[tt].trans_name+"_general";
             rate="1.0";
