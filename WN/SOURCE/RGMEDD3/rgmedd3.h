@@ -1065,7 +1065,7 @@ public:
             return false;
         else {
             plmark = it->getAssignments();
-            fEV->evaluate((*indexrs), plmark, idm);
+            //fEV->evaluate((*indexrs), plmark, idm);
             memcpy(vmark, plmark, nvar * sizeof(int));
             ++(*it);
             return true;
