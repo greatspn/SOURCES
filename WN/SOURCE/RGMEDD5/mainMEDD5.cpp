@@ -2003,7 +2003,7 @@ int initialize(int  argc,  char  *argv[]) {
                 _step = atof(argv[ii]);
             }
             else {
-                cerr << "\n -S <double_precision> <integer_iteration> <transient_double_min> <transient_double_max> <transient_int_step>\n";
+                cerr << "\n --smart <double_precision> <integer_iteration> <transient_double_min> <transient_double_max> <transient_int_step>\n";
             }
         }
         else if (0 == strcmp(argv[ii], "-bfs-mono")){
