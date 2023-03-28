@@ -187,7 +187,9 @@ struct PETLT {
 shared_ptr<MdepExpr<double> > ParseMarkDepDelayExpr(const PN &pn, const char *exprStr,
         VerboseLevel verboseLvl);
 
-void ReadGreatSPN_File(ifstream &net, ifstream &def, PN &pn, VerboseLevel verboseLvl);
+void ReadGreatSPN_File(ifstream &net, ifstream &def, PN &pn, 
+                       bool readAsPT, // ignore rates/delays
+                       VerboseLevel verboseLvl);
 
 void BuildPossiblyEnabledTransitionLookupTable(const PN &pn, PETLT &petlt,
         VerboseLevel verboseLvl);
