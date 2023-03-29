@@ -39,6 +39,7 @@ public class CppCommand {
             //System.out.println("TOTAL TIME: " + (System.currentTimeMillis() - totalStart) / 1000.0);
             //System.out.println("OK.");
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("EXCEPTION RAISED.");
             System.out.println("FAILED.");
             System.exit(1);

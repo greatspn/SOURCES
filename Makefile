@@ -226,7 +226,7 @@ endif
 # endif
 
 ifdef HAS_LP_SOLVE_LIB
-ifeq ("$(wildcard $(PATH_TO_LP_SOLVE_LIB)libcolamd.*)","")
+ifeq ("$(wildcard $(PATH_TO_LP_SOLVE_LIB)libcolamd.a)","")
   $(warning "liblpsolve55 found, but libcolamd.a is missing!")
   HAS_LP_SOLVE_LIB :=
   INCLUDE_LP_SOLVE_LIB :=
