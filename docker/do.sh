@@ -1,18 +1,20 @@
 #!/bin/bash
 
+DOCKERFILE=r-base.Dockerfile
+
 case $1 in
 build)
 	docker build --target builder --tag greatspn_builder_stage \
-		--build-arg update_version="`date`" -f Dockerfile .
+		--build-arg update_version="`date`" -f ${DOCKERFILE} .
 
 	docker build --target deploy_base --tag greatspn_deploy_base_stage \
-		--build-arg update_version="`date`" -f Dockerfile .
+		--build-arg update_version="`date`" -f ${DOCKERFILE} .
 
 	docker build --target updater --tag greatspn_updater_stage \
-		--build-arg update_version="`date`" -f Dockerfile .
+		--build-arg update_version="`date`" -f ${DOCKERFILE} .
 
 	docker build --tag greatspn \
-		--build-arg update_version="`date`" -f Dockerfile .
+		--build-arg update_version="`date`" -f ${DOCKERFILE} .
 	;;
 
 run)
@@ -37,7 +39,7 @@ exec)
 
 update)
 	wget https://raw.githubusercontent.com/greatspn/SOURCES/master/docker/do.sh ./do.sh 
-	wget https://raw.githubusercontent.com/greatspn/SOURCES/master/docker/Dockerfile ./Dockerfile
+	wget https://raw.githubusercontent.com/greatspn/SOURCES/master/docker/${DOCKERFILE} ./${DOCKERFILE}
 	;;
 
 esac

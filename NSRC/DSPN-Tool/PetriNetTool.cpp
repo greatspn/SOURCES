@@ -116,6 +116,7 @@ static const char *s_AppBanner =
     "\nOptions:\n"
     "  {!-v} and {!-vv}       Verbose and very verbose modes.\n"
     "  {!-nv} and {!-nnv}     Basic verbose and quiet mode.\n"
+    "  {!-pt}              Load nets as P/T nets (ignore delays).\n"
     "  {!-load} {$<file>}     Loads a GreatSPN Petri net {$<file>}.\n"
     "  {!-load-mrmc} {$<mod>} Loads a model in MRMC format ({$<mod>}.tra and {$<mod>}.lab).\n"
     "  {!-trg}             Builds the Tangible Reachability Graph.\n"
@@ -366,6 +367,7 @@ bool is_invariants_cmd(std::string cmd, invariants_spec_t& is) {
 
 struct ToolData {
     shared_ptr<string>	netName;
+    bool                readAsPT = false;
     shared_ptr<PN>		pn;
     shared_ptr<PETLT>   petlt;
     shared_ptr<RG>   	rg;
@@ -687,6 +689,10 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
                 verboseLvl = VL_NONE;
                 withVPaths = false;
             }
+            else if (cmdArg == "-pt") {
+                cout << "LOADING NETS AS P/T NETS." << endl;
+                readAsPT = true;
+            }
             else if (cmdArg == "-load" && remainedArgs >= 1) {
                 netName = make_shared<string>(argv[argNum++]);
                 pn = make_shared<PN>();
@@ -715,7 +721,7 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
                     return -1;
                 }
                 performance_timer timer;
-                ReadGreatSPN_File(net, def, *pn, verboseLvl);
+                ReadGreatSPN_File(net, def, *pn, readAsPT, verboseLvl);
                 net.close();
                 def.close();
                 BuildPossiblyEnabledTransitionLookupTable(*pn, *petlt, verboseLvl);

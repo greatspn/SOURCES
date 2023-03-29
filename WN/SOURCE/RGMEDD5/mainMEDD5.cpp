@@ -1988,7 +1988,7 @@ int initialize(int  argc,  char  *argv[]) {
             // The Java GUI wants the statistics printed in its format.
             set_print_stat_for_gui();
         }
-        else if (0 == strcmp(argv[ii], "-S")) {
+        else if (0 == strcmp(argv[ii], "--smart")) {
             SMART = true;
             if (ii + 5 < argc) {
                 ii++;
@@ -2003,7 +2003,7 @@ int initialize(int  argc,  char  *argv[]) {
                 _step = atof(argv[ii]);
             }
             else {
-                cerr << "\n -S <double_precision> <integer_iteration> <transient_double_min> <transient_double_max> <transient_int_step>\n";
+                cerr << "\n --smart <double_precision> <integer_iteration> <transient_double_min> <transient_double_max> <transient_int_step>\n";
             }
         }
         else if (0 == strcmp(argv[ii], "-bfs-mono")){

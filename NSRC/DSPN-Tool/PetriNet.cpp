@@ -195,7 +195,9 @@ static inline string read_mdep_fn_from_def(simple_tokenizer& def, size_t trn_ind
 
 //=============================================================================
 
-void ReadGreatSPN_File(ifstream &ifsNet, ifstream &ifsDef, PN &pn, VerboseLevel verboseLvl) {
+void ReadGreatSPN_File(ifstream &ifsNet, ifstream &ifsDef, PN &pn, 
+                       bool readAsPT, VerboseLevel verboseLvl) 
+{
     simple_tokenizer net(&ifsNet), def(&ifsDef);
     string line, textBuf;
 
@@ -314,6 +316,8 @@ void ReadGreatSPN_File(ifstream &ifsNet, ifstream &ifsDef, PN &pn, VerboseLevel 
                     delayExpr = true;
                 }
             }
+            if (readAsPT && delayExpr)
+                delayText = "1.0";
             if (delayExpr) {
                 trn.delayFn = NewMultipleServerDelayFn(1, ParseMarkDepDelayExpr(pn, delayText.c_str(), verboseLvl));
             }
@@ -336,6 +340,8 @@ void ReadGreatSPN_File(ifstream &ifsNet, ifstream &ifsDef, PN &pn, VerboseLevel 
                     delayText = oss.str();
                 }
             }
+            if (readAsPT)
+                delayText = "I[1.0]";
             // double delay = atof(delayText.c_str());
             trn.distrib = DET;
             trn.prio = 0;
@@ -364,6 +370,8 @@ void ReadGreatSPN_File(ifstream &ifsNet, ifstream &ifsDef, PN &pn, VerboseLevel 
                 if (delay == -5.100000e+02) {
                     // Read the marking dependent function from the def file
                     string mdepfn = read_mdep_fn_from_def(def, i);
+                    if (readAsPT)
+                        mdepfn = "1.0";
                     shared_ptr<MdepExpr<double> > mdepFn =
                         ParseMarkDepDelayExpr(pn, mdepfn.c_str(), verboseLvl);
                     trn.delayFn = NewMarkingDependentDelayFn(mdepFn);

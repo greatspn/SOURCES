@@ -1,14 +1,20 @@
 #================================================================================
 # Stage 1: build all the GreatSPN modules and their dependencies
 #================================================================================
-FROM fedora:34 AS builder
+FROM r-base AS builder
 
-RUN dnf -y install git wget
+RUN apt-get update ; apt-get install -y sudo adduser apt-utils
+# RUN /usr/sbin/adduser --disabled-password --gecos '' docker
+RUN /usr/sbin/adduser docker sudo
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+USER docker
+WORKDIR /home/docker
 
-RUN sudo dnf -y install gcc gcc-c++ gmp-devel gmp-c++ gmp boost-devel flex-devel \
-    ant glib2-devel patch python glpk-devel autoconf automake ghostscript\
-    libtool zip flex byacc time graphviz suitesparse-devel motif-devel make \
-    libxml++-devel glibmm24-devel cmake diffutils java-latest-openjdk
+RUN sudo apt-get install -y gcc g++ libgmp-dev libgmpxx4ldbl libboost-all-dev \
+     flexc++ ant libglib2.0-dev patch python3 libglpk-dev liblpsolve55-dev \
+     autoconf automake libtool zip flex byacc time graphviz libsuitesparse-dev \
+     libmotif-dev make libxml++2.6-dev libglibmm-2.4-dev texlive-font-utils \
+     openjdk-17-jdk cmake git ghostscript libfl-dev
 
 ENV MAKE_ARGS=-j4
 
@@ -39,15 +45,13 @@ RUN git clone https://github.com/ogdf/ogdf ;\
 RUN wget https://datacloud.di.unito.it/index.php/s/JFsJwyHfJ9FNWZJ/download/lp_solve_5.5.2.11_source.tar.gz ;\
     wget https://raw.githubusercontent.com/greatspn/SOURCES/master/contrib/build_lpsolve.sh ;\
     tar xzf lp_solve_5.5.2.11_source.tar.gz ;\
-    sh ./build_lpsolve.sh 
-
+    /bin/bash ./build_lpsolve.sh 
 
 # Install GreatSPN
 RUN mkdir ~/GreatSPN ;\
     cd ~/GreatSPN ;\
     git clone https://github.com/greatspn/SOURCES.git SOURCES ;\
     cd ~/GreatSPN/SOURCES ;\
-	  git pull ;\
     make ${MAKE_ARGS} -k derived_objects ;\
     make ${MAKE_ARGS} ;\
     make ;\
@@ -56,13 +60,19 @@ RUN mkdir ~/GreatSPN ;\
 #================================================================================
 # Stage 2: prepare the deployment image with the non-devel packages
 #================================================================================
-FROM fedora:34 AS deploy_base
+FROM r-base AS deploy_base
 
-RUN sudo dnf -y install gmp gmp-c++ gmp boost flex \
-    glib2 patch glpk lpsolve  \
-    time graphviz suitesparse motif make \
-    libxml++ glibmm24 ghostscript java-latest-openjdk \
-    gcc gcc-c++ make perl
+RUN apt-get update ; apt-get install -y sudo adduser apt-utils
+# RUN /usr/sbin/adduser --disabled-password --gecos '' docker
+RUN /usr/sbin/adduser docker sudo
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+USER docker
+WORKDIR /home/docker
+
+RUN sudo apt-get install -y gcc g++ libgmp10 libgmpxx4ldbl \
+     flexc++ python3 libglpk40 \
+     flex time graphviz bison libglpk-dev \
+     make openjdk-17-jre git ghostscript
 
 #================================================================================
 # Stage 3: Update the GreatSPN framework by pulling/remaking the latest changes
@@ -85,11 +95,10 @@ FROM deploy_base
 # copy the compiled binaries
 COPY --from=updater /usr/local/GreatSPN /usr/local/GreatSPN
 COPY --from=updater /usr/local/lib /usr/local/lib
-RUN rm -rf /usr/local/lib/*.a /usr/local/lib/*.la
-RUN sudo dnf -y install glpk-devel
+RUN sudo rm -rf /usr/local/lib/*.a /usr/local/lib/*.la
 
 # add library & binary paths
-RUN echo '/usr/local/lib' > /etc/ld.so.conf.d/greatspn.conf ; ldconfig
+RUN sudo echo '/usr/local/lib' > /etc/ld.so.conf.d/greatspn.conf ; sudo ldconfig
 ENV PATH="$PATH:/usr/local/GreatSPN/scripts"
 
 

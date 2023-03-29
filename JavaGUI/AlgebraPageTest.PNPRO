@@ -14,7 +14,7 @@
   </gspn>
   <gspn name="PN2">
     <nodes>
-      <place marking="2" name="P0" superposition-tags="pp|cc|bb|dd" x="6.0" y="5.0"/>
+      <place marking="2" name="P0" superposition-tags="pp|cc|bb?|dd" x="6.0" y="5.0"/>
       <transition name="T2" nservers-x="0.5" superposition-tags="tt" type="EXP" x="12.55" y="5.0"/>
       <template name="r" type="REAL" x="9.0" y="1.0"/>
       <template name="n" type="INTEGER" x="7.0" y="1.0"/>
@@ -24,7 +24,7 @@
       <arc head="T2" kind="INPUT" tail="P0"/>
     </edges>
   </gspn>
-  <algebra align-dy="6" alignment="CUSTOM" name="Composition" use-broken-edges="true">
+  <algebra align-dy="6" alignment="CUSTOM" name="CompositionOld" use-broken-edges="true">
     <bindings-list>
       <binding value="5" variable="r"/>
       <binding value="3" variable="m"/>
@@ -37,4 +37,17 @@
     <subnet netname="PN2"/>
     <subnet netname="PN1"/>
   </algebra>
+  <algebra2 alignment="VERTICAL" name="CompositionNew" policy="UNARY_CONJUGATED_ALL" restriction="true">
+    <bindings-list>
+      <binding value="" variable="r"/>
+      <binding value="" variable="m"/>
+      <binding value="" variable="n"/>
+    </bindings-list>
+    <place-tags>
+      <tag name="bb"/>
+    </place-tags>
+    <transition-tags/>
+    <subnet netname="PN1"/>
+    <subnet netname="PN2"/>
+  </algebra2>
 </project>
