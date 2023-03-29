@@ -448,6 +448,8 @@ namespace SDE
   Event* deleteEventInPosition(int event_index, int tran);
   //!It removes the i-th event in the event list updating the pointers 
   void deleteEvent(Event* event);
+  //!add event ad the end of the list
+  void addEventAtTheEnd(Event* event, int tran);
   //stream TEMPORANEO
   ofstream outfel{"outfel.txt"};
 
@@ -490,7 +492,7 @@ public:
   virtual void setSizeFutureEventList(int nTrans, int &size_expTran, int &size_notExpTran)=0;
     //!It updates the future event list during the SSA with non exponential general transition using the value of Enabling
   //void updateFutureEventList(int trans);
-  void updateFutureEventList(int tran, int prev_fired);
+  void updateFutureEventList(int tran, int prev_fired, double time);
   //! It checks if there is an enable transition which will fire in the current time step.
   int fireEnableTrans(  int SetTran[],double& h);
     //int fireEnableTrans(  set<int>&SetTran,double& h);

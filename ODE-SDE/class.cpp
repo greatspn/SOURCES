@@ -484,7 +484,7 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 				transition using the value of Enabling */
 /**************************************************************/
 
-    void SystEq::updateFutureEventList(int tran, int prev_fired){
+    void SystEq::updateFutureEventList(int tran, int prev_fired, double time){
 
 
     	int number_events = EnabledTransValueDis[tran] - PreviousEnabledTransValueDis[tran];
@@ -502,7 +502,6 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 
     	outfel << "events size prima dell'aggiunta " << Trans[tran].events_size << endl;
 
-
     	while(number_events>0)
     	{
 
@@ -513,26 +512,14 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     		double time_event = Trans[tran].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,tran,time);
 #endif 	
     		outfel <<"ciclo aggiunta " << endl;
+    		time_event = time_event + time;
     		Event *event_distribution = new Event(time_event, tran);
     		future_event_list.pushHeap(event_distribution);
-    		//set head
-    		if(Trans[tran].events_size == 0 ) {
-    			Trans[tran].first_event = event_distribution;
-    		}
-    		//set tail
-    		else if(Trans[tran].events_size == 1){
-    			Trans[tran].first_event->setNext(event_distribution);
-    			event_distribution->setPrevious(Trans[tran].first_event);
-    			Trans[tran].last_event = event_distribution;
-    		}
-    		else {
-    			event_distribution->setPrevious(Trans[tran].last_event);
-    			Trans[tran].last_event -> setNext(event_distribution);
-    			Trans[tran].last_event = event_distribution;
-    		}
+    		addEventAtTheEnd(event_distribution, tran);
     		Trans[tran].events_size++;
     		number_events--;
     	}
+
 
 		//remove events if there are less tokens; the chosen transition is not updated here
 		// so I can do the loop normally
@@ -556,6 +543,35 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 
     }
 
+/**************************************************************/
+/* NAME :  Class deleteEventInPosition*/
+/* DESCRIPTION : delete the i-th event in the event list updating the pointers */
+/**************************************************************/
+
+    void SystEq::addEventAtTheEnd(Event* event, int tran){
+
+    	if(Trans[tran].events_size==0){
+    		Trans[tran].first_event = event;
+    	}
+
+    	int size = Trans[tran].events_size;
+    	Event *temp1 = Trans[tran].first_event;
+
+
+    	while(size > 1){
+
+        // Update temp1
+    		temp1 = temp1->getNext();
+
+    		size--;
+    	}
+
+    	temp1->setNext(event);
+    	event->setPrevious(temp1);
+
+    }
+
+
 
     
 
@@ -575,16 +591,13 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
      	  		// Update head
     			Trans[tran].first_event = temp1->getNext();
     			//if it's not the last element of the list
-    			if(temp1->getNext() != NULL )
+    			if(temp1->getNext() != NULL){
     				Trans[tran].first_event ->setPrevious(NULL);
+    			}
+
     			return temp1;
     		}
-    		else if(Trans[tran].last_event != NULL){
-    			Trans[tran].last_event = NULL;
-    			return Trans[tran].last_event;
-    		}
     	}
-
 
     // Traverse the list to
     // find the node to be deleted.
@@ -600,6 +613,7 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     	}
 
     	Event *next = temp1->getNext();
+
 
     // Change the next pointer of the previous node.
     	temp2->setNext(next);
@@ -633,9 +647,6 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     			Trans[tran].first_event ->setPrevious(NULL);
     		return;
     	}
-    	else if (event == Trans[tran].last_event){
-    		Trans[tran].last_event = prev;
-    	}
 
     	Event *next = event->getNext();
 
@@ -659,9 +670,9 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 
     	for(int t=0; t<nTrans; t++)
     	{
-    		PreviousEnabledTransValueDis[t] = 0;
     		if(Trans[t].timing == NON_EXP_GEN) {
 
+    			PreviousEnabledTransValueDis[t] = 0;
     			size_notExpTran++;
 				for (unsigned int k=0; k<Trans[t].InPlaces.size(); k++)//for all variables in the components
 				{
@@ -689,9 +700,9 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 
 		for(int t=0; t<nTrans; t++)
 		{
-			PreviousEnabledTransValueDis[t] = 0;
 			if(Trans[t].timing == NON_EXP_GEN) {
 
+				PreviousEnabledTransValueDis[t] = 0;
 				size_notExpTran++;
 			for (unsigned int k=0; k<Trans[t].InPlaces.size(); k++)//for all variables in the components
 			{
@@ -2808,6 +2819,7 @@ int SystEq::getComputeTau(int SetTranExp[], double& nextTimePoint,double t){
 	double sumRate=0.0;
 	int size = 0;
 
+
 	if (SetTranExp[0]!=0)
 	{
 		size= SetTranExp[0];
@@ -2839,14 +2851,15 @@ int SystEq::getComputeTau(int SetTranExp[], double& nextTimePoint,double t){
 	if (sumRate==0.0 && future_event_list.getLenght() == 0)
 		return -1;
 	std::exponential_distribution<> ExpD(sumRate);
+
 	tau=(ExpD(generator)+t);
     //cout<<"\nReaction:"<<tau<<" "<<tau-t<<endl;
+	outfel << "tau da confrontare " << tau << endl;
 
 	outfel << "lunghezza future event list " << future_event_list.getLenght() << endl;
 	if(future_event_list.getLenght() > 0) {
 		general_tau = future_event_list.topWeight();
 		outfel << "general_tau " << general_tau << endl;
-		outfel << "tau " << tau << endl;
 		if(general_tau<tau){
 			if(general_tau >= nextTimePoint)
 				return -1;
@@ -3299,7 +3312,7 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 	double tout;
 	solve = Solve_SSA;
 	int size_expTran = 0;
-	int size_notExpTran = 0;
+	int size_notExpTran = 1;
 	int Tran_previous = -1;
 
 	setSizeFutureEventList(nTrans, size_expTran, size_notExpTran);
@@ -3377,9 +3390,6 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 		SetTranExp[++SetTranExp[0]]=i;
 	}
 
-	//to update future event list
-	size_notExpTran++;
-
 	int run=0;
 
 	while (run<Max_Run){
@@ -3389,6 +3399,8 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 			cout<<"\r\t START RUN... "<<run<<" ";
 			cout.flush();
 		}
+
+		outfel << "run numero " << run << endl;
 
 		//Initialization for each run
 		if(Info){
@@ -3400,9 +3412,10 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 
 			future_event_list.deleteHeap();
 
-			for(int t=0; t<size_expTran; t++){
+			for(int t=1; t<size_notExpTran; t++){
+				PreviousEnabledTransValueDis[t] = 0;
 				Trans[SetTranNotExp[t]].first_event = NULL;
-				Trans[SetTranNotExp[t]].last_event = NULL;
+				Trans[SetTranNotExp[t]].events_size = 0;
 			}
 
 		}
@@ -3431,10 +3444,12 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 		}
 
 		double nextTimePoint=tout=Print_Step+itime;
+
 		//istate=1;
 		time=itime;
 
 		while(time<=Max_Time){
+
 
             //time=nextTimePoint;
 			getValTranFire(Value);
@@ -3443,9 +3458,8 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 		//update of future event list
 			for(int t=1;t<size_notExpTran;t++)
 			{
-				updateFutureEventList(SetTranNotExp[t], Tran_previous);
+				updateFutureEventList(SetTranNotExp[t], Tran_previous, time);
 			}
-
 
       		//this returns the correct transition to fire
 			int Tran=getComputeTau(SetTranExp, nextTimePoint,time);
@@ -3498,6 +3512,8 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 		++run;
 
 	}
+
+	future_event_list.deleteHeap();
 
 	cout<<"\n\nSolution at time "<<Max_Time<<":\n";
 	outfel.close();

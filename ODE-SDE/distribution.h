@@ -14,7 +14,6 @@
 	//da pensare se tenere o meno. Risolverebbe il problema del controllo nel file class.cpp
 	inline double dirac_delta(double value){
 
-		cout << "MA QUI CI ENTRI " << endl;
 		if(value<0){
 			throw Exception("The value must be greater than 0.\n\n");
 		}
@@ -34,7 +33,7 @@
 		return value;
 	}
 
-	/*inline double gamma(double alpha, double beta, mt19937_64& generator){
+	inline double gamma(double alpha, double beta, mt19937_64& generator){
 		std::gamma_distribution<double> gamma_dis(alpha, beta);
 		double value = gamma_dis(generator);
 		return value;
@@ -65,5 +64,5 @@
 		double value = norm_dis(generator);
 		return value;
 
-	}*/
+	}
 

@@ -86,7 +86,7 @@ public:
 
 class min_heap {
 
-    size_t N;
+    //size_t N;
     std::vector<Event*> heap;
 
     void percolateUp(Event* elem) {
@@ -146,15 +146,15 @@ public:
 
     //!Constructor with size
     min_heap(size_t initN) {
-        heap.reserve(N);
+        heap.reserve(initN);
     }
 
     void setHeapSize(size_t sizeN){
-        this -> N = sizeN;
         heap.reserve(sizeN);
     }
 
     void pushHeap(Event* elem) {
+
         size_t i = heap.size();
         assert(elem-> getIndexHeap() == -1);
         elem -> setIndexHeap(i);
@@ -179,6 +179,7 @@ public:
         }
 
         delete elem;
+        elem = NULL;
 
     }
 
@@ -208,11 +209,12 @@ public:
 
     //delete and clear all heap deallocating objects
     inline void deleteHeap(){
-        for(int i=0;i<(int)N;i++){
+        for(int i=0;i<(int)heap.size();i++){
             Event *delete_event = heap[i];
-            delete(delete_event);
+            delete delete_event;
             heap[i] = NULL;
         }
+        heap.clear();
     }
     
 };
