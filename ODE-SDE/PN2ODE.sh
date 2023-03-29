@@ -168,7 +168,7 @@ echo
 echo "#Computing p-semiflows and place bounds: "
 if [ "$NOPINV" == "NO" ]
 then
-    ${GREATSPN_BINDIR}/DSPN-Tool -load $NET_PATH -pinv  -bnd 
+    ${GREATSPN_BINDIR}/DSPN-Tool -pt -load $NET_PATH -pinv  -bnd 
     if [ "$?" -ne 0 ]
     then
         exit 1
