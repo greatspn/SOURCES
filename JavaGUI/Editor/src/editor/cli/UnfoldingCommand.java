@@ -62,6 +62,8 @@ public class UnfoldingCommand {
         boolean shuffleNames = false;
         boolean saveNameMap = false, savePnmlGfx = true;
         boolean saveAsPnml = false;
+        boolean saveAsNetDef = true;
+        boolean saveAsPNPRO = false;
         boolean anonimize = false;
         boolean useLongNames = false;
         boolean doUnfolding = true;
@@ -91,6 +93,14 @@ public class UnfoldingCommand {
                     
                 case "-out-pnml":
                     saveAsPnml = true;
+                    break;
+                    
+                case "-out-pnpro":
+                    saveAsPNPRO = true;
+                    break;
+                    
+                case "-no-out-netdef":
+                    saveAsNetDef = false;
                     break;
                     
                 case "-no-pnml-gfx":
@@ -267,24 +277,35 @@ public class UnfoldingCommand {
             }
         }
 
+        boolean saveUnfoldingRelation = false;
         if (saveAsPnml) {
-            File pnmlNet = new File(baseName+"_unf.pnml");
+            File pnmlNet = new File(baseName+".pnml");
             start = System.currentTimeMillis();
-            System.out.println("SAVING AS "+baseName+"_unf.pnml ...");
+            System.out.println("SAVING AS "+baseName+".pnml ...");
             String ret = PNMLFormat.exportGspn(gspn, pnmlNet, savePnmlGfx);
             System.out.println("SAVING TIME: "+(System.currentTimeMillis() - start)/1000.0);
             if (ret != null) {
                 System.out.println("Problems exporting the PNML file:\n"+ret);
                 System.exit(1);
             }
-            // Save unfolded relations
-            if (unfolded) {
-                System.out.println("SAVING UNFOLDING MAP FILE "+baseName+"_unf.unfmap ...");
-                File outUnfMapName = new File(baseName+"_unf.unfmap");
-                saveUnfMap(outUnfMapName, unf);
-            }
+            saveUnfoldingRelation = true;
         }
-        else { // Save in GreatSPN format
+        if (saveAsPNPRO) { // Save in PNPRO format
+            File pnproNet = new File(baseName+".PNPRO");
+            start = System.currentTimeMillis();
+            System.out.println("SAVING AS "+baseName+".PNPRO ...");
+            ArrayList<ProjectPage> outPages = new ArrayList<>();
+            outPages.add(gspn);
+            ProjectData outProj = new ProjectData("project", outPages);
+            PnProFormat.saveXML(outProj, pnproNet);
+            System.out.println("SAVING TIME: "+(System.currentTimeMillis() - start)/1000.0);
+//            if (ret != null) {
+//                System.out.println("Problems exporting the PNPRO file:\n"+ret);
+//                System.exit(1);
+//            }
+            saveUnfoldingRelation = true;
+        }
+        if (saveAsNetDef) { // Save in GreatSPN format
             // Save in GreatSPN net/def format
             File outNet = new File(baseName+".net");
             File outDef = new File(baseName+".def");
@@ -311,12 +332,7 @@ public class UnfoldingCommand {
                     map.close();
                 }
 
-                // Save unfolded relations
-                if (unfolded) {
-                    System.out.println("SAVING UNFOLDING MAP FILE "+baseName+".unfmap ...");
-                    File outUnfMapName = new File(baseName+".unfmap");
-                    saveUnfMap(outUnfMapName, unf);
-                }
+                saveUnfoldingRelation = true;
             }
 
 
@@ -336,6 +352,13 @@ public class UnfoldingCommand {
                 nu.close();
             }
         }
+        
+        if (saveUnfoldingRelation) {
+            System.out.println("SAVING UNFOLDING MAP FILE "+baseName+".unfmap ...");
+            File outUnfMapName = new File(baseName+".unfmap");
+            saveUnfMap(outUnfMapName, unf);
+        }
+
 
         System.out.println("TOTAL TIME: "+(System.currentTimeMillis() - totalStart)/1000.0);
         System.out.println("OK.");
