@@ -39,7 +39,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 
     // The context in which formulas are checked and parsed.
-    private ParserContext context;
+    protected ParserContext context;
 
     // The parse flags
     private final int parseFlags;
