@@ -674,7 +674,8 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 
             case APNN:
                 return format(true, "if ", cond, " then ", e1, " else ", e2);
-
+            case CPP:
+                return format(true, "if(", cond, "){\n ", e1, "}\n else {", e2, "\n} ");
             default:
                 throw new UnsupportedOperationException("formatIfThenElse: unsupported lang");
         }
@@ -1433,6 +1434,8 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 return format(true, "<numberconstant value=\"" + (value ? "true" : "false") + "\">");
             case NETLOGO:
                 return format(true, value ? "TRUE" : "FALSE");
+            case CPP:
+                return format(true, value ? "true" : "false");
             default:
                 throw new UnsupportedOperationException("visitBoolConst");
         }

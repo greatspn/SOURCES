@@ -46,6 +46,7 @@ fi
 
 
 NET_PATH=$(perl -e "use File::Spec; print(File::Spec->rel2abs(\"${1}\"),\"\n\")")
+
 TRANS_POLICY="-I"
 NOPINV="NO"
 FLUXNAMEFILE=()
@@ -137,14 +138,6 @@ done
 echo ${FLUXNAMEFILE[@]}
 
 echo "Compiling general transition file"
-
-#if [[ -f ${NET_PATH}_unf.net ]]
-#then
-#	CPP_INPUT_PATH=${NET_PATH}_unf
-#else
-#	CPP_INPUT_PATH=${NET_PATH}
-#fi
-
 
 echo
 if [ "$FLUXFLAG" == "true" ]
