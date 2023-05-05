@@ -353,7 +353,7 @@ public class UnfoldingCommand {
             }
         }
         
-        if (saveUnfoldingRelation) {
+        if (unfolded && saveUnfoldingRelation) {
             System.out.println("SAVING UNFOLDING MAP FILE "+baseName+".unfmap ...");
             File outUnfMapName = new File(baseName+".unfmap");
             saveUnfMap(outUnfMapName, unf);
