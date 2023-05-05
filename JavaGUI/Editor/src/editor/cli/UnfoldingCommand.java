@@ -303,7 +303,7 @@ public class UnfoldingCommand {
 //                System.out.println("Problems exporting the PNPRO file:\n"+ret);
 //                System.exit(1);
 //            }
-            saveUnfoldingRelation = true;
+            //saveUnfoldingRelation = true;
         }
         if (saveAsNetDef) { // Save in GreatSPN format
             // Save in GreatSPN net/def format

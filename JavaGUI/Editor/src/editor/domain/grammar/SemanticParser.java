@@ -598,7 +598,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new BinaryFunct(false, ExprLangParser.MAX_FN, "max(", ", ", ")", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.MIN_FN, "min(", ", ", ")", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.POW_FN, "pow(", ", ", ")", OperatorPos.FUNCTION),
-        //come gestire in cpp le distribuzioni?
+        //cpp distribution
         new BinaryFunct(false, ExprLangParser.RECT_FN, "uniform_real_distribution<double> unf_dis(", ", ", ");\n unf_dis(generator)", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.TRUNCATED_EXP_FN, "exponential_distribution<> exp_dis(", ", ", ")\n exp_dis(generator)", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.TRIANGULAR_FN, "Triangular(", ", ", ")", OperatorPos.FUNCTION),
