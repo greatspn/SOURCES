@@ -1374,15 +1374,13 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 String function_name = call_name.substring(1, call_name.length() - 1);
                 String arguments = visit(ctx.intOrRealList()).getFormula();
                 String arguments_defined;
-                if (arguments.isEmpty()) {
-                    if (context.cppForFluxBalance) {
-                        arguments_defined = "Value, vec_fluxb, NumTrans, NumPlaces, NameTrans, Trans, T, time";
-
-                    } else {
-                        arguments_defined = "Value, NumTrans, NumPlaces, NameTrans, Trans, T, time";
-                    }
+                if (context.cppForFluxBalance) {
+                    arguments_defined = "Value, vec_fluxb, NumTrans, NumPlaces, NameTrans, Trans, T, time";
                 } else {
-                    arguments_defined = arguments.substring(2);
+                    arguments_defined = "Value, NumTrans, NumPlaces, NameTrans, Trans, T, time";
+                }
+                if (!arguments.isEmpty()) {
+                    arguments_defined = arguments_defined + ", " + arguments.substring(2);
                 }
                 return format(true, function_name, "(", arguments_defined, ")");
             default:
