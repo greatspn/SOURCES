@@ -226,6 +226,8 @@ const char* GetFlowName(InvariantKind ik, FlowMatrixKind matk, SystemMatrixType 
             return p ? "PLACE FLOW BASIS" : "TRANSITION FLOW BASIS";
         case FlowMatrixKind::INTEGER_FLOWS: 
             return p ? "PLACE FLOWS" : "TRANSITION FLOWS";
+        case FlowMatrixKind::NONE: 
+            return "INCIDENCE";
         // case FlowMatrixKind::NESTED_FLOW_SPAN: 
         //     return p ? "NESTED PLACE FLOW SPAN" : "NESTED TRANSITION FLOW SPAN";
         default:
@@ -302,6 +304,18 @@ ostream& flow_matrix_t::print(ostream& os, bool highlight_annulled) const {
         assert(rr.neg_D == rr.count_negatives_D());
     }
     return os;
+}
+
+//-----------------------------------------------------------------------------
+
+void flow_matrix_t::save_matrix_A(ostream& os) const {
+    os << N << " " << M << endl;
+    for (const auto& rr : mK) {
+        for (size_t j=0; j<M; j++) {
+            os << rr.A[j] << " ";
+        }
+        os << endl;
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -1607,49 +1621,50 @@ ComputeFlows(const PN& pn, InvariantKind inv_kind, FlowMatrixKind mat_kind,
 
     } printer(verboseLvl);
 
-    // Initialize generator
-    flows_generator_t sf_gen(*pfm, printer, verboseLvl);
-    if (detect_exp_growth)
-        sf_gen.max_peak_rows = 5 * pfm->N; // N=pn.plcs.size() for psfl
+    if (mat_kind != FlowMatrixKind::NONE) {
+        // Initialize generator
+        flows_generator_t sf_gen(*pfm, printer, verboseLvl);
+        if (detect_exp_growth)
+            sf_gen.max_peak_rows = 5 * pfm->N; // N=pn.plcs.size() for psfl
 
-    // Start the computation of the P/T semiflows/basis/flows
-    switch (mat_kind) {
-        case FlowMatrixKind::SEMIFLOWS:
-            sf_gen.compute_semiflows();
-            break;
-        case FlowMatrixKind::BASIS:
-            sf_gen.compute_basis();
-            break;
-        case FlowMatrixKind::INTEGER_FLOWS:
-            sf_gen.compute_integer_flows();
-            break;
-         // case FlowMatrixKind::NESTED_FLOW_SPAN:
-         //    sf_gen.compute_nested_flow_span();
-         //    break;
-        default:
-            throw program_exception("Unknown kind of flows!");
-    }
-
-    if (system_kind != SystemMatrixType::REGULAR || 0!=(suppl_flags & FM_REDUCE_SUPPLEMENTARY_VARS))
-        sf_gen.reduce_non_minimal();
-
-    if (verboseLvl >= VL_BASIC) {
-        if (mat_kind == FlowMatrixKind::BASIS) {
-            cout << "FOUND " << pfm->num_flows()
-                 << " VECTORS IN THE " << GetFlowName(inv_kind, pfm->mat_kind, pfm->system_kind);
+        // Start the computation of the P/T semiflows/basis/flows
+        switch (mat_kind) {
+            case FlowMatrixKind::SEMIFLOWS:
+                sf_gen.compute_semiflows();
+                break;
+            case FlowMatrixKind::BASIS:
+                sf_gen.compute_basis();
+                break;
+            case FlowMatrixKind::INTEGER_FLOWS:
+                sf_gen.compute_integer_flows();
+                break;
+            // case FlowMatrixKind::NESTED_FLOW_SPAN:
+            //    sf_gen.compute_nested_flow_span();
+            //    break;
+            default:
+                throw program_exception("Unknown kind of flows!");
         }
-        else {
-            cout << "FOUND " << pfm->num_flows()
-                 << " " << GetFlowName(inv_kind, pfm->mat_kind, pfm->system_kind);
-        }
-        size_t num_neg = 0;
-        for (auto&& row : pfm->mK)
-            num_neg += (row.is_negative() ? 1 : 0);
-        if (num_neg > 0) 
-            cout << " (" << (pfm->num_flows() - num_neg) << " semiflows, " << num_neg << " flows)";
-        cout << ".\n" << endl;
-    }
 
+        if (system_kind != SystemMatrixType::REGULAR || 0!=(suppl_flags & FM_REDUCE_SUPPLEMENTARY_VARS))
+            sf_gen.reduce_non_minimal();
+
+        if (verboseLvl >= VL_BASIC) {
+            if (mat_kind == FlowMatrixKind::BASIS) {
+                cout << "FOUND " << pfm->num_flows()
+                    << " VECTORS IN THE " << GetFlowName(inv_kind, pfm->mat_kind, pfm->system_kind);
+            }
+            else {
+                cout << "FOUND " << pfm->num_flows()
+                    << " " << GetFlowName(inv_kind, pfm->mat_kind, pfm->system_kind);
+            }
+            size_t num_neg = 0;
+            for (auto&& row : pfm->mK)
+                num_neg += (row.is_negative() ? 1 : 0);
+            if (num_neg > 0) 
+                cout << " (" << (pfm->num_flows() - num_neg) << " semiflows, " << num_neg << " flows)";
+            cout << ".\n" << endl;
+        }
+    }
     return pfm;
 }
 
