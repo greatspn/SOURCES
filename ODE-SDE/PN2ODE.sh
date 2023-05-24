@@ -263,17 +263,18 @@ echo
   cp ./lsode.*  ${MyTempDir}
   cp ./makefile ${MyTempDir}
   cp ./readSupport.* ${MyTempDir}
+  cp ./reverse_heap.h ${MyTempDir}
+  cp ./distribution.h ${MyTempDir}
+  
   if [ "$AUT" == "-A" ]
   then
   	cp ./readingAutomaton.* ${MyTempDir}
   	cp ./automa.* ${MyTempDir}
-  	cp ./readSupport.* ${MyTempDir}
   fi	
   if [[ ${#FLUXNAMEFILE[@]} > 0 ]]
   then
   	cp ./general.* ${MyTempDir}
   	cp ./GLPKsolve.* ${MyTempDir}
-  	cp ./readSupport.* ${MyTempDir}
   fi	
   cd ${MyTempDir}
   echo "#cd ${MyTempDir}"

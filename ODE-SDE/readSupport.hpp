@@ -35,6 +35,4 @@ namespace CRS {
     inline void setColumn(int column);
 
   };
-
-
 }

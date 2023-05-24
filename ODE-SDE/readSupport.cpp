@@ -28,6 +28,7 @@ namespace CRS {
 			//!to read more elements separated by comma
 				stringstream ss(line); 
 				string token;
+				
 				while (getline(ss, token, ',')) 
 			//!to read the single elements of the line
 				{  
@@ -80,7 +81,9 @@ namespace CRS {
 			//!to read more elements separated by comma 
 				stringstream ss(line); 
 				string token;
+				
 				while (getline(ss, token, ',')) 
+
 			//!to read the single elements of the line
 				{   
 					try{
@@ -177,7 +180,8 @@ namespace CRS {
 			readFileTable(file_index);
 		}
 
-		if(column_index < 0 || row_index < 0 || column_index > column-1){
+	if(column_index < 0 || row_index < 0 || column_index > column-1){
+
 			throw Exception("Index out of range");
 		}
 

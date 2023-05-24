@@ -51,9 +51,9 @@ extern "C" {
 
 
 
-    Tree_p reached_marking = NULL;
-    Tree_p initial_marking = NULL;
-    Tree_p current_marking = NULL;
+Tree_p reached_marking = NULL;
+Tree_p initial_marking = NULL;
+Tree_p current_marking = NULL;
 
     Result_p enabled_head = NULL;   /* Puntatori alla lista delle tr. abil. */
 
@@ -61,41 +61,41 @@ extern "C" {
     int marcatura = 0;  /* contatore per le marcature       */
     int h = 0;          /* per bilanciamento nella insert_tree  */
     unsigned long tang = 0;     /* contatori tipi di marc. raggiunte    */
-    unsigned long evan = 0;
-    unsigned long dead = 0;
-    int home = 0;
-    unsigned long cont_tang;
-    int count_arc = 0;
+unsigned long evan = 0;
+unsigned long dead = 0;
+int home = 0;
+unsigned long cont_tang;
+int count_arc = 0;
 
 
-    int cur_priority;
+int cur_priority;
 
-    int *code_place = NULL;
-    int *min_place = NULL;
-    int *max_place = NULL;
-    int *init_place = NULL;
-    char IstanceName[MAX_TAG_SIZE];
-    int max_priority = 0;
-    time_t old_time, new_time;
-
-
+int *code_place = NULL;
+int *min_place = NULL;
+int *max_place = NULL;
+int *init_place = NULL;
+char IstanceName[MAX_TAG_SIZE];
+int max_priority = 0;
+time_t old_time, new_time;
 
 
-    unsigned long d_ptr;
-    unsigned long length;
-    unsigned long f_mark;
-    int f_bot;
-    int f_throu;
-    int f_tang;
 
-    extern bool MASSACTION;
-    extern bool AUTOMATON;
-    extern bool FLUXB;
-    extern std::vector<std::string> flux_names;
-    int exceeded_markings_bound()
-    {
-        return FALSE;
-    }
+
+unsigned long d_ptr;
+unsigned long length;
+unsigned long f_mark;
+int f_bot;
+int f_throu;
+int f_tang;
+
+extern bool MASSACTION;
+extern bool AUTOMATON;
+extern bool FLUXB;
+extern std::vector<std::string> flux_names;
+int exceeded_markings_bound()
+{
+    return FALSE;
+}
 }
 
 using namespace std;
@@ -338,27 +338,27 @@ void read_bound(std::string &net, int *lbound, int *ubound)
 void build_ODECompact(ofstream &out, std::string path, std::string net)
 {
     /* Init build_ODE */
- Node_p l_ptr = NULL;
- int pp;
- clock_t startGlobal, endGlobal;
- double timeGlobal;
- startGlobal = clock();
- char delims[]=": ()\n\r\t";
+   Node_p l_ptr = NULL;
+   int pp;
+   clock_t startGlobal, endGlobal;
+   double timeGlobal;
+   startGlobal = clock();
+   char delims[]=": ()\n\r\t";
 
- cout << "\n\n------------------------------------------------" << endl;
- cout << "               Start  encoding" << endl;
- cout << "------------------------------------------------\n" << endl;
+   cout << "\n\n------------------------------------------------" << endl;
+   cout << "               Start  encoding" << endl;
+   cout << "------------------------------------------------\n" << endl;
 
 
- out << "\n#include <iostream>\n#include \"class.hpp\"\n\n";
- out << "\n#include <iostream>\n#include \""<<path<<".hpp\"\n\n";
+   out << "\n#include <iostream>\n#include \"class.hpp\"\n\n";
+   out << "\n#include <iostream>\n#include \""<<path<<".hpp\"\n\n";
 
     //for transition function rates
- std::string filename=path+".hpp";
- ofstream hout(filename.c_str());
+   std::string filename=path+".hpp";
+   ofstream hout(filename.c_str());
 
- if (!hout)
- {
+   if (!hout)
+   {
     cerr << "Error: it is not possible to output file "<<filename<<"\n\n";
 
 }
@@ -370,12 +370,12 @@ for (int i = 0; i < npl; i++)
 set<std::string> function_names;
 for (int tt = 0; tt < ntr; tt++)
 {
-    if (tabt[tt].general_function!=NULL){
-         if (!FLUXB)
-            hout<<"double "<<tabt[tt].trans_name<<"_general(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n";
-        else
-            hout<<"double "<<tabt[tt].trans_name<<"_general(double *Value,vector<class FBGLPK::LPprob>& vec_fluxb,  map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n";
-    }
+    if (tabt[tt].general_function!=NULL  || (tabt[tt].timing == TIMING_DETERMINISTIC && tabt[tt].general_function == NULL /*dirac*/)){
+       if (!FLUXB)
+        hout<<"double "<<tabt[tt].trans_name<<"_general(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n";
+    else
+        hout<<"double "<<tabt[tt].trans_name<<"_general(double *Value,vector<class FBGLPK::LPprob>& vec_fluxb,  map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n";
+}
 }
 hout<<"};\n";
 hout.close();
@@ -425,24 +425,24 @@ for (int tt = 0; tt < ntr; tt++)
 
 
 
-    out << "\nint main(int argc, char **argv) {\n\n";
-    out << " time_t time_1,time_4;\n";
-    out<<  " int who = RUSAGE_SELF;\n struct rusage usage;\n";
-    out << " int SOLVE = 7, runs=1;\n";
-    out << " long int seed = 0;\n";
-    out << " bool OUTPUT=false;\n";
+out << "\nint main(int argc, char **argv) {\n\n";
+out << " time_t time_1,time_4;\n";
+out<<  " int who = RUSAGE_SELF;\n struct rusage usage;\n";
+out << " int SOLVE = 7, runs=1;\n";
+out << " long int seed = 0;\n";
+out << " bool OUTPUT=false;\n";
    //variability 
-    if (FLUXB){
+if (FLUXB){
     out << " bool VARIABILITY=false;\n";
-    }
+}
     //variability
-    out << " std::string fbound=\"\", finit=\"\", fparm=\"\";\n";
-    out << " double hini = 1e-6, atolODE = 1e-6, rtolODE=1e-6, ftime=1.0, stime=0.0, itime=0.0, epsTAU=0.1;\n\n";
-    out << " cout<<\"\\n\\n =========================================================\\n\";\n";
-    out << " cout<<\"|	              ODE/SDE Solver                       |\\n\";\n";
-    out << " cout<<\" =========================================================\\n\";\n";
-    out << " cout<<\"\\n If you find any bug, send an email to beccuti@di.unito.it\\n\";\n\n";
-    
+out << " std::string fbound=\"\", finit=\"\", fparm=\"\";\n";
+out << " double hini = 1e-6, atolODE = 1e-6, rtolODE=1e-6, ftime=1.0, stime=0.0, itime=0.0, epsTAU=0.1;\n\n";
+out << " cout<<\"\\n\\n =========================================================\\n\";\n";
+out << " cout<<\"|	              ODE/SDE Solver                       |\\n\";\n";
+out << " cout<<\" =========================================================\\n\";\n";
+out << " cout<<\"\\n If you find any bug, send an email to beccuti@di.unito.it\\n\";\n\n";
+
     //automaton
 if (AUTOMATON)
 {
@@ -456,26 +456,26 @@ else
     out << " std::cerr<<\"\\n\\nUSE:" << net << "_solve <out_file> [OPTIONS]\";\n\t";
 }
     //automaton
-    out<<"std::cerr<<\"\\n\\n\\tOPTIONS\\n\";\n\t";
-    out << " std::cerr<<\"\\n\\t -type <type>:\\t\\t ODE-E or ODE-RKF or ODE45 or LSODA or HLSODA or (H)SDE or HODE or SSA or TAUG or STEP. Default: LSODA \";\n\t";
-    out << " std::cerr<<\"\\n\\t -hini <double>:\\t Initial step size. Default: 1e-6\";\n\t";
-    out << " std::cerr<<\"\\n\\t -atol <double>:\\t Absolute error tolerance. Dafault: 1e-6\";\n\t";
-    out << " std::cerr<<\"\\n\\t -rtol <double>:\\t Relative error tolerance. Dafault: 1e-6\";\n\t";
-    out << " std::cerr<<\"\\n\\t -taueps <double>:\\t Epsilon value for Tau-leaping algorithm. Dafault: 0.1\";\n\t";
-    out << " std::cerr<<\"\\n\\t -runs <int>:\\t\\t Integer number corresponding to runs (only used in SSA,TAUG, HODE,HLSODA). Default: 1\";\n\t";
-    out << " std::cerr<<\"\\n\\t -ftime <double>:\\t Double number used to set the upper bound of the evolution time. Dafault: 1\";\n\t";
-    out << " std::cerr<<\"\\n\\t -stime <double>:\\t Double number used to set the step in the output. Default: 0.0 (no output)\";\n\t";
-    out << " std::cerr<<\"\\n\\t -itime <double>:\\t Double number used to set the initial simulation time. Default: 0.0 \";\n\t";
-    out << " std::cerr<<\"\\n\\t -b <bound_file>:\\t Soft bound are defined in the file <bound_file>\";\n\t";
-    out << " std::cerr<<\"\\n\\t -seed <double>:\\t Seed of random number generator\";\n\t";
+out<<"std::cerr<<\"\\n\\n\\tOPTIONS\\n\";\n\t";
+out << " std::cerr<<\"\\n\\t -type <type>:\\t\\t ODE-E or ODE-RKF or ODE45 or LSODA or HLSODA or (H)SDE or HODE or SSA or TAUG or STEP. Default: LSODA \";\n\t";
+out << " std::cerr<<\"\\n\\t -hini <double>:\\t Initial step size. Default: 1e-6\";\n\t";
+out << " std::cerr<<\"\\n\\t -atol <double>:\\t Absolute error tolerance. Dafault: 1e-6\";\n\t";
+out << " std::cerr<<\"\\n\\t -rtol <double>:\\t Relative error tolerance. Dafault: 1e-6\";\n\t";
+out << " std::cerr<<\"\\n\\t -taueps <double>:\\t Epsilon value for Tau-leaping algorithm. Dafault: 0.1\";\n\t";
+out << " std::cerr<<\"\\n\\t -runs <int>:\\t\\t Integer number corresponding to runs (only used in SSA,TAUG, HODE,HLSODA). Default: 1\";\n\t";
+out << " std::cerr<<\"\\n\\t -ftime <double>:\\t Double number used to set the upper bound of the evolution time. Dafault: 1\";\n\t";
+out << " std::cerr<<\"\\n\\t -stime <double>:\\t Double number used to set the step in the output. Default: 0.0 (no output)\";\n\t";
+out << " std::cerr<<\"\\n\\t -itime <double>:\\t Double number used to set the initial simulation time. Default: 0.0 \";\n\t";
+out << " std::cerr<<\"\\n\\t -b <bound_file>:\\t Soft bound are defined in the file <bound_file>\";\n\t";
+out << " std::cerr<<\"\\n\\t -seed <double>:\\t Seed of random number generator\";\n\t";
     //variability 
-    if (FLUXB){
-        out << " std::cerr<<\"\\n\\t -var:\\t Enable output for variability analysis of fluxes\";\n\t";
-    }
+if (FLUXB){
+    out << " std::cerr<<\"\\n\\t -var:\\t Enable output for variability analysis of fluxes\";\n\t";
+}
       //variability
-    out << " std::cerr<<\"\\n\\t -init <init_file>:\\t The file <initial_file> contains the initial marking. Default:  initial marking in the orginal net\";\n\t";
-    out << " std::cerr<<\"\\n\\t -parm <parm_file>:\\t The file <parm_file> contains a set of pairs with format <transition name> <value> or <place name> <value>.\\n\\t\\t\\t\\t For transition  the value is used to set a new rate value, while for place  it is used to set a new initial marking.\";\n\t";
-  
+out << " std::cerr<<\"\\n\\t -init <init_file>:\\t The file <initial_file> contains the initial marking. Default:  initial marking in the orginal net\";\n\t";
+out << " std::cerr<<\"\\n\\t -parm <parm_file>:\\t The file <parm_file> contains a set of pairs with format <transition name> <value> or <place name> <value>.\\n\\t\\t\\t\\t For transition  the value is used to set a new rate value, while for place  it is used to set a new initial marking.\";\n\t";
+
     //automaton
 if (AUTOMATON)
     out << " std::cerr<<\"\\n\\t <automaton_file>:\\t automaton is defined in the file <automaton>\\n\";";
@@ -596,12 +596,12 @@ out<<"\t }\n";
 
 //variability
 //variability analysis
-        if (FLUXB){
-            out<<"\t if (strcmp(\"-var\", argv[ii])==0){\n";
-            out<<"\t\t VARIABILITY=true;\n";
-            out<<"\t\t continue;\n";
-            out<<"\t }\n";
-        }
+if (FLUXB){
+    out<<"\t if (strcmp(\"-var\", argv[ii])==0){\n";
+    out<<"\t\t VARIABILITY=true;\n";
+    out<<"\t\t continue;\n";
+    out<<"\t }\n";
+}
 //variability
 
 //initial file code
@@ -642,15 +642,15 @@ out << " cout<<\"\\tInitial  time: \"<<itime<<\"\\n\";\n";
 out << " cout<<\"\\tAbosolute tolerance: \"<<atolODE<<\"\\n\";\n";
 out << " cout<<\"\\tRelative tolerance: \"<<rtolODE<<\"\\n\";\n";
     //out << " if ((strcmp(argv[2],\"ODE\")!=0)&&(strcmp(argv[2],\"ode\")!=0)){\n";
-    out << " cout<<\"\\tEpsilon value for TAU-leaping: \"<<epsTAU<<\"\\n\";\n";
-    out << " cout<<\"\\tSolution runs: \"<<runs<<\"\\n\";\n";
-    out << " if (fbound!=\"\") cout<<\"\\tBound file: \"<<fbound<<\"\\n\";\n";
-    out << " if (finit!=\"\") cout<<\"\\tInitial marking file: \"<<finit<<\"\\n\";\n";
-    out << " if (fparm!=\"\") cout<<\"\\tInitial parameter file: \"<<fparm<<\"\\n\";\n";
+out << " cout<<\"\\tEpsilon value for TAU-leaping: \"<<epsTAU<<\"\\n\";\n";
+out << " cout<<\"\\tSolution runs: \"<<runs<<\"\\n\";\n";
+out << " if (fbound!=\"\") cout<<\"\\tBound file: \"<<fbound<<\"\\n\";\n";
+out << " if (finit!=\"\") cout<<\"\\tInitial marking file: \"<<finit<<\"\\n\";\n";
+out << " if (fparm!=\"\") cout<<\"\\tInitial parameter file: \"<<fparm<<\"\\n\";\n";
     //Variability
-    if (FLUXB){
-        out << " if (VARIABILITY) cout<<\"\\tEnable variability analysis.\\n\";\n";
-    }
+if (FLUXB){
+    out << " if (VARIABILITY) cout<<\"\\tEnable variability analysis.\\n\";\n";
+}
     //Variability
     //automaton
 if (AUTOMATON)
@@ -697,26 +697,22 @@ out<<" mapOfFunctions[std::string(\"nullptr\")]= nullptr;\n";
 
 for (int tt = 0; tt < ntr; tt++)
 {
-    std::string enable="false";
     std::string GenFun="nullptr";
     std::string FuncT="nullptr";
     std::string rate=std::to_string(tabt[tt].mean_t);
+    std::string timing= std::to_string(tabt[tt].timing);
 
     if (tabt[tt].general_function!=NULL)
     {
-        cout<<tabt[tt].general_function<<endl;
+        //cout<<tabt[tt].general_function<<endl;
         std::string tmp_st(tabt[tt].general_function);
         char* stoken=strtok((char*)tmp_st.c_str(),delims);
             //to remove FN
-            //da rivedere
         stoken=strtok(NULL,delims);
         while (stoken!=NULL){
-            if (strcmp(stoken,"Discrete")==0 ||strcmp(stoken,"discrete")==0 || strcmp(stoken,"D")==0)
-             enable="true";
-         else
             if (isdigit(stoken[0]))
-               rate =stoken;
-           else{
+             rate =stoken;
+         else{
             GenFun=std::string("")+tabt[tt].trans_name+"_general";
             FuncT=std::string("&")+tabt[tt].trans_name+"_general";
             if (mapOfFunctions.find(FuncT)==mapOfFunctions.end()){
@@ -729,7 +725,7 @@ for (int tt = 0; tt < ntr; tt++)
     }
     rate="1.0";
 }
-foutT<<enable<<" "<<GenFun<<" "<<FuncT<<" "<<rate<<"\n";
+foutT<<" "<<GenFun<<" "<<FuncT<<" "<<rate<<timing<<"\n";
 l_ptr = GET_INPUT_LIST(tt);
 
 while (l_ptr != NULL)
@@ -971,20 +967,20 @@ for (pp = 0; pp < npl; pp++)
     PTout<<"#PLACE  ID\n";
     for (int pp = 0; pp < npl; pp++)
     {
-     PTout<<tabp[pp].place_name<<"\t"<<pp<<endl;
- }
- PTout<<"#TRANSITION  ID\n";
- for (int tt = 0; tt < ntr; tt++)
- {
-     PTout<<tabt[tt].trans_name<<"\t"<<tt<<endl;
- }
- PTout.close();
+       PTout<<tabp[pp].place_name<<"\t"<<pp<<endl;
+   }
+   PTout<<"#TRANSITION  ID\n";
+   for (int tt = 0; tt < ntr; tt++)
+   {
+       PTout<<tabt[tt].trans_name<<"\t"<<tt<<endl;
+   }
+   PTout.close();
 
- cout << "===================== INFO =====================" << endl;
- cout << " Total Time: " << setprecision(7) << timeGlobal << " sec" << endl;
- cout << " Total Used Memory: " << usage1.ru_maxrss << "KB" << endl;
- cout << " Output saved in: " << net << ".cpp" << "\n";
- cout << "================================================\n" << endl;
+   cout << "===================== INFO =====================" << endl;
+   cout << " Total Time: " << setprecision(7) << timeGlobal << " sec" << endl;
+   cout << " Total Used Memory: " << usage1.ru_maxrss << "KB" << endl;
+   cout << " Output saved in: " << net << ".cpp" << "\n";
+   cout << "================================================\n" << endl;
 }/* End build_ODECompact */
 
 
@@ -996,9 +992,9 @@ for (pp = 0; pp < npl; pp++)
 /* PARAMETERS : */
 /* RETURN VALUE : */
 /**************************************************************/
- void 
- build_ODE(ofstream &out, std::string path, std::string net)
- {
+   void 
+   build_ODE(ofstream &out, std::string path, std::string net)
+   {
     /* Init build_ODE */
 
 
@@ -1035,10 +1031,11 @@ for (pp = 0; pp < npl; pp++)
     set<std::string> function_names;
     for (int tt = 0; tt < ntr; tt++)
     {
-        if (tabt[tt].general_function != NULL)
+
+        if (tabt[tt].general_function != NULL || (tabt[tt].timing == TIMING_DETERMINISTIC && tabt[tt].general_function == NULL /*dirac*/))
         {
             //if(tabt[tt].timing == TIMING_DETERMINISTIC ){
-            //    hout << tabt[tt].trans_name << " sei dunque generale?" << endl; //Sono commossa.
+              //  hout << TIMING_DETERMINISTIC << " sei dunque generale?" << endl; //Sono commossa.
            // }
             if (!FLUXB)
                 hout<<"double "<<tabt[tt].trans_name<<"_general(double *Value, map <std::string,int>& NumTrans,  map <std::string,int>& NumPlaces,const vector <string>& NameTrans, const struct InfTr* Trans, const int Tran, const double& Time);\n";
@@ -1105,7 +1102,7 @@ for (pp = 0; pp < npl; pp++)
     out << " bool OUTPUT=false;\n";
     //variability 
     if (FLUXB){
-    out << " bool VARIABILITY=false;\n";
+        out << " bool VARIABILITY=false;\n";
     }
     //variability
     out << " std::string fbound=\"\", finit=\"\", fparm=\"\";\n";
@@ -1267,12 +1264,12 @@ for (pp = 0; pp < npl; pp++)
 
 //variability
 //variability analysis
-        if (FLUXB){
-            out<<"\t if (strcmp(\"-var\", argv[ii])==0){\n";
-            out<<"\t\t VARIABILITY=true;\n";
-            out<<"\t\t continue;\n";
-            out<<"\t }\n";
-        }
+    if (FLUXB){
+        out<<"\t if (strcmp(\"-var\", argv[ii])==0){\n";
+        out<<"\t\t VARIABILITY=true;\n";
+        out<<"\t\t continue;\n";
+        out<<"\t }\n";
+    }
 //variability
 
 //initial file code
@@ -1352,17 +1349,16 @@ for (pp = 0; pp < npl; pp++)
         std::string GenFun="";
         std::string FuncT="nullptr";
         std::string rate=std::to_string(tabt[tt].mean_t);
-        if (tabt[tt].general_function != NULL)
+        std::string timing= std::to_string(tabt[tt].timing);
+        //if (tabt[tt].general_function != NULL)
+        if (tabt[tt].general_function != NULL || (tabt[tt].timing == TIMING_DETERMINISTIC && tabt[tt].general_function == NULL /*dirac*/))
         {
-            cout<<tabt[tt].general_function<<endl;
-            std::string tmp_st(tabt[tt].general_function);
-            char* stoken=strtok((char*)tmp_st.c_str(),delims);
-            cout << " stoken è " << stoken << endl;
-            enable = "true";
             GenFun=std::string("")+tabt[tt].trans_name+"_general";
             FuncT=std::string("&")+tabt[tt].trans_name+"_general";
             rate="1.0";
+
         }
+        out<<" t.timing = "<<timing<<";\n";
         out<<" t.discrete = "<<enable<<";\n";
         out<<" t.GenFun= \""<<GenFun<<"\";\n";
         out<<" t.FuncT=  "<<FuncT<<";\n";
@@ -1528,20 +1524,20 @@ for (pp = 0; pp < npl; pp++)
     PTout<<"#PLACE  ID\n";
     for (int pp = 0; pp < npl; pp++)
     {
-     PTout<<tabp[pp].place_name<<"\t"<<pp<<endl;
- }
- PTout<<"#TRANSITION  ID\n";
- for (int tt = 0; tt < ntr; tt++)
- {
-     PTout<<tabt[tt].trans_name<<"\t"<<tt<<endl;
- }
- PTout.close();
+       PTout<<tabp[pp].place_name<<"\t"<<pp<<endl;
+   }
+   PTout<<"#TRANSITION  ID\n";
+   for (int tt = 0; tt < ntr; tt++)
+   {
+       PTout<<tabt[tt].trans_name<<"\t"<<tt<<endl;
+   }
+   PTout.close();
 
- cout << "===================== INFO =====================" << endl;
- cout << " Total Time: " << setprecision(7) << timeGlobal << " sec" << endl;
- cout << " Total Used Memory: " << usage1.ru_maxrss << "KB" << endl;
- cout << " Output saved in: " << net << ".cpp" << "\n";
- cout << "================================================\n" << endl;
+   cout << "===================== INFO =====================" << endl;
+   cout << " Total Time: " << setprecision(7) << timeGlobal << " sec" << endl;
+   cout << " Total Used Memory: " << usage1.ru_maxrss << "KB" << endl;
+   cout << " Output saved in: " << net << ".cpp" << "\n";
+   cout << "================================================\n" << endl;
 }/* End build_ODE */
 
 
@@ -1553,8 +1549,8 @@ for (pp = 0; pp < npl; pp++)
 /* PARAMETERS : */
 /* RETURN VALUE : */
 /**************************************************************/
- void build_ODEGPU(std::string net)
- {
+   void build_ODEGPU(std::string net)
+   {
     /* Init build_ODEGPU */
 
     Node_p l_ptr = NULL;
