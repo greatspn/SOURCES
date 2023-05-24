@@ -153,6 +153,7 @@ static const char *s_AppBanner =
     "  {!-pbasis}          Compute basis for Place invariants, saved as {$<file>.pba}.\n"
     "  {!-tbasis}          Compute basis for Transition invariants, saved as {$<file>.tba}.\n"
     "  {!-traps}/{!-siphons}  Compute minimal traps/siphons.\n"
+    "  {!-imPxT}/{!-imTxP}    Save the PxT or TxP incidence matrix.\n"
     "  {!-bnd}             Compute place bounds from P-semiflows, saved as {$<file>.bnd}.\n"
     "  {!-detect-exp}      Limit exponential growth in P/T flow generation.\n"
     "  {!-strict-support}  Slack variables are excluded from the flow support.\n"    
@@ -1121,6 +1122,18 @@ int ToolData::ExecuteCommandLine(int argc, char *const *argv) {
             //          cmdArg == "-pfl"    || cmdArg == "-pfl+"    || cmdArg == "-pfl-"    || cmdArg == "-pfl+-"    || cmdArg == "-pfl*"    ||
             //          cmdArg == "-tfl"    || cmdArg == "-tfl+"    || cmdArg == "-tfl-"    || cmdArg == "-tfl+-"    || cmdArg == "-tfl*"    ||
             //          cmdArg == "-traps"  || cmdArg == "-siphons") 
+            else if (cmdArg == "-imPxT" || cmdArg == "-imTxP") {
+                RequirePetriNet();
+                shared_ptr<flow_matrix_t> psf;
+                psf = ComputeFlows(*pn, (cmdArg == "-imPxT") ? InvariantKind::PLACE : InvariantKind::TRANSITION, 
+                                   FlowMatrixKind::NONE, SystemMatrixType::REGULAR, false, 0, false, false, verboseLvl);
+
+                string IncMatFile(*netName + ".mat");
+                cout << "SAVING INCIDENCE MATRIX AS: "<<IncMatFile<<endl;
+                ofstream im_os(IncMatFile.c_str());
+                psf->save_matrix_A(im_os);
+                im_os.close();
+            }
             else if (is_invariants_cmd(cmdArg, inv_spec))
             {
                 RequirePetriNet();

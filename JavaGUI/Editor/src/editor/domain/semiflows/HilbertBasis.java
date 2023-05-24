@@ -379,7 +379,7 @@ public class HilbertBasis {
         //testHilbert(HilbertTestData.mat55, null, false);
 //        testHilbert(matK1, null, true); // slow 1533
 
-//        testBuchberger(HilbertTestData.mat33, HilbertTestData.sol33); // OK (361), fast
+        testBuchberger(HilbertTestData.mat33, HilbertTestData.sol33); // OK (361), fast
 //        testBuchberger(HilbertTestData.matA3, HilbertTestData.solA3); // OK (12), fast
 //        testBuchberger(HilbertTestData.matA4, HilbertTestData.solA4); // OK (34), fast
 //        testBuchberger(HilbertTestData.mat33v2, HilbertTestData.sol33v2); // OK, 2311 fast
@@ -408,10 +408,10 @@ public class HilbertBasis {
 //        };
 //        testHilbert(mat, null, true);
 
-        for (int h=0; h<10; h++) {
-            testCommutativity(HilbertTestData.mat33v2,rand);
-//            testCommutativity(HilbertTestData.mat33,rand);
-        }
+//        for (int h=0; h<10; h++) {
+//            testCommutativity(HilbertTestData.mat33v2,rand);
+////            testCommutativity(HilbertTestData.mat33,rand);
+//        }
 
 
 //        int[][] matA5 = {{1,1,1}, {-1,0,0}, {0,-1,0}};
@@ -489,6 +489,11 @@ public class HilbertBasis {
         int[][] B0 = avB0.toArray(new int[avB0.size()][]);
         sortArrays(B0);
         System.out.println("Computed Hilbert basis has "+B0.length+" entries.");
+//        for (int i=0; i<H.numRows(); i++) {
+//            if (H.isHilbertBasisVec(i)) {
+//                System.out.println(H.rows.get(i));
+//            }
+//        }
 
         if (matRes != null) {
             sortArrays(matRes);
@@ -505,7 +510,7 @@ public class HilbertBasis {
     private static void testBuchberger(int[][] matIn, int[][] matRes) {
         System.out.println("\n\n---------------------");
         HilbertBasis H = new HilbertBasis(matIn);  
-//        H.setVerbose();
+        H.setVerbose();
         System.out.println(H);
         long start = System.currentTimeMillis();
         for (int j=0; j<matIn[0].length; j++)
@@ -524,6 +529,11 @@ public class HilbertBasis {
         int[][] B0 = avB0.toArray(new int[avB0.size()][]);
         sortArrays(B0);
         System.out.println("Computed Hilbert basis has "+B0.length+" entries.");
+        for (int i=0; i<H.numRows(); i++) {
+            if (H.isHilbertBasisVec(i)) {
+                System.out.println(H.rows.get(i));
+            }
+        }
 
         if (matRes != null) {
             sortArrays(matRes);

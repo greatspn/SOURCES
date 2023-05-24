@@ -24,6 +24,7 @@ enum class FlowMatrixKind {
     SEMIFLOWS, 
     BASIS,
     INTEGER_FLOWS,
+    NONE,
     // NESTED_FLOW_SPAN
 };
 
@@ -228,6 +229,8 @@ public:
     // friend ostream& operator<<(ostream& os, const flow_matrix_t::row_t& mrow);
 
     ostream& print(ostream& os, bool highlight_annulled = false) const;
+
+    void save_matrix_A(ostream& os) const;
 };
 
 ostream& operator<<(ostream& os, const flow_matrix_t& msa);
