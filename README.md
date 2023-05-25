@@ -4,7 +4,7 @@
 **GreatSPN** (**GR**aphical **E**ditor and **A**nalyzer for **T**imed and **S**tochastic **P**etri **N**ets) 
 is a software package for the modeling, validation, and performance evaluation of distributed systems 
 using Generalized Stochastic Petri Nets and their colored extension, Stochastic Well-formed Nets. 
-The tool provides a friendly framework to experiment with timed Petri net based modeling techniques. 
+The tool provides a friendly framework to experiment with (stochastic) Petri net based modeling techniques. 
 It implements efficient analysis algorithms to allow its use on rather complex applications.
 
 
