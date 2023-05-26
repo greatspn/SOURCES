@@ -1343,16 +1343,15 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     public FormattedFormula visitRealExprFromTimeTable(ExprLangParser.RealExprFromTimeTableContext ctx) {
         switch (lang) {
             case LATEX:
-                return format(true, "\\mathbf{FromTimeTable}[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]");
+                return format(true, "\\mathbf{FromTimeTable}[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr()), "]");
             case PNPRO:
-                return format(true, "FromTimeTable[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]");
+                return format(true, "FromTimeTable[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr()), "]");
             case GREATSPN:
-                return format(true, "FromTimeTable[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]");
+                return format(true, "FromTimeTable[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr()), "]");
             case CPP:
                 String file_name = ctx.STRING_LITERAL().toString();
                 String define_name = file_name.substring(1, file_name.length() - 1).replace(".", "_");
-                //return format(true, "class_files[", define_name, "].getConstantFromTimeTable(", visit(ctx.intExpr(0)), ",", visit(ctx.intExpr(1)), ")");
-                return format(true, "class_files[", define_name, "].getConstantFromTimeTable(time, ", visit(ctx.intExpr(1)), ")");
+                return format(true, "class_files[", define_name, "].getConstantFromTimeTable(time, ", visit(ctx.intExpr()), ")");
             default:
                 throw new UnsupportedOperationException();
         }

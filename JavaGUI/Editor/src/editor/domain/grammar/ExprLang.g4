@@ -138,7 +138,7 @@ realExpr : realExpr op=('*'|'/') realExpr                            # RealExprM
          | ID /* Generate a parse error */                           # RealExprUnknownId
          | 'FromList' '[' fname=STRING_LITERAL ',' intExpr ']'       # RealExprFromList
          | 'FromTable' '[' fname=STRING_LITERAL ',' intExpr ',' intExpr ']' # RealExprFromTable
-         | 'FromTimeTable' '[' fname=STRING_LITERAL ',' intExpr ',' intExpr ']' # RealExprFromTimeTable
+         | 'FromTimeTable' '[' fname=STRING_LITERAL ',' intExpr ']' # RealExprFromTimeTable
          | 'Call' '[' name=STRING_LITERAL intOrRealList ']'          # RealExprCall
          ;
 
