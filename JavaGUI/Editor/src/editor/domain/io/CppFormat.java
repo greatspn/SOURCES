@@ -15,12 +15,16 @@ import java.util.StringJoiner;
 
 /**
  *
- * @author Irene Write che c++ file with the expressions of the transitions
+ * @author Irene 
+ * Write che c++ file with the expressions of the transitions
  */
 public class CppFormat {
 
     public static void export(File file, GspnPage gspn, boolean fluxBalance, ParserContext context, Set<String> filenames)
             throws Exception {
+        
+        
+
 
         try (PrintWriter out = new PrintWriter(new BufferedOutputStream(new FileOutputStream(file)))) {
 
@@ -43,7 +47,7 @@ public class CppFormat {
             for (Node node : gspn.nodes) {
                 if (node instanceof Transition) {
                     Transition trn = (Transition) node;
-
+                    //il controllo se il numero inserito è negativo o meno va fatto da UI
                     ArrayList<String> double_constant_log = new ArrayList<>();
                     String cppDelayExpr = trn.convertDelayLang(context, null, ExpressionLanguage.CPP);
                     GreatSpnFormat.realOrRpar(cppDelayExpr, "", gspn, double_constant_log);
@@ -70,15 +74,8 @@ public class CppFormat {
                                     + "                         const int T,\n"
                                     + "                         const double& time) {\n");
                         }
-
-                        if (trn.isGeneral()) {
-                            String[] splitted = cppDelayExpr.split("\n");
-                            out.println("   " + splitted[0]);
-                            out.println("   double rate = " + splitted[1] + ";");
-
-                        } else {
-                            out.println("   double rate = " + cppDelayExpr + ";");
-                        }
+                        
+                        out.println("   double rate = " + cppDelayExpr + ";");
                         out.println("   return (rate);");
                         out.println("}\n");
                     }

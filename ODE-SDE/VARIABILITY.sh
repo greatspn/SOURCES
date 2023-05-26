@@ -1,5 +1,7 @@
 #!/bin/bash
+
 . great_package.sh
+
 echo
 echo
 echo "--------------------------------------------------------------------"
@@ -21,6 +23,7 @@ echo "Use Variability.sh <Flux_Balance_Problem> <Solutions_Flux_Balance> <Flux_n
     echo
  	exit
 fi
+
 FBProblem=$1
 FBPSolution=$2
 FName=$3
@@ -29,6 +32,7 @@ Output=$5
 Cores=$6
 
 readarray -t FluxNameArray < "${FName}"
+
 echo "Flux names for variability:"
 echo ${FluxNameArray[@]}
 echo
@@ -44,3 +48,4 @@ do
 done
 wait
 echo "--------------------------------------------------------------------"
+

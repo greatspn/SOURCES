@@ -1373,7 +1373,9 @@ INSTALLEDSOURCES := 	ODE-SDE/class.hpp \
 			ODE-SDE/general.h \
 			ODE-SDE/general.cpp \
 			ODE-SDE/readSupport.hpp \
-			ODE-SDE/readSupport.cpp
+			ODE-SDE/readSupport.cpp \
+			ODE-SDE/reverse_heap.h \
+			ODE-SDE/distribution.h
 			
 
 

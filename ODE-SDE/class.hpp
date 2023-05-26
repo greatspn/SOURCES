@@ -104,7 +104,6 @@
 //automaton
 #ifdef AUTOMATON
   #include "automa.hpp"
- // #include <boost/math/distributions/binomial.hpp>
 #endif
 //automaton
 
@@ -137,16 +136,21 @@
     #endif
 #endif
 
+
+#ifndef __REVERSE_HEAP_H__
+#define __REVERSE_HEAP_H__
+#include "reverse_heap.h"
+#endif 
+
+
 namespace SDE
 {
-
-  //#define epsilon 0.0001
-  //#define epsilon 100000
   #define INCDEC 0.0
   #define DEFAULT 4294967295U
   #define DEBUG 1
   #define ADAPTATIVE 1
   #define ALPHA 0.99
+  #define NON_EXP_GEN 127
   const double MAXSTEP=4294967295.0;
 
   using namespace std;
@@ -177,11 +181,25 @@ namespace SDE
     //@}
   };
 
+  //! enumeration used to prevent use of non-exponential general transition except in SSA
+  enum solve_type {
+    Solve_LSODE,
+    Solve_SSA,
+    Solve_HLSODE,
+    Solve_TAUG
+  };
+
+#ifndef __DISTRIBUTION_H__
+#define __DISTRIBUTION_H__
+#include "distribution.h"
+#endif 
+
   //! It uses for encoding the place information
   struct InfPlace
   {
     double Card;
     int Id;
+    int marking;
   };
 
   //! It uses for encoding the transition information (i.e. rate, inhibitor places, and its associated  negative exponential distribution)
@@ -199,7 +217,17 @@ namespace SDE
     std::exponential_distribution<double> dist[1];
     //!remember if this transition is enable in the diffusion process
     bool enable;
+    //!indicate if the transition is exponential or general
+    int timing;
     bool discrete {false};
+    //!list of the events connected to the transition if it's general non exponential
+    //vector<Event*> events;
+    //!size of the events associated to the transition
+    int events_size {0};
+    //!Pointer to the first event of the transition
+    Event* first_event {NULL};
+    //!Pointer to the last event of the transition, used to add
+    Event* last_event {NULL};
     //!encode the  brown noise value for the current time
     double BrownNoise;
     //!it stores for generic transition
@@ -351,6 +379,8 @@ namespace SDE
   double* EnabledTransValueCon {nullptr};
     //!it stores the current enabling degree for discrete transition fire
   double* EnabledTransValueDis {nullptr};
+  //!it stores the previous enabling degree values for discrete transition fire
+  double* PreviousEnabledTransValueDis {nullptr};
     //!it  store the final place value of each run
   double** FinalValueXRun {nullptr};
     //!It used for TauLeaping
@@ -401,7 +431,17 @@ namespace SDE
   int max_attempt {500};
     //!It stores the used seed
   long int seed {0};
-  
+  //!It indicates the solve type used in this execution
+  solve_type solve;
+    //!The heap that handles the future event list of general non exponential transition
+  min_heap future_event_list {min_heap()};
+  //!It removes the i-th event in the event list updating the pointers 
+  Event* deleteEventInPosition(int event_index, int tran);
+  //!It removes the i-th event in the event list updating the pointers 
+  void deleteEvent(Event* event);
+  //!add event ad the end of the list
+  void addEventAtTheEnd(Event* event, int tran);
+
 //automaton
 #ifdef AUTOMATON
   class automaton automaton;
@@ -431,13 +471,18 @@ public:
   bool NotEnable(int Tran);
 
     //!It computes the Tau taking as input the list of descrete transitions and the next time point. It returns a possible transition firing otherwise  -1. It requires that  getValTranFire() must be called before.
-  int getComputeTau(int SetTran[], double& nextTimePoint,double t);
+    //! In SSA it's necessary to pass also the set of non exponetial general transition
+  int getComputeTau(int SetTranExp[], double& nextTimePoint,double t);
     //!It computes the Tau according to Gillespie algorithm. It takes as input the list of descrete transitions and the next time point. It returns a possible transition firing otherwise  -1. It requires that  getValTranFire() must be called before.
   double getComputeTauGillespie(int SetTran[],double t, double hstep);
     //! It is a pure virtual function which must be implemented.
   virtual void getValTranFire()=0;
   virtual void getValTranFire(double*)=0;
-    //! It checks if there is an enable transition which will fire in the current time step.
+  virtual void setSizeFutureEventList(int nTrans, int &size_expTran, int &size_notExpTran)=0;
+    //!It updates the future event list during the SSA with non exponential general transition using the value of Enabling
+  //void updateFutureEventList(int trans);
+  void updateFutureEventList(int tran, int prev_fired, double time);
+  //! It checks if there is an enable transition which will fire in the current time step.
   int fireEnableTrans(  int SetTran[],double& h);
     //int fireEnableTrans(  set<int>&SetTran,double& h);
     //!It generates the brown noise value for all the transition involved  the diffusion process.
@@ -523,6 +568,8 @@ public:
   virtual void getValTranFire() override;
      //! For each transition it returns  the min of the values of its input places considering its input vector ValuePrv as marking
   virtual void getValTranFire(double* ValuePrv) override;
+  virtual void setSizeFutureEventList(int nTrans, int &size_expTran, int &size_notExpTran) override;
+
 };
 
 class SystEqMas:public SystEq
@@ -534,6 +581,8 @@ public:
   virtual void getValTranFire() override;
     //! For each transition it returns  the min of the values of its input places considering its input vector ValuePrv as marking
   virtual void getValTranFire(double* ValuePrv) override;
+  virtual void setSizeFutureEventList(int nTrans, int &size_expTran, int &size_notExpTran) override;
+
 };
 
 //  double Fg(double *Value, vector <string>& NameTrans, vector <string>& NamePlaces);

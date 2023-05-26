@@ -309,8 +309,8 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new UnaryFunct(true, ExprLangParser.CEIL_FN, "ceil(", " )"),
         new UnaryFunct(true, ExprLangParser.FLOOR_FN, "floor(", ")"),
         new UnaryFunct(true, ExprLangParser.ABS_FN, "abs(", " )"),
-        // come gestire le dirac delta e le rectangular function in cpp?
-        new UnaryFunct(true, ExprLangParser.DIRAC_DELTA_FN, "Dirac_delta(", ")"),};
+        new UnaryFunct(true, ExprLangParser.DIRAC_DELTA_FN, "dirac_delta(", ")")
+    };
 
     public FormattedFormula formatUnaryFn(int unaryIntRealFn, FormattedFormula expr) {
         UnaryFunct[] functs;
@@ -598,14 +598,12 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new BinaryFunct(false, ExprLangParser.MAX_FN, "max(", ", ", ")", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.MIN_FN, "min(", ", ", ")", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.POW_FN, "pow(", ", ", ")", OperatorPos.FUNCTION),
-        //come gestire in cpp le distribuzioni?
-        new BinaryFunct(false, ExprLangParser.RECT_FN, "uniform_real_distribution<double> unf_dis(", ", ", ");\n unf_dis(generator)", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.TRUNCATED_EXP_FN, "exponential_distribution<> exp_dis(", ", ", ")\n exp_dis(generator)", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.TRIANGULAR_FN, "Triangular(", ", ", ")", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.TRUNCATED_EXP_FN, "truncated_exp(", ", ", ", generator)", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.PARETO_FN, "Pareto(", ", ", ")", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.UNIFORM_FN, "uniform_real_distribution<double> unf_dis(", ", ", ");\n distribution(generator)", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.ERLANG_FN, "Erlang(", ", ", ")", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.BINOMIAL_FN, "binomial_distribution<> bin_dis(", ", ", ")\n bin_dis(generator)", OperatorPos.FUNCTION),};
+        new BinaryFunct(false, ExprLangParser.UNIFORM_FN, "uniform(", ", ", ", generator)", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.ERLANG_FN, "erlang(", ", ", ", generator)", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.BINOMIAL_FN, "binomial(", ", ", ", generator)", OperatorPos.FUNCTION),
+};
 
     public FormattedFormula formatBinaryFn(int binaryIntFn, FormattedFormula expr0,
             FormattedFormula expr1) {
@@ -674,7 +672,8 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 
             case APNN:
                 return format(true, "if ", cond, " then ", e1, " else ", e2);
-
+            case CPP:
+                return format(true, "if(", cond, "){\n ", e1, "}\n else {", e2, "\n} ");
             default:
                 throw new UnsupportedOperationException("formatIfThenElse: unsupported lang");
         }
@@ -1344,15 +1343,15 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
     public FormattedFormula visitRealExprFromTimeTable(ExprLangParser.RealExprFromTimeTableContext ctx) {
         switch (lang) {
             case LATEX:
-                return format(true, "\\mathbf{FromTimeTable}[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]");
+                return format(true, "\\mathbf{FromTimeTable}[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr()), "]");
             case PNPRO:
-                return format(true, "FromTimeTable[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]");
+                return format(true, "FromTimeTable[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr()), "]");
             case GREATSPN:
-                return format(true, "FromTimeTable[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr(0)), ", ", visit(ctx.intExpr(1)), "]");
+                return format(true, "FromTimeTable[", ctx.STRING_LITERAL(), ", ", visit(ctx.intExpr()), "]");
             case CPP:
                 String file_name = ctx.STRING_LITERAL().toString();
                 String define_name = file_name.substring(1, file_name.length() - 1).replace(".", "_");
-                return format(true, "class_files[", define_name, "].getConstantFromTimeTable(", visit(ctx.intExpr(0)), ",", visit(ctx.intExpr(1)), ")");
+                return format(true, "class_files[", define_name, "].getConstantFromTimeTable(time, ", visit(ctx.intExpr()), ")");
             default:
                 throw new UnsupportedOperationException();
         }
@@ -1372,15 +1371,13 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 String function_name = call_name.substring(1, call_name.length() - 1);
                 String arguments = visit(ctx.intOrRealList()).getFormula();
                 String arguments_defined;
-                if (arguments.isEmpty()) {
-                    if (context.cppForFluxBalance) {
-                        arguments_defined = "Value, vec_fluxb, NumTrans, NumPlaces, NameTrans, Trans, T, time";
-
-                    } else {
-                        arguments_defined = "Value, NumTrans, NumPlaces, NameTrans, Trans, T, time";
-                    }
+                if (context.cppForFluxBalance) {
+                    arguments_defined = "Value, vec_fluxb, NumTrans, NumPlaces, NameTrans, Trans, T, time";
                 } else {
-                    arguments_defined = arguments.substring(2);
+                    arguments_defined = "Value, NumTrans, NumPlaces, NameTrans, Trans, T, time";
+                }
+                if (!arguments.isEmpty()) {
+                    arguments_defined = arguments_defined + ", " + arguments.substring(2);
                 }
                 return format(true, function_name, "(", arguments_defined, ")");
             default:
@@ -1432,6 +1429,8 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 return format(true, "<numberconstant value=\"" + (value ? "true" : "false") + "\">");
             case NETLOGO:
                 return format(true, value ? "TRUE" : "FALSE");
+            case CPP:
+                return format(true, value ? "true" : "false");
             default:
                 throw new UnsupportedOperationException("visitBoolConst");
         }
