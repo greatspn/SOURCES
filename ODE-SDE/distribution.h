@@ -32,6 +32,7 @@
 	}
 
 	inline double gamma(double alpha, double beta, mt19937_64& generator){
+
 		std::gamma_distribution<double> gamma_dis(alpha, beta);
 		double value = gamma_dis(generator);
 		return value;
@@ -62,5 +63,22 @@
 		double value = norm_dis(generator);
 		return value;
 
+	}
+
+	inline double erlang(unsigned int k, double lambda){
+		double value = 0;
+		for(unsigned i = 0; i<k; i++){
+			value += exponential_distribution<double> exp_dis(lambda);
+		}
+		return value;
+	}
+
+	inline double truncated_exp(double lambda, double limit, mt19937_64& generator){
+
+		exponential_distribution<double> exp_dis(lambda);
+		double value = exp_dis(generator);
+		if(value > limit)
+			value = limit;
+		return value;
 	}
 

@@ -197,7 +197,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new UnaryFunct(true, ExprLangParser.FLOOR_FN, "floor(", ")"),
         new UnaryFunct(true, ExprLangParser.ABS_FN, "abs(", " )"),
         // General event PDF operator
-        new UnaryFunct(true, ExprLangParser.DIRAC_DELTA_FN, "[", "]"),};
+        new UnaryFunct(true, ExprLangParser.DIRAC_DELTA_FN, "DiracDelta[", "]"),};
     static final UnaryFunct pnproUnaryFunctions[] = {
         new UnaryFunct(true, ExprLangParser.OP_PAREN, "(", ")"),
         new UnaryFunct(false, ExprLangParser.SUB, "-", OperatorPos.PREFIX_SIMPLETERM),
@@ -599,11 +599,11 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         new BinaryFunct(false, ExprLangParser.MIN_FN, "min(", ", ", ")", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.POW_FN, "pow(", ", ", ")", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.RECT_FN, "uniform(", ", ", ", generator)", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.TRUNCATED_EXP_FN, "exponential(", ", ", ", generator)", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.TRUNCATED_EXP_FN, "truncated_exp(", ", ", ", generator)", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.TRIANGULAR_FN, "Triangular(", ", ", ")", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.PARETO_FN, "Pareto(", ", ", ")", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.UNIFORM_FN, "uniform(", ", ", ", generator)", OperatorPos.FUNCTION),
-        new BinaryFunct(false, ExprLangParser.ERLANG_FN, "gamma(", ", ", ", generator)", OperatorPos.FUNCTION),
+        new BinaryFunct(false, ExprLangParser.ERLANG_FN, "erlang(", ", ", ", generator)", OperatorPos.FUNCTION),
         new BinaryFunct(false, ExprLangParser.BINOMIAL_FN, "binomial(", ", ", ", generator)", OperatorPos.FUNCTION),
 };
 
