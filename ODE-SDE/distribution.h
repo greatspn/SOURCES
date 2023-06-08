@@ -10,6 +10,8 @@
 		return value;
 	}
 
+	
+
 	inline double dirac_delta(double value){
 
 		if(value<0){
@@ -41,7 +43,7 @@
 	//aspetta ma questa è una unary function!
 	inline double exponential(double lambda, double nan, mt19937_64& generator){
 
-		exponential_distribution<double> exp_dis(lambda);
+		std::exponential_distribution<> exp_dis(lambda);
 		double value = exp_dis(generator);
 		return value;
 	}
@@ -65,17 +67,18 @@
 
 	}
 
-	inline double erlang(unsigned int k, double lambda){
+	inline double erlang(unsigned int k, double lambda, mt19937_64& generator){
 		double value = 0;
-		for(unsigned i = 0; i<k; i++){
-			value += exponential_distribution<double> exp_dis(lambda);
+		std::exponential_distribution<> exp_dis(lambda);
+		for(unsigned int i = 0; i<k; i++){
+			value += exp_dis(generator);
 		}
 		return value;
 	}
 
 	inline double truncated_exp(double lambda, double limit, mt19937_64& generator){
 
-		exponential_distribution<double> exp_dis(lambda);
+		std::exponential_distribution<> exp_dis(lambda);
 		double value = exp_dis(generator);
 		if(value > limit)
 			value = limit;
