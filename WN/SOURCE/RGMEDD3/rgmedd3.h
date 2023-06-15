@@ -50,7 +50,7 @@ inline double get_double(cardinality_t c) { return c; }
 #endif
 
 // Include meddly only after having included <gmpxx.h>
-#include "/usr/local/include/meddly.h"
+#include <meddly.h>
 #include <meddly_expert.h>
 
 #include "general.h"
