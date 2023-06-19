@@ -485,6 +485,7 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     void SystEq::updateFutureEventList(int tran, int prev_fired, double time){
 
 
+
     	int number_events = EnabledTransValueDis[tran] - PreviousEnabledTransValueDis[tran];
 
     	//if the transition is already fired one event has already been popped out
