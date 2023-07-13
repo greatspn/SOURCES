@@ -90,6 +90,7 @@ public class SemiflowComputationDialog extends javax.swing.JDialog implements Fl
         public void run() {
             try {
                 algo.compute(false, SemiflowComputationDialog.this);
+                System.out.println("There are "+algo.numFlows()+" flow elements.");
             }
             catch (ArithmeticException e) {
                 algo.setFailed("Computation failed: Arithmetic overflow.");

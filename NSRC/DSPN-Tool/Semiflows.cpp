@@ -1103,6 +1103,25 @@ void flows_generator_t::compute_semiflows()
         cout << f << endl;
     A_cols_count.clear();
     f.clear_A_vectors();
+
+    // D contains only semiflows. Remove the non-minimal semiflows
+    // that could still be in D
+    for (auto row = f.mK.begin(); row != f.mK.end(); ) {
+        bool keep_row = true;
+        for (auto reducer = f.mK.begin(); reducer != f.mK.end() && keep_row; ++reducer) {
+            if (row != reducer) {
+                if (row->test_minimal_support_D(reducer->D, f.extra_vars_in_support ? f.N : f.N0)) {
+                    // cout << " ** "; row->print(cout, f.M, f.N0, true) << endl;
+                    keep_row = false;
+                    break;
+                }
+            }
+        }
+        if (!keep_row) {
+            f.mK.erase(row++);
+        }
+        else ++row;
+    }
 }
 
 //-----------------------------------------------------------------------------
