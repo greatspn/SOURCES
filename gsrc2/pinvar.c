@@ -676,6 +676,10 @@ int main(int argc, char **argv) {
     char  filename[LINEMAX];
     int ii, show=TRUE, detect_exp=FALSE;
 
+    puts("pinv is known to generate incorrect P-semiflows matrices.");
+    puts("(see MCC model SafeBus). Do not use pinv.");
+    puts("Use instead:  DSPN-Tool -load <model_name> -pinv");
+
     if (argc < 2) {
         printf("ERROR: no net name !\n");
         exit(1);

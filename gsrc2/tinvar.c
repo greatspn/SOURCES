@@ -614,6 +614,10 @@ int main(int argc, char **argv) {
     char  filename[LINEMAX];
     int ii;
 
+    puts("tinv is known to generate incorrect T-semiflows matrices.");
+    puts("(see MCC model SafeBus). Do not use tinv.");
+    puts("Use instead:  DSPN-Tool -load <model_name> -tinv");
+
     if (argc < 2) {
         printf("ERROR: no net name !\n");
         exit(1);
