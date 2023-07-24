@@ -198,8 +198,8 @@ unsigned long long g_random_order_seeds[2] = { 0, 0 };
 extern size_t g_sim_ann_num_tentatives;
 int g_sloan_W1 = 1;
 int g_sloan_W2 = 2;
-extern MEDDLY::forest::policies::node_deletion mdd_node_del_policy;
-extern MEDDLY::forest::policies::node_deletion mxd_node_del_policy;
+extern MEDDLY::policies::node_deletion mdd_node_del_policy;
+extern MEDDLY::policies::node_deletion mxd_node_del_policy;
 
 // The technique used to compute the variable order of the decision diagrams
 const char* g_given_varorder = nullptr;
@@ -1834,18 +1834,18 @@ int initialize(int  argc,  char  *argv[]) {
         else if (0 == strcmp(argv[ii], "-scc")) {
             g_var_order_sel.reorder_SCC = true;
         }
-        else if (0 == strcmp(argv[ii], "-mdd-fp-optimistic")) 
-        { mdd_node_del_policy = forest::policies::node_deletion::OPTIMISTIC_DELETION; }
-        else if (0 == strcmp(argv[ii], "-mdd-fp-pessimistic")) 
-        { mdd_node_del_policy = forest::policies::node_deletion::PESSIMISTIC_DELETION; }
-        else if (0 == strcmp(argv[ii], "-mdd-fp-never-delete")) 
-        { mdd_node_del_policy = forest::policies::node_deletion::NEVER_DELETE; }
-        else if (0 == strcmp(argv[ii], "-mxd-fp-optimistic")) 
-        { mxd_node_del_policy = forest::policies::node_deletion::OPTIMISTIC_DELETION; }
-        else if (0 == strcmp(argv[ii], "-mxd-fp-pessimistic")) 
-        { mxd_node_del_policy = forest::policies::node_deletion::PESSIMISTIC_DELETION; }
-        else if (0 == strcmp(argv[ii], "-mxd-fp-never-delete")) 
-        { mxd_node_del_policy = forest::policies::node_deletion::NEVER_DELETE; }
+        // else if (0 == strcmp(argv[ii], "-mdd-fp-optimistic")) 
+        // { mdd_node_del_policy = forest::policies::node_deletion::OPTIMISTIC_DELETION; }
+        // else if (0 == strcmp(argv[ii], "-mdd-fp-pessimistic")) 
+        // { mdd_node_del_policy = forest::policies::node_deletion::PESSIMISTIC_DELETION; }
+        // else if (0 == strcmp(argv[ii], "-mdd-fp-never-delete")) 
+        // { mdd_node_del_policy = forest::policies::node_deletion::NEVER_DELETE; }
+        // else if (0 == strcmp(argv[ii], "-mxd-fp-optimistic")) 
+        // { mxd_node_del_policy = forest::policies::node_deletion::OPTIMISTIC_DELETION; }
+        // else if (0 == strcmp(argv[ii], "-mxd-fp-pessimistic")) 
+        // { mxd_node_del_policy = forest::policies::node_deletion::PESSIMISTIC_DELETION; }
+        // else if (0 == strcmp(argv[ii], "-mxd-fp-never-delete")) 
+        // { mxd_node_del_policy = forest::policies::node_deletion::NEVER_DELETE; }
         else if (0 == strcmp(argv[ii], "-f")) {
             if (ii + 1 < argc) {
                 ii = ii + 1;

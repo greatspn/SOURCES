@@ -74,8 +74,7 @@ inline double get_double(cardinality_t c) { return c; }
 #endif
 
 // Include meddly only after having included <gmpxx.h>
-#include <meddly.h>
-#include <meddly_expert.h>
+#include <meddly/meddly.h>
 
 // #include "general.h"
 

@@ -10,8 +10,7 @@
 // generation of MDDs from HOA representation
 #include "rgmedd5.h"
 #include "refcounter.h"
-#include <meddly.h>
-#include <meddly_expert.h>
+#include <meddly/meddly.h>
 
 
 namespace ctlmdd {

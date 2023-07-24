@@ -37,7 +37,7 @@ void CTLMDD::CTLinit() {
     for (int j = 1; j <= nvar; j++) {
         ins[0][j] = DOUBLELEVEL ? DONT_CHANGE : DONT_CARE;
     }
-    forest::policies fp(DOUBLELEVEL); // false: not a relation
+    MEDDLY::policies fp(DOUBLELEVEL); // false: not a relation
 
 
     if (DOUBLELEVEL)
@@ -46,7 +46,7 @@ void CTLMDD::CTLinit() {
         fp.setFullyReduced();
     //fp.setCompactStorage();
     fp.setOptimistic();
-    forestMTMDD = rsrg->getDomain()->createForest(DOUBLELEVEL, forest::REAL, forest::MULTI_TERMINAL, fp);
+    forestMTMDD = rsrg->getDomain()->createForest(DOUBLELEVEL, range_type::REAL, edge_labeling::MULTI_TERMINAL, fp);
     //if (DOUBLELEVEL)
     //  forestMTMDD->setReductionRule(forest::IDENTITY_REDUCED);
     //forestMTMDD->setNodeStorage(forest::FULL_OR_SPARSE_STORAGE);
@@ -733,7 +733,7 @@ void Inequality::createMDD() {
         // exp2MDD->show(stdout,1);
     }
     FormulaPrinter<Inequality> fp(this);
-    const MEDDLY::binary_opname *opname;
+    MEDDLY::binary_handle opname;
     switch (op) {
         case IOP_MIN:    opname = LESS_THAN;            break;
         case IOP_MAJ:    opname = GREATER_THAN;         break;
@@ -743,7 +743,6 @@ void Inequality::createMDD() {
         case IOP_NEQ:    opname = NOT_EQUAL;            break;
         default: throw;
     }
-
     apply(opname, exp1MDD, exp2MDD, q);
     dd_edge boole(rsrg->getForestMDD());
     apply(COPY, q, boole);
@@ -767,7 +766,7 @@ void Inequality::createMDDByComplement() {
     FormulaPrinter<Inequality> fp(this);
 
     // Select the complement operator
-    const MEDDLY::binary_opname *complement_opname;
+    MEDDLY::binary_handle complement_opname;
     switch (op) {
         case IOP_MIN:    complement_opname = GREATER_THAN_EQUAL;   break;
         case IOP_MAJ:    complement_opname = LESS_THAN_EQUAL;      break;

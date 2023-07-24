@@ -2,8 +2,7 @@
 #define IMPLICIT_POSTIMAGE__H
 
 // Include meddly only after having included <gmpxx.h>
-#include <meddly.h>
-#include <meddly_expert.h>
+#include <meddly/meddly.h>
 
 //-----------------------------------------------------------------------------
 
@@ -15,7 +14,7 @@ public:
     virtual ~postimage_impl_opname();
 
     /// Arguments should have type "implicit_relation", below
-    virtual specialized_operation *buildOperation(arguments *a) const;
+    virtual specialized_operation *buildOperation(arguments *a) override;
 };
 
 postimage_impl_opname* initImplPostImage();

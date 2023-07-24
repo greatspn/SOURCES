@@ -8,8 +8,10 @@
 #endif
 
 // Include meddly only after having included <gmpxx.h>
-#include <meddly.h>
-#include <meddly_expert.h>
+#include <meddly/meddly.h>
+#include <meddly/ct_entry_key.h>
+#include <meddly/ct_entry_result.h>
+#include <meddly/compute_table.h>
 
 #undef MEDDLY_DCASSERT
 #define MEDDLY_DCASSERT(x)  assert(x)
@@ -56,7 +58,7 @@ class MEDDLY::postimage_impl_unary_opname : public unary_opname {
 public:
     postimage_impl_unary_opname();
 
-    static const postimage_impl_unary_opname* getInstance();
+    static postimage_impl_unary_opname* getInstance();
 };
 
 MEDDLY::postimage_impl_unary_opname* MEDDLY::postimage_impl_unary_opname::instance = 0;
@@ -66,7 +68,7 @@ MEDDLY::postimage_impl_unary_opname::postimage_impl_unary_opname()
 {
 }
 
-const MEDDLY::postimage_impl_unary_opname* MEDDLY::postimage_impl_unary_opname::getInstance()
+MEDDLY::postimage_impl_unary_opname* MEDDLY::postimage_impl_unary_opname::getInstance()
 {
     if (0 == instance)
         instance = new postimage_impl_unary_opname;
@@ -92,10 +94,10 @@ public:
     node_handle compute_postimage(node_handle mdd, int level);
 
 protected:
-    inline compute_table::entry_key*
+    inline ct_entry_key*
     findPostImageResult(node_handle a, int level, node_handle& b)
     {
-        compute_table::entry_key* CTsrch = CT0->useEntryKey(etype[0], 0);
+        ct_entry_key* CTsrch = CT0->useEntryKey(etype[0], 0);
         MEDDLY_DCASSERT(CTsrch);
         CTsrch->writeN(a);
         if (argF->isFullyReduced())
@@ -108,12 +110,12 @@ protected:
         return 0;
     }
 
-    inline void recycleCTKey(compute_table::entry_key* CTsrch)
+    inline void recycleCTKey(ct_entry_key* CTsrch)
     {
         CT0->recycle(CTsrch);
     }
 
-    inline node_handle savePostImageResult(compute_table::entry_key* Key,
+    inline node_handle savePostImageResult(ct_entry_key* Key,
                                               node_handle a, node_handle b)
     {
         CTresult[0].reset();
@@ -134,7 +136,7 @@ protected:
 // in the inner step of the recursion (fireEvent)
 class MEDDLY::postimage_impl_inner_op : public specialized_operation {
 public:
-    postimage_impl_inner_op(const postimage_impl_opname* opcode,
+    postimage_impl_inner_op(postimage_impl_opname* opcode,
         satimpl_opname::implicit_relation* rel);
     virtual ~postimage_impl_inner_op();
 
@@ -144,10 +146,10 @@ public:
     node_handle fireEvent(node_handle mdd, rel_node_handle mxd);
 
 protected:
-    inline compute_table::entry_key*
+    inline ct_entry_key*
     findResult(node_handle a, rel_node_handle b, node_handle& c)
     {
-        compute_table::entry_key* CTsrch = CT0->useEntryKey(etype[0], 0);
+        ct_entry_key* CTsrch = CT0->useEntryKey(etype[0], 0);
         MEDDLY_DCASSERT(CTsrch);
         CTsrch->writeN(a);
         CTsrch->writeL(b);
@@ -159,12 +161,12 @@ protected:
         return 0;
     }
 
-    inline void recycleCTKey(compute_table::entry_key* CTsrch)
+    inline void recycleCTKey(ct_entry_key* CTsrch)
     {
         CT0->recycle(CTsrch);
     }
 
-    inline node_handle saveResult(compute_table::entry_key* Key,
+    inline node_handle saveResult(ct_entry_key* Key,
         node_handle a, rel_node_handle b, node_handle c)
     {
         CTresult[0].reset();
@@ -277,7 +279,7 @@ MEDDLY::node_handle MEDDLY::postimage_impl_inner_op::fireEvent(MEDDLY::node_hand
 
     // check the cache
     node_handle result = 0;
-    compute_table::entry_key* Key = findResult(mdd, mxd, result);
+    ct_entry_key* Key = findResult(mdd, mxd, result);
     if (0 == Key)
         return result;
 
@@ -303,11 +305,11 @@ MEDDLY::node_handle MEDDLY::postimage_impl_inner_op::fireEvent(MEDDLY::node_hand
     dd_edge nbdj(resF), newst(resF);
 
     // Initialize mdd reader
-    unpacked_node *nb_in = unpacked_node::useUnpackedNode();
+    unpacked_node *nb_in = unpacked_node::New();
     if (mddLevel < rLevel)
         nb_in->initRedundant(arg1F, rLevel, mdd, true);
     else
-        nb_in->initFromNode(arg1F, mdd, true);
+        arg1F->unpackNode(nb_in, mdd, FULL_ONLY);
 
     //Re-Think
     if (mddLevel > mxdLevel) {
@@ -389,7 +391,7 @@ MEDDLY::node_handle MEDDLY::postimage_impl_inner_op::fireEvent(MEDDLY::node_hand
 // ******************************************************************
 
 MEDDLY::postimage_impl_inner_op::postimage_impl_inner_op(
-    const postimage_impl_opname *opcode,
+    postimage_impl_opname *opcode,
     satimpl_opname::implicit_relation *relation)
     : specialized_operation(opcode, 1)
 {
@@ -406,7 +408,7 @@ MEDDLY::postimage_impl_inner_op::postimage_impl_inner_op(
     registerInForest(arg1F);
     //registerInForest(arg2F);
     registerInForest(resF);
-    compute_table::entry_type *et = new compute_table::entry_type(opcode->getName(), "NL:N");
+    ct_entry_type *et = new ct_entry_type(opcode->getName(), "NL:N");
     et->setForestForSlot(0, arg1F);
     et->setForestForSlot(3, resF);
     registerEntryType(0, et);
@@ -469,7 +471,7 @@ MEDDLY::postimage_impl_opname *MEDDLY::initImplPostImage()
 }
 
 MEDDLY::specialized_operation *
-MEDDLY::postimage_impl_opname::buildOperation(arguments *a) const
+MEDDLY::postimage_impl_opname::buildOperation(arguments *a)
 {
 
     satimpl_opname::implicit_relation *rel = dynamic_cast<satimpl_opname::implicit_relation *>(a);
@@ -489,24 +491,24 @@ MEDDLY::postimage_impl_opname::buildOperation(arguments *a) const
 // ******************************************************************
 
 MEDDLY::postimage_impl_outer_op ::postimage_impl_outer_op(postimage_impl_inner_op *p,
-                                                                expert_forest *argF, expert_forest *resF)
+                                                          expert_forest *argF, expert_forest *resF)
     : unary_operation(postimage_impl_unary_opname::getInstance(), 1, argF, resF)
 {
     parent = p;
 
     const char *name = postimage_impl_unary_opname::getInstance()->getName();
-    compute_table::entry_type *et;
+    ct_entry_type *et;
 
     if (argF->isFullyReduced())
     {
         // CT entry includes level info
-        et = new compute_table::entry_type(name, "NI:N");
+        et = new ct_entry_type(name, "NI:N");
         et->setForestForSlot(0, argF);
         et->setForestForSlot(3, resF);
     }
     else
     {
-        et = new compute_table::entry_type(name, "N:N");
+        et = new ct_entry_type(name, "N:N");
         et->setForestForSlot(0, argF);
         et->setForestForSlot(2, resF);
     }
@@ -549,7 +551,7 @@ MEDDLY::postimage_impl_outer_op::compute_postimage(node_handle mdd, int k)
 
     // search compute table
     node_handle n = 0;
-    compute_table::entry_key *Key = findPostImageResult(mdd, k, n);
+    ct_entry_key *Key = findPostImageResult(mdd, k, n);
     // printf("findPostImageResult mdd:%d level:%d n:%d   %d\n", mdd, k, n, Key);
     if (0 == Key)
         return n;
@@ -563,11 +565,11 @@ MEDDLY::postimage_impl_outer_op::compute_postimage(node_handle mdd, int k)
 #endif
 
     // Initialize mdd reader
-    unpacked_node *mddDptrs = unpacked_node::useUnpackedNode();
+    unpacked_node *mddDptrs = unpacked_node::New();
     if (mdd_level < k) 
         mddDptrs->initRedundant(argF, k, mdd, true);
     else 
-        mddDptrs->initFromNode(argF, mdd, true);
+        argF->unpackNode(mddDptrs, mdd, FULL_ONLY);
 
     // Fire events below this level
     unpacked_node *nbdown = unpacked_node::newFull(resF, k, sz);

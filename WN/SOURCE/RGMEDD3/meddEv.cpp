@@ -23,10 +23,10 @@ extern int _iter;
 extern int out_mc;
 
 extern bool CTMC;
-MEDDLY::forest::policies::node_deletion mdd_node_del_policy = 
-/**/ MEDDLY::forest::policies::node_deletion::OPTIMISTIC_DELETION;
-MEDDLY::forest::policies::node_deletion mxd_node_del_policy = 
-/**/ MEDDLY::forest::policies::node_deletion::OPTIMISTIC_DELETION;
+// MEDDLY::policies::node_deletion mdd_node_del_policy = 
+// /**/ MEDDLY::policies::node_deletion::OPTIMISTIC_DELETION;
+// MEDDLY::policies::node_deletion mxd_node_del_policy = 
+// /**/ MEDDLY::policies::node_deletion::OPTIMISTIC_DELETION;
 
 static const cardinality_t CARD0 = cardinality_t(0);
 static const cardinality_t CARD1 = cardinality_t(1);
@@ -172,41 +172,43 @@ void RSRG::initialize(RsMethod _rsMethod, LrsMethod _lrsMethod,
     for (int p=0; p<npl; p++)
         dom->useVar(net_to_mddLevel[p] + 1)->setName(tabp[p].place_name);
 
-    auto set_forest_node_del_policy = [](forest::policies& _fp, forest::policies::node_deletion nd) {
-        switch (nd) {
-            case MEDDLY::forest::policies::node_deletion::OPTIMISTIC_DELETION:
-                _fp.setOptimistic(); break;
-            case MEDDLY::forest::policies::node_deletion::PESSIMISTIC_DELETION:
-                _fp.setPessimistic(); break;
-            case MEDDLY::forest::policies::node_deletion::NEVER_DELETE:
-                _fp.setNeverDelete(); break;
-        }
-    };
+    // auto set_forest_node_del_policy = [](forest::policies& _fp, forest::policies::node_deletion nd) {
+    //     switch (nd) {
+    //         case MEDDLY::policies::node_deletion::OPTIMISTIC_DELETION:
+    //             _fp.setOptimistic(); break;
+    //         case MEDDLY::policies::node_deletion::PESSIMISTIC_DELETION:
+    //             _fp.setPessimistic(); break;
+    //         case MEDDLY::policies::node_deletion::NEVER_DELETE:
+    //             _fp.setNeverDelete(); break;
+    //     }
+    // };
 
-    forest::policies mdd_fp(false); // false: not a relation
+    MEDDLY::policies mdd_fp(false); // false: not a relation
     mdd_fp.setFullyReduced();
     // mdd_fp.setQuasiReduced();
     //mdd_fp.setCompactStorage();
-    set_forest_node_del_policy(mdd_fp, mdd_node_del_policy);
-    forestMDD = dom->createForest(false, forest::BOOLEAN, forest::MULTI_TERMINAL, mdd_fp);
+    // mdd_fp.setOptimistic();
+    // set_forest_node_del_policy(mdd_fp, mdd_node_del_policy);
+    forestMDD = dom->createForest(false, range_type::BOOLEAN, edge_labeling::MULTI_TERMINAL, mdd_fp);
 
 
-    forest::policies mxd_fp(true); // false: not a relation
+    MEDDLY::policies mxd_fp(true); // false: not a relation
     mxd_fp.setIdentityReduced();
     //mxd_fp.setCompactStorage();
-    set_forest_node_del_policy(mxd_fp, mxd_node_del_policy);
-    forestMxD = dom->createForest(true, forest::BOOLEAN, forest::MULTI_TERMINAL, mxd_fp);
+    // mxd_fp.setOptimistic();
+    // set_forest_node_del_policy(mxd_fp, mxd_node_del_policy);
+    forestMxD = dom->createForest(true, range_type::BOOLEAN, edge_labeling::MULTI_TERMINAL, mxd_fp);
     //forestMxD->setReductionRule(forest::IDENTITY_REDUCED);
     //forestMxD->setReductionRule(forest::QUASI_REDUCED);
     //forestMxD->setNodeStorage(forest::FULL_OR_SPARSE_STORAGE);
     //forestMxD->setNodeDeletion(forest::OPTIMISTIC_DELETION);
 
-    forestMTMxD = dom->createForest(true, forest::INTEGER, forest::MULTI_TERMINAL, mxd_fp);
+    forestMTMxD = dom->createForest(true, range_type::INTEGER, edge_labeling::MULTI_TERMINAL, mxd_fp);
     //forestMTMxD->setReductionRule(forest::IDENTITY_REDUCED);
     //forestMTMxD->setNodeStorage(forest::FULL_OR_SPARSE_STORAGE);
     //forestMTMxD->setNodeDeletion(forest::OPTIMISTIC_DELETION);
 
-    forestMTMDDint = dom->createForest(false, forest::INTEGER, forest::MULTI_TERMINAL, mdd_fp);
+    forestMTMDDint = dom->createForest(false, range_type::INTEGER, edge_labeling::MULTI_TERMINAL, mdd_fp);
     
     if (useMonolithicNSF()) {
         // Initialize dd_edges for the monolithic NSF
@@ -964,7 +966,7 @@ void RSRG::buildImplicitRelation() {
                 impl_trn_handle[p_trn->trn] = previous_handle;
         }
     }
-    impl_sat = SATURATION_IMPL_FORWARD->buildOperation(impl_rel);
+    impl_sat = SATURATION_IMPL_FORWARD()->buildOperation(impl_rel);
 }
 
 //-----------------------------------------------------------------------------
@@ -1090,7 +1092,7 @@ void RSRG::buildOtfRelation() {
 
     // Create the OTF transition relation operator
     otf_rel = new satotf_opname::otf_relation(forestMDD, forestMxD, forestMDD, otf_events.data(), otf_events.size());
-    otf_sat = SATURATION_OTF_FORWARD->buildOperation(otf_rel);
+    otf_sat = SATURATION_OTF_FORWARD()->buildOperation(otf_rel);
 }
 
 //-----------------------------------------------------------------------------
@@ -1170,7 +1172,7 @@ bool RSRG::buildRS() {
             // cout << "Finalizing SAT-pregen operator..." << endl;
             pregen_rel->finalize();
 
-            pregen_sat = SATURATION_FORWARD->buildOperation(pregen_rel);
+            pregen_sat = SATURATION_FORWARD()->buildOperation(pregen_rel);
             pregen_sat->compute(rs, rs);
             break;
         }
@@ -1441,7 +1443,7 @@ bool RSRG::genRSAll() {
 //-----------------------------------------------------------------------------
 
 void RSRG::IndexRS() {
-    forestEVplMDD = dom->createForest(false, forest::INTEGER, forest::EVPLUS);
+    forestEVplMDD = dom->createForest(false, range_type::INTEGER, edge_labeling::EVPLUS);
     indexrs = dd_edge(forestEVplMDD);
     indexrs.clear();
 
@@ -1473,9 +1475,9 @@ bool RSRG::JacobiSolver() {
 
 
 //UPDATE 23-12-1
-    specialized_operation *VM = EXPLVECT_MATR_MULT->buildOperation(indexrs, DiagReal , indexrs);
+    specialized_operation *VM = EXPLVECT_MATR_MULT()->buildOperation(indexrs, DiagReal , indexrs);
     VM->compute(h, qold);
-    specialized_operation *VM1 = EXPLVECT_MATR_MULT->buildOperation(indexrs, NSFReal, indexrs);
+    specialized_operation *VM1 = EXPLVECT_MATR_MULT()->buildOperation(indexrs, NSFReal, indexrs);
 
     int ss = 0;
     double sum = 0.0, diff = 0.0, norm = 0.0;
@@ -1547,7 +1549,7 @@ bool RSRG::JacobiSolver() {
                 return -1;
                 }*/
             //UPDATE 23-12-1
-            specialized_operation *VMT = EXPLVECT_MATR_MULT->buildOperation(indexrs, VectNSFReal[tt], indexrs);
+            specialized_operation *VMT = EXPLVECT_MATR_MULT()->buildOperation(indexrs, VectNSFReal[tt], indexrs);
             VMT->compute(q2, q1);
             sum = 0.0;
             for (int jj = 0; jj < (int)cardinality; jj++) {
@@ -1659,7 +1661,9 @@ int RSRG::visitXBounds(const node_handle node, int visit_level,
 
     nodeMaxSumTokens.at(node) = VBP_GOES_TO_ZERO_TERMINAL;
     // cout << "Visit " << node << endl;
-    unpacked_node *rnode = unpacked_node::newFromNode(forest, node, unpacked_node::storage_style::AS_STORED);
+    // unpacked_node *rnode = unpacked_node::newFromNode(forest, node, unpacked_node::storage_style::AS_STORED);
+    unpacked_node *rnode = unpacked_node::New();
+    forest->unpackNode(rnode, node, FULL_OR_SPARSE);
     assert(rnode->getLevel() >= 1 && rnode->getLevel() <= npl);
 
     if (rnode->isFull()) {
@@ -1770,7 +1774,9 @@ int RSRG::visitXBoundOfVariables(const node_handle node, int visit_level,
     assert(node_level >= 1 && node_level < selected_vars.size()+1);
     bool is_selected = (selected_vars.at(node_level-1));
 
-    unpacked_node *rnode = unpacked_node::newFromNode(forest, node, unpacked_node::storage_style::AS_STORED);
+    // unpacked_node *rnode = unpacked_node::newFromNode(forest, node, unpacked_node::storage_style::AS_STORED);
+    unpacked_node *rnode = unpacked_node::New();
+    forest->unpackNode(rnode, node, FULL_OR_SPARSE);
     int maximum = VBP_GOES_TO_ZERO_TERMINAL;
 
     if (rnode->isFull()) {
@@ -1827,7 +1833,9 @@ struct dot_of_DD {
         // draw the node
         ostringstream edges;
         dot << "  n"<<node<<" [label=\"";
-        unpacked_node *rnode = unpacked_node::newFromNode(forest, node, unpacked_node::storage_style::FULL_NODE);
+        // unpacked_node *rnode = unpacked_node::newFromNode(forest, node, unpacked_node::storage_style::FULL_NODE);
+        unpacked_node *rnode = unpacked_node::New();
+        forest->unpackNode(rnode, node, FULL_ONLY);
         assert(rnode->isFull());
         int end = rnode->getSize() - 1;
         while (rnode->d(end) == forest->handleForValue(false))
@@ -2433,7 +2441,9 @@ struct EventFiringsCounterShared {
 
 
         markings_count = 0;
-        unpacked_node *rnode = unpacked_node::newFromNode(forestMDD, node, unpacked_node::storage_style::AS_STORED);
+        // unpacked_node *rnode = unpacked_node::newFromNode(forestMDD, node, unpacked_node::storage_style::AS_STORED);
+        unpacked_node *rnode = unpacked_node::New();
+        forestMDD->unpackNode(rnode, node, FULL_OR_SPARSE);
 
         if (rnode->isFull()) {
             for (int i = enab_range.first; i < std::min((int)rnode->getSize(), enab_range.second); i++) {
@@ -2506,7 +2516,9 @@ struct EventFiringsCounterShared {
         }
 
         // Visit sub-levels recursively
-        unpacked_node *rnode = unpacked_node::newFromNode(forestMDD, node, false /* SPARSE */);
+        // unpacked_node *rnode = unpacked_node::newFromNode(forestMDD, node, false /* SPARSE */);
+        unpacked_node *rnode = unpacked_node::New();
+        forestMDD->unpackNode(rnode, node, SPARSE_ONLY);
         assert(!rnode->isFull());     
 
         for (int i = 0; i < rnode->getNNZs(); i++) {
@@ -2602,7 +2614,9 @@ bool RSRG::visitCountNodesPerLevel(const node_handle node, RSRG::NodesPerLevelCo
         return true; // Already visited
 
     const int node_level = forest->getNodeLevel(node);
-    unpacked_node *rnode = unpacked_node::newFromNode(forest, node, unpacked_node::storage_style::AS_STORED);
+    // unpacked_node *rnode = unpacked_node::newFromNode(forest, node, unpacked_node::storage_style::AS_STORED);
+    unpacked_node *rnode = unpacked_node::New();
+    forest->unpackNode(rnode, node, FULL_OR_SPARSE);
     assert(rnode->getLevel() >= 1 && rnode->getLevel() <= npl);
     nplc.nodesPerLvl[node_level-1]++;
 
