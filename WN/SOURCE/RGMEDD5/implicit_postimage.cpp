@@ -2,6 +2,7 @@
 #include <typeinfo> // for "bad_cast" exception
 #include <set>
 #include <map>
+#include <cassert>
 
 #ifdef HAS_GMP_LIB
 #include <gmpxx.h>

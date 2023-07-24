@@ -167,6 +167,11 @@ struct hashed_node_t {
         const node_t* p_node; // when node_id == -1
     };
 
+    inline hashed_node_t(size_t node_id, CDD_t* p_dd)
+    /**/ : node_id(node_id), p_dd(p_dd) { }
+    inline hashed_node_t(const node_t* p_node)
+    /**/ : node_id(-1), p_node(p_node) { }
+
     inline const node_t& get_node() const;
     bool operator==(const hashed_node_t& rhs) const;
 };
@@ -394,7 +399,7 @@ size_t CDD_t::initialize_recursive(node_t&& node, initialize_op_cache_t& op_cach
 
     // search in node cache
     node.precompute_hash();
-    hashed_node_t hn {.node_id=size_t(-1), .p_node=&node};
+    hashed_node_t hn(&node);
     auto it = cache.find(hn);
     if (it != cache.end()) // node exists
         return it->node_id;
@@ -437,7 +442,7 @@ size_t CDD_t::add_node(node_t&& node) {
     node.precompute_hash();
     forest.emplace_back(node);
     // Search the node in the cache
-    hashed_node_t hn {.node_id=node_id, .p_dd=this};
+    hashed_node_t hn(node_id, this);
     auto it = cache.find(hn);
     if (it != cache.end()) { // node exists
         forest.pop_back();
@@ -549,7 +554,7 @@ bool CDD_t::collect_unused_nodes() {
     // Rebuild the cache
     cache.clear();
     for (size_t i=0; i<forest.size(); i++) {
-        cache.insert({.node_id=i, .p_dd=this});
+        cache.insert(hashed_node_t(i, this));
     }
 
     // Remap the root node
