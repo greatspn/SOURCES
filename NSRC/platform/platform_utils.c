@@ -25,9 +25,9 @@ char* const* get_environ() { return environ; }
 //=============================================================================
 
 static int
-str_has_spaces(const char*p) {
+str_needs_quotes(const char*p) {
     while (*p) {
-        if (isspace(*p))
+        if (isspace(*p) || *p=='(' || *p==')')
             return 1;
         ++p;
     }
@@ -49,7 +49,7 @@ int execp_cmd(const char* exec_name, const char* const* args, int verbose) {
     if (verbose) {
         printf("exec: ");
         for (int a=0; args[a]; ++a) {
-            if (str_has_spaces(args[a]))
+            if (str_needs_quotes(args[a]))
                 printf("\"%s\" ", args[a]);
             else
                 printf("%s ", args[a]);
@@ -98,7 +98,7 @@ int execp_cmd(const char* exec_name, const char* const* args, int verbose) {
     const char* q;
     i=0;
     while (args[i]) {
-        int sp = str_has_spaces(args[i]);
+        int sp = str_needs_quotes(args[i]);
         q=args[i];
         if (i>0) *p++ = ' ';
         if (sp) *p++ = '\"';
