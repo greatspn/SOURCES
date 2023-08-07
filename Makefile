@@ -1122,10 +1122,12 @@ RGMEDD5_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx17) $(INCLUDE_GMP_LIB) \
 					$(RGMEDD5_CFLAGS) $(INCLUDE_MEDDLY_LIB) $(INCLUDE_SPOT_LIB)
 
 RGMEDD5_LDFLAGS := $(LDFLAGS) $(FLEX-LIB) $(LINK_GMP_LIB) \
-					$(LINK_MEDDLY_LIB) $(LINK_SPOT_LIB) -lmeddly -lspot
+					$(LINK_MEDDLY_LIB) $(LINK_SPOT_LIB) -lspot
 
 ifdef IS_CYGWIN
-	RGMEDD5_LDFLAGS := $(RGMEDD5_LDFLAGS)  -lgmp -lgmpxx
+	RGMEDD5_LDFLAGS := $(RGMEDD5_LDFLAGS)  /usr/local/lib/libmeddly.a /usr/lib/libgmp.dll.a /usr/lib/libgmpxx.dll.a
+else
+	RGMEDD5_LDFLAGS := $(RGMEDD5_LDFLAGS) -lmeddly
 endif
 
 RGMEDD5_SOURCES := WN/SOURCE/SHARED/service.c \
