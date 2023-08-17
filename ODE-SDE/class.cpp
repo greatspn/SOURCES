@@ -554,7 +554,10 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 
     Event* SystEq::deleteEventInPosition(int event_index, int tran){
 
+
+
     	Event *temp1 = Trans[tran].first_event, *temp2 = Trans[tran].first_event;
+    	cout << "index event " << event_index << endl;
 
     // Deleting the head.
     	if (event_index == 0) {
@@ -571,9 +574,11 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     	}
 
 
+
     // Traverse the list to
     // find the node to be deleted.
     	while (event_index > 0) {
+
 
         // Update temp2
     		temp2 = temp1;

@@ -218,7 +218,7 @@ $(call search_library,GLPK_LIB,libglpk.*,"GLPK library",-lglpk)
 $(call search_library,LP_SOLVE_LIB,liblpsolve55.*,"lp_solve55 library", )
 ifdef HAS_LP_SOLVE_LIB
   INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I$(PATH_TO_LP_SOLVE_LIB)../include/lpsolve
-  LINK_LP_SOLVE_LIB := $(LINK_LP_SOLVE_LIB) $(PATH_TO_LP_SOLVE_LIB)liblpsolve55.a $(PATH_TO_LP_SOLVE_LIB)libcolamd.a -ldl
+  LINK_LP_SOLVE_LIB := $(LINK_LP_SOLVE_LIB) $(PATH_TO_LP_SOLVE_LIB)liblpsolve55.a $(PATH_TO_LP_SOLVE_LIB)libcolamd.so -ldl
 endif
 # $(call search_library,LP_SOLVE_LIB,liblpsolve55.*,"lp_solve55 library",-llpsolve55 -ldl -lcolamd)
 # ifdef HAS_LP_SOLVE_LIB
