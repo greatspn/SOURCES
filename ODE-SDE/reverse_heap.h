@@ -184,8 +184,8 @@ public:
             percolateUpOrDown(elem);
         }
 
-        delete elem;
-        elem = NULL;
+        //delete elem;
+        //elem = NULL;
 
     }
 
