@@ -482,7 +482,7 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 				transition using the value of Enabling */
 /**************************************************************/
 
-    void SystEq::updateFutureEventList(int tran, int prev_fired, double time, vector<Event*> elementsToDelete){
+    void SystEq::updateFutureEventList(int tran, int prev_fired, double time){
 
 
     	int number_events = EnabledTransValueDis[tran] - PreviousEnabledTransValueDis[tran];
@@ -511,18 +511,13 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     		number_events--;
     	}
 
-    	outfel << "eventi trans lunghezza " << Trans[tran].events_size << endl;
-    	outfel << "numero eventi  prima del ciclo" << number_events << endl;
-
     	while(number_events < 0 && positions_lenght ==  (int)positionsToDelete.size()){
     		int index = uniform(0, Trans[tran].events_size, generator);
+
     		if(index != Trans[tran].events_size)
     			positionsToDelete.insert(index);
- 			//outfel << "index generato " << index << endl;
-    		//outfel << (int)positionsToDelete.size() << " lunghezza elementi da rimuovere" << endl;
-    		//outfel << positions_lenght+1 << " posizione + 1 " << endl;
 
-
+    		//generate all different index until the numer of elements to remove is reached
     		if((int)positionsToDelete.size() == positions_lenght+1){
     			number_events++;
     			positions_lenght++;
@@ -530,94 +525,14 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 
     	}
 
-    	/*std::set<int>::iterator it;
-    	for (it = positionsToDelete.begin(); it != positionsToDelete.end(); ++it) {
-    		outfel << *it << " indexo da rimuovere " << endl;
-    	}*/
-
-    	//std::set<int>::iterator it;
-    	/*outfel << "e fuori?" << endl;
-    	outfel << positionsToDelete.size() << "quanto minchia è lungo " << endl;
-    	for (it = positionsToDelete.begin(); it != positionsToDelete.end(); ++it) {
-    		outfel << *it << " indexo da rimuovere " << endl;
-		}*/
-
-    	/*Event* first = Trans[tran].first_event;
-    	for(int k = 0; k<Trans[tran].events_size; k++){
-    		outfel << first->getIndexHeap() << "lista associata alla tran prima della delete" << endl;
-    		if(first==Trans[tran].first_event){
-    			outfel << "parte dalla testa" << endl;
-    		}
-    		if(first==Trans[tran].last_event){
-    			outfel << "la coda dovrebbe esserci una volta sola." << endl;
-    		}
-    		first=first->getNext();
-    	}*/
-
-
-    	//outfel << future_event_list.getLenght() << "lunghezza FEL " << endl;
     	if(positionsToDelete.size() > 0  && future_event_list.getLenght() > 0 && Trans[tran].events_size > 0){
-    		elementsToDelete = deleteEventsInPositions(positionsToDelete, tran);
-    		for(int j = 0; j<(int)elementsToDelete.size(); j++){
-    			outfel << "elemento da togliere appena estratto " << elementsToDelete[j]->getIndexHeap() << endl;
-    			outfel << "pure indirizzo di memoriva va' " << elementsToDelete[j] << endl;
-    			Trans[tran].events_size--;
-
-    		}
-
-
-
-
-
-
-
-    		for(int i = 0; i<(int)elementsToDelete.size(); i++){
-
-    			outfel << "elemento da togliere in ciclo" << elementsToDelete[i] ->getIndexHeap() << endl;
-    			future_event_list.removeHeap(elementsToDelete[i]);
-    			//delete elementsToDelete[i];
-    			//elementsToDelete[i] = NULL;
-    			Trans[tran].events_size--;
-
-    		}
+    		deleteOnceEventsInPositions(positionsToDelete, tran);
     	}
 
-    	//elementsToDelete.clear();
-    	//positionsToDelete.clear();
-    	outfel << "lunghezza di elementsToDelete " << elementsToDelete.size() << endl;
 
-    	for(int j = 0; j<(int)elementsToDelete.size(); j++){
-    			outfel << "elemento da togliere dopo rimozione da heap...?" << elementsToDelete[j]->getIndexHeap() << endl;
-    			outfel << "pure indirizzo di memoriva va' bis " << elementsToDelete[j] << endl;
-    			//Trans[tran].events_size--;
-
-    	}
-
-    	Event* first = Trans[tran].first_event;
-    	for(int k = 0; k<Trans[tran].events_size; k++){
-    		outfel << first->getIndexHeap() << "lista associata dopo delete" << endl;
-    		if(first==Trans[tran].first_event){
-    			outfel << "parte dalla testa" << endl;
-    		}
-    		if(first==Trans[tran].last_event){
-    			outfel << "la coda dovrebbe esserci una volta sola." << endl;
-    		}
-    		if(first != NULL)
-    			first=first->getNext();
-    	}
-
-    	outfel << "ma dunque... è finita. Lunghezza trans? " << Trans[tran].events_size << endl;
-
-
-
-    	//if(elementsToDelete.size() > 0){
-    	//	outfel << "quindi ti sbraghi qui " << endl;
-    	//	elementsToDelete.clear();
-    	//}
 
     	//update with new/old value for next loop
     	PreviousEnabledTransValueDis[tran] = EnabledTransValueDis[tran];
-    	//outfel << "e quiiii " << endl;
 
 
     }
@@ -641,158 +556,46 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     }
 
 
-    
-
 /**************************************************************/
-/* NAME :  Class deleteEventsInPositions*/
+/* NAME :  Class takeEventsInPositions*/
 /* DESCRIPTION : delete a list of events by their positions in the event list updating the pointers */
 /**************************************************************/
 
-    vector<Event*> SystEq::deleteEventsInPositions(set<int> events, int tran){
+    void SystEq::deleteOnceEventsInPositions(set<int> events, int tran){
 
 
-
-    	vector<Event*> toBeRemoved;
-    	//to check the consecutive position for the head (next to put it in a separate method and use it also for inside events)
     	auto event_index = events.begin();
-    	auto event_index_plus = events.begin();
-    	//Event *added;
-    	event_index_plus++;
     	int lenght_event = 0;
-
-
-    	// Deleting the head.
-    	if (*event_index == 0) {
-    		outfel << *event_index << " sto togliendo la testa" << endl;
-    		if(Trans[tran].first_event != NULL) {
-    			//added = Trans[tran].first_event;
-    			toBeRemoved.push_back(Trans[tran].first_event);
-    			outfel << "sono nella testa e sto aggiungendo l'evento da rimuovere prima del while" << Trans[tran].first_event->getIndexHeap() << endl;
-    			while(*event_index+1==*event_index_plus && event_index_plus!=events.end()){
-    				// Update head
-    				Trans[tran].first_event = Trans[tran].first_event->getNext();
-    				//added = Trans[tran].first_event;
-    				toBeRemoved.push_back(Trans[tran].first_event);
-    				outfel << "sono nella testa e sto aggiungendo l'evento da rimuovere nel while" << Trans[tran].first_event->getIndexHeap() << endl;
-    				event_index++;
-    				event_index_plus++;
-    				lenght_event++;
-    			}
-    			if(Trans[tran].first_event != NULL && Trans[tran].first_event->getNext() != NULL){
-    				outfel << "sono arrivato all'index " << *event_index << endl;
-    				//outfel << Trans[tran].first_event << " probabilmente testa " << endl;
-
-    				//outfel << Trans[tran].last_event << " ma dunque la coda scusa?" << endl;
-    			//outfel << Trans[tran].first_event->getNext()->getIndexHeap() << " probabilmente nuova testa " << endl;
-    				//added = Trans[tran].first_event;
-    				//outfel << "sono nella testa e sto aggiungendo l'evento da rimuovere fuori dal while" << Trans[tran].first_event->getIndexHeap() << endl;
-    				//toBeRemoved.push_back(added);
-    			// Update head
-    				Trans[tran].first_event = Trans[tran].first_event->getNext();
-    				outfel << "ti sbraghi qui?" << endl;
-    			//if it's not the last element of the list
-    				Trans[tran].first_event ->setPrevious(NULL);
-    				outfel << Trans[tran].first_event->getIndexHeap() << " probabilmente nuova testa " << endl;
-    			}
-    			lenght_event++;
-    			event_index++;
-    			event_index_plus++;
-    			outfel << "posizione post testa" << lenght_event << endl;
-
-    		}
-
-
-    		if(Trans[tran].first_event != NULL){
-    			outfel << "la testa è stata tolta e ora first è indice " << Trans[tran].first_event->getIndexHeap() <<  endl;
-    		}
-    	}
+    	bool deleted = false;
 
     	Event *temp1 = Trans[tran].first_event, *temp2 = Trans[tran].first_event;
 
-    	if(Trans[tran].first_event != NULL){
 
-    		outfel << "ma aspetta temp 1 quanto è prima di entrare nel ciclo grosso?? " << temp1->getIndexHeap() << endl;
-    	}
+    			while(event_index!=events.end() && Trans[tran].events_size > 0 && future_event_list.getLenght() > 0 ){
 
-
-
-    	while(event_index!=events.end() && lenght_event < Trans[tran].events_size){
-    		//std::cout << ' ' << *event_index;
-    		//outfel << "indice attuale fisso " << *event_index << endl;
-    		outfel << "prossimo indice da rimuovere " << *event_index << endl;
-    		outfel<< "event index plus inizio ciclo " << *event_index_plus << endl;
-    		outfel << "posizione " << lenght_event << endl;
+    				deleted = false;
 
 
-    		// Update temp2
-    		temp2 = temp1;
+    				if(lenght_event == *event_index){
+    					temp2 = temp1;
+    					temp2 = temp2->getNext();
+    					deleteEvent(temp1);
+    					future_event_list.removeHeap(temp1);
+    					Trans[tran].events_size--;
+    					event_index++;
+    					temp1 = temp2;
+    					deleted = true;
+    				}
 
-        // Update temp1
-    		if(temp1 != NULL)
-    			temp1 = temp1->getNext();
 
-    		outfel << "ma dunque temp1 non viene aggiornato? " << temp1->getIndexHeap() << endl;
-
-    		if(lenght_event+1 == *event_index){
-    			outfel << "rimuovi l'evento " << endl;
-
-    			while(*event_index+1==*event_index_plus && event_index!=events.end()){
-    				outfel<< "event index nel while " << *event_index << endl;
-    				outfel<< "event index plus nel while " << *event_index_plus << endl;
-    				outfel<< "lunghezza nel while del lenght_event" << lenght_event << endl;
-    				
-    				//added = temp1;
-    				outfel << "indice elemento che sto aggiungendo alla lista nel while interno" << temp1 ->getIndexHeap() << endl; 
-    				toBeRemoved.push_back(temp1);
-    				temp1=temp1->getNext();
-    				event_index++;
-    				event_index_plus++;
+    				if(!deleted){
+    					temp1 = temp1 -> getNext();
+    				}
     				lenght_event++;
     			}
-    			Event *next = temp1->getNext();
-    			//added = temp1;
-    			toBeRemoved.push_back(temp1);
-    			outfel << "indice elemento che sto aggiungendo alla lista appena fuori while" << temp1 ->getIndexHeap() << endl; 
-    			outfel<< "event index appena fuori dal while " << *event_index << endl;
-    			
-
-
-    // Change the next pointer of the previous node.
-    			temp2->setNext(next);
-
-    			if(next != NULL)
-    				(next)->setPrevious(temp2);
-
-    			if(*event_index==Trans[tran].events_size-1){
-    				outfel << "mi sto occupando della coda?" << endl;
-    				Trans[tran].last_event = temp2;
-    				outfel << "la coda è " << Trans[tran].last_event->getIndexHeap() << endl;
-    			}
-
-
-    			//lenght_event++;
-    			if(event_index != events.end()){
-    				event_index++;
-    				event_index_plus++;
-    			}
-
-    			//outfel << "event_index alla fine? " << *event_index << endl;
-
-    			
-
-
-
-    		}
-
-    		lenght_event++;
 
     	}
 
-    	
-
-    	return toBeRemoved;
-
-    }
 
 /**************************************************************/
 /* NAME :  Class deleteEventInPosition*/
@@ -804,7 +607,6 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 
 
     	Event *temp1 = Trans[tran].first_event, *temp2 = Trans[tran].first_event;
-    	//cout << "index event " << event_index << endl;
 
     // Deleting the head.
     	if (event_index == 0) {
@@ -858,12 +660,16 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     	int tran = event ->getIndexTran();
     	bool head_or_tail = false;
 
+    	if(Trans[tran].first_event==Trans[tran].last_event){
+    		return;
+    	}
 
-    // Deleting the head.
+    // Deleting only the head.
     	if (event == Trans[tran].first_event) {
 
         // Update head
     		Trans[tran].first_event = Trans[tran].first_event->getNext();
+
     		//it it's not the last element of the list
     		if(Trans[tran].first_event != NULL)
     			Trans[tran].first_event ->setPrevious(NULL);
@@ -3052,6 +2858,7 @@ int SystEq::getComputeTau(int SetTranExp[], double& nextTimePoint,double t){
 	double sumRate=0.0;
 	int size = 0;
 
+
 	if (SetTranExp[0]!=0)
 	{
 		size= SetTranExp[0];
@@ -3098,8 +2905,6 @@ int SystEq::getComputeTau(int SetTranExp[], double& nextTimePoint,double t){
 			lo = top_list -> getIndexTran(); 
 			deleteEvent(top_list);
 			future_event_list.removeHeap(top_list);
-			//delete top_list;
-			//top_list = NULL;
 			Trans[lo].events_size--;
 			nextTimePoint = general_tau;
 			return lo;			
@@ -3542,7 +3347,7 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 	int size_expTran = 0;
 	int size_notExpTran = 1;
 	int Tran_previous = -1;
-  	vector<Event*> elementsToDelete; 
+  	
 
 
 
@@ -3672,8 +3477,8 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 		//update of future event list
 			for(int t=1;t<size_notExpTran;t++)
 			{
-				updateFutureEventList(SetTranNotExp[t], Tran_previous, time, elementsToDelete);
-				outfel << "e da qui non esci " << endl;
+				updateFutureEventList(SetTranNotExp[t], Tran_previous, time);
+				
 			}
 
       		//this returns the correct transition to fire
@@ -3728,22 +3533,23 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 		if(future_event_list.getLenght() > 0){
 
 			future_event_list.deleteHeap();
-			//elementsToDelete.clear();
 
 			for(int t=1; t<size_notExpTran; t++){
 				PreviousEnabledTransValueDis[t] = 0;
 				Trans[SetTranNotExp[t]].first_event = NULL;
+				Trans[SetTranNotExp[t]].last_event = NULL;
 				Trans[SetTranNotExp[t]].events_size = 0;
 			}
 
 		}
 
+
 		++run;
 
 	}
 
+
 	future_event_list.deleteHeap();
-	//elementsToDelete.clear();
 
 	cout<<"\n\nSolution at time "<<Max_Time<<":\n";
 }

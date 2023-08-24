@@ -2,8 +2,6 @@
 
 	inline double uniform(double min, double max, mt19937_64& generator){
 
-		cout << min << " CHE E' STO MIN " << endl;
-		cout << max << " CHE E' STO MAX " << endl;
 		if(min<0 || max<min){
 			throw Exception("The parameters of the Uniform distribution are wrong. The second must be greater than the first and they must be greater than 0.\n\n");
 		}
