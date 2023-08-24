@@ -529,11 +529,8 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
     		deleteOnceEventsInPositions(positionsToDelete, tran);
     	}
 
-
-
     	//update with new/old value for next loop
     	PreviousEnabledTransValueDis[tran] = EnabledTransValueDis[tran];
-
 
     }
 
@@ -3347,9 +3344,6 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 	int size_expTran = 0;
 	int size_notExpTran = 1;
 	int Tran_previous = -1;
-  	
-
-
 
 	setSizeFutureEventList(nTrans, size_expTran, size_notExpTran);
 
@@ -3543,19 +3537,13 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 
 		}
 
-
 		++run;
-
 	}
-
 
 	future_event_list.deleteHeap();
 
 	cout<<"\n\nSolution at time "<<Max_Time<<":\n";
 }
-
-
-
 
 
 /**************************************************************/
