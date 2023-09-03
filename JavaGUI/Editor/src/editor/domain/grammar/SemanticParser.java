@@ -1624,6 +1624,21 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
         }
     }
 
+    @Override
+    public FormattedFormula visitBoolExprCTLGlobalProperty(ExprLangParser.BoolExprCTLGlobalPropertyContext ctx) {
+        switch (lang) {
+            case LATEX:
+                return format(true, "\\mathrm{"+ctx.globalProp+"}");
+            case GREATSPN:
+            case PNPRO:
+                return format(true, ctx.globalProp.toString().toUpperCase());
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+    
+    
+
     //==========================================================================
     //  CTLSTAR terms:
     //==========================================================================

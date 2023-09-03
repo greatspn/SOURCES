@@ -62,8 +62,8 @@ public class IncidenceMatrixFormatter {
                 break;
                 
             case INCIDENCE_MATRIX:
-                matAdd = extractMatrix(gspn, GspnEdge.Kind.INPUT, pl2pos, tr2pos);
-                matSub = extractMatrix(gspn, GspnEdge.Kind.OUTPUT, pl2pos, tr2pos);
+                matAdd = extractMatrix(gspn, GspnEdge.Kind.OUTPUT, pl2pos, tr2pos);
+                matSub = extractMatrix(gspn, GspnEdge.Kind.INPUT, pl2pos, tr2pos);
                 break;
         }
         boolean twoMatrices = (matSub != null);

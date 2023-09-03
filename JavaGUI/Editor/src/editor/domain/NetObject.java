@@ -328,6 +328,7 @@ public class NetObject implements Serializable {
         "CN", "If", "when", "ever", "Card", "All", "Subclass",
         "en", "bounds", "deadlock", "ndeadlock", "initial", "possibly", "impossibly",
         "invariantly", "I", "Uniform", "Triangular", "Erlang", "TruncatedExp", "Pareto", 
+        "has_deadlock", "quasi_liveness", "stable_marking", "liveness", "onesafe",
         "S", /* SWN for <All> */
     };
     

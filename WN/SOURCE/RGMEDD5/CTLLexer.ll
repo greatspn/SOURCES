@@ -106,10 +106,15 @@ int lex_identifier(const std::string& token) {
 "impossibly"        {return IMPOSSIBLY;}
 "invariantly"       {return INVARIANT;}
 "HAS_DEADLOCK"      {return HAS_DEADLOCK;}
+"has_deadlock"      {return HAS_DEADLOCK;}
 "QUASI_LIVENESS"    {return QUASI_LIVENESS;}
+"quasi_liveness"    {return QUASI_LIVENESS;}
 "STABLE_MARKING"    {return STABLE_MARKING;}
+"stable_marking"    {return STABLE_MARKING;}
 "LIVENESS"          {return LIVENESS;}
+"liveness"          {return LIVENESS;}
 "ONESAFE"           {return ONESAFE;}
+"onesafe"           {return ONESAFE;}
 [0-9]+("."[0-9]*)?      { mmlval.num= atof(yytext); return NUMBER; }
 [A-Za-z_][A-Za-z0-9_]* { 
 			stdyytext = yytext; 

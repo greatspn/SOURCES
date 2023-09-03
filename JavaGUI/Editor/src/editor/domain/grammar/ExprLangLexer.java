@@ -229,14 +229,19 @@ public class ExprLangLexer extends Lexer {
 		    }
 		    if (isCTL || isLTL || isCTLSTAR) {
 		        switch (getText()) {
-		            case "possibly":     setType(ExprLangParser.POSSIBLY);    return;
-		            case "impossibly":   setType(ExprLangParser.IMPOSSIBLY);  return;
-		            case "invariantly":  setType(ExprLangParser.INVARIANTLY); return;
-		            case "en":           setType(ExprLangParser.ENABLED);     return;
-		            case "bounds":       setType(ExprLangParser.BOUNDS);      return;
-		            case "deadlock":     setType(ExprLangParser.DEADLOCK);    return;
-		            case "ndeadlock":    setType(ExprLangParser.NO_DEADLOCK); return;
-		            case "initial":      setType(ExprLangParser.INITIAL_STATE);    return;
+		            case "possibly":       setType(ExprLangParser.POSSIBLY);       return;
+		            case "impossibly":     setType(ExprLangParser.IMPOSSIBLY);     return;
+		            case "invariantly":    setType(ExprLangParser.INVARIANTLY);    return;
+		            case "en":             setType(ExprLangParser.ENABLED);        return;
+		            case "bounds":         setType(ExprLangParser.BOUNDS);         return;
+		            case "deadlock":       setType(ExprLangParser.DEADLOCK);       return;
+		            case "ndeadlock":      setType(ExprLangParser.NO_DEADLOCK);    return;
+		            case "initial":        setType(ExprLangParser.INITIAL_STATE);  return;
+		            case "has_deadlock":   setType(ExprLangParser.HAS_DEADLOCK);   return;
+		            case "quasi_liveness": setType(ExprLangParser.QUASI_LIVENESS); return;
+		            case "stable_marking": setType(ExprLangParser.STABLE_MARKING); return;
+		            case "liveness":       setType(ExprLangParser.LIVENESS);       return;
+		            case "onesafe":        setType(ExprLangParser.ONESAFE);        return;
 		            // If new context-dependent keywords are added to this list,
 		            // they must also be added in NetObject.extraKeyWords[].
 		        }

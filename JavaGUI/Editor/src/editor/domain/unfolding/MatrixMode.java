@@ -13,7 +13,7 @@ public enum MatrixMode {
     INPUT_MATRIX("Input matrix (I)"),
     OUTPUT_MATRIX("Output matrix (O)"),
     INHIBITOR_MATRIX("Inhibitor matrix (H)"),
-    INCIDENCE_MATRIX("Incidence Matrix (I-O)");
+    INCIDENCE_MATRIX("Incidence Matrix (O-I)");
 
     String visualized;
     private MatrixMode(String visualized) {
