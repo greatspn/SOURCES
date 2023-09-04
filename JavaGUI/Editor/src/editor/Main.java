@@ -481,6 +481,18 @@ public class Main {
     public static boolean areGreatSPNMdepArcsAllowed() {
         return Util.getPreferences().getBoolean(ALLOW_GSPN_MDEP_ARCS_KEY, false);
     }
+    
+    private static final String ZOOM_MULT_KEY = "zoom_mult";
+    private static int zoomMultiplier = -1;
+    public static void setZoomMultiplier(int mult) {
+        Util.getPreferences().putInt(ZOOM_MULT_KEY, mult);
+        zoomMultiplier = mult;
+    }
+    public static int getZoomMultiplier() {
+        if (zoomMultiplier < 0)
+            zoomMultiplier = Util.getPreferences().getInt(ZOOM_MULT_KEY, 100);
+        return zoomMultiplier;
+    }
 
 //    private static final String MODEL_LIBRARY_DIR = "model_library_dir";
 //    public static String getModelLibraryDirectory() {

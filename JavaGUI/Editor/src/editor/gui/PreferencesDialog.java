@@ -48,6 +48,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
         for (Main.UiSize sz : Main.UiSize.values())
             comboBoxUiSizes.addItem(sz);
         comboBoxUiSizes.setSelectedItem(Main.getStartupUiSize());
+        sm = new SpinnerNumberModel(Main.getZoomMultiplier(), 10, 1000, 1);
+        jSpinnerZoomMultiplier.setModel(sm);
         
         // Solvers
         filenameGreatSPN.setText(Main.getPathToGreatSPN());
@@ -111,6 +113,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
         comboBoxUiSizes = new javax.swing.JComboBox<>();
         labelUiNote = new javax.swing.JLabel();
         jCheckBoxReopenFiles = new javax.swing.JCheckBox();
+        jSpinnerZoomMultiplier = new javax.swing.JSpinner();
+        jLabel5 = new javax.swing.JLabel();
         tabSolverPath = new javax.swing.JPanel();
         jLabelGreatSPN = new javax.swing.JLabel();
         filenameGreatSPN = new common.JFilenameField();
@@ -257,6 +261,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
 
         jCheckBoxReopenFiles.setText("Reopen previously open projects at startup.");
 
+        jLabel5.setText("Zoom multiplier percentage.");
+
         org.jdesktop.layout.GroupLayout jPanel3Layout = new org.jdesktop.layout.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -268,10 +274,15 @@ public class PreferencesDialog extends javax.swing.JDialog {
                         .add(jLabel3)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(comboBoxUiSizes, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .add(jCheckBoxReopenFiles, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(jPanel3Layout.createSequentialGroup()
-                        .add(labelUiNote, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .add(0, 185, Short.MAX_VALUE))
-                    .add(jCheckBoxReopenFiles, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .add(jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(labelUiNote, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(jPanel3Layout.createSequentialGroup()
+                                .add(jSpinnerZoomMultiplier, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jLabel5)))
+                        .add(0, 343, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -282,9 +293,13 @@ public class PreferencesDialog extends javax.swing.JDialog {
                     .add(jLabel3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 27, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(labelUiNote, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                .add(jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jSpinnerZoomMultiplier, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(jLabel5))
+                .add(9, 9, 9)
                 .add(jCheckBoxReopenFiles)
-                .add(0, 163, Short.MAX_VALUE))
+                .add(0, 165, Short.MAX_VALUE))
         );
 
         org.jdesktop.layout.GroupLayout tabGeneralLayout = new org.jdesktop.layout.GroupLayout(tabGeneral);
@@ -437,6 +452,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         Main.setMaxUndo((Integer)jSpinnerMaxUndo.getValue());
         Main.setMaxLatexCacheEntries((Integer)jSpinnerMaxLatexCache.getValue());
         Main.setStartupUiSize((Main.UiSize)comboBoxUiSizes.getSelectedItem());
+        Main.setZoomMultiplier((Integer)jSpinnerZoomMultiplier.getValue());
         
         // Solvers
         Main.setPathToGreatSPN(filenameGreatSPN.getText());
@@ -493,6 +509,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
@@ -506,6 +523,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JPanel jPanelAutoUpdate;
     private javax.swing.JSpinner jSpinnerMaxLatexCache;
     private javax.swing.JSpinner jSpinnerMaxUndo;
+    private javax.swing.JSpinner jSpinnerZoomMultiplier;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel labelUiNote;
     private javax.swing.JPanel tabGeneral;

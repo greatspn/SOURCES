@@ -34,14 +34,15 @@ public class NetObject implements Serializable {
     //-------------------------------------------------------------------------
         
     // Pixels occupied by a single UNIT on the screen at 100% zoom
-    public static int getUnitToPixels() {
+    public static float getUnitToPixels() {
+        float mult = Main.getZoomMultiplier() / 100.0f;
         switch (Main.getUiSize()) {
             case NORMAL:
-                return 16;
+                return 16 * mult;
             case LARGE:
-                return 24;
+                return 24 * mult;
             case LARGER:
-                return 32;
+                return 32 * mult;
             default: 
                 throw new UnsupportedOperationException();
         }

@@ -1547,6 +1547,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         sharedActionComputeTransitionBasis = new common.Action();
         sharedActionComputeTraps = new common.Action();
         sharedActionComputeSiphons = new common.Action();
+        actionPageUp = new common.Action();
         jStatusBar = new javax.swing.JPanel();
         jStatusLabel = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
@@ -2350,6 +2351,10 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         sharedActionComputeSiphons.setIcon(resourceFactory.getSiphon());
         sharedActionComputeSiphons.setTooltipDesc("Recompute the minimal siphons of the GSPN.");
 
+        actionPageUp.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_UP, 0));
+        actionPageUp.setActionName("Page Up");
+        actionPageUp.setTooltipDesc("xxx");
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Editor");
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -2514,7 +2519,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jPanelToolBars.setOpaque(false);
         jPanelToolBars.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 2, 2));
 
-        jAppToolBar_File.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "File", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
+        jAppToolBar_File.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "File", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jAppToolBar_File.setRollover(true);
 
         jToolbarButtonNew.setAction(actionNewProject);
@@ -2532,7 +2537,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         jPanelToolBars.add(jAppToolBar_File);
 
-        jAppToolBar_Edit.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "Edit", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
+        jAppToolBar_Edit.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Edit", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jAppToolBar_Edit.setRollover(true);
 
         jToolbarButtonUndo.setAction(actionUndo);
@@ -2568,7 +2573,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         jPanelToolBars.add(jAppToolBar_Edit);
 
-        jAppToolBar_Basic.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "Basic", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
+        jAppToolBar_Basic.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Basic", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jAppToolBar_Basic.setRollover(true);
 
         jToolbarButtonStartPlay.setIcon(resourceFactory.getPlay32());
@@ -2629,7 +2634,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         jPanelToolBars.add(jAppToolBar_Basic);
 
-        jAppToolBar_Advanced.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "Advanced", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
+        jAppToolBar_Advanced.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Advanced", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jAppToolBar_Advanced.setRollover(true);
 
         jToolbarButtonAlgebra.setAction(actionStartAlgebra);
@@ -2655,7 +2660,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
 
         jPanelToolBars.add(jAppToolBar_Advanced);
 
-        jPlayToolBar.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(41, 43, 45)), "Panel", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
+        jPlayToolBar.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Panel", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BOTTOM));
         jPlayToolBar.setRollover(true);
 
         jToolbarButtonEndPlay.setAction(actionEndPlay);
@@ -2716,7 +2721,6 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jMenuItem_FileExport.add(jMenuItem_ApnnFormat);
 
         jMenuItem_NetLogoFormat.setAction(sharedActionExportNetLogo);
-        jMenuItem_NetLogoFormat.setText("Export in NetLogo format...");
         jMenuItem_FileExport.add(jMenuItem_NetLogoFormat);
 
         jMenuItem_DtaFormat.setAction(sharedActionExportDta);
@@ -3025,6 +3029,8 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         PreferencesDialog prefDlg = new PreferencesDialog(this, true);
         setStatus(null, true);
         prefDlg.setVisible(true);
+        if (activeEditor != null)
+            activeEditor.zoomChanged(-1); // trigger zoom update
     }//GEN-LAST:event_actionAppPreferencesActionPerformed
     
     private void actionCutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionCutActionPerformed
@@ -3750,6 +3756,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private common.Action actionNewProject;
     private common.Action actionNormalZoom;
     private common.Action actionOpen;
+    private common.Action actionPageUp;
     private common.Action actionPaste;
     private common.Action actionPrint;
     private common.Action actionRedo;

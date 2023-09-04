@@ -259,11 +259,18 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="comboBoxUiSizes" max="32767" attributes="0"/>
                               </Group>
-                              <Group type="102" attributes="0">
-                                  <Component id="labelUiNote" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="0" pref="185" max="32767" attributes="0"/>
-                              </Group>
                               <Component id="jCheckBoxReopenFiles" max="32767" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="labelUiNote" min="-2" max="-2" attributes="0"/>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Component id="jSpinnerZoomMultiplier" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                                  <EmptySpace min="0" pref="343" max="32767" attributes="0"/>
+                              </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
@@ -278,9 +285,14 @@
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="labelUiNote" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="jSpinnerZoomMultiplier" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
                           <Component id="jCheckBoxReopenFiles" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="0" pref="163" max="32767" attributes="0"/>
+                          <EmptySpace min="0" pref="165" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -307,6 +319,13 @@
                 <Component class="javax.swing.JCheckBox" name="jCheckBoxReopenFiles">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Reopen previously open projects at startup."/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JSpinner" name="jSpinnerZoomMultiplier">
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel5">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Zoom multiplier percentage."/>
                   </Properties>
                 </Component>
               </SubComponents>

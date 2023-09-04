@@ -1114,7 +1114,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             if (placeList.length() > 0) {
                 placeList.append(", ");
             }
-            placeList.append(visit(place).getFormula());
+            placeList.append(place.getSymbol().getText());
         }
         switch (lang) {
             case LATEX:

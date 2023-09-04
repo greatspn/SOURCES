@@ -1209,6 +1209,15 @@
         <Property name="tooltipDesc" type="java.lang.String" value="Recompute the minimal siphons of the GSPN."/>
       </Properties>
     </Component>
+    <Component class="common.Action" name="actionPageUp">
+      <Properties>
+        <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+          <KeyStroke key="UP"/>
+        </Property>
+        <Property name="actionName" type="java.lang.String" value="Page Up"/>
+        <Property name="tooltipDesc" type="java.lang.String" value="xxx"/>
+      </Properties>
+    </Component>
     <Menu class="javax.swing.JMenuBar" name="jAppMenuBar">
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="jMenuFile">
@@ -1328,7 +1337,6 @@
                     <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
                       <ComponentRef name="sharedActionExportNetLogo"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="Export in NetLogo format..."/>
                   </Properties>
                 </MenuItem>
                 <MenuItem class="javax.swing.JMenuItem" name="jMenuItem_DtaFormat">
