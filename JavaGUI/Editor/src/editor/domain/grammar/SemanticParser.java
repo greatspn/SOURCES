@@ -1114,7 +1114,7 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
             if (placeList.length() > 0) {
                 placeList.append(", ");
             }
-            placeList.append(visit(place).getFormula());
+            placeList.append(place.getSymbol().getText());
         }
         switch (lang) {
             case LATEX:
@@ -1623,6 +1623,21 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 throw new UnsupportedOperationException();
         }
     }
+
+    @Override
+    public FormattedFormula visitBoolExprCTLGlobalProperty(ExprLangParser.BoolExprCTLGlobalPropertyContext ctx) {
+        switch (lang) {
+            case LATEX:
+                return format(true, "\\mathrm{"+ctx.globalProp+"}");
+            case GREATSPN:
+            case PNPRO:
+                return format(true, ctx.globalProp.toString().toUpperCase());
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+    
+    
 
     //==========================================================================
     //  CTLSTAR terms:

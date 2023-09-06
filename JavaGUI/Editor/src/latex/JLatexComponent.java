@@ -90,7 +90,7 @@ public class JLatexComponent extends JComponent implements Scrollable {
 
     @Override
     public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
-        return NetObject.getUnitToPixels();
+        return (int)NetObject.getUnitToPixels();
     }
 
     @Override

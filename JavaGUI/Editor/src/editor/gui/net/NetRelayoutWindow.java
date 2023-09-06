@@ -95,7 +95,7 @@ public class NetRelayoutWindow extends javax.swing.JDialog {
         changeWindowEnablingForComputation(false);
         
         Dimension dim = comboBox_layout.getPreferredSize();
-        dim.width = Math.max(dim.width, NetObject.getUnitToPixels()*20);
+        dim.width = Math.max(dim.width, (int)(NetObject.getUnitToPixels()*20));
         comboBox_layout.setMinimumSize(dim);
         comboBox_layout.setPreferredSize(dim);
         

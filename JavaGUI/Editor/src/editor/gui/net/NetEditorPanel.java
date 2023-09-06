@@ -99,10 +99,11 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
     public void zoomChanged(int newZoomLevel) {
         //System.out.println("zoomChanged "+newZoomLevel+" "+currPage.zoomLevel);
         if (newZoomLevel != currPage.viewProfile.zoom || newZoomLevel != horizRuler.getZoomLevel()) {
-            currPage.viewProfile.zoom = newZoomLevel;
+            if (newZoomLevel > 0) // -1 triggers zoom update
+                currPage.viewProfile.zoom = newZoomLevel;
             netPanel.resizeToAccomodate();
-            horizRuler.setZoomLevel(newZoomLevel);
-            vertRuler.setZoomLevel(newZoomLevel);
+            horizRuler.setZoomLevel(currPage.viewProfile.zoom);
+            vertRuler.setZoomLevel(currPage.viewProfile.zoom);
             netPanel.repaint();
         }
         assert getPageZoom() == horizRuler.getZoomLevel();

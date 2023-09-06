@@ -220,14 +220,14 @@ public class FlowsGenerator extends StructuralAlgorithm {
             System.out.println("\nRESULT:\n"+this);
 
         obs.advance(M+1, M+1, 1, 1);
-        
-        if (type.isBound()) {
-            computeBoundsFromInvariants();
-        }
-        
+                
         flowsMat = new ArrayList<>(rows);
         rows.clear();
         rows = null;
+
+        if (type.isBound()) {
+            computeBoundsFromInvariants();
+        }
         
         setComputed();
     }

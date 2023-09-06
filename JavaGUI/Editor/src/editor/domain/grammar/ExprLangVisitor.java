@@ -1164,6 +1164,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	T visitTemporalOp2T(@NotNull ExprLangParser.TemporalOp2TContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#BoolExprCTLGlobalProperty}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBoolExprCTLGlobalProperty(@NotNull ExprLangParser.BoolExprCTLGlobalPropertyContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#mainBoolExpr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
