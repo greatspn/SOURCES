@@ -433,15 +433,19 @@ namespace SDE
   long int seed {0};
   //!It indicates the solve type used in this execution
   solve_type solve;
+  //!Vectore to store the elements to remove 
+  //vector<Event*> elementsToDelete; 
     //!The heap that handles the future event list of general non exponential transition
   min_heap future_event_list {min_heap()};
   //!It removes the i-th event in the event list updating the pointers 
   Event* deleteEventInPosition(int event_index, int tran);
+  //!It removes a set of events
+  void deleteOnceEventsInPositions(set<int> events, int tran);
   //!It removes the i-th event in the event list updating the pointers 
   void deleteEvent(Event* event);
   //!add event ad the end of the list
   void addEventAtTheEnd(Event* event, int tran);
-
+  
 //automaton
 #ifdef AUTOMATON
   class automaton automaton;
