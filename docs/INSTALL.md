@@ -53,6 +53,10 @@ brew install graphviz ghostscript
 After that, download the `.dmg` package from the [GreatSPN binary repository](https://datacloud.di.unito.it/index.php/s/E3kzX9ntCTnpRNi), open it and drag the GreatSPN application bundle in the Application directory.
 GreatSPN will then run directly as a standard macOS application.
 
+If macOS says that the application is damaged and should be deleted, it can be fixed by running this command:
+```
+sudo xattr -cr /Application/GreatSPN.app
+```
 
 
 ### Pre-installed VirtualBox machine (OLD)
