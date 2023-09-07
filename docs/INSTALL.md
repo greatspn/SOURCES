@@ -55,7 +55,7 @@ GreatSPN will then run directly as a standard macOS application.
 
 If macOS says that the application is damaged and should be deleted, it can be fixed by running this command:
 ```
-sudo xattr -cr /Application/GreatSPN.app
+sudo xattr -cr /Applications/GreatSPN.app
 ```
 
 
