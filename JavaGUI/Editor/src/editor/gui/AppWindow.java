@@ -116,16 +116,6 @@ import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreePath;
 import latex.LatexProvider;
 import editor.domain.semiflows.PTFlows;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.stream.Stream;
 import models.BuiltinModels;
 
 /**

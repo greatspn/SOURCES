@@ -25,7 +25,10 @@ public class RecentFilesListLRU {
             String fn = prefs.get("recent-file-"+i, null);
             if (fn == null)
                 break;
-            filenames.add(new File(fn));
+            
+            File f = new File(fn);
+            if (f.canRead())
+                filenames.add(f);
         }
     }
     

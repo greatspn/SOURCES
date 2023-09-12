@@ -96,6 +96,9 @@ Other recent papers referencing GreatSPN:
 
 GreatSPN partecipated to several Model Checking Context (MCC) editions:
 
+ * MCC 2022 Edition [(link)](https://mcc.lip6.fr/2022/results.php):
+    - 🥈 Silver medal in StateSpace category;
+    - 🥉 Bronze medal in GlobalProperties, UpperBounds and CTL categories;
  * MCC 2021 Edition [(link)](https://mcc.lip6.fr/2021/results.php):
     - 🥈 Silver medal in StateSpace category;
  * MCC 2020 Edition [(link)](https://mcc.lip6.fr/2020/results.php):
