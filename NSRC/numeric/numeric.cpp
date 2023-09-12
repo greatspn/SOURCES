@@ -222,7 +222,7 @@ ch_compute_alpha_factors_dbl(const char* fg_expr, const double q, const double a
 		for (size_t ii=0; ii<num_factors; ii++)
 			inf >> af[ii].first >> af[ii].second;
 		if (!inf)
-			throw program_exception("Count not read back the output file.");
+			throw program_exception("Could not read back the output file.");
 		inf.close();
 
 		/*FILE *proc = popen(cmdline.str().c_str(), "r");

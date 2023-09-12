@@ -227,8 +227,9 @@ public class Place extends Node implements Serializable, ColorClass.DomainHolder
         {
             super.paintDecorAt(g, dh, textX, textY, isParentGrayed, isParentError); 
             // Paint the ':' between the name label and the domain label.
-            if (semicolon == null) {
-                semicolon = new LatexFormula(":", DEFAULT_TEXT_SIZE * (float)getUnitToPixels());
+            float semicolonSize = DEFAULT_TEXT_SIZE * (float)getUnitToPixels();
+            if (semicolon == null || semicolon.getSize() != semicolonSize) {
+                semicolon = new LatexFormula(":", semicolonSize);
             }
             if (semicolon != null) {
                 double scaleFact = 1.0 / (double)getUnitToPixels();
@@ -593,17 +594,33 @@ public class Place extends Node implements Serializable, ColorClass.DomainHolder
     public static LatexFormula paintLatexTokenCountAt(Graphics2D g, DrawHelper dh, LatexFormula tokenText,
                                                       String tokenNumber, double cx, double cy) 
     {
-        if (tokenText == null || !tokenText.getLatex().equals(tokenNumber)) {
-            int i;
-            for (i=0; i<tokenNumber.length(); i++)
-                if (tokenNumber.charAt(i) < '0' || tokenNumber.charAt(i) > '9')
-                    break;
-            // Change the size for pure numbers or for formulas
-            float size = (i==tokenNumber.length()) ? MARKING_TEXT_NUMBER_SIZE : MARKING_TEXT_FORMULA_SIZE;
-                
-            // Prepare a new LaTeX text
+        boolean rebuildFormula = false;
+        if (tokenText == null || !tokenText.getLatex().equals(tokenNumber))
+            rebuildFormula = true;
+        
+        // Determine size
+        int i;
+        for (i=0; i<tokenNumber.length(); i++)
+            if (tokenNumber.charAt(i) < '0' || tokenNumber.charAt(i) > '9')
+                break;
+        // Change the size for pure numbers or for formulas
+        float size = (i==tokenNumber.length()) ? MARKING_TEXT_NUMBER_SIZE : MARKING_TEXT_FORMULA_SIZE;
+        if (tokenText != null && size != tokenText.getSize())
+            rebuildFormula = true;
+        
+        if (rebuildFormula)
             tokenText = new LatexFormula(tokenNumber, size  * (float)getUnitToPixels());
-        }
+//        if (tokenText == null || !tokenText.getLatex().equals(tokenNumber)) {
+//            int i;
+//            for (i=0; i<tokenNumber.length(); i++)
+//                if (tokenNumber.charAt(i) < '0' || tokenNumber.charAt(i) > '9')
+//                    break;
+//            // Change the size for pure numbers or for formulas
+//            float size = (i==tokenNumber.length()) ? MARKING_TEXT_NUMBER_SIZE : MARKING_TEXT_FORMULA_SIZE;
+//                
+//            // Prepare a new LaTeX text
+//            tokenText = new LatexFormula(tokenNumber, size  * (float)getUnitToPixels());
+//        }
         double scaleFact = 1.0 / (double)getUnitToPixels();
         double textX = cx - (tokenText.getWidth() * scaleFact) / 2.0;
         double textY = cy - (tokenText.getHeight() * scaleFact * 0.9) / 2.0;
