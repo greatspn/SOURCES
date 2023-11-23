@@ -64,7 +64,7 @@ sudo xattr -cr /Applications/GreatSPN.app
 We offer a pre-installed VirtualBox machine image, based on Ubuntu, that ships with
 the GreatSPN framework already installed, with all the required dependencies.
 This is the easiest way to get GreatSPN together with the pre-compiled source, since you just have to download the image, but of course the VirtualBox machine will be slower than a native build.
-The VirtualBox image can be downloaded from this [repository](http://www.di.unito.it/~greatspn/VBox/).
+The VirtualBox image can be downloaded from this [repository](https://www.di.unito.it/~greatspn/VBox/GreatSPN-2021a.ova).
 In case you need it, the root password of the VirtualBox image is: `user`
 
 Sometimes the virtual box machine will require the re-installation of
