@@ -21,16 +21,18 @@ extern int checkmpar (char * str);
 extern int checkrpar (char * str);
 
 extern FILE* extra_def;
-extern int has_extra_def;
+//extern int has_extra_def;
+
+#define DEBUG
 
 int yywrap(void) {
-	if (has_extra_def) { // switch to extra definitions file.
+	/*if (has_extra_def) { // switch to extra definitions file.
 		//fclose(yyin);
 		yyin = extra_def;
 		has_extra_def = 0;
 		return 0; // Scan next file
-	}
-	else return 1; // End of input
+	} else */
+	return 1; // End of input
 }
 
 %}
@@ -86,7 +88,7 @@ E\{ {
 
 e\{ { return(TR_MEAN); } ;
 
-^\|[a-zA-Z][a-zA-Z0-9]* { sprintf(res_name,yytext+1);
+^\|[a-zA-Z][a-zA-Z0-9]* { sprintf(res_name, "%s", yytext+1);
 #ifdef DEBUG
     fprintf(stderr,"\n token RES_NAME '%s'\n", res_name);
 #endif /* DEBUG */
@@ -97,11 +99,11 @@ e\{ { return(TR_MEAN); } ;
 #ifdef DEBUG
     fprintf(stderr,"\n token END_RES\n");
 #endif /* DEBUG */
-	if (has_extra_def) { 
+	/*if (has_extra_def) { 
 		// Do not return, wait for end file and 
 		// than switch to extra definitions file.
-	}
-	else return(END_RES); } ;
+	} else */
+	return(END_RES); } ;
 
 [\n\r\t ] { /* Skip spaces */ }
 

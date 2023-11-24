@@ -510,7 +510,7 @@ swn_stndrd_CFLAGS := $(call generate_WN_FLAGS,TOOL_SWN_STNDRD,swn_stndrd)
 swn_gst_stndrd_SOURCES := WN/SOLVE/swn_gst_stndrd.c WN/SOLVE/compact.c
 swn_gst_stndrd_CFLAGS := $(call generate_WN_FLAGS,TOOL_SWN_GST_STNDRD,swn_gst_stndrd)
 
-swn_gst_prep_SOURCES := WN/SOLVE/res_stndrd.l WN/SOLVE/res_stndrd.y
+swn_gst_prep_SOURCES := WN/SOLVE/res_stndrd.l WN/SOLVE/res_stndrd.y NSRC/platform/platform_utils.c
 swn_gst_prep_CFLAGS := $(call generate_WN_FLAGS,TOOL_SWN_GST_PREP,swn_gst_prep)
 
 

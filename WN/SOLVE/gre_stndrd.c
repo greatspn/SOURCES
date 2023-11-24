@@ -2,15 +2,14 @@
 // extern double atof();
 // #endif
 
-/*
 #define DEBUG
-*/
 
 unsigned p_num;
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../../NSRC/platform/platform_utils.h"
 
 extern FILE *yyin;
 
@@ -26,7 +25,9 @@ static int cur_intval;
 static char cur_inttype;
 
 FILE *nfp, * dfp, * ofp, *extra_def;
-int has_extra_def = 0;
+// int has_extra_def = 0;
+
+char extra_def_fname[FILENAME_MAX];
 
 #include "sconst.h"
 
@@ -292,6 +293,7 @@ char **argv;
 
     static char   *can_t_open = "Can't open file %s for %c\n";
     char  filename[LINEMAX];
+    char  linebuf[LINEMAX];
     int ii, np, jj;
     struct Cond_def *cp;
     struct Prob_def *pp;
@@ -311,6 +313,34 @@ char **argv;
     }
     load_net();
     (void) fclose(nfp);
+
+    portable_mkstemp(extra_def_fname, "exdef_XXXXXXXX");
+    printf("extra_def_fname = %s\n", extra_def_fname);
+    extra_def = fopen(extra_def_fname, "w+");
+
+    sprintf(filename, "%s.def", argv[1]);
+    if ((dfp = fopen(filename, "r")) == NULL) {
+        fprintf(stderr, can_t_open, filename, 'r');
+        exit(1);
+    }
+    while (getc(dfp) != '%');
+    while (getc(dfp) != '\n');
+    int cont;
+    do {
+        fgets(linebuf, LINEMAX, dfp);
+        size_t len = strlen(linebuf);
+        if (len>0 && linebuf[len-1]=='\n') {
+            linebuf[len-1] = '\0';
+            len--;
+        }
+        cont = strlen(linebuf)>1;
+        if (cont) {
+            fprintf(extra_def, "%s\n", linebuf);
+        }
+        //printf("linebuf = '%s' cont=%d\n", linebuf, cont);
+    }
+    while (cont);
+    fclose(dfp); dfp=NULL;
 
     // Read other command line arguments (after the load_net() call)
     for (ii = 2; ii < argc; ii++) {
@@ -342,8 +372,11 @@ char **argv;
         }
         // Extra measure:  -measure <name> <expression>
         else if (0 == strcmp(argv[ii], "-measure") && ii+2 < argc) {
-            if (extra_def == NULL) // Extra definition file still not opened
-                extra_def = tmpfile(); // Temporary file that will be deleted at exit
+            // if (extra_def == NULL) {// Extra definition file still not opened
+            //     // extra_def = tmpfile(); // Temporary file that will be deleted at exit
+            //     portable_mkstemp(extra_def_fname, "exdef_XXXXXXXX");
+            //     extra_def = fopen(extra_def_fname, "w+");
+            // }
             fprintf(extra_def, "|%s 0.0 0.0 : %s;\n", argv[ii+1], argv[ii+2]);
             ii += 2;
         }
@@ -368,16 +401,16 @@ char **argv;
     if (extra_def != NULL) {
         fprintf(extra_def, "|\n");
         rewind(extra_def);
-        has_extra_def = 1;
+        // has_extra_def = 1;
     }
 
-    sprintf(filename, "%s.def", argv[1]);
-    if ((dfp = fopen(filename, "r")) == NULL) {
-        fprintf(stderr, can_t_open, filename, 'r');
-        exit(1);
-    }
-    while (getc(dfp) != '%');
-    while (getc(dfp) != '\n');
+    // sprintf(filename, "%s.def", argv[1]);
+    // if ((dfp = fopen(filename, "r")) == NULL) {
+    //     fprintf(stderr, can_t_open, filename, 'r');
+    //     exit(1);
+    // }
+    // while (getc(dfp) != '%');
+    // while (getc(dfp) != '\n');
     sprintf(filename, "%s.gst", argv[1]);
     if ((ofp = fopen(filename, "w")) == NULL) {
         fprintf(stderr, can_t_open, filename, 'w');
@@ -386,14 +419,17 @@ char **argv;
 #ifdef DEBUG
     fprintf(stderr, "  Start of yyparse\n");
 #endif
-    yyin = dfp;
+    // yyin = dfp;
+    yyin = extra_def;
     yyparse();
 #ifdef DEBUG
     fprintf(stderr, "  End of yyparse\n");
 #endif
-    fclose(dfp);
-    if (extra_def != NULL)
-        fclose(extra_def);
+    // fclose(dfp);
+    // if (extra_def != NULL) {
+    fclose(extra_def);
+    // remove(extra_def_fname);
+    // }
     fprintf(ofp, "%d %d\n", no_pro, no_res);
     for (rp = first_res ; rp != NULL ; rp = rp->next)
         for (pp = rp->probs ; pp != NULL ; pp = pp->next) {

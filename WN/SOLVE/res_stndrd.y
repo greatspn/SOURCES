@@ -57,7 +57,7 @@ result : RES_NAME coord coord COLON
 		      cur_res->next = new_res;
 		  cur_res = new_res;
 		  cur_res->name = ecalloc(strlen(res_name)+1,1);
-		  sprintf(cur_res->name,res_name);
+		  sprintf(cur_res->name, "%s", res_name);
 		  cur_res->nprobs = 0;
 		  cur_prob = NULL;
 		}
