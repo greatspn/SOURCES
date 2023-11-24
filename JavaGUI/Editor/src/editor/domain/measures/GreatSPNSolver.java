@@ -171,10 +171,9 @@ public class GreatSPNSolver extends SolverInvokator {
                 }
 
                 // Step 4: copy .epd into .mpd
-                cmd = createCopyFileCmd(makeDefaultModelFilenameForCmd(".epd"),
-                                        makeDefaultModelFilenameForCmd(".mpd"));
-                step.addCmd(cmd);
-//                step.addCmd(startOfCommand() + "/bin/cp "+quotedFn(".epd")+" "+quotedFn(".mpd"));
+//                cmd = createCopyFileCmd(makeDefaultModelFilenameForCmd(".epd"),
+//                                        makeDefaultModelFilenameForCmd(".mpd"));
+//                step.addCmd(cmd);
 
                 // Step 5: prepare measures (use modified mark/rate params and extra defs)
                 cmd = startOfCommand();

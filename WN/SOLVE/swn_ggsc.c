@@ -221,7 +221,7 @@ void init() {
 
 static char netname[400];
 static char   *can_t_open = "Can't open file %s for %c\n";
-static char  filename[400];
+static char  filename[410];
 
 double err;
 
@@ -235,7 +235,9 @@ void save_distrib_human() {
     struct mtrx_col *c_p;
     int ii;
 
-    if ((sspfp = fopen(filename, "w")) == NULL) {
+    // printf("save_distrib_human %s\n", filename);
+    FILE *f_mpdh;
+    if ((f_mpdh = fopen(filename, "w")) == NULL) {
         fprintf(stderr, can_t_open, filename, 'w');
         exit(1);
     }
@@ -248,14 +250,14 @@ void save_distrib_human() {
         *++m_p = rr;
         sum += rr;
     }
-    dd = -err; fprintf(sspfp, "%g ", dd);
-    dd = -1.0; fprintf(sspfp, "%g \n", dd);
+    dd = -err; fprintf(f_mpdh, "%g ", dd);
+    dd = -1.0; fprintf(f_mpdh, "%g \n", dd);
     dd = 1.0 / sum;
     for (ii = top_tan, m_p = wprob ; ii-- ;) {
         rr = *++m_p * dd;
         mymp[top_tan - ii - 1] = rr;
     }
-    fclose(sspfp);
+    fclose(f_mpdh);
 }
 
 void save_distrib() {
@@ -264,10 +266,11 @@ void save_distrib() {
     double *res_p, * m_p;
     struct mtrx_col *c_p;
     int ii;
-    char command[400];
+    char command[820];
 
-    sprintf(filename, "%s.mpd", netname);
-    if ((sspfp = fopen(filename, "w")) == NULL) {
+    sprintf(filename, "%s.epd", netname);
+    FILE *f_epd;
+    if ((f_epd = fopen(filename, "wb")) == NULL) {
         fprintf(stderr, can_t_open, filename, 'w');
         exit(1);
     }
@@ -280,17 +283,20 @@ void save_distrib() {
         *++m_p = rr;
         sum += rr;
     }
-    dd = -err; store_double(&dd, sspfp);
-    dd = -1.0; store_double(&dd, sspfp);
+    dd = -err; store_double(&dd, f_epd);
+    dd = -1.0; store_double(&dd, f_epd);
+    // printf("save_distrib %lf %lf", -err, dd);
     dd = 1.0 / sum;
     for (ii = top_tan, m_p = wprob ; ii-- ;) {
         rr = *++m_p * dd;
-        store_double(&rr, sspfp);
-        /*fprintf(stdout,"STATO %d RIS %lg\n",ii+1,rr);*/
+        store_double(&rr, f_epd);
+        //fprintf(stdout,"STATO %d RIS %lg\n",ii+1,rr);
     }
-    fclose(sspfp);
-    sprintf(command, "/bin/cp \"%s.mpd\" \"%s.epd\"", netname, netname);
-    system(command);
+    fclose(f_epd);
+
+    // sprintf(command, "/bin/cp \"%s.mpd\" \"%s.epd\"", netname, netname);
+    // int e = system(command);
+    // printf("command(%d): %s\n", e, command);
 }
 
 
@@ -538,20 +544,23 @@ int main(int argc, char **argv) {
     if (save <= 0)
         save = 1;
     init();
-    (void) fclose(outtype);
-    (void) fclose(clmfp);
-    (void) fclose(emcfp);
-    (void) fclose(mptfp);
-    (void) fclose(dbfp);
-    (void) fclose(sspfp);
+    (void) fclose(outtype);  outtype=NULL;
+    (void) fclose(clmfp);    clmfp=NULL;
+    (void) fclose(emcfp);    emcfp=NULL;
+    (void) fclose(mptfp);    mptfp=NULL;
+    (void) fclose(dbfp);     dbfp=NULL;
+    (void) fclose(sspfp);    sspfp=NULL;
     gauss_seidel();
+
+    sprintf(filename, "%s.mpdh", argv[1]);
     save_distrib_human();
+
     compute_throughput();
-    (void) fclose(altth);
-    (void) fclose(stafp);
-    (void) fclose(nmrk);
-    (void) fclose(denom);
-    (void) fclose(ratesfp);
+    (void) fclose(altth);    altth=NULL;
+    (void) fclose(stafp);    stafp=NULL;
+    (void) fclose(nmrk);     nmrk=NULL;
+    (void) fclose(denom);    denom=NULL;
+    (void) fclose(ratesfp);  ratesfp=NULL;
 
     return 0;
 }

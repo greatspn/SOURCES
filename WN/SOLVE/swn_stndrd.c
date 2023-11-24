@@ -1204,7 +1204,7 @@ int main(int argc,
     }
     load_initialmark();
     sprintf(filename, "%s.epd", argv[1]);
-    if ((marfp = fopen(filename, "w")) == NULL) {
+    if ((marfp = fopen(filename, "wb")) == NULL) {
         fprintf(stderr, can_t_open, filename, 'w');
         exit(1);
     }

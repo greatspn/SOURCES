@@ -337,11 +337,6 @@ void init() {
         fprintf(stderr, can_t_open, filename, 'r');
         exit(1);
     }
-    sprintf(filename, "%s.mpd", netname);
-    if ((mpdfp = fopen(filename, "r")) == NULL) {
-        fprintf(stderr, can_t_open, filename, 'r');
-        exit(1);
-    }
     sprintf(filename, "%s.tpd", netname);
     if ((tpdfp = fopen(filename, "w")) == NULL) {
         fprintf(stderr, can_t_open, filename, 'w');
@@ -688,8 +683,15 @@ int main(int argc,
 
     sprintf(netname, "%s", argv[1]);
     init();
+
+    sprintf(filename, "%s.epd", netname);
+    if ((mpdfp = fopen(filename, "rb")) == NULL) {
+        fprintf(stderr, can_t_open, filename, 'r');
+        exit(1);
+    }
     load_double(&mp, mpdfp); err = -mp;
     load_double(&mp, mpdfp);
+    // printf("load_distrib %lf %lf\n", err, mp);
     transient = (mp >= 0.0);
 #ifdef DEBUG
     fprintf(stderr, "\nerror=%f, time=%f\n\n", err, mp);
