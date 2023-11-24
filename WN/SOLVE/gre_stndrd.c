@@ -1,8 +1,5 @@
-// #ifndef ___LINUX___
-// extern double atof();
-// #endif
 
-#define DEBUG
+// #define DEBUG
 
 unsigned p_num;
 
@@ -25,7 +22,6 @@ static int cur_intval;
 static char cur_inttype;
 
 FILE *nfp, * dfp, * ofp, *extra_def;
-// int has_extra_def = 0;
 
 char extra_def_fname[FILENAME_MAX];
 
@@ -315,7 +311,7 @@ char **argv;
     (void) fclose(nfp);
 
     portable_mkstemp(extra_def_fname, "exdef_XXXXXXXX");
-    printf("extra_def_fname = %s\n", extra_def_fname);
+    // printf("extra_def_fname = %s\n", extra_def_fname);
     extra_def = fopen(extra_def_fname, "w+");
 
     sprintf(filename, "%s.def", argv[1]);
@@ -333,7 +329,7 @@ char **argv;
             linebuf[len-1] = '\0';
             len--;
         }
-        cont = strlen(linebuf)>1;
+        cont = strlen(linebuf)>1 && linebuf[0]=='|';
         if (cont) {
             fprintf(extra_def, "%s\n", linebuf);
         }
@@ -372,11 +368,6 @@ char **argv;
         }
         // Extra measure:  -measure <name> <expression>
         else if (0 == strcmp(argv[ii], "-measure") && ii+2 < argc) {
-            // if (extra_def == NULL) {// Extra definition file still not opened
-            //     // extra_def = tmpfile(); // Temporary file that will be deleted at exit
-            //     portable_mkstemp(extra_def_fname, "exdef_XXXXXXXX");
-            //     extra_def = fopen(extra_def_fname, "w+");
-            // }
             fprintf(extra_def, "|%s 0.0 0.0 : %s;\n", argv[ii+1], argv[ii+2]);
             ii += 2;
         }
@@ -398,11 +389,8 @@ char **argv;
     }
     
     // Complete extra definitions file with the terminating bar, and restart for reading.
-    if (extra_def != NULL) {
-        fprintf(extra_def, "|\n");
-        rewind(extra_def);
-        // has_extra_def = 1;
-    }
+    fprintf(extra_def, "|\n");
+    rewind(extra_def);
 
     // sprintf(filename, "%s.def", argv[1]);
     // if ((dfp = fopen(filename, "r")) == NULL) {
@@ -427,8 +415,8 @@ char **argv;
 #endif
     // fclose(dfp);
     // if (extra_def != NULL) {
-    fclose(extra_def);
-    // remove(extra_def_fname);
+    fclose(extra_def); extra_def=NULL;
+    remove(extra_def_fname);
     // }
     fprintf(ofp, "%d %d\n", no_pro, no_res);
     for (rp = first_res ; rp != NULL ; rp = rp->next)
