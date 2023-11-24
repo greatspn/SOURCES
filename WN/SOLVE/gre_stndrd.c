@@ -1,6 +1,6 @@
-#ifndef ___LINUX___
-extern double atof();
-#endif
+// #ifndef ___LINUX___
+// extern double atof();
+// #endif
 
 /*
 #define DEBUG
