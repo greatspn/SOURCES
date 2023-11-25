@@ -39,11 +39,11 @@ if [ $? -ne 0 ]
 then
 	exit 36
 fi
-/bin/cp $1.epd $1.mpd
-if [ $? -ne 0 ] 
-then
-	exit 31 
-fi
+# /bin/cp $1.epd $1.mpd
+# if [ $? -ne 0 ] 
+# then
+# 	exit 31 
+# fi
 ${GREATSPN_BINDIR}/swn_gst_prep $1
 if [ $? -ne 0 ] 
 then
