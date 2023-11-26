@@ -640,8 +640,8 @@ int main(int argc,
         fprintf(stderr, can_t_open, filename, 'r');
         exit(1);
     }
-    sprintf(filename, "%s.epd", argv[1]);
-    if ((sspfp = fopen(filename, "r")) == NULL) {
+    sprintf(filename, "%s.mpd", argv[1]);
+    if ((sspfp = fopen(filename, "rb")) == NULL) {
         fprintf(stderr, can_t_open, filename, 'r');
         exit(1);
     }
@@ -761,7 +761,7 @@ int main(int argc,
         dd2 += *(++i_m_p);
     }
     stop_sum = 1.0 / dd; stop_sum2 = 1.0 / dd2;
-    sprintf(filename, "%s.epd", argv[1]);
+    sprintf(filename, "%s.mpd", argv[1]);
     if ((sspfp = fopen(filename, "wb")) == NULL) {
         fprintf(stderr, can_t_open, filename, 'w');
         exit(1);

@@ -1203,7 +1203,7 @@ int main(int argc,
         exit(1);
     }
     load_initialmark();
-    sprintf(filename, "%s.epd", argv[1]);
+    sprintf(filename, "%s.mpd", argv[1]);
     if ((marfp = fopen(filename, "wb")) == NULL) {
         fprintf(stderr, can_t_open, filename, 'w');
         exit(1);

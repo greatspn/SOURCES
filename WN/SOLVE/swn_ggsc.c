@@ -268,9 +268,9 @@ void save_distrib() {
     int ii;
     char command[820];
 
-    sprintf(filename, "%s.epd", netname);
-    FILE *f_epd;
-    if ((f_epd = fopen(filename, "wb")) == NULL) {
+    sprintf(filename, "%s.mpd", netname);
+    FILE *f_mpd;
+    if ((f_mpd = fopen(filename, "wb")) == NULL) {
         fprintf(stderr, can_t_open, filename, 'w');
         exit(1);
     }
@@ -283,16 +283,16 @@ void save_distrib() {
         *++m_p = rr;
         sum += rr;
     }
-    dd = -err; store_double(&dd, f_epd);
-    dd = -1.0; store_double(&dd, f_epd);
+    dd = -err; store_double(&dd, f_mpd);
+    dd = -1.0; store_double(&dd, f_mpd);
     // printf("save_distrib %lf %lf", -err, dd);
     dd = 1.0 / sum;
     for (ii = top_tan, m_p = wprob ; ii-- ;) {
         rr = *++m_p * dd;
-        store_double(&rr, f_epd);
+        store_double(&rr, f_mpd);
         //fprintf(stdout,"STATO %d RIS %lg\n",ii+1,rr);
     }
-    fclose(f_epd);
+    fclose(f_mpd);
 
     // sprintf(command, "/bin/cp \"%s.mpd\" \"%s.epd\"", netname, netname);
     // int e = system(command);
@@ -481,8 +481,8 @@ int main(int argc, char **argv) {
         fprintf(stderr, can_t_open, filename, 'r');
         exit(1);
     }
-    sprintf(filename, "%s.epd", argv[1]);
-    if ((sspfp = fopen(filename, "r")) == NULL) {
+    sprintf(filename, "%s.mpd", argv[1]);
+    if ((sspfp = fopen(filename, "rb")) == NULL) {
         fprintf(stderr, can_t_open, filename, 'r');
         exit(1);
     }
@@ -552,8 +552,8 @@ int main(int argc, char **argv) {
     (void) fclose(sspfp);    sspfp=NULL;
     gauss_seidel();
 
-    sprintf(filename, "%s.mpdh", argv[1]);
-    save_distrib_human();
+    // sprintf(filename, "%s.mpdh", argv[1]);
+    // save_distrib_human();
 
     compute_throughput();
     (void) fclose(altth);    altth=NULL;

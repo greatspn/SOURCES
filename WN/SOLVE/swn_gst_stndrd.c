@@ -158,7 +158,7 @@ static unsigned transient = FALSE;
 
 static char   *can_t_open = "Can't open file %s for %c\n";
 char  netname[1024];
-char  filename[1024];
+char  filename[1024+48];
 
 void init() {
     char cc;
@@ -684,7 +684,7 @@ int main(int argc,
     sprintf(netname, "%s", argv[1]);
     init();
 
-    sprintf(filename, "%s.epd", netname);
+    sprintf(filename, "%s.mpd", netname);
     if ((mpdfp = fopen(filename, "rb")) == NULL) {
         fprintf(stderr, can_t_open, filename, 'r');
         exit(1);
