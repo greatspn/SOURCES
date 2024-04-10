@@ -17,7 +17,7 @@ To install GreatSPN, follow your platform's instructions.
 2. Download and install Ghostscript from the [official repository](https://www.ghostscript.com/releases/gsdnld.html). You have to install the **Postscript and PDF interpreter/renderer**.
 Once installed, check that Ghostscript is properly added to the PATH Environment Variable.
 
-3. Download and install the `.msi` installer from the [GreatSPN binary repository](https://datacloud.di.unito.it/index.php/s/ADL37NdGw7CE7Qd).
+3. Download and install the `.msi` installer from the [GreatSPN binary repository](https://datacloud.di.unito.it/index.php/s/MnWgcYamrHdDXZk).
 
 4. GreatSPN is added to the Windows Start menu.
 
@@ -30,7 +30,7 @@ On **Ubuntu** or other Debian-based distributions, install the following package
 ```
 sudo apt-get install -y graphviz ghostscript
 ```
-Then download the `.deb` package from the [GreatSPN binary repository](https://datacloud.di.unito.it/index.php/s/ADL37NdGw7CE7Qd), and install it using:
+Then download the `.deb` package from the [GreatSPN binary repository](https://datacloud.di.unito.it/index.php/s/MnWgcYamrHdDXZk), and install it using:
 ```
 sudo apt install -y greatspn_3.2_amd64.deb
 ```
@@ -39,7 +39,7 @@ On **Fedora** or other RedHat-based distributions, install the following package
 ```
 sudo dnf -y install graphviz ghostscript
 ```
-Then download the `.rpm` package from the [GreatSPN binary repository](https://datacloud.di.unito.it/index.php/s/ADL37NdGw7CE7Qd), and install it using:
+Then download the `.rpm` package from the [GreatSPN binary repository](https://datacloud.di.unito.it/index.php/s/MnWgcYamrHdDXZk), and install it using:
 ```
 sudo dnf install -y greatspn-3.2.x86_64.rpm
 ```
@@ -50,7 +50,7 @@ You first need to install a minimal set of dependencies using a software like [H
 ```
 brew install graphviz ghostscript 
 ```
-After that, download the `.dmg` package from the [GreatSPN binary repository](https://datacloud.di.unito.it/index.php/s/ADL37NdGw7CE7Qd), open it and drag the GreatSPN application bundle in the Application directory.
+After that, download the `.dmg` package from the [GreatSPN binary repository](https://datacloud.di.unito.it/index.php/s/MnWgcYamrHdDXZk), open it and drag the GreatSPN application bundle in the Application directory.
 GreatSPN will then run directly as a standard macOS application.
 
 If macOS says that the application is damaged and should be deleted, it can be fixed by running this command:
