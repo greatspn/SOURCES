@@ -482,7 +482,7 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 				transition using the value of Enabling */
 /**************************************************************/
 
-    void SystEq::updateFutureEventList(int tran, int prev_fired, double time){
+    void SystEq::updateFutureEventList(int tran, double* Value, int prev_fired, double time){
 
 
     	int number_events = EnabledTransValueDis[tran] - PreviousEnabledTransValueDis[tran];
@@ -499,9 +499,9 @@ inline void SystEqMas::getValTranFire(double* ValuePrv)
 
 #ifdef CGLPK
  //!If CGLPK is defined then the vector of pointers to flux balance problems is passed as input parameter.
-    		double time_event = Trans[tran].FuncT(ValuePrv,vec_fluxb,NumTrans,NumPlaces,NameTrans,Trans,tran,time);
+    		double time_event = Trans[tran].FuncT(Value,vec_fluxb,NumTrans,NumPlaces,NameTrans,Trans,tran,time);
 #else
-    		double time_event = Trans[tran].FuncT(ValuePrv,NumTrans,NumPlaces,NameTrans,Trans,tran,time);
+    		double time_event = Trans[tran].FuncT(Value,NumTrans,NumPlaces,NameTrans,Trans,tran,time);
 #endif 	
     		time_event = time_event + time;
     		Event *event_distribution = new Event(time_event, tran);
@@ -3471,7 +3471,7 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 		//update of future event list
 			for(int t=1;t<size_notExpTran;t++)
 			{
-				updateFutureEventList(SetTranNotExp[t], Tran_previous, time);
+				updateFutureEventList(SetTranNotExp[t], Value, Tran_previous, time);
 				
 			}
 
