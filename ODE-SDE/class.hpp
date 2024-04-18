@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2013 by Marco Beccuti				   *
- *   beccuti@di.unito.it						   *
+ *   Copyright (C) 2013 by Marco Beccuti           *
+ *   beccuti@di.unito.it               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -485,7 +485,7 @@ public:
   virtual void setSizeFutureEventList(int nTrans, int &size_expTran, int &size_notExpTran)=0;
     //!It updates the future event list during the SSA with non exponential general transition using the value of Enabling
   //void updateFutureEventList(int trans);
-  void updateFutureEventList(int tran, int prev_fired, double time);
+  void updateFutureEventList(int tran, double* Value, int prev_fired, double time);
   //! It checks if there is an enable transition which will fire in the current time step.
   int fireEnableTrans(  int SetTran[],double& h);
     //int fireEnableTrans(  set<int>&SetTran,double& h);
