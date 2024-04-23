@@ -6,7 +6,9 @@
 package editor.cli;
 
 import common.UnixPrintWriter;
+import common.Util;
 import editor.Main;
+import static editor.Main.PREF_ROOT_KEY;
 import editor.domain.Node;
 import editor.domain.PageErrorWarning;
 import editor.domain.ProjectData;
@@ -56,6 +58,7 @@ public class UnfoldingCommand {
     public static void toolMain(String[] args) throws Exception {
         Main.useGuiLogWindowForExceptions = false;
         Main.fixedUiSize = Main.UiSize.NORMAL;
+        Util.initApplication(PREF_ROOT_KEY, "/org/unito/mainprefs");
         DummyLatexProvider.initializeProvider();
         long totalStart = System.currentTimeMillis();
         boolean doShuffle = false;

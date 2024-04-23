@@ -4,7 +4,9 @@
  */
 package editor.cli;
 
+import common.Util;
 import editor.Main;
+import static editor.Main.PREF_ROOT_KEY;
 import static editor.cli.Common.loadPage;
 import editor.domain.Node;
 import editor.domain.ProjectData;
@@ -49,6 +51,7 @@ public class CppCommand {
 
     public static boolean toolMain(String[] args) throws Exception {
 
+        Util.initApplication(PREF_ROOT_KEY, "/org/unito/mainprefs");
         // Read command line arguments
         if (args.length < 2) {
             System.out.println("Not enough arguments.");
