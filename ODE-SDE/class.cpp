@@ -246,6 +246,7 @@ SystEqMin::~SystEqMin() {}
 inline void SystEqMin::getValTranFire()
 {
 
+
 	for(int t=0; t<nTrans; t++)
 	{
 		unsigned int size=Trans[t].InPlaces.size();
@@ -300,6 +301,7 @@ SystEqMas::~SystEqMas() {}
 
 inline void SystEqMas::getValTranFire()
 {
+
 	for(int t=0; t<nTrans; t++)
 	{
 		EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
@@ -354,7 +356,6 @@ inline void SystEqMas::getValTranFire()
 
 inline void SystEqMas::getValTranFire(double* ValuePrv)
 {
-
 	for(int t=0; t<nTrans; t++)
 	{
 		EnabledTransValueDis[t]=EnabledTransValueCon[t]=1.0;
@@ -833,7 +834,6 @@ SystEq::~SystEq(){
 			delete[] FinalValueXRun[i];
 		delete[] FinalValueXRun;
 	}
-
 }
 
 /**************************************************************/
@@ -2690,7 +2690,6 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 	iwork1 = iwork2 = iwork5 = iwork6 = iwork7 = iwork8 = iwork9 = 0;
 	rwork1 = rwork5 = rwork6 = rwork7 = 0.0;
 
-
 	this->Max_Run=0;
 	solve = Solve_LSODE;
 	//For statistic
@@ -2720,7 +2719,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 
 #ifdef CGLPK
 		for (unsigned int i=0;i<vec_fluxb.size();++i){
-			outflux[i].open(string(argv)+"-"+to_string(i)+".flux",ofstream::out);
+			outflux[i].open(string(argv)+"-"+vec_fluxb[i].getFilenameWithoutExtension()+".flux",ofstream::out);
 			outflux[i].precision(16);
 			if(!outflux[i]){
 				throw Exception("*****Error opening output file storing FLUXES*****\n\n");
@@ -2748,7 +2747,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 	t=itime;
 
 	y[0]=0.0;
-
+	
 	for (int j=1;j<=nPlaces;j++){
 		y[j]=Value[j-1];
 		if (Info){
@@ -2772,6 +2771,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 #endif
 //		out<<endl;
 	}
+	
 	while(tout<=Max_Time){
 		lsoda(*this,neq, y, &t, tout, itol, rtol, atol, itask, &istate, iopt, jt,
 			iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
@@ -2794,7 +2794,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 #ifdef CGLPK
 			time=tout;
 			getValTranFire(y+1);
-			for (unsigned int i=0;i<vec_fluxb.size();++i){
+			for(unsigned int i=0;i<vec_fluxb.size();++i){
 				outflux[i]<<endl<<tout<<" ";
 				vec_fluxb[i].printObject(outflux[i]);
 				vec_fluxb[i].printValue(outflux[i]);
@@ -2811,9 +2811,11 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 		
 		if (istate <= 0){
 			throw   Exception("*****Error during the integration step*****\n\n");
-
 		}
 	}
+	// @Chiabrando: Sembra che l'ultima chiamata di lsoda non vada a liberare la memoria allocata quindi forzando l'invocazione si risolve il memory leak (tracciato con valgrid)
+	_freevectors();
+	
 	/*
 	lsoda(*this,neq, y, &t, Max_Time, itol, rtol, atol, itask, &istate, iopt, jt,
 					iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,
@@ -3335,6 +3337,7 @@ double SystEq::getComputeTauGillespie(int SetTran[],double t, double hstep){
 void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max_Run,bool Info,double Print_Step,char *argv){
 
 
+
 	this-> Max_Run=Max_Run;
 	FinalValueXRun = new double*[nPlaces];
 	double Mean[nPlaces];
@@ -3345,6 +3348,8 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 	int size_notExpTran = 1;
 	int Tran_previous = -1;
 
+
+	
 	setSizeFutureEventList(nTrans, size_expTran, size_notExpTran);
 
 	//double ValuePrev[nPlaces] {0.0};
@@ -3369,7 +3374,7 @@ void SystEq::SolveSSA(double h,double perc1,double perc2,double Max_Time,int Max
 
 #ifdef CGLPK
 		for (unsigned int i=0;i<vec_fluxb.size();++i){
-			outflux[i].open(string(argv)+to_string(i)+".flux",ofstream::out);
+			outflux[i].open(string(argv)+vec_fluxb[i].getFilenameWithoutExtension()+".flux",ofstream::out);
 			outflux[i].precision(16);
 			if(!outflux[i]){
 				throw Exception("*****Error opening output file storing FLUXES*****\n\n");
@@ -3584,7 +3589,7 @@ void SystEq::SolveTAUG(double Max_Time,int Max_Run,bool Info,double Print_Step,c
 		out<<"Time";
 #ifdef CGLPK
 		for (unsigned int i=0;i<vec_fluxb.size();++i){
-			outflux[i].open(string(argv)+to_string(i)+".flux",ofstream::out);
+			outflux[i].open(string(argv)+vec_fluxb[i].getFilenameWithoutExtension()+".flux",ofstream::out);
 			outflux[i].precision(16);
 			if(!outflux[i]){
 				throw Exception("*****Error opening output file storing FLUXES*****\n\n");

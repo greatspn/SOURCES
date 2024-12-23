@@ -67,7 +67,6 @@ public class CppCommand {
         boolean fluxBalanceFlag = false;
         for (int i=2; i<args.length; i++) {
             if (args[i].equals("-flux")) {
-                // DO something
                 fluxBalanceFlag = true;
                 System.out.println("Enabling flux balance.");
             }
@@ -100,7 +99,7 @@ public class CppCommand {
 
         long saveStart = System.currentTimeMillis();
          // Convert in C++
-        CppFormat.export(cppFile, gspn, fluxBalanceFlag, context, etv.filenames);
+        CppFormat.export(cppFile, gspn, fluxBalanceFlag, context, etv.filenames, etv.rnames, gspn.getPageName());
 
         System.out.println("SAVING TIME: " + (System.currentTimeMillis() - saveStart) / 1000.0);
         return true;
@@ -111,6 +110,7 @@ public class CppCommand {
     static class ExternalTermsVisitor extends ExprLangBaseVisitor<Object> {
 
         final Set<String> filenames = new TreeSet<>();
+        final Set<String> rnames = new TreeSet<>();
 
         @Override
         public Object visitRealExprFromList(ExprLangParser.RealExprFromListContext ctx) {
@@ -124,11 +124,15 @@ public class CppCommand {
             return super.visitRealExprFromTable(ctx);
         }
 
-        @Override
-        public Object visitRealExprFromTimeTable(ExprLangParser.RealExprFromTimeTableContext ctx) {
+        /*@Override
+        public Object visitRealExprFBA(ExprLangParser.RealExprFBAContext ctx) {
             filenames.add(ctx.fname.getText());
-            return super.visitRealExprFromTimeTable(ctx);
-        }
+           	rnames.add(ctx.rname.getText());
+           	
+           	//System.out.println("Aggiungo: " + ctx.rname.getText());
+           	
+            return super.visitRealExprFBA(ctx);
+        } */
 
     }
 

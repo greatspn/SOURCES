@@ -929,7 +929,7 @@ for (pp = 0; pp < npl; pp++)
     out << " cout<<\"\\n=========================== MEM. ===========================\\n\\n\\t\";\n";
     out << " getrusage(who,&usage);\n";
     out << " cout<<\"Total memory used: \"<<usage.ru_maxrss<<\"KB\"<<endl;\n";
-    out << " cout<<\"\\n=========================== TIME ===========================\\n\\n\";\n\n}";
+    out << " cout<<\"\\n=========================== MEM. ===========================\\n\\n\";\n\n}";
 //     return EXIT_SUCCESS;
 //
 //free memory
@@ -1486,7 +1486,7 @@ for (pp = 0; pp < npl; pp++)
     out << " cout<<\"\\n=========================== MEM. ===========================\\n\\n\\t\";\n";
     out << " getrusage(who,&usage);\n";
     out << " cout<<\"Total memory used: \"<<usage.ru_maxrss<<\"KB\"<<endl;\n";
-    out << " cout<<\"\\n=========================== TIME ===========================\\n\\n\";\n\n}";
+    out << " cout<<\"\\n=========================== MEM. ===========================\\n\\n\";\n\n}";
 //     return EXIT_SUCCESS;
 //
 //free memory

@@ -1384,6 +1384,84 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 throw new UnsupportedOperationException();
         }
     }
+    
+		 /**
+		*    @author: Chiabrando
+		*   
+		*   New formula for FBA
+		**/
+
+		@Override
+		public FormattedFormula visitRealExprFBA(ExprLangParser.RealExprFBAContext ctx) {
+
+				String fileName = ctx.STRING_LITERAL(0).getText().replace("\"", "");
+				String reactionName = ctx.STRING_LITERAL(1).getText().replace("\"", "");
+				String multiplicity = (ctx.INT() != null) ? ctx.INT().getText() : "";
+				String bacteriaCountPlaceId = (ctx.STRING_LITERAL(2) != null) ? ctx.STRING_LITERAL(2).getText().replace("\"", "") : "";
+				String bacteriaBiomassPlaceId = (ctx.STRING_LITERAL(3) != null) ? ctx.STRING_LITERAL(3).getText().replace("\"", "") : "";
+				String isBiomass = (ctx.STRING_LITERAL(4) != null) ? ctx.STRING_LITERAL(4).getText().replace("\"", "") : "";
+
+				switch (lang) {
+				    case LATEX:
+							// Escapare underscore per Latex
+							String latexFileName          = fileName.replace("_", "\\_");
+							String latexReactionName      = reactionName.replace("_", "\\_");
+							String latexMultiplicity      = !multiplicity.isEmpty() ? multiplicity : "1";
+							String latexBacteriaCount     = !bacteriaCountPlaceId.isEmpty()
+										                          ? bacteriaCountPlaceId.replace("_", "\\_")
+										                          : "\"N/A\"";
+							String latexBacteriaBiomass   = !bacteriaBiomassPlaceId.isEmpty()
+										                          ? bacteriaBiomassPlaceId.replace("_", "\\_")
+										                          : "\"N/A\"";
+							String latexIsBiomass         = !isBiomass.isEmpty()
+										                          ? isBiomass.replace("_", "\\_")
+										                          : "false";
+
+							return format(
+									true,
+									"\\mathbf{FBA}[",
+									latexFileName, ",",
+									latexReactionName, ",",
+									latexMultiplicity, ",",
+									latexBacteriaCount, ",",
+									latexBacteriaBiomass, ",",
+									latexIsBiomass,
+									"]"
+							);
+
+				    case PNPRO:
+				        String pnproMultiplicity = !multiplicity.isEmpty() ? multiplicity : "1";
+				        String pnproBacteriaCount = !bacteriaCountPlaceId.isEmpty() ? bacteriaCountPlaceId : "\"N/A\"";
+				        String pnproBacteriaBiomass = !bacteriaBiomassPlaceId.isEmpty() ? bacteriaBiomassPlaceId : "\"N/A\"";;
+				        String pnproIsBiomass = !isBiomass.isEmpty() ? isBiomass : "false";
+				        return format(true, "\\mathbf{FBA}[", fileName, ",", reactionName, ",", pnproMultiplicity, "," , pnproBacteriaCount, "," , pnproBacteriaBiomass, ",", pnproIsBiomass, "]");
+				        /* Clean Visualization
+				      	return format(true, "\\mathbf{FBA}[", fileName, ",", reactionName, "]");*/
+
+				    case GREATSPN:
+				        String greatspnMultiplicity = !multiplicity.isEmpty() ? multiplicity : "1";
+				        String greatspnBacteriaCount = !bacteriaCountPlaceId.isEmpty() ? bacteriaCountPlaceId : "\"N/A\"";
+				        String greatspnBacteriaBiomass = !bacteriaBiomassPlaceId.isEmpty() ? bacteriaBiomassPlaceId : "\"N/A\"";
+				        String greatspnIsBiomass = !isBiomass.isEmpty() ? isBiomass : "false";		        
+				        return format(true, "\\mathbf{FBA}[", fileName, ",", reactionName, ",", greatspnMultiplicity, "," , greatspnBacteriaCount, "," , greatspnBacteriaBiomass, ",", greatspnIsBiomass, "]");
+				        /* Clean Visualization
+									 return format(true, "\\mathbf{FBA}[", fileName, ",", reactionName, "]");*/
+				    case CPP:
+
+				        String argumentsDefined;
+				        if (context.cppForFluxBalance) {
+				            argumentsDefined = "Value, vec_fluxb, NumTrans, NumPlaces, NameTrans, Trans, T, time";
+				        } else {
+				            argumentsDefined = "Value, NumTrans, NumPlaces, NameTrans, Trans, T, time";
+				        }
+
+				        return format(true, "FBAProcessor::getInstance().process", "(", argumentsDefined, ")");
+				    default:
+				        throw new UnsupportedOperationException();
+				}
+		}
+		
+		
 
     @Override
     public FormattedFormula visitIntOrRealListEmptyList(ExprLangParser.IntOrRealListEmptyListContext ctx) {
