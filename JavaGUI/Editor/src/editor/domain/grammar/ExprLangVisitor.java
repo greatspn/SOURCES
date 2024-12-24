@@ -1,4 +1,4 @@
-// Generated from JavaGUI/Editor/src/editor/domain/grammar/ExprLang.g4 by ANTLR 4.2.1
+// Generated from ExprLang.g4 by ANTLR 4.2.1
 package editor.domain.grammar;
 
 import editor.domain.*;
@@ -56,6 +56,13 @@ public interface ExprLangVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitIntExprConst(@NotNull ExprLangParser.IntExprConstContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link ExprLangParser#RealExprFBA}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRealExprFBA(@NotNull ExprLangParser.RealExprFBAContext ctx);
 
 	/**
 	 * Visit a parse tree produced by {@link ExprLangParser#binaryIntFn}.
