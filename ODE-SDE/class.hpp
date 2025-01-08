@@ -71,6 +71,7 @@
 #ifndef __MAP_H__
 #define __MAP_H__
 #include <map>
+#include <functional>
 #include <unordered_map>
 #endif
 

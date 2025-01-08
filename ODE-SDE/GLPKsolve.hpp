@@ -15,6 +15,7 @@
 
 #ifndef __UNORDERED_MAP__
     #define __UNORDERED_MAP__
+    #include<map>
     #include <unordered_map>
 #endif
 
@@ -62,6 +63,13 @@ namespace FBGLPK {
          */
         std::string what() const { return mess; }
     };
+    
+
+		struct SparseEntry {
+				int row;
+				int col;
+				double val;
+		};
 
     /**
      * @brief Class representing a linear programming problem using GLPK.
@@ -85,7 +93,14 @@ namespace FBGLPK {
         string filename {""}; //!< Filename of the LP problem
         unordered_map<string, unsigned int> ReactionsNamesId; //!< Mapping of reaction names to numeric IDs
         vector<string> ReactionsNamesOrd; //!< Ordered list of reaction names
-				std::unordered_map<string, unsigned int> InternalReactions; //!< Stores names and indices of internal reactions, excluding 'EX' and 'sink' reactions  //!< Stores names of internal reactions, excluding 'EX' and 'sink' reactions
+        
+        // Maps to keep track of the Gene / Non-gene associated reactions
+				map<std::string, unsigned int> GeneAssocReactions;
+				map<std::string, unsigned int> NonGeneAssocReactions;
+				std::map<std::string, unsigned int> GeneAssocReactionsSplitted;
+				std::map<std::string, unsigned int> NonGeneAssocReactionsSplitted;
+
+				//std::unordered_map<string, unsigned int> InternalReactions; //!< Stores names and indices of internal reactions, excluding 'EX' and 'sink' reactions  //!< Stores names of internal reactions, excluding 'EX' and 'sink' reactions
 
         ifstream in_var; //!< Input stream for variability data
         ofstream out_var; //!< Output stream for variability results
@@ -98,13 +113,6 @@ namespace FBGLPK {
         double bioMin {-1}; // Minimum biomass, default to -1 if unspecified
         double bioMean {-1}; // Average biomass, default to -1 if unspecified
         
-        // Simulation Bactirium rates parameters
-        
-        double starvRate {1}; // Starvation Rate , default to 1 if unspecified
-        double dupRate {1}; // Duplication Rate, default to 1 if unspecified
-        double halfLife {1}; // Half Life of the bactirium, default to 1 if unspecified
-        
-
         //! Helper function to set the type of bounds based on string input
         int setTypeBound(string typeString);
 
@@ -117,9 +125,41 @@ namespace FBGLPK {
                 type=GLP_MIN;
             return type;
         }
+        
+				// Per i bound delle colonne (reazioni):
+				std::vector<std::string> tmpReactions;   // dimensione = sizeCol
+				std::vector<int>         tmpBoundType;   // dimensione = sizeCol
+				std::vector<double>      tmpLb;          // dimensione = sizeCol
+				std::vector<double>      tmpUb;          // dimensione = sizeCol
+
+				// Per i bound delle righe (vincoli)
+				std::vector<int>         tmpRowBoundType; // dimensione = sizeRow
+				std::vector<double>      tmpRowLb;        // dimensione = sizeRow
+				std::vector<double>      tmpRowUb;        // dimensione = sizeRow
+				std::vector<double> 		 tmpObjCoeff;
+				std::vector<int> 				 mapFwd;
+				std::vector<int> 			   mapRev;
+				unsigned int 						 sizeColBeforeSplitting; 
+
+				// Per la matrice sparsa
+				std::vector<SparseEntry> tmpMatrix; // dimensione = sizeVet
+
+				// Flag per evitare di richiamare più volte la procedura di splitting
+				bool dataCollected = false;
+				
+				
+				// 1) forwardReactions: reazioni _f (splitted)
+				std::map<std::string,unsigned int> forwardReactions;
+				// 2) reverseReactions: reazioni _r (splitted)
+				std::map<std::string,unsigned int> reverseReactions;
+				// 3) irreversibileReactions: reazioni non splitted
+				std::map<std::string,unsigned int> irreversibileReactions;
 
         //! Parses flux names from input file
         void parseFluxNames(ifstream& in, general::Parser& parser, const char* delimC);
+        
+         //! Parses gene associated reactions and non-associated reactions
+        void parseGeneAssocLine(ifstream& in, general::Parser& parser, const char* delimC);
 
         //! Parses model dimensions and type from input file
         void parseModelDimensionsAndType(ifstream& in, general::Parser& parser, const char* delimC, unsigned int& sizeRow, unsigned int& sizeCol, int& typeOBJ, int variability);
@@ -129,13 +169,10 @@ namespace FBGLPK {
         
         //! Parses BioMax and BioMean values from input file
         void parseBiomassValues(ifstream& in, general::Parser& parser, const char* delimC);
-        
-        //! Parses Starvation rate, duplication rate, half life values from input file
-        void parseSimulationRateValues(ifstream& in, general::Parser& parser, const char* delimC);
 
         //! Parses objective coefficients from input file
-        void parseObjectiveCoefficients(ifstream& in, general::Parser& parser, const char* delimC, int setDefaultCoefficients, int variability, unsigned int flux_var, string* var_obj_eq);
-
+        //void parseObjectiveCoefficients(ifstream& in, general::Parser& parser, const char* delimC, int setDefaultCoefficients, int variability, unsigned int flux_var, string* var_obj_eq);
+        void parseObjectiveCoefficients(ifstream& in, general::Parser& parser, const char* delimC);
         //! Sets row bounds from input data
         void setRowBounds(ifstream& in, general::Parser& parser, const char* delimC);
 
@@ -156,7 +193,13 @@ namespace FBGLPK {
 
         //! Adds a row for handling variability in the objective
         void addVariabilityRow(const string& var_obj_eq, general::Parser& parser, const char* delimC, unsigned int& sizeVet);
-
+        
+				// =================
+				// Metodo che creerà col/row su GLPK DOPO lo splitting
+				// =================
+				void finalizeLPAndSplit(const char* fileProb, int typeOBJ);
+				void debugPrintGLPKProblem(const char* fileProb);
+				void debugPrintMatrix();
     public:
     
     		// Default constructor
@@ -166,17 +209,19 @@ namespace FBGLPK {
 				LPprob(const LPprob&) = delete;
 				LPprob& operator=(const LPprob&) = delete;
 
-						// Move constructor
 				// Move constructor
 				LPprob(LPprob&& other) noexcept 
 						: lp(other.lp), ia(other.ia), ja(other.ja), ar(other.ar), Value(other.Value),
 							sizeCol(other.sizeCol), sizeRow(other.sizeRow), sizeVet(other.sizeVet),
 							solved(other.solved), filename(std::move(other.filename)),
-							ReactionsNamesId(std::move(other.ReactionsNamesId)), ReactionsNamesOrd(std::move(other.ReactionsNamesOrd)), InternalReactions(std::move(other.InternalReactions)),
+							ReactionsNamesId(std::move(other.ReactionsNamesId)), ReactionsNamesOrd(std::move(other.ReactionsNamesOrd)), /*InternalReactions(std::move(other.InternalReactions)),*/
+							GeneAssocReactions(std::move(other.GeneAssocReactions)),
+							NonGeneAssocReactions(std::move(other.NonGeneAssocReactions)),
+							GeneAssocReactionsSplitted(std::move(other.GeneAssocReactionsSplitted)),
+							NonGeneAssocReactionsSplitted(std::move(other.NonGeneAssocReactionsSplitted)),
 							in_var(std::move(other.in_var)), out_var(std::move(other.out_var)),
 							flux_var(other.flux_var), pFBA_index(other.pFBA_index), gamma(other.gamma),
-							bioMax(other.bioMax), bioMin(other.bioMin), bioMean(other.bioMean),
-							starvRate(other.starvRate), dupRate(other.dupRate), halfLife(other.halfLife) {
+							bioMax(other.bioMax), bioMin(other.bioMin), bioMean(other.bioMean) {
 
 						// Nullify the moved-from object to prevent double freeing
 						other.lp = nullptr;
@@ -213,7 +258,11 @@ namespace FBGLPK {
 								filename = std::move(other.filename);
 								ReactionsNamesId = std::move(other.ReactionsNamesId);
 								ReactionsNamesOrd = std::move(other.ReactionsNamesOrd);
-								InternalReactions = std::move(other.InternalReactions);
+			//				InternalReactions = std::move(other.InternalReactions);
+								GeneAssocReactions = std::move(other.GeneAssocReactions);
+								NonGeneAssocReactions = std::move(other.NonGeneAssocReactions);
+								GeneAssocReactionsSplitted = std::move(other.GeneAssocReactionsSplitted);
+								NonGeneAssocReactionsSplitted = std::move(other.NonGeneAssocReactionsSplitted);
 								in_var = std::move(other.in_var);
 								out_var = std::move(other.out_var);
 								flux_var = other.flux_var;
@@ -222,9 +271,6 @@ namespace FBGLPK {
 								bioMax = other.bioMax;
 								bioMin = other.bioMin;
 								bioMean = other.bioMean;
-								starvRate = other.starvRate;
-								dupRate = other.dupRate;
-								halfLife = other.halfLife;
 
 								// Nullify other’s pointers
 								other.lp = nullptr;
@@ -235,7 +281,6 @@ namespace FBGLPK {
 						}
 						return *this;
 				}
-
 
 				// Additional constructors
 				LPprob(const char * FileProb);
@@ -307,12 +352,22 @@ namespace FBGLPK {
         //! Returns the solution values for variables
         inline double* getVariables(){
             if (!solved) solve();
-            for (unsigned int i=1;i<=sizeCol;++i){
-            Value[i]= glp_get_col_prim(lp, i);
-            }
-            return Value;
-        };
+				   // std::cout << "Flussi delle Reazioni:" << std::endl;
+					//	std::cout << "----------------------" << std::endl;
 
+						for (unsigned int i = 1; i <= sizeCol; ++i){
+								Value[i] = glp_get_col_prim(lp, i);
+								/*
+								if (i-1 < ReactionsNamesOrd.size()) {
+										std::cout << ReactionsNamesOrd[i-1] << " : " << Value[i] << std::endl;
+								} else {
+										std::cout << "Reazione " << i << " : " << Value[i] << " (Nome non disponibile)" << std::endl;
+								}*/
+						}
+						//std::cout << "----------------------" << std::endl;
+						return Value;
+        };
+        
         //! Returns the lower bound for a specified variable
         inline double getLwBounds(int indexR){
 						double LB = glp_get_col_lb(lp, indexR);
@@ -435,30 +490,6 @@ namespace FBGLPK {
 				    return bioMin;
 				}
 				
-				/**
-				 * @brief Gets the starvation rate value.
-				 * @return Starvation rate as a double.
-				 */
-				double getStarvRate() const {
-				    return starvRate;
-				}
-
-				/**
-				 * @brief Gets the duplication rate value.
-				 * @return Duplication rate as a double.
-				 */
-				double getDupRate() const {
-				    return dupRate;
-				}
-				
-				/**
-				 * @brief Gets the half life value of the bactirium.
-				 * @return Half life as double
-				 */
-				double getHalfLife() const {
-				    return halfLife;
-				}				
-				
 				std::string getFilenameWithoutExtension() const {
 				    size_t lastDot = filename.rfind('.');  // Find the last occurrence of a dot in the filename
 				    
@@ -512,15 +543,18 @@ namespace FBGLPK {
 				
 				void printInitialFluxForReaction(const string& reactionName) {
 					int reactionId = fromNametoid(reactionName);
-						if (reactionId != -1) {
-								double* variables = getVariables();
-								cout << "Initial flux value for " << reactionName << " : " << variables[reactionId] << endl;
-						} else {
-								cout << "Reaction " << reactionName << " not found in the problem." << endl;
+						if(reactionId != -1){
+							double* variables = getVariables();
+							cout << "Initial flux value for " << reactionName << " : " << variables[reactionId] << endl;
+						}else{
+							cout << "Reaction " << reactionName << " not found in the problem." << endl;
 						}
 				}
+				
+				
+				
 
-				// Parsimonious Flux Balance Analysis Support Functions:
+				// Parsimonious Flux Balance Analysis (PFBA) Support Functions:
 				
 				// Method to set optimization mode to maximization
 				void setMaximizeMode() {
@@ -533,24 +567,101 @@ namespace FBGLPK {
 				    glp_set_obj_dir(lp, GLP_MIN);
 				//    cout << "Objective mode set to minimize." << endl;
 				}
+		  	
+				/**
+				 * @brief Sets the objective coefficients to minimize fluxes,
+				 *        depending on the geneOption:
+				 *        0 = penalizes all reactions,
+				 *        1 = penalizes only gene-associated reactions,
+				 *        2 = penalizes only non-gene-associated reactions.
+				 *
+				 * @param biomassIndex The index of the biomass reaction, which is excluded from penalization.
+				 * @param geneOption   0, 1, or 2 as in the COBRA Toolbox.
+				 */
 
-		  	// Method to set the objective to minimize internal fluxes only
-				void setMinimizeInternalFluxObjective(int biomassIndex) {
-						// Reset all coefficients to zero
-						for (int i = 1; i <= glp_get_num_cols(lp); ++i) {
-								glp_set_obj_coef(lp, i, 0);
+				void setMinimizeFluxObjective(int biomassIndex, int geneOption) {
+					std::cout << "[DEBUG setMinimizeFluxObjective] geneOption = " << geneOption 
+						        << ", biomassIndex = " << biomassIndex << std::endl;
+
+					// Azzera tutti i coefficienti
+					int numCols = glp_get_num_cols(lp);
+					for (int col = 1; col <= numCols; ++col) {
+						  glp_set_obj_coef(lp, col, 0.0);
+					}
+
+					// Per contare quante colonne penalizziamo
+					int countObjCol = 0;
+
+					// Stampo per debug la dimensione delle map
+					std::cout << "    [DEBUG] GeneAssocReactionsSplitted.size() = " 
+						        << GeneAssocReactionsSplitted.size() << std::endl;
+					std::cout << "    [DEBUG] NonGeneAssocReactionsSplitted.size() = " 
+						        << NonGeneAssocReactionsSplitted.size() << std::endl;
+
+					switch(geneOption) {
+						  case 0:
+						      std::cout << "    Minimizzo TUTTE le reazioni (tranne biomassa)!" << std::endl;
+						      for (int c = 1; c <= numCols; c++) {
+						          if (c != biomassIndex) {
+						              glp_set_obj_coef(lp, c, 1.0);
+						              countObjCol++;
+						          }
+						      }
+						      break;
+
+						  case 1:
+						      std::cout << "    Minimizzo SOLO reazioni gene-associated." << std::endl;
+						      for (auto &kv : GeneAssocReactionsSplitted){
+						          unsigned int col = kv.second;
+						          if ((int)col != biomassIndex) {
+						              glp_set_obj_coef(lp, col, 1.0);
+						              countObjCol++;
+						          }
+						      }
+						      break;
+
+						  case 2:
+						      std::cout << "    Minimizzo SOLO reazioni NON-gene-associated." << std::endl;
+						      for(auto &kv : NonGeneAssocReactionsSplitted){
+						          unsigned int col = kv.second;
+						          if((int)col != biomassIndex){
+						            glp_set_obj_coef(lp, col, 1.0);
+						          	countObjCol++;
+						          }
+						      }
+						      break;
+
+						  default:
+						      std::cout << "    geneOption non riconosciuto, fallback = 0 (TUTTO)" << std::endl;
+						      for (int c = 1; c <= numCols; c++) {
+						          if (c != biomassIndex) {
+						              glp_set_obj_coef(lp, c, 1.0);
+						              countObjCol++;
+						          }
+						      }
+						      break;
+					}
+
+					// Debug: quante reazioni effettivamente penalizzate?
+					std::cout << "    [DEBUG] Reazioni (colonne) con coefficiente=1: " << countObjCol << std::endl;
+
+					// Ora settiamo la minimizzazione
+					glp_set_obj_dir(lp, GLP_MIN);
+					std::cout << "    [DEBUG] Obiettivo impostato a MINIMIZE" << std::endl;
+					
+						int numCols2 = glp_get_num_cols(lp);
+						double sumFluxes = 0.0;
+						for (int col = 1; col <= numCols2; ++col) {
+								double fluxVal = glp_get_col_prim(lp, col);
+								sumFluxes += fluxVal;
 						}
-						// Iterate through the internal reactions and set objective coefficients
-						for (const std::pair<const std::string, unsigned int>& reaction : InternalReactions) {
-								unsigned int index = reaction.second;
-								
-								if (index != static_cast<unsigned int>(biomassIndex)) { 
-								    glp_set_obj_coef(lp, index, 1); // Minimize internal fluxes only
-								}
-						}
-						setMinimizeMode();
-					 // cout << "Objective set to minimize only internal fluxes, excluding biomass and EX reactions." << endl;
-				}
+						std::cout << "[DEBUG pFBA SUPER SOMMA FLUSSI]"
+								      << ",  sum(|fluxes|) = " << sumFluxes
+								      << std::endl;
+			}
+
+
+					
 
 				// Method to reset the biomass objective after pFBA
 				void setBiomassObjective(int biomassIndex) {
@@ -584,7 +695,30 @@ namespace FBGLPK {
 				void removeConstraint(int index, int originalType, double originalLb, double originalUb) {
 						// Set the bounds back to their original state, using the saved constraint type and bounds
 						glp_set_col_bnds(lp, index, originalType, originalLb, originalUb);
-					//	cout << "Restored constraint on variable " << index << " with bounds [" << originalLb << ", " << originalUb << "]" << endl;
+				}
+								
+				inline void debugPFBA() {
+						// Assicuriamoci che il problema sia stato risolto.
+						if (!solved) {
+								solve();
+						}
+
+						// 1) Leggiamo l'obiettivo restituito da GLPK (che, in pFBA, è la somma dei flussi penalizzati)
+						double pfbaObjective = glp_get_obj_val(lp);
+
+						// 2) Calcoliamo a mano la somma dei valori assoluti dei flussi
+						int numCols = glp_get_num_cols(lp);
+						double sumFluxes = 0.0;
+						for (int col = 1; col <= numCols; ++col) {
+								double fluxVal = glp_get_col_prim(lp, col);
+								sumFluxes += fluxVal;
+						}
+
+						// 3) Stampiamo a video per confrontare
+						std::cout << "[DEBUG pFBA] objective_value (GLPK) = " << pfbaObjective
+								      << ",  sum(|fluxes|) = " << sumFluxes
+								      << ",  difference = " << (pfbaObjective - sumFluxes)
+								      << std::endl;
 				}
 
 				// Destructor:
@@ -613,8 +747,6 @@ namespace FBGLPK {
 								Value = nullptr;
 						}
 				}
-
-
     };
 }
 

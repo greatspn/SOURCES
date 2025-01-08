@@ -57,11 +57,58 @@ namespace FBGLPK{
         ReactionsNamesId[reactionName] = i + 1;
         ReactionsNamesOrd.push_back(reactionName);
 
-        if (reactionName.rfind("EX_", 0) != 0 && reactionName.rfind("sink_", 0) != 0) {
-            InternalReactions[reactionName] = i + 1;  // Add to InternalReactions map
-        }
+        //if (reactionName.rfind("EX_", 0) != 0 && reactionName.rfind("sink_", 0) != 0) {
+        //    InternalReactions[reactionName] = i + 1;  // Add to InternalReactions map
+        //}
 		  }
 	}
+	
+	
+	void LPprob::parseGeneAssocLine(std::ifstream& in, general::Parser& parser, const char* delimC){
+		  std::string buffer;
+		  // Prova a leggere la riga che contiene i flag di gene assoc (0/1)
+		  if(!std::getline(in, buffer)){
+		  	throw Exception("FLUX BALANCE: Failed to read gene-association line.");
+		  }
+
+		  // Esegui il parsing
+		  parser.update(delimC, buffer);
+
+		  // Deve avere la stessa dimensione di ReactionsNamesOrd
+		  if(parser.size() != ReactionsNamesOrd.size()){
+		  	throw Exception("FLUX BALANCE: gene-association flags do not match the number of reactions.");
+		  }
+
+		  // Scorri tutti i flag e assegna alle mappe
+		  for(unsigned int i = 0; i < parser.size(); ++i){
+		  	int flag = std::stoi(parser.get(i));  // 0 o 1
+		    const std::string& rxnName = ReactionsNamesOrd[i];
+
+		    if(flag == 1){
+		    	// Se gene-associated
+		      GeneAssocReactions[rxnName] = i+1;
+		    }else{
+		      // Se non gene-associated
+		      NonGeneAssocReactions[rxnName] = i+1;
+		    }
+		  }
+		  
+		// Debug Gene/Non Gene Reactions:
+		/*
+    std::cout << "=== Gene-Associated Reactions ===" << std::endl;
+    for (const auto& kv : GeneAssocReactions) {
+        // kv.first  è il nome della reazione
+        // kv.second è l’indice corrispondente (es. colonna in GLPK)
+        std::cout << kv.first  << std::endl;
+    }
+    
+    std::cout << "=== Non-Gene-Associated Reactions ===" << std::endl;
+    for (const auto& kv : NonGeneAssocReactions) {
+        std::cout <<  kv.first << std::endl;
+    }
+    */
+	}
+
 
 
 	/**
@@ -119,6 +166,8 @@ namespace FBGLPK{
 	 *
 	 * @throws Exception If unable to read the line or if the number of parsed coefficients does not match the expected number.
 	 */
+	 
+	/* ORIGINAL
 	void LPprob::parseObjectiveCoefficients(std::ifstream& in, general::Parser& parser, const char* delimC, 
 		                                      int setDefaultCoefficients, int variability, 
 		                                      unsigned int flux_var, std::string* var_obj_eq) {
@@ -147,6 +196,30 @@ namespace FBGLPK{
 		      }
 		  }
 	}
+	
+	*/
+
+void LPprob::parseObjectiveCoefficients(std::ifstream& in, general::Parser& parser, const char* delimC) {
+    std::string buffer;
+    if (!std::getline(in, buffer)) {
+        throw Exception("FLUX BALANCE: Failed to read objective coefficients.");
+    }
+    parser.update(delimC, buffer);
+    if (parser.size() != sizeCol) {
+        throw Exception("FLUX BALANCE: Incorrect number of objective coefficients.");
+    }
+
+    tmpObjCoeff.resize(sizeCol);
+
+    for (unsigned int i = 0; i < sizeCol; ++i) {
+        float val = std::stof(parser.get(i));
+        tmpObjCoeff[i] = val;
+        if (val == 1.0f) {
+            pFBA_index = i+1; // 1-based
+        }
+    }
+}
+
 
 	/**
 	 * @brief Sets the bounds for each row (constraint) in the linear programming problem.
@@ -164,6 +237,7 @@ namespace FBGLPK{
 	 *
 	 */
 	 
+	/* ORIGINAL
 	void LPprob::setRowBounds(std::ifstream& in, general::Parser& parser, const char* delimC) {
 		  std::string buffer;
 		  for (unsigned int i = 0; i < sizeRow && std::getline(in, buffer); ++i) {
@@ -174,6 +248,27 @@ namespace FBGLPK{
 		      glp_set_row_bnds(lp, i + 1, setTypeBound(parser.get(0)), std::atof(parser.get(1).c_str()), std::atof(parser.get(2).c_str()));
 		  }
 	}
+	*/
+	
+	void LPprob::setRowBounds(std::ifstream& in, general::Parser& parser, const char* delimC) {
+		  // Allochiamo i vector in base a sizeRow (già noto)
+		  tmpRowBoundType.resize(sizeRow);
+		  tmpRowLb.resize(sizeRow);
+		  tmpRowUb.resize(sizeRow);
+
+		  std::string buffer;
+		  for (unsigned int i = 0; i < sizeRow && std::getline(in, buffer); ++i) {
+		      parser.update(delimC, buffer);
+		      if (parser.size() != 3) {
+		          throw Exception("FLUX BALANCE: Incorrect row bounds format.");
+		      }
+
+		      tmpRowBoundType[i] = setTypeBound(parser.get(0));     
+		      tmpRowLb[i]        = std::atof(parser.get(1).c_str());
+		      tmpRowUb[i]        = std::atof(parser.get(2).c_str());
+		  }
+	}
+
 
 
 	/**
@@ -192,6 +287,8 @@ namespace FBGLPK{
 	 * @throws Exception If any line does not contain exactly three parts or fails to meet format expectations.
 	 *
 	 */
+	 
+	/* ORIGINAL
 	void LPprob::setColumnBounds(std::ifstream& in, general::Parser& parser, const char* delimC) {
 		  std::string buffer;
 		  for (unsigned int i = 0; i < sizeCol && std::getline(in, buffer); ++i) {
@@ -203,11 +300,37 @@ namespace FBGLPK{
 		      double ub = std::atof(parser.get(2).c_str());
 		      if (parser.get(0) == "GLP_DB" && lb == ub) {
 		          glp_set_col_bnds(lp, i + 1, GLP_FX, lb, lb);
-		      } else {
+		      }else{
 		          glp_set_col_bnds(lp, i + 1, setTypeBound(parser.get(0)), lb, ub);
 		      }
 		  }
-	}
+	}*/
+	
+void LPprob::setColumnBounds(std::ifstream& in, general::Parser& parser, const char* delimC) {
+    // Allochiamo i vector in base a sizeCol (già noto)
+    tmpReactions.resize(sizeCol);   
+    tmpBoundType.resize(sizeCol);
+    tmpLb.resize(sizeCol);
+    tmpUb.resize(sizeCol);
+
+    std::string buffer;
+    for (unsigned int i = 0; i < sizeCol && std::getline(in, buffer); ++i) {
+        parser.update(delimC, buffer);
+        if (parser.size() != 3) {
+            throw Exception("FLUX BALANCE: Incorrect column bounds format.");
+        }
+        double lb = std::atof(parser.get(1).c_str());
+        double ub = std::atof(parser.get(2).c_str());
+
+        tmpBoundType[i] = setTypeBound(parser.get(0));
+        tmpLb[i]        = lb;
+        tmpUb[i]        = ub;
+
+        // Copiamo il nome della reazione corrispondente (assumendo che ReactionsNamesOrd sia già pieno)
+        tmpReactions[i] = ReactionsNamesOrd[i];
+    }
+}
+
 
 	/**
 	 * @brief Sets the sparse matrix coefficients for the linear programming problem.
@@ -225,6 +348,8 @@ namespace FBGLPK{
 	 * @throws Exception If any line does not contain exactly three parts or fails to meet format expectations.
 	 *
 	 */
+	 
+	/* ORIGINAL
 	void LPprob::setSparseMatrix(std::ifstream& in, general::Parser& parser, const char* delimC) {
 		  std::string buffer;
 		  for (unsigned int i = 0; i < sizeVet && std::getline(in, buffer); ++i) {
@@ -236,8 +361,28 @@ namespace FBGLPK{
 		      ja[i + 1] = std::atoi(parser.get(1).c_str());
 		      ar[i + 1] = std::atof(parser.get(2).c_str());
 		  }
-	}
+	}*/
 	
+		void LPprob::setSparseMatrix(std::ifstream& in, general::Parser& parser, const char* delimC) {
+				// Puliamo il vettore e lo prepariamo a contenere sizeVet elementi
+				tmpMatrix.clear();
+				tmpMatrix.reserve(sizeVet);
+
+				std::string buffer;
+				for (unsigned int i = 0; i < sizeVet && std::getline(in, buffer); ++i) {
+				    parser.update(delimC, buffer);
+				    if (parser.size() != 3) {
+				        throw Exception("FLUX BALANCE: Incorrect matrix format.");
+				    }
+				    SparseEntry se;
+				    se.row = std::atoi(parser.get(0).c_str());
+				    se.col = std::atoi(parser.get(1).c_str());
+				    se.val = std::atof(parser.get(2).c_str());
+
+				    tmpMatrix.push_back(se);
+				}
+		}
+
 	
 	/**
 	 * @brief Parses the maximum and average biomass values directly from an input stream and stores them in class attributes.
@@ -292,60 +437,6 @@ namespace FBGLPK{
 				    bioMin = std::stod(parser.get(0));
 				} catch (const std::invalid_argument& ia) {
 				    throw Exception("FLUX BALANCE: Invalid BioMean value format.");
-				}
-		}
-
-	/**
-	 * @brief Parses the starvation rate, duplication rate and half life values directly from an input stream and stores them in class attributes.
-	 * 
-	 *
-	 * @param in Reference to an input file stream from which the simulation rate values are read.
-	 * 
-	 * @throws Exception If either of the simulation rate lines cannot be read or if the values are not properly formatted.
-	 */
-		void LPprob::parseSimulationRateValues(std::ifstream& in, general::Parser& parser, const char* delimC) {
-				std::string buffer;
-
-				// Parse the BioMax value
-				if (!std::getline(in, buffer)) {
-				    throw Exception("FLUX BALANCE: Failed to read Starvation Rate value.");
-				}
-				parser.update(delimC, buffer);
-				if (parser.size() < 1) {
-				    throw Exception("FLUX BALANCE: No valid Starvation Rate value found.");
-				}
-				try {
-				    starvRate = std::stod(parser.get(0));
-				} catch (const std::invalid_argument& ia) {
-				    throw Exception("FLUX BALANCE: Invalid Starvation Rate value format.");
-				}
-
-				// Parse the BioMean value
-				if (!std::getline(in, buffer)) {
-				    throw Exception("FLUX BALANCE: Failed to read Duplication Rate value.");
-				}
-				parser.update(delimC, buffer);
-				if (parser.size() < 1) {
-				    throw Exception("FLUX BALANCE: No valid Duplication Rate value found.");
-				}
-				try {
-				    dupRate = std::stod(parser.get(0));
-				} catch (const std::invalid_argument& ia) {
-				    throw Exception("FLUX BALANCE: Invalid Duplication Rate value format.");
-				}
-				
-				// Parse the BioMean value
-				if (!std::getline(in, buffer)) {
-				    throw Exception("FLUX BALANCE: Failed to read Half Life value.");
-				}
-				parser.update(delimC, buffer);
-				if (parser.size() < 1) {
-				    throw Exception("FLUX BALANCE: No valid Half Life found.");
-				}
-				try {
-				    halfLife = std::stod(parser.get(0));
-				} catch (const std::invalid_argument& ia) {
-				    throw Exception("FLUX BALANCE: Invalid Half Life value format.");
 				}
 		}
 
@@ -505,7 +596,6 @@ namespace FBGLPK{
 		      if (!in) {
 		          throw Exception("FLUX BALANCE: error opening input file:" + string(fileProb));
 		      }
-			cout << "init problem in classical --->  " << fileProb << endl;
 		      initializeLP(fileProb);
 
 		      general::Parser parser;
@@ -513,10 +603,10 @@ namespace FBGLPK{
 		      int typeOBJ;
 
 		      parseFluxNames(in, parser, delimC);
+		      parseGeneAssocLine(in, parser, delimC);
 		      parseModelDimensionsAndType(in, parser, delimC, sizeRow, sizeCol, typeOBJ, 0);
 		      parseSizeVet(in, parser, delimC, sizeVet);
 		      parseBiomassValues(in, parser, delimC);
-		      parseSimulationRateValues(in, parser, delimC);
 
 		      allocateMemory(sizeVet);
 
@@ -524,7 +614,7 @@ namespace FBGLPK{
 		      glp_add_rows(lp, sizeRow);
 		      glp_add_cols(lp, sizeCol);
 
-		      parseObjectiveCoefficients(in, parser, delimC, 1, 0, 0, nullptr);
+		      parseObjectiveCoefficients(in, parser, delimC);//, 1, 0, 0, nullptr);
 		      setRowBounds(in, parser, delimC);
 		      setColumnBounds(in, parser, delimC);
 		      setSparseMatrix(in, parser, delimC);
@@ -537,7 +627,8 @@ namespace FBGLPK{
 		  }
 	}
 	
-
+	
+	// TODO: Adapt for the splitted problem version
 	LPprob::LPprob(const char* FileProb, const char* FileInVar, const char* FileOutVar, int typeOBJ, const char* FluxName, const int gamma) {
 		  // Creating LP problem
 			cout << "init problem in update --->  " << FileProb << endl;
@@ -598,6 +689,8 @@ namespace FBGLPK{
 	 *   lp.updateLP("path/to/problem.txt", 1, GLP_MAX, "targetFlux");
 	 * @endcode
 	 */
+	 
+	/* Original
 	void LPprob::updateLP(const char* fileProb, int variability, int typeOBJ, const char* FluxName) {
 		  try {
 		      string var_obj_eq = "";
@@ -611,10 +704,10 @@ namespace FBGLPK{
 		      char delimC[] = "\t, ;\"";
 
 		      parseFluxNames(in, parser, delimC);
+		      parseGeneAssocLine(in, parser, delimC);		      
 		      parseModelDimensionsAndType(in, parser, delimC, sizeRow, sizeCol, typeOBJ, variability);
 		      parseSizeVet(in, parser, delimC, sizeVet);
 		     	parseBiomassValues(in, parser, delimC);
-		     	parseSimulationRateValues(in, parser, delimC);
 
 		      if (variability) {
 		          manageVariability(in, parser, delimC, variability, FluxName);
@@ -645,55 +738,463 @@ namespace FBGLPK{
 		      cout << "Exception: " << e.what() << endl;
 		      exit(EXIT_FAILURE);
 		  }
-	}
+	}*/
 
-
-
-	void LPprob::solveVariability(){
-		  string buffer;
-		  out_var<<"Time Obj"<<endl;
-		  try{
-		      while (!in_var.eof()){
-		      getline(in_var,buffer); 
-		      class general::Parser par(" ",buffer);
-		      //cout<<"tot:"<<par.size()<<" sizeCol"<<sizeCol<<endl;
-		      if (par.size()!=0){
-		       for (unsigned int i=sizeCol+2,j=1; i<par.size();i=i+2,++j){ //+2 is due to time and obj
-		          //updating bound
-		          update_bound(j,get_bound_type(j),atof(par.get(i).c_str()),atof(par.get(i+1).c_str()));
-		          }
-		       //updating new equation based on old obj
-		       glp_set_row_bnds(lp,sizeRow+1, GLP_LO, atof(par.get(0).c_str())*gamma, atof(par.get(0).c_str())*gamma);
-		       //glp_set_col_bnds(lp,sizeRow+1, GLP_LO, atof(par.get(0).c_str())*gamma, atof(par.get(0).c_str())*gamma);
-		       solve();
-		       out_var<<par.get(0)<<" "<< glp_get_obj_val(lp)<<endl;   
+	void LPprob::updateLP(const char* fileProb, int variability, int typeOBJ, const char* FluxName) {
+		  try {
+		      string var_obj_eq;
+		      ifstream in(fileProb, std::ifstream::in);
+		      if (!in) {
+		          throw Exception("FLUX BALANCE: error opening input file:" + string(fileProb));
 		      }
+
+				 // If not split:
+		     // initializeLP(fileProb);
+
+		      general::Parser parser;
+		      char delimC[] = "\t, ;\"";
+
+		      // parse
+		      parseFluxNames(in, parser, delimC);
+		      parseGeneAssocLine(in, parser, delimC);		      
+		      parseModelDimensionsAndType(in, parser, delimC, sizeRow, sizeCol, typeOBJ, variability);
+		      parseSizeVet(in, parser, delimC, sizeVet);
+		      parseBiomassValues(in, parser, delimC);
+
+		      if (variability) {
+		          manageVariability(in, parser, delimC, variability, FluxName);
 		      }
-		   }
-	 catch (exception& e){
-		  cout << "\n Exception: " << e.what() << endl;
-		  exit(EXIT_FAILURE);
+
+					// Variability (TODO)
+		      parseObjectiveCoefficients(in, parser, delimC);
+
+		      setRowBounds(in, parser, delimC);
+		      setColumnBounds(in, parser, delimC);
+		      setSparseMatrix(in, parser, delimC);
+
+					// Variability (TODO)
+		      if (variability) {
+		          // addVariabilityRow(...);
+		      }
+
+		      filename = string(fileProb);
+		      finalizeLPAndSplit(fileProb, typeOBJ);
+		  } 
+		  catch (exception& e) {
+		      cout << "Exception: " << e.what() << endl;
+		      exit(EXIT_FAILURE);
+		  } 
+		  catch (Exception& e) {
+		      cout << "Exception: " << e.what() << endl;
+		      exit(EXIT_FAILURE);
 		  }
-	 catch (Exception& e){
-		  cout << "\n Exception: " << e.what() << endl;
-		  exit(EXIT_FAILURE);
-		  }       
 	}
 
-	int LPprob::setTypeBound(string typeString){
-		  int type;
-		  if (typeString.compare("GLP_FR")==0)
-		      type=GLP_FR;
-		  else  if (typeString.compare("GLP_LO")==0)
-		      type=GLP_LO;
-		  else  if (typeString.compare("GLP_UP")==0)
-		      type=GLP_UP;
-		  else  if (typeString.compare("GLP_DB")==0)
-		      type=GLP_DB;
-		  else
-		      type=GLP_FX;
-		  return type;
+
+
+		void LPprob::solveVariability(){
+				string buffer;
+				out_var<<"Time Obj"<<endl;
+				try{
+				    while (!in_var.eof()){
+				    getline(in_var,buffer); 
+				    class general::Parser par(" ",buffer);
+				    //cout<<"tot:"<<par.size()<<" sizeCol"<<sizeCol<<endl;
+				    if (par.size()!=0){
+				     for (unsigned int i=sizeCol+2,j=1; i<par.size();i=i+2,++j){ //+2 is due to time and obj
+				        //updating bound
+				        update_bound(j,get_bound_type(j),atof(par.get(i).c_str()),atof(par.get(i+1).c_str()));
+				        }
+				     //updating new equation based on old obj
+				     glp_set_row_bnds(lp,sizeRow+1, GLP_LO, atof(par.get(0).c_str())*gamma, atof(par.get(0).c_str())*gamma);
+				     //glp_set_col_bnds(lp,sizeRow+1, GLP_LO, atof(par.get(0).c_str())*gamma, atof(par.get(0).c_str())*gamma);
+				     solve();
+				     out_var<<par.get(0)<<" "<< glp_get_obj_val(lp)<<endl;   
+				    }
+				    }
+				 }
+		 catch (exception& e){
+				cout << "\n Exception: " << e.what() << endl;
+				exit(EXIT_FAILURE);
+				}
+		 catch (Exception& e){
+				cout << "\n Exception: " << e.what() << endl;
+				exit(EXIT_FAILURE);
+				}       
+		}
+
+		int LPprob::setTypeBound(string typeString){
+				int type;
+				if (typeString.compare("GLP_FR")==0)
+				    type=GLP_FR;
+				else  if (typeString.compare("GLP_LO")==0)
+				    type=GLP_LO;
+				else  if (typeString.compare("GLP_UP")==0)
+				    type=GLP_UP;
+				else  if (typeString.compare("GLP_DB")==0)
+				    type=GLP_DB;
+				else
+				    type=GLP_FX;
+				return type;
+		}
+		
+		void LPprob::finalizeLPAndSplit(const char* fileProb,  int typeOBJ)
+	{
+		  // Evita di rieseguire due volte
+		  if (dataCollected) {
+		      std::cerr << "[finalizeLPAndSplit] data are already collected. Skipping.\n";
+		      return;
+		  }
+		  dataCollected = true;
+		  sizeColBeforeSplitting = sizeCol;
+		  // =========================
+		  // 1) Prepara i vettori “finali”
+		  // =========================
+		  std::vector<std::string> newReactions;
+		  std::vector<int>         newBoundType;
+		  std::vector<double>      newLb, newUb;
+
+		  // Mappature per capire come la colonna i-esima (old) diventa 1 o 2 colonne (new)
+		  std::vector<int> mapFwd(sizeCol, -1);
+		  std::vector<int> mapRev(sizeCol, -1);
+
+		  int newIndexCount = 0; // contatore per le "nuove" colonne
+		  int forwardCount = 0;  // Contatore per reazioni forward
+		  int reverseCount = 0;  // Contatore per reazioni reverse
+
+		  // Splitting colonna per colonna
+		  for(unsigned int c = 0; c < sizeCol; c++)
+		  {
+		      double LB = tmpLb[c];
+		      double UB = tmpUb[c];
+
+		      // Se la reazione c ha lb < 0 < ub => splitted
+		      if(LB < 0.0 && UB > 0.0) {
+		          // Forward
+		          {
+		              std::string fwdName = tmpReactions[c] + "_f";
+		              newReactions.push_back(fwdName);
+		              newBoundType.push_back(GLP_DB); // double-bounded => [0, UB]
+		              newLb.push_back(0.0);
+		              newUb.push_back(UB);
+
+		              mapFwd[c] = newIndexCount;
+		              newIndexCount++;
+		             	forwardCount++;  // Incrementa forward
+		          }
+		          // Reverse
+		          {
+		              std::string revName = tmpReactions[c] + "_r";
+		              newReactions.push_back(revName);
+		              newBoundType.push_back(GLP_DB); // [0, -LB]
+		              newLb.push_back(0.0);
+		              newUb.push_back(-LB);
+
+		              mapRev[c] = newIndexCount;
+		              newIndexCount++;
+		              reverseCount++;  // Incrementa forward
+		          }
+		      }
+		      else {
+		          // Non splitted => 1 colonna invariata
+		          newReactions.push_back(tmpReactions[c]);
+		          newBoundType.push_back(tmpBoundType[c]);
+		          newLb.push_back(LB);
+		          newUb.push_back(UB);
+
+		          mapFwd[c] = newIndexCount;
+		          mapRev[c] = -1;
+		          newIndexCount++;
+		      }
+		  }
+		  
+		  std::cout << "[finalizeLPAndSplit: " << fileProb << " ]" << "Reazioni aggiunte come forward (_f): " << forwardCount << std::endl;
+		  std::cout << "[finalizeLPAndSplit " << fileProb << " ]" << " Reazioni aggiunte come reverse (_r): " << reverseCount << std::endl;
+
+		  unsigned int finalCols = (unsigned int)newIndexCount;
+
+		  // =========================
+		  // 2) Ricostruire la matrice sparsa
+		  // =========================
+		  std::vector<SparseEntry> newMatrix;
+		  newMatrix.reserve(tmpMatrix.size() * 2);
+
+		  for(const auto& e : tmpMatrix) {
+		      int oldCol   = e.col - 1; // 1-based -> 0-based
+		      int oldRow   = e.row;     // la riga possiamo lasciarla 1-based
+		      double coeff = e.val;
+
+		      if(mapRev[oldCol] >= 0) {
+		          // splitted => abbiamo col forward e col reverse
+		          int cF = mapFwd[oldCol]; 
+		          int cR = mapRev[oldCol]; 
+
+		          // parte forward: coeff invariato
+		          SparseEntry eF;
+		          eF.row = oldRow;    
+		          eF.col = cF + 1;    // back to 1-based
+		          eF.val = coeff;
+		          newMatrix.push_back(eF);
+
+		          // parte reverse: coeff con segno invertito
+		          SparseEntry eR;
+		          eR.row = oldRow;
+		          eR.col = cR + 1;
+		          eR.val = -coeff;
+		          newMatrix.push_back(eR);
+		      }
+		      else {
+		          // non splitted
+		          int cN = mapFwd[oldCol];
+		          SparseEntry eN;
+		          eN.row = oldRow;
+		          eN.col = cN + 1;
+		          eN.val = coeff;
+		          newMatrix.push_back(eN);
+		      }
+		  }
+
+		  unsigned int finalNonZeros = (unsigned int)newMatrix.size();
+
+		  // =========================
+		  // 3) Costruisci davvero l'oggetto GLPK
+		  // =========================
+		  // Se c’era già qualcosa, pulisci
+		  if (lp) {
+		      glp_delete_prob(lp);
+		      lp = nullptr;
+		  }
+		  lp = glp_create_prob();
+		  glp_set_prob_name(lp, fileProb);
+		  glp_set_obj_dir(lp, typeOBJ); 
+		  
+		  // 3a) Crea le righe
+		  glp_add_rows(lp, sizeRow);
+		  for(unsigned int r = 0; r < sizeRow; r++) {
+		      glp_set_row_bnds(lp, r+1,
+		                       tmpRowBoundType[r],
+		                       tmpRowLb[r],
+		                       tmpRowUb[r]);
+		  }
+
+		  // 3b) Crea le colonne (splittate o no)
+		  glp_add_cols(lp, finalCols);
+
+		  // Svuotiamo i vecchi ReactionsNamesOrd/Id e li rigeneriamo
+		  ReactionsNamesOrd.clear();
+		  ReactionsNamesId.clear();
+
+		  for(unsigned int c = 0; c < finalCols; c++) {
+		      glp_set_col_bnds(lp, c+1,
+		                       newBoundType[c],
+		                       newLb[c],
+		                       newUb[c]);
+
+		      // Salviamo i nuovi nomi
+		      std::string rxnName = newReactions[c];
+		      ReactionsNamesOrd.push_back(newReactions[c]);
+		      ReactionsNamesId[newReactions[c]] = c+1;
+		      
+		      if(rxnName.size() >= 2 && rxnName.substr(rxnName.size()-2) == "_f") {
+		          forwardReactions[rxnName] = c+1;
+		      }
+		      else if(rxnName.size() >= 2 && rxnName.substr(rxnName.size()-2) == "_r") {
+		          reverseReactions[rxnName] = c+1;
+		      }
+		      else {
+		          irreversibileReactions[rxnName] = c+1;
+		      }
+		  }
+
+		  // 3c) Prepara ia,ja,ar e carica la matrice
+		  free(ia);  free(ja);  free(ar);  free(Value);
+
+		  sizeCol = finalCols;
+		  sizeVet = finalNonZeros;
+
+		  ia    = (int*)malloc(sizeof(int)*(sizeVet+1));
+		  ja    = (int*)malloc(sizeof(int)*(sizeVet+1));
+		  ar    = (double*)malloc(sizeof(double)*(sizeVet+1));
+		  Value = (double*)malloc(sizeof(double)*(sizeVet+1));
+		  if(!ia || !ja || !ar || !Value) {
+		      throw std::bad_alloc();
+		  }
+
+		  for(unsigned int i = 0; i < sizeVet; i++) {
+		      ia[i+1] = newMatrix[i].row;  // 1-based
+		      ja[i+1] = newMatrix[i].col;  // 1-based
+		      ar[i+1] = newMatrix[i].val;
+		  }
+
+		  glp_load_matrix(lp, sizeVet, ia, ja, ar);
+		  
+		   for(unsigned int oldC = 0; oldC < sizeColBeforeSplitting; oldC++) {
+		      double cObj = tmpObjCoeff[oldC]; // coeff letto dal file (o 0 se non c’era)
+
+		      if (mapRev[oldC] >= 0) {
+		          // splitted => forward e reverse
+		          int newF = mapFwd[oldC]; // colonna forward (0-based)
+		          int newR = mapRev[oldC]; // colonna reverse (0-based)
+		          // esempio: assegno lo stesso coeff a entrambe
+		          glp_set_obj_coef(lp, newF+1, cObj);
+		          glp_set_obj_coef(lp, newR+1, cObj);
+		      } else {
+		          // non splitted
+		          int newN = mapFwd[oldC];
+		          glp_set_obj_coef(lp, newN+1, cObj);
+		      }
+		  }
+		  
+
+			for (unsigned int i=0; i < ReactionsNamesOrd.size(); i++) {
+					std::string splittedName = ReactionsNamesOrd[i]; // es. "R1_f" o "R2"
+					unsigned int colIdx = i+1;
+
+					// Estrai la “baseName”
+					std::string baseName = splittedName;
+					if (baseName.size()>=2) {
+						 if (baseName.substr(baseName.size()-2)=="_f" || baseName.substr(baseName.size()-2)=="_r") {
+						    baseName = baseName.substr(0, baseName.size()-2);
+						 }
+					}
+					// Check gene
+					bool wasGene = (GeneAssocReactions.find(baseName) != GeneAssocReactions.end());
+					if (wasGene) {
+						  GeneAssocReactionsSplitted[splittedName] = colIdx;
+					} else {
+						  NonGeneAssocReactionsSplitted[splittedName] = colIdx;
+					}
+			}
+			
+		  std::string oldObjName;
+		  if (pFBA_index > 0 && pFBA_index <= tmpReactions.size()) {
+		      oldObjName = tmpReactions[pFBA_index-1]; 
+		  }
+
+		  // Una volta popolato ReactionsNamesOrd col new set:
+		  // Re-inizializzo pFBA_index = 0
+		  pFBA_index = 0;
+
+		  // Ora cerco se la reazione è splitted
+		  //   - se era irr, trovo directly oldObjName
+		  //   - se era rev, trovo oldObjName + "_f" (ad es.)
+		  // E setto pFBA_index
+		  for (unsigned int c=0; c<ReactionsNamesOrd.size(); c++){
+		      std::string rName = ReactionsNamesOrd[c];
+		      // Caso tipico, biomassa irreversibile
+		      if (rName == oldObjName){
+		          pFBA_index = c+1;
+		          break;
+		      }
+		      // Caso splitted
+		      else if (rName == oldObjName + "_f"){
+		          pFBA_index = c+1;
+		          break;
+		      }
+		  }
+			
+			// Debug: stampa i contenuti di GeneAssocReactions
+			std::cout << "\n[DEBUG] GeneAssocReactions contents:" << std::endl;
+			for (const auto& pair : GeneAssocReactions) {
+					std::cout << "  " << pair.first << " => " << pair.second << std::endl;
+			}
+			
+			// Debug: stampa i contenuti di GeneAssocReactions
+			std::cout << "\n[DEBUG] NonGeneAssocReactions contents:" << std::endl;
+			for (const auto& pair : NonGeneAssocReactions) {
+					std::cout << "  " << pair.first << " => " << pair.second << std::endl;
+			}
+
+			// Debug: stampa i contenuti di GeneAssocReactionsSplitted
+			std::cout << "\n[DEBUG] GeneAssocReactionsSplitted contents:" << std::endl;
+			for (const auto& pair : GeneAssocReactionsSplitted) {
+					std::cout << "  " << pair.first << " => " << pair.second << std::endl;
+			}
+
+			// Debug: stampa i contenuti di NonGeneAssocReactionsSplitted
+			std::cout << "\n[DEBUG] NonGeneAssocReactionsSplitted contents:" << std::endl;
+			for (const auto& pair : NonGeneAssocReactionsSplitted) {
+					std::cout << "  " << pair.first << " => " << pair.second << std::endl;
+			}
+
+			std::cout << "[finalizeLPAndSplit] oldObjName = " << oldObjName 
+						    << " => new pFBA_index = " << pFBA_index << std::endl;
+			//debugPrintGLPKProblem(fileProb);
+		  // Fatto! Adesso lp “splittato” è pronto
+		  // Se vuoi, reimposta la direzione dell’obiettivo come era originariamente.
+		  // Ecc.
 	}
+
+	void LPprob::debugPrintGLPKProblem(const char* fileProb)
+	{
+		  std::cout << "\n=== DEBUG: GLPK Problem " << fileProb << "  ===" << std::endl;
+		  int nrows = glp_get_num_rows(lp);
+		  int ncols = glp_get_num_cols(lp);
+		  std::cout << "Rows: " << nrows << "   Cols: " << ncols << std::endl;
+
+		  // Stampa bounds delle righe
+		  for (int r = 1; r <= nrows; r++) {
+		      int type = glp_get_row_type(lp, r);
+		      double lb = glp_get_row_lb(lp, r);
+		      double ub = glp_get_row_ub(lp, r);
+		      std::cout << "Row " << r << " => type=" << type
+		                << "  LB=" << lb << "  UB=" << ub << std::endl;
+		  }
+
+		  // Stampa bounds delle colonne
+		  for (int c = 1; c <= ncols; c++) {
+		      int type = glp_get_col_type(lp, c);
+		      double lb = glp_get_col_lb(lp, c);
+		      double ub = glp_get_col_ub(lp, c);
+
+		      // Se hai le reazioni in ReactionsNamesOrd (c-1)
+		      std::string rxnName = ReactionsNamesOrd[c-1]; 
+		      std::cout << "Col " << c << " (" << rxnName << ") => type=" << type
+		                << "  LB=" << lb << "  UB=" << ub << std::endl;
+		  }
+
+		  // Stampa la matrice
+		  debugPrintMatrix();
+
+		  std::cout << "====================================\n" << std::endl;
+	}
+
+	void LPprob::debugPrintMatrix() 
+	{
+		  std::cout << "\n=== DEBUG: GLPK Matrix (row by row) ===\n";
+
+		  int nrows = glp_get_num_rows(lp);
+		  int ncols = glp_get_num_cols(lp);
+
+		  // GLPK richiede array 1-based per indici e valori
+		  // (ind[0] e val[0] non vengono usati).
+		  std::vector<int>    ind(ncols + 1);
+		  std::vector<double> val(ncols + 1);
+
+		  // Per ogni riga
+		  for (int r = 1; r <= nrows; ++r)
+		  {
+		      // glp_get_mat_row restituisce quanti non-zero ci sono in questa riga
+		      // e scrive in ind[] e val[] le colonne e i rispettivi coefficienti
+		      int len = glp_get_mat_row(lp, r, ind.data(), val.data());
+
+		      // Stampa solo se ci sono elementi non-zero
+		      std::cout << "Row " << r << " has " << len << " non-zero(s):\n";
+		      for (int i = 1; i <= len; ++i)
+		      {
+		          int colIndex    = ind[i];
+		          double coeff    = val[i];
+		          // Se vuoi, puoi anche stampare il nome della colonna: ReactionsNamesOrd[colIndex-1] 
+		          std::string colName = ReactionsNamesOrd[colIndex - 1];
+		          
+		          std::cout << "   col " << colIndex 
+		                    << " (" << colName << "), val = " << coeff << "\n";
+		      }
+		  }
+
+		  std::cout << "====================================\n" << std::endl;
+	}
+
 
 
 }
