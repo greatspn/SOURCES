@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LIBSOLVE55_DIR=lp_solve_5.5
+LIBSOLVE55_DIR=${1:-lp_solve_5.5}
 if [ ! -d "${LIBSOLVE55_DIR}" ]; then
   echo "Missing LIBSOLVE55_DIR directory(${LIBSOLVE55_DIR})."
   exit 1
