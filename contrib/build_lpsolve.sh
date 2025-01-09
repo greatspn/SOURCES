@@ -19,13 +19,13 @@ fi
 
 echo "Compilazione di lpsolve lib"
 (
-  cd ${LIBSOLVE55_DIR}/lpsolve55
+  cd ${LIBSOLVE55_DIR}/lpsolve55 || exit 1
   sh ${RUN} || (echo "Errore durante la compilazione di lpsolve!" && exit 1)
 )
 
 echo "Compilazione di colamd"
 (
-  cd ${LIBSOLVE55_DIR}/colamd
+  cd ${LIBSOLVE55_DIR}/colamd || exit 1
   gcc -c colamd.c -o colamd.o || (echo "Errore durante la compilazione di colamd!" && exit 1)
   ar rcs libcolamd.a colamd.o || (echo "Errore durante la creazione di libcolamd.a!" && exit 1)
 )
@@ -39,7 +39,16 @@ echo "Installazione delle librerie"
      /usr/local/include/ || (echo "Errore durante la copia degli header!" && exit 1)
 )
 
+# Assicurati che i file siano nella posizione corretta
+if [ ! -f /usr/local/lib/libcolamd.a ] || [ ! -f /usr/local/lib/liblpsolve55.a ]; then
+  echo "Errore: librerie mancanti in /usr/local/lib!"
+  exit 1
+fi
+
 echo "Verifica finale"
 ls -l /usr/local/lib/libcolamd.a || (echo "libcolamd.a non trovato!" && exit 1)
+ls -l /usr/local/lib/liblpsolve55.a || (echo "liblpsolve55.a non trovato!" && exit 1)
+
 echo "Build completata correttamente."
+
 
