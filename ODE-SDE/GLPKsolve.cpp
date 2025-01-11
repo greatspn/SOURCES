@@ -854,7 +854,6 @@ void LPprob::setColumnBounds(std::ifstream& in, general::Parser& parser, const c
 		  std::vector<int>         newBoundType;
 		  std::vector<double>      newLb, newUb;
 
-		  // Mappature per capire come la colonna i-esima (old) diventa 1 o 2 colonne (new)
 		  std::vector<int> mapFwd(sizeCol, -1);
 		  std::vector<int> mapRev(sizeCol, -1);
 
@@ -896,7 +895,6 @@ void LPprob::setColumnBounds(std::ifstream& in, general::Parser& parser, const c
 		          }
 		      }
 		      else {
-		          // Non splitted => 1 colonna invariata
 		          newReactions.push_back(tmpReactions[c]);
 		          newBoundType.push_back(tmpBoundType[c]);
 		          newLb.push_back(LB);
@@ -920,23 +918,22 @@ void LPprob::setColumnBounds(std::ifstream& in, general::Parser& parser, const c
 		  newMatrix.reserve(tmpMatrix.size() * 2);
 
 		  for(const auto& e : tmpMatrix) {
-		      int oldCol   = e.col - 1; // 1-based -> 0-based
-		      int oldRow   = e.row;     // la riga possiamo lasciarla 1-based
+		      int oldCol   = e.col - 1;
+		      int oldRow   = e.row;     
 		      double coeff = e.val;
 
 		      if(mapRev[oldCol] >= 0) {
-		          // splitted => abbiamo col forward e col reverse
+
 		          int cF = mapFwd[oldCol]; 
 		          int cR = mapRev[oldCol]; 
 
-		          // parte forward: coeff invariato
+
 		          SparseEntry eF;
 		          eF.row = oldRow;    
 		          eF.col = cF + 1;    // back to 1-based
 		          eF.val = coeff;
 		          newMatrix.push_back(eF);
 
-		          // parte reverse: coeff con segno invertito
 		          SparseEntry eR;
 		          eR.row = oldRow;
 		          eR.col = cR + 1;
@@ -977,10 +974,8 @@ void LPprob::setColumnBounds(std::ifstream& in, general::Parser& parser, const c
 		                       tmpRowUb[r]);
 		  }
 
-		  // 3b) Crea le colonne (splittate o no)
 		  glp_add_cols(lp, finalCols);
 
-		  // Svuotiamo i vecchi ReactionsNamesOrd/Id e li rigeneriamo
 		  ReactionsNamesOrd.clear();
 		  ReactionsNamesId.clear();
 
@@ -1032,10 +1027,8 @@ void LPprob::setColumnBounds(std::ifstream& in, general::Parser& parser, const c
 		      double cObj = tmpObjCoeff[oldC]; // coeff letto dal file (o 0 se non c’era)
 
 		      if (mapRev[oldC] >= 0) {
-		          // splitted => forward e reverse
 		          int newF = mapFwd[oldC]; // colonna forward (0-based)
 		          int newR = mapRev[oldC]; // colonna reverse (0-based)
-		          // esempio: assegno lo stesso coeff a entrambe
 		          glp_set_obj_coef(lp, newF+1, cObj);
 		          glp_set_obj_coef(lp, newR+1, cObj);
 		      } else {
@@ -1047,17 +1040,17 @@ void LPprob::setColumnBounds(std::ifstream& in, general::Parser& parser, const c
 		  
 
 			for (unsigned int i=0; i < ReactionsNamesOrd.size(); i++) {
-					std::string splittedName = ReactionsNamesOrd[i]; // es. "R1_f" o "R2"
+					std::string splittedName = ReactionsNamesOrd[i]; 
 					unsigned int colIdx = i+1;
 
-					// Estrai la “baseName”
+
 					std::string baseName = splittedName;
 					if (baseName.size()>=2) {
 						 if (baseName.substr(baseName.size()-2)=="_f" || baseName.substr(baseName.size()-2)=="_r") {
 						    baseName = baseName.substr(0, baseName.size()-2);
 						 }
 					}
-					// Check gene
+
 					bool wasGene = (GeneAssocReactions.find(baseName) != GeneAssocReactions.end());
 					if (wasGene) {
 						  GeneAssocReactionsSplitted[splittedName] = colIdx;
@@ -1071,14 +1064,8 @@ void LPprob::setColumnBounds(std::ifstream& in, general::Parser& parser, const c
 		      oldObjName = tmpReactions[pFBA_index-1]; 
 		  }
 
-		  // Una volta popolato ReactionsNamesOrd col new set:
-		  // Re-inizializzo pFBA_index = 0
 		  pFBA_index = 0;
 
-		  // Ora cerco se la reazione è splitted
-		  //   - se era irr, trovo directly oldObjName
-		  //   - se era rev, trovo oldObjName + "_f" (ad es.)
-		  // E setto pFBA_index
 		  for (unsigned int c=0; c<ReactionsNamesOrd.size(); c++){
 		      std::string rName = ReactionsNamesOrd[c];
 		      // Caso tipico, biomassa irreversibile
@@ -1120,9 +1107,6 @@ void LPprob::setColumnBounds(std::ifstream& in, general::Parser& parser, const c
 			std::cout << "[finalizeLPAndSplit] oldObjName = " << oldObjName 
 						    << " => new pFBA_index = " << pFBA_index << std::endl;
 			//debugPrintGLPKProblem(fileProb);
-		  // Fatto! Adesso lp “splittato” è pronto
-		  // Se vuoi, reimposta la direzione dell’obiettivo come era originariamente.
-		  // Ecc.
 	}
 
 	void LPprob::debugPrintGLPKProblem(const char* fileProb)

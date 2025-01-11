@@ -545,7 +545,7 @@ namespace FBGLPK {
 					int reactionId = fromNametoid(reactionName);
 						if(reactionId != -1){
 							double* variables = getVariables();
-							cout << "Initial flux value for " << reactionName << " : " << variables[reactionId] << endl;
+							//cout << "Initial flux value for " << reactionName << " : " << variables[reactionId] << endl;
 						}else{
 							cout << "Reaction " << reactionName << " not found in the problem." << endl;
 						}
@@ -592,15 +592,14 @@ namespace FBGLPK {
 					// Per contare quante colonne penalizziamo
 					int countObjCol = 0;
 
-					// Stampo per debug la dimensione delle map
+				/*
 					std::cout << "    [DEBUG] GeneAssocReactionsSplitted.size() = " 
 						        << GeneAssocReactionsSplitted.size() << std::endl;
 					std::cout << "    [DEBUG] NonGeneAssocReactionsSplitted.size() = " 
 						        << NonGeneAssocReactionsSplitted.size() << std::endl;
-
+					*/
 					switch(geneOption) {
 						  case 0:
-						      std::cout << "    Minimizzo TUTTE le reazioni (tranne biomassa)!" << std::endl;
 						      for (int c = 1; c <= numCols; c++) {
 						          if (c != biomassIndex) {
 						              glp_set_obj_coef(lp, c, 1.0);
@@ -610,7 +609,6 @@ namespace FBGLPK {
 						      break;
 
 						  case 1:
-						      std::cout << "    Minimizzo SOLO reazioni gene-associated." << std::endl;
 						      for (auto &kv : GeneAssocReactionsSplitted){
 						          unsigned int col = kv.second;
 						          if ((int)col != biomassIndex) {
@@ -621,7 +619,6 @@ namespace FBGLPK {
 						      break;
 
 						  case 2:
-						      std::cout << "    Minimizzo SOLO reazioni NON-gene-associated." << std::endl;
 						      for(auto &kv : NonGeneAssocReactionsSplitted){
 						          unsigned int col = kv.second;
 						          if((int)col != biomassIndex){
@@ -632,7 +629,6 @@ namespace FBGLPK {
 						      break;
 
 						  default:
-						      std::cout << "    geneOption non riconosciuto, fallback = 0 (TUTTO)" << std::endl;
 						      for (int c = 1; c <= numCols; c++) {
 						          if (c != biomassIndex) {
 						              glp_set_obj_coef(lp, c, 1.0);
@@ -642,12 +638,8 @@ namespace FBGLPK {
 						      break;
 					}
 
-					// Debug: quante reazioni effettivamente penalizzate?
-					std::cout << "    [DEBUG] Reazioni (colonne) con coefficiente=1: " << countObjCol << std::endl;
-
 					// Ora settiamo la minimizzazione
 					glp_set_obj_dir(lp, GLP_MIN);
-					std::cout << "    [DEBUG] Obiettivo impostato a MINIMIZE" << std::endl;
 					
 						int numCols2 = glp_get_num_cols(lp);
 						double sumFluxes = 0.0;
@@ -655,9 +647,6 @@ namespace FBGLPK {
 								double fluxVal = glp_get_col_prim(lp, col);
 								sumFluxes += fluxVal;
 						}
-						std::cout << "[DEBUG pFBA SUPER SOMMA FLUSSI]"
-								      << ",  sum(|fluxes|) = " << sumFluxes
-								      << std::endl;
 			}
 
 
