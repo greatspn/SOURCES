@@ -841,7 +841,7 @@ public class CppFormat {
 				sb.append("        }\n");
 				sb.append("\n");
 				sb.append("        for (auto index : toSolve) {\n");
-				sb.append("            cout << \"Problema da risolvere ---> \" << index <<  \"   Name: \" << vec_fluxb[index].getFilename() << endl;\n");                
+				sb.append("            //cout << \"Problema da risolvere ---> \" << index <<  \"   Name: \" << vec_fluxb[index].getFilename() << endl;\n");                
 				sb.append("            vec_fluxb[index].solve();\n");
 				sb.append("            // PARSIMONIUS FLAGS:\n");
 				sb.append("            performPFBA(vec_fluxb, index, 0);\n");

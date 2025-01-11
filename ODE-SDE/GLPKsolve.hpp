@@ -580,8 +580,8 @@ namespace FBGLPK {
 				 */
 
 				void setMinimizeFluxObjective(int biomassIndex, int geneOption) {
-					std::cout << "[DEBUG setMinimizeFluxObjective] geneOption = " << geneOption 
-						        << ", biomassIndex = " << biomassIndex << std::endl;
+					//std::cout << "[DEBUG setMinimizeFluxObjective] geneOption = " << geneOption 
+					//	        << ", biomassIndex = " << biomassIndex << std::endl;
 
 					// Azzera tutti i coefficienti
 					int numCols = glp_get_num_cols(lp);
