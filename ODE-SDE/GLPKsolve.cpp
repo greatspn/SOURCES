@@ -631,7 +631,7 @@ void LPprob::setColumnBounds(std::ifstream& in, general::Parser& parser, const c
 	// TODO: Adapt for the splitted problem version
 	LPprob::LPprob(const char* FileProb, const char* FileInVar, const char* FileOutVar, int typeOBJ, const char* FluxName, const int gamma) {
 		  // Creating LP problem
-			cout << "init problem in update --->  " << FileProb << endl;
+			//cout << "init problem in update --->  " << FileProb << endl;
 		  updateLP(FileProb, 1, typeOBJ, FluxName);
 		  try {
 		      // Opening input file
@@ -1079,7 +1079,7 @@ void LPprob::setColumnBounds(std::ifstream& in, general::Parser& parser, const c
 		          break;
 		      }
 		  }
-			
+			/*
 			// Debug: stampa i contenuti di GeneAssocReactions
 			std::cout << "\n[DEBUG] GeneAssocReactions contents:" << std::endl;
 			for (const auto& pair : GeneAssocReactions) {
@@ -1102,7 +1102,7 @@ void LPprob::setColumnBounds(std::ifstream& in, general::Parser& parser, const c
 			std::cout << "\n[DEBUG] NonGeneAssocReactionsSplitted contents:" << std::endl;
 			for (const auto& pair : NonGeneAssocReactionsSplitted) {
 					std::cout << "  " << pair.first << " => " << pair.second << std::endl;
-			}
+			}*/
 
 			std::cout << "[finalizeLPAndSplit] oldObjName = " << oldObjName 
 						    << " => new pFBA_index = " << pFBA_index << std::endl;
