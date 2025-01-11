@@ -1096,7 +1096,7 @@ public class CppFormat {
 				sb.append("                        trunc(newUb, decimalTrunc)\n");
 				sb.append("                    );\n");
 				sb.append("                }\n");
-				sb.append("            }
+				sb.append("            }");
 				sb.append("        }\n");
 				sb.append("\n");
 				sb.append("        file.close();\n");
@@ -1163,7 +1163,7 @@ public class CppFormat {
 				sb.append("                        trunc(newUb, decimalTrunc)\n");
 				sb.append("                    );\n");
 				sb.append("                }\n");
-				sb.append("            }
+				sb.append("            }");
 				sb.append("        }\n");
 				sb.append("\n");
 				sb.append("        file.close();\n");
