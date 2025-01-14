@@ -2705,6 +2705,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 	ofstream out;
 #ifdef CGLPK
 	vector <ofstream> outflux(vec_fluxb.size());	
+	vector<ofstream> outUb(vec_fluxb.size());		// For upper bounds debug files
 #endif
 	if (Info)
 	{
@@ -2726,6 +2727,24 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 			}
 			outflux[i]<<"Time"<<" Obj_"<<i;
 		}	
+		
+		// Upper bounds debug files:
+		
+    for (unsigned int i = 0; i < vec_fluxb.size(); ++i) {
+				// Upper bounds file name
+        string ubFileName = string(argv) + "-" 
+                            + vec_fluxb[i].getFilenameWithoutExtension() 
+                            + ".upperbounds";
+
+        outUb[i].open(ubFileName, ofstream::out);
+        outUb[i].precision(16);
+        if (!outUb[i]) {
+            throw FBGLPK::Exception("*****Error opening output file storing UPPER BOUNDS*****\n\n");
+        }
+
+        // Csv Header
+        outUb[i] << "Time,Reaction,Upperbound\n";
+    }
 #endif
 
 		for (int i=0;i<nPlaces;i++)
@@ -2802,6 +2821,23 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 					vec_fluxb[i].printLowerMax(outflux[i]);	
 				}
 			}
+			
+			// For for upper bounds files
+			
+		  for (unsigned int i = 0; i < vec_fluxb.size(); ++i) {
+		      // Per ogni reazione, stampiamo una riga:
+		      // time, <reactionName>, <upperbound>
+		      const auto& rxnNames = vec_fluxb[i].getReactions(); 
+		      for (unsigned int r = 1; r <= rxnNames.size(); r++) {
+		          double ub = vec_fluxb[i].getUpBounds(r);
+		          // Nome reazione corrispondente
+		          string reactionName = rxnNames[r - 1]; // (r è 1-based, vector è 0-based)
+
+		          outUb[i] << tout << "," 
+		                   << reactionName << "," 
+		                   << ub << "\n";
+		      }
+		  }			
 #endif	
 //			out<<endl;
 		}		
@@ -2836,13 +2872,20 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 
 	}
 */ 
-	cout<<"\nSolution at time "<<Max_Time<<":\n";
+	cout<<"\nSolution at time2 "<<Max_Time<<":\n";
 	for (int i=0;i<nPlaces;i++)//store resul ode and print final time for each trace
 	{
 		FinalValueXRun[i][0]= y[i+1];
 		cout<<"\t"<<NamePlaces[i]<<": "<<y[i+1]<<"\n";
 	}
 	cout<<endl;
+	#ifdef CGLPK
+	for (auto& ubStream : outUb) {
+    if (ubStream.is_open()) {
+       ubStream.close();
+    }
+  }
+  #endif
 }
 
 /**************************************************************/

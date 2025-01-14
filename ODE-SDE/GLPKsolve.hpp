@@ -99,6 +99,12 @@ namespace FBGLPK {
 				map<std::string, unsigned int> NonGeneAssocReactions;
 				std::map<std::string, unsigned int> GeneAssocReactionsSplitted;
 				std::map<std::string, unsigned int> NonGeneAssocReactionsSplitted;
+				// 1) forwardReactions: reazioni _f (splitted)
+				std::map<std::string,unsigned int> forwardReactions;
+				// 2) reverseReactions: reazioni _r (splitted)
+				std::map<std::string,unsigned int> reverseReactions;
+				// 3) irreversibileReactions: reazioni non splitted
+				std::map<std::string,unsigned int> irreversibileReactions;
 
 				//std::unordered_map<string, unsigned int> InternalReactions; //!< Stores names and indices of internal reactions, excluding 'EX' and 'sink' reactions  //!< Stores names of internal reactions, excluding 'EX' and 'sink' reactions
 
@@ -112,6 +118,7 @@ namespace FBGLPK {
         double bioMax {-1}; // Maximum biomass, default to -1 if unspecified
         double bioMin {-1}; // Minimum biomass, default to -1 if unspecified
         double bioMean {-1}; // Average biomass, default to -1 if unspecified
+        int pFbaFlag {-1};
         
         //! Helper function to set the type of bounds based on string input
         int setTypeBound(string typeString);
@@ -148,12 +155,6 @@ namespace FBGLPK {
 				bool dataCollected = false;
 				
 				
-				// 1) forwardReactions: reazioni _f (splitted)
-				std::map<std::string,unsigned int> forwardReactions;
-				// 2) reverseReactions: reazioni _r (splitted)
-				std::map<std::string,unsigned int> reverseReactions;
-				// 3) irreversibileReactions: reazioni non splitted
-				std::map<std::string,unsigned int> irreversibileReactions;
 
         //! Parses flux names from input file
         void parseFluxNames(ifstream& in, general::Parser& parser, const char* delimC);
@@ -219,9 +220,12 @@ namespace FBGLPK {
 							NonGeneAssocReactions(std::move(other.NonGeneAssocReactions)),
 							GeneAssocReactionsSplitted(std::move(other.GeneAssocReactionsSplitted)),
 							NonGeneAssocReactionsSplitted(std::move(other.NonGeneAssocReactionsSplitted)),
+							forwardReactions(std::move(other.forwardReactions)),
+							reverseReactions(std::move(other.reverseReactions)),
+							irreversibileReactions(std::move(other.irreversibileReactions)),							
 							in_var(std::move(other.in_var)), out_var(std::move(other.out_var)),
 							flux_var(other.flux_var), pFBA_index(other.pFBA_index), gamma(other.gamma),
-							bioMax(other.bioMax), bioMin(other.bioMin), bioMean(other.bioMean) {
+							bioMax(other.bioMax), bioMin(other.bioMin), bioMean(other.bioMean), pFbaFlag(other.pFbaFlag) {
 
 						// Nullify the moved-from object to prevent double freeing
 						other.lp = nullptr;
@@ -263,6 +267,9 @@ namespace FBGLPK {
 								NonGeneAssocReactions = std::move(other.NonGeneAssocReactions);
 								GeneAssocReactionsSplitted = std::move(other.GeneAssocReactionsSplitted);
 								NonGeneAssocReactionsSplitted = std::move(other.NonGeneAssocReactionsSplitted);
+								forwardReactions = std::move(other.forwardReactions);
+								reverseReactions = std::move(other.reverseReactions);
+								irreversibileReactions = std::move(other.irreversibileReactions);
 								in_var = std::move(other.in_var);
 								out_var = std::move(other.out_var);
 								flux_var = other.flux_var;
@@ -271,7 +278,7 @@ namespace FBGLPK {
 								bioMax = other.bioMax;
 								bioMin = other.bioMin;
 								bioMean = other.bioMean;
-
+								pFbaFlag = other.pFbaFlag;
 								// Nullify other’s pointers
 								other.lp = nullptr;
 								other.ia = nullptr;
@@ -290,49 +297,51 @@ namespace FBGLPK {
 				void updateLP(const char * FileProb, int variability = 0, int typeOBJ = -1, const char* FluxName = "");
 				    //! Solves the LP problem using simplex method
 				void solve() {
-						// Initialize the simplex method control parameters
+						// Inizializza i parametri del metodo del simplesso
 						glp_smcp param;
 						glp_init_smcp(&param);
-						
-						// Set the message level to off to avoid debug output during the solving process
-						param.msg_lev = GLP_MSG_OFF;
 
-						// Run the GLPK simplex solver on the current problem
-						// `status` will hold the return code to indicate if the solution process succeeded
+						// 1) Imposta il livello di messaggi (per debugging). 
+						//    Può essere: GLP_MSG_OFF, GLP_MSG_ON, GLP_MSG_ERR, GLP_MSG_DBG, etc.
+						param.msg_lev = GLP_MSG_ERR; 
+
+						// 2) Attiva il presolve (opzionale, aiuta a ridurre il problema)
+					  //param.presolve = GLP_ON;
+
+						// 3) Scegli il metodo del simplesso: 
+						//    - GLP_PRIMAL (default)
+						//    - GLP_DUAL
+						//    - GLP_DUALP (dual con partial pricing, a volte riduce il ciclaggio)
+						//param.meth = GLP_DUAL; 
+
+						// 4) Imposta eventualmente un limite sulle iterazioni (ad es. 1 milione)
+						//    Se GLPK supera questa soglia, interrompe e restituisce un codice di stato.
+						param.it_lim = 100000; // o un valore adeguato
+
+						// Esegui il solver
 						int status = glp_simplex(lp, &param);
 
-						// Check the status to determine if the solver found a feasible solution
+						// Controlla se la soluzione è stata trovata
 						if (status == 0) {
-								// Solution was found successfully, mark the problem as solved
 								solved = true;
-
-								// Optional: Retrieve and print the objective value for debugging
-								// double objectiveValue = glp_get_obj_val(lp);
-								// cout << "Objective value after solving: " << objectiveValue << endl;
-
 						} else {
-								// Solution was not successful, mark the problem as unsolved
 								solved = false;
 
-								// Handle potential error conditions based on the status code returned by GLPK
+								// Eventuale gestione degli errori
 								if (status == GLP_EBADB) {
-								    // GLPK could not start the simplex method due to an invalid basis
-								    // cout << "GLPK: Unable to start the simplex algorithm; invalid initial basis." << endl;
+								    // ...
 								} else if (status == GLP_ESING) {
-								    // Singular matrix encountered, likely causing numerical issues
-								    // cout << "GLPK: Singular matrix; numerical issues encountered." << endl;
+								    // ...
 								} else if (status == GLP_ECOND) {
-								    // Matrix is ill-conditioned, which may affect numerical stability
-								    // cout << "GLPK: Ill-conditioned matrix; poor numerical stability." << endl;
+								    // ...
 								} else if (status == GLP_EBOUND) {
-								    // Solution was found to be infeasible due to bound constraints
-								    // cout << "GLPK: Solution seems to be infeasible due to bounds." << endl;
+								    // ...
 								} else {
-								    // Unknown error code, handle accordingly
-								    // cout << "GLPK: Unknown error code " << status << "." << endl;
+								    // ...
 								}
 						}
 				}
+
 
 
 
@@ -490,6 +499,25 @@ namespace FBGLPK {
 				    return bioMin;
 				}
 				
+				inline int getPFbaFlag() const {
+						return pFbaFlag;
+				}
+				
+				// Getter per forwardReactions
+				const std::map<std::string, unsigned int>& getForwardReactions() const {
+				    return forwardReactions;
+				}
+
+				// Getter per reverseReactions
+				const std::map<std::string, unsigned int>& getReverseReactions() const {
+				    return reverseReactions;
+				}
+
+				// Getter per irreversibileReactions
+				const std::map<std::string, unsigned int>& getIrreversibileReactions() const {
+				    return irreversibileReactions;
+				}
+				
 				std::string getFilenameWithoutExtension() const {
 				    size_t lastDot = filename.rfind('.');  // Find the last occurrence of a dot in the filename
 				    
@@ -545,7 +573,7 @@ namespace FBGLPK {
 					int reactionId = fromNametoid(reactionName);
 						if(reactionId != -1){
 							double* variables = getVariables();
-							//cout << "Initial flux value for " << reactionName << " : " << variables[reactionId] << endl;
+							cout << "Initial flux value for " << reactionName << " : " << variables[reactionId] << endl;
 						}else{
 							cout << "Reaction " << reactionName << " not found in the problem." << endl;
 						}
@@ -579,8 +607,8 @@ namespace FBGLPK {
 				 * @param geneOption   0, 1, or 2 as in the COBRA Toolbox.
 				 */
 
-				void setMinimizeFluxObjective(int biomassIndex, int geneOption) {
-					//std::cout << "[DEBUG setMinimizeFluxObjective] geneOption = " << geneOption 
+				void setMinimizeFluxObjective(int biomassIndex) {
+					//std::cout << "[DEBUG setMinimizeFluxObjective] geneOption = " << pFbaFlag 
 					//	        << ", biomassIndex = " << biomassIndex << std::endl;
 
 					// Azzera tutti i coefficienti
@@ -592,14 +620,15 @@ namespace FBGLPK {
 					// Per contare quante colonne penalizziamo
 					int countObjCol = 0;
 
-				/*
-					std::cout << "    [DEBUG] GeneAssocReactionsSplitted.size() = " 
+					// Stampo per debug la dimensione delle map
+					/*std::cout << "    [DEBUG] GeneAssocReactionsSplitted.size() = " 
 						        << GeneAssocReactionsSplitted.size() << std::endl;
 					std::cout << "    [DEBUG] NonGeneAssocReactionsSplitted.size() = " 
-						        << NonGeneAssocReactionsSplitted.size() << std::endl;
-					*/
-					switch(geneOption) {
+						        << NonGeneAssocReactionsSplitted.size() << std::endl;*/
+
+					switch(pFbaFlag) {
 						  case 0:
+						     // std::cout << "    Minimizzo TUTTE le reazioni (tranne biomassa)!" << std::endl;
 						      for (int c = 1; c <= numCols; c++) {
 						          if (c != biomassIndex) {
 						              glp_set_obj_coef(lp, c, 1.0);
@@ -609,6 +638,7 @@ namespace FBGLPK {
 						      break;
 
 						  case 1:
+						     // std::cout << "    Minimizzo SOLO reazioni gene-associated." << std::endl;
 						      for (auto &kv : GeneAssocReactionsSplitted){
 						          unsigned int col = kv.second;
 						          if ((int)col != biomassIndex) {
@@ -619,6 +649,7 @@ namespace FBGLPK {
 						      break;
 
 						  case 2:
+						     // std::cout << "    Minimizzo SOLO reazioni NON-gene-associated." << std::endl;
 						      for(auto &kv : NonGeneAssocReactionsSplitted){
 						          unsigned int col = kv.second;
 						          if((int)col != biomassIndex){
@@ -629,6 +660,7 @@ namespace FBGLPK {
 						      break;
 
 						  default:
+						      //std::cout << "    geneOption non riconosciuto, fallback = 0 (TUTTO)" << std::endl;
 						      for (int c = 1; c <= numCols; c++) {
 						          if (c != biomassIndex) {
 						              glp_set_obj_coef(lp, c, 1.0);
@@ -638,15 +670,26 @@ namespace FBGLPK {
 						      break;
 					}
 
+					// Debug: quante reazioni effettivamente penalizzate?
+					//std::cout << "    [DEBUG] Reazioni (colonne) con coefficiente=1: " << countObjCol << std::endl;
+
 					// Ora settiamo la minimizzazione
 					glp_set_obj_dir(lp, GLP_MIN);
+				//	std::cout << "    [DEBUG] Obiettivo impostato a MINIMIZE" << std::endl;
 					
-						int numCols2 = glp_get_num_cols(lp);
-						double sumFluxes = 0.0;
-						for (int col = 1; col <= numCols2; ++col) {
-								double fluxVal = glp_get_col_prim(lp, col);
-								sumFluxes += fluxVal;
-						}
+					int numCols2 = glp_get_num_cols(lp);
+					//double pfbaObjective = glp_get_obj_val(lp);
+					double sumFluxes = 0.0;
+					for (int col = 1; col <= numCols2; ++col) {
+							double fluxVal = glp_get_col_prim(lp, col);
+							sumFluxes += fluxVal;
+					}
+					//std::cout << "[DEBUG pFBA] objective_value = " << pfbaObjective
+					//					<< ", sum(|fluxes|) = " << sumFluxes << std::endl;
+
+						/*std::cout << "[DEBUG pFBA SUPER SOMMA FLUSSI]"
+								      << ",  sum(|fluxes|) = " << sumFluxes
+								      << std::endl;*/
 			}
 
 
