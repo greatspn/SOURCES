@@ -242,7 +242,7 @@ public class CppFormat {
 				sb.append("     * Unordered set to store transitions identified as related to biomass.\n");
 				sb.append("     */\n");
 				sb.append("     unordered_set<string> biomassTransitions;\n");
-				
+								
 				sb.append("			unordered_set<string> transitionsWithoutFile;\n");
 				
 				sb.append("    std::unordered_map<\n");
@@ -682,7 +682,7 @@ public class CppFormat {
 				sb.append("                    biomassTransitions.insert(transition);\n");
 				sb.append("                    //std::cerr << \"[DEBUG] => Inserito '\" << transition << \"' in biomassTransitions (entrambe input e output presenti).\\n\";\n");
 				sb.append("                } else {\n");
-				sb.append("                   // std::cerr << \"[DEBUG] => '\" << transition << \"' è IsBiomass ma NON ha entrambi input e output => NON inserita in biomassTransitions.\\n\";\n");
+				sb.append("                    //std::cerr << \"[DEBUG] => '\" << transition << \"' è IsBiomass ma NON ha entrambi input e output => NON inserita in biomassTransitions.\\n\";\n");
 				sb.append("                }\n");
 				sb.append("            }\n");
 				sb.append("\n");
@@ -880,6 +880,9 @@ public class CppFormat {
 				sb.append("                    continue;\n");
 				sb.append("                }\n");
 				sb.append("\n");
+				sb.append("                if (reaction == \"EX_biomass_e_f\" || reaction == \"EX_biomass_e_r\") {\n");
+				sb.append("                    continue; // do NOT update dynamic bounds for biomass reaction\n");
+				sb.append("                }\n");
 				sb.append("                bool isReverse = false;\n");
 				sb.append("                if (reaction.size() >= 2 && reaction.substr(reaction.size() - 2) == \"_f\") {\n");
 				sb.append("                    isReverse = true;\n");
