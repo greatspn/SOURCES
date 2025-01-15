@@ -1534,6 +1534,9 @@ public class GreatSpnFormat {
 				                            if (placeName.equals(bacteriaCountPlaceId)){
 				                                hasBacteriaCountPlace = true;
 				                            } else if (placeName.equals(bacteriaBiomassPlaceId)) {
+				                            		if(isBiomass){
+				                                		inputPlaces.append("\"").append(placeName).append("\",");				                            		
+				                            		}
 				                                hasBacteriaBiomassPlace = true;
 				                            } else {
 				                                inputPlaces.append("\"").append(placeName).append("\",");
@@ -1542,6 +1545,9 @@ public class GreatSpnFormat {
 				                        		String placeName = gspnEdge.getHeadNode().getUniqueName();
 																		if (!placeName.equals(bacteriaCountPlaceId) && !placeName.equals(bacteriaBiomassPlaceId)) {
 																				outputPlaces.append("\"").append(gspnEdge.getHeadNode().getUniqueName()).append("\",");
+																		}
+																		if(placeName.equals(bacteriaBiomassPlaceId) && isBiomass){
+																			outputPlaces.append("\"").append(gspnEdge.getHeadNode().getUniqueName()).append("\",");
 																		}
 				                        }
 				                    }
