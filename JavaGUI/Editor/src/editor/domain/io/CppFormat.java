@@ -41,6 +41,9 @@ public class CppFormat {
             }
 
             if(fluxBalance){
+							if (baseName.endsWith("_unf")) {
+									baseName = baseName.substring(0, baseName.length() - "_unf".length());
+							}
 							out.println("#define FBA_INFO_FILE \"./" + baseName + ".fbainfo\"");
               out.println("\n\n/**FBAProcessor Class Definition**/\n\n");
            		out.println(generateFBAClass());
