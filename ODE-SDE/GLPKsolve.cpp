@@ -910,8 +910,8 @@ void LPprob::setColumnBounds(std::ifstream& in, general::Parser& parser, const c
 		      }
 		  }
 		  
-		  //std::cout << "[finalizeLPAndSplit: " << fileProb << " ]" << "Reazioni aggiunte come forward (_f): " << forwardCount << std::endl;
-		  //std::cout << "[finalizeLPAndSplit " << fileProb << " ]" << " Reazioni aggiunte come reverse (_r): " << reverseCount << std::endl;
+		  std::cout << "[finalizeLPAndSplit: " << fileProb << " ]" << "Reazioni aggiunte come forward (_f): " << forwardCount << std::endl;
+		  std::cout << "[finalizeLPAndSplit " << fileProb << " ]" << " Reazioni aggiunte come reverse (_r): " << reverseCount << std::endl;
 
 		  unsigned int finalCols = (unsigned int)newIndexCount;
 

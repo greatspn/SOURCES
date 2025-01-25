@@ -303,7 +303,7 @@ namespace FBGLPK {
 
 						// 1) Imposta il livello di messaggi (per debugging). 
 						//    Può essere: GLP_MSG_OFF, GLP_MSG_ON, GLP_MSG_ERR, GLP_MSG_DBG, etc.
-						param.msg_lev = GLP_MSG_ERR; 
+						param.msg_lev = GLP_MSG_OFF; 
 
 						// 2) Attiva il presolve (opzionale, aiuta a ridurre il problema)
 					  //param.presolve = GLP_ON;
