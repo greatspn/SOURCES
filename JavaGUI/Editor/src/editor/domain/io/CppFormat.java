@@ -1069,7 +1069,7 @@ public class CppFormat {
 				sb.append("        }\n");
 				sb.append("\n");
 				sb.append("        if (hasBioMASS && biomassTransitions.find(transitionName) != biomassTransitions.end()) {\n");
-				sb.append("            std::cout << \"[computeRate] Biomass Transition Detected for Transition : \" << transitionName << \"rateo: \" << rate << std::endl;\n");
+				sb.append("            //std::cout << \"[computeRate] Biomass Transition Detected for Transition : \" << transitionName << \"rateo: \" << rate << std::endl;\n");
 				sb.append("            constant = floor(Value[NumPlaces.at(problemBacteriaPlace.at(problemIndex))]);\n");
 				sb.append("            return rate;\n");
 				sb.append("        } else if (hasMultiSpecies && hasBioMASS) {\n");
@@ -1078,7 +1078,7 @@ public class CppFormat {
 				sb.append("\n");
 				sb.append("\n");
 				sb.append("        if (hasBioMASS) {\n");
-				sb.append("            std::cout << \"[computeRate] Other rate Transition Detected for Transition : \" << transitionName << \"rateo: \" << rate << std::endl;\n");
+				sb.append("          //  std::cout << \"[computeRate] Other rate Transition Detected for Transition : \" << transitionName << \"rateo: \" << rate << std::endl;\n");
 				sb.append("            rate = rate * (constant * currentBiomass * scalingFactor);\n");
 				sb.append("        }\n");
 				sb.append("\n");
