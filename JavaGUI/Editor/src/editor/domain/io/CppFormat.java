@@ -324,7 +324,7 @@ public class CppFormat {
 				sb.append("    /**\n");
 				sb.append("     * Molecular Weight scaling factor.\n");
 				sb.append("     */\n");				
-				sb.append("     double Mw = 1;\n");				
+				sb.append("    double Mw = 1;\n");				
 				
 				sb.append("    double minDeltaThreshold = 1e-16;\n");		
 				
@@ -364,9 +364,16 @@ public class CppFormat {
 				
 
 				sb.append("    /**\n");
-				sb.append("     * Threshold for determining significant changes in metabolic concentrations, expressed as a percentage.\n");
+				sb.append("     * Threshold for determining significant changes in metabolic concentrations, expressed as a absolute value.\n");
 				sb.append("     */\n");
-				sb.append("    double epsilon = 0; // Initially set to 0%, can be configured.\n");
+				sb.append("    double absEpsilon = g_absEpsilon; // Initially set to 0%, can be configured.\n");
+				
+
+				sb.append("    /**\n");
+				sb.append("     * Threshold for determining significant changes in metabolic concentrations, expressed as a percentage.\n");
+				sb.append("     */\n");				
+				sb.append("    double relEpsilon = g_relEpsilon; // Initially set to 0%, can be configured.\n");
+				
 				
 				sb.append("    double scalingFactor = 1e-12; // Initially set to 0%, can be configured.\n");
 
@@ -574,16 +581,16 @@ public class CppFormat {
 				sb.append("    }\n");
 				sb.append("\n");
 				sb.append("    // 5) Non-biomass logic (classica):\n");
-				sb.append("    //    - se ci sono input => '_f'\n");
-				sb.append("    //    - se ci sono output => '_r'\n");
-				sb.append("    if (!outputs.empty() && splittedR) {\n");
-				sb.append("       // std::cerr << \"  [DEBUG splitted] '\" << reactionBase\n");
-				sb.append("         //         << \"' => '_r' (ha inputPlaces)\\n\";\n");
-				sb.append("        return reactionBase + \"_r\";\n");
-				sb.append("    } else if (!inputs.empty() && splittedF) {\n");
+				sb.append("    //    - se ci sono input => '_r'\n");
+				sb.append("    //    - se ci sono output => '_f'\n");
+				sb.append("    if (!outputs.empty() && splittedF) {\n");
 				sb.append("        //std::cerr << \"  [DEBUG splitted] '\" << reactionBase\n");
-				sb.append("         //         << \"' => '_f' (ha outputPlaces)\\n\";\n");
+				sb.append("        //          << \"' => '_r' (ha outputPlaces)\\n\";\n");
 				sb.append("        return reactionBase + \"_f\";\n");
+				sb.append("    } else if (!inputs.empty() && splittedR) {\n");
+				sb.append("        //std::cerr << \"  [DEBUG splitted] '\" << reactionBase\n");
+				sb.append("        //          << \"' => '_r' (ha inputPlaces)\\n\";\n");
+				sb.append("        return reactionBase + \"_r\";\n");
 				sb.append("    }\n");
 				sb.append("\n");
 				sb.append("    // 6) Fallback\n");
@@ -711,7 +718,7 @@ public class CppFormat {
 				sb.append("   	 								isBiomass\n");
 			  sb.append("										);\n");
 				sb.append("    								//cerr << \"[DEBUG readFBAInfo] reactionBase='\" << reaction\n");
-				sb.append("         				  //	<< \"' => finalReaction='\" << finalReaction << \"'\\n\";\n");
+				sb.append("         				  //<< \"transition: \" << transition	<< \"' => finalReaction='\" << finalReaction << \"'\\n\";\n");
 				sb.append("\n");
 				sb.append("    								FBAreact[transition] = finalReaction;\n");
 				sb.append("                   int checkReacId = vec_fluxb[index].fromNametoid(finalReaction);\n");
@@ -763,7 +770,9 @@ public class CppFormat {
 				sb.append("                    }\n");
 				sb.append("                }\n");
 				sb.append("            }\n");
-				sb.append("            ReactionMultiplicity[FBAreact[transition]] = multiplicity;\n");
+				sb.append("            ReactionMultiplicity[transition] = multiplicity;\n");
+				// Debug multiplicity
+				sb.append("            //cout << \"For transition: \" << transition << \" multiplicity: \" << ReactionMultiplicity[transition] << endl; \n");
 				sb.append("\n");
 				sb.append("            // Populate the reactionToBacteria map if bacteriaCountPlace is specified\n");
 				sb.append("            if (!bacteriaCountPlace.empty() && bacteriaCountPlace != \"N/A\") {\n");
@@ -792,39 +801,39 @@ public class CppFormat {
 
 				sb.append("\n\n");				
 								
-				
-				sb.append("    /**\n");
-				sb.append("     * Checks for significant changes in metabolite concentrations and returns a set of changed metabolites.\n");
-				sb.append("     * This set is used to determine which specific LP problems need to be updated based on the changed metabolites.\n");
-				sb.append("     *\n");
-				sb.append("     * @param Value Pointer to the array containing current metabolic values.\n");
-				sb.append("     * @param NumPlaces Mapping of place names to their corresponding indices in the metabolic array.\n");
-				sb.append("     * @return set<string> Set of metabolites that have undergone significant changes.\n");
-				sb.append("     */\n");
 				sb.append("    set<string> checkSignificantChange(double* Value, map<string, int>& NumPlaces, double time) {\n");
 				sb.append("        reactionsToUpdate.clear();\n");
 				sb.append("        set<string> changedMetabolites;\n");
-				sb.append("\n");
+				sb.append("        bool useAbsolute = (absEpsilon != -1);\n");
+				sb.append("        bool useRelative = (relEpsilon != -1);\n");
 				sb.append("        for (const auto& place : FBAplace) {\n");
 				sb.append("            string metabolite = place.second;\n");
 				sb.append("            double currentConcentration = trunc(Value[NumPlaces[metabolite]], decimalTrunc);\n");
 				sb.append("            double previousConcentration = previousConcentrations[metabolite];\n");
-				sb.append("            double change = fabs(currentConcentration - previousConcentration);\n");
-				sb.append("           	//double threshold = minDeltaThreshold;\n");
-				sb.append("            double percentChange = (previousConcentration != 0) ? (change / fabs(previousConcentration)) * 100.0 : 100.0;\n");
-				sb.append("\n");
-				sb.append("            bool condition1 = percentChange > epsilon;\n");
-				sb.append("            // && change > threshold;\n");
-				sb.append("            bool condition2 = previousConcentration == 0 && currentConcentration != 0;\n");
-				sb.append("\n");
-				sb.append("            if (condition1 || condition2) {\n");
+				sb.append("            double absoluteDiff = fabs(currentConcentration - previousConcentration);\n");
+				sb.append("            double percentChange = (previousConcentration != 0)\n");
+				sb.append("                ? (absoluteDiff / fabs(previousConcentration)) * 100.0\n");
+				sb.append("                : 100.0;\n");
+				sb.append("            bool condAbsolute = useAbsolute && (absoluteDiff > absEpsilon);\n");
+				sb.append("            bool condRelative = useRelative && (percentChange > relEpsilon);\n");
+				sb.append("            bool condFromZero = useRelative && (previousConcentration == 0 && currentConcentration != 0);\n");
+				sb.append("            if (condAbsolute || condRelative || condFromZero) {\n");
+				sb.append("                /*cout << \"[DEBUG] Metabolite '\" << metabolite\n");
+				sb.append("                     << \"' changed. Old: \" << previousConcentration\n");
+				sb.append("                     << \", New: \" << currentConcentration\n");
+				sb.append("                     << \", Diff: \" << (currentConcentration - previousConcentration)\n");
+				sb.append("                     << \", AbsDiff: \" << absoluteDiff\n");
+				sb.append("                     << \", PercentChange: \" << percentChange << \"%\"\n");
+				sb.append("                     << \", condAbsolute: \" << condAbsolute\n");
+				sb.append("                     << \", condRelative: \" << condRelative\n");
+				sb.append("                     << \", condFromZero: \" << condFromZero << endl;*/\n");
 				sb.append("                changedMetabolites.insert(metabolite);\n");
 				sb.append("            }\n");
 				sb.append("        }\n");
-				sb.append("\n");
 				sb.append("        return changedMetabolites;\n");
 				sb.append("    }\n");
-				
+
+
 
 				sb.append("\n\n");				
 						
@@ -889,7 +898,7 @@ public class CppFormat {
 				sb.append("                    continue; // do NOT update dynamic bounds for biomass reaction\n");
 				sb.append("                }\n");
 				sb.append("                bool isReverse = false;\n");
-				sb.append("                if (reaction.size() >= 2 && reaction.substr(reaction.size() - 2) == \"_f\") {\n");
+				sb.append("                if (reaction.size() >= 2 && reaction.substr(reaction.size() - 2) == \"_r\") {\n");
 				sb.append("                    isReverse = true;\n");
 				sb.append("                }\n");
 				sb.append("                if (!isReverse) {\n");
@@ -972,7 +981,7 @@ public class CppFormat {
 				sb.append("        }\n");
 				sb.append("\n");
 				sb.append("        for (auto index : toSolve) {\n");
-				sb.append("           // cout << \"Problema da risolvere ---> \" << index <<  \"   Name: \" << vec_fluxb[index].getFilename() << endl;\n");                
+				sb.append("            //cout << \"Problema da risolvere ---> \" << index <<  \"   Name: \" << vec_fluxb[index].getFilename() << endl;\n");                
 				sb.append("            vec_fluxb[index].solve();\n");
 				sb.append("            // PARSIMONIUS FLAGS:\n");
 				sb.append("            if(vec_fluxb[index].getPFbaFlag() != -1) performPFBA(vec_fluxb, index);\n");
@@ -1033,6 +1042,7 @@ public class CppFormat {
 				sb.append("            solveFBAProblems(vec_fluxb, changedMetabolites);\n");
 				sb.append("            updateConcentrations(Value, NumPlaces, changedMetabolites);\n");
 				sb.append("            count += 1;\n");
+				sb.append("            //cout << \"risolvo per la: \" << count << endl;\n");
 				sb.append("        }\n");
 				sb.append("    }\n");
 				
@@ -1064,22 +1074,25 @@ public class CppFormat {
 				sb.append("        double constant = 1.0;\n");
 				sb.append("        double currentBiomass = 1.0;\n");
 				sb.append("\n");
-				sb.append("        if (hasBioMASS) {\n");
+				sb.append("        double scalingMeasure = ReactionMultiplicity[transitionName];\n");
+				sb.append("        //cout << \" [Debug Transition Rate]: \" << transitionName << \"Scaling Factor for measure unit: \" <<  scalingMeasure << endl;\n");
+				sb.append("\n");
+				sb.append("        if(hasBioMASS){\n");
 				sb.append("            currentBiomass = Value[NumPlaces.at(problemBiomassPlace.at(problemIndex))];\n");
 				sb.append("        }\n");
 				sb.append("\n");
 				sb.append("        if (hasBioMASS && biomassTransitions.find(transitionName) != biomassTransitions.end()) {\n");
 				sb.append("            //std::cout << \"[computeRate] Biomass Transition Detected for Transition : \" << transitionName << \"rateo: \" << rate << std::endl;\n");
 				sb.append("            constant = floor(Value[NumPlaces.at(problemBacteriaPlace.at(problemIndex))]);\n");
-				sb.append("            return rate;\n");
+				sb.append("            return rate * scalingMeasure;\n");
 				sb.append("        } else if (hasMultiSpecies && hasBioMASS) {\n");
 				sb.append("            constant = floor(Value[NumPlaces.at(problemBacteriaPlace.at(problemIndex))]);\n");
 				sb.append("        }\n");
 				sb.append("\n");
 				sb.append("\n");
-				sb.append("        if (hasBioMASS) {\n");
-				sb.append("          //  std::cout << \"[computeRate] Other rate Transition Detected for Transition : \" << transitionName << \"rateo: \" << rate << std::endl;\n");
-				sb.append("            rate = rate * (constant * currentBiomass * scalingFactor);\n");
+				sb.append("        if(hasBioMASS) {\n");
+				sb.append("            //std::cout << \"[computeRate] Other rate Transition Detected for Transition : \" << transitionName << \"rateo: \" << rate << std::endl;\n");
+				sb.append("            rate = rate * (constant * currentBiomass * scalingFactor) * scalingMeasure;\n");
 				sb.append("        }\n");
 				sb.append("\n");
 				sb.append("        //cout << \"Ritorno rateo: \" << rate << endl;\n");

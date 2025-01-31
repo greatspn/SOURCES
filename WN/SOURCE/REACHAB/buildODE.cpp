@@ -1106,7 +1106,7 @@ for (pp = 0; pp < npl; pp++)
     }
     //variability
     out << " std::string fbound=\"\", finit=\"\", fparm=\"\";\n";
-    out << " double hini = 1e-6, atolODE = 1e-6, rtolODE=1e-6, ftime=1.0, stime=0.0, itime=0.0, epsTAU=0.1;\n\n";
+    out << " double hini = 1e-6, atolODE = 1e-6, rtolODE=1e-6, ftime=1.0, stime=0.0, itime=0.0, epsTAU=0.1, userAbs = -1, userRel = 0;\n\n";
     out << " cout<<\"\\n\\n =========================================================\\n\";\n";
     out << " cout<<\"|                ODE/SDE Solver                       |\\n\";\n";
     out << " cout<<\" =========================================================\\n\";\n";
@@ -1261,6 +1261,30 @@ for (pp = 0; pp < npl; pp++)
     out<< "\t\t\t std::cerr<<\"\\nError:  -seed  <value>\\n\";\n\t\t\t exit(EXIT_FAILURE);\n\t\t }\n";
     out<<"\t\t continue;\n";
     out<<"\t }\n";
+    
+		// -achn (absolute change)
+		out << "\t if (strcmp(\"-achn\", argv[ii])==0){\n";
+		out << "\t\t if (++ii<argc){\n";
+		out << "\t\t\t userAbs = atof(argv[ii]);\n";
+		out << "\t\t }\n";
+		out << "\t\t else{\n";
+		out << "\t\t\t std::cerr<<\"\\nError:  -achn  <value>\\n\";\n";
+		out << "\t\t\t exit(EXIT_FAILURE);\n";
+		out << "\t\t }\n";
+		out << "\t\t continue;\n";
+		out << "\t }\n\n";
+
+		// -rchn (relative change)
+		out << "\t if (strcmp(\"-rchn\", argv[ii])==0){\n";
+		out << "\t\t if (++ii<argc){\n";
+		out << "\t\t\t userRel = atof(argv[ii]);\n";
+		out << "\t\t }\n";
+		out << "\t\t else{\n";
+		out << "\t\t\t std::cerr<<\"\\nError:  -rchn  <value>\\n\";\n";
+		out << "\t\t\t exit(EXIT_FAILURE);\n";
+		out << "\t\t }\n";
+		out << "\t\t continue;\n";
+		out << "\t }\n\n";
 
 //variability
 //variability analysis
@@ -1309,6 +1333,9 @@ for (pp = 0; pp < npl; pp++)
     out << " cout<<\"\\tInitial  time: \"<<itime<<\"\\n\";\n";
     out << " cout<<\"\\tAbosolute tolerance: \"<<atolODE<<\"\\n\";\n";
     out << " cout<<\"\\tRelative tolerance: \"<<rtolODE<<\"\\n\";\n";
+    // Chiabrando
+    out << " cout<<\"\\tAbsolute Change: \"<<userAbs<<\"\\n\";\n";
+    out << " cout<<\"\\tRelative Change: \"<<userRel<<\"\\n\";\n";
     //out << " if ((strcmp(argv[2],\"ODE\")!=0)&&(strcmp(argv[2],\"ode\")!=0)){\n";
     out << " cout<<\"\\tEpsilon value for TAU-leaping: \"<<epsTAU<<\"\\n\";\n";
     out << " cout<<\"\\tSolution runs: \"<<runs<<\"\\n\";\n";
@@ -1447,6 +1474,8 @@ for (pp = 0; pp < npl; pp++)
     //automaton
     cout << "\tDone.\n" << endl;
     out << "\n se.setEpsTAU(epsTAU);\n";
+    out << "\n g_absEpsilon = userAbs;\n";
+    out << "\n g_relEpsilon = userRel;\n";
     out << "\n se.Print();\n";
     //automaton
     if (AUTOMATON)
@@ -1487,6 +1516,7 @@ for (pp = 0; pp < npl; pp++)
     out << " getrusage(who,&usage);\n";
     out << " cout<<\"Total memory used: \"<<usage.ru_maxrss<<\"KB\"<<endl;\n";
     out << " cout<<\"\\n=========================== MEM. ===========================\\n\\n\";\n\n}";
+
 //     return EXIT_SUCCESS;
 //
 //free memory

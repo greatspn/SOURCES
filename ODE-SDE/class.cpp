@@ -36,6 +36,10 @@ double MININC=0;
 namespace SDE {
 
 
+//Chiabrando
+double g_absEpsilon;  
+double g_relEpsilon; 
+
 //long int seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 
 std::mt19937_64 generator;//(seed);
@@ -2704,7 +2708,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 
 	ofstream out;
 #ifdef CGLPK
-	vector <ofstream> outflux(vec_fluxb.size());	
+	vector<ofstream> outflux(vec_fluxb.size());	
 	vector<ofstream> outUb(vec_fluxb.size());		// For upper bounds debug files
 #endif
 	if (Info)
@@ -2872,7 +2876,7 @@ void SystEq::SolveLSODE(double h,double perc1,double perc2,double Max_Time,bool 
 
 	}
 */ 
-	cout<<"\nSolution at time2 "<<Max_Time<<":\n";
+	cout<<"\nSolution at time "<<Max_Time<<":\n";
 	for (int i=0;i<nPlaces;i++)//store resul ode and print final time for each trace
 	{
 		FinalValueXRun[i][0]= y[i+1];

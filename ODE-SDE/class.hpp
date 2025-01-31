@@ -186,6 +186,9 @@ namespace SDE
   extern vector<string> name_file;
   extern vector<Table> class_files;
 
+	//@Chiabrando
+	extern double g_absEpsilon;  // Soglia assoluta
+	extern double g_relEpsilon;  // Soglia relativa
 
   //!Exception
   struct Exception

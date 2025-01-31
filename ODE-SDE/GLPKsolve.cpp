@@ -849,14 +849,12 @@ void LPprob::setColumnBounds(std::ifstream& in, general::Parser& parser, const c
 		  }
 		  dataCollected = true;
 		  sizeColBeforeSplitting = sizeCol;
-		  // =========================
-		  // 1) Prepara i vettori “finali”
-		  // =========================
+
 		  std::vector<std::string> newReactions;
 		  std::vector<int>         newBoundType;
 		  std::vector<double>      newLb, newUb;
 
-		  // Mappature per capire come la colonna i-esima (old) diventa 1 o 2 colonne (new)
+
 		  std::vector<int> mapFwd(sizeCol, -1);
 		  std::vector<int> mapRev(sizeCol, -1);
 
@@ -864,81 +862,120 @@ void LPprob::setColumnBounds(std::ifstream& in, general::Parser& parser, const c
 		  int forwardCount = 0;  // Contatore per reazioni forward
 		  int reverseCount = 0;  // Contatore per reazioni reverse
 
-		  // Splitting colonna per colonna
-		  for(unsigned int c = 0; c < sizeCol; c++)
-		  {
-		      double LB = tmpLb[c];
-		      double UB = tmpUb[c];
+		      // -------------------------------------------------------------------------
+    //                  SPLITTING COLONNA PER COLONNA
+    // -------------------------------------------------------------------------
+    for(unsigned int c = 0; c < sizeCol; c++)
+    {
+        double LB = tmpLb[c];
+        double UB = tmpUb[c];
 
-		      // Se la reazione c ha lb < 0 < ub => splitted
-		      if(LB < 0.0 && UB > 0.0) {
-		          // Forward
-		          {
-		              std::string fwdName = tmpReactions[c] + "_f";
-		              newReactions.push_back(fwdName);
-		              newBoundType.push_back(GLP_DB); // double-bounded => [0, UB]
-		              newLb.push_back(0.0);
-		              newUb.push_back(UB);
+        // -----------------------------------------------------------
+        // CASO 1: reazione effettivamente reversibile (LB<0 < UB)
+        // -----------------------------------------------------------
+        if(LB < 0.0 && UB > 0.0) 
+        {
+            // Forward
+            {
+                std::string fwdName = tmpReactions[c] + "_f";
+                newReactions.push_back(fwdName);
+                newBoundType.push_back(GLP_DB);  // double-bounded => [0, UB]
+                newLb.push_back(0.0);
+                newUb.push_back(UB);
 
-		              mapFwd[c] = newIndexCount;
-		              newIndexCount++;
-		             	forwardCount++;  // Incrementa forward
-		          }
-		          // Reverse
-		          {
-		              std::string revName = tmpReactions[c] + "_r";
-		              newReactions.push_back(revName);
-		              newBoundType.push_back(GLP_DB); // [0, -LB]
-		              newLb.push_back(0.0);
-		              newUb.push_back(-LB);
+                mapFwd[c] = newIndexCount;
+                newIndexCount++;
+                forwardCount++; 
+            }
+            // Reverse
+            {
+                std::string revName = tmpReactions[c] + "_r";
+                newReactions.push_back(revName);
+                newBoundType.push_back(GLP_DB);  // double-bounded => [0, -LB]
+                newLb.push_back(0.0);
+                newUb.push_back(-LB);
 
-		              mapRev[c] = newIndexCount;
-		              newIndexCount++;
-		              reverseCount++;  // Incrementa forward
-		          }
-		      }
-		      else {
-		          // Non splitted => 1 colonna invariata
-		          newReactions.push_back(tmpReactions[c]);
-		          newBoundType.push_back(tmpBoundType[c]);
-		          newLb.push_back(LB);
-		          newUb.push_back(UB);
+                mapRev[c] = newIndexCount;
+                newIndexCount++;
+                reverseCount++;
+            }
+        }
+        // -----------------------------------------------------------
+        // CASO 2: LB < 0 e UB <= 0 => reazione irreversibile "al contrario"
+        // -----------------------------------------------------------
+        else if (LB < 0.0 && UB <= 0.0)
+        {
+            // Qui vogliamo comunque splittare:
+            // - colonna "reverse" con [0, -LB]
+            // - colonna "forward" fissa a 0 (GLP_FX=0)
+            {
+                // Reverse
+                std::string revName = tmpReactions[c] + "_r";
+                newReactions.push_back(revName);
+                newBoundType.push_back(GLP_DB);  // double-bounded => [0, -LB]
+                newLb.push_back(0.0);
+                newUb.push_back(-LB);
 
-		          mapFwd[c] = newIndexCount;
-		          mapRev[c] = -1;
-		          newIndexCount++;
-		      }
-		  }
+                mapRev[c] = newIndexCount;
+                newIndexCount++;
+                reverseCount++;
+            }
+            {
+                // Forward (morta)
+                std::string fwdName = tmpReactions[c] + "_f";
+                newReactions.push_back(fwdName);
+                // GLP_FX => variabile fissa
+                newBoundType.push_back(GLP_FX);
+                newLb.push_back(0.0);
+                newUb.push_back(0.0);
+
+                mapFwd[c] = newIndexCount;
+                newIndexCount++;
+                forwardCount++; 
+            }
+        }
+        // -----------------------------------------------------------
+        // CASO 3: tutti gli altri (LB>=0 oppure LB=0 & UB>=0, etc.)
+        //         -> non splitted => 1 colonna invariata
+        // -----------------------------------------------------------
+        else 
+        {
+            newReactions.push_back(tmpReactions[c]);
+            newBoundType.push_back(tmpBoundType[c]);
+            newLb.push_back(LB);
+            newUb.push_back(UB);
+
+            mapFwd[c] = newIndexCount; // "fwd" coincide con la colonna singola
+            mapRev[c] = -1;
+            newIndexCount++;
+        }
+    }
 		  
 		 // std::cout << "[finalizeLPAndSplit: " << fileProb << " ]" << "Reazioni aggiunte come forward (_f): " << forwardCount << std::endl;
 		 // std::cout << "[finalizeLPAndSplit " << fileProb << " ]" << " Reazioni aggiunte come reverse (_r): " << reverseCount << std::endl;
 
 		  unsigned int finalCols = (unsigned int)newIndexCount;
 
-		  // =========================
-		  // 2) Ricostruire la matrice sparsa
-		  // =========================
+
 		  std::vector<SparseEntry> newMatrix;
 		  newMatrix.reserve(tmpMatrix.size() * 2);
 
 		  for(const auto& e : tmpMatrix) {
-		      int oldCol   = e.col - 1; // 1-based -> 0-based
-		      int oldRow   = e.row;     // la riga possiamo lasciarla 1-based
+		      int oldCol   = e.col - 1;
+		      int oldRow   = e.row;     
 		      double coeff = e.val;
 
 		      if(mapRev[oldCol] >= 0) {
-		          // splitted => abbiamo col forward e col reverse
+
 		          int cF = mapFwd[oldCol]; 
 		          int cR = mapRev[oldCol]; 
 
-		          // parte forward: coeff invariato
 		          SparseEntry eF;
 		          eF.row = oldRow;    
-		          eF.col = cF + 1;    // back to 1-based
+		          eF.col = cF + 1;    
 		          eF.val = coeff;
 		          newMatrix.push_back(eF);
 
-		          // parte reverse: coeff con segno invertito
 		          SparseEntry eR;
 		          eR.row = oldRow;
 		          eR.col = cR + 1;
@@ -946,7 +983,6 @@ void LPprob::setColumnBounds(std::ifstream& in, general::Parser& parser, const c
 		          newMatrix.push_back(eR);
 		      }
 		      else {
-		          // non splitted
 		          int cN = mapFwd[oldCol];
 		          SparseEntry eN;
 		          eN.row = oldRow;
@@ -958,10 +994,7 @@ void LPprob::setColumnBounds(std::ifstream& in, general::Parser& parser, const c
 
 		  unsigned int finalNonZeros = (unsigned int)newMatrix.size();
 
-		  // =========================
-		  // 3) Costruisci davvero l'oggetto GLPK
-		  // =========================
-		  // Se c’era già qualcosa, pulisci
+
 		  if (lp) {
 		      glp_delete_prob(lp);
 		      lp = nullptr;
@@ -1073,22 +1106,15 @@ void LPprob::setColumnBounds(std::ifstream& in, general::Parser& parser, const c
 		      oldObjName = tmpReactions[pFBA_index-1]; 
 		  }
 
-		  // Una volta popolato ReactionsNamesOrd col new set:
-		  // Re-inizializzo pFBA_index = 0
+
 		  pFBA_index = 0;
 
-		  // Ora cerco se la reazione è splitted
-		  //   - se era irr, trovo directly oldObjName
-		  //   - se era rev, trovo oldObjName + "_f" (ad es.)
-		  // E setto pFBA_index
 		  for (unsigned int c=0; c<ReactionsNamesOrd.size(); c++){
 		      std::string rName = ReactionsNamesOrd[c];
-		      // Caso tipico, biomassa irreversibile
 		      if (rName == oldObjName){
 		          pFBA_index = c+1;
 		          break;
 		      }
-		      // Caso splitted
 		      else if (rName == oldObjName + "_f"){
 		          pFBA_index = c+1;
 		          break;
