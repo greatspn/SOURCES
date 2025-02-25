@@ -167,6 +167,8 @@ public class CppFormat {
 				sb.append("            mapReactionsFromProblems(vec_fluxb);\n");
 				sb.append("            loadAndApplyFBAReactionUpperBounds(vec_fluxb, \"EX_upper_bounds_FBA.csv\");\n");
 				sb.append("            updateNonFBAReactionUpperBoundsFromFile(vec_fluxb, \"EX_upper_bounds_nonFBA.csv\");\n");
+				sb.append("            loadGeneRules(vec_fluxb, \"GeneRules.txt\");\n");				
+				sb.append("            debugPrintGeneRules();\n");	
 				sb.append("            firstTransitionName = NameTrans[T];\n");
 				sb.append("            init = true;\n");
 				sb.append("        }\n");
@@ -176,7 +178,7 @@ public class CppFormat {
 				sb.append("                    deadBacterialSpecies[problem.second] = true;\n");
 				sb.append("                }\n");
 				sb.append("            }\n");
-				sb.append("            if (hasBioMASS) {\n");
+				sb.append("            if(hasBioMASS){\n");
 				sb.append("            		updateAllBiomassReactionsUpperBounds(Value, NumPlaces, vec_fluxb); // Update biomass upper limits\n");
 				sb.append("            }\n");
 				sb.append("            updateFluxBoundsAndSolve(Value, vec_fluxb, NumPlaces, time); // Update fluxes only on first transition\n");
@@ -204,6 +206,29 @@ public class CppFormat {
 
 				sb.append("		private:\n");
 				
+				// ---------------------- Gene Regulation Rules ----------------------
+				/**
+				 * @brief Structure to hold gene regulation rule data.
+				 *
+				 * Each rule can have a time condition, a concentration condition (based on a metabolite),
+				 * or both. Use "NA" in the input file to indicate that a field is not specified.
+				 */
+				sb.append("    struct GeneRule {\n");
+				sb.append("        bool timeSpecified;       // true if a time condition is specified\n");
+				sb.append("        double time;              // simulation time condition (only valid if timeSpecified is true)\n\n");
+				sb.append("        bool placeSpecified;      // true if a metabolite condition is specified\n");
+				sb.append("        std::string place;        // name of the metabolite (e.g., \"glc_D_e\")\n\n");
+				sb.append("        bool thresholdSpecified;  // true if a threshold condition is specified\n");
+				sb.append("        double threshold;         // concentration threshold (only valid if thresholdSpecified is true)\n\n");
+				sb.append("        std::string compType;     // comparison type: \"min\", \"max\", or \"NA\"\n\n");
+				sb.append("        std::string reactionID;   // reaction identifier (e.g., \"LACZ\")\n");
+				sb.append("        double newLB;             // new lower bound for the reaction\n");
+				sb.append("        double newUB;             // new upper bound for the reaction\n");
+				sb.append("        std::string bacterium;    // bacterium name for which the rule is associated\n");
+				sb.append("        size_t lpIndex;           // index in the vector of LP problems (default: numeric_limits<size_t>::max())\n");
+				sb.append("        bool applied;             // flag to track if the rule has been applied\n");
+				sb.append("    };\n\n");
+				// Structure to maintain the correlation between gene and nonGene associated reactions
 
 				sb.append("    struct PairHash {\n");
 				sb.append("        size_t operator()(const std::pair<std::string, size_t>& p) const {\n");
@@ -394,17 +419,193 @@ public class CppFormat {
 				sb.append("    FBAProcessor() : init(false) {\n");
 				sb.append("    }\n\n");
 							
-				// Definizione della mappa metaboliteToProblems
 				sb.append("    /**\n");
 				sb.append("     * Maps each metabolite to a set of problem indices that are affected by changes in this metabolite.\n");
 				sb.append("     * This helps optimize the processing by updating only relevant LP problems when specific metabolite concentrations change.\n");
 				sb.append("     */\n");
 				sb.append("    unordered_map<string, set<size_t>> metaboliteToProblems;\n\n");
 				
+				// Gene Rules related structure:
+
+				sb.append("    std::vector<GeneRule> geneRules;\n");
+				sb.append("    bool geneRulesLoaded;\n\n");
+				
+				
+				sb.append("    /**\n");
+				sb.append("     * @brief Loads gene regulation rules from a file with a default name.\n");
+				sb.append("     *        If the file is not present, the simulation continues without gene rules.\n");
+				sb.append("     * @param vec_fluxb The vector of LP problems (used to map bacterium names to LP indices).\n");
+				sb.append("     * @param filename The file name to load; default is \"GeneRules.txt\".\n");
+				sb.append("     */\n");
+				sb.append("    void loadGeneRules(const vector<class FBGLPK::LPprob>& vec_fluxb, const std::string &filename = \"GeneRules.txt\") {\n");
+				sb.append("        std::ifstream infile(filename.c_str());\n");
+				sb.append("        if (!infile) {\n");
+				sb.append("            std::cout << \"Gene rules file '\" << filename \n");
+				sb.append("                      << \"' not found. Continuing simulation without gene rules.\" << std::endl;\n");
+				sb.append("            geneRulesLoaded = false;\n");
+				sb.append("            return;\n");
+				sb.append("        }\n");
+				sb.append("        geneRules.clear();\n");
+				sb.append("        std::string line;\n");
+				sb.append("        while (std::getline(infile, line)) {\n");
+				sb.append("            if (line.empty() || line[0] == '#') continue;\n");
+				sb.append("            size_t commentPos = line.find('#');\n");
+				sb.append("            if (commentPos != std::string::npos) line = line.substr(0, commentPos);\n");
+				sb.append("            std::istringstream iss(line);\n");
+				sb.append("            std::vector<std::string> tokens;\n");
+				sb.append("            std::string token;\n");
+				sb.append("            while (std::getline(iss, token, ',')) {\n");
+				sb.append("                token.erase(0, token.find_first_not_of(\" \\t\\r\\n\"));\n");
+				sb.append("                token.erase(token.find_last_not_of(\" \\t\\r\\n\") + 1);\n");
+				sb.append("                if (!token.empty()) tokens.push_back(token);\n");
+				sb.append("            }\n");
+				sb.append("            if (tokens.size() < 7) {\n");
+				sb.append("                std::cerr << \"Skipping invalid gene rule: \" << line << std::endl;\n");
+				sb.append("                continue;\n");
+				sb.append("            }\n");
+				sb.append("            GeneRule rule;\n");
+				sb.append("            if (tokens[0] == \"NA\") { rule.timeSpecified = false; } else { rule.timeSpecified = true; rule.time = std::stod(tokens[0]); }\n");
+				sb.append("            if (tokens[1] == \"NA\") { rule.placeSpecified = false; } else { rule.placeSpecified = true; rule.place = tokens[1]; }\n");
+				sb.append("            if (tokens[2] == \"NA\") { rule.thresholdSpecified = false; } else { rule.thresholdSpecified = true; rule.threshold = std::stod(tokens[2]); }\n");
+				sb.append("            // tokens[3] is reactionID\n");
+				sb.append("            rule.reactionID = tokens[3];\n");
+				sb.append("            // tokens[4] is newLB, tokens[5] is newUB\n");
+				sb.append("            rule.newLB = std::stod(tokens[4]);\n");
+				sb.append("            rule.newUB = std::stod(tokens[5]);\n");
+				sb.append("            // tokens[6] is bacterium name\n");
+				sb.append("            rule.bacterium = tokens[6];\n");
+				sb.append("            // If a comparison type is provided as an optional 7th token, use it; otherwise, set to \"NA\"\n");
+				sb.append("            if (tokens.size() >= 8) {\n");
+				sb.append("                rule.compType = tokens[7];\n");
+				sb.append("            } else {\n");
+				sb.append("                rule.compType = \"NA\";\n");
+				sb.append("            }\n");
+				sb.append("            // Determine the LP index for the bacterium; assume findLPIndex is defined\n");
+				sb.append("            rule.lpIndex = findLPIndex(vec_fluxb, rule.bacterium);\n");
+				sb.append("            if (rule.lpIndex == std::numeric_limits<size_t>::max()) {\n");
+				sb.append("                std::cerr << \"Error: Bacterium '\" << rule.bacterium << \"' not found among LP problems.\" << std::endl;\n");
+				sb.append("            }\n");
+				sb.append("            // Set the applied flag to false initially\n");
+				sb.append("            rule.applied = false;\n");
+				sb.append("            geneRules.push_back(rule);\n");
+				sb.append("        }\n");
+				sb.append("        infile.close();\n");
+				sb.append("        geneRulesLoaded = true;\n");
+				sb.append("        std::cout << \"Loaded \" << geneRules.size() << \" gene rule(s) from \" << filename << std::endl;\n");
+				sb.append("    }\n");
+				// ---------------------- End Gene Regulation Rules ----------------------
+				
+				// ----------------------- Debug Gene Rules Function ----------------------
+				sb.append("    void debugPrintGeneRules() {\n");
+				sb.append("        std::cout << \"DEBUG: Loaded \" << geneRules.size() << \" gene rule(s):\" << std::endl;\n");
+				sb.append("        for (size_t i = 0; i < geneRules.size(); ++i) {\n");
+				sb.append("            const GeneRule &rule = geneRules[i];\n");
+				sb.append("            std::cout << \"GeneRule[\" << i << \"]: \";\n");
+				sb.append("            std::cout << \"Time = \";\n");
+				sb.append("            if (rule.timeSpecified)\n");
+				sb.append("                std::cout << rule.time;\n");
+				sb.append("            else\n");
+				sb.append("                std::cout << \"NA\";\n");
+				sb.append("            std::cout << \", Place = \";\n");
+				sb.append("            if (rule.placeSpecified)\n");
+				sb.append("                std::cout << rule.place;\n");
+				sb.append("            else\n");
+				sb.append("                std::cout << \"NA\";\n");
+				sb.append("            std::cout << \", Threshold = \";\n");
+				sb.append("            if (rule.thresholdSpecified)\n");
+				sb.append("                std::cout << rule.threshold;\n");
+				sb.append("            else\n");
+				sb.append("                std::cout << \"NA\";\n");
+				sb.append("            std::cout << \", ReactionID = \" << rule.reactionID;\n");
+				sb.append("            std::cout << \", newLB = \" << rule.newLB;\n");
+				sb.append("            std::cout << \", newUB = \" << rule.newUB;\n");
+				sb.append("            std::cout << \", Bacterium = \" << rule.bacterium;\n");
+				sb.append("            std::cout << \", lpIndex = \" << rule.lpIndex;\n");
+				sb.append("            std::cout << \", compType = \" << rule.compType;\n");
+				sb.append("            std::cout << \", applied = \" << (rule.applied ? \"YES\" : \"NO\") << std::endl;\n");
+				sb.append("        }\n");
+				sb.append("    }\n");
+				// ------------------- End Debug Gene Rules Function ----------------------
+
+
+				// ---------------------- Gene Regulation Rule Application (Debug Version) ----------------------
+				sb.append("    void applyGeneRegulationRules(double *Value, vector<class FBGLPK::LPprob>& vec_fluxb, map<string,int>& NumPlaces, double time) {\n");
+				sb.append("        //std::cout << \"[DEBUG] Applying gene regulation rules at time \" << time << std::endl;\n");
+				sb.append("        for (size_t i = 0; i < geneRules.size(); ++i) {\n");
+				sb.append("            GeneRule &rule = geneRules[i];\n");
+				sb.append("            // Skip rule if already applied\n");
+				sb.append("            if (rule.applied) {\n");
+				sb.append("                //std::cout << \"[DEBUG] GeneRule[\" << i << \"] already applied, skipping.\" << std::endl;\n");
+				sb.append("                continue;\n");
+				sb.append("            }\n");
+				sb.append("           // std::cout << \"[DEBUG] Evaluating GeneRule[\" << i << \"]: Reaction = \" << rule.reactionID;\n");
+				sb.append("            if (rule.timeSpecified) {\n");
+				sb.append("                //std::cout << \", Time condition: current time (\" << time << \") >= \" << rule.time;\n");
+				sb.append("            } else {\n");
+				sb.append("                //std::cout << \", Time condition: NA\";\n");
+				sb.append("            }\n");
+				sb.append("            if (rule.placeSpecified && rule.thresholdSpecified) {\n");
+				sb.append("                //std::cout << \", Place condition: \" << rule.place;\n");
+				sb.append("                if (NumPlaces.find(rule.place) != NumPlaces.end()) {\n");
+				sb.append("                    //int idx = NumPlaces[rule.place];\n");
+				sb.append("                    //double conc = Value[idx];\n");
+				sb.append("                    //std::cout << \" (current conc = \" << conc << \")\";\n");
+				sb.append("                } else {\n");
+				sb.append("                    //std::cout << \" (metabolite not found)\";\n");
+				sb.append("                }\n");
+				sb.append("            } else {\n");
+				sb.append("               // std::cout << \", Place condition: NA\";\n");
+				sb.append("            }\n");
+				sb.append("            //std::cout << \", compType = \" << rule.compType << std::endl;\n");
+				sb.append("\n");
+				sb.append("            bool triggered = true;\n");
+				sb.append("            if (rule.timeSpecified) {\n");
+				sb.append("                triggered = triggered && (time >= rule.time);\n");
+				sb.append("            }\n");
+				sb.append("            if (rule.placeSpecified && rule.thresholdSpecified) {\n");
+				sb.append("                if (NumPlaces.find(rule.place) != NumPlaces.end()) {\n");
+				sb.append("                    int idx = NumPlaces[rule.place];\n");
+				sb.append("                    double conc = Value[idx];\n");
+				sb.append("                    if (rule.compType == \"min\") {\n");
+				sb.append("                        triggered = triggered && (conc <= rule.threshold);\n");
+				sb.append("                    } else if (rule.compType == \"max\") {\n");
+				sb.append("                        triggered = triggered && (conc >= rule.threshold);\n");
+				sb.append("                    } else {\n");
+				sb.append("                        // Default behavior: use 'max' condition\n");
+				sb.append("                        triggered = triggered && (conc >= rule.threshold);\n");
+				sb.append("                    }\n");
+				sb.append("                } else {\n");
+				sb.append("                    triggered = false;\n");
+				sb.append("                }\n");
+				sb.append("            }\n");
+				sb.append("            //std::cout << \"[DEBUG] GeneRule[\" << i << \"] triggered: \" << (triggered ? \"YES\" : \"NO\") << std::endl;\n");
+				sb.append("            if (triggered) {\n");
+				sb.append("                for (size_t j = 0; j < vec_fluxb.size(); ++j) {\n");
+				sb.append("                    int colIdx = vec_fluxb[j].fromNametoid(rule.reactionID);\n");
+				sb.append("                    if (colIdx != -1) {\n");
+				sb.append("                        if (rule.newLB == rule.newUB) {\n");
+				sb.append("                            vec_fluxb[j].update_bound(colIdx, \"GLP_FX\", rule.newLB, rule.newUB);\n");
+				sb.append("                        } else {\n");
+				sb.append("                            vec_fluxb[j].update_bound(colIdx, \"GLP_DB\", rule.newLB, rule.newUB);\n");
+				sb.append("                        }\n");
+				sb.append("                        std::cout << \"[DEBUG] Applied gene rule for reaction \" << rule.reactionID \n");
+				sb.append("                                  << \" in LP problem \" << j << \" at time \" << time \n");
+				sb.append("                                  << \" (new bounds: [\" << rule.newLB << \", \" << rule.newUB << \"])\" << std::endl;\n");
+				sb.append("                    } else {\n");
+				sb.append("                        std::cout << \"[DEBUG] Reaction \" << rule.reactionID \n");
+				sb.append("                                  << \" not found in LP problem \" << j << std::endl;\n");
+				sb.append("                    }\n");
+				sb.append("                }\n");
+				sb.append("                rule.applied = true;\n");
+				sb.append("            }\n");
+				sb.append("        }\n");
+				sb.append("    }\n");
+				// ---------------------- End Gene Regulation Rule Application (Debug Version) ----------------------
+
+
 		
 				sb.append("\n\n");
 				
-
 				sb.append("    /**\n");
 				sb.append("     * Destructor to clean up memory allocated for the Vars pointer of pointers, ensuring no memory leaks.\n");
 				sb.append("     */\n");
@@ -717,7 +918,7 @@ public class CppFormat {
 				sb.append("    									irreversMap,\n");
 				sb.append("   	 								isBiomass\n");
 			  sb.append("										);\n");
-				sb.append("    								//cerr << \"[DEBUG readFBAInfo] reactionBase='\" << reaction\n");
+				sb.append("    								//cout << \"[DEBUG readFBAInfo] reactionBase='\" << reaction\n");
 				sb.append("         				  //<< \"transition: \" << transition	<< \"' => finalReaction='\" << finalReaction << \"'\\n\";\n");
 				sb.append("\n");
 				sb.append("    								FBAreact[transition] = finalReaction;\n");
@@ -804,8 +1005,11 @@ public class CppFormat {
 				sb.append("    set<string> checkSignificantChange(double* Value, map<string, int>& NumPlaces, double time) {\n");
 				sb.append("        reactionsToUpdate.clear();\n");
 				sb.append("        set<string> changedMetabolites;\n");
+				sb.append("        double relChange = (relEpsilon > 100.0) ? 100.0 : ((relEpsilon < 0.0 && absEpsilon == -1) ? 0 : ((relEpsilon < 0.0 && absEpsilon != -1) ? -1 : relEpsilon));\n");
+				sb.append("       //cout << \"[DEBUG] relChange: \" << relChange << endl;\n");
+				sb.append("       // cout << \"[DEBUG] absChange: \" << absEpsilon << endl;\n");
 				sb.append("        bool useAbsolute = (absEpsilon != -1);\n");
-				sb.append("        bool useRelative = (relEpsilon != -1);\n");
+				sb.append("        bool useRelative = (relChange != -1);\n");
 				sb.append("        for (const auto& place : FBAplace) {\n");
 				sb.append("            string metabolite = place.second;\n");
 				sb.append("            double currentConcentration = trunc(Value[NumPlaces[metabolite]], decimalTrunc);\n");
@@ -815,9 +1019,10 @@ public class CppFormat {
 				sb.append("                ? (absoluteDiff / fabs(previousConcentration)) * 100.0\n");
 				sb.append("                : 100.0;\n");
 				sb.append("            bool condAbsolute = useAbsolute && (absoluteDiff > absEpsilon);\n");
-				sb.append("            bool condRelative = useRelative && (percentChange > relEpsilon);\n");
+				sb.append("            bool condRelative = useRelative && (percentChange > relChange);\n");
 				sb.append("            bool condFromZero = useRelative && (previousConcentration == 0 && currentConcentration != 0);\n");
-				sb.append("            if (condAbsolute || condRelative || condFromZero) {\n");
+				sb.append("            bool condFirstSol = (previousConcentration == -1);\n");
+				sb.append("            if (condAbsolute || condRelative || condFromZero || condFirstSol) {\n");
 				sb.append("                /*cout << \"[DEBUG] Metabolite '\" << metabolite\n");
 				sb.append("                     << \"' changed. Old: \" << previousConcentration\n");
 				sb.append("                     << \", New: \" << currentConcentration\n");
@@ -1037,9 +1242,12 @@ public class CppFormat {
 				sb.append("                reactionsToUpdate.insert(place.first);\n");
 				sb.append("            }\n");
 				sb.append("\n");
+				sb.append("            applyGeneRegulationRules(Value, vec_fluxb, NumPlaces, time);\n");
 				sb.append("            updateFluxBounds(Value, vec_fluxb, NumPlaces, changedMetabolites, time);\n");
 				sb.append("            updateNonFBAReactionsUB(vec_fluxb, NumPlaces, Value);\n");
+			//	sb.append("            cout << \"Mi preparo a risolvere per la: \" << count << endl;\n");
 				sb.append("            solveFBAProblems(vec_fluxb, changedMetabolites);\n");
+								//sb.append("            cout << \"Ho risolto per la: \" << count << endl;\n");
 				sb.append("            updateConcentrations(Value, NumPlaces, changedMetabolites);\n");
 				sb.append("            count += 1;\n");
 				sb.append("            //cout << \"risolvo per la: \" << count << endl;\n");
@@ -1068,6 +1276,9 @@ public class CppFormat {
 				sb.append("        int problemIndex = FBAproblems[transitionName];\n");
 				sb.append("\n");
 				sb.append("        int varIndex = vec_fluxb[problemIndex].fromNametoid(FBAreact[transitionName]);\n");
+				sb.append("       // int tmpProva = vec_fluxb[problemIndex].fromNametoid(\"biomass525\");\n");
+				sb.append("        //double rateTmp = Vars[problemIndex][tmpProva];\n");
+				sb.append("        //std::cout << \"[tmpProva] biomass525 rate : \" << rateTmp <<  std::endl;\n");
 				sb.append("\n");
 				sb.append("        double rate = Vars[problemIndex][varIndex];\n");
 				sb.append("\n");
@@ -1082,7 +1293,7 @@ public class CppFormat {
 				sb.append("        }\n");
 				sb.append("\n");
 				sb.append("        if (hasBioMASS && biomassTransitions.find(transitionName) != biomassTransitions.end()) {\n");
-				sb.append("            //std::cout << \"[computeRate] Biomass Transition Detected for Transition : \" << transitionName << \"rateo: \" << rate << std::endl;\n");
+				sb.append("           // std::cout << \"[computeRate] Biomass Transition Detected for Transition : \" << transitionName << \" rateo: \" << rate << std::endl;\n");
 				sb.append("            constant = floor(Value[NumPlaces.at(problemBacteriaPlace.at(problemIndex))]);\n");
 				sb.append("            return rate * scalingMeasure;\n");
 				sb.append("        } else if (hasMultiSpecies && hasBioMASS) {\n");
@@ -1091,7 +1302,7 @@ public class CppFormat {
 				sb.append("\n");
 				sb.append("\n");
 				sb.append("        if(hasBioMASS) {\n");
-				sb.append("            //std::cout << \"[computeRate] Other rate Transition Detected for Transition : \" << transitionName << \"rateo: \" << rate << std::endl;\n");
+				sb.append("           // std::cout << \"[computeRate] Other rate Transition Detected for Transition : \" << transitionName << \" rateo: \" << rate << std::endl;\n");
 				sb.append("            rate = rate * (constant * currentBiomass * scalingFactor) * scalingMeasure;\n");
 				sb.append("        }\n");
 				sb.append("\n");
