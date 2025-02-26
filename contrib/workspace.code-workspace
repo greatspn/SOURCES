@@ -125,7 +125,8 @@
 			"fun_ext.h": "c",
 			"macros.h": "c",
 			"decl.h": "c",
-			"platform_utils.h": "c"
+			"platform_utils.h": "c",
+			"stdlib.h": "c"
 		}
 	},
 	// "C_Cpp.default.includePath": [
