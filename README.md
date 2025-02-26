@@ -91,7 +91,7 @@ Other recent papers referencing GreatSPN:
 }
 ```
 
-The original design document of GreatSPN [(link)](docs/A%20software%20package%20for%20the%20analysis%20of%20Generalized%20Stochastic%20Petri%20Nets%20-%20Giovanni%20Chiola%20-%20PNPM%201985.pdf):
+The original design document of GreatSPN [(link)](docs/A%20software%20package%20for%20the%20analysis%20of%20Generalized%20Stochastic%20Petri%20Net%20models%20-%20Giovanni%20Chiola%20-%20PNPM%201985.pdf):
 
 > Chiola, Giovanni. _"A software package for the analysis of generalized stochastic Petri net models."_ International Workshop on Timed Petri Nets. 1985.
 
