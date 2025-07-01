@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import latex.DummyLatexProvider;
 
+
 /**
  *
  * @author Irene
@@ -124,15 +125,11 @@ public class CppCommand {
             return super.visitRealExprFromTable(ctx);
         }
 
-        /*@Override
-        public Object visitRealExprFBA(ExprLangParser.RealExprFBAContext ctx) {
+        @Override
+        public Object visitRealExprFromTimeTable(ExprLangParser.RealExprFromTimeTableContext ctx) {
             filenames.add(ctx.fname.getText());
-           	rnames.add(ctx.rname.getText());
-           	
-           	//System.out.println("Aggiungo: " + ctx.rname.getText());
-           	
-            return super.visitRealExprFBA(ctx);
-        } */
+            return super.visitRealExprFromTimeTable(ctx);
+        }
 
     }
 

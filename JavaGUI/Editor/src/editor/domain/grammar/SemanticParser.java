@@ -1394,72 +1394,79 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
 		@Override
 		public FormattedFormula visitRealExprFBA(ExprLangParser.RealExprFBAContext ctx) {
 
-				String fileName = ctx.STRING_LITERAL(0).getText().replace("\"", "");
-				String reactionName = ctx.STRING_LITERAL(1).getText().replace("\"", "");
-				String multiplicity = (ctx.INT() != null) ? ctx.INT().getText() : "";
-				String bacteriaCountPlaceId = (ctx.STRING_LITERAL(2) != null) ? ctx.STRING_LITERAL(2).getText().replace("\"", "") : "";
-				String bacteriaBiomassPlaceId = (ctx.STRING_LITERAL(3) != null) ? ctx.STRING_LITERAL(3).getText().replace("\"", "") : "";
-				String isBiomass = (ctx.STRING_LITERAL(4) != null) ? ctx.STRING_LITERAL(4).getText().replace("\"", "") : "";
+				String fileName       = ctx.STRING_LITERAL(0).getText().replace("\"", "");
+				String reactionName   = ctx.STRING_LITERAL(1).getText().replace("\"", "");
+
+				String multiplicity         = (ctx.INT()            != null) ? ctx.INT().getText()                       : "1";
+				String bacteriaCountPlaceId = (ctx.STRING_LITERAL(2) != null) ? ctx.STRING_LITERAL(2).getText().replace("\"", "") : "N/A";
+				String bacteriaBiomassPlaceId
+				                            = (ctx.STRING_LITERAL(3) != null) ? ctx.STRING_LITERAL(3).getText().replace("\"", "") : "N/A";
+				String isBiomass            = (ctx.STRING_LITERAL(4) != null) ? ctx.STRING_LITERAL(4).getText().replace("\"", "") : "false";
+
 
 				switch (lang) {
-				    case LATEX:
-							// Escapare underscore per Latex
-							String latexFileName          = fileName.replace("_", "\\_");
-							String latexReactionName      = reactionName.replace("_", "\\_");
-							String latexMultiplicity      = !multiplicity.isEmpty() ? multiplicity : "1";
-							String latexBacteriaCount     = !bacteriaCountPlaceId.isEmpty()
-										                          ? bacteriaCountPlaceId.replace("_", "\\_")
-										                          : "\"N/A\"";
-							String latexBacteriaBiomass   = !bacteriaBiomassPlaceId.isEmpty()
-										                          ? bacteriaBiomassPlaceId.replace("_", "\\_")
-										                          : "\"N/A\"";
-							String latexIsBiomass         = !isBiomass.isEmpty()
-										                          ? isBiomass.replace("_", "\\_")
-										                          : "false";
+				    case LATEX: {
+				        String lf  = fileName.replace("_", "\\_");
+				        String lr  = reactionName.replace("_", "\\_");
+				        String lbc = bacteriaCountPlaceId.replace("_", "\\_");
+				        String lbm = bacteriaBiomassPlaceId.replace("_", "\\_");
+				        String lib = isBiomass.replace("_", "\\_");
 
-							return format(
-									true,
-									"\\mathbf{FBA}[",
-									latexFileName, ",",
-									latexReactionName, ",",
-									latexMultiplicity, ",",
-									latexBacteriaCount, ",",
-									latexBacteriaBiomass, ",",
-									latexIsBiomass,
-									"]"
-							);
+				        return format(
+				            true,
+				            "\\mathbf{FBA}[",
+				            lf, ",",
+				            lr, ",",
+				            multiplicity, ",",
+				            lbc, ",",
+				            lbm, ",",
+				            lib,
+				            "]"
+				        );
+				    }
 
-				    case PNPRO:
-				        String pnproMultiplicity = !multiplicity.isEmpty() ? multiplicity : "1";
-				        String pnproBacteriaCount = !bacteriaCountPlaceId.isEmpty() ? bacteriaCountPlaceId : "\"N/A\"";
-				        String pnproBacteriaBiomass = !bacteriaBiomassPlaceId.isEmpty() ? bacteriaBiomassPlaceId : "\"N/A\"";;
-				        String pnproIsBiomass = !isBiomass.isEmpty() ? isBiomass : "false";
-				        return format(true, "\\mathbf{FBA}[", fileName, ",", reactionName, ",", pnproMultiplicity, "," , pnproBacteriaCount, "," , pnproBacteriaBiomass, ",", pnproIsBiomass, "]");
-				        /* Clean Visualization
-				      	return format(true, "\\mathbf{FBA}[", fileName, ",", reactionName, "]");*/
+				    case PNPRO: {
+				        return format(
+				            true,
+				            "FBA[\"",
+				            fileName,      "\",\"",
+				            reactionName,  "\",",
+				            multiplicity,  ",\"",
+				            bacteriaCountPlaceId,  "\",\"",
+				            bacteriaBiomassPlaceId,"\",\"",
+				            isBiomass,     "\"]"
+				        );
+				    }
 
-				    case GREATSPN:
-				        String greatspnMultiplicity = !multiplicity.isEmpty() ? multiplicity : "1";
-				        String greatspnBacteriaCount = !bacteriaCountPlaceId.isEmpty() ? bacteriaCountPlaceId : "\"N/A\"";
-				        String greatspnBacteriaBiomass = !bacteriaBiomassPlaceId.isEmpty() ? bacteriaBiomassPlaceId : "\"N/A\"";
-				        String greatspnIsBiomass = !isBiomass.isEmpty() ? isBiomass : "false";		        
-				        return format(true, "\\mathbf{FBA}[", fileName, ",", reactionName, ",", greatspnMultiplicity, "," , greatspnBacteriaCount, "," , greatspnBacteriaBiomass, ",", greatspnIsBiomass, "]");
-				        /* Clean Visualization
-									 return format(true, "\\mathbf{FBA}[", fileName, ",", reactionName, "]");*/
-				    case CPP:
+				    case GREATSPN: {
+				        return format(
+				            true,
+				            "FBA[\"",
+				            fileName,      "\",\"",
+				            reactionName,  "\",",
+				            multiplicity,  ",\"",
+				            bacteriaCountPlaceId,  "\",\"",
+				            bacteriaBiomassPlaceId,"\",\"",
+				            isBiomass,     "\"]"
+				        );
+				    }
 
-				        String argumentsDefined;
-				        if (context.cppForFluxBalance) {
-				            argumentsDefined = "Value, vec_fluxb, NumTrans, NumPlaces, NameTrans, Trans, T, time";
-				        } else {
-				            argumentsDefined = "Value, NumTrans, NumPlaces, NameTrans, Trans, T, time";
-				        }
+				    case CPP: {
+				        String args = context.cppForFluxBalance
+				            ? "Value, vec_fluxb, NumTrans, NumPlaces, NameTrans, Trans, T, time"
+				            : "Value, NumTrans, NumPlaces, NameTrans, Trans, T, time";
 
-				        return format(true, "FBAProcessor::getInstance().process", "(", argumentsDefined, ")");
+				        return format(true,
+				                      "FBAProcessor::getInstance().process(",
+				                      args,
+				                      ")");
+				    }
+
 				    default:
-				        throw new UnsupportedOperationException();
+				        throw new UnsupportedOperationException("visitRealExprFBA: unsupported language " + lang);
 				}
 		}
+
 		
 		
 

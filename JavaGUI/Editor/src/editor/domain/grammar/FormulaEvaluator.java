@@ -540,6 +540,13 @@ public class FormulaEvaluator extends ExprLangBaseVisitor<EvaluatedFormula> {
     public EvaluatedFormula visitRealExprCall(ExprLangParser.RealExprCallContext ctx) {
         throw new EvaluationException("External Call expressions cannot be evaluated in the interactive editor.");
     }
+    
+
+    @Override
+    public EvaluatedFormula visitRealExprFBA(ExprLangParser.RealExprFBAContext ctx) {
+        throw new EvaluationException("External FBA expressions cannot be evaluated in the interactive editor.");
+    }
+
 
     @Override
     public EvaluatedFormula visitIntOrRealListEmptyList(ExprLangParser.IntOrRealListEmptyListContext ctx) {
