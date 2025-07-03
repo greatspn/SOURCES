@@ -9,37 +9,48 @@ if [ ! -d "${LIBSOLVE55_DIR}" ]; then
 fi
 
 # Determine which os-dependent script to run.
-case "$OSTYPE" in
-  solaris*) 
-	echo "SOLARIS"
-	exit 1 
-	;;
-  darwin*)  
-	echo "OSX"
-	RUN=ccc.osx
-	;;
-  linux*)   
-	echo "LINUX"
-	RUN=ccc
-	;;
-  bsd*)     
-	echo "BSD"
-	exit 1 
-	;;
-  msys*)    
-	echo "WINDOWS"
-	exit 1 
-	;;
-  cygwin*)  
-	echo "CYGWIN"
-	RUN=ccc
-	exit 1 
-	;;
-  *)        
-	echo "unknown: $OSTYPE"
-	exit 1 
-	;;
-esac
+#case "$OSTYPE" in
+#  solaris*) 
+#	echo "SOLARIS"
+#	exit 1 
+#	;;
+#  darwin*)  
+#	echo "OSX"
+#	RUN=ccc.osx
+#	;;
+#  linux*)   
+#	echo "LINUX"
+#	RUN=ccc
+#	;;
+#  bsd*)     
+#	echo "BSD"
+#	exit 1 
+#	;;
+#  msys*)    
+#	echo "WINDOWS"
+#	exit 1 
+#	;;
+#  cygwin*)  
+#	echo "CYGWIN"
+#	RUN=ccc
+#	exit 1 
+#	;;
+#  *)        
+#	echo "unknown: $OSTYPE"
+#	exit 1 
+#	;;
+#esac
+
+if [ "$(uname)" = "Darwin" ]; then
+  echo "OSX"
+  RUN=ccc.osx
+elif [ "$(uname)" = "Linux" ]; then
+  echo "LINUX"
+  RUN=ccc
+else
+  echo "Unsupported OS: $(uname)"
+  exit 1
+fi
 
 
 echo build lpsolve lib

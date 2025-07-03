@@ -72,6 +72,10 @@ public class UnfoldingCommand {
         boolean doUnfolding = true;
         boolean useEvaluationCache = false;
         boolean outSuffix = true;
+        
+				// @Author: Chiabrando
+				// Option to activate the saving of FBA-related information into a .fbainfo file.
+        boolean saveFBAInfo = false; 
         SemanticParser.strictColorExpressionChecks = false;
         
         // Read command line arguments
@@ -134,6 +138,13 @@ public class UnfoldingCommand {
                 case "-eval-cache":
                     System.out.println("Evaluation cache is bugged and does not work reliably!");
                     useEvaluationCache = true;
+                    break;
+                 
+								// @Author: Chiabrando
+								// Enables the creation of the .fbainfo file which stores necessary data
+								// for initializing the harmonization process in flux balance analysis.
+                case "-flux":
+                    saveFBAInfo = true;
                     break;
                     
                 default:
@@ -354,6 +365,25 @@ public class UnfoldingCommand {
                 saveNuPNUnit(nu, rootUnit[0], 0, pnmlId2name, plc2Index);
                 nu.close();
             }
+            
+					/*
+					 * @Author: Chiabrando
+					 *
+					 * If the -flux flag is set, this section of the code will execute. It attempts to
+					 * create and write to a .fbainfo file, which includes details necessary for FBA
+					 * simulation based on the current model's structure and associated data.
+					 */
+										  
+						if(saveFBAInfo){
+								File outFBAInfo = new File(baseName + ".fbainfo");
+								try{
+										GreatSpnFormat.saveFBAInfo(gspn, outFBAInfo);
+								}catch(Exception e){
+										System.out.println("Failed to save FBA info: " + e.getMessage());
+										System.exit(1); 
+								}
+						}
+
         }
         
         if (unfolded && saveUnfoldingRelation) {

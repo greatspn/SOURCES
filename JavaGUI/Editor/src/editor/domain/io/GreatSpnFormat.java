@@ -1433,6 +1433,185 @@ public class GreatSpnFormat {
         }
         return numDeducedVars;
     }
+    
+    
+    
+	 /**
+		 * @Author: Chiabrando
+		 *
+		 * Saves the FBA-related information from a GSPN model to a file.
+		 * This method is specifically designed to export the data necessary for Flux Balance Analysis (FBA)
+		 * from the transitions in a GSPN model managed by GreatSPN framework. It outputs a formatted .fbainfo
+		 * file which contains associations between transitions and their respective metabolic reactions, input
+		 * places, and output places.
+		 *
+		 * @param gspn The GspnPage object representing the loaded Petri net from which data is extracted.
+		 * @param outFBAInfo The file object where the FBA information will be saved. This file will contain
+		 *                   JSON-like objects for each transition with keys: Transition, LPfile, Reaction, Multiplicity, BacteriaCountPlace, BacteriaBiomassPlace, InputPlaces, and OutputPlaces.
+		 * @throws Exception If there are I/O errors during the file writing process or other unexpected issues.
+		 * 
+		 * The output file has the following format:
+		 * Each line corresponds to one transition with FBA data, formatted as:
+		 * {
+		 *   "Transition": "transition_name",
+		 *   "LPfile": "lp_file",
+		 *   "Reaction": "reaction_name",
+		 *   "Multiplicity": multiplicity,
+		 *   "BacteriaCountPlace": "bacteria_count_place",
+		 *   "BacteriaBiomassPlace": "bacteria_biomass_place",
+		 *   "InputPlaces": ["input_place1", "input_place2", ...],
+		 *   "OutputPlaces": ["output_place1", "output_place2", ...]
+		 * }
+		 */
+		public static void saveFBAInfo(GspnPage gspn, File outFBAInfo) throws Exception {
+				PrintWriter fbaWriter = new UnixPrintWriter(new BufferedOutputStream(new FileOutputStream(outFBAInfo)));
+				try {
+				    // Print the opening bracket for the JSON array
+				    fbaWriter.println("[");
+
+				    // Track if this is the first element to avoid trailing commas
+				    boolean firstElement = true;
+
+				    // Iterate through all nodes in the GSPN model
+				    for (Node node : gspn.nodes) {
+				        if (node instanceof Transition) {
+				            Transition trn = (Transition) node;
+
+				            // Check if the transition's delay begins with "FBA"
+				            String delayInfo = trn.getDelay();
+				            if (delayInfo.startsWith("FBA")) {
+				                System.out.println(trn.getUniqueName());
+
+				                // Remove "FBA[" at the beginning and "]" at the end
+				                delayInfo = delayInfo.substring(4, delayInfo.length() - 1);
+
+				                // Split the string by commas while ignoring those inside quotes
+				                String[] parts = delayInfo.split("\",\\s*\"|\",\\s*|\\s*\",\\s*|\",\\s*|,\\s*");
+
+				                // Trim and remove quotes from each part
+				                for (int i = 0; i < parts.length; i++) {
+				                    parts[i] = parts[i].trim().replaceAll("^\"|\"$", "");
+				                }
+
+				                // Initialize variables with default values
+				                String lpFile = parts[0]; // LP file name is always first
+				                String reaction = parts[1]; // Reaction name is always second
+				                int multiplicity = 1; // Default multiplicity
+				                String bacteriaCountPlaceId = "N/A";
+				                String bacteriaBiomassPlaceId = "N/A";
+                    		boolean isBiomass = false;				                
+
+
+												// Process remaining parts
+												for (int i = 2; i < parts.length; i++) {
+														String part = parts[i];
+														if (part.matches("\\d+")) {
+																multiplicity = Integer.parseInt(part);
+														} else if (bacteriaCountPlaceId.equals("N/A")) {
+																bacteriaCountPlaceId = part;
+														} else if (bacteriaBiomassPlaceId.equals("N/A")) {
+																bacteriaBiomassPlaceId = part;
+														} else if (part.equalsIgnoreCase("true")) {
+																isBiomass = Boolean.parseBoolean(part); 
+														}
+												}
+
+				                StringBuilder inputPlaces = new StringBuilder();
+				                StringBuilder outputPlaces = new StringBuilder();
+
+				                int inputPlaceCount = 0;
+				                boolean hasBacteriaCountPlace = false;
+				                boolean hasBacteriaBiomassPlace = false;
+
+				                // Collect input and output places connected via edges
+				                for (Edge edge : gspn.edges) {
+				                    if (edge instanceof GspnEdge) {
+				                        GspnEdge gspnEdge = (GspnEdge) edge;
+				                        if (gspnEdge.getHeadNode() == trn && gspnEdge.getEdgeKind() == GspnEdge.Kind.INPUT) {
+				                            String placeName = gspnEdge.getTailNode().getUniqueName();
+				                           //System.out.println("Place name ---> " + placeName + " DUE VALORI DEFAULT :    " + bacteriaCountPlaceId + " " + bacteriaBiomassPlaceId);
+				                            inputPlaceCount++;
+				                            if (placeName.equals(bacteriaCountPlaceId)){
+				                                hasBacteriaCountPlace = true;
+				                            } else if (placeName.equals(bacteriaBiomassPlaceId)) {
+				                            		if(isBiomass){
+				                                		inputPlaces.append("\"").append(placeName).append("\",");				                            		
+				                            		}
+				                                hasBacteriaBiomassPlace = true;
+				                            } else {
+				                                inputPlaces.append("\"").append(placeName).append("\",");
+				                            }
+				                        } else if (gspnEdge.getTailNode() == trn && gspnEdge.getEdgeKind() == GspnEdge.Kind.OUTPUT) {
+				                        		String placeName = gspnEdge.getHeadNode().getUniqueName();
+																		if (!placeName.equals(bacteriaCountPlaceId) && !placeName.equals(bacteriaBiomassPlaceId)) {
+																				outputPlaces.append("\"").append(gspnEdge.getHeadNode().getUniqueName()).append("\",");
+																		}
+																		if(placeName.equals(bacteriaBiomassPlaceId) && isBiomass){
+																			outputPlaces.append("\"").append(gspnEdge.getHeadNode().getUniqueName()).append("\",");
+																		}
+				                        }
+				                    }
+				                }
+
+				                // Check the conditions for input places
+				                if (inputPlaceCount > 3) {
+				                    throw new Exception("Too many input places for transition: " + trn.getUniqueName());
+				                }
+				                if (inputPlaceCount == 2 && (!hasBacteriaCountPlace || !hasBacteriaBiomassPlace)) {
+				                    throw new Exception("Transition with two input places must include both BacteriaCountPlace and BacteriaBiomassPlace for transition: " + trn.getUniqueName());
+				                }
+				                if (inputPlaceCount == 3 && (!hasBacteriaCountPlace || !hasBacteriaBiomassPlace)) {
+				                    throw new Exception("Transition with three input places must include BacteriaCountPlace and BacteriaBiomassPlace for transition: " + trn.getUniqueName());
+				                }
+				                
+												// Add biomass place to input places if isBiomass is true
+											/*	if (isBiomass) {
+														//System.out.println("Qui entro !!!");
+														inputPlaceCount++;
+														inputPlaces.append("\"").append(bacteriaBiomassPlaceId).append("\",");
+												} */
+																								
+
+				                // Remove the last comma
+				                if (inputPlaces.length() > 0 && inputPlaces.charAt(inputPlaces.length() - 1) == ',') {
+				                    inputPlaces.setLength(inputPlaces.length() - 1);
+				                }
+				                if (outputPlaces.length() > 0 && outputPlaces.charAt(outputPlaces.length() - 1) == ',') {
+				                    outputPlaces.setLength(outputPlaces.length() - 1);
+				                }
+
+				                // Print to file with the new fields in JSON format
+				                if (!firstElement) {
+				                    fbaWriter.println(",");
+				                } else {
+				                    firstElement = false;
+				                }
+
+				                fbaWriter.println("  {");
+				                fbaWriter.println("    \"Transition\": \"" + trn.getUniqueName() + "\",");
+				                fbaWriter.println("    \"LPfile\": \"" + lpFile + "\",");
+				                fbaWriter.println("    \"Reaction\": \"" + reaction + "\",");
+				                fbaWriter.println("    \"Multiplicity\": " + multiplicity + ",");
+				                fbaWriter.println("    \"BacteriaCountPlace\": \"" + bacteriaCountPlaceId + "\",");
+				                fbaWriter.println("    \"BacteriaBiomassPlace\": \"" + bacteriaBiomassPlaceId + "\",");
+				                fbaWriter.println("    \"InputPlaces\": [" + inputPlaces + "],");
+				                fbaWriter.println("    \"OutputPlaces\": [" + outputPlaces + "],");
+				                fbaWriter.println("    \"IsBiomass\": " + isBiomass);  
+				                fbaWriter.print("  }");
+				            }
+				        }
+				    }
+
+				    // Print the closing bracket for the JSON array
+				    fbaWriter.println();
+				    fbaWriter.println("]");
+				} finally {
+				    fbaWriter.close(); // Ensure the PrintWriter is closed after writing
+				}
+		}
+
+
+
 
 
 //    public static void main(String[] args) throws Exception {

@@ -1,4 +1,4 @@
-// Generated from JavaGUI/Editor/src/editor/domain/grammar/ExprLang.g4 by ANTLR 4.2.1
+// Generated from ExprLang.g4 by ANTLR 4.2.1
 package editor.domain.grammar;
 
 import editor.domain.*;
@@ -63,6 +63,14 @@ public class ExprLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitIntExprConst(@NotNull ExprLangParser.IntExprConstContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitRealExprFBA(@NotNull ExprLangParser.RealExprFBAContext ctx) { return visitChildren(ctx); }
 
 	/**
 	 * {@inheritDoc}

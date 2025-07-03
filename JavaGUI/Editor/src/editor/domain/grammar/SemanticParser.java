@@ -1384,6 +1384,91 @@ public class SemanticParser extends ExprLangBaseVisitor<FormattedFormula> {
                 throw new UnsupportedOperationException();
         }
     }
+    
+		 /**
+		*    @author: Chiabrando
+		*   
+		*   New formula for FBA
+		**/
+
+		@Override
+		public FormattedFormula visitRealExprFBA(ExprLangParser.RealExprFBAContext ctx) {
+
+				String fileName       = ctx.STRING_LITERAL(0).getText().replace("\"", "");
+				String reactionName   = ctx.STRING_LITERAL(1).getText().replace("\"", "");
+
+				String multiplicity         = (ctx.INT()            != null) ? ctx.INT().getText()                       : "1";
+				String bacteriaCountPlaceId = (ctx.STRING_LITERAL(2) != null) ? ctx.STRING_LITERAL(2).getText().replace("\"", "") : "N/A";
+				String bacteriaBiomassPlaceId
+				                            = (ctx.STRING_LITERAL(3) != null) ? ctx.STRING_LITERAL(3).getText().replace("\"", "") : "N/A";
+				String isBiomass            = (ctx.STRING_LITERAL(4) != null) ? ctx.STRING_LITERAL(4).getText().replace("\"", "") : "false";
+
+
+				switch (lang) {
+				    case LATEX: {
+				        String lf  = fileName.replace("_", "\\_");
+				        String lr  = reactionName.replace("_", "\\_");
+				        String lbc = bacteriaCountPlaceId.replace("_", "\\_");
+				        String lbm = bacteriaBiomassPlaceId.replace("_", "\\_");
+				        String lib = isBiomass.replace("_", "\\_");
+
+				        return format(
+				            true,
+				            "\\mathbf{FBA}[",
+				            lf, ",",
+				            lr, ",",
+				            multiplicity, ",",
+				            lbc, ",",
+				            lbm, ",",
+				            lib,
+				            "]"
+				        );
+				    }
+
+				    case PNPRO: {
+				        return format(
+				            true,
+				            "FBA[\"",
+				            fileName,      "\",\"",
+				            reactionName,  "\",",
+				            multiplicity,  ",\"",
+				            bacteriaCountPlaceId,  "\",\"",
+				            bacteriaBiomassPlaceId,"\",\"",
+				            isBiomass,     "\"]"
+				        );
+				    }
+
+				    case GREATSPN: {
+				        return format(
+				            true,
+				            "FBA[\"",
+				            fileName,      "\",\"",
+				            reactionName,  "\",",
+				            multiplicity,  ",\"",
+				            bacteriaCountPlaceId,  "\",\"",
+				            bacteriaBiomassPlaceId,"\",\"",
+				            isBiomass,     "\"]"
+				        );
+				    }
+
+				    case CPP: {
+				        String args = context.cppForFluxBalance
+				            ? "Value, vec_fluxb, NumTrans, NumPlaces, NameTrans, Trans, T, time"
+				            : "Value, NumTrans, NumPlaces, NameTrans, Trans, T, time";
+
+				        return format(true,
+				                      "FBAProcessor::getInstance().process(",
+				                      args,
+				                      ")");
+				    }
+
+				    default:
+				        throw new UnsupportedOperationException("visitRealExprFBA: unsupported language " + lang);
+				}
+		}
+
+		
+		
 
     @Override
     public FormattedFormula visitIntOrRealListEmptyList(ExprLangParser.IntOrRealListEmptyListContext ctx) {

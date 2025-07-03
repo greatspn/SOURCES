@@ -65,11 +65,13 @@
 #ifndef __SET_H__
 #define __SET_H__
 #include <set>
+#include <unordered_set>
 #endif
 
 #ifndef __MAP_H__
 #define __MAP_H__
 #include <map>
+#include <functional>
 #include <unordered_map>
 #endif
 
@@ -137,10 +139,30 @@
 #endif
 
 
+
+
 #ifndef __REVERSE_HEAP_H__
 #define __REVERSE_HEAP_H__
 #include "reverse_heap.h"
 #endif 
+
+#ifndef __THREAD_H__
+#define __THREAD_H__
+#include <thread>
+#endif
+
+#ifndef __MUTEX_H__
+#define __MUTEX_H__
+#include <mutex>
+#endif
+
+
+#ifndef __IOMANIP__
+#define __IOMANIP__
+#include <iomanip>
+#endif
+
+
 
 
 namespace SDE
@@ -164,6 +186,9 @@ namespace SDE
   extern vector<string> name_file;
   extern vector<Table> class_files;
 
+	//@Chiabrando
+	extern double g_absEpsilon;  // Soglia assoluta
+	extern double g_relEpsilon;  // Soglia relativa
 
   //!Exception
   struct Exception
@@ -464,7 +489,7 @@ public:
     //! Constructor it takes in input the total number of transitions and places, two vector with the names of places and transitions, initial simulation time,  and  a seed  of random number generator. Moreover the input parameter usedMin is true if transition infinity server policy is used, otherwise mass-product policy is used.
   SystEq(int nPlaces,int nTrans, string NameTrans[], string NamePlaces[],double itime,long int seed);
     //! Deconstruct
-  virtual ~SystEq();
+	virtual ~SystEq();
     //! It stores the transition information. It takes in input the transition id and its information encodes on ``struct InfTr''
   void InsertTran(int num, struct InfTr T);
     //! It stores an equation. It takes in input the equation/place id, its information encodes on class Equation, its initial value and its bounds.
@@ -509,12 +534,24 @@ public:
 #endif
 //automaton
 #ifdef CGLPK
-      void initialize_fluxbalance(std::string flux_name){
+    /*	ORIGINAL VERSION (WITH PROBLEMS):  
+    	void initialize_fluxbalance(std::string flux_name){
+    	cout << "Calling initialize_fluxbalance for: " << flux_name << endl;
       FBGLPK::LPprob l;
       vec_fluxb.push_back(l);
       vec_fluxb[vec_fluxb.size()-1].updateLP(flux_name.c_str()); 
       };
-      inline void setVariability(bool v){Variability=v;};
+      inline void setVariability(bool v){Variability=v;};*/
+			void initialize_fluxbalance(std::string flux_name) {
+					//cout << "Calling initialize_fluxbalance for: " << flux_name << endl;
+					vec_fluxb.emplace_back();  // Constructs an LPprob instance in the vector
+					vec_fluxb.back().updateLP(flux_name.c_str());  // Update the last element with the specific LP file
+			}
+
+			inline void setVariability(bool v) {
+					Variability = v;
+			}
+
 #endif       
     //!It returns the brown noise value for the input transition.
   inline double getBNoiseTran(int Tran) {return Trans[Tran].BrownNoise;};

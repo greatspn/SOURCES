@@ -141,7 +141,9 @@ realExpr : realExpr op=('*'|'/') realExpr                            # RealExprM
          | 'FromTable' '[' fname=STRING_LITERAL ',' intExpr ',' intExpr ']' # RealExprFromTable
          | 'FromTimeTable' '[' fname=STRING_LITERAL ',' intExpr ']' # RealExprFromTimeTable
          | 'Call' '[' name=STRING_LITERAL intOrRealList ']'          # RealExprCall
-         ;
+		     | 'FBA' '[' fname=STRING_LITERAL ',' rname=STRING_LITERAL (',' multiplicity=INT)? (',' bacteriaCountPlaceId=STRING_LITERAL)? (',' bacteriaBiomassPlaceId=STRING_LITERAL)? (',' isBiomass=STRING_LITERAL)? ']' # RealExprFBA   		     
+				 ;
+         
 
 boolExpr : '!' boolExpr                                          # BoolExprNot
          | boolExpr '&&' boolExpr                                # BoolExprAnd

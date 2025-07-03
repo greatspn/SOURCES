@@ -975,7 +975,7 @@ lsoda(f, neq, y, t, tout, itol, rtol, atol, itask, istate,
 		meth = 1;
 		g_nyh = nyh = n;
 		g_lenyh = lenyh = 1 + max(mxordn, mxords);
-
+		
 		yh = (double **) calloc(1 + lenyh, sizeof(*yh));
 		if (yh == NULL) {
 			printf("lsoda -- insufficient memory for your problem\n");
@@ -2660,14 +2660,42 @@ void freevectors(void)
 
 void _freevectors(void)
 {
-	int i;
-	if (wm) for (i = 1; i <= g_nyh; ++i) free(wm[i]);
-	if (yh) for (i = 1; i <= g_lenyh; ++i) free(yh[i]);
-	free(yh); free(wm); free(ewt); free(savf); free(acor); free(ipvt);
-	g_nyh = g_lenyh = 0;
-	yh = 0; wm = 0;
-	ewt = 0; savf = 0; acor = 0; ipvt = 0;
+  int i;
+
+
+  if (wm) {
+    for (i = 1; i <= g_nyh; ++i) {
+      free(wm[i]);
+      wm[i] = NULL; 
+    }
+  }
+
+  if (yh) {
+    for (i = 1; i <= g_lenyh; ++i) {
+      free(yh[i]);
+      yh[i] = NULL; 
+    }
+  }
+
+  free(yh);
+  free(wm);
+  free(ewt);
+  free(savf);
+  free(acor);
+  free(ipvt);
+
+  yh = NULL;
+  wm = NULL;
+  ewt = NULL;
+  savf = NULL;
+  acor = NULL;
+  ipvt = NULL;
+
+  g_nyh = 0;
+  g_lenyh = 0;
+
 }
+
 
 /*****************************
  * more convenient interface *
@@ -2694,6 +2722,7 @@ int n_lsoda(double y[], int n, double *x, double xout, double eps, const double 
 
 void n_lsoda_terminate(void)
 {
+	std::cout << "Terminate n_lsoda classic chiamata \n" << endl;
 	if (init) _freevectors();
 	init = 0;
 }
