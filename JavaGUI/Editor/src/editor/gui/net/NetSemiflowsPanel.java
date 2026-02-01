@@ -586,8 +586,7 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
                             highlightedElems.add(trn);
                     }
                 }
-            }
-            
+            }   
         }
         else if (sfType.isTransition()) {                
             int[] trnSF = algo.getFlowVector(sfNum);
@@ -595,17 +594,45 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
             for (int k=0; k<trnSF.length; k++)
                 if (trnSF[k] != 0)
                     highlightedElems.add(netIndex.transitions.get(k));
-            // [2] Add all places that have both an input and an output edge
-            //     between highlighted transitions
-            Set<Place> inputPlaces = new HashSet<>();
-            for (Edge edge : gspn.edges)
-                if (edge instanceof GspnEdge && ((GspnEdge)edge).getEdgeKind() == GspnEdge.Kind.INPUT &&
-                    highlightedElems.contains((Transition)edge.getHeadNode()))
-                    inputPlaces.add((Place)edge.getTailNode());
-            for (Edge edge : gspn.edges)
-                if (edge instanceof GspnEdge && ((GspnEdge)edge).getEdgeKind() == GspnEdge.Kind.OUTPUT &&
-                    inputPlaces.contains((Place)edge.getHeadNode()))
-                    highlightedElems.add((Place)edge.getHeadNode());
+//            // [2] Add all places that have both an input and an output edge
+//            //     between highlighted transitions
+//            Set<Place> inputPlaces = new HashSet<>();
+//            for (Edge edge : gspn.edges)
+//                if (edge instanceof GspnEdge && ((GspnEdge)edge).getEdgeKind() == GspnEdge.Kind.INPUT &&
+//                    highlightedElems.contains((Transition)edge.getHeadNode()))
+//                    inputPlaces.add((Place)edge.getTailNode());
+//            for (Edge edge : gspn.edges)
+//                if (edge instanceof GspnEdge && ((GspnEdge)edge).getEdgeKind() == GspnEdge.Kind.OUTPUT &&
+//                    inputPlaces.contains((Place)edge.getHeadNode()))
+//                    highlightedElems.add((Place)edge.getHeadNode());
+            // [2] Add all transitions that have at least two edge endpoints in the set
+            // of highlighted places
+            Map<Place, Integer> plcCounts = new HashMap<>();
+            for (Edge edge : gspn.edges) {
+                Place plc = null;
+                int count = 0;
+                if (edge instanceof GspnEdge) {
+                    if (((GspnEdge)edge).getEdgeKind() == GspnEdge.Kind.OUTPUT) {
+                        plc = (Place)edge.getHeadNode();
+                        if (highlightedElems.contains((Transition)edge.getTailNode()))
+                            ++count;
+                    }
+                    else if (((GspnEdge)edge).getEdgeKind() == GspnEdge.Kind.INPUT) {
+                        plc = (Place)edge.getTailNode();
+                        if (highlightedElems.contains((Transition)edge.getHeadNode()))
+                            ++count;
+                    }
+                    if (count>0 && plc!=null) {
+                        if (!plcCounts.containsKey(plc))
+                            plcCounts.put(plc, count);
+                        else
+                            plcCounts.put(plc, plcCounts.get(plc) + count);
+                        
+                        if (plcCounts.get(plc) >= 2 && !highlightedElems.contains(plc))
+                            highlightedElems.add(plc);
+                    }
+                }
+            }
         }
         
         // Highlight edges between place/transitions, when visualizing flows
