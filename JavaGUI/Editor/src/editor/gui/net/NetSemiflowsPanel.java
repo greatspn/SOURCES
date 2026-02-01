@@ -42,6 +42,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import editor.domain.semiflows.PTFlows;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.UIManager;
 
 /**
@@ -557,17 +559,35 @@ public class NetSemiflowsPanel extends javax.swing.JPanel implements AbstractPag
             for (int k=0; k<placeSF.length; k++)
                 if (placeSF[k] != 0)
                     highlightedElems.add(netIndex.places.get(k));
-            // [2] Add all transitions that have both an input and an output edge
-            //     between highlighted places
-            Set<Transition> inputTrns = new HashSet<>();
-            for (Edge edge : gspn.edges)
-                if (edge instanceof GspnEdge && ((GspnEdge)edge).getEdgeKind() == GspnEdge.Kind.INPUT &&
-                    highlightedElems.contains((Place)edge.getTailNode()))
-                    inputTrns.add((Transition)edge.getHeadNode());
-            for (Edge edge : gspn.edges)
-                if (edge instanceof GspnEdge && ((GspnEdge)edge).getEdgeKind() == GspnEdge.Kind.OUTPUT &&
-                    inputTrns.contains((Transition)edge.getTailNode()))
-                    highlightedElems.add((Transition)edge.getTailNode());
+            // [2] Add all transitions that have at least two edge endpoints in the set
+            // of highlighted places
+            Map<Transition, Integer> trnCounts = new HashMap<>();
+            for (Edge edge : gspn.edges) {
+                Transition trn = null;
+                int count = 0;
+                if (edge instanceof GspnEdge) {
+                    if (((GspnEdge)edge).getEdgeKind() == GspnEdge.Kind.INPUT) {
+                        trn = (Transition)edge.getHeadNode();
+                        if (highlightedElems.contains((Place)edge.getTailNode()))
+                            ++count;
+                    }
+                    else if (((GspnEdge)edge).getEdgeKind() == GspnEdge.Kind.OUTPUT) {
+                        trn = (Transition)edge.getTailNode();
+                        if (highlightedElems.contains((Place)edge.getHeadNode()))
+                            ++count;
+                    }
+                    if (count>0 && trn!=null) {
+                        if (!trnCounts.containsKey(trn))
+                            trnCounts.put(trn, count);
+                        else
+                            trnCounts.put(trn, trnCounts.get(trn) + count);
+                        
+                        if (trnCounts.get(trn) >= 2 && !highlightedElems.contains(trn))
+                            highlightedElems.add(trn);
+                    }
+                }
+            }
+            
         }
         else if (sfType.isTransition()) {                
             int[] trnSF = algo.getFlowVector(sfNum);
