@@ -41,7 +41,7 @@ LEXPPFLAGS ?=
 YACCPPFLAGS ?=
 ARFLAGS :=
 UIL ?= /usr/bin/uil
-ENABLE_Cxx17 ?= -std=c++17
+ENABLE_Cxx20 ?= -std=c++20
 ENABLE_Cxx14 ?= -std=c++14
 
 # External libraries
@@ -88,7 +88,7 @@ ifeq ($(UNAME_S),Darwin)
    CFLAGS += -I/usr/include/malloc -I/usr/local/include/ -I/opt/homebrew/include
    CPPFLAGS += -I/usr/include/malloc -I/usr/local/include/ -I/opt/homebrew/include
    LDFLAGS += -L/usr/local/lib/ -L/opt/homebrew/lib
-   ENABLE_Cxx17 := -std=c++17 -stdlib=libc++ -U__STRICT_ANSI__
+   ENABLE_Cxx20 := -std=c++20 -stdlib=libc++ -U__STRICT_ANSI__
 #    LAUNCH4J := java -jar JavaGUI/launch4j-3.13-macosx/launch4j.jar
 
    
@@ -123,8 +123,8 @@ endif
 ifneq (,$(findstring CYGWIN,$(UNAME_S))) 
   $(info Running on CYGWIN.)
 	IS_CYGWIN := 1
-  CPP := $(CPP) -std=gnu++17
-	ENABLE_Cxx17 := -std=gnu++17
+  CPP := $(CPP) -std=gnu++20
+	ENABLE_Cxx20 := -std=gnu++20
 	ENABLE_Cxx14 := -std=gnu++14
 endif
 
@@ -853,7 +853,7 @@ WNESRG_SOURCES := WN/SOURCE/SHARED/service.c \
 
 # RGMEDD2_CFLAGS := $(CFLAGS) $(call generate_WN_FLAGS,TOOL_RGMEDD2,RGMEDD2) \
 # 				          $(FLEX-INCLUDE) 
-# RGMEDD2_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx17) -Wno-deprecated-register \
+# RGMEDD2_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx20) -Wno-deprecated-register \
 #                     -I/usr/local/include $(INCLUDE_GMP_LIB) \
 #                     $(RGMEDD2_CFLAGS) -I/usr/local/include 
                     
@@ -1021,7 +1021,7 @@ endif
 # RGMEDD4_CFLAGS := $(CFLAGS) $(call generate_WN_FLAGS,TOOL_RGMEDD4,RGMEDD4) \
 #           $(FLEX-INCLUDE) #-g #-DDEBUG_BUILD
 
-# RGMEDD4_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx17) $(INCLUDE_GMP_LIB) \
+# RGMEDD4_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx20) $(INCLUDE_GMP_LIB) \
 #           $(RGMEDD4_CFLAGS) $(INCLUDE_MEDDLY_LIB) $(INCLUDE_SPOT_LIB)
 
 # RGMEDD4_LDFLAGS := $(LDFLAGS) $(FLEX-LIB) $(LINK_GMP_LIB) \
@@ -1110,7 +1110,7 @@ endif
 RGMEDD5_CFLAGS := $(CFLAGS) $(call generate_WN_FLAGS,TOOL_RGMEDD5,RGMEDD5) \
 					$(FLEX-INCLUDE) #-g #-DDEBUG_BUILD
 
-RGMEDD5_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx17) $(INCLUDE_GMP_LIB) \
+RGMEDD5_CPPFLAGS := $(CPPFLAGS) $(ENABLE_Cxx20) $(INCLUDE_GMP_LIB) \
 					$(RGMEDD5_CFLAGS) $(INCLUDE_MEDDLY_LIB) $(INCLUDE_SPOT_LIB)
 
 RGMEDD5_LDFLAGS := $(LDFLAGS) $(FLEX-LIB) $(LINK_GMP_LIB) \
@@ -1302,7 +1302,7 @@ swn-translator_SOURCES := WN/SOURCE/UNFOLDING/alloc.c \
 					 	  
 PN2ODE_LDFLAGS := $(LDFLAGS) $(FLEX-LIB)
 PN2ODE_CFLAGS := $(call generate_WN_FLAGS,TOOL_PN2ODE,PN2ODE)
-PN2ODE_CPPFLAGS := $(PN2ODE_CFLAGS) $(ENABLE_Cxx17) -I.
+PN2ODE_CPPFLAGS := $(PN2ODE_CFLAGS) $(ENABLE_Cxx20) -I.
 PN2ODE_LD := $(LDPP)
 PN2ODE_SOURCES := WN/SOURCE/SHARED/service.c \
 				  WN/SOURCE/SHARED/ealloc.c \
@@ -1719,7 +1719,7 @@ endif
 
 VARIABILITY_SOURCES := ODE-SDE/main_variability.cpp  ODE-SDE/GLPKsolve.cpp ODE-SDE/general.cpp
 VARIABILITY_LDFLAGS := $(LINK_GLPK_LIB)
-VARIABILITY_CPPFLAGS := $(CPPFLAGS) -Wall $(ENABLE_Cxx17)  
+VARIABILITY_CPPFLAGS := $(CPPFLAGS) -Wall $(ENABLE_Cxx20)
 VARIABILITY_LD := $(LDPP)
 
 ifdef HAS_GLPK_LIB
@@ -2157,7 +2157,7 @@ CSLTA_SOURCES := NSRC/CSLTA-solver/asmc.cpp \
                  NSRC/CSLTA-solver/parser.y \
                  NSRC/CSLTA-solver/lexer.l
 
-CSLTA_CPPFLAGS := $(CPPFLAGS) -Wall $(ENABLE_Cxx17)
+CSLTA_CPPFLAGS := $(CPPFLAGS) -Wall $(ENABLE_Cxx20)
 CSLTA_LEX := flex
 CSLTA_YACC := bison -d
 CSLTA_LD := $(LDPP)
@@ -2207,7 +2207,7 @@ $(OBJDIR)/DSPN-Tool/NSRC/DSPN-Tool/CSLTA.o: $(OBJDIR)/DSPN-Tool/NSRC/DSPN-Tool/n
 
 NSRC/DSPN-Tool/lexer.ll: $(OBJDIR)/DSPN-Tool/NSRC/DSPN-Tool/newparser.lyy.o bin/lemon
 
-DSPN-Tool_CPPFLAGS := -O2 -Wall $(ENABLE_Cxx17) \
+DSPN-Tool_CPPFLAGS := -O2 -Wall $(ENABLE_Cxx20) \
                       -Iobjects/DSPN-Tool/NSRC/DSPN-Tool/ \
                       -Wno-unused-function \
                       -DNDEBUG=1 $(CPPFLAGS)
@@ -2226,7 +2226,7 @@ $(OBJDIR)/DSPN-Tool-Debug/NSRC/DSPN-Tool/CSLTA.o: $(OBJDIR)/DSPN-Tool-Debug/NSRC
 NSRC/DSPN-Tool/lexer.ll: $(OBJDIR)/DSPN-Tool/NSRC/DSPN-Tool/newparser.lyy.o bin/lemon
 
 DSPN-Tool-Debug_SOURCES := $(DSPN-Tool_SOURCES)
-DSPN-Tool-Debug_CPPFLAGS := -Wall $(ENABLE_Cxx17) \
+DSPN-Tool-Debug_CPPFLAGS := -Wall $(ENABLE_Cxx20) \
                       		-Iobjects/DSPN-Tool-Debug/NSRC/DSPN-Tool/ \
                       		-g -Wall -Wextra -Wno-unused-parameter \
                       		-Wno-unused-function \
@@ -2243,7 +2243,7 @@ endif
 
 alphaFactory_SOURCES := NSRC/alphaFactory/alphaFactory.cpp
 
-alphaFactory_CPPFLAGS := $(CPPFLAGS) -Wall $(ENABLE_Cxx17) \
+alphaFactory_CPPFLAGS := $(CPPFLAGS) -Wall $(ENABLE_Cxx20) \
                          -Wno-unused-function 
 alphaFactory_LD := $(LDPP)
 
@@ -2266,9 +2266,9 @@ endif
 
 ogdf_SOURCES := NSRC/ogdf/ogdf.cpp
 
-ogdf_CPPFLAGS := $(CPPFLAGS) -Wall $(ENABLE_Cxx17)
+ogdf_CPPFLAGS := $(CPPFLAGS) -Wall $(ENABLE_Cxx20)
 ogdf_LD := $(LDPP)
-ogdf_LDFLAGS := $(LDFLAGS) $(LINK_OGDF_LIB) $(ENABLE_Cxx17) -pthread
+ogdf_LDFLAGS := $(LDFLAGS) $(LINK_OGDF_LIB) $(ENABLE_Cxx20) -pthread
 
 ifdef HAS_COIN_LIB
 	ogdf_LDFLAGS := $(ogdf_LDFLAGS)  $(LINK_COIN_LIB)
