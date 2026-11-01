@@ -18,13 +18,6 @@ namespace ctlmdd {
 
 //-----------------------------------------------------------------------------
 
-inline bool isEmptySet(const dd_edge& e) {
-    expert_forest *forest = static_cast<expert_forest *>(e.getForest());
-    return e.getNode() == forest->handleForValue(false);
-}
-
-//-----------------------------------------------------------------------------
-
 /*-----------------
  ---	CTLMDD	---
  ------------------*/
@@ -46,7 +39,7 @@ void CTLMDD::CTLinit() {
         fp.setFullyReduced();
     //fp.setCompactStorage();
     fp.setOptimistic();
-    forestMTMDD = rsrg->getDomain()->createForest(DOUBLELEVEL, range_type::REAL, edge_labeling::MULTI_TERMINAL, fp);
+    forestMTMDD = forest::create(rsrg->getDomain(), DOUBLELEVEL ? RELATION : SET, range_type::REAL, edge_labeling::MULTI_TERMINAL, fp);
     //if (DOUBLELEVEL)
     //  forestMTMDD->setReductionRule(forest::IDENTITY_REDUCED);
     //forestMTMDD->setNodeStorage(forest::FULL_OR_SPARSE_STORAGE);
@@ -167,23 +160,26 @@ struct FormulaPrinter {
     void stat(StateFormula *f) {
         if (running_for_MCC() || CTL_quiet)
             return;
-        cout << "  card = " << f->getMDD().getCardinality();
+        cardinality_t c;
+        apply(CARDINALITY, f->getMDD(), cardinality_ref(c));
+        cout << "  card = " << c;
         if (f->getMDD().getNode() == rsrg->getRS().getNode())
             cout << " (RS)";
 
         if (CTL_print_intermediate_sat_sets) {
             cout << endl;
-            // const dd_edge& dd = f->getMDD();
             dd_edge dd(f->getMDD());
             apply(INTERSECTION, rsrg->getRS(), dd, dd);
-            enumerator i(dd);
             int nvar = dd.getForest()->getDomain()->getNumVariables();
-            cout << "     " << dd.getCardinality() << endl;
-            for (enumerator i(dd); i != 0; ++i) {
+            cardinality_t card;
+            apply(CARDINALITY, dd, cardinality_ref(card));
+            cout << "     " << card << endl;
+            for (auto it = dd.begin(); it; ++it) {
                 cout << "     ";
+                const minterm &m = *it;
                 for(int j=1; j <= nvar; j++) { // for each variable
-                    int val = *(i.getAssignments() + j);
-                    const char* s = dd.getForest()->getDomain()->getVar(j)->getName();
+                    int val = m.from(j);
+                    const std::string& s = dd.getForest()->getDomain()->getVar(j)->getName();
                     if(val==1) 
                         cout << s << " ";
                     else if(val!=0) 
@@ -289,10 +285,12 @@ void IntLiteral::createMTMDD() {
     int **m = ctl->getIns();
     FormulaPrinter<IntLiteral> fp(this);
     float constant = getConstant();
+    minterm min(mtmdd_forest);
     if (DOUBLELEVEL)
-        mtmdd_forest->createEdge(m, m, &constant, 1, complete);
+        min.setAll(m[0], m[0], rangeval(constant));
     else
-        mtmdd_forest->createEdge(m, &constant, 1, complete);
+        min.setAll(m[0], rangeval(constant));
+    min.buildFunction(rangeval(constant), complete);
     setMTMDD(complete);
 }
 
@@ -415,50 +413,27 @@ void PlaceTerm::print(std::ostream &os) const {
 void PlaceTerm::createMTMDD() {
     CTLMDD *ctl = CTLMDD::getInstance();
     forest *mtmdd_forest = ctl->getMTMDDForest();
-    dd_edge tmp_mdd(ctl->getMTMDDForest());
-    int val;
-    int **m = ctl->getIns();
-    float terminale;
     int level = rsrg->convertPlaceToMDDLevel(place) + 1;
-    int variable_bound = rsrg->getMaxValueOfPlaceRS(place);//rsrg->getRealBound(variable);
-#warning "Use createEdgeForVar"
-#warning "non dovrebbero mai comparire PLUS e MINUS, controllare"
+    int variable_bound = rsrg->getMaxValueOfPlaceRS(place);
+    int dom_bound = rsrg->getDomain()->getVariableBound(level);
     FormulaPrinter<PlaceTerm> fp(this);
-    for (val = 0; val <= variable_bound; val++) {
-        m[0][level] = val;
-        switch (op) {
-            case IntFormula::EOP_PLUS:
-                terminale = coeff + (float) val;
-                break;
-            case IntFormula::EOP_TIMES:
-                terminale = coeff * (float) val;
-                break;
-            case IntFormula::EOP_MINUS:
-                terminale = coeff - (float) val;
-                break;
-            case IntFormula::EOP_DIV:
-                terminale = coeff / (float) val;
-                break;
-        }
-        // dd_edge tmp_new_ap(mtmdd_forest);
-        dd_edge new_ap(ctl->getMTMDDForest());// = tmp_new_ap;
-        if (DOUBLELEVEL)
-            mtmdd_forest->createEdge(m, m, &terminale, 1, new_ap);
-        else
-            mtmdd_forest->createEdge(m, &terminale, 1, new_ap);
-        tmp_mdd += new_ap;
-    }
-    m[0][level] = DOUBLELEVEL ? DONT_CHANGE : DONT_CARE;
-    setMTMDD(tmp_mdd);
 
-#warning "Try and test this implementation below."
-    // float term_vec[variable_bound + 1];
-    // for (int mark = 0; mark <= variable_bound; mark++)
-    //     term_vec[mark] = mark;
-    // Controllare se gli indici si term_vec partono da 0 o 1, e se serve l'elemento -1
-    // dd_edge* mark_of_place(ctl->getMTMDDForest());
-    // mtmdd_forest->createEdgeForVar(level, DOUBLELEVEL, term_vec, *mark_of_place);
-    // setMTMDD(mark_of_place);
+    std::vector<rangeval> term_vec(dom_bound, rangeval(0.0f));
+    for (int mark = 0; mark < dom_bound; mark++) {
+        if (mark <= variable_bound) {
+            float terminale = 0.0f;
+            switch (op) {
+                case IntFormula::EOP_PLUS:  terminale = coeff + (float)mark; break;
+                case IntFormula::EOP_TIMES: terminale = coeff * (float)mark; break;
+                case IntFormula::EOP_MINUS: terminale = coeff - (float)mark; break;
+                case IntFormula::EOP_DIV:   terminale = coeff / (float)mark; break;
+            }
+            term_vec[mark] = rangeval(terminale);
+        }
+    }
+    dd_edge mark_of_place(mtmdd_forest);
+    mtmdd_forest->createEdgeForVar(level, false, term_vec.data(), mark_of_place);
+    setMTMDD(mark_of_place);
 }
 
 /*---------------------
@@ -567,7 +542,7 @@ const dd_edge& IntFormula::getMTMDD() {
 }
 
 void IntFormula::clearMTMDD() {
-    MTMDD.clear();
+    MTMDD = dd_edge();
     computedMTMDD = false;
 }
 
@@ -684,7 +659,9 @@ void Inequality::createMDD() {
                 mult *= (int)((PlaceTerm *)expr2)->getCoeff();
             if (((i % div) == 0) && ((i / div * mult) <= variable_bound2)) {
                 m[0][((PlaceTerm *)expr2)->getVariable()] = int(i / div * mult);
-                rsrg->getForestMDD()->createEdge(m, 1, tmp_complete);
+                minterm min(rsrg->getForestMDD());
+                min.setAll(m[0], true);
+                min.buildFunction(false, tmp_complete);
                 apply(UNION, tmp_complete, boole, boole);
                 m[0][((PlaceTerm *)expr2)->getVariable()] = DONT_CARE;
             }
@@ -726,14 +703,16 @@ void Inequality::createMDD() {
     else { //case exp <op> term
         int **m = ctl->getIns();
         exp2MDD = dd_edge(ctl->getMTMDDForest());
+        minterm min(mtmdd_forest);
         if (DOUBLELEVEL)
-            mtmdd_forest->createEdge(m, m, &(constant), 1, exp2MDD);
+            min.setAll(m[0], m[0], rangeval(constant));
         else
-            mtmdd_forest->createEdge(m, &(constant), 1, exp2MDD);
+            min.setAll(m[0], rangeval(constant));
+        min.buildFunction(rangeval(constant), exp2MDD);
         // exp2MDD->show(stdout,1);
     }
     FormulaPrinter<Inequality> fp(this);
-    MEDDLY::binary_handle opname;
+    MEDDLY::binary_builtin0 opname;
     switch (op) {
         case IOP_MIN:    opname = LESS_THAN;            break;
         case IOP_MAJ:    opname = GREATER_THAN;         break;
@@ -756,17 +735,19 @@ void Inequality::createMDDByComplement() {
     dd_edge complete(mtmdd_forest);
     int **m = ctl->getIns();
     float t = this->constant;
+    minterm min(mtmdd_forest);
     if (DOUBLELEVEL)
-        mtmdd_forest->createEdge(m, m, &t, 1, complete);
+        min.setAll(m[0], m[0], rangeval(t));
     else
-        mtmdd_forest->createEdge(m, &t, 1, complete);
+        min.setAll(m[0], rangeval(t));
+    min.buildFunction(rangeval(t), complete);
 
     dd_edge r(expr1->getMTMDD());
     dd_edge complement(mtmdd_forest);
     FormulaPrinter<Inequality> fp(this);
 
     // Select the complement operator
-    MEDDLY::binary_handle complement_opname;
+    MEDDLY::binary_builtin0 complement_opname;
     switch (op) {
         case IOP_MIN:    complement_opname = GREATER_THAN_EQUAL;   break;
         case IOP_MAJ:    complement_opname = LESS_THAN_EQUAL;      break;
@@ -1121,7 +1102,9 @@ void CTLStateFormula::createEGMDD() {
         r = r + deadlock_f1;
         it_cnt2++;
         if (print_intermediate_expr()) {
-            cout << "EG: step=" << it_cnt2 << ",  SAT size=" << fixed << r.getCardinality() << endl;
+            cardinality_t card;
+            apply(CARDINALITY, r, cardinality_ref(card));
+            cout << "EG: step=" << it_cnt2 << ",  SAT size=" << fixed << card << endl;
 
             /*enumerator i(*r);
             int nvar = rsrg->getDomain()->getNumVariables();
@@ -1224,7 +1207,7 @@ void CTLStateFormula::createEFMDD(StateFormula *formula) {
     }
     // Solve using backward reachability with saturation
     // (slightly more costly than PRE_IMAGE + UNION)
-    apply(REVERSE_REACHABLE_DFS, result, rsrg->getNSF(), result);
+    apply(REACHABLE_SATUR(false), result, rsrg->getNSF(), result);
     if (print_intermediate_expr()) {
         cout << "      saturation: ";
     }
@@ -1346,15 +1329,16 @@ TreeTraceNode *CTLStateFormula::generateTrace(const vector<int> &state0, TraceTy
             vector<int> state = state0;
             for (ssize_t step = intermDD.size() - 2; step >= 0; step--) {
                 dd_edge dd_of_state(mdd_forest);
-                const int *vlist = state.data();
-                mdd_forest->createEdge(&vlist, 1, dd_of_state);
+                minterm m_st(mdd_forest);
+                m_st.setAll(state.data(), true);
+                m_st.buildFunction(false, dd_of_state);
                 apply(POST_IMAGE, dd_of_state, rsrg->getNSF(), dd_of_state);
                 apply(INTERSECTION, intermDD[step], dd_of_state, dd_of_state);
                 // Now take a sample state from dd_of_state
-                enumerator it(dd_of_state);
+                auto it = dd_of_state.begin();
                 CTL_ASSERT(it);
-                const int *tmp = it.getAssignments();
-                std::copy(tmp, tmp + npl + 1, state.begin());
+                const minterm &m_it = *it;
+                for (size_t k = 1; k <= npl; ++k) state[k] = m_it.from(k);
 
                 // Add this intermediate state to the trace.
                 TreeTraceNode *next_ttn = new TreeTraceNode(state, this, traceTy);
@@ -1373,8 +1357,9 @@ TreeTraceNode *CTLStateFormula::generateTrace(const vector<int> &state0, TraceTy
             dd_edge Phi = getFormula1()->getMDD();
             CTL_ASSERT(ctl->SatSetContains(Phi, state0.data()));
             dd_edge dd_s0(mdd_forest);
-            const int *vlist = state0.data();
-            mdd_forest->createEdge(&vlist, 1, dd_s0);
+            minterm m_s0(mdd_forest);
+            m_s0.setAll(state0.data(), true);
+            m_s0.buildFunction(false, dd_s0);
 
             vector<dd_edge> intermDD;
             intermDD.push_back(dd_s0);
@@ -1395,15 +1380,16 @@ TreeTraceNode *CTLStateFormula::generateTrace(const vector<int> &state0, TraceTy
                 // Get the set of next states departing from *state
                 // and remaining in the Phi set of intermDD
                 dd_edge dd_of_state(mdd_forest);
-                const int *vlist = state.data();
-                mdd_forest->createEdge(&vlist, 1, dd_of_state);
+                minterm m_st(mdd_forest);
+                m_st.setAll(state.data(), true);
+                m_st.buildFunction(false, dd_of_state);
                 apply(POST_IMAGE, dd_of_state, rsrg->getNSF(), dd_of_state);
                 apply(INTERSECTION, intermDD[step], dd_of_state, dd_of_state);
                 // Pick the first state
-                enumerator it(dd_of_state);
+                auto it = dd_of_state.begin();
                 CTL_ASSERT(it);
-                const int *tmp = it.getAssignments();
-                std::copy(tmp, tmp + npl + 1, state.begin());
+                const minterm &m_it = *it;
+                for (size_t k = 1; k <= npl; ++k) state[k] = m_it.from(k);
                 // Add this intermediate state to the trace.
                 TreeTraceNode *next_ttn = new TreeTraceNode(state, this, traceTy);
                 next_ttn->set_sub_trace1(getFormula1()->generateTrace(state, traceTy));
@@ -1440,18 +1426,19 @@ TreeTraceNode *CTLStateFormula::generateTrace(const vector<int> &state0, TraceTy
                 vector<int> state = state0;
                 for (ssize_t step = intermDD.size() - 2; step >= 0; step--) {
                     dd_edge dd_of_state(mdd_forest);
-                    const int *vlist = state.data();
-                    mdd_forest->createEdge(&vlist, 1, dd_of_state);
+                    minterm m_st(mdd_forest);
+                    m_st.setAll(state.data(), true);
+                    m_st.buildFunction(false, dd_of_state);
                     apply(POST_IMAGE, dd_of_state, rsrg->getNSF(), dd_of_state);
                     // if (step > 0)
                     apply(INTERSECTION, intermDD[step], dd_of_state, dd_of_state);
                     // else
                         // apply(DIFFERENCE, dd_of_state, intermDD[step], dd_of_state); // Modif. 5 may 2014
                     // Now take a sample state from dd_of_state
-                    enumerator it(dd_of_state);
+                    auto it = dd_of_state.begin();
                     CTL_ASSERT(it);
-                    const int *tmp = it.getAssignments();
-                    std::copy(tmp, tmp + npl + 1, state.begin());
+                    const minterm &m_it = *it;
+                    for (size_t k = 1; k <= npl; ++k) state[k] = m_it.from(k);
                     // Add this intermediate state to the trace.
                     TreeTraceNode *next_ttn = new TreeTraceNode(state, this, traceTy);
                     if (step > 0)
@@ -1472,14 +1459,15 @@ TreeTraceNode *CTLStateFormula::generateTrace(const vector<int> &state0, TraceTy
             dd_edge Phi = getFormula1()->getMDD();
             vector<int> state1(npl + 1);
             dd_edge dd_s0(mdd_forest);
-            const int *vlist = state0.data();
-            mdd_forest->createEdge(&vlist, 1, dd_s0);
+            minterm m_s0(mdd_forest);
+            m_s0.setAll(state0.data(), true);
+            m_s0.buildFunction(false, dd_s0);
             apply(POST_IMAGE, dd_s0, rsrg->getNSF(), dd_s0);
             apply(INTERSECTION, Phi, dd_s0, dd_s0);
-            enumerator it(dd_s0);
+            auto it = dd_s0.begin();
             CTL_ASSERT(it);
-            const int *tmp = it.getAssignments();
-            std::copy(tmp, tmp + npl + 1, state1.begin());
+            const minterm &m_it = *it;
+            for (size_t k = 1; k <= npl; ++k) state1[k] = m_it.from(k);
 
             TreeTraceNode *ttn1 = new TreeTraceNode(state1, this, traceTy);
             ttn1->set_sub_trace1(getFormula1()->generateTrace(state1, traceTy));
@@ -1719,7 +1707,7 @@ void StateFormula::setMDD(dd_edge newMDD) {
     computedMDD = true; 
 }
 void StateFormula::clearMDD() {
-    SatMDD.clear();
+    SatMDD = dd_edge();
     computedMDD = false;
 }
 void StateFormula::addOwner() {

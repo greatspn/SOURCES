@@ -19,10 +19,10 @@ namespace ctlmdd {
 // potential state on each model variable, and fixed 0 values for the extra levels
 dd_edge mdd_potential_state_set(RSRG* rsrg, forest* forestMDD, bool zero_extra_lvls)
 {
-    expert_forest *forest = static_cast<expert_forest*>(forestMDD);
+    forest *forest_ptr = forestMDD;
     dd_edge d(forestMDD);
     // take any value for all levels
-    d.set(forest->handleForValue(true));
+    d.set(forest_ptr->handleForValue(true));
 
     if (zero_extra_lvls) {
         // impose a fixed 0 value for all extra levels in the domain
@@ -30,9 +30,9 @@ dd_edge mdd_potential_state_set(RSRG* rsrg, forest* forestMDD, bool zero_extra_l
             int lvl = rsrg->indexOfExtraLvl(i);
             assert(d.getLevel() < lvl);
 
-            unpacked_node *nb_out = unpacked_node::newFull(forest, lvl, 1);
-            nb_out->set_d(0, d);
-            d.set(forest->createReducedNode(-1, nb_out));
+            unpacked_node *nb_out = unpacked_node::newWritable(forest_ptr, lvl, 1, FULL_ONLY);
+            nb_out->down(0) = forest_ptr->linkNode(d.getNode());
+            d.set(forest_ptr->createReducedNode(-1, nb_out));
         }
     }
 
@@ -203,9 +203,11 @@ dd_edge Context::EU(dd_edge f1, dd_edge f2) const {
 
         n_iters++;
         if (print_intermediate_expr()) {
+            cardinality_t c;
+            apply(CARDINALITY, result, cardinality_ref(c));
             cout << (is_true(f1) ? "EF" : "EU") 
                  << ": step=" << n_iters << ",  SAT size=" 
-                 << fixed << result.getCardinality() << endl;
+                 << fixed << c << endl;
             cout.unsetf(ios_base::floatfield);
         }
     }
@@ -366,10 +368,12 @@ dd_edge Context::ERfair(dd_edge f1, dd_edge f2) const {
 
         n_iters++;
         if (print_intermediate_expr()) {
+            cardinality_t c;
+            apply(CARDINALITY, result, cardinality_ref(c));
             cout << (has_fairness_constraints() ? "Fair" : "")
                  << (is_false(f1) ? "EG" : "ER") 
                  << ": step=" << n_iters << ",  SAT size=" 
-                 << fixed << result.getCardinality() << endl;
+                 << fixed << c << endl;
             cout.unsetf(ios_base::floatfield);
         }
     }
@@ -536,15 +540,21 @@ dd_edge StutteredNSF::forward_reachable(const dd_edge& s0) const {
 
 // check if a DD contains a specific marking
 bool sat_set_contains(const dd_edge &dd, const std::vector<int> &marking) {
-    bool isContained;
-    dd.getForest()->evaluate(dd, marking.data(), isContained);
+    bool isContained = false;
+    minterm m(dd.getForest());
+    int num_vars = dd.getForest()->getDomain()->getNumVariables();
+    for (int i = 1; i <= num_vars; ++i) {
+        int val = (i < (int)marking.size()) ? marking[i] : 0;
+        m.setVar(i, val);
+    }
+    dd.evaluate(m, isContained);
     return isContained;
 }
 
 //-----------------------------------------------------------------------------
 
 bool sat_set_is_empty(const dd_edge &e) {
-    expert_forest *forest = static_cast<expert_forest *>(e.getForest());
+    const forest *forest = e.getForest();
     return e.getNode() == forest->handleForValue(false);
 }
 
@@ -553,8 +563,13 @@ bool sat_set_is_empty(const dd_edge &e) {
 // create the DD corresponding to a single marking
 dd_edge dd_from_marking(const std::vector<int> &marking, MEDDLY::forest *mdd_forest) {
     dd_edge dd_of_state(mdd_forest);
-    const int *vlist = marking.data();
-    mdd_forest->createEdge(&vlist, 1, dd_of_state);
+    minterm m(mdd_forest);
+    int num_vars = mdd_forest->getDomain()->getNumVariables();
+    for (int i = 1; i <= num_vars; ++i) {
+        int val = (i < (int)marking.size()) ? marking[i] : 0;
+        m.setVar(i, val);
+    }
+    m.buildFunction(false, dd_of_state);
     return dd_of_state;
 }
 
@@ -562,48 +577,100 @@ dd_edge dd_from_marking(const std::vector<int> &marking, MEDDLY::forest *mdd_for
 
 // extract an arbitrary state from the dd
 void get_marking_from_dd(const dd_edge &dd, std::vector<int> &marking) {
-    MEDDLY::enumerator it(dd);
-    const int *tmp = it.getAssignments();
     const size_t n_vars = dd.getForest()->getDomain()->getNumVariables();
-    marking.resize(n_vars + 1);
-    std::copy(tmp, tmp + n_vars + 1, marking.begin());
+    marking.assign(n_vars + 1, 0);
+    auto it = dd.begin();
+    if (it) {
+        const minterm& m = *it;
+        for (size_t i = 1; i <= n_vars; ++i) {
+            marking[i] = m.getVar(i);
+        }
+    }
+}
+
+//-----------------------------------------------------------------------------
+
+// Resolution of firing transition between two states
+int Context::find_firing_transition(const std::vector<int>& s_prev,
+                                    const std::vector<int>& s_curr) const
+{
+    dd_edge dd_prev = dd_from_marking(s_prev, get_MDD_forest());
+    for (int tr = 0; tr < ntr; ++tr) {
+        dd_edge img_tr(get_MDD_forest());
+        apply(POST_IMAGE, dd_prev, rsrg->getEventMxD(tr), img_tr);
+        if (sat_set_contains(img_tr, s_curr)) {
+            return tr;
+        }
+    }
+    return -1;
 }
 
 //-----------------------------------------------------------------------------
 
 // generate a trace in the form:
 //  s0 -> s1 -> s2 -> ... -> sN
-// from a vector of M>=N intermediate DD. 
-// sN \subsetof steps[M-1]
-// the first step is the first DD that contains s0.
+// from a vector of intermediate DDs.
+void generate_sequential_trace(const Context& ctx,
+                               const std::vector<int> &s0, 
+                               const std::vector<dd_edge> &steps, 
+                               const VirtualNSF& NSF,
+                               std::list<std::vector<int>> &trace_states,
+                               std::vector<int> &trace_transitions) 
+{
+    MEDDLY::forest* forestMDD = steps.front().getForest();
+    int start_i = -1;
+    for (int i = 0; i < (int)steps.size(); i++) {
+        if (sat_set_contains(steps[i], s0)) {
+            start_i = i;
+            break;
+        }
+    }
+    if (start_i < 0) {
+        start_i = (int)steps.size() - 1;
+    }
+
+    std::vector<int> state = s0;
+    trace_states.push_back(state);
+    trace_transitions.push_back(-1);
+
+    for (int i = start_i - 1; i >= 0; i--) {
+        dd_edge dd_state = dd_from_marking(state, forestMDD);
+        dd_edge dd_succ = NSF.post_image(dd_state);
+        MEDDLY::apply(INTERSECTION, dd_succ, steps[i], dd_succ);
+        if (sat_set_is_empty(dd_succ))
+            break;
+        std::vector<int> next_state;
+        get_marking_from_dd(dd_succ, next_state);
+        int tr = ctx.find_firing_transition(state, next_state);
+        trace_states.push_back(next_state);
+        trace_transitions.push_back(tr);
+        state = next_state;
+    }
+}
+
 void generate_sequential_trace(const std::vector<int> &s0, 
                                const std::vector<dd_edge> &steps, 
                                const VirtualNSF& NSF,
                                std::list<std::vector<int>> &trace_states) 
 {
     MEDDLY::forest* forestMDD = steps.front().getForest();
-    // follow back the intermediate DD steps, and find the one that contains s0
-    int start_i;
-    for (start_i=steps.size()-1; start_i>=0; start_i--) {
-        if (sat_set_contains(steps[start_i], s0))
+    int start_i = -1;
+    for (int i = 0; i < (int)steps.size(); i++) {
+        if (sat_set_contains(steps[i], s0)) {
+            start_i = i;
             break;
+        }
     }
-    if (start_i < 0)
-        throw rgmedd_exception(" Could not find s0 in the trace");
+    if (start_i < 0) start_i = (int)steps.size() - 1;
 
-    // Generate the trace from steps[i] to the end, starting from state s0 and picking
-    // arbitrary successor states
     std::vector<int> state = s0;
     trace_states.push_back(state);
-    for (int i = start_i+1; i<steps.size(); i++) {
+    for (int i = start_i - 1; i >= 0; i--) {
         dd_edge dd_state = dd_from_marking(state, forestMDD);
-        // generate the successors of @state
         dd_edge dd_succ = NSF.post_image(dd_state);
-        // take only those that are also in step[i]
         MEDDLY::apply(INTERSECTION, dd_succ, steps[i], dd_succ);
         if (sat_set_is_empty(dd_succ))
-            throw rgmedd_exception("Problem generating the trace successors");
-        // get one successor state for the trace
+            break;
         get_marking_from_dd(dd_succ, state);
         trace_states.push_back(state);
     }
@@ -614,8 +681,57 @@ void generate_sequential_trace(const std::vector<int> &s0,
 // generate a rho trace in the form:
 //  s0 -> s1 -> s2 -> ... -> sk -> ... -> sN --\   <- goes back
 //                            ^----------------/
-// that contains a self loop going back to some intermediate state sk.
-// States in the trace belong to the M steps DDs.
+void generate_rho_trace(const Context& ctx,
+                        const std::vector<int> &s0, 
+                        const std::vector<dd_edge> &steps, 
+                        const VirtualNSF& NSF,
+                        std::list<std::vector<int>> &trace_states,
+                        std::vector<int> &trace_transitions,
+                        size_t& start_of_loop) 
+{
+    MEDDLY::forest* forestMDD = steps.front().getForest();
+    generate_sequential_trace(ctx, s0, steps, NSF, trace_states, trace_transitions);
+    start_of_loop = trace_states.size();
+
+    std::vector<int> sk = trace_states.back();
+    dd_edge dd_sk = dd_from_marking(sk, forestMDD);
+
+    std::vector<dd_edge> loop_steps;
+    loop_steps.push_back(dd_sk);
+
+    while (true) {
+        dd_edge succs = NSF.post_image(loop_steps.back());
+        MEDDLY::apply(INTERSECTION, succs, steps.back(), succs);
+        if (sat_set_is_empty(succs)) break;
+        loop_steps.push_back(succs);
+        if (sat_set_contains(succs, sk))
+            break;
+        if (loop_steps.size() > 1000) break;
+    }
+    if (loop_steps.size() > 1) {
+        auto iter = loop_steps.rbegin();
+        while (true) {
+            dd_edge preds = *iter;
+            iter++;
+            if (iter == loop_steps.rend())
+                break;
+            preds = NSF.pre_image(preds);
+            MEDDLY::apply(INTERSECTION, *iter, preds, *iter);
+        }
+        std::list<std::vector<int>> loop_states;
+        std::vector<int> loop_transitions;
+        generate_sequential_trace(ctx, sk, loop_steps, NSF, loop_states, loop_transitions);
+        if (loop_states.size() > 1) {
+            auto it_s = ++loop_states.begin();
+            auto it_t = ++loop_transitions.begin();
+            for (; it_s != loop_states.end(); ++it_s, ++it_t) {
+                trace_states.push_back(*it_s);
+                trace_transitions.push_back(*it_t);
+            }
+        }
+    }
+}
+
 void generate_rho_trace(const std::vector<int> &s0, 
                         const std::vector<dd_edge> &steps, 
                         const VirtualNSF& NSF,
@@ -623,40 +739,603 @@ void generate_rho_trace(const std::vector<int> &s0,
                         size_t& start_of_loop) 
 {
     MEDDLY::forest* forestMDD = steps.front().getForest();
-    // first generate a sequence from s0 to sk in the last steps[] DD,
-    // which is assumed to be a SCC.
     generate_sequential_trace(s0, steps, NSF, trace_states);
     start_of_loop = trace_states.size();
 
     std::vector<int> sk = trace_states.back();
     dd_edge dd_sk = dd_from_marking(sk, forestMDD);
 
-    // find a loop that goes back to sk, while remaining in the SCC. 
-    // Generate all intermediate DDs
     std::vector<dd_edge> loop_steps;
     loop_steps.push_back(dd_sk);
 
     while (true) {
         dd_edge succs = NSF.post_image(loop_steps.back());
         MEDDLY::apply(INTERSECTION, succs, steps.back(), succs);
+        if (sat_set_is_empty(succs)) break;
         loop_steps.push_back(succs);
         if (sat_set_contains(succs, sk))
             break;
+        if (loop_steps.size() > 1000) break;
     }
-    auto iter = loop_steps.rbegin();
-    while (true) {
-        dd_edge preds = *iter;
-        iter++;
-        if (iter == loop_steps.rend())
+    if (loop_steps.size() > 1) {
+        auto iter = loop_steps.rbegin();
+        while (true) {
+            dd_edge preds = *iter;
+            iter++;
+            if (iter == loop_steps.rend())
+                break;
+            preds = NSF.pre_image(preds);
+            MEDDLY::apply(INTERSECTION, *iter, preds, *iter);
+        }
+        std::list<std::vector<int>> loop_states;
+        generate_sequential_trace(sk, loop_steps, NSF, loop_states);
+        if (loop_states.size() > 1) {
+            auto it_s = ++loop_states.begin();
+            for (; it_s != loop_states.end(); ++it_s) {
+                trace_states.push_back(*it_s);
+            }
+        }
+    }
+}
+
+//-----------------------------------------------------------------------------
+// CTL Core Trace Algorithms
+//-----------------------------------------------------------------------------
+
+TreeTraceNode* Context::trace_EX(Formula* top_formula, Formula* phi, const std::vector<int>& state0, TraceType traceTy) {
+    TreeTraceNode* ttn = new TreeTraceNode(state0, make_ref_ptr<Formula>(top_formula), traceTy);
+    if (traceTy == TT_COUNTEREXAMPLE) {
+        ttn->set_ECTL_cntexample();
+        return ttn;
+    }
+
+    dd_edge phi_mdd = phi->getMDD(*this);
+    if (has_fairness_constraints()) {
+        phi_mdd = AND(phi_mdd, get_fair_states());
+    }
+
+    dd_edge dd_s0 = dd_from_marking(state0, get_MDD_forest());
+    dd_edge succs(get_MDD_forest());
+    if (stutter_EX) {
+        succs = get_stuttered_nsf()->post_image(dd_s0);
+    } else {
+        succs = vNSF->post_image(dd_s0);
+    }
+    succs = MDD_INTERSECT(succs, phi_mdd);
+
+    if (sat_set_is_empty(succs)) {
+        return ttn;
+    }
+
+    std::vector<int> state1;
+    get_marking_from_dd(succs, state1);
+    int tr = find_firing_transition(state0, state1);
+
+    TreeTraceNode* next_ttn = new TreeTraceNode(state1, traceTy, tr, (tr >= 0 && tr < ntr) ? tabt[tr].trans_name : "");
+    ttn->set_next(next_ttn);
+
+    next_ttn->set_sub_trace1(phi->generateTrace(*this, state1, traceTy));
+    return ttn;
+}
+
+//-----------------------------------------------------------------------------
+
+TreeTraceNode* Context::trace_EF(Formula* top_formula, Formula* phi, const std::vector<int>& state0, TraceType traceTy) {
+    TreeTraceNode* ttn = new TreeTraceNode(state0, make_ref_ptr<Formula>(top_formula), traceTy);
+    if (traceTy == TT_COUNTEREXAMPLE) {
+        ttn->set_ECTL_cntexample();
+        return ttn;
+    }
+
+    dd_edge phi_mdd = phi->getMDD(*this);
+    if (has_fairness_constraints()) {
+        phi_mdd = AND(phi_mdd, get_fair_states());
+    }
+
+    if (sat_set_contains(phi_mdd, state0)) {
+        ttn->set_sub_trace1(phi->generateTrace(*this, state0, traceTy));
+        return ttn;
+    }
+
+    std::vector<dd_edge> steps;
+    steps.push_back(phi_mdd);
+    while (!sat_set_contains(steps.back(), state0)) {
+        dd_edge pre = PREIMG(steps.back(), stutter_EX);
+        if (sat_set_is_empty(pre) || pre == steps.back()) {
             break;
-
-        preds = NSF.pre_image(preds);
-        MEDDLY::apply(INTERSECTION, *iter, preds, *iter);
+        }
+        steps.push_back(pre);
     }
 
-    trace_states.resize(trace_states.size() - 1); // remove the last state
-    // Now generate a self loop visiting the succs_lst DDs.
-    generate_sequential_trace(sk, loop_steps, NSF, trace_states);
+    if (!sat_set_contains(steps.back(), state0)) {
+        return ttn;
+    }
+
+    TraceType tt0 = (steps.size() > 1) ? oppositeTraceType(traceTy) : traceTy;
+    ttn->set_sub_trace1(phi->generateTrace(*this, state0, tt0));
+
+    TreeTraceNode* current_ttn = ttn;
+    std::vector<int> curr_state = state0;
+
+    for (ssize_t step = (ssize_t)steps.size() - 2; step >= 0; step--) {
+        dd_edge dd_curr = dd_from_marking(curr_state, get_MDD_forest());
+        dd_edge succs(get_MDD_forest());
+        if (stutter_EX) {
+            succs = get_stuttered_nsf()->post_image(dd_curr);
+        } else {
+            succs = vNSF->post_image(dd_curr);
+        }
+        succs = MDD_INTERSECT(succs, steps[step]);
+        if (sat_set_is_empty(succs)) {
+            break;
+        }
+        std::vector<int> next_state;
+        get_marking_from_dd(succs, next_state);
+        int tr = find_firing_transition(curr_state, next_state);
+
+        TreeTraceNode* next_ttn = new TreeTraceNode(next_state, traceTy, tr, (tr >= 0 && tr < ntr) ? tabt[tr].trans_name : "");
+        TraceType tt = (step > 0) ? oppositeTraceType(traceTy) : traceTy;
+        next_ttn->set_sub_trace1(phi->generateTrace(*this, next_state, tt));
+
+        current_ttn->set_next(next_ttn);
+        current_ttn = next_ttn;
+        curr_state = next_state;
+    }
+    return ttn;
+}
+
+//-----------------------------------------------------------------------------
+
+TreeTraceNode* Context::trace_EG(Formula* top_formula, Formula* phi, const std::vector<int>& state0, TraceType traceTy) {
+    TreeTraceNode* ttn = new TreeTraceNode(state0, make_ref_ptr<Formula>(top_formula), traceTy);
+    if (traceTy == TT_COUNTEREXAMPLE) {
+        ttn->set_ECTL_cntexample();
+        return ttn;
+    }
+
+    dd_edge phi_mdd = phi->getMDD(*this);
+    dd_edge S_EG = EGfair(phi_mdd);
+    if (!sat_set_contains(S_EG, state0)) {
+        return ttn;
+    }
+
+    const VirtualNSF* nsf = stutter_EG ? get_stuttered_nsf() : vNSF.get();
+    dd_edge dd_s0 = dd_from_marking(state0, get_MDD_forest());
+
+    // =========================================================================
+    // Phase 1: Forward BFS layers from s0 (Check Case A: cycle through s0)
+    // =========================================================================
+    std::vector<dd_edge> L;
+    L.push_back(dd_s0);
+    dd_edge visited = dd_s0;
+    int cycle_len = -1;
+
+    for (int step = 1; step <= 1000; ++step) {
+        dd_edge nxt = nsf->post_image(L.back());
+        nxt = MDD_INTERSECT(nxt, S_EG);
+        if (sat_set_is_empty(nxt)) {
+            break;
+        }
+
+        L.push_back(nxt);
+        if (sat_set_contains(nxt, state0)) {
+            cycle_len = step;
+            break;
+        }
+
+        dd_edge new_visited = visited + nxt;
+        if (new_visited == visited) {
+            // Fixpoint reached: s0 cannot reach s0 within S_EG -> proceed to Case B
+            break;
+        }
+        visited = new_visited;
+    }
+
+    std::vector<std::vector<int>> stem_path;
+    std::vector<std::vector<int>> loop_path;
+    int loop_len = -1;
+    size_t k = 0;
+
+    if (cycle_len > 0) {
+        // Case A: minimal cycle from s0 back to s0
+        stem_path.push_back(state0);
+        k = 0;
+        loop_len = cycle_len;
+        loop_path.resize(cycle_len + 1);
+        loop_path[cycle_len] = state0;
+        for (int i = cycle_len; i >= 1; --i) {
+            dd_edge dd_curr = dd_from_marking(loop_path[i], get_MDD_forest());
+            dd_edge preds = nsf->pre_image(dd_curr);
+            preds = MDD_INTERSECT(preds, L[i - 1]);
+            get_marking_from_dd(preds, loop_path[i - 1]);
+        }
+    } else {
+        // =====================================================================
+        // Phase 2: Case B (s0 is transient)
+        // =====================================================================
+        // 1. Identify recurrent cycle states C within reachable states 'visited'
+        dd_edge C = visited;
+        for (int it = 0; it < 500; ++it) {
+            dd_edge prev_C = C;
+            dd_edge pre_C = nsf->pre_image(C);
+            C = MDD_INTERSECT(C, pre_C);
+            dd_edge post_C = nsf->post_image(C);
+            C = MDD_INTERSECT(C, post_C);
+            if (C == prev_C || sat_set_is_empty(C)) {
+                break;
+            }
+        }
+
+        if (!sat_set_is_empty(C)) {
+            // 2. Shortest stem from s0 to C using backward BFS
+            std::vector<dd_edge> stem_layers;
+            stem_layers.push_back(C);
+            while (!sat_set_contains(stem_layers.back(), state0) && stem_layers.size() <= 1000) {
+                dd_edge pre = nsf->pre_image(stem_layers.back());
+                pre = MDD_INTERSECT(pre, S_EG);
+                if (sat_set_is_empty(pre) || pre == stem_layers.back()) {
+                    break;
+                }
+                stem_layers.push_back(pre);
+            }
+
+            if (sat_set_contains(stem_layers.back(), state0)) {
+                size_t stem_len = stem_layers.size() - 1;
+                stem_path.resize(stem_len + 1);
+                stem_path[0] = state0;
+                for (size_t i = 1; i <= stem_len; ++i) {
+                    dd_edge dd_curr = dd_from_marking(stem_path[i - 1], get_MDD_forest());
+                    dd_edge succs = nsf->post_image(dd_curr);
+                    succs = MDD_INTERSECT(succs, stem_layers[stem_len - i]);
+                    get_marking_from_dd(succs, stem_path[i]);
+                }
+                k = stem_len;
+                const std::vector<int>& sk = stem_path.back();
+
+                // 3. Shortest loop from sk back to sk using forward BFS
+                dd_edge dd_sk = dd_from_marking(sk, get_MDD_forest());
+                std::vector<dd_edge> loop_L;
+                loop_L.push_back(dd_sk);
+
+                for (int step = 1; step <= 1000; ++step) {
+                    dd_edge nxt = nsf->post_image(loop_L.back());
+                    nxt = MDD_INTERSECT(nxt, S_EG);
+                    if (sat_set_is_empty(nxt)) {
+                        break;
+                    }
+                    loop_L.push_back(nxt);
+                    if (sat_set_contains(nxt, sk)) {
+                        loop_len = step;
+                        break;
+                    }
+                }
+
+                if (loop_len > 0) {
+                    loop_path.resize(loop_len + 1);
+                    loop_path[loop_len] = sk;
+                    for (int i = loop_len; i >= 1; --i) {
+                        dd_edge dd_curr = dd_from_marking(loop_path[i], get_MDD_forest());
+                        dd_edge preds = nsf->pre_image(dd_curr);
+                        preds = MDD_INTERSECT(preds, loop_L[i - 1]);
+                        get_marking_from_dd(preds, loop_path[i - 1]);
+                    }
+                }
+            }
+        }
+    }
+
+    // Verify fairness constraints on loop_path if any
+    if (loop_len > 0 && has_fairness_constraints()) {
+        for (const auto& F : fair_sets) {
+            bool visited_F = false;
+            for (const auto& st : loop_path) {
+                if (sat_set_contains(F, st)) {
+                    visited_F = true;
+                    break;
+                }
+            }
+            if (!visited_F) {
+                loop_len = -1; // Fairness condition violated, fall back to simulation walk
+                break;
+            }
+        }
+    }
+
+    // =========================================================================
+    // Trace Assembly
+    // =========================================================================
+    if (loop_len > 0) {
+        ttn->set_sub_trace1(phi->generateTrace(*this, state0, traceTy));
+        TreeTraceNode* curr_ttn = ttn;
+
+        // 1. Stem transitions: stem_path[0] -> stem_path[1] -> ... -> stem_path[k]
+        for (size_t i = 1; i <= k; ++i) {
+            int tr = find_firing_transition(stem_path[i - 1], stem_path[i]);
+            TreeTraceNode* next_ttn = new TreeTraceNode(stem_path[i], traceTy, tr,
+                (tr >= 0 && tr < ntr) ? tabt[tr].trans_name : "");
+            next_ttn->set_sub_trace1(phi->generateTrace(*this, stem_path[i], traceTy));
+            curr_ttn->set_next(next_ttn);
+            curr_ttn = next_ttn;
+        }
+
+        // 2. Loop transitions: loop_path[0] -> loop_path[1] -> ... -> loop_path[loop_len - 1]
+        for (int j = 1; j < loop_len; ++j) {
+            int tr = find_firing_transition(loop_path[j - 1], loop_path[j]);
+            TreeTraceNode* next_ttn = new TreeTraceNode(loop_path[j], traceTy, tr,
+                (tr >= 0 && tr < ntr) ? tabt[tr].trans_name : "");
+            next_ttn->set_sub_trace1(phi->generateTrace(*this, loop_path[j], traceTy));
+            curr_ttn->set_next(next_ttn);
+            curr_ttn = next_ttn;
+        }
+
+        // 3. Loop back to state (k + 1)
+        int last_tr = find_firing_transition(loop_path[loop_len - 1], stem_path[k]);
+        TreeTraceNode* loop_node = new TreeTraceNode(stem_path[k], traceTy, last_tr,
+            (last_tr >= 0 && last_tr < ntr) ? tabt[last_tr].trans_name : "");
+        loop_node->set_loop_back_step((int)k);
+        loop_node->set_sub_trace1(phi->generateTrace(*this, stem_path[k], traceTy));
+        curr_ttn->set_next(loop_node);
+        ttn->set_circular();
+        ttn->set_loop_back_step((int)k);
+        return ttn;
+    }
+
+    // =========================================================================
+    // Fallback: Greedy Simulation Walk
+    // =========================================================================
+    TreeTraceNode* current_ttn = ttn;
+    std::vector<std::vector<int>> visited_states;
+    visited_states.push_back(state0);
+    std::vector<int> curr_state = state0;
+
+    ttn->set_sub_trace1(phi->generateTrace(*this, state0, traceTy));
+
+    while (visited_states.size() < 10000) {
+        dd_edge dd_curr = dd_from_marking(curr_state, get_MDD_forest());
+        dd_edge succs(get_MDD_forest());
+        if (stutter_EG) {
+            succs = get_stuttered_nsf()->post_image(dd_curr);
+        } else {
+            succs = vNSF->post_image(dd_curr);
+        }
+        succs = MDD_INTERSECT(succs, S_EG);
+        if (sat_set_is_empty(succs)) {
+            break;
+        }
+
+        std::vector<int> next_state;
+        get_marking_from_dd(succs, next_state);
+        int tr = find_firing_transition(curr_state, next_state);
+
+        int loop_idx = -1;
+        for (size_t i = 0; i < visited_states.size(); ++i) {
+            if (visited_states[i] == next_state) {
+                loop_idx = (int)i;
+                break;
+            }
+        }
+
+        if (loop_idx >= 0) {
+            TreeTraceNode* loop_node = new TreeTraceNode(next_state, traceTy, tr, (tr >= 0 && tr < ntr) ? tabt[tr].trans_name : "");
+            loop_node->set_loop_back_step(loop_idx);
+            loop_node->set_sub_trace1(phi->generateTrace(*this, next_state, traceTy));
+            current_ttn->set_next(loop_node);
+            ttn->set_circular();
+            ttn->set_loop_back_step(loop_idx);
+            break;
+        }
+
+        TreeTraceNode* next_ttn = new TreeTraceNode(next_state, traceTy, tr, (tr >= 0 && tr < ntr) ? tabt[tr].trans_name : "");
+        next_ttn->set_sub_trace1(phi->generateTrace(*this, next_state, traceTy));
+        current_ttn->set_next(next_ttn);
+        current_ttn = next_ttn;
+
+        visited_states.push_back(next_state);
+        curr_state = next_state;
+    }
+    return ttn;
+}
+
+//-----------------------------------------------------------------------------
+
+TreeTraceNode* Context::trace_EU(Formula* top_formula, Formula* phi1, Formula* phi2, const std::vector<int>& state0, TraceType traceTy) {
+    TreeTraceNode* ttn = new TreeTraceNode(state0, make_ref_ptr<Formula>(top_formula), traceTy);
+    if (traceTy == TT_COUNTEREXAMPLE) {
+        ttn->set_ECTL_cntexample();
+        return ttn;
+    }
+
+    dd_edge phi1_mdd = phi1->getMDD(*this);
+    dd_edge phi2_mdd = phi2->getMDD(*this);
+    if (has_fairness_constraints()) {
+        phi2_mdd = AND(phi2_mdd, get_fair_states());
+    }
+
+    if (sat_set_contains(phi2_mdd, state0)) {
+        ttn->set_sub_trace1(phi2->generateTrace(*this, state0, traceTy));
+        return ttn;
+    }
+
+    std::vector<dd_edge> steps;
+    steps.push_back(phi2_mdd);
+    while (!sat_set_contains(steps.back(), state0)) {
+        dd_edge pre = PREIMG(steps.back(), false);
+        pre = MDD_INTERSECT(pre, phi1_mdd);
+        if (sat_set_is_empty(pre) || pre == steps.back()) {
+            break;
+        }
+        steps.push_back(pre);
+    }
+
+    if (!sat_set_contains(steps.back(), state0)) {
+        return ttn;
+    }
+
+    TreeTraceNode* current_ttn = ttn;
+    std::vector<int> curr_state = state0;
+    ttn->set_sub_trace1(phi1->generateTrace(*this, state0, traceTy));
+
+    for (ssize_t step = (ssize_t)steps.size() - 2; step >= 0; step--) {
+        dd_edge dd_curr = dd_from_marking(curr_state, get_MDD_forest());
+        dd_edge succs = vNSF->post_image(dd_curr);
+        succs = MDD_INTERSECT(succs, steps[step]);
+        if (sat_set_is_empty(succs)) {
+            break;
+        }
+        std::vector<int> next_state;
+        get_marking_from_dd(succs, next_state);
+        int tr = find_firing_transition(curr_state, next_state);
+
+        TreeTraceNode* next_ttn = new TreeTraceNode(next_state, traceTy, tr, (tr >= 0 && tr < ntr) ? tabt[tr].trans_name : "");
+        if (step > 0) {
+            next_ttn->set_sub_trace1(phi1->generateTrace(*this, next_state, traceTy));
+        } else {
+            next_ttn->set_sub_trace1(phi2->generateTrace(*this, next_state, traceTy));
+        }
+
+        current_ttn->set_next(next_ttn);
+        current_ttn = next_ttn;
+        curr_state = next_state;
+    }
+    return ttn;
+}
+
+//-----------------------------------------------------------------------------
+
+TreeTraceNode* Context::trace_ERfair(Formula* top_formula, Formula* phi1, Formula* phi2, const std::vector<int>& state0, TraceType traceTy) {
+    dd_edge phi1_mdd = phi1->getMDD(*this);
+    dd_edge phi2_mdd = phi2->getMDD(*this);
+    dd_edge phi1_and_phi2 = AND(phi1_mdd, phi2_mdd);
+    dd_edge eu_part = EUfair(phi2_mdd, phi1_and_phi2);
+
+    if (sat_set_contains(eu_part, state0)) {
+        ref_ptr<Formula> phi1_and_phi2_f = ctlnew<LogicalFormula>(make_ref_ptr<Formula>(phi1), make_ref_ptr<Formula>(phi2), LogicalFormula::CBF_AND);
+        return trace_EU(top_formula, phi2, phi1_and_phi2_f.get(), state0, traceTy);
+    }
+    return trace_EG(top_formula, phi2, state0, traceTy);
+}
+
+//-----------------------------------------------------------------------------
+// Universal Duals
+//-----------------------------------------------------------------------------
+
+TreeTraceNode* Context::trace_AX(Formula* top_formula, Formula* phi, const std::vector<int>& state0, TraceType traceTy) {
+    if (traceTy == TT_COUNTEREXAMPLE) {
+        ref_ptr<Formula> not_phi = ctlnew<LogicalFormula>(make_ref_ptr<Formula>(phi));
+        TreeTraceNode* ttn = trace_EX(top_formula, not_phi.get(), state0, TT_WITNESS);
+        ttn->set_trace_type(TT_COUNTEREXAMPLE);
+        return ttn;
+    }
+    return new TreeTraceNode(state0, make_ref_ptr<Formula>(top_formula), traceTy);
+}
+
+//-----------------------------------------------------------------------------
+
+TreeTraceNode* Context::trace_AF(Formula* top_formula, Formula* phi, const std::vector<int>& state0, TraceType traceTy) {
+    if (traceTy == TT_COUNTEREXAMPLE) {
+        ref_ptr<Formula> not_phi = ctlnew<LogicalFormula>(make_ref_ptr<Formula>(phi));
+        TreeTraceNode* ttn = trace_EG(top_formula, not_phi.get(), state0, TT_WITNESS);
+        ttn->set_trace_type(TT_COUNTEREXAMPLE);
+        return ttn;
+    }
+    return new TreeTraceNode(state0, make_ref_ptr<Formula>(top_formula), traceTy);
+}
+
+//-----------------------------------------------------------------------------
+
+TreeTraceNode* Context::trace_AG(Formula* top_formula, Formula* phi, const std::vector<int>& state0, TraceType traceTy) {
+    if (traceTy == TT_COUNTEREXAMPLE) {
+        ref_ptr<Formula> not_phi = ctlnew<LogicalFormula>(make_ref_ptr<Formula>(phi));
+        TreeTraceNode* ttn = trace_EF(top_formula, not_phi.get(), state0, TT_WITNESS);
+        ttn->set_trace_type(TT_COUNTEREXAMPLE);
+        return ttn;
+    }
+    return new TreeTraceNode(state0, make_ref_ptr<Formula>(top_formula), traceTy);
+}
+
+//-----------------------------------------------------------------------------
+
+TreeTraceNode* Context::trace_AU(Formula* top_formula, Formula* phi1, Formula* phi2, const std::vector<int>& state0, TraceType traceTy) {
+    if (traceTy == TT_COUNTEREXAMPLE) {
+        ref_ptr<Formula> not_phi1 = ctlnew<LogicalFormula>(make_ref_ptr<Formula>(phi1));
+        ref_ptr<Formula> not_phi2 = ctlnew<LogicalFormula>(make_ref_ptr<Formula>(phi2));
+        ref_ptr<Formula> not_both = ctlnew<LogicalFormula>(not_phi1, not_phi2, LogicalFormula::CBF_AND);
+
+        dd_edge not_phi2_mdd = not_phi2->getMDD(*this);
+        dd_edge eg_set = EGfair(not_phi2_mdd);
+
+        TreeTraceNode* ttn = nullptr;
+        if (sat_set_contains(eg_set, state0)) {
+            ttn = trace_EG(top_formula, not_phi2.get(), state0, TT_WITNESS);
+        } else {
+            ttn = trace_EU(top_formula, not_phi2.get(), not_both.get(), state0, TT_WITNESS);
+        }
+        ttn->set_trace_type(TT_COUNTEREXAMPLE);
+        return ttn;
+    }
+    return new TreeTraceNode(state0, make_ref_ptr<Formula>(top_formula), traceTy);
+}
+
+//-----------------------------------------------------------------------------
+
+TreeTraceNode* Context::trace_ARfair(Formula* top_formula, Formula* phi1, Formula* phi2, const std::vector<int>& state0, TraceType traceTy) {
+    if (traceTy == TT_COUNTEREXAMPLE) {
+        ref_ptr<Formula> not_phi1 = ctlnew<LogicalFormula>(make_ref_ptr<Formula>(phi1));
+        ref_ptr<Formula> not_phi2 = ctlnew<LogicalFormula>(make_ref_ptr<Formula>(phi2));
+        TreeTraceNode* ttn = trace_EU(top_formula, not_phi1.get(), not_phi2.get(), state0, TT_WITNESS);
+        ttn->set_trace_type(TT_COUNTEREXAMPLE);
+        return ttn;
+    }
+    return new TreeTraceNode(state0, make_ref_ptr<Formula>(top_formula), traceTy);
+}
+
+//-----------------------------------------------------------------------------
+// Logic Trace Algorithms
+//-----------------------------------------------------------------------------
+
+TreeTraceNode* Context::trace_NOT(Formula* top_formula, Formula* phi, const std::vector<int>& state0, TraceType traceTy) {
+    TreeTraceNode* sub = phi->generateTrace(*this, state0, oppositeTraceType(traceTy));
+    TreeTraceNode* ttn = new TreeTraceNode(state0, make_ref_ptr<Formula>(top_formula), traceTy);
+    ttn->set_sub_trace1(sub);
+    return ttn;
+}
+
+//-----------------------------------------------------------------------------
+
+TreeTraceNode* Context::trace_AND(Formula* top_formula, Formula* phi1, Formula* phi2, const std::vector<int>& state0, TraceType traceTy) {
+    TreeTraceNode* ttn = new TreeTraceNode(state0, make_ref_ptr<Formula>(top_formula), traceTy);
+    if (traceTy == TT_WITNESS) {
+        ttn->set_sub_trace1(phi1->generateTrace(*this, state0, traceTy));
+        ttn->set_sub_trace2(phi2->generateTrace(*this, state0, traceTy));
+    } else { // TT_COUNTEREXAMPLE
+        dd_edge dd1 = phi1->getMDD(*this);
+        bool sat1 = sat_set_contains(dd1, state0);
+        if (!sat1) {
+            ttn->set_sub_trace1(phi1->generateTrace(*this, state0, traceTy));
+        } else {
+            ttn->set_sub_trace1(phi2->generateTrace(*this, state0, traceTy));
+        }
+    }
+    return ttn;
+}
+
+//-----------------------------------------------------------------------------
+
+TreeTraceNode* Context::trace_OR(Formula* top_formula, Formula* phi1, Formula* phi2, const std::vector<int>& state0, TraceType traceTy) {
+    TreeTraceNode* ttn = new TreeTraceNode(state0, make_ref_ptr<Formula>(top_formula), traceTy);
+    if (traceTy == TT_WITNESS) {
+        dd_edge dd1 = phi1->getMDD(*this);
+        bool sat1 = sat_set_contains(dd1, state0);
+        if (sat1) {
+            ttn->set_sub_trace1(phi1->generateTrace(*this, state0, traceTy));
+        } else {
+            ttn->set_sub_trace1(phi2->generateTrace(*this, state0, traceTy));
+        }
+    } else { // TT_COUNTEREXAMPLE
+        ttn->set_sub_trace1(phi1->generateTrace(*this, state0, traceTy));
+        ttn->set_sub_trace2(phi2->generateTrace(*this, state0, traceTy));
+    }
+    return ttn;
 }
 
 //-----------------------------------------------------------------------------

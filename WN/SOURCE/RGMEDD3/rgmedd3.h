@@ -682,23 +682,23 @@ public:
 protected:
     //--------------------------------------------------
     // Saturation with pregenerated relation support:
-    satpregen_opname::pregen_relation* pregen_rel = nullptr;
-    specialized_operation* pregen_sat = nullptr;
+    pregen_relation* pregen_rel = nullptr;
+    saturation_operation* pregen_sat = nullptr;
 
     //--------------------------------------------------
     // Implicit relation support:
-    satimpl_opname::implicit_relation* impl_rel = nullptr;
+    implicit_relation* impl_rel = nullptr;
     std::vector<rel_node_handle> impl_trn_handle; // The top rel_node_handle of each encoded transition.
-    specialized_operation* impl_sat = nullptr;
+    saturation_operation* impl_sat = nullptr;
     void buildImplicitRelation();
 
     //--------------------------------------------------
     // On-the-fly saturation support:
     int *p_otf_unprimed_minterms = nullptr;
     int *p_otf_primed_minterms = nullptr;
-    std::vector<satotf_opname::event*> otf_events;
-    satotf_opname::otf_relation *otf_rel = nullptr;
-    specialized_operation* otf_sat = nullptr;
+    std::vector<otf_event*> otf_events;
+    otf_relation *otf_rel = nullptr;
+    saturation_operation* otf_sat = nullptr;
     void buildOtfRelation();
 
     class otf_subevent;
@@ -855,11 +855,11 @@ public:
     void statistic() {
         MEDDLY::ostream_output stdout_wrap(cout);
         cout << "\n-----------RS-----------\n";
-        rs.show(stdout_wrap, 2);
+        rs.show(stdout_wrap);
 
         if(useMonolithicNSF()){
             cout << "\n---------RG---------\n";
-            NSF.show(stdout_wrap, 2);
+            NSF.show(stdout_wrap);
         }
         //d->showInfo(stdout);
     }
@@ -1010,70 +1010,69 @@ This class is used to manage the RS augmented with the Automaton
 //     void  checkRate(float &val, const int *plmark);
 // };
 
-class QUASIPRODFOR {
-private:
-    domain *d;
-    forest *fRS;
-    forest *fEV;
-    dd_edge *rs;
-    dd_edge *indexrs;
-    dd_edge *Mark;
-    int **to;
-    enumerator *it;
-    int nvar;
-
-public:
-    QUASIPRODFOR(dd_edge *rs, dd_edge *indexrs, domain *d) {
-        fRS = rs->getForest();
-        fEV = indexrs->getForest();
-        this->d = d;
-        this->rs = rs;
-        this->indexrs = indexrs;
-        nvar = d->getNumVariables();
-        //to = (int **) malloc(sizeof(int *));
-        //to[0] = (int*) malloc(sizeof(int) * (nvar + 1));
-        it = NULL;
-        Mark = new dd_edge(fRS);
-    }
-    ~QUASIPRODFOR() {
-        // free(to[0]);
-        // free(to);
-        if (it != NULL)
-            delete it;
-        delete Mark;
-    }
-
-    //! \name Methods use to quasi product form
-    //@{
-    //!It computes the intersection between input MDD and the MDD encoding the RS. The ouput is encoded on the input MDD.
-    inline bool getState(int **ins) {
-
-        fRS->createEdge(ins, 1, *Mark);
-        apply(INTERSECTION, *Mark, *rs, *Mark);
-        return true;
-    };
-
-
-    inline int initIterator() {
-        it = new enumerator(*Mark);
-        return Mark->getCardinality();
-    };
-
-    inline bool getMarking(int *vmark, long &idm) {
-        const int *plmark;
-        if (it == NULL || *it == 0)
-            return false;
-        else {
-            plmark = it->getAssignments();
-            //fEV->evaluate((*indexrs), plmark, idm);
-            memcpy(vmark, plmark, nvar * sizeof(int));
-            ++(*it);
-            return true;
-        }
-    }
-
-    //@}
-};
+// class QUASIPRODFOR {
+// private:
+//     domain *d;
+//     forest *fRS;
+//     forest *fEV;
+//     dd_edge *rs;
+//     dd_edge *indexrs;
+//     dd_edge *Mark;
+//     int **to;
+//     enumerator *it;
+//     int nvar;
+//
+// public:
+//     QUASIPRODFOR(dd_edge *rs, dd_edge *indexrs, domain *d) {
+//         fRS = rs->getForest();
+//         fEV = indexrs->getForest();
+//         this->d = d;
+//         this->rs = rs;
+//         this->indexrs = indexrs;
+//         nvar = d->getNumVariables();
+//         //to = (int **) malloc(sizeof(int *));
+//         //to[0] = (int*) malloc(sizeof(int) * (nvar + 1));
+//         it = NULL;
+//         Mark = new dd_edge(fRS);
+//     }
+//     ~QUASIPRODFOR() {
+//         // free(to[0]);
+//         // free(to);
+//         if (it != NULL)
+//             delete it;
+//         delete Mark;
+//     }
+//
+//     //! \name Methods use to quasi product form
+//     //@{
+//     //!It computes the intersection between input MDD and the MDD encoding the RS. The ouput is encoded on the input MDD.
+//     inline bool getState(int **ins) {
+//
+//         fRS->createEdge(ins, 1, *Mark);
+//         apply(INTERSECTION, *Mark, *rs, *Mark);
+//         return true;
+//     };
+//
+//     inline int initIterator() {
+//         it = new enumerator(*Mark);
+//         return Mark->getCardinality();
+//     };
+//
+//     inline bool getMarking(int *vmark, long &idm) {
+//         const int *plmark;
+//         if (it == NULL || *it == 0)
+//             return false;
+//         else {
+//             plmark = it->getAssignments();
+//             //fEV->evaluate((*indexrs), plmark, idm);
+//             memcpy(vmark, plmark, nvar * sizeof(int));
+//             ++(*it);
+//             return true;
+//         }
+//     }
+//
+//     //@}
+// };
 
 
 #endif /* MEDD_H_ */
