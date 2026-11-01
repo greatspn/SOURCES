@@ -182,22 +182,21 @@ inline void dumpDD(const std::string msg1, MEDDLY::dd_edge dd)
 {
     cout << "\n" << msg1 << "\n" << std::endl;
     ostream_output meddout(cout);
-    dd.show(meddout, 2);
+    dd.show(meddout);
 
     cout << "\n--- State-location pairs reachable ---" << std::endl;
-    enumerator i(dd);
     int nvar = dd.getForest()->getDomain()->getNumVariables();
-    while(i != 0) { // for each marking in the sat set
+    for (auto i = dd.begin(); i; ++i) { // for each marking in the sat set
+        const minterm& m = *i;
         int j;
         for(j=1; j <= nvar; j++) { // for each place
-            int val = *(i.getAssignments() + j);
-            const char* s = dd.getForest()->getDomain()->getVar(j)->getName();
+            int val = m.getVar(j);
+            const char* s = dd.getForest()->getDomain()->getVar(j)->getName().c_str();
             if(val>=0 && j < nvar)
                 cout << s << "(" << val << ") ";
             else if(j == nvar)
                 cout << "loc(" << val << ") ";
         }
-        ++i;
         cout << endl;
     }
     cout << endl;

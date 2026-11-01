@@ -71,7 +71,7 @@ void CTLMDD::CTLinit() {
         fp.setFullyReduced();
     //fp.setCompactStorage();
     fp.setOptimistic();
-    forestMTMDD = g_rsrg->getDomain()->createForest(DOUBLELEVEL, range_type::REAL, 
+    forestMTMDD = forest::create(g_rsrg->getDomain(), DOUBLELEVEL ? RELATION : SET, range_type::REAL, 
                                                     edge_labeling::MULTI_TERMINAL, fp);
     //if (DOUBLELEVEL)
     //  forestMTMDD->setReductionRule(forest::IDENTITY_REDUCED);
@@ -261,7 +261,9 @@ struct FormulaPrinter {
     void stat(Formula *f) {
         if (running_for_MCC() || CTL_quiet)
             return;
-        cout << "  potential card = " << f->getStoredMDD().getCardinality();
+        cardinality_t pot_card;
+        apply(CARDINALITY, f->getStoredMDD(), cardinality_ref(pot_card));
+        cout << "  potential card = " << pot_card;
         if (f->getStoredMDD().getNode() == g_rsrg->getRS().getNode())
             cout << " (RS)";
 
@@ -270,14 +272,16 @@ struct FormulaPrinter {
             // const dd_edge& dd = f->getMDD(ctx);
             dd_edge dd(f->getStoredMDD());
             apply(INTERSECTION, g_rsrg->getRS(), dd, dd);
-            enumerator i(dd);
+            cardinality_t real_card;
+            apply(CARDINALITY, dd, cardinality_ref(real_card));
             int nvar = dd.getForest()->getDomain()->getNumVariables();
-            cout << "     real card = " << dd.getCardinality() << endl;
-            for (enumerator i(dd); i != 0; ++i) {
+            cout << "     real card = " << real_card << endl;
+            for (auto i = dd.begin(); i; ++i) {
+                const minterm &m = *i;
                 cout << "     ";
                 for(int j=1; j <= nvar; j++) { // for each variable
-                    int val = *(i.getAssignments() + j);
-                    const char* s = dd.getForest()->getDomain()->getVar(j)->getName();
+                    int val = m.getVar(j);
+                    const char* s = dd.getForest()->getDomain()->getVar(j)->getName().c_str();
                     if (g_rsrg->isIndexOfPlace(j - 1)) {
                         if(val == 1)
                             cout << s << " ";
@@ -390,10 +394,12 @@ void IntLiteral::createMTMDD(Context& ctx) {
     int **m = ctl->getIns();
     FormulaPrinter<IntLiteral> fp(this);
     float constant = getConstant();
+    minterm min(mtmdd_forest);
     if (DOUBLELEVEL)
-        mtmdd_forest->createEdge(m, m, &constant, 1, complete);
+        min.setAll(m[0], m[0], rangeval(constant));
     else
-        mtmdd_forest->createEdge(m, &constant, 1, complete);
+        min.setAll(m[0], rangeval(constant));
+    min.buildFunction(rangeval(constant), complete);
     setMTMDD(complete);
 }
 
@@ -571,30 +577,30 @@ void PlaceTerm::createMTMDD(Context& ctx) {
     // setMTMDD(tmp_mdd);
 
     // New method: use a single createEdgeForVar
-    float term_vec[dom_bound + 1];
+    std::vector<rangeval> term_vec(dom_bound + 1, rangeval(0.0f));
     for (int mark = 0; mark <= dom_bound; mark++) {
         if (mark <= variable_bound) {
             switch (op) {
                 case IntFormula::EOP_PLUS:
-                    term_vec[mark] = coeff + (float)mark;
+                    term_vec[mark] = rangeval(coeff + (float)mark);
                     break;
                 case IntFormula::EOP_TIMES:
-                    term_vec[mark] = coeff * (float)mark;
+                    term_vec[mark] = rangeval(coeff * (float)mark);
                     break;
                 case IntFormula::EOP_MINUS:
-                    term_vec[mark] = coeff - (float)mark;
+                    term_vec[mark] = rangeval(coeff - (float)mark);
                     break;
                 case IntFormula::EOP_DIV:
-                    term_vec[mark] = coeff / (float)mark;
+                    term_vec[mark] = rangeval(coeff / (float)mark);
                     break;
             }
         }
         else {
-            term_vec[mark] = 0;
+            term_vec[mark] = rangeval(0.0f);
         }
     }
     dd_edge mark_of_place(ctl->getMTMDDForest());
-    mtmdd_forest->createEdgeForVar(level, DOUBLELEVEL, term_vec, mark_of_place);
+    mtmdd_forest->createEdgeForVar(level, DOUBLELEVEL, term_vec.data(), mark_of_place);
     setMTMDD(mark_of_place);
 
 
@@ -681,7 +687,7 @@ const dd_edge& IntFormula::getMTMDD(Context& ctx) {
 }
 
 void IntFormula::clearMTMDD() {
-    MTMDD.clear();
+    MTMDD = dd_edge();
     computedMTMDD = false;
 }
 
@@ -780,7 +786,9 @@ void Inequality::createMDD(Context& ctx) {
                 mult *= (int)plterm2->getCoeff();
             if (((i % div) == 0) && ((i / div * mult) <= variable_bound2)) {
                 m[0][plterm2->getMeddlyLevel1based()] = int(i / div * mult);
-                ctx.get_MDD_forest()->createEdge(m, 1, tmp_complete);
+                minterm min_comp(ctx.get_MDD_forest());
+                min_comp.setAll(m[0], rangeval(true));
+                min_comp.buildFunction(false, tmp_complete);
                 apply(UNION, tmp_complete, boole, boole);
                 m[0][plterm2->getMeddlyLevel1based()] = DONT_CARE;
             }
@@ -822,14 +830,16 @@ void Inequality::createMDD(Context& ctx) {
     else { //case exp <op> term
         int **m = ctl->getIns();
         exp2MDD = dd_edge(ctl->getMTMDDForest());
+        minterm min_exp(mtmdd_forest);
         if (DOUBLELEVEL)
-            mtmdd_forest->createEdge(m, m, &(constant), 1, exp2MDD);
+            min_exp.setAll(m[0], m[0], rangeval(constant));
         else
-            mtmdd_forest->createEdge(m, &(constant), 1, exp2MDD);
+            min_exp.setAll(m[0], rangeval(constant));
+        min_exp.buildFunction(rangeval(constant), exp2MDD);
         // exp2MDD->show(stdout,1);
     }
     FormulaPrinter<Inequality> fp(this);
-    MEDDLY::binary_handle opname;
+    MEDDLY::binary_builtin0 opname;
     switch (op) {
         case IOP_MIN:    opname = LESS_THAN;            break;
         case IOP_MAJ:    opname = GREATER_THAN;         break;
@@ -853,17 +863,19 @@ void Inequality::createMDDByComplement(Context& ctx) {
     dd_edge complete(mtmdd_forest);
     int **m = ctl->getIns();
     float t = this->constant;
+    minterm min_comp(mtmdd_forest);
     if (DOUBLELEVEL)
-        mtmdd_forest->createEdge(m, m, &t, 1, complete);
+        min_comp.setAll(m[0], m[0], rangeval(t));
     else
-        mtmdd_forest->createEdge(m, &t, 1, complete);
+        min_comp.setAll(m[0], rangeval(t));
+    min_comp.buildFunction(rangeval(t), complete);
 
     dd_edge r(expr1->getMTMDD(ctx));
     dd_edge complement(mtmdd_forest);
     FormulaPrinter<Inequality> fp(this);
 
     // Select the complement operator
-    MEDDLY::binary_handle complement_opname;
+    MEDDLY::binary_builtin0 complement_opname;
     switch (op) {
         case IOP_MIN:    complement_opname = GREATER_THAN_EQUAL;   break;
         case IOP_MAJ:    complement_opname = LESS_THAN_EQUAL;      break;
@@ -1527,16 +1539,16 @@ void QuantifiedFormula::createMDD(Context& ctx) {
 
     dd_edge result(ctx.get_MDD_forest());
     if (!ba.accept_loc_sets.empty()) {
+        // Initial & final states of RS*BA (also resizes extra level bound if needed)
+        dd_edge Z0 = RSxBA_init_states(ctx, ba);
+        std::list<dd_edge> AS = RSxBA_final_sets(ctx, ba);
+
         // Evaluate all subformulas and atomic propositions
         ba.pre_compute_subformula_MDDs(ctx);
 
         // Get all deadlock states of the RS from the deadlock atomic proposition
         ref_ptr<Deadlock> dead_ap = ctlnew<Deadlock>(true);
         dd_edge deadlock = dead_ap->getMDD(ctx);
-
-        // Initial & final states of RS*BA
-        dd_edge Z0 = RSxBA_init_states(ctx, ba);
-        std::list<dd_edge> AS = RSxBA_final_sets(ctx, ba);
 
         shared_ptr<RSxBA_VirtualNSF> RSxBA_NSF = make_shared<RSxBA_VirtualNSF>(&ctx, &ba, deadlock);
         if (!implicitNextForCTLstar) {
@@ -2004,7 +2016,7 @@ void Formula::setMDD(dd_edge newMDD) {
 }
 
 void Formula::clearMDD() {
-    SatMDD.clear();
+    SatMDD = dd_edge();
     computedMDD = false;
 }
 

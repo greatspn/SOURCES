@@ -215,7 +215,7 @@ void RSRG::initialize(RsMethod _rsMethod, LrsMethod _lrsMethod,
         domainBnd[i] = domainBounds(i);
     for (int i=npl; i<npl + extraLvls; i++)
         domainBnd[i] = 10; // arbitrary bound for the extra levels, to be extended
-    dom = createDomainBottomUp(domainBnd.data(), npl + extraLvls);
+    dom = domain::createBottomUp(domainBnd.data(), npl + extraLvls);
 
     // cout << "DOMAIN BND: ";
     // for (int i = 0; i < npl; i++) {
@@ -240,7 +240,7 @@ void RSRG::initialize(RsMethod _rsMethod, LrsMethod _lrsMethod,
             // Meddly pretends to have a newly allocated string with new[]
             char *pstr = new char[strlen(lvl_name) + 1];
             strcpy(pstr, lvl_name);
-            dom->useVar(lvl + 1)->setName(pstr);
+            dom->getVar(lvl + 1)->setName(pstr);
         }
     }
 
@@ -261,25 +261,25 @@ void RSRG::initialize(RsMethod _rsMethod, LrsMethod _lrsMethod,
     // mdd_fp.setFullOrSparse();
     // mdd_fp.setSparseStorage();
     // set_forest_node_del_policy(mdd_fp, mdd_node_del_policy);
-    forestMDD = dom->createForest(false, range_type::BOOLEAN, edge_labeling::MULTI_TERMINAL, mdd_fp);
+    forestMDD = forest::create(dom, false, range_type::BOOLEAN, edge_labeling::MULTI_TERMINAL, mdd_fp);
 
 
     MEDDLY::policies mxd_fp(true); // true: matrix diagram forest
     mxd_fp.setIdentityReduced();
     // mxd_fp.setQuasiReduced();
     // set_forest_node_del_policy(mxd_fp, mxd_node_del_policy);
-    forestMxD = dom->createForest(true, range_type::BOOLEAN, edge_labeling::MULTI_TERMINAL, mxd_fp);
+    forestMxD = forest::create(dom, true, range_type::BOOLEAN, edge_labeling::MULTI_TERMINAL, mxd_fp);
     //forestMxD->setReductionRule(forest::IDENTITY_REDUCED);
     //forestMxD->setReductionRule(forest::QUASI_REDUCED);
     //forestMxD->setNodeStorage(forest::FULL_OR_SPARSE_STORAGE);
     //forestMxD->setNodeDeletion(forest::OPTIMISTIC_DELETION);
 
-    forestMTMxD = dom->createForest(true, range_type::INTEGER, edge_labeling::MULTI_TERMINAL, mxd_fp);
+    forestMTMxD = forest::create(dom, true, range_type::INTEGER, edge_labeling::MULTI_TERMINAL, mxd_fp);
     //forestMTMxD->setReductionRule(forest::IDENTITY_REDUCED);
     //forestMTMxD->setNodeStorage(forest::FULL_OR_SPARSE_STORAGE);
     //forestMTMxD->setNodeDeletion(forest::OPTIMISTIC_DELETION);
 
-    forestMTMDDint = dom->createForest(false, range_type::INTEGER, edge_labeling::MULTI_TERMINAL, mdd_fp);
+    forestMTMDDint = forest::create(dom, false, range_type::INTEGER, edge_labeling::MULTI_TERMINAL, mdd_fp);
     
     if (useMonolithicNSF()) {
         // Initialize dd_edges for the monolithic NSF
@@ -623,7 +623,6 @@ void RSRG::verifyGuessedBounds() const {
 bool RSRG::updateGuessedBounds(int restart_count){
     // Compute effective/real bounds directly on the RS
     computeRealBounds();
-    expert_domain *exp_dom = static_cast<expert_domain *>(dom);
     bool changed = false;
     int max_m0 = -1;
     
@@ -678,7 +677,7 @@ bool RSRG::updateGuessedBounds(int restart_count){
                 default:
                     throw;
             }
-            exp_dom->enlargeVariableBound(var+1, false, domainBounds(var));
+            dom->enlargeVariableBound(var+1, false, domainBounds(var));
         }
         if (guessedBounds[var] < realBounds[var])
             throw rgmedd_exception("Bug in updateGuessedBounds.");
@@ -798,10 +797,10 @@ bool RSRG::init_RS(const Net_Mark_p &net_mark) {
     }
     for (int el = 0; el < extraLvls; el++)
         ins[npl + el + 1] = 0; 
-    const int *ins_ptr = ins.data();
     rs = dd_edge(forestMDD);
-    initMark = dd_edge(forestMDD); 
-    forestMDD->createEdge(&ins_ptr, 1, rs);
+    minterm m(forestMDD);
+    m.setAll(ins.data(), true);
+    m.buildFunction(false, rs);
     initMark = rs;
 
     // Setup the transition set (IOH) and finalize it
@@ -912,9 +911,10 @@ bool RSRG::verify_LRS_RS_equiv() {
     for (int pl = 0; pl < npl; pl++) {
         ins[net_to_mddLevel[pl] + 1] = m0min[pl];
     }
-    const int *ins_ptr = ins.data();
     dd_edge m0min_mdd = dd_edge(forestMDD);
-    forestMDD->createEdge(&ins_ptr, 1, m0min_mdd);
+    minterm m(forestMDD);
+    m.setAll(ins.data(), true);
+    m.buildFunction(false, m0min_mdd);
 
     // Build LRS[m0min]
     // vector<int> inv_consts = compute_inv_consts_from_m0(m0min, *p_flows);
@@ -1026,7 +1026,7 @@ void createFiringEdgeForRelVar(int vh, std::vector<long>& primed_vars,
                                const dd_edge& down, dd_edge& out) 
 {
     assert(down.getLevel() < vh);
-    expert_forest* fMxD = dynamic_cast<expert_forest*>(down.getForest());
+    forest* fMxD = down.getForest();
     const int nvars = fMxD->getDomain()->getNumVariables();
     assert(1 <= vh && vh <= fMxD->getDomain()->getNumVariables());
     assert(down.getForest() == fMxD);
@@ -1040,19 +1040,19 @@ void createFiringEdgeForRelVar(int vh, std::vector<long>& primed_vars,
     }
 
     // Create the unprimed level
-    unpacked_node* unprimed = unpacked_node::newFull(fMxD, vh, level_size);
+    unpacked_node* unprimed = unpacked_node::newWritable(fMxD, vh, level_size, FULL_ONLY);
     for (int i=0; i<level_size; i++) {
-        unprimed->d_ref(i) = nhFalse;
+        unprimed->down(i) = nhFalse;
 
         if (i < primed_vars.size()) {
             long j = primed_vars[i];
             assert(j < level_size);
             if (0 <= j && j < level_size) { // j value must be valid
                 // Create the primed level for i -> j  with a single element
-                unpacked_node* primed = unpacked_node::newSparse(fMxD, -vh, 1);
-                primed->i_ref(0) = j;
-                primed->d_ref(0) = fMxD->linkNode(down);
-                unprimed->d_ref(i) = fMxD->createReducedNode(i, primed); // i for identity reduction
+                unpacked_node* primed = unpacked_node::newWritable(fMxD, -vh, 1, SPARSE_ONLY);
+                primed->index(0) = j;
+                primed->down(0) = fMxD->linkNode(down.getNode());
+                unprimed->down(i) = fMxD->createReducedNode(i, primed); // i for identity reduction
             }
         }
     }
@@ -1075,7 +1075,7 @@ void createEnablingEdgeForRelVar(int vh, std::vector<bool>& unprimed_vars,
                                  const dd_edge& down, dd_edge& out) 
 {
     assert(down.getLevel() < vh);
-    expert_forest* fMxD = dynamic_cast<expert_forest*>(down.getForest());
+    forest* fMxD = down.getForest();
     const int nvars = fMxD->getDomain()->getNumVariables();
     assert(1 <= vh && vh < fMxD->getDomain()->getNumVariables());
     assert(down.getForest() == fMxD);
@@ -1089,13 +1089,13 @@ void createEnablingEdgeForRelVar(int vh, std::vector<bool>& unprimed_vars,
     }
 
     // Create the unprimed level
-    unpacked_node* unprimed = unpacked_node::newFull(fMxD, vh, level_size);
+    unpacked_node* unprimed = unpacked_node::newWritable(fMxD, vh, level_size, FULL_ONLY);
     for (int i=0; i<level_size; i++) {
         if (i < unprimed_vars.size() && unprimed_vars[i]) {
-            unprimed->d_ref(i) = fMxD->linkNode(down);
+            unprimed->down(i) = fMxD->linkNode(down.getNode());
         }
         else 
-            unprimed->d_ref(i) = nhFalse;
+            unprimed->down(i) = nhFalse;
     }
 
     out.set(fMxD->createReducedNode(-1, unprimed));
@@ -1105,7 +1105,7 @@ void createEnablingEdgeForRelVar(int vh, std::vector<bool>& unprimed_vars,
 
 // Fill up all intermediate MxD levels (up to @level) with DONT_CARE/DONT_CHANGE nodes
 void fillUpMxDLevels(int level, dd_edge& dd) {
-    expert_forest* fMxD = dynamic_cast<expert_forest*>(dd.getForest());
+    forest* fMxD = dd.getForest();
     if (dd.getNode() == fMxD->handleForValue(false)) {
         return; // nothing to fill up
     }
@@ -1113,9 +1113,9 @@ void fillUpMxDLevels(int level, dd_edge& dd) {
     for (int vh=std::abs(dd.getLevel()) + 1; vh<=level; ++vh) {
         const int level_size = fMxD->getDomain()->getVariableBound(vh);
         // fill all values in the primed level with:  any-value -> dd
-        unpacked_node* primed = unpacked_node::newFull(fMxD, -vh, level_size);
+        unpacked_node* primed = unpacked_node::newWritable(fMxD, -vh, level_size, FULL_ONLY);
         for (int i=0; i<level_size; i++) {
-            primed->d_ref(i) = fMxD->linkNode(dd);
+            primed->down(i) = fMxD->linkNode(dd.getNode());
         }
         dd.set(fMxD->createReducedNode(-1, primed));
     }
@@ -1192,7 +1192,7 @@ void fillUpMxDLevels(int level, dd_edge& dd) {
 //-----------------------------------------------------------------------------
 
 void RSRG::generateTransitionNFS(size_t tt, dd_edge& enabling, dd_edge& nsf_event) {
-    expert_forest* efMxD = dynamic_cast<expert_forest*>(forestMxD);
+    forest* efMxD = forestMxD;
     nsf_event.set(efMxD->handleForValue(true));
     enabling.set(efMxD->handleForValue(true));
 
@@ -1440,7 +1440,7 @@ void RSRG::initializeNSFsForKnownBounds() {
 
         case RSM_SAT_PREGEN:
             assert(pregen_rel == nullptr);
-            pregen_rel = new satpregen_opname::pregen_relation(forestMDD, forestMxD, forestMDD);
+            pregen_rel = new MEDDLY::pregen_relation(forestMxD);
             break;
 
         case RSM_SAT_IMPLICIT:
@@ -1565,11 +1565,10 @@ public:
 
 //---------------------------------------------------------------------------------------
 
-satimpl_opname::implicit_relation*
+MEDDLY::implicit_relation*
 RSRG::buildImplicitRelation(bool forward, std::vector<rel_node_handle>* p_handles) {
-    satimpl_opname::implicit_relation *impl_rel;
-    impl_rel = new satimpl_opname::implicit_relation(forestMDD, forestMDD, forestMDD);
-    impl_rel->setAutoDestroy(false);
+    MEDDLY::implicit_relation *impl_rel;
+    impl_rel = new MEDDLY::implicit_relation(forestMDD, forestMxD, forestMDD);
     // Associate all unique IOH nodes to the registered rel_node_handles
     std::vector<rel_node_handle> registered_handles(trns_set.signatures, -1);
     if (p_handles)
@@ -1615,18 +1614,18 @@ RSRG::buildImplicitRelation(bool forward, std::vector<rel_node_handle>* p_handle
 // Encoding of the firing rules for the on-the-fly saturation
 //-----------------------------------------------------------------------------
 
-class RSRG::otf_subevent : public satotf_opname::subevent {
+class RSRG::otf_subevent : public MEDDLY::otf_subevent {
   public:
     otf_subevent(RSRG* _rs, const var_ioh_t* _p_ioh, int _trn,
               int* subevent_vars, int n_subevent_vars, bool is_firing)
-    : satotf_opname::subevent(_rs->getForestMxD(), subevent_vars, n_subevent_vars, is_firing), 
+    : MEDDLY::otf_subevent(_rs->getForestMxD(), subevent_vars, n_subevent_vars, is_firing), 
       rs(_rs), p_ioh(_p_ioh), trn(_trn)
     { }
 
     ~otf_subevent() { }
 
     // The method we have to overwrite to confirm a new value for variable @v
-    virtual void confirm(satotf_opname::otf_relation &rel, int v, int tokens) {
+    virtual void confirm(MEDDLY::otf_relation &rel, int v, int tokens) {
         assert(v == p_ioh->level + 1);
         rs->observeVariableValue(p_ioh->level, tokens);
         if (isFiring()) {
@@ -1727,14 +1726,14 @@ void RSRG::buildOtfRelation() {
         }
 
         // Allocate the Meddly OTF event
-        satotf_opname::event* ev;
-        ev = new satotf_opname::event((satotf_opname::subevent**)(&subevents[0]), num_subevents);
+        MEDDLY::otf_event* ev;
+        ev = new MEDDLY::otf_event((MEDDLY::otf_subevent**)(&subevents[0]), num_subevents);
         otf_events[tr.trn] = ev;
     }
 
     // Create the OTF transition relation operator
-    otf_rel = new satotf_opname::otf_relation(forestMDD, forestMxD, forestMDD, otf_events.data(), otf_events.size());
-    otf_sat = SATURATION_OTF_FORWARD()->buildOperation(otf_rel);
+    otf_rel = new MEDDLY::otf_relation(forestMxD, forestMDD, otf_events.data(), otf_events.size());
+    otf_sat = SATURATION_OTF_FORWARD(forestMDD, otf_rel, forestMDD);
 }
 
 //-----------------------------------------------------------------------------
@@ -1755,8 +1754,10 @@ RSRG::testerForCoverabilityOfPlace(int pl, std::pair<dd_edge, int> current_teste
         std::vector<int> unprimed(dom->getNumVariables()+1, DONT_CARE);
         std::vector<int> primed(dom->getNumVariables()+1, DONT_CHANGE);
         primed[ net_to_mddLevel[pl] + 1 ] = 0;
-        const int *p_unprimed = unprimed.data(), *p_primed = primed.data();
-        forestMxD->createEdge(&p_unprimed, &p_primed, 1, tester);
+        tester = dd_edge(forestMxD);
+        minterm m(forestMxD);
+        m.setAll(unprimed.data(), primed.data(), true);
+        m.buildFunction(false, tester);
         // cout << "\n\nPLACE "<<pl<<endl;
         // MEDDLY::ostream_output stdout_wrap(cout);
         // tester.show(stdout_wrap, 2);
@@ -1849,7 +1850,7 @@ bool RSRG::buildRS() {
 
         case RSM_SAT_MONOLITHIC: {
             rs_banner();
-            apply(REACHABLE_STATES_DFS, rs, NSF, rs);
+            apply(REACHABLE_SATUR(true), rs, NSF, rs);
             // apply(REVERSE_REACHABLE_DFS, rs, NSF, rs);
             break;
         }
@@ -1859,7 +1860,7 @@ bool RSRG::buildRS() {
             // cout << "Finalizing SAT-pregen operator..." << endl;
             pregen_rel->finalize();
 
-            pregen_sat = SATURATION_FORWARD()->buildOperation(pregen_rel);
+            pregen_sat = SATURATION_FORWARD(forestMDD, pregen_rel, forestMDD);
             rs_banner();
             pregen_sat->compute(rs, rs);
             break;
@@ -1952,8 +1953,8 @@ void RSRG::fill_const_terms_from_m0(const std::vector<int>& m0, int_lin_constr_v
 std::optional<dd_edge>
 RSRG::computeLRSof(const int_lin_constr_vec_t& ilcp) const 
 {
-    expert_forest *efMDD = static_cast<expert_forest *>(forestMDD);
-    expert_domain *eDom = static_cast<expert_domain *>(dom);
+    forest *efMDD = forestMDD;
+    domain *eDom = dom;
     dd_edge ALL(efMDD);
     ALL.set(efMDD->handleForValue(true));
     dd_edge LRS(ALL);
@@ -1972,11 +1973,11 @@ RSRG::computeLRSof(const int_lin_constr_vec_t& ilcp) const
         // cout << real_bound << " / " << var_bound << endl;
 
         // Encode the constraint:   var < bound
-        bool terms[var_bound];
+        std::vector<rangeval> terms(var_bound);
         for (int i=0; i<var_bound; i++)
-            terms[i] = (i < real_bound); // exclude every value above the real bound
+            terms[i] = (i < real_bound) ? 1 : 0; // exclude every value above the real bound
         dd_edge boundDD(forestMDD);
-        forestMDD->createEdgeForVar(lvl + 1, false, terms, boundDD);
+        forestMDD->createEdgeForVar(lvl + 1, false, terms.data(), boundDD);
 
         // Remove the states above the bound
         LRS *= boundDD;
@@ -2128,16 +2129,16 @@ RSRG::computeLRSof(const int_lin_constr_vec_t& ilcp) const
                     if (constr.has_negative_coeffs || j <= constr.const_term) {
                         std::map<int, unpacked_node*>::iterator node = partial_sums_at_lvl.find(j);
                         if (node == partial_sums_at_lvl.end()) {
-                            unpacked_node* nodeptr = unpacked_node::newFull(efMDD, elem.level, bound);
+                            unpacked_node* nodeptr = unpacked_node::newWritable(efMDD, elem.level, bound, FULL_ONLY);
                             for (int kk=0; kk<bound; kk++)
-                                nodeptr->d_ref(kk) = efMDD->handleForValue(false);
+                                nodeptr->down(kk) = efMDD->handleForValue(false);
                             node = partial_sums_at_lvl.insert(make_pair(j, nodeptr)).first;
                         }
 
                         // insert the new combination: 
                         // new partial sum of @j by adding @i tokens at @lvl to previous partial sum @part
-                        assert(node->second->d_ref(i) == 0);
-                        node->second->d_ref(i) = efMDD->linkNode(part.second.getNode());
+                        assert(node->second->down(i) == 0);
+                        node->second->down(i) = efMDD->linkNode(part.second.getNode());
                     }
                 }
             }
@@ -2209,7 +2210,7 @@ RSRG::computeLRSof(const int_lin_constr_vec_t& ilcp) const
 
 
     // Project all extraLevels to 0
-    expert_forest *efMxD = static_cast<expert_forest *>(forestMxD);
+    forest *efMxD = forestMxD;
     for (int i=0; i<getExtraLvls(); i++) {
         int lvl = indexOfExtraLvl(i);
         int bound = dom->getVariableBound(lvl);
@@ -2471,7 +2472,7 @@ bool RSRG::buildLRSbyPBasisConstraints() {
 bool RSRG::buildLRS() {
     switch (lrsMethod) {
         case LRSM_NONE:
-            lrs.set(static_cast<expert_forest *>(lrs.getForest())->handleForValue(false));
+            lrs.set(lrs.getForest()->handleForValue(false));
             return false;
 
         case LRSM_PBASIS_CONSTRAINTS:
@@ -2487,11 +2488,11 @@ void RSRG::initImplicitOperators() {
     if (nullptr == fwd_impl_rel) {
         cout << "Initializing implicit operators..." << endl;
         fwd_impl_rel = buildImplicitRelation(true, &impl_fdw_trn_handle);
-        impl_sat = SATURATION_IMPL_FORWARD()->buildOperation(fwd_impl_rel);
+        impl_sat = SATURATION_IMPL_FORWARD(forestMDD, fwd_impl_rel, forestMDD);
 
-        impl_postimg = IMPLICIT_POSTIMAGE_OPNAME->buildOperation(fwd_impl_rel);
+        impl_postimg = MEDDLY::createImplicitPostImage(fwd_impl_rel);
         bwd_impl_rel = buildImplicitRelation(false, nullptr);
-        impl_preimg = IMPLICIT_POSTIMAGE_OPNAME->buildOperation(bwd_impl_rel);
+        impl_preimg = MEDDLY::createImplicitPostImage(bwd_impl_rel);
     }
 }
 
@@ -2682,9 +2683,8 @@ bool RSRG::genRSAll() {
 //-----------------------------------------------------------------------------
 
 void RSRG::IndexRS() {
-    forestEVplMDD = dom->createForest(false, range_type::INTEGER, edge_labeling::EVPLUS);
+    forestEVplMDD = forest::create(dom, false, range_type::INTEGER, edge_labeling::EVPLUS);
     indexrs = dd_edge(forestEVplMDD);
-    indexrs.clear();
 
     apply(CONVERT_TO_INDEX_SET, rs, indexrs);
 }
@@ -2695,7 +2695,9 @@ bool RSRG::JacobiSolver() {
 
     int jj = 0;
 
-    double cardinality = rs.getCardinality();
+    cardinality_t card;
+    apply(CARDINALITY, rs, cardinality_ref(card));
+    double cardinality = get_double(card);
     if (cardinality < 1) {
         return 0;
     }
@@ -2714,9 +2716,9 @@ bool RSRG::JacobiSolver() {
 
 
 //UPDATE 23-12-1
-    specialized_operation *VM = EXPLVECT_MATR_MULT()->buildOperation(indexrs, DiagReal , indexrs);
+    numerical_operation *VM = EXPLVECT_MATR_MULT(indexrs, DiagReal , indexrs);
     VM->compute(h, qold);
-    specialized_operation *VM1 = EXPLVECT_MATR_MULT()->buildOperation(indexrs, NSFReal, indexrs);
+    numerical_operation *VM1 = EXPLVECT_MATR_MULT(indexrs, NSFReal, indexrs);
 
     int ss = 0;
     double sum = 0.0, diff = 0.0, norm = 0.0;
@@ -2788,7 +2790,7 @@ bool RSRG::JacobiSolver() {
                 return -1;
                 }*/
             //UPDATE 23-12-1
-            specialized_operation *VMT = EXPLVECT_MATR_MULT()->buildOperation(indexrs, VectNSFReal[tt], indexrs);
+            numerical_operation *VMT = EXPLVECT_MATR_MULT(indexrs, VectNSFReal[tt], indexrs);
             VMT->compute(q2, q1);
             sum = 0.0;
             for (int jj = 0; jj < (int)cardinality; jj++) {
@@ -2813,21 +2815,18 @@ bool RSRG::JacobiSolver() {
 //-----------------------------------------------------------------------------
 
 ostream& operator<<(ostream &out, class RSRG &rs) {
-    //dd_edge::iterator i = rs.rs->begin();
-    enumerator i(rs.getRS());
-    int mddVar, z = 0;
-    while (i != 0) {
+    int z = 0;
+    for (auto i = rs.getRS().begin(); i; ++i, ++z) {
         out << "M" << z << "\n\t";
+        const minterm &m = *i;
         for (int j = 1; j <= rs.getDomain()->getNumVariables(); j++) {
-            mddVar = *(i.getAssignments() + j);
+            int mddVar = m.from(j);
             if ((mddVar != 0)) {
                 out << rs.nameOfMddVar(j - 1) << "(" << mddVar << ")";
             }
             // out << mddVar << " ";
         }//per ogni posto
         out << endl;
-        ++i;
-        ++z;
     }//per ogni marcatura
     return out;
 }
@@ -2843,7 +2842,7 @@ ostream& operator<<(ostream &out, class RSRG &rs) {
 //         cout << "     "<<(++n_marks)<<": ";
 //         for(int j=1; j <= nvar; j++) { // for each variable
 //             int val = *(i.getAssignments() + j);
-//             const char* s = dd.getForest()->getDomain()->getVar(j)->getName();
+//             const char* s = dd.getForest()->getDomain()->getVar(j)->getName().c_str();
 //             if (rsrg->isIndexOfPlace(j - 1)) {
 //                 if(val == 1)
 //                     cout << s << " ";
@@ -2857,26 +2856,24 @@ ostream& operator<<(ostream &out, class RSRG &rs) {
 //     }
 // }
 void RSRG::show_markings(ostream& out, const dd_edge& e, int max_markings) {
-    enumerator it(e);
     int count = 0;
     const int nvar = e.getForest()->getDomain()->getNumVariables();
-    while (it) {
+    for (auto it = e.begin(); it; ++it) {
         // out << "  M" << left << setw(4) << count << "  ";
         out << "     ";
-        const int *mark = it.getAssignments();
+        const minterm &m = *it;
         for (int i = 1, num=0; i <= nvar; i++) {
-            int val = *(it.getAssignments() + i);
+            int val = m.from(i);
             if (val!=0) {
                 if (num++ != 0)
                     out << " + ";
                 if (val != 1)
                     out << val << "*";
-                const char* s = e.getForest()->getDomain()->getVar(i)->getName();
+                const char* s = e.getForest()->getDomain()->getVar(i)->getName().c_str();
                 out << s;
             }
         }
         out << "\n";
-        ++it;
         if (count++ > max_markings) {
             out << "     ..." << endl;
             return;
@@ -2893,7 +2890,7 @@ static const int VBP_GOES_TO_ZERO_TERMINAL = -12;
 int RSRG::visitXBounds(const node_handle node, int visit_level, 
                        std::vector<bool> &visited, std::vector<int> &nodeMaxSumTokens) 
 {
-    expert_forest *forest = static_cast<expert_forest *>(rs.getForest());
+    forest *forest = rs.getForest();
     if (node == forest->handleForValue(false))
         return VBP_GOES_TO_ZERO_TERMINAL;
 
@@ -2928,14 +2925,12 @@ int RSRG::visitXBounds(const node_handle node, int visit_level,
 
     nodeMaxSumTokens.at(node) = VBP_GOES_TO_ZERO_TERMINAL;
     //  cout << "Visit " << node << " at level " << forest->getNodeLevel(node) << endl;
-    // unpacked_node *rnode = unpacked_node::newFromNode(forest, node, unpacked_node::storage_style::AS_STORED);
-    unpacked_node *rnode = unpacked_node::New();
-    forest->unpackNode(rnode, node, FULL_OR_SPARSE);
+    unpacked_node *rnode = unpacked_node::newFromNode(forest, node, FULL_OR_SPARSE);
     assert(rnode->getLevel() >= 1 && rnode->getLevel() <= realBounds.size());
 
     if (rnode->isFull()) {
         for (int i = rnode->getSize() - 1; i >= 0; i--) {
-            int maxSumToks_i = visitXBounds(rnode->d(i), visit_level - 1, visited, nodeMaxSumTokens);
+            int maxSumToks_i = visitXBounds(rnode->down(i), visit_level - 1, visited, nodeMaxSumTokens);
             if (maxSumToks_i != VBP_GOES_TO_ZERO_TERMINAL) {
                 realBounds.at(node_level - 1) = std::max(realBounds.at(node_level - 1), i);
                 realLowerBounds.at(node_level - 1) = std::min(realLowerBounds.at(node_level - 1), i);
@@ -2948,12 +2943,12 @@ int RSRG::visitXBounds(const node_handle node, int visit_level,
         }
     }
     else { // sparse node
-        for (int i = rnode->getNNZs() - 1; i >= 0; i--) {
-            int maxSumToks_di = visitXBounds(rnode->d(i), visit_level - 1, visited, nodeMaxSumTokens);
+        for (int i = rnode->getSize() - 1; i >= 0; i--) {
+            int maxSumToks_di = visitXBounds(rnode->down(i), visit_level - 1, visited, nodeMaxSumTokens);
             if (maxSumToks_di != VBP_GOES_TO_ZERO_TERMINAL) {
-                realBounds.at(node_level - 1) = std::max(realBounds.at(node_level - 1), (int)rnode->i(i));
-                realLowerBounds.at(node_level - 1) = std::min(realLowerBounds.at(node_level - 1), (int)rnode->i(i));
-                int node_contrib = (node_level - 1 < npl) ? (int)rnode->i(i) : 0;
+                realBounds.at(node_level - 1) = std::max(realBounds.at(node_level - 1), (int)rnode->index(i));
+                realLowerBounds.at(node_level - 1) = std::min(realLowerBounds.at(node_level - 1), (int)rnode->index(i));
+                int node_contrib = (node_level - 1 < npl) ? (int)rnode->index(i) : 0;
                 nodeMaxSumTokens.at(node) = std::max(nodeMaxSumTokens.at(node), 
                                                      node_contrib + maxSumToks_di);
             }
@@ -2964,18 +2959,18 @@ int RSRG::visitXBounds(const node_handle node, int visit_level,
     //     cout << "visiting " << node << " at level: " << visit_level << "\n   ";
     //     if (rnode->isFull()) {
     //         for (int i = rnode->getSize() - 1; i >= 0; i--) {
-    //             cout << i << ":" << rnode->d(i) << " ";
+    //             cout << i << ":" << rnode->down(i) << " ";
     //         }
     //     }
     //     else { // sparse node
-    //         for (int i = rnode->getNNZs() - 1; i >= 0; i--) {
-    //             cout << rnode->i(i) << ":" << rnode->d(i) << " ";
+    //         for (int i = rnode->getSize() - 1; i >= 0; i--) {
+    //             cout << rnode->index(i) << ":" << rnode->down(i) << " ";
     //         }
     //     }
     //     cout << endl;
     // }
 
-    unpacked_node::recycle(rnode);
+    unpacked_node::Recycle(rnode);
     visited.at(node) = true;
     return nodeMaxSumTokens.at(node);
 }
@@ -3031,7 +3026,7 @@ RSRG::visitXBoundOfVariables(const node_handle node, int visit_level,
                              const std::vector<bool> &selected_vars,
                              std::vector<pair<int, int>> &cache) const 
 {
-    expert_forest *forest = static_cast<expert_forest *>(rs.getForest());
+    forest *forest = rs.getForest();
     if (node == forest->handleForValue(false))
         return VBPV_GOES_TO_ZERO_TERMINAL;
 
@@ -3062,14 +3057,12 @@ RSRG::visitXBoundOfVariables(const node_handle node, int visit_level,
     assert(node_level >= 1 && node_level < selected_vars.size()+1);
     bool is_selected = (selected_vars.at(node_level-1));
 
-    // unpacked_node *rnode = unpacked_node::newFromNode(forest, node, unpacked_node::storage_style::AS_STORED);
-    unpacked_node *rnode = unpacked_node::New();
-    forest->unpackNode(rnode, node, FULL_OR_SPARSE);
+    unpacked_node *rnode = unpacked_node::newFromNode(forest, node, FULL_OR_SPARSE);
     pair<int, int> bound = VBPV_GOES_TO_ZERO_TERMINAL;
 
     if (rnode->isFull()) {
         for (int i = rnode->getSize() - 1; i >= 0; i--) {
-            pair<int, int> val = visitXBoundOfVariables(rnode->d(i), visit_level - 1, selected_vars, cache);
+            pair<int, int> val = visitXBoundOfVariables(rnode->down(i), visit_level - 1, selected_vars, cache);
             if (val != VBPV_GOES_TO_ZERO_TERMINAL) {
                 int incr = is_selected ? i : 0;
                 bound.first = std::min(bound.first, val.first + incr);
@@ -3079,17 +3072,17 @@ RSRG::visitXBoundOfVariables(const node_handle node, int visit_level,
         }
     }
     else {
-        for (int i = rnode->getNNZs() - 1; i >= 0; i--) {
-            pair<int, int> val = visitXBoundOfVariables(rnode->d(i), visit_level - 1, selected_vars, cache);
+        for (int i = rnode->getSize() - 1; i >= 0; i--) {
+            pair<int, int> val = visitXBoundOfVariables(rnode->down(i), visit_level - 1, selected_vars, cache);
             if (val != VBPV_GOES_TO_ZERO_TERMINAL) {
-                int incr = is_selected ? rnode->i(i) : 0;
+                int incr = is_selected ? rnode->index(i) : 0;
                 bound.first = std::min(bound.first, val.first + incr);
                 bound.second = std::max(bound.second, val.second + incr);
             }
         }
     }
 
-    unpacked_node::recycle(rnode);
+    unpacked_node::Recycle(rnode);
     cache[node] = bound;
     return cache[node];
 }
@@ -3279,7 +3272,7 @@ dd_edge MonoVirtualNSF::post_image(const dd_edge& set) const {
 }
 dd_edge MonoVirtualNSF::forward_reachable(const dd_edge& s0) const {
     dd_edge reachab = s0;
-    apply(REACHABLE_STATES_DFS, s0, NSF, reachab);
+    apply(REACHABLE_SATUR(true), s0, NSF, reachab);
     return reachab;
 }
 
@@ -3340,7 +3333,7 @@ dd_edge BySeparateEventVirtualNSF::forward_reachable(const dd_edge& s0) const {
 struct dot_of_DD {
     ofstream dot;
     std::set<node_handle> visited;
-    expert_forest *forest;
+    forest *f_ptr;
     std::vector<std::vector<std::string>> nodes_per_lvl; // unprimed and primed
     const std::vector<bool> *pSingletonLevel;
     const RSRG *rs;
@@ -3351,26 +3344,24 @@ struct dot_of_DD {
     void visit(const node_handle node) {
         if (visited.count(node) > 0)
             return;
-        if (node == forest->handleForValue(false) || 
-            (node == forest->handleForValue(true) && !write_terminals))
+        if (node == f_ptr->handleForValue(false) || 
+            (node == f_ptr->handleForValue(true) && !write_terminals))
             return;
         visited.insert(node);
 
-        if (node == forest->handleForValue(true)) {
+        if (node == f_ptr->handleForValue(true)) {
             dot << "  nT [label=\"T\"];\n";
             return;
         }
 
-        const int node_level = forest->getNodeLevel(node);
+        const int node_level = f_ptr->getNodeLevel(node);
         bool is_extra_lvl = (npl < node_level);
         bool draw_node = !is_extra_lvl || !skip_extra_levels;
 
-        // unpacked_node *rnode = unpacked_node::newFromNode(forest, node, unpacked_node::storage_style::FULL_NODE);
-        unpacked_node *rnode = unpacked_node::New();
-        forest->unpackNode(rnode, node, FULL_ONLY);
+        unpacked_node *rnode = unpacked_node::newFromNode(f_ptr, node, FULL_ONLY);
         assert(rnode->isFull());
         int end = rnode->getSize() - 1; // find last non-false edge
-        while (rnode->d(end) == forest->handleForValue(false))
+        while (rnode->down(end) == f_ptr->handleForValue(false))
             end--;
 
         if (draw_node) {
@@ -3384,17 +3375,17 @@ struct dot_of_DD {
             dot << "  n"<<node<<" [label=\"";
 
             for (int i = 0, cnt=0; i <= end; i++) {
-                if (rnode->d(i) == forest->handleForValue(false))
+                if (rnode->down(i) == f_ptr->handleForValue(false))
                     continue;
                 dot << (cnt++==0 ? "" : "|") << "<i"<<i<<">";
-                if (rnode->d(i) == forest->handleForValue(true)) {
+                if (rnode->down(i) == f_ptr->handleForValue(true)) {
                     dot << i; // << ":T";
                     if (write_terminals)
                         edges << "  n"<<node<<":i"<<i<<" -> nT;\n";
                 }
                 else {
                     dot << i;
-                    edges << "  n"<<node<<":i"<<i<<" -> n"<<rnode->d(i)<<":n;\n";
+                    edges << "  n"<<node<<":i"<<i<<" -> n"<<rnode->down(i)<<":n;\n";
                 }
             }
             dot << "\"";
@@ -3405,14 +3396,14 @@ struct dot_of_DD {
         }
         // Visit recursively
         for (int i = 0; i <= end; i++)
-            visit(rnode->d(i));
+            visit(rnode->down(i));
 
-        unpacked_node::recycle(rnode);
+        unpacked_node::Recycle(rnode);
     }
 
     void start_visit(const dd_edge& e) {
-        forest = static_cast<expert_forest *>(e.getForest());
-        bool isForRel = forest->isForRelations();
+        f_ptr = e.getForest();
+        bool isForRel = f_ptr->isForRelations();
         int num_series = isForRel ? 2 : 1; // number of sets in nodes_per_lvl[]
         dot << "digraph structs {\n  newrank=true;\n  dpi=72;\n";
         dot << "  subgraph cluster1 { style=invis;\n";
@@ -3420,7 +3411,7 @@ struct dot_of_DD {
         // dot << "  edge [arrowhead=vee, samehead=true];\n";
         dot << "  node [shape=record, height=0.8, width=0.5, fontsize=50, penwidth=4, fillcolor=white, style=filled];\n";
         dot << "  edge [arrowhead=vee, minlen=1, penwidth=4, color=blue];\n";
-        // const int max_levels = forest->getDomain()->getNumVariables();//e.getLevel();
+        // const int max_levels = f_ptr->getDomain()->getNumVariables();//e.getLevel();
         const int max_levels = abs(e.getLevel());
         nodes_per_lvl.resize(num_series);
         for (size_t i=0; i<num_series; i++)
@@ -3444,7 +3435,7 @@ struct dot_of_DD {
                 //     level_name = tabp[p].place_name;
                 // }
                 // else { // use Meddly domain names
-                    level_name = forest->getDomain()->getVar(lvl)->getName();
+                    level_name = f_ptr->getDomain()->getVar(lvl)->getName().c_str();
                 // }
                 for (size_t i=0; i<num_series; i++) {
                     dot << "  LVL"<<lvl<<"_"<<i<<" [label=\""
@@ -3686,7 +3677,7 @@ struct compact_cardinality_cache {
 // Transition firings counter based on the trans_span_set_t encoding.
 struct EventFiringsCounterShared {
     const RSRG& rsrg;
-    expert_forest *forestMDD;
+    forest *forestMDD;
     const trans_span_set_t *trns_set;
     // Shared cache
     compact_cardinality_cache  cache;
@@ -3699,7 +3690,7 @@ struct EventFiringsCounterShared {
     : rsrg(_rsrg), trns_set(ts) 
     {
         // card_op = MEDDLY::getOperation(CARDINALITY, f, cardinality_operant_type);
-        forestMDD = static_cast<expert_forest*>(RS.getForest());
+        forestMDD = RS.getForest();
         long numNodes = RS.getNodeCount(); //->getPeakNumNodes() + 1;
         assert(forestMDD->getDomain()->getNumVariables() == npl + rsrg.getExtraLvls());
         working_set.resize(forestMDD->getDomain()->getNumVariables() + 2); // Must be 2!
@@ -3798,32 +3789,30 @@ struct EventFiringsCounterShared {
 
 
         markings_count = 0;
-        // unpacked_node *rnode = unpacked_node::newFromNode(forestMDD, node, unpacked_node::storage_style::AS_STORED);
-        unpacked_node *rnode = unpacked_node::New();
-        forestMDD->unpackNode(rnode, node, FULL_OR_SPARSE);
+        unpacked_node *rnode = unpacked_node::newFromNode(forestMDD, node, FULL_OR_SPARSE);
 
         if (rnode->isFull()) {
             for (int i = enab_range.first; i < std::min((int)rnode->getSize(), enab_range.second); i++) {
-                markings_count += count_firings_of_event(rnode->d(i), evt, next_ioh_pos, visit_level - 1);
+                markings_count += count_firings_of_event(rnode->down(i), evt, next_ioh_pos, visit_level - 1);
             }
             // for (int i=0; i<rnode->getSize(); i++)
             //     if (ioh->enabled_for (i))
-            //         markings_count += count_firings_of_event(rnode->d(i), evt, next_ioh_pos, visit_level - 1);
+            //         markings_count += count_firings_of_event(rnode->down(i), evt, next_ioh_pos, visit_level - 1);
         }
         else {
-            for (int i = 0; i < rnode->getNNZs(); i++) {
-                if (rnode->i(i) >= enab_range.second)
+            for (int i = 0; i < rnode->getSize(); i++) {
+                if (rnode->index(i) >= enab_range.second)
                     break; // out of enabling range
-                if (rnode->i(i) >= enab_range.first) {
-                    markings_count += count_firings_of_event(rnode->d(i), evt, next_ioh_pos, visit_level - 1);
+                if (rnode->index(i) >= enab_range.first) {
+                    markings_count += count_firings_of_event(rnode->down(i), evt, next_ioh_pos, visit_level - 1);
                 }
             }
-            // for (int i = 0; i < rnode->getNNZs(); i++)
-            //     if (ioh->enabled_for (rnode->i(i)))
-            //         markings_count += count_firings_of_event(rnode->d(i), evt, next_ioh_pos, visit_level - 1);
+            // for (int i = 0; i < rnode->getSize(); i++)
+            //     if (ioh->enabled_for (rnode->index(i)))
+            //         markings_count += count_firings_of_event(rnode->down(i), evt, next_ioh_pos, visit_level - 1);
         }
 
-        unpacked_node::recycle(rnode);
+        unpacked_node::Recycle(rnode);
 
         cache.store(trn_key, node, markings_count);
         return markings_count;
@@ -3881,15 +3870,14 @@ struct EventFiringsCounterShared {
         }
 
         // Visit sub-levels recursively
-        // unpacked_node *rnode = unpacked_node::newFromNode(forestMDD, node, false /* SPARSE */);
-        unpacked_node *rnode = unpacked_node::New();
-        forestMDD->unpackNode(rnode, node, SPARSE_ONLY);
+        // Visit sub-levels recursively
+        unpacked_node *rnode = unpacked_node::newFromNode(forestMDD, node, SPARSE_ONLY);
         assert(!rnode->isFull());     
 
-        for (int i = 0; i < rnode->getNNZs(); i++) {
-            sum_firings += count_firings_of_all_events(rnode->d(i), visit_level - 1);
+        for (int i = 0; i < rnode->getSize(); i++) {
+            sum_firings += count_firings_of_all_events(rnode->down(i), visit_level - 1);
         }
-        unpacked_node::recycle(rnode);
+        unpacked_node::Recycle(rnode);
 
         cache.store(KEY_SUM_FIRINGS, node, sum_firings);
         return sum_firings;
@@ -3899,7 +3887,7 @@ struct EventFiringsCounterShared {
 //-----------------------------------------------------------------------------
 
 cardinality_t RSRG::count_num_fired_transitions_by_events_shared() const {
-    expert_forest *forestMDD = static_cast<expert_forest *>(rs.getForest());
+    forest *forestMDD = rs.getForest();
     const int start_lvl = forestMDD->getDomain()->getNumVariables();
     EventFiringsCounterShared efc(*this, getRS(), &trns_set);
 
@@ -3965,7 +3953,7 @@ cardinality_t RSRG::count_num_fired_transitions_by_events_shared() const {
 
 bool RSRG::visitCountNodesPerLevel(const node_handle node, RSRG::NodesPerLevelCounter& nplc) 
 {
-    expert_forest *forest = static_cast<expert_forest *>(rs.getForest());
+    forest *forest = rs.getForest();
     if (node == forest->handleForValue(false))
         return false;
     if (node == forest->handleForValue(true))
@@ -3979,9 +3967,7 @@ bool RSRG::visitCountNodesPerLevel(const node_handle node, RSRG::NodesPerLevelCo
         return true; // Already visited
 
     const int node_level = forest->getNodeLevel(node);
-    // unpacked_node *rnode = unpacked_node::newFromNode(forest, node, unpacked_node::storage_style::AS_STORED);
-    unpacked_node *rnode = unpacked_node::New();
-    forest->unpackNode(rnode, node, FULL_OR_SPARSE);
+    unpacked_node *rnode = unpacked_node::newFromNode(forest, node, FULL_OR_SPARSE);
     // assert(rnode->getLevel() >= 1 && rnode->getLevel() <= npl);
     nplc.nodesPerLvl[node_level-1]++;
     // nplc.outEdgesPerLvl[node_level - 1] += rnode->isFull() ? rnode->getSize() : rnode->getNNZs();
@@ -3989,13 +3975,13 @@ bool RSRG::visitCountNodesPerLevel(const node_handle node, RSRG::NodesPerLevelCo
     size_t num_nnz = 0;
     if (rnode->isFull()) {
         for (int i = rnode->getSize() - 1; i >= 0; i--) {
-            if (visitCountNodesPerLevel(rnode->d(i), nplc)) 
+            if (visitCountNodesPerLevel(rnode->down(i), nplc)) 
                 num_nnz++;
         }
     }
     else { // sparse node
-        for (int i = rnode->getNNZs() - 1; i >= 0; i--) {
-            if (visitCountNodesPerLevel(rnode->d(i), nplc))
+        for (int i = rnode->getSize() - 1; i >= 0; i--) {
+            if (visitCountNodesPerLevel(rnode->down(i), nplc))
                 num_nnz++;
         }
     }
@@ -4003,7 +3989,7 @@ bool RSRG::visitCountNodesPerLevel(const node_handle node, RSRG::NodesPerLevelCo
         nplc.singletoneNodesPerLvl[node_level-1]++;
     nplc.outEdgesPerLvl.at(node_level-1) += num_nnz;
 
-    unpacked_node::recycle(rnode);
+    unpacked_node::Recycle(rnode);
     nplc.visited.at(node) = true;
     return true;
 }
