@@ -39,6 +39,7 @@ public class ShowRgDialog extends javax.swing.JDialog {
     GspnPage gspn;
     TemplateBinding binding;
     RgType rgType;
+    boolean highlightDeadlocks = false;
     
     /**
      * Creates new form ShowRgDialog
@@ -69,6 +70,10 @@ public class ShowRgDialog extends javax.swing.JDialog {
         
         pack();
         setLocationRelativeTo(parent);
+    }
+    
+    public void setHighlightDeadlocks(boolean highlight) {
+        this.highlightDeadlocks = highlight;
     }
     
     public String showRG() {
@@ -129,6 +134,14 @@ public class ShowRgDialog extends javax.swing.JDialog {
             String[] envp = SolverInvokator.prepareRuntimeEnvironmentVars();
             Runtime.getRuntime().exec(cmd.toArray(new String[cmd.size()]), envp).waitFor();
             
+            if (highlightDeadlocks) {
+                File dotFile = new File(tmpRoot.getAbsolutePath() + ".dot");
+                if (dotFile.exists()) {
+                    DotDeadlockHighlighter.process(dotFile);
+                    Runtime.getRuntime().exec(new String[]{"dot", "-Tpdf", dotFile.getAbsolutePath(), "-o", tmpPdf.getAbsolutePath()}).waitFor();
+                }
+            }
+
             if (tmpPdf.exists()) {
                 Main.viewPDF(tmpPdf);
             }

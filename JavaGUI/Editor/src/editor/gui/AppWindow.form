@@ -686,6 +686,18 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionStartRGActionPerformed"/>
       </Events>
     </Component>
+    <Component class="common.Action" name="actionStartRGDeadlocks">
+      <Properties>
+        <Property name="actionName" type="java.lang.String" value="Show the Reachability Graph (Highlight Deadlocks)."/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection component="resourceFactory" name="getBuildRGDeadlocks32" type="method"/>
+        </Property>
+        <Property name="tooltipDesc" type="java.lang.String" value="Show the Reachability Graph highlighting deadlock paths."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionStartRGDeadlocksActionPerformed"/>
+      </Events>
+    </Component>
     <Component class="common.Action" name="actionStartSymRG">
       <Properties>
         <Property name="actionName" type="java.lang.String" value="Show the Symbolic Reachability Graph of the Petri net."/>
@@ -2110,6 +2122,15 @@
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                   <Connection component="actionStartRG" type="bean"/>
+                </Property>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="common.JToolbarButton" name="jToolbarButtonShowRGDeadlocks">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection component="actionStartRGDeadlocks" type="bean"/>
                 </Property>
                 <Property name="horizontalTextPosition" type="int" value="0"/>
                 <Property name="verticalTextPosition" type="int" value="3"/>

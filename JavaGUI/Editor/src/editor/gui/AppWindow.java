@@ -818,7 +818,9 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
                 boolean hasRGTool = selectedElem != null && selectedElem.pageSupportsRG(ProjectPage.RgType.RG);
                 boolean isRGToolEnabled = canEdit && hasRGTool && selectedElem.canBuildRG(ProjectPage.RgType.RG);
                 actionStartRG.setEnabled(isRGToolEnabled);
+                actionStartRGDeadlocks.setEnabled(isRGToolEnabled);
                 jToolbarButtonShowRG.setVisible(hasRGTool);
+                jToolbarButtonShowRGDeadlocks.setVisible(hasRGTool);
 
                 boolean hasSRGTool = selectedElem != null && selectedElem.pageSupportsRG(ProjectPage.RgType.SRG);
                 boolean isSRGToolEnabled = canEdit && hasSRGTool && selectedElem.canBuildRG(ProjectPage.RgType.SRG);
@@ -885,7 +887,9 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
                 actionStartAlgebra.setEnabled(false);
                 jToolbarButtonAlgebra.setVisible(false);
                 actionStartRG.setEnabled(false);
+                actionStartRGDeadlocks.setEnabled(false);
                 jToolbarButtonShowRG.setVisible(false);
+                jToolbarButtonShowRGDeadlocks.setVisible(false);
                 actionStartSymRG.setEnabled(false);
                 jToolbarButtonShowSymRG.setVisible(false);
                 actionStartCTMC.setEnabled(false);
@@ -1476,6 +1480,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         actionStartUnfolding = new common.Action();
         actionStartAlgebra = new common.Action();
         actionStartRG = new common.Action();
+        actionStartRGDeadlocks = new common.Action();
         actionStartSymRG = new common.Action();
         actionStartCTMC = new common.Action();
         actionAdvRapidMeasurePopup = new common.Action();
@@ -1586,6 +1591,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jToolbarButtonShowTransitionSemiflows = new common.JToolbarButton();
         jToolbarButtonShowPlaceBoundsFromPinv = new common.JToolbarButton();
         jToolbarButtonShowRG = new common.JToolbarButton();
+        jToolbarButtonShowRGDeadlocks = new common.JToolbarButton();
         jToolbarButtonShowSymRG = new common.JToolbarButton();
         jToolbarButtonShowCTMC = new common.JToolbarButton();
         jToolbarButtonUnfolding = new common.JToolbarButton();
@@ -2078,6 +2084,15 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         actionStartRG.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 actionStartRGActionPerformed(evt);
+            }
+        });
+
+        actionStartRGDeadlocks.setActionName("Show the Reachability Graph (Highlight Deadlocks).");
+        actionStartRGDeadlocks.setIcon(resourceFactory.getBuildRGDeadlocks32());
+        actionStartRGDeadlocks.setTooltipDesc("Show the Reachability Graph highlighting deadlock paths.");
+        actionStartRGDeadlocks.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionStartRGDeadlocksActionPerformed(evt);
             }
         });
 
@@ -2601,6 +2616,11 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         jToolbarButtonShowRG.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jToolbarButtonShowRG.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jAppToolBar_Basic.add(jToolbarButtonShowRG);
+
+        jToolbarButtonShowRGDeadlocks.setAction(actionStartRGDeadlocks);
+        jToolbarButtonShowRGDeadlocks.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jToolbarButtonShowRGDeadlocks.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jAppToolBar_Basic.add(jToolbarButtonShowRGDeadlocks);
 
         jToolbarButtonShowSymRG.setAction(actionStartSymRG);
         jToolbarButtonShowSymRG.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -3465,6 +3485,10 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         startRGTool(RgType.RG);
     }//GEN-LAST:event_actionStartRGActionPerformed
 
+    private void actionStartRGDeadlocksActionPerformed(java.awt.event.ActionEvent evt) {
+        startRGToolHighlightDeadlocks(RgType.RG);
+    }
+
     private void actionStartSymRGActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionStartSymRGActionPerformed
         startRGTool(RgType.SRG);
     }//GEN-LAST:event_actionStartSymRGActionPerformed
@@ -3523,6 +3547,27 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
             return; // cancel RG
         
         ShowRgDialog dlg = new ShowRgDialog(this, page, binding, rgType);
+        String result = dlg.showRG();
+        
+        if (result == null) {
+            setStatus("Reachability Graph shown.", true);
+        }
+        else {
+            JOptionPane.showMessageDialog(this, result, "Could not generate the RG.", 
+                                          JOptionPane.ERROR_MESSAGE);
+            setStatus("Could not show the Reachability Graph.", false);
+        }
+    }
+
+    public void startRGToolHighlightDeadlocks(RgType rgType) {
+        assert hasActiveProject();
+        final GspnPage page = (GspnPage)((ComposableNet)activeProject.getCurrent().getActivePage()).getComposedNet();
+        final TemplateBinding binding = ParameterAssignmentDialog.askParamAssignment(this, page);
+        if (binding == null)
+            return; // cancel RG
+        
+        ShowRgDialog dlg = new ShowRgDialog(this, page, binding, rgType);
+        dlg.setHighlightDeadlocks(true);
         String result = dlg.showRG();
         
         if (result == null) {
@@ -3761,6 +3806,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private common.Action actionStartPlay;
     private common.Action actionStartPlayForPopupMenu;
     private common.Action actionStartRG;
+    private common.Action actionStartRGDeadlocks;
     private common.Action actionStartSymRG;
     private common.Action actionStartTransitionInv;
     private common.Action actionStartUnfolding;
@@ -3891,6 +3937,7 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
     private common.JToolbarButton jToolbarButtonShowPlaceBoundsFromPinv;
     private common.JToolbarButton jToolbarButtonShowPlaceSemiflows;
     private common.JToolbarButton jToolbarButtonShowRG;
+    private common.JToolbarButton jToolbarButtonShowRGDeadlocks;
     private common.JToolbarButton jToolbarButtonShowSymRG;
     private common.JToolbarButton jToolbarButtonShowTransitionSemiflows;
     private common.JToolbarButton jToolbarButtonStartPlay;
