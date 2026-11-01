@@ -782,31 +782,31 @@ public:
 protected:
     //--------------------------------------------------
     // Saturation with pregenerated relation support:
-    satpregen_opname::pregen_relation* pregen_rel = nullptr;
-    specialized_operation* pregen_sat = nullptr;
+    pregen_relation* pregen_rel = nullptr;
+    saturation_operation* pregen_sat = nullptr;
 
     //--------------------------------------------------
     // Implicit relation support:
     void initImplicitOperators();
     std::vector<rel_node_handle> impl_fdw_trn_handle; // The top rel_node_handle of each (forward) encoded transition.
-    satimpl_opname::implicit_relation* buildImplicitRelation(bool forward, std::vector<rel_node_handle>* p_handles);
+    implicit_relation* buildImplicitRelation(bool forward, std::vector<rel_node_handle>* p_handles);
     // forward/backward transition relations
-    satimpl_opname::implicit_relation* fwd_impl_rel = nullptr;
-    satimpl_opname::implicit_relation* bwd_impl_rel = nullptr;
+    implicit_relation* fwd_impl_rel = nullptr;
+    implicit_relation* bwd_impl_rel = nullptr;
     // saturation with implicit transition relations
-    specialized_operation* impl_sat = nullptr;
+    saturation_operation* impl_sat = nullptr;
     // implicit pre/post images
-    specialized_operation *impl_postimg = nullptr;
-    specialized_operation *impl_preimg = nullptr;
+    saturation_operation *impl_postimg = nullptr;
+    saturation_operation *impl_preimg = nullptr;
 
 
     //--------------------------------------------------
     // On-the-fly saturation support:
     int *p_otf_unprimed_minterms = nullptr;
     int *p_otf_primed_minterms = nullptr;
-    std::vector<satotf_opname::event*> otf_events;
-    satotf_opname::otf_relation *otf_rel = nullptr;
-    specialized_operation* otf_sat = nullptr;
+    std::vector<otf_event*> otf_events;
+    otf_relation *otf_rel = nullptr;
+    saturation_operation* otf_sat = nullptr;
     void buildOtfRelation();
 
     class otf_subevent;
@@ -1007,11 +1007,11 @@ public:
     void statistic() {
         MEDDLY::ostream_output stdout_wrap(cout);
         cout << "\n-----------RS-----------\n";
-        rs.show(stdout_wrap, 2);
+        rs.show(stdout_wrap);
 
         if(useMonolithicNSF()){
             cout << "\n---------RG---------\n";
-            NSF.show(stdout_wrap, 2);
+            NSF.show(stdout_wrap);
         }
         //d->showInfo(stdout);
     }
@@ -1089,9 +1089,9 @@ public:
     forest* getForestMDD() const { return forestMDD; }
     forest* getForestMxD() const { return forestMxD; }
 
-    inline specialized_operation* getImplSaturationOp() const { return impl_sat; }
-    inline specialized_operation* getImplPreImageOp() const { return impl_preimg; }
-    inline specialized_operation* getImplPostImageOp() const { return impl_postimg; }
+    inline saturation_operation* getImplSaturationOp() const { return impl_sat; }
+    inline saturation_operation* getImplPreImageOp() const { return impl_preimg; }
+    inline saturation_operation* getImplPostImageOp() const { return impl_postimg; }
 
     // It returns the vector encoding the place ordering
     // const int *getPlaceOrd() const { return net_to_mddLevel.data(); }
@@ -1106,7 +1106,7 @@ public:
     // Converts a (0-based) MDD variable level into the place name it is encoding
     const char* nameOfMddVar(int var) const { 
         assert(0 <= var && var < npl + extraLvls);
-        return dom->useVar(var + 1)->getName();
+        return dom->getVar(var + 1)->getName().c_str();
         // return tabp[mddLevel_to_net.at(var)].place_name; 
     }
 
