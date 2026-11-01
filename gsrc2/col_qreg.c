@@ -238,7 +238,7 @@ add_elist() {
     new_n->from = ff;
     new_n->to = tt;
     new_n->str = cp = ecalloc(strlen(name) + 1, 1);
-    sprintf(cp, name);
+    sprintf(cp, "%s", name);
     new_n->next = cur_elist;
     cur_elist = new_n;
 #ifdef DEBUG
@@ -259,7 +259,7 @@ convert_elist() {
     case 'n' :
         cur_elist->next = e_table;
         cur_class->nn.str = ecalloc(strlen(name) + 1, 1);
-        sprintf(cur_class->nn.str, name);
+        sprintf(cur_class->nn.str, "%s", name);
         break;
     case 'l' :
         ii = cur_class->num;
@@ -718,7 +718,7 @@ char **argv;
                 exit(1);
             }
             cur_dom->name = ecalloc(strlen(def_name) + 1, 1);
-            sprintf(cur_dom->name, def_name);
+            sprintf(cur_dom->name, "%s", def_name);
             if (cur_dom->bypass) {
                 cur_dom->sets.s_ind->name = cur_dom->name;
                 if (cur_dom->sets.s_ind->bypass)

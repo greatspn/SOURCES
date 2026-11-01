@@ -45,7 +45,7 @@ E\{ { return(SS_MEAN); } ;
 
 e\{ { return(TR_MEAN); } ;
 
-^\|[a-zA-Z][a-zA-Z0-9]* { sprintf(res_name,yytext+1);
+^\|[a-zA-Z][a-zA-Z0-9]* { sprintf(res_name, "%s", yytext+1);
 			  return(RES_NAME);
 			} ;
 

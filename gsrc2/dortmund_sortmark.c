@@ -284,7 +284,7 @@ void init() {
         place_p->rubound = nn - nt;
         place_p->subsystem = FALSE;
         place_p->name = ecalloc(strlen(linebuf) + 1, 1);
-        sprintf(place_p->name, linebuf);
+        sprintf(place_p->name, "%s", linebuf);
 #ifdef DEBUG
         fprintf(stderr, "        place %d mask=%d shift=%d in byte #%d\n",
                 ii, place_p->cod.mask, place_p->cod.shift, place_p->cod.num_byte);
@@ -714,7 +714,7 @@ char *filename;
                         fprintf(tmfp, ", ");
                     prev = 1;
                     if (nb == 1)
-                        fprintf(tmfp, place_p->name);
+                        fprintf(tmfp, "%s", place_p->name);
                     else
                         fprintf(tmfp, "%d @ %s", nb, place_p->name);
                 }

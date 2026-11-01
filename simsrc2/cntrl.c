@@ -48,7 +48,7 @@ int main(int argc,
         fprintf(stderr, "Simulation cntrl ERROR: no net name !\n");
         exit(1);
     }
-    sprintf(netname, argv[1]);
+    sprintf(netname, "%s", argv[1]);
     if (argc > 2) {
         char **a_p = &(argv[2]);
         char *s_p;
@@ -90,7 +90,7 @@ int main(int argc,
         fprintf(stderr, "Simulation cntrl ERROR: couldn't listen socket !\n");
         exit(1);
     }
-    sprintf(bbb, inet_ntoa(gi_sock_addr.sin_addr));
+    sprintf(bbb, "%s", inet_ntoa(gi_sock_addr.sin_addr));
 #ifdef DEBUG
     fprintf(stderr, "%s, h_name=%s, h_addrtype=%d, h_length=%d\n",
             bbb, h_ent->h_name, h_ent->h_addrtype, h_ent->h_length);

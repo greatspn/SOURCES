@@ -389,7 +389,7 @@ void out_filtered_event_list(FILE *fp,
             }
         }
         else
-            fprintf(fp, buf);
+            fprintf(fp, "%s", buf);
 #ifdef DEBUGCALLS
         fprintf(stderr, "              End of out_filtered_event_list !=\n");
 #endif
@@ -498,7 +498,7 @@ void out_filtered_simulation_state(FILE *fp,
                 write_s_buf_in_(sockid)
             }
             else
-                fprintf(fp, s_buf);
+                fprintf(fp, "%s", s_buf);
             s_buf[0] = '\0';
         }
         sprintf(s_buf, "0\n");
@@ -506,7 +506,7 @@ void out_filtered_simulation_state(FILE *fp,
             write_s_buf_in_(sockid)
         }
         else
-            fprintf(fp, s_buf);
+            fprintf(fp, "%s", s_buf);
     }
 #ifdef DEBUG
     else
@@ -543,7 +543,7 @@ void out_filtered_event(FILE *fp,
         write_s_buf_in_(sockid)
     }
     else
-        fprintf(fp, s_buf);
+        fprintf(fp, "%s", s_buf);
 #ifdef DEBUGCALLS
     fprintf(stderr, "             End of out_filtered_event\n");
 #endif

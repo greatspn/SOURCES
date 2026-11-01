@@ -140,7 +140,7 @@ void out_single_instance(Event_p  ev_p,  FILE  *fp) {
             fprintf(fp, "BINDING  : (implicit projection) <-- %s", name);
 //DOT
         if (name[0] != '\0')
-            sprintf(bname, "<%s", name);
+            snprintf(bname, sizeof(bname), "<%s", name);
         else
             bname[0] = '\0';
 //DOT
@@ -172,14 +172,16 @@ void out_single_instance(Event_p  ev_p,  FILE  *fp) {
             else
                 fprintf(fp, ", (implicit projection) <-- %s ", name);
 //DOT
-            if (name[0] != '\0')
-                sprintf(bname, "%s,%s", bname, name);
+            if (name[0] != '\0' && bname[0] != '\0') {
+                strncat(bname, ",", sizeof(bname) - strlen(bname) - 1);
+                strncat(bname, name, sizeof(bname) - strlen(bname) - 1);
+            }
             else
                 bname[0] = '\0';
 //DOT
         }
-        if (name[0] != '\0')
-            sprintf(bname, "%s>", bname);
+        if (bname[0] != '\0')
+            strncat(bname, ">", sizeof(bname) - strlen(bname) - 1);
     }/* Transizione colorata */
     else {
         fprintf(fp, "NO BINDING (non-colored)");

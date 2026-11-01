@@ -248,7 +248,7 @@ void init_animation() {
     }
 #ifdef DEBUG
     fprintf(stderr, "      End init_animation:\n");
-    sprintf(bbb, inet_ntoa(gi_sock_addr.sin_addr));
+    sprintf(bbb, "%s", inet_ntoa(gi_sock_addr.sin_addr));
     fprintf(stderr, "%s, h_name=%s, h_addrtype=%d, h_length=%d\n",
             bbb, h_ent->h_name, h_ent->h_addrtype, h_ent->h_length);
 #endif
@@ -304,7 +304,7 @@ void init_int_sim() {
 #ifdef DEBUG
     fprintf(stderr, "start of init_int_sim\n");
 #endif
-    sprintf(bbb, inet_ntoa(gi_sock_addr.sin_addr));
+    sprintf(bbb, "%s", inet_ntoa(gi_sock_addr.sin_addr));
     /* fprintf(stderr,"... bbb written\n"); */
     Gspn = getenv("GREATSPN_SCRIPTDIR");
     /* fprintf(stderr,"... Gspn read\n"); */

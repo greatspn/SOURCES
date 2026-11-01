@@ -448,7 +448,7 @@ static int check_results(int approx, int conf, char file[MAXSTRING])
                 end_criteria) // Last frame, convergence reached
             {
                 if (timeOfLastPrint != (clock_t)-1) 
-                    printf(FOUR_LINES_UP);
+                    printf("%s", FOUR_LINES_UP);
                 else 
                     printf("\n");
 

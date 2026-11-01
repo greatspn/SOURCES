@@ -251,7 +251,7 @@ void init() {
         place_p->lbound = nt;
         place_p->rubound = nn - nt;
         place_p->name = ecalloc(strlen(linebuf) + 1, 1);
-        sprintf(place_p->name, linebuf);
+        sprintf(place_p->name, "%s", linebuf);
 #ifdef DEBUG
         fprintf(stderr, "        place %d mask=%d shift=%d in byte #%d\n",
                 ii, place_p->cod.mask, place_p->cod.shift, place_p->cod.num_byte);
@@ -282,7 +282,7 @@ void init() {
                &ll, &nb, &nc, linebuf);
         tp = t_list + (ii - 1);
         tp->name = ecalloc(strlen(linebuf) + 1, 1);
-        sprintf(tp->name, linebuf);
+        sprintf(tp->name, "%s", linebuf);
         tp->noecs = jj;
         for (ii = 0 ; ++ii <= nb ;) {
             fscanf(nfp, "  %d %d %d\n", &jj, &nge, &nlt);
@@ -356,7 +356,7 @@ void show_marking(int nm) {
                 printf(", ");
             prev = 1;
             if (nb == 1)
-                printf(place_p->name);
+                printf("%s", place_p->name);
             else
                 printf("%d @ %s", nb, place_p->name);
         }
@@ -387,7 +387,7 @@ void show_immpath() {
                     printf("{");
                     while (aecsn--) {
                         nt = *(usp++);
-                        printf(t_list[nt - 1].name);
+                        printf("%s", t_list[nt - 1].name);
                         if (aecsn)
                             printf(",");
                     }

@@ -236,7 +236,7 @@ int main(int argc,
         fprintf(stderr, "%sno net name\n", sim_eng_err);
         exit(1);
     }
-    sprintf(netname, argv[1]);
+    sprintf(netname, "%s", argv[1]);
     trace_flag = FALSE;
     target_time = 0.0;
     /*#ifndef SunOS5x*/

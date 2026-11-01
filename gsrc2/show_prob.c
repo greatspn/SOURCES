@@ -248,7 +248,7 @@ char **argv;
         printf("ERROR: no net name !\n");
         exit(1);
     }
-    sprintf(netname, argv[1]);
+    sprintf(netname, "%s", argv[1]);
     sprintf(filename, "%s.emc", argv[1]);
     if ((emcfp = fopen(filename, "r")) == NULL) {
         fprintf(stderr, can_t_open, filename, 'r');

@@ -32,7 +32,7 @@ static void compute_show_lpp(char *tag) {
         ShowErrorDialog(message, mainwin);
         return;
     }
-    fprintf(fp, string);
+    fprintf(fp, "%s", string);
     (void)fclose(fp);
     sprintf(str2, "cat %s.lp_disab >> %s.lp_in\n",
             GetCurrentFilename(), GetCurrentFilename());
