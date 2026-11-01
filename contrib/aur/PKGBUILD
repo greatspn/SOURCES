@@ -1,0 +1,54 @@
+# Maintainer: koraynilay <koray.fra@gmail.com>
+pkgname=greatspn-git
+pkgver=r979.3e714d1
+pkgrel=1
+pkgdesc="GreatSPN: A tool for modelling and analyzing Petri Nets"
+arch=('x86_64')
+url="https://github.com/greatspn/SOURCES"
+license=('GPL-2.0-or-later')
+depends=('java-environment'
+         'boost'
+         'glib2'
+         'glibmm'
+         'libxml++2.6'
+         'gmp'
+         'graphviz'
+         'suitesparse'
+         'glpk'
+         'lpsolve'
+         'meddly')
+optdepends=('spot: for the CTL* and LTL model checker tools'
+            'ogdf: for the automatic Petri net relayout feature in the GUI')
+makedepends=('ant' 'byacc')
+source=("greatspn::git+file:///$PWD/../.."
+        "greatspn_editor"
+        "pnpro-editor.desktop")
+sha256sums=('SKIP'
+            'eb2d946d34855663d325823840c79713225295df0857f11159d41eeb5bac84f6'
+            'cc38443fc0ddc2c008e2acb35c84e469a926416ad41417ace1112b0588263606')
+
+pkgver() {
+  cd "$srcdir/greatspn"
+  printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+  cd "$srcdir/greatspn"
+
+  # Disable problematic XDG scripts that fail in fakeroot
+  sed -i 's/^# XDG Integration/exit 0\n# XDG Integration/' JavaGUI/DISTRIB/install.sh
+
+  export CFLAGS="$CFLAGS -std=gnu99 -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-implicit-int -DGLIBCXX_DEBUG"
+  make ogdf_INCLUDES="-I/usr/include/ogdf-release"
+}
+
+package() {
+  cd "$srcdir/greatspn"
+
+  make INSTALLDIR="$pkgdir/opt/GreatSPN" PKGDIR=/opt/GreatSPN install
+
+  install -Dm755 "$srcdir/greatspn_editor" "$pkgdir/usr/bin/greatspn_editor"
+  install -Dm644 "$srcdir/pnpro-editor.desktop" "$pkgdir/usr/share/applications/pnpro-editor.desktop"
+  install -Dm644 objects/JavaGUI/bin/pnpro-editor.png "$pkgdir/usr/share/pixmaps/pnpro-editor.png"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
