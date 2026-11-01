@@ -377,14 +377,14 @@ public class NetPlayPanel extends javax.swing.JPanel implements AbstractPageEdit
         gspn.setSelectionFlag(false);
         gspn.setGrayedFlag(false);
         gspn.setAuraFlag(false);
-        gspn.viewProfile.viewSuperPosTags = false;
+        gspn.viewProfile.viewSuperPosTags = true;
         gspn.viewProfile.viewRatesDelays = isTimedSimulation();
         
         if (dta != null) {
             dta.setSelectionFlag(false);
             dta.setGrayedFlag(false);
             dta.setAuraFlag(false);
-            dta.viewProfile.viewSuperPosTags = false;
+            dta.viewProfile.viewSuperPosTags = true;
             dta.viewProfile.viewRatesDelays = isTimedSimulation();
         }
 
