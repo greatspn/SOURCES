@@ -41,7 +41,7 @@ LEXPPFLAGS ?=
 YACCPPFLAGS ?=
 ARFLAGS :=
 UIL ?= /usr/bin/uil
-ENABLE_Cxx17 ?= -std=c++17
+ENABLE_Cxx17 ?= -std=c++20
 ENABLE_Cxx14 ?= -std=c++14
 
 # External libraries
@@ -215,23 +215,9 @@ $(call search_library,GLIBMM2-4_LIB,libglibmm-2.4.*,"glibmm-2.4 library")
 $(call search_library,GLPK_LIB,libglpk.*,"GLPK library",-lglpk)
 
 
-$(call search_library,LP_SOLVE_LIB,liblpsolve55.*,"lp_solve55 library", )
+$(call search_library,LP_SOLVE_LIB,liblpsolve55.*,"lp_solve55 library",-llpsolve55 -ldl -lcolamd)
 ifdef HAS_LP_SOLVE_LIB
   INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I$(PATH_TO_LP_SOLVE_LIB)../include/lpsolve
-  LINK_LP_SOLVE_LIB := $(LINK_LP_SOLVE_LIB) $(PATH_TO_LP_SOLVE_LIB)liblpsolve55.a $(PATH_TO_LP_SOLVE_LIB)libcolamd.a -ldl
-endif
-# $(call search_library,LP_SOLVE_LIB,liblpsolve55.*,"lp_solve55 library",-llpsolve55 -ldl -lcolamd)
-# ifdef HAS_LP_SOLVE_LIB
-#   INCLUDE_LP_SOLVE_LIB := -DHAS_LP_SOLVE_LIB=1 -I$(PATH_TO_LP_SOLVE_LIB)../include/lpsolve
-# endif
-
-ifdef HAS_LP_SOLVE_LIB
-ifeq ("$(wildcard $(PATH_TO_LP_SOLVE_LIB)libcolamd.a)","")
-  $(warning "liblpsolve55 found, but libcolamd.a is missing!")
-  HAS_LP_SOLVE_LIB :=
-  INCLUDE_LP_SOLVE_LIB :=
-  LINK_LP_SOLVE_LIB :=
-endif
 endif
 
 # make GMP a static library to avoid the dependency in the portable GreatSPN distrib.
