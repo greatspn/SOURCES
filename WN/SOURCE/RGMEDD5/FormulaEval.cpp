@@ -325,10 +325,14 @@ void model_check_query(Context& ctx, const ctl_query_t& query, int sem_id, bool 
             if (print_CTL_counterexamples && !is_int_formula) {
                 Formula* state_formula = dynamic_cast<Formula*>(formula.get());
                 cout << "\nGenerated " << (boost::get<bool>(result) ? "witness: " : "counter-example: ") << endl;
-                vector<int> state0(npl + 1);
-                enumerator it0(g_rsrg->getInitMark());
-                const int* tmp =it0.getAssignments();
-                std::copy(tmp, tmp+npl + 1, state0.begin());
+                vector<int> state0(npl + 1, 0);
+                auto it0 = g_rsrg->getInitMark().begin();
+                if (it0) {
+                    const minterm& m0 = *it0;
+                    for (int i = 1; i <= npl; ++i) {
+                        state0[i] = m0.getVar(i);
+                    }
+                }
                 
                 TraceType traceTy = (boost::get<bool>(result) ? TT_WITNESS : TT_COUNTEREXAMPLE);
                 TreeTraceNode *ttn = state_formula->generateTrace(state0, traceTy);

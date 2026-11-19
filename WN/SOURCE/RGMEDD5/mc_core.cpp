@@ -19,10 +19,10 @@ namespace ctlmdd {
 // potential state on each model variable, and fixed 0 values for the extra levels
 dd_edge mdd_potential_state_set(RSRG* rsrg, forest* forestMDD, bool zero_extra_lvls)
 {
-    expert_forest *forest = static_cast<expert_forest*>(forestMDD);
+    forest *forest_ptr = forestMDD;
     dd_edge d(forestMDD);
     // take any value for all levels
-    d.set(forest->handleForValue(true));
+    d.set(forest_ptr->handleForValue(true));
 
     if (zero_extra_lvls) {
         // impose a fixed 0 value for all extra levels in the domain
@@ -30,9 +30,9 @@ dd_edge mdd_potential_state_set(RSRG* rsrg, forest* forestMDD, bool zero_extra_l
             int lvl = rsrg->indexOfExtraLvl(i);
             assert(d.getLevel() < lvl);
 
-            unpacked_node *nb_out = unpacked_node::newFull(forest, lvl, 1);
-            nb_out->set_d(0, d);
-            d.set(forest->createReducedNode(-1, nb_out));
+            unpacked_node *nb_out = unpacked_node::newWritable(forest_ptr, lvl, 1, FULL_ONLY);
+            nb_out->down(0) = forest_ptr->linkNode(d.getNode());
+            d.set(forest_ptr->createReducedNode(-1, nb_out));
         }
     }
 
@@ -203,9 +203,11 @@ dd_edge Context::EU(dd_edge f1, dd_edge f2) const {
 
         n_iters++;
         if (print_intermediate_expr()) {
+            cardinality_t c;
+            apply(CARDINALITY, result, cardinality_ref(c));
             cout << (is_true(f1) ? "EF" : "EU") 
                  << ": step=" << n_iters << ",  SAT size=" 
-                 << fixed << result.getCardinality() << endl;
+                 << fixed << c << endl;
             cout.unsetf(ios_base::floatfield);
         }
     }
@@ -366,10 +368,12 @@ dd_edge Context::ERfair(dd_edge f1, dd_edge f2) const {
 
         n_iters++;
         if (print_intermediate_expr()) {
+            cardinality_t c;
+            apply(CARDINALITY, result, cardinality_ref(c));
             cout << (has_fairness_constraints() ? "Fair" : "")
                  << (is_false(f1) ? "EG" : "ER") 
                  << ": step=" << n_iters << ",  SAT size=" 
-                 << fixed << result.getCardinality() << endl;
+                 << fixed << c << endl;
             cout.unsetf(ios_base::floatfield);
         }
     }
@@ -536,15 +540,19 @@ dd_edge StutteredNSF::forward_reachable(const dd_edge& s0) const {
 
 // check if a DD contains a specific marking
 bool sat_set_contains(const dd_edge &dd, const std::vector<int> &marking) {
-    bool isContained;
-    dd.getForest()->evaluate(dd, marking.data(), isContained);
+    bool isContained = false;
+    minterm m(dd.getForest());
+    for (int i = 1; i <= dd.getForest()->getDomain()->getNumVariables(); ++i) {
+        m.setVar(i, marking[i]);
+    }
+    dd.evaluate(m, isContained);
     return isContained;
 }
 
 //-----------------------------------------------------------------------------
 
 bool sat_set_is_empty(const dd_edge &e) {
-    expert_forest *forest = static_cast<expert_forest *>(e.getForest());
+    const forest *forest = e.getForest();
     return e.getNode() == forest->handleForValue(false);
 }
 
@@ -553,8 +561,11 @@ bool sat_set_is_empty(const dd_edge &e) {
 // create the DD corresponding to a single marking
 dd_edge dd_from_marking(const std::vector<int> &marking, MEDDLY::forest *mdd_forest) {
     dd_edge dd_of_state(mdd_forest);
-    const int *vlist = marking.data();
-    mdd_forest->createEdge(&vlist, 1, dd_of_state);
+    minterm m(mdd_forest);
+    for (int i = 1; i <= mdd_forest->getDomain()->getNumVariables(); ++i) {
+        m.setVar(i, marking[i]);
+    }
+    m.buildFunction(false, dd_of_state);
     return dd_of_state;
 }
 
@@ -562,11 +573,15 @@ dd_edge dd_from_marking(const std::vector<int> &marking, MEDDLY::forest *mdd_for
 
 // extract an arbitrary state from the dd
 void get_marking_from_dd(const dd_edge &dd, std::vector<int> &marking) {
-    MEDDLY::enumerator it(dd);
-    const int *tmp = it.getAssignments();
     const size_t n_vars = dd.getForest()->getDomain()->getNumVariables();
-    marking.resize(n_vars + 1);
-    std::copy(tmp, tmp + n_vars + 1, marking.begin());
+    marking.assign(n_vars + 1, 0);
+    auto it = dd.begin();
+    if (it) {
+        const minterm& m = *it;
+        for (size_t i = 1; i <= n_vars; ++i) {
+            marking[i] = m.getVar(i);
+        }
+    }
 }
 
 //-----------------------------------------------------------------------------

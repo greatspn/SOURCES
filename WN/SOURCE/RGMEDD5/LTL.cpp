@@ -320,7 +320,7 @@ spot_LTL_to_Buchi_automaton(const char* ltl_formula,
 */
 dd_edge mxd_location_change(dd_edge& NSF, const size_t i, const size_t j)
 {
-    expert_forest* forestMxD = static_cast<expert_forest*>(NSF.getForest());
+    forest* forestMxD = NSF.getForest();
     const int locLvl = forestMxD->getDomain()->getNumVariables();
     const int locLvlBnd = forestMxD->getDomain()->getVariableBound(locLvl);
 
@@ -332,17 +332,17 @@ dd_edge mxd_location_change(dd_edge& NSF, const size_t i, const size_t j)
 
     // Create a node nh1=[j:NSF] in the primed loc level
     unpacked_node* un;
-    un = unpacked_node::newFull(forestMxD, -locLvl, locLvlBnd);
+    un = unpacked_node::newWritable(forestMxD, -locLvl, locLvlBnd, FULL_ONLY);
     // un->set_d(j, NSF);
-    un->d_ref(j) = forestMxD->linkNode(NSF.getNode());
+    un->down(j) = forestMxD->linkNode(NSF.getNode());
     node_handle nh1 = forestMxD->createReducedNode(-1, un);
     dd_edge j_to_nsf(forestMxD);
     j_to_nsf.set(nh1);
 
     // Create a node nh2=[i:nh1] in the loc level
-    un = unpacked_node::newFull(forestMxD, +locLvl, locLvlBnd);
+    un = unpacked_node::newWritable(forestMxD, +locLvl, locLvlBnd, FULL_ONLY);
     // un->set_d(i, j_to_nsf);
-    un->d_ref(i) = forestMxD->linkNode(j_to_nsf.getNode());
+    un->down(i) = forestMxD->linkNode(j_to_nsf.getNode());
     node_handle nh2 = forestMxD->createReducedNode(-1, un);
     dd_edge ij_to_nsf(forestMxD);
     ij_to_nsf.set(nh2);
@@ -402,17 +402,11 @@ dd_edge mxd_location_change(dd_edge& NSF, const size_t i, const size_t j)
 dd_edge mxd_relabel_loc(int loc, int loc_primed, forest* forestMxD)
 {
     dd_edge labelingMxD = dd_edge(forestMxD);
-    unsigned int nvars = forestMxD->getDomain()->getNumVariables();
-    std::vector<int> states(nvars+1, DONT_CARE), primedStates(nvars+1, DONT_CHANGE);
-    const int *st, *pst;
-
+    minterm m(forestMxD);
+    m.setAllVars(DONT_CARE, DONT_CHANGE);
     // npl is a global var (!)
-    states[npl+1] = loc;
-    primedStates[npl+1] = loc_primed;
-    st = states.data();
-    pst = primedStates.data();
-
-    forestMxD->createEdge(&st, &pst, 1, labelingMxD);
+    m.setVars(npl + 1, loc, loc_primed);
+    m.buildFunction(false, labelingMxD);
 
     return labelingMxD;
 }
@@ -544,13 +538,17 @@ dd_edge mdd_relabel(const dd_edge& mdd, int loc, int loc_primed, forest* forestM
 
 dd_edge
 RSxBA_init_states(Context& ctx, BuchiAutomaton& ba) {
-    expert_domain* dom = (expert_domain*)ctx.get_domain();
+    domain* dom = const_cast<domain*>(ctx.get_domain());
     const int nvars = dom->getNumVariables();
     // Resize the variable bound of the extra level to accomodate BA location indicess
     const unsigned int currentLocLvlBound = dom->getVariableBound(nvars);
     const unsigned int locLvlBound = std::max(ba.num_locs + 1, currentLocLvlBound);
-    if (currentLocLvlBound < locLvlBound) // resize needed
+    if (currentLocLvlBound < locLvlBound) { // resize needed
         dom->enlargeVariableBound(nvars, false, locLvlBound);
+        ctx.get_MDD_forest()->removeAllComputeTableEntries();
+        ctx.get_MxD_forest()->removeAllComputeTableEntries();
+        compute_table::removeAllFromMonolithic();
+    }
 
     // Encode the initial states of RSxBA
     dd_edge Z0(ctx.get_MDD_forest());
@@ -578,24 +576,24 @@ std::list<dd_edge>
 RSxBA_final_sets(Context& ctx, BuchiAutomaton& ba) {
     forest* forestMDD = ctx.get_MDD_forest();
     forest* forestMxD = ctx.get_MxD_forest();
-    expert_domain* dom = (expert_domain*)ctx.get_domain();
+    domain* dom = const_cast<domain*>(ctx.get_domain());
     const int nvars = dom->getNumVariables();
 
     const unsigned int locLvlBound = dom->getVariableBound(nvars);
 
     // Enocde all the accepting sets (1 for BA, >1 for GBA)
     std::list<dd_edge> AS;
-    bool terms[locLvlBound];
+    std::vector<rangeval> terms(locLvlBound, rangeval(false));
     for (auto&& F : ba.accept_loc_sets) {
-        std::fill(terms, terms+locLvlBound, false);
+        std::fill(terms.begin(), terms.end(), rangeval(false));
         // mark all locations in the acceptance set F
         for (int loc : F) {
             assert(loc < locLvlBound);
-            terms[loc] = true;
+            terms[loc] = rangeval(true);
         }
 
         dd_edge mdd_F(forestMDD);
-        forestMDD->createEdgeForVar(nvars, false, terms, mdd_F);
+        forestMDD->createEdgeForVar(nvars, false, terms.data(), mdd_F);
 
         AS.push_back(mdd_F);
     }
@@ -610,14 +608,14 @@ dd_edge
 RSxBA_makeNSF(Context& ctx, BuchiAutomaton& ba, dd_edge& deadlock) {
     forest* forestMDD = ctx.get_MDD_forest();
     forest* forestMxD = ctx.get_MxD_forest();
-    expert_domain* dom = (expert_domain*)ctx.get_domain();
+    domain* dom = const_cast<domain*>(ctx.get_domain());
     const int nvars = dom->getNumVariables();
 
     // full potential RS (any state in the domain)
     dd_edge pot_RS = dd_edge(forestMDD);
-    std::vector<int> src(nvars+1, DONT_CARE);
-    const int* sa = src.data();
-    forestMDD->createEdge(&sa, 1, pot_RS);
+    minterm m_pot(forestMDD);
+    m_pot.setAllVars(DONT_CARE);
+    m_pot.buildFunction(false, pot_RS);
 
     // location-agnostic deadlock states
     dd_edge deadlock_anyloc = mdd_relabel(deadlock, DONT_CARE, DONT_CARE, forestMxD);
@@ -794,7 +792,7 @@ dd_edge RSxBA_VirtualNSF::forward_reachable(const dd_edge& s0) const {
         return reachable_BFS(s0, this);
     else {
         dd_edge reachab = s0;
-        apply(REACHABLE_STATES_DFS, reachab, NSF, reachab);
+        apply(REACHABLE_TRAD_FS(true), reachab, NSF, reachab);
         return reachab;
     }
 }

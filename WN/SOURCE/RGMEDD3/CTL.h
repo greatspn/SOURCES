@@ -78,11 +78,20 @@ public:
     void print_state(const int *marking) const;
 
     inline bool SatSetContains(const dd_edge &dd, const int *marking) {
-        bool isContained;
-        rsrg->getForestMDD()->evaluate(dd, marking, isContained);
+        bool isContained = false;
+        minterm m(dd.getForest());
+        for (int i = 1; i <= rsrg->getDomain()->getNumVariables(); ++i) {
+            m.setVar(i, marking[i]);
+        }
+        dd.evaluate(m, isContained);
         return isContained;
     }
 };
+
+inline bool isEmptySet(const dd_edge& e) {
+    const forest *forest = e.getForest();
+    return e.getNode() == forest->handleForValue(false);
+}
 
 /*---------------------
  --- Base class of all CTL formulas

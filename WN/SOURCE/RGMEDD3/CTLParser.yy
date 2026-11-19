@@ -385,7 +385,7 @@ BaseFormula *parse_formula(const std::string& formula, CTLResult *out_result) {
             cout << endl;*/
 
             apply(INTERSECTION, rsrg->getInitMark(), dd, r);
-            out_result->set_bool(r.getCardinality() != 0);
+            out_result->set_bool(!isEmptySet(r));
         }
         endMDD2=clock();
     }
@@ -517,10 +517,14 @@ void CTLParser(RSRG *r) {
                     if (print_CTL_counterexamples && !is_int_formula) {
                         StateFormula* state_formula = dynamic_cast<StateFormula*>(formula);
                         cout << "\nGenerated " << (result.get_bool() ? "witness: " : "counter-example: ") << endl;
-                        vector<int> state0(npl + 1);
-                        enumerator it0(rsrg->getInitMark());
-                        const int* tmp =it0.getAssignments();
-                        std::copy(tmp, tmp+npl + 1, state0.begin());
+                        vector<int> state0(npl + 1, 0);
+                        auto it0 = rsrg->getInitMark().begin();
+                        if (it0) {
+                            const minterm& m0 = *it0;
+                            for (int i = 1; i <= npl; ++i) {
+                                state0[i] = m0.getVar(i);
+                            }
+                        }
                         
                         TraceType traceTy = (result.get_bool() ? TT_WITNESS : TT_COUNTEREXAMPLE);
                         TreeTraceNode *ttn = state_formula->generateTrace(state0, traceTy);

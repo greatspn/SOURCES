@@ -238,11 +238,11 @@ public:
 
     // test for true/false in the context RS
     inline bool is_true(const dd_edge& e) const {
-        expert_forest *forest = static_cast<expert_forest *>(e.getForest());
+        const forest *forest = e.getForest();
         return e.getNode() == RS.getNode() || e.getNode() == forest->handleForValue(true);
     }
     inline bool is_false(const dd_edge& e) const {
-        expert_forest *forest = static_cast<expert_forest *>(e.getForest());
+        const forest *forest = e.getForest();
         return e.getNode() == forest->handleForValue(false);
     }
 
