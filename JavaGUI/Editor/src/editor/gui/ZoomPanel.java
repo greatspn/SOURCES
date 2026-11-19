@@ -17,10 +17,10 @@ import java.awt.event.ActionListener;
 public class ZoomPanel extends javax.swing.JPanel {
         
     public static final int zooms[] = { 
-        12, 25, 50, 75, 100, 125, 150, 200, 400
+        12, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350, 375, 400, 425, 450, 475, 500
     };
     public static final String zoomLabels[] = { 
-        "12%", "25 %", "50 %", "75 %", "100 %", "125%", "150 %", "200 %", "400%"
+        "12%", "25%", "50%", "75%", "100%", "125%", "150%", "175%", "200%", "225%", "250%", "275%", "300%", "325%", "350%", "375%", "400%", "425%", "450%", "475%", "500%"
     };
     
     private Action actionZoomIn, actionZoomOut, actionNormalZoom;

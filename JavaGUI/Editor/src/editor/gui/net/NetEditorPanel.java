@@ -59,6 +59,7 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.Scrollable;
@@ -721,6 +722,12 @@ public class NetEditorPanel extends javax.swing.JPanel implements AbstractPageEd
             addMouseListener(new MouseListener() {
                 @Override public void mouseClicked(MouseEvent e) { if (canForwardEvents()) currTool.myMouseClicked(e); }
                 @Override public void mousePressed(MouseEvent e) { 
+                    if (e.getButton() == 4 || e.getButton() == 5) {
+                        JScrollBar hsb = jScrollPane.getHorizontalScrollBar();
+                        int delta = (e.getButton() == 4 ? -3 : 3) * getScrollableUnitIncrement(null, SwingConstants.HORIZONTAL, 1);
+                        hsb.setValue(hsb.getValue() + delta);
+                        return;
+                    }
                     JComponent source = (JComponent)e.getSource();
                     if (!source.isFocusOwner())
                         source.requestFocus();

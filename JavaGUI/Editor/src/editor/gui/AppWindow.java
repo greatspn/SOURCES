@@ -412,9 +412,12 @@ public final class AppWindow extends javax.swing.JFrame implements MainWindowInt
         InputMap inMap = getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap actMap = getRootPane().getActionMap();
         common.Action.registerAllActions(actMap, inMap, this, getClass(), firingCondition);
-//        if (Util.isOSX()) {
-//            actionZoomIn.mapInto(actMap, inMap, KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, KeyEvent.META_DOWN_MASK));
-//        }
+        actionZoomIn.mapInto(actMap, inMap, KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, KeyEvent.CTRL_DOWN_MASK));
+        actionZoomIn.mapInto(actMap, inMap, KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
+        actionZoomIn.mapInto(actMap, inMap, KeyStroke.getKeyStroke(KeyEvent.VK_ADD, KeyEvent.CTRL_DOWN_MASK));
+        actionZoomIn.mapInto(actMap, inMap, KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
+        actionZoomOut.mapInto(actMap, inMap, KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, KeyEvent.CTRL_DOWN_MASK));
+        actionNormalZoom.mapInto(actMap, inMap, KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD0, KeyEvent.CTRL_DOWN_MASK));
         
         // Disable Ctrl+A from the project page tree
         for (KeyStroke ks : jTreeProjects.getInputMap(JTree.WHEN_FOCUSED).allKeys())
