@@ -5,6 +5,8 @@
 // Forward declarations
 //---------------------------------------------------------------------------------------
 
+#include <cstdint>
+
 #define NO_SPARSE_VECTOR_VERIFY_INVARIANT
 #include "NSRC/DSPN-Tool/sparsevector.h"
 
