@@ -322,7 +322,7 @@ read_noobjects() {
         for (charpp = m_names, upp = MP; i++ < nomp ; ++charpp, ++upp) {
             getname(linebuf);
             *charpp = ecalloc(strlen(linebuf) + 1, 1);
-            sprintf(*charpp, linebuf);
+            sprintf(*charpp, "%s", linebuf);
             fscanf(nfp, "%d", &mark);
             *upp = mark;
 #ifdef DEBUG
@@ -337,7 +337,7 @@ read_noobjects() {
     for (charpp = p_names;  i++ < place_num ; ++charpp) {
         getname(linebuf);
         *charpp = ecalloc(strlen(linebuf) + 1, 1);
-        sprintf(*charpp, linebuf);
+        sprintf(*charpp, "%s", linebuf);
 #ifdef DEBUG
         fprintf(stderr, "  ...place %s\n", linebuf);
 #endif
@@ -442,7 +442,7 @@ read_trans() {
     while (ii < norp) {
         getname(linebuf);
         *charpp = ecalloc(strlen(linebuf) + 1, 1);
-        sprintf(*charpp, linebuf);
+        sprintf(*charpp, "%s", linebuf);
         fscanf(nfp, "%lf", &ftemp); while (getc(nfp) != '\n');
         RP[ii++] = ftemp;
         ++charpp;

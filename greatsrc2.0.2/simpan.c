@@ -90,22 +90,22 @@ int             conf_lev_prec;
 //{
 ///*
 //	P_SET(confidence_level_item, PANEL_VALUE, c_i = rem_B.m_c_i, 0);
-//	sprintf(c_f, rem_B.m_c_f);
+//	sprintf(c_f, "%s", rem_B.m_c_f);
 //	P_SET(backup_B_item, PANEL_VALUE, b_i = rem_B.m_b_i, 0);
-//	sprintf(b_f, rem_B.m_b_f);
+//	sprintf(b_f, "%s", rem_B.m_b_f);
 //	P_SET(delete_item, PANEL_VALUE, d_i = rem_B.m_d_i, 0);
-//	sprintf(d_f, rem_B.m_d_f);
+//	sprintf(d_f, "%s", rem_B.m_d_f);
 //	P_SET(memory_item, PANEL_VALUE, m_i = rem_B.m_m_i, 0);
-//	sprintf(m_f, rem_B.m_m_f);
-//	sprintf(error, rem_B.m_e_f);
+//	sprintf(m_f, "%s", rem_B.m_m_f);
+//	sprintf(error, "%s", rem_B.m_e_f);
 //	P_SET(error_item, PANEL_VALUE, error, 0);
-//	sprintf(cycle_number_B, rem_B.m_l_f);
+//	sprintf(cycle_number_B, "%s", rem_B.m_l_f);
 //	P_SET(cycle_number_B_item, PANEL_VALUE, cycle_number_B, 0);
-//	sprintf(lenght_B, rem_B.m_L_f);
+//	sprintf(lenght_B, "%s", rem_B.m_L_f);
 //	P_SET(lenght_B_item, PANEL_VALUE, lenght_B, 0);
-//	sprintf(seed, rem_B.m_s_f);
+//	sprintf(seed, "%s", rem_B.m_s_f);
 //	P_SET(seed_item, PANEL_VALUE, seed, 0);
-//	sprintf(back_B, rem_B.m_back);
+//	sprintf(back_B, "%s", rem_B.m_back);
 //	P_SET(back_B_item, PANEL_VALUE, back_B, 0);
 //*/
 //}
@@ -117,21 +117,21 @@ int             conf_lev_prec;
 //	rem_B.m_b_i = b_i;
 //	rem_B.m_d_i = d_i;
 //	rem_B.m_m_i = m_i;
-//	sprintf(rem_B.m_c_f, c_f);
-//	sprintf(rem_B.m_b_f, b_f);
-//	sprintf(rem_B.m_d_f, d_f);
-//	sprintf(rem_B.m_m_f, m_f);
+//	sprintf(rem_B.m_c_f, "%s", c_f);
+//	sprintf(rem_B.m_b_f, "%s", b_f);
+//	sprintf(rem_B.m_d_f, "%s", d_f);
+//	sprintf(rem_B.m_m_f, "%s", m_f);
 //	sprintf(cycle_number_B, (char *) P_GET(cycle_number_B_item, PANEL_VALUE, 0));
-//	sprintf(rem_B.m_l_f, cycle_number_B);
+//	sprintf(rem_B.m_l_f, "%s", cycle_number_B);
 //	sprintf(lenght_B, (char *) P_GET(lenght_B_item, PANEL_VALUE, 0));
-//	sprintf(rem_B.m_L_f, lenght_B);
+//	sprintf(rem_B.m_L_f, "%s", lenght_B);
 //	sprintf(seed, (char *) P_GET(seed_item, PANEL_VALUE, 0));
-//	sprintf(rem_B.m_s_f, seed);
+//	sprintf(rem_B.m_s_f, "%s", seed);
 //	sprintf(error, (char *) P_GET(error_item, PANEL_VALUE, 0));
-//	sprintf(rem_B.m_e_f, error);
+//	sprintf(rem_B.m_e_f, "%s", error);
 //	if (!backup_B_flag) {
 //	sprintf(back_B, (char *) P_GET(back_B_item, PANEL_VALUE, 0));
-//	sprintf(rem_B.m_back, back_B);
+//	sprintf(rem_B.m_back, "%s", back_B);
 //	}
 //	*/
 //}
@@ -142,22 +142,22 @@ int             conf_lev_prec;
 //{
 //	/*
 //	P_SET(confidence_level_item, PANEL_VALUE, c_i = rem_R.m_c_i, 0);
-//	sprintf(c_f, rem_R.m_c_f);
+//	sprintf(c_f, "%s", rem_R.m_c_f);
 //	P_SET(backup_R_item, PANEL_VALUE, b_i = rem_R.m_b_i, 0);
-//	sprintf(b_f, rem_R.m_b_f);
+//	sprintf(b_f, "%s", rem_R.m_b_f);
 //	P_SET(delete_item, PANEL_VALUE, d_i = rem_R.m_d_i, 0);
-//	sprintf(d_f, rem_R.m_d_f);
+//	sprintf(d_f, "%s", rem_R.m_d_f);
 //	P_SET(memory_item, PANEL_VALUE, m_i = rem_R.m_m_i, 0);
-//	sprintf(m_f, rem_R.m_m_f);
-//	sprintf(error, rem_R.m_e_f);
+//	sprintf(m_f, "%s", rem_R.m_m_f);
+//	sprintf(error, "%s", rem_R.m_e_f);
 //	P_SET(error_item, PANEL_VALUE, error, 0);
-//	sprintf(cycle_number_R, rem_R.m_l_f);
+//	sprintf(cycle_number_R, "%s", rem_R.m_l_f);
 //	P_SET(cycle_number_R_item, PANEL_VALUE, cycle_number_R, 0);
-//	sprintf(lenght_R, rem_R.m_L_f);
+//	sprintf(lenght_R, "%s", rem_R.m_L_f);
 //	P_SET(lenght_R_item, PANEL_VALUE, lenght_R, 0);
-//	sprintf(seed, rem_R.m_s_f);
+//	sprintf(seed, "%s", rem_R.m_s_f);
 //	P_SET(seed_item, PANEL_VALUE, seed, 0);
-//	sprintf(back_R, rem_R.m_back);
+//	sprintf(back_R, "%s", rem_R.m_back);
 //	P_SET(back_R_item, PANEL_VALUE, back_R, 0);
 //	*/
 //}
@@ -170,21 +170,21 @@ int             conf_lev_prec;
 //	rem_R.m_b_i = b_i;
 //	rem_R.m_d_i = d_i;
 //	rem_R.m_m_i = m_i;
-//	sprintf(rem_R.m_c_f, c_f);
-//	sprintf(rem_R.m_b_f, b_f);
-//	sprintf(rem_R.m_d_f, d_f);
-//	sprintf(rem_R.m_m_f, m_f);
+//	sprintf(rem_R.m_c_f, "%s", c_f);
+//	sprintf(rem_R.m_b_f, "%s", b_f);
+//	sprintf(rem_R.m_d_f, "%s", d_f);
+//	sprintf(rem_R.m_m_f, "%s", m_f);
 //	sprintf(cycle_number_R, (char *) P_GET(cycle_number_R_item, PANEL_VALUE, 0));
-//	sprintf(rem_R.m_l_f, cycle_number_R);
+//	sprintf(rem_R.m_l_f, "%s", cycle_number_R);
 //	sprintf(lenght_R, (char *) P_GET(lenght_R_item, PANEL_VALUE, 0));
-//	sprintf(rem_R.m_L_f, lenght_R);
+//	sprintf(rem_R.m_L_f, "%s", lenght_R);
 //	sprintf(seed, (char *) P_GET(seed_item, PANEL_VALUE, 0));
-//	sprintf(rem_R.m_s_f, seed);
+//	sprintf(rem_R.m_s_f, "%s", seed);
 //	sprintf(error, (char *) P_GET(error_item, PANEL_VALUE, 0));
-//	sprintf(rem_R.m_e_f, error);
+//	sprintf(rem_R.m_e_f, "%s", error);
 //	if (!backup_R_flag) {
 //	sprintf(back_R, (char *) P_GET(back_R_item, PANEL_VALUE, 0));
-//	sprintf(rem_R.m_back, back_R);
+//	sprintf(rem_R.m_back, "%s", back_R);
 //	}
 //	*/
 //}

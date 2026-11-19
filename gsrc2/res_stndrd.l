@@ -73,7 +73,7 @@ E\{ {
 
 e\{ { return(TR_MEAN); } ;
 
-^\|[a-zA-Z][a-zA-Z0-9]* { sprintf(res_name,yytext+1);
+^\|[a-zA-Z][a-zA-Z0-9]* { sprintf(res_name, "%s", yytext+1);
 #ifdef DEBUG
     fprintf(stderr,"\n token RES_NAME '%s'\n", res_name);
 #endif /* DEBUG */

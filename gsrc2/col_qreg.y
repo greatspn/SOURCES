@@ -98,7 +98,7 @@ colour_set : class_list
 		 else {
 		     add_set('?');
 		     cur_set->class.str = ecalloc(strlen(name)+1,1);
-		     sprintf(cur_set->class.str,name);
+		     sprintf(cur_set->class.str, "%s", name);
 		   }
 	       }
 	   ;
@@ -115,7 +115,7 @@ sc_term : static_class
 	      else {
 		  add_class('?');
 		  cur_class->nn.str = ecalloc(strlen(name)+1,1);
-		  sprintf(cur_class->nn.str,name);
+		  sprintf(cur_class->nn.str, "%s", name);
 	        }
 	    }
 	;

@@ -127,7 +127,7 @@ load_places() {
         while (i < nomp) {
             getname(linebuf);
             m_names[i] = ecalloc(strlen(linebuf) + 1, sizeof(char));
-            sprintf(m_names[i], linebuf);
+            sprintf(m_names[i], "%s", linebuf);
             fscanf(nfp, "%d", &mark); while (getc(nfp) != '\n');
 #ifdef DEBUG
             printf("    %d %s=%d\n", i, linebuf, mark);
@@ -141,7 +141,7 @@ load_places() {
     while (i < place_num) {
         getname(linebuf);
         p_names[i] = ecalloc(strlen(linebuf) + 1, sizeof(char));
-        sprintf(p_names[i], linebuf);
+        sprintf(p_names[i], "%s", linebuf);
         fscanf(nfp, "%d ", &mark); while (getc(nfp) != '\n');
         place->covered = FALSE;
         place->next = NULL;
@@ -160,7 +160,7 @@ load_places() {
     while (i < norp) {
         getname(linebuf);
         r_names[i] = ecalloc(strlen(linebuf) + 1, sizeof(char));
-        sprintf(r_names[i], linebuf);
+        sprintf(r_names[i], "%s", linebuf);
         fscanf(nfp, "%f", &ftemp); while (getc(nfp) != '\n');
         RP[i++] = ftemp;
     }

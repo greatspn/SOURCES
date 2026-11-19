@@ -196,7 +196,7 @@ static void fire_start_proc() {
     XtSetSensitive(sim_tokenmoves, TRUE);
 
     ss = XmTextFieldGetString(sim_step);
-    sprintf(val_step, ss);
+    sprintf(val_step, "%s", ss);
     XtFree(ss);
     if ((int_val_step = atoi(val_step)) < 1) {
         int_val_step = 1;
@@ -240,7 +240,7 @@ static void fire_afire_proc() {
     reset_flag = FALSE;
 
     ss = XmTextFieldGetString(sim_step);
-    sprintf(val_step, ss);
+    sprintf(val_step, "%s", ss);
     XtFree(ss);
     if ((int_val_step = atoi(val_step)) < 1) {
         int_val_step = 1;
@@ -275,7 +275,7 @@ static void fire_reset_proc() {
     	xv_get(set_time_item, PANEL_VALUE, 0));
     */
     ss = XmTextFieldGetString(sim_Time);
-    sprintf(val_set_time, ss);
+    sprintf(val_set_time, "%s", ss);
     XtFree(ss);
     sscanf(val_set_time, "%lg", &ddd);
     if (ddd < 0.0) {
@@ -578,7 +578,7 @@ static void ValProcCB(Widget w, int closure, XtPointer *call_data) {
     char *ss;
 
     ss = XmTextFieldGetString(sim_step);
-    sprintf(val_step, ss);
+    sprintf(val_step, "%s", ss);
     XtFree(ss);
 
     if ((int_val_step = atoi(val_step)) < 1) {
@@ -597,7 +597,7 @@ void set_no_shots() {
     char *pp;
 
     pp = XmTextFieldGetString(sim_tokenmoves);
-    sprintf(numtk, pp);
+    sprintf(numtk, "%s", pp);
     XtFree(pp);
     if ((number_of_shots = atoi(numtk)) < 0) {
         number_of_shots = 0;

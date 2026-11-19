@@ -211,7 +211,7 @@ void init() {
         trans_p = t_list + --nt;
         trans_p->pri = jj;
         trans_p->name = ecalloc(strlen(buf) + 1, 1);
-        sprintf(trans_p->name, buf);
+        sprintf(trans_p->name, "%s", buf);
         while (n1--) {
             fscanf(nfp, " %*d %d %d\n", &n3, &n4);
             for (n3 += n4 ; n3-- ;)
@@ -301,7 +301,7 @@ void init() {
         fprintf(stderr, "\nres %d (%d lines) name:%s\n", jj, ll, linebuf);
 #endif
         Res[jj].name = ecalloc(strlen(linebuf) + 1, sizeof(char));
-        sprintf(Res[jj].name, linebuf);
+        sprintf(Res[jj].name, "%s", linebuf);
         Res[jj].oper = oop = (struct Op_descr *)
                              ecalloc(ll, sizeof(struct Op_descr));
         while (ll--) {

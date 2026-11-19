@@ -51,23 +51,23 @@
 
 o/[^a-zA-Z0-9_]  { return(L_OR); } ;
 
-id/[^a-zA-Z0-9_]  { sprintf(name,yytext); return(ID); };
+id/[^a-zA-Z0-9_]  { sprintf(name, "%s", yytext); return(ID); };
 
-I[dD]/[^a-zA-Z0-9_]  { sprintf(name,yytext); return(ID); };
+I[dD]/[^a-zA-Z0-9_]  { sprintf(name, "%s", yytext); return(ID); };
 
-[sS]/[^a-rt-zA-RT-Z0-9_]  { sprintf(name,yytext);
+[sS]/[^a-rt-zA-RT-Z0-9_]  { sprintf(name, "%s", yytext);
 			   return(S_FUNCT);
 			 } ;
 
-[xXyYzZ]+/[^a-wA-W0-9_]  { sprintf(name,yytext);
+[xXyYzZ]+/[^a-wA-W0-9_]  { sprintf(name, "%s", yytext);
 			  return(X_FUNCT);
 		        } ;
 
-N[xXyYzZ]*/[^a-wA-W0-9_]  { sprintf(name,yytext+1);
+N[xXyYzZ]*/[^a-wA-W0-9_]  { sprintf(name, "%s", yytext+1);
 			   return(N_FUNCT);
 			 } ;
 
-[a-zA-Z][a-zA-Z0-9_]*  { sprintf(name,yytext);
+[a-zA-Z][a-zA-Z0-9_]*  { sprintf(name, "%s", yytext);
 			 return(STRING);
 		       } ;
 

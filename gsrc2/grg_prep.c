@@ -201,7 +201,7 @@ void load_places() {
     while (i < place_num) {
         getname(linebuf);
         place->name = ecalloc(strlen(linebuf) + 1, 1);
-        sprintf(place->name, linebuf);
+        sprintf(place->name, "%s", linebuf);
         fscanf(nfp, "%d ", &mark); while (getc(nfp) != '\n');
         place->cods = (struct Coding_descr *)ecalloc(sub_num,
                       sizeof(struct Coding_descr));
@@ -500,7 +500,7 @@ void read_trans() {
         trans_p->nt = nt;
         getname(linebuf);
         trans_p->name = ecalloc(strlen(linebuf) + 1, 1);
-        sprintf(trans_p->name, linebuf);
+        sprintf(trans_p->name, "%s", linebuf);
         fscanf(nfp, "%f %d %d %d ", &ftemp, &load_d, &knd, &noar);
         while (getc(nfp) != '\n');
         if (load_d < 0) {
