@@ -1,0 +1,3 @@
+#!/bin/bash
+export PATH=/opt/GreatSPN/scripts:$PATH
+/opt/GreatSPN/scripts/greatspn_editor "$@"
