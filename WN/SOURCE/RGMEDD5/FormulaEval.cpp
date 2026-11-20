@@ -335,7 +335,7 @@ void model_check_query(Context& ctx, const ctl_query_t& query, int sem_id, bool 
                 }
                 
                 TraceType traceTy = (boost::get<bool>(result) ? TT_WITNESS : TT_COUNTEREXAMPLE);
-                TreeTraceNode *ttn = state_formula->generateTrace(state0, traceTy);
+                TreeTraceNode *ttn = state_formula->generateTrace(ctx, state0, traceTy);
                 print_banner(" Trace ");
                 cout << "Initial state is: ";
                 CTLMDD::getInstance()->print_state(state0.data());

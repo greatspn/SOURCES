@@ -323,7 +323,8 @@ void TreeTraceNode::print_trace(const char *prefix, int nest_level) const {
     else
         cout << "State " << prefix;
     cout << (traceTy == TT_COUNTEREXAMPLE ? " does not satisfy: " : " satisfies: ");
-    cout << *(ttn->formula) << ". ";
+    if (ttn->formula)
+        cout << *(ttn->formula) << ". ";
     if (ttn->isECTL_cntexample) {
         cout << "Could not show a counter-example for this ECTL formula.";
     }
@@ -333,7 +334,25 @@ void TreeTraceNode::print_trace(const char *prefix, int nest_level) const {
     cout << endl << endl;
     if (nest_level > 0 && ttn->next == NULL && ttn->sub_trace1 == NULL && ttn->sub_trace2 == NULL)
         return; // Do not show this AP state
+    bool loop_printed = false;
     while (ttn) {
+        if (ttn != this && ttn->loop_back_step >= 0) {
+            for (int i = 0; i < nest_level; i++)
+                cout << "  ";
+            if (!ttn->fired_trans_name.empty()) {
+                cout << "--> " << ttn->fired_trans_name << " --> ";
+            }
+            cout << "loop back to state " << prefix << (ttn->loop_back_step + 1) << "." << endl;
+            loop_printed = true;
+            break;
+        }
+
+        if (!ttn->fired_trans_name.empty()) {
+            for (int i = 0; i < nest_level; i++)
+                cout << "  ";
+            cout << "--> " << ttn->fired_trans_name << " -->" << endl;
+        }
+
         for (int i = 0; i < nest_level; i++)
             cout << "  ";
         cout << prefix << cnt << ": ";
@@ -352,21 +371,78 @@ void TreeTraceNode::print_trace(const char *prefix, int nest_level) const {
         ttn = ttn->next;
         cnt++;
     }
-    if (isCircular) {
+    if (isCircular && !loop_printed) {
         for (int i = 0; i < nest_level; i++)
             cout << "  ";
-        cout << prefix << cnt << ": loop back to state " << prefix << "1." << endl;
+        if (loop_back_step >= 0)
+            cout << "loop back to state " << prefix << (loop_back_step + 1) << "." << endl;
+        else
+            cout << "loop back to state " << prefix << "1." << endl;
+    }
+}
+
+void TreeTraceNode::export_token_game_trace(std::ostream &os) const {
+    const TreeTraceNode *ttn = this;
+    size_t step = 0;
+    while (ttn) {
+        os << "# Step " << step;
+        if (step == 0) {
+            os << " (Initial Marking)\n";
+        } else if (!ttn->fired_trans_name.empty()) {
+            os << ": Fire transition \"" << ttn->fired_trans_name << "\"\n";
+        } else {
+            os << "\n";
+        }
+
+        bool first = true;
+        if (step > 0 && !ttn->fired_trans_name.empty()) {
+            os << " -> " << ttn->fired_trans_name << "\n";
+        }
+
+        bool empty = true;
+        for (size_t i = 0; i < npl; i++) {
+            int tokens = (i + 1 < ttn->marking.size()) ? ttn->marking[i + 1] : 0;
+            if (tokens > 0) {
+                if (!first) os << ", ";
+                os << g_rsrg->nameOfMddVar(i) << "=" << tokens;
+                first = false;
+                empty = false;
+            }
+        }
+        if (empty && first) {
+            os << "<<empty marking>>";
+        }
+        os << "\n\n";
+
+        ttn = ttn->next;
+        step++;
+    }
+
+    if (isCircular) {
+        int target = (loop_back_step >= 0) ? loop_back_step : 0;
+        os << "# Loop back to step " << target << " (Lasso cycle)\n";
+        os << "LOOP_BACK " << target << "\n";
     }
 }
 
 TreeTraceNode::TreeTraceNode()
     : next(NULL), sub_trace1(NULL), sub_trace2(NULL),
-      isECTL_cntexample(false), isCircular(false), traceTy(TT_COUNTEREXAMPLE) { }
+      isECTL_cntexample(false), isCircular(false), traceTy(TT_COUNTEREXAMPLE),
+      fired_trans_index(-1), fired_trans_name(""), loop_back_step(-1), automaton_location(-1) { }
 
-TreeTraceNode::TreeTraceNode(const vector<int> &mark, ref_ptr<Formula> f, TraceType tt)
+TreeTraceNode::TreeTraceNode(const vector<int> &mark, ref_ptr<Formula> f, TraceType tt,
+                             int trans_idx, const std::string& trans_name)
     : marking(mark), next(NULL), sub_trace1(NULL), sub_trace2(NULL),
-      formula(f), isECTL_cntexample(false), isCircular(false), traceTy(tt)
+      formula(f), isECTL_cntexample(false), isCircular(false), traceTy(tt),
+      fired_trans_index(trans_idx), fired_trans_name(trans_name), loop_back_step(-1), automaton_location(-1)
 { /*f->addOwner();*/ }
+
+TreeTraceNode::TreeTraceNode(const vector<int> &mark, TraceType tt,
+                             int trans_idx, const std::string& trans_name)
+    : marking(mark), next(NULL), sub_trace1(NULL), sub_trace2(NULL),
+      formula(nullptr), isECTL_cntexample(false), isCircular(false), traceTy(tt),
+      fired_trans_index(trans_idx), fired_trans_name(trans_name), loop_back_step(-1), automaton_location(-1)
+{ }
 
 TreeTraceNode::~TreeTraceNode() {
     if (next != NULL)
@@ -893,15 +969,8 @@ void Inequality::createMDDByComplement(Context& ctx) {
     setMDD(boole);
 }
 
-TreeTraceNode *Inequality::generateTrace(const vector<int> &state, TraceType traceTy) {
-    // CTLMDD *ctl = CTLMDD::getInstance();
-    // bool isSat = ctl->SatSetContains(getMDD(ctx), state.data());
-
-    // // cout << "isSat="<<isSat<<" traceTy == TT_WITNESS is " << (traceTy == TT_WITNESS) << endl;
-    // CTL_ASSERT(isSat == (traceTy == TT_WITNESS));
-
-    // return new TreeTraceNode(state, this, traceTy);
-    return nullptr;
+TreeTraceNode *Inequality::generateTrace(Context& ctx, const vector<int> &state, TraceType traceTy) {
+    return new TreeTraceNode(state, make_ref_ptr<Formula>(this), traceTy);
 }
 
 //-----------------------------------------------------------------------------
@@ -943,8 +1012,7 @@ void Fireability::print(std::ostream &os) const {
     os << ")";
 }
 
-TreeTraceNode* Fireability::generateTrace(const vector<int> &state, TraceType traceTy) {
-    // CTL_ASSERT(value == (traceTy == TT_WITNESS));
+TreeTraceNode* Fireability::generateTrace(Context& ctx, const vector<int> &state, TraceType traceTy) {
     return new TreeTraceNode(state, make_ref_ptr<Formula>(this), traceTy);
 }
 
@@ -1016,8 +1084,7 @@ void BoolLiteral::createMDD(Context& ctx) {
     }
 }
 
-TreeTraceNode *BoolLiteral::generateTrace(const vector<int> &state, TraceType traceTy) {
-    CTL_ASSERT(value == (traceTy == TT_WITNESS));
+TreeTraceNode *BoolLiteral::generateTrace(Context& ctx, const vector<int> &state, TraceType traceTy) {
     return new TreeTraceNode(state, make_ref_ptr<Formula>(this), traceTy);
 }
 
@@ -1055,19 +1122,8 @@ void Deadlock::createMDD(Context& ctx) {
         setMDD(ctx.NON_DEAD());
 }
 
-TreeTraceNode *Deadlock::generateTrace(const vector<int> &state, TraceType traceTy) {
-    // CTLMDD *ctl = CTLMDD::getInstance();
-    // bool isSat = ctl->SatSetContains(getMDD(), state.data());
-
-    // if (value) { // deadlock
-    //     CTL_ASSERT(isSat == (traceTy == TT_WITNESS));
-    // }
-    // else { // not deadlock
-    //     CTL_ASSERT(isSat == (traceTy == TT_WITNESS));
-    // }
-
-    // return new TreeTraceNode(state, this, traceTy);
-    return nullptr;
+TreeTraceNode *Deadlock::generateTrace(Context& ctx, const vector<int> &state, TraceType traceTy) {
+    return new TreeTraceNode(state, make_ref_ptr<Formula>(this), traceTy);
 }
 
 //-----------------------------------------------------------------------------
@@ -1100,9 +1156,8 @@ void InitState::createMDD(Context& ctx) {
     setMDD(ctx.rsrg->getInitMark());
 }
 
-TreeTraceNode *InitState::generateTrace(const vector<int> &state, TraceType traceTy) {
-    // TBD
-    return nullptr;
+TreeTraceNode *InitState::generateTrace(Context& ctx, const vector<int> &state, TraceType traceTy) {
+    return new TreeTraceNode(state, make_ref_ptr<Formula>(this), traceTy);
 }
 
 //-----------------------------------------------------------------------------
@@ -1140,9 +1195,8 @@ void Reachability::createMDD(Context& ctx) {
     FormulaPrinter<Reachability> fp(this);
     setMDD(result ? ctx.get_state_set() : ctx.empty_set());
 }
-TreeTraceNode *Reachability::generateTrace(const vector<int> &state, TraceType traceTy) {
-    throw rgmedd_exception("Unimplemented");
-    // Should show a state in *subf that satisfyes/does not satisfy the invariant.
+TreeTraceNode *Reachability::generateTrace(Context& ctx, const vector<int> &state, TraceType traceTy) {
+    return new TreeTraceNode(state, make_ref_ptr<Formula>(this), traceTy);
 }
 void Reachability::print(std::ostream &os) const {
     os << (type == RPT_POSSIBILITY ? "P" : (type == RPT_IMPOSSIBILITY ? "N" : "I")) 
@@ -1272,64 +1326,26 @@ void LogicalFormula::createMDD(Context& ctx) {
     setMDD(result);
 }
 
-TreeTraceNode *LogicalFormula::generateTrace(const vector<int> &state0, TraceType traceTy) {
-    assert(0);
-    // CTLMDD *ctl = CTLMDD::getInstance();
-    // CTL_ASSERT(ctl->SatSetContains(getMDD(), state0.data()) == (traceTy == TT_WITNESS));
+TreeTraceNode *LogicalFormula::generateTrace(Context& ctx, const vector<int> &state0, TraceType traceTy) {
+    if (op == CBF_NOT) {
+        return ctx.trace_NOT(this, formula1.get(), state0, traceTy);
+    }
+    else if (op == CBF_AND) {
+        return ctx.trace_AND(this, formula1.get(), formula2.get(), state0, traceTy);
+    }
+    else if (op == CBF_OR) {
+        return ctx.trace_OR(this, formula1.get(), formula2.get(), state0, traceTy);
+    }
+    else if (op == CBF_IMPLY) {
+        // A => B is (!A) || B
+        ref_ptr<Formula> not_f1 = ctlnew<LogicalFormula>(formula1);
+        return ctx.trace_OR(this, not_f1.get(), formula2.get(), state0, traceTy);
+    }
+    return new TreeTraceNode(state0, make_ref_ptr<Formula>(this), traceTy);
+}
 
-    // if (op == CBF_NOT) {
-    //     // Counter-example for:  NOT Phi  is a witness for Phi
-    //     // Witness for:  NOT Phi  is a counter-example for Phi
-    //     return getFormula1()->generateTrace(state0, oppositeTraceType(traceTy));
-    //     // TreeTraceNode *not_ttn = new TreeTraceNode(state0, this, traceTy);
-    //     // not_ttn->set_sub_trace1(getFormula1()->generateTrace(state0, oppositeTraceType(traceTy)));
-    //     // return not_ttn;
-    // }
-
-    // // Counter-example for:  Phi_1 AND Phi_2 -> Either !Phi_1 or !Phi_2 (if false & valid)
-    // // Witness for:  Phi_1 AND Phi_2 -> Both Phi_1 and Phi_2 must be true
-
-    // // Counter-example for:  Phi_1 OR Phi_2 -> Both Phi_1 and Phi_2 must be false
-    // // Witness for:  Phi_1 OR Phi_2 -> Either Phi_1 or Phi_2
-
-    // TreeTraceNode *ttn = new TreeTraceNode(state0, this, traceTy);
-    // if (traceTy == TT_WITNESS) {
-    //     if (op == CBF_AND) {
-    //         // cout << "ctl->SatSetContains(getFormula1()->getMDD(ctx), state0.data()) = " << ctl->SatSetContains(getFormula1()->getMDD(ctx), state0.data()) << endl;
-    //         // cout << "ctl->SatSetContains(getFormula2()->getMDD(ctx), state0.data()) = " << ctl->SatSetContains(getFormula2()->getMDD(ctx), state0.data()) << endl;
-    //         CTL_ASSERT(ctl->SatSetContains(getFormula1()->getMDD(ctx), state0.data()));
-    //         CTL_ASSERT(ctl->SatSetContains(getFormula2()->getMDD(ctx), state0.data()));
-    //         ttn->set_sub_trace1(getFormula1()->generateTrace(state0, traceTy));
-    //         ttn->set_sub_trace2(getFormula2()->generateTrace(state0, traceTy));
-    //     }
-    //     else { // (op == CBF_OR)
-    //         bool isSat1 = ctl->SatSetContains(getFormula1()->getMDD(ctx), state0.data());
-    //         if (isSat1)
-    //             ttn->set_sub_trace1(getFormula1()->generateTrace(state0, traceTy));
-    //         else {
-    //             CTL_ASSERT(ctl->SatSetContains(getFormula2()->getMDD(ctx), state0.data()));
-    //             ttn->set_sub_trace1(getFormula2()->generateTrace(state0, traceTy));
-    //         }
-    //     }
-    // }
-    // else { // traceTy == TT_COUNTEREXAMPLE
-    //     if (op == CBF_AND) {
-    //         bool isSat1 = ctl->SatSetContains(getFormula1()->getMDD(ctx), state0.data());
-    //         if (!isSat1)
-    //             ttn->set_sub_trace1(getFormula1()->generateTrace(state0, traceTy));
-    //         else {
-    //             CTL_ASSERT(!ctl->SatSetContains(getFormula2()->getMDD(ctx), state0.data()));
-    //             ttn->set_sub_trace1(getFormula2()->generateTrace(state0, traceTy));
-    //         }
-    //     }
-    //     else { // (op == CBF_OR)
-    //         CTL_ASSERT(!ctl->SatSetContains(getFormula1()->getMDD(ctx), state0.data()));
-    //         CTL_ASSERT(!ctl->SatSetContains(getFormula2()->getMDD(ctx), state0.data()));
-    //         ttn->set_sub_trace1(getFormula1()->generateTrace(state0, traceTy));
-    //         ttn->set_sub_trace2(getFormula2()->generateTrace(state0, traceTy));
-    //     }
-    // }
-    // return ttn;
+bool LogicalFormula::hasQuantifier() const {
+    return (formula1 && formula1->hasQuantifier()) || (formula2 && formula2->hasQuantifier());
 }
 
 bool LogicalFormula::isStateFormula() const {
@@ -1629,8 +1645,40 @@ void QuantifiedFormula::createMDD(Context& ctx) {
     setMDD(result);
 }
 
-TreeTraceNode *QuantifiedFormula::generateTrace(const vector<int> &state, TraceType traceTy) {
-    assert(false);
+TreeTraceNode *QuantifiedFormula::generateTrace(Context& ctx, const vector<int> &state, TraceType traceTy) {
+    TemporalFormula *tf = dynamic_cast<TemporalFormula*>(formula.get());
+    if (tf != nullptr) {
+        path_op_type pop = tf->getOp();
+        if (quantifier == QOP_EXISTS) {
+            switch (pop) {
+                case POT_NEXT:
+                    return ctx.trace_EX(this, tf->getFormula1(), state, traceTy);
+                case POT_FUTURE:
+                    return ctx.trace_EF(this, tf->getFormula1(), state, traceTy);
+                case POT_GLOBALLY:
+                    return ctx.trace_EG(this, tf->getFormula1(), state, traceTy);
+                case POT_UNTIL:
+                    return ctx.trace_EU(this, tf->getFormula1(), tf->getFormula2(), state, traceTy);
+            }
+        }
+        else { // quantifier == QOP_ALWAYS
+            switch (pop) {
+                case POT_NEXT:
+                    return ctx.trace_AX(this, tf->getFormula1(), state, traceTy);
+                case POT_FUTURE:
+                    return ctx.trace_AF(this, tf->getFormula1(), state, traceTy);
+                case POT_GLOBALLY:
+                    return ctx.trace_AG(this, tf->getFormula1(), state, traceTy);
+                case POT_UNTIL:
+                    return ctx.trace_AU(this, tf->getFormula1(), tf->getFormula2(), state, traceTy);
+            }
+        }
+    }
+    return new TreeTraceNode(state, make_ref_ptr<Formula>(this), traceTy);
+}
+
+bool QuantifiedFormula::hasQuantifier() const {
+    return true;
 }
 
 bool QuantifiedFormula::isStateFormula() const {
@@ -1774,8 +1822,12 @@ void TemporalFormula::maximal_path_subformula(Context& ctx, std::ostream& os, qu
     os << ")";
 }
 
-TreeTraceNode *TemporalFormula::generateTrace(const vector<int> &state, TraceType traceTy) {
-    assert(false);
+TreeTraceNode *TemporalFormula::generateTrace(Context& ctx, const vector<int> &state, TraceType traceTy) {
+    throw rgmedd_exception("Direct trace generation not supported for TemporalFormula (path formula)");
+}
+
+bool TemporalFormula::hasQuantifier() const {
+    return (formula1 && formula1->hasQuantifier()) || (formula2 && formula2->hasQuantifier());
 }
 
 bool TemporalFormula::isStateFormula() const {
@@ -1963,8 +2015,8 @@ void GlobalProperty::createMDD(Context& ctx) {
     setMDD(result ? ctx.RS : ctx.empty_set());
 }
 
-TreeTraceNode *GlobalProperty::generateTrace(const vector<int> &state, TraceType traceTy) {
-    throw rgmedd_exception("Unimplemented");
+TreeTraceNode *GlobalProperty::generateTrace(Context& ctx, const vector<int> &state, TraceType traceTy) {
+    return new TreeTraceNode(state, make_ref_ptr<Formula>(this), traceTy);
 }
 
 void GlobalProperty::print(std::ostream &os) const {
