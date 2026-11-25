@@ -106,7 +106,25 @@ ILU0(Matrix &M, VerboseLevel verboseLvl) {
 
 //-----------------------------------------------------------------------------
 
-template <class T> struct qentry_comp : binary_function <T, T, bool> {
+#ifndef __LOCAL_BINARY_FUNCTION_DEFINED__
+#define __LOCAL_BINARY_FUNCTION_DEFINED__
+// Local replacement for std::binary_function (removed in C++17)
+template <class Arg1, class Arg2, class Result>
+struct local_binary_function {
+    typedef Arg1 first_argument_type;
+    typedef Arg2 second_argument_type;
+    typedef Result result_type;
+};
+
+// Local replacement for std::unary_function (removed in C++17)
+template <class Arg, class Result>
+struct local_unary_function {
+    typedef Arg argument_type;
+    typedef Result result_type;
+};
+#endif
+
+template <class T> struct qentry_comp : local_binary_function <T, T, bool> {
     bool operator()(const T &x, const T &y) const
     {return std::abs(x.first) < std::abs(y.first);}
 };

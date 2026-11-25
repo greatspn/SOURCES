@@ -11,6 +11,24 @@
 #define __SPARSE_VECTOR_H__
 //=============================================================================
 
+#ifndef __LOCAL_BINARY_FUNCTION_DEFINED__
+#define __LOCAL_BINARY_FUNCTION_DEFINED__
+// Local replacement for std::binary_function (removed in C++17)
+template <class Arg1, class Arg2, class Result>
+struct local_binary_function {
+    typedef Arg1 first_argument_type;
+    typedef Arg2 second_argument_type;
+    typedef Result result_type;
+};
+
+// Local replacement for std::unary_function (removed in C++17)
+template <class Arg, class Result>
+struct local_unary_function {
+    typedef Arg argument_type;
+    typedef Result result_type;
+};
+#endif
+
 template <class Iterator, class T, class Compare>
 Iterator my_lower_bound(Iterator first, Iterator last,
                         const T &value, Compare comp) {
@@ -102,7 +120,7 @@ public:
     typedef typename storage_type::const_iterator const_iterator;
 
     // comparator for  index_value_pair <> index_type
-    struct less_by_index : std::binary_function <index_value_pair, index_type, bool> {
+    struct less_by_index : local_binary_function <index_value_pair, index_type, bool> {
         inline bool operator()(const index_value_pair &x, const index_type &y) const
         { return x.index < y; }
         inline bool operator()(const index_type &x, const index_value_pair &y) const

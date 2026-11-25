@@ -540,7 +540,7 @@ void BuildEmbeddedMatrices(const MRP &mrp, const MRPStateKinds &stKinds,
 
 //-----------------------------------------------------------------------------
 
-struct embedded_state_pred : unary_function <MRPStateKind, bool> {
+struct embedded_state_pred : local_unary_function <MRPStateKind, bool> {
     inline bool operator()(const MRPStateKind k) const
     {	return (k & MSK_EMC_NOT_EMBEDDED) == 0;   }
 };

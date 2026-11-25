@@ -2447,10 +2447,10 @@ void AbsorptionCTMC(const CTMC &ctmc, const ublas::vector<double> &reward,
 
 //-----------------------------------------------------------------------------
 
-struct is_zero : public unary_function<double, bool> {
+struct is_zero : public local_unary_function<double, bool> {
     inline bool operator()(const double val) const  {  return (val == 0);  }
 };
-struct is_nonzero : public unary_function<double, bool> {
+struct is_nonzero : public local_unary_function<double, bool> {
     inline bool operator()(const double val) const  {  return (val != 0);  }
 };
 
