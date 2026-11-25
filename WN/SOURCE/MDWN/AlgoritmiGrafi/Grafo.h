@@ -106,6 +106,24 @@
 
 
 
+#ifndef __LOCAL_BINARY_FUNCTION_DEFINED__
+#define __LOCAL_BINARY_FUNCTION_DEFINED__
+// Local replacement for std::binary_function (removed in C++17)
+template <class Arg1, class Arg2, class Result>
+struct local_binary_function {
+    typedef Arg1 first_argument_type;
+    typedef Arg2 second_argument_type;
+    typedef Result result_type;
+};
+
+// Local replacement for std::unary_function (removed in C++17)
+template <class Arg, class Result>
+struct local_unary_function {
+    typedef Arg argument_type;
+    typedef Result result_type;
+};
+#endif
+
 namespace asd {
 
 
@@ -167,7 +185,7 @@ public:
 
 
 
-class hash_v: std::unary_function<vertice *, long> {
+class hash_v: local_unary_function<vertice *, long> {
 public: long operator()(vertice *x) const {
         return (long)x;
     }
