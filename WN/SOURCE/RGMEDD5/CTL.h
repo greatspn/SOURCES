@@ -288,12 +288,70 @@ public:
     dd_edge AGfair(dd_edge f1) const;
     dd_edge AUfair(dd_edge f1, dd_edge f2) const;
     dd_edge ARfair(dd_edge f1, dd_edge f2) const;
+
+    // Transition finding & CTL trace methods
+    int find_firing_transition(const std::vector<int>& s_prev, const std::vector<int>& s_curr) const;
+
+    TreeTraceNode* trace_EX(Formula* top_formula, Formula* phi, const std::vector<int>& state0, TraceType traceTy);
+    TreeTraceNode* trace_EF(Formula* top_formula, Formula* phi, const std::vector<int>& state0, TraceType traceTy);
+    TreeTraceNode* trace_EG(Formula* top_formula, Formula* phi, const std::vector<int>& state0, TraceType traceTy);
+    TreeTraceNode* trace_EU(Formula* top_formula, Formula* phi1, Formula* phi2, const std::vector<int>& state0, TraceType traceTy);
+    TreeTraceNode* trace_ERfair(Formula* top_formula, Formula* phi1, Formula* phi2, const std::vector<int>& state0, TraceType traceTy);
+
+    TreeTraceNode* trace_AX(Formula* top_formula, Formula* phi, const std::vector<int>& state0, TraceType traceTy);
+    TreeTraceNode* trace_AF(Formula* top_formula, Formula* phi, const std::vector<int>& state0, TraceType traceTy);
+    TreeTraceNode* trace_AG(Formula* top_formula, Formula* phi, const std::vector<int>& state0, TraceType traceTy);
+    TreeTraceNode* trace_AU(Formula* top_formula, Formula* phi1, Formula* phi2, const std::vector<int>& state0, TraceType traceTy);
+    TreeTraceNode* trace_ARfair(Formula* top_formula, Formula* phi1, Formula* phi2, const std::vector<int>& state0, TraceType traceTy);
+
+    inline TreeTraceNode* trace_EXfair(Formula* top, Formula* phi, const std::vector<int>& s, TraceType tt) { return trace_EX(top, phi, s, tt); }
+    inline TreeTraceNode* trace_EFfair(Formula* top, Formula* phi, const std::vector<int>& s, TraceType tt) { return trace_EF(top, phi, s, tt); }
+    inline TreeTraceNode* trace_EGfair(Formula* top, Formula* phi, const std::vector<int>& s, TraceType tt) { return trace_EG(top, phi, s, tt); }
+    inline TreeTraceNode* trace_EUfair(Formula* top, Formula* p1, Formula* p2, const std::vector<int>& s, TraceType tt) { return trace_EU(top, p1, p2, s, tt); }
+    inline TreeTraceNode* trace_AXfair(Formula* top, Formula* phi, const std::vector<int>& s, TraceType tt) { return trace_AX(top, phi, s, tt); }
+    inline TreeTraceNode* trace_AFfair(Formula* top, Formula* phi, const std::vector<int>& s, TraceType tt) { return trace_AF(top, phi, s, tt); }
+    inline TreeTraceNode* trace_AGfair(Formula* top, Formula* phi, const std::vector<int>& s, TraceType tt) { return trace_AG(top, phi, s, tt); }
+    inline TreeTraceNode* trace_AUfair(Formula* top, Formula* p1, Formula* p2, const std::vector<int>& s, TraceType tt) { return trace_AU(top, p1, p2, s, tt); }
+
+    TreeTraceNode* trace_NOT(Formula* top_formula, Formula* phi, const std::vector<int>& state0, TraceType traceTy);
+    TreeTraceNode* trace_AND(Formula* top_formula, Formula* phi1, Formula* phi2, const std::vector<int>& state0, TraceType traceTy);
+    TreeTraceNode* trace_OR(Formula* top_formula, Formula* phi1, Formula* phi2, const std::vector<int>& state0, TraceType traceTy);
 };
 
 dd_edge MDD_INTERSECT(dd_edge f1, dd_edge f2);
 
 // potential state on each model variable, and fixed 0 values for the extra levels
 dd_edge mdd_potential_state_set(RSRG* rsrg, forest* forestMDD, bool zero_extra_lvls);
+
+// Trace generation helpers
+bool sat_set_contains(const dd_edge &dd, const std::vector<int> &marking);
+bool sat_set_is_empty(const dd_edge &e);
+dd_edge dd_from_marking(const std::vector<int> &marking, MEDDLY::forest *mdd_forest);
+void get_marking_from_dd(const dd_edge &dd, std::vector<int> &marking);
+
+void generate_sequential_trace(const Context& ctx,
+                               const std::vector<int> &s0, 
+                               const std::vector<dd_edge> &steps, 
+                               const VirtualNSF& NSF,
+                               std::list<std::vector<int>> &trace_states,
+                               std::vector<int> &trace_transitions);
+void generate_sequential_trace(const std::vector<int> &s0, 
+                               const std::vector<dd_edge> &steps, 
+                               const VirtualNSF& NSF,
+                               std::list<std::vector<int>> &trace_states);
+
+void generate_rho_trace(const Context& ctx,
+                        const std::vector<int> &s0, 
+                        const std::vector<dd_edge> &steps, 
+                        const VirtualNSF& NSF,
+                        std::list<std::vector<int>> &trace_states,
+                        std::vector<int> &trace_transitions,
+                        size_t& start_of_loop);
+void generate_rho_trace(const std::vector<int> &s0, 
+                        const std::vector<dd_edge> &steps, 
+                        const VirtualNSF& NSF,
+                        std::list<std::vector<int>> &trace_states,
+                        size_t& start_of_loop);
 
 //-----------------------------------------------------------------------------
 // NSF with stuttering (self-loops) on the deadlocked markings 
@@ -423,7 +481,8 @@ public:
     bool hasStoredMDD() const;
     const dd_edge& getStoredMDD() const;
 
-    virtual TreeTraceNode *generateTrace(const vector<int> &state, TraceType traceTy) = 0;
+    virtual TreeTraceNode *generateTrace(Context& ctx, const vector<int> &state, TraceType traceTy) = 0;
+    virtual bool hasQuantifier() const = 0;
 };
 
 /*---------------------------------
@@ -446,9 +505,21 @@ private:
     bool           isCircular;
     // Is this a witness or a counterexample?
     TraceType      traceTy;
+
+    // Fired transition leading to this state (-1 for initial/root state)
+    int            fired_trans_index;
+    std::string    fired_trans_name;
+    // Loop-back target step (0-based, -1 if not a loop)
+    int            loop_back_step;
+    // Automaton location index for synchronized products (LTL/CTL*), -1 for pure CTL
+    int            automaton_location;
+
 public:
     TreeTraceNode();
-    TreeTraceNode(const vector<int> &mark, ref_ptr<Formula> f, TraceType tt);
+    TreeTraceNode(const vector<int> &mark, ref_ptr<Formula> f, TraceType tt,
+                  int trans_idx = -1, const std::string& trans_name = "");
+    TreeTraceNode(const vector<int> &mark, TraceType tt,
+                  int trans_idx = -1, const std::string& trans_name = "");
     ~TreeTraceNode();
 
     inline void set_sub_trace1(TreeTraceNode *ttn) { CTL_ASSERT(sub_trace1 == NULL); sub_trace1 = ttn; }
@@ -456,9 +527,36 @@ public:
     inline void set_next(TreeTraceNode *tn)        { CTL_ASSERT(next == NULL); next = tn; }
     inline void set_ECTL_cntexample()              { isECTL_cntexample = true; }
     inline void set_circular()                     { isCircular = true; }
-    inline bool has_next()                         { return next != NULL; }
+    inline bool has_next() const                   { return next != NULL; }
+
+    inline void set_fired_transition(int idx, const std::string& name) {
+        fired_trans_index = idx;
+        fired_trans_name = name;
+    }
+    inline int get_fired_trans_index() const { return fired_trans_index; }
+    inline const std::string& get_fired_trans_name() const { return fired_trans_name; }
+
+    inline void set_loop_back_step(int step) {
+        loop_back_step = step;
+        if (step >= 0) isCircular = true;
+    }
+    inline int get_loop_back_step() const { return loop_back_step; }
+
+    inline void set_automaton_location(int loc) { automaton_location = loc; }
+    inline int get_automaton_location() const { return automaton_location; }
+
+    inline void set_trace_type(TraceType tt) { traceTy = tt; }
+    inline TraceType get_trace_type() const { return traceTy; }
+
+    inline const vector<int>& get_marking() const { return marking; }
+    inline TreeTraceNode* get_next() const { return next; }
+    inline TreeTraceNode* get_sub_trace1() const { return sub_trace1; }
+    inline TreeTraceNode* get_sub_trace2() const { return sub_trace2; }
+    inline ref_ptr<Formula> get_formula() const { return formula; }
+    inline bool is_circular() const { return isCircular; }
 
     void print_trace(const char *prefix = "", int nest_level = 0) const;
+    void export_token_game_trace(std::ostream &os) const;
 };
 
 //-----------------------------------------------------------------------------
@@ -487,7 +585,8 @@ protected:
     LogicalFormula(ref_ptr<Formula> formula1);
     virtual ~LogicalFormula();
 public:
-    virtual TreeTraceNode *generateTrace(const vector<int> &state, TraceType traceTy) override;
+    virtual TreeTraceNode *generateTrace(Context& ctx, const vector<int> &state, TraceType traceTy) override;
+    virtual bool hasQuantifier() const override;
     virtual bool isStateFormula() const override;
     virtual bool isPathFormula() const override;
     virtual bool isAtomicPropos() const override;
@@ -519,7 +618,8 @@ protected:
     virtual ~QuantifiedFormula();
 public:
 
-    virtual TreeTraceNode *generateTrace(const vector<int> &state, TraceType traceTy) override;
+    virtual TreeTraceNode *generateTrace(Context& ctx, const vector<int> &state, TraceType traceTy) override;
+    virtual bool hasQuantifier() const override;
     virtual bool isStateFormula() const override;
     virtual bool isPathFormula() const override;
     virtual bool isAtomicPropos() const override;
@@ -548,7 +648,8 @@ protected:
     TemporalFormula(ref_ptr<Formula> _formula1, ref_ptr<Formula> _formula2/*, path_op_type _op*/);
 public:
 
-    virtual TreeTraceNode *generateTrace(const vector<int> &state, TraceType traceTy) override;
+    virtual TreeTraceNode *generateTrace(Context& ctx, const vector<int> &state, TraceType traceTy) override;
+    virtual bool hasQuantifier() const override;
 
     virtual ~TemporalFormula();
 
@@ -573,6 +674,7 @@ public:
     virtual bool isStateFormula() const override;
     virtual bool isPathFormula() const override;
     virtual bool isAtomicPropos() const override;
+    virtual bool hasQuantifier() const override { return false; }
     virtual void maximal_path_subformula(Context& ctx, std::ostream&, quant_type,
                                          std::vector<ref_ptr<Formula>>&) override;
 };
@@ -595,7 +697,7 @@ protected:
     BoolLiteral(bool value);
     virtual ~BoolLiteral();
 public:
-    virtual TreeTraceNode *generateTrace(const vector<int> &state, TraceType traceTy) override;
+    virtual TreeTraceNode *generateTrace(Context& ctx, const vector<int> &state, TraceType traceTy) override;
     virtual void print(std::ostream &os) const override;
     virtual void maximal_path_subformula(Context& ctx, std::ostream&, quant_type,
                                          std::vector<ref_ptr<Formula>>&) override;
@@ -621,7 +723,7 @@ protected:
     Deadlock(bool value);
     virtual ~Deadlock();
 public:
-    virtual TreeTraceNode *generateTrace(const vector<int> &state, TraceType traceTy) override;
+    virtual TreeTraceNode *generateTrace(Context& ctx, const vector<int> &state, TraceType traceTy) override;
     virtual void print(std::ostream &os) const override;
 
     inline bool getValue() const { return  value; }
@@ -640,7 +742,7 @@ protected:
     InitState();
     virtual ~InitState();
 public:
-    virtual TreeTraceNode *generateTrace(const vector<int> &state, TraceType traceTy) override;
+    virtual TreeTraceNode *generateTrace(Context& ctx, const vector<int> &state, TraceType traceTy) override;
     virtual void print(std::ostream &os) const override;
 };
 
@@ -671,7 +773,7 @@ protected:
     GlobalProperty(global_property_type type);
     virtual ~GlobalProperty();
 public:
-    virtual TreeTraceNode *generateTrace(const vector<int> &state, TraceType traceTy) override;
+    virtual TreeTraceNode *generateTrace(Context& ctx, const vector<int> &state, TraceType traceTy) override;
     virtual void print(std::ostream &os) const override;
     /**
      * Return the boolean value.
@@ -703,7 +805,7 @@ protected:
     Reachability(ref_ptr<Formula> subf, prop_type type);
     virtual ~Reachability();
 public:
-    virtual TreeTraceNode *generateTrace(const vector<int> &state, TraceType traceTy) override;
+    virtual TreeTraceNode *generateTrace(Context& ctx, const vector<int> &state, TraceType traceTy) override;
 
     virtual void print(std::ostream &os) const override;
 };
@@ -725,7 +827,7 @@ protected:
 
 public:
     virtual void print(std::ostream &os) const override;
-    virtual TreeTraceNode *generateTrace(const vector<int> &state, TraceType traceTy) override;
+    virtual TreeTraceNode *generateTrace(Context& ctx, const vector<int> &state, TraceType traceTy) override;
 };
 
 //-----------------------------------------------------------------------------
@@ -755,7 +857,7 @@ protected:
     Inequality(op_type op, ref_ptr<IntFormula> expr1, float constant);
     virtual ~Inequality();    
 public:
-    virtual TreeTraceNode *generateTrace(const vector<int> &state, TraceType traceTy) override;
+    virtual TreeTraceNode *generateTrace(Context& ctx, const vector<int> &state, TraceType traceTy) override;
 
     inline float getConstant() const { return constant; }
     inline IntFormula *getExpr1() const { return expr1.get(); }
