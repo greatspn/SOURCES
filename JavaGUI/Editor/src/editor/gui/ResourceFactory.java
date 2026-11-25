@@ -274,6 +274,10 @@ public class ResourceFactory {
         return loadIcon32("build_rg");
     }
 
+    public ImageIcon getBuildRGDeadlocks32() {
+        return loadIcon32("build_rg_deadlocks");
+    }
+
     public ImageIcon getBuildSymRG32() {
         return loadIcon32("build_srg");
     }
