@@ -1356,45 +1356,56 @@ TreeTraceNode *CTLStateFormula::generateTrace(const vector<int> &state0, TraceTy
             //  \------------------------------------/
             dd_edge Phi = getFormula1()->getMDD();
             CTL_ASSERT(ctl->SatSetContains(Phi, state0.data()));
-            dd_edge dd_s0(mdd_forest);
-            minterm m_s0(mdd_forest);
-            m_s0.setAll(state0.data(), true);
-            m_s0.buildFunction(false, dd_s0);
 
-            vector<dd_edge> intermDD;
-            intermDD.push_back(dd_s0);
-            do {
-                dd_edge pre_image(mdd_forest);
-                apply(PRE_IMAGE, intermDD.back(), rsrg->getNSF(), pre_image);
-                apply(INTERSECTION, pre_image, Phi, pre_image);
-                intermDD.push_back(pre_image);
-            }
-            while (!ctl->SatSetContains(intermDD.back(), state0.data()));
-
-            // Sample a circular trace from s0 to s0, skipping the last s0
-            // All trace node should evaluate Phi
             ttn->set_sub_trace1(getFormula1()->generateTrace(state0, traceTy));
-            ttn->set_circular();
+
+            dd_edge S_EG = getMDD();
+            vector<vector<int>> visited_states;
+            visited_states.push_back(state0);
             vector<int> state = state0;
-            for (ssize_t step = intermDD.size() - 2; step > 0; step--) {
-                // Get the set of next states departing from *state
-                // and remaining in the Phi set of intermDD
+
+            while (true) {
                 dd_edge dd_of_state(mdd_forest);
                 minterm m_st(mdd_forest);
                 m_st.setAll(state.data(), true);
                 m_st.buildFunction(false, dd_of_state);
-                apply(POST_IMAGE, dd_of_state, rsrg->getNSF(), dd_of_state);
-                apply(INTERSECTION, intermDD[step], dd_of_state, dd_of_state);
-                // Pick the first state
-                auto it = dd_of_state.begin();
+
+                dd_edge dd_succs(mdd_forest);
+                apply(POST_IMAGE, dd_of_state, rsrg->getNSF(), dd_succs);
+                apply(INTERSECTION, dd_succs, S_EG, dd_succs);
+
+                if (isEmptySet(dd_succs)) {
+                    // Reached deadlock (no successors in S_EG)
+                    break;
+                }
+
+                auto it = dd_succs.begin();
                 CTL_ASSERT(it);
                 const minterm &m_it = *it;
-                for (size_t k = 1; k <= npl; ++k) state[k] = m_it.from(k);
-                // Add this intermediate state to the trace.
-                TreeTraceNode *next_ttn = new TreeTraceNode(state, this, traceTy);
-                next_ttn->set_sub_trace1(getFormula1()->generateTrace(state, traceTy));
+                vector<int> next_state(npl + 1);
+                for (size_t k = 1; k <= npl; ++k)
+                    next_state[k] = m_it.from(k);
+
+                bool is_loop = false;
+                for (size_t i = 0; i < visited_states.size(); ++i) {
+                    if (visited_states[i] == next_state) {
+                        is_loop = true;
+                        break;
+                    }
+                }
+
+                if (is_loop) {
+                    ttn->set_circular();
+                    break;
+                }
+
+                TreeTraceNode *next_ttn = new TreeTraceNode(next_state, this, traceTy);
+                next_ttn->set_sub_trace1(getFormula1()->generateTrace(next_state, traceTy));
                 current_ttn->set_next(next_ttn);
                 current_ttn = next_ttn;
+
+                visited_states.push_back(next_state);
+                state = next_state;
             }
         }
         break;
@@ -1412,8 +1423,15 @@ TreeTraceNode *CTLStateFormula::generateTrace(const vector<int> &state0, TraceTy
                 // Step back until we find the marking in the sat set
                 dd_edge pre_image(mdd_forest);
                 apply(PRE_IMAGE, intermDD.back(), rsrg->getNSF(), pre_image);
-                apply(INTERSECTION, intermDD.back(), Phi1, intermDD.back());
+                apply(INTERSECTION, pre_image, Phi1, pre_image);
+                if (isEmptySet(pre_image) || pre_image == intermDD.back()) {
+                    break;
+                }
                 intermDD.push_back(pre_image);
+            }
+            if (!ctl->SatSetContains(intermDD.back(), state0.data())) {
+                ttn->set_sub_trace1(getFormula1()->generateTrace(state0, traceTy));
+                break;
             }
             // Pick the trace from s0 to any state in intermDD[i]
             if (intermDD.size() == 1) {
