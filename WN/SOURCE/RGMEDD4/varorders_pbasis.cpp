@@ -1124,7 +1124,7 @@ struct uPSI_set {
         typedef uPSI_ref value_type;
         typedef std::vector<int>::iterator::difference_type difference_type;
         typedef void* pointer;   // should not be used.
-        typedef uPSI_ref& reference;
+        typedef uPSI_ref reference;
         typedef std::random_access_iterator_tag iterator_category;
 
         inline iterator() {}
